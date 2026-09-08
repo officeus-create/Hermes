@@ -4,204 +4,154 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
 ---
 
 <BaseLayout
-  title="Repair Shop Settings | Hermes Connect"
-  description="Owner-only repair shop profile and public booking settings."
+  title="Company | Hermes Connect Repair Shop"
+  description="Owner-only company profile, team schedules, booking link, and connection readiness."
   robots="noindex,nofollow"
 >
-  <div class="site-header settings-account-source" aria-hidden="true">
+  <div class="site-header company-account-source" aria-hidden="true">
     <HermesConnectAccountSwitcher current="repair" mode="menu" />
   </div>
-  <main id="main-content" class="customers-page settings-page">
-    <div class="shell">
-      <section id="settings-workspace">
-        <header class="settings-hero">
-          <div>
-            <p class="eyebrow" data-i18n="eyebrow">Repair Shop CRM</p>
-            <h1 data-i18n="title">Settings</h1>
-            <p class="muted" data-i18n="subtitle">Manage the saved shop profile used by your public booking link and operating timezone.</p>
-          </div>
-          <span id="profile-state" class="pill" data-i18n="notConfigured">Not configured</span>
-        </header>
 
-        <div id="page-alert" class="alert hidden" role="status" aria-live="polite"></div>
+  <main id="main-content" class="company-page">
+    <div class="company-shell">
+      <header class="company-hero">
+        <div>
+          <p class="eyebrow" data-i18n="eyebrow">Repair Shop CRM</p>
+          <h1 data-i18n="title">Company</h1>
+          <p class="muted" data-i18n="subtitle">Company profile, team, shifts, breaks and connection readiness in one place.</p>
+        </div>
+        <span id="profile-state" class="status-pill" data-i18n="notConfigured">Not configured</span>
+      </header>
 
-        <section class="settings-card" aria-labelledby="profile-title">
-          <div class="settings-card-head">
-            <div>
-              <p class="eyebrow" data-i18n="profileEyebrow">Business profile</p>
-              <h2 id="profile-title" data-i18n="profileTitle">Shop profile</h2>
-              <p class="muted" data-i18n="profileCopy">These are the same saved business details Hermes Connect uses for public booking.</p>
-            </div>
-          </div>
+      <div id="page-alert" class="company-alert hidden" role="status" aria-live="polite"></div>
 
-          <form id="profile-form" class="settings-form">
-            <label class="span-2"><span data-i18n="shopName">Shop name</span><input id="shop-name" maxlength="120" required autocomplete="organization" placeholder="Apex Auto Care" data-i18n-placeholder="shopNamePlaceholder" /></label>
-            <label><span data-i18n="phone">Phone</span><input id="shop-phone" maxlength="32" inputmode="tel" autocomplete="tel" placeholder="+1 414 555 0100" /></label>
-            <label><span data-i18n="address">Address</span><input id="shop-address" maxlength="160" autocomplete="street-address" placeholder="123 Main St" /></label>
-            <label><span data-i18n="city">City</span><input id="shop-city" maxlength="100" required autocomplete="address-level2" placeholder="Milwaukee" /></label>
-            <label><span data-i18n="region">Region / state</span><input id="shop-region" maxlength="100" autocomplete="address-level1" placeholder="Wisconsin" /></label>
-            <label><span data-i18n="country">Country code</span><input id="shop-country" maxlength="2" minlength="2" required autocomplete="country" placeholder="US" pattern="[A-Za-z]{2}" /></label>
-            <label><span data-i18n="postal">Postal code</span><input id="shop-postal" maxlength="24" autocomplete="postal-code" placeholder="53202" /></label>
-            <label class="span-2"><span data-i18n="timezone">Timezone</span><div class="timezone-row"><input id="shop-timezone" maxlength="64" required list="timezone-suggestions" placeholder="America/Chicago" /><button id="detect-timezone" class="secondary-action" type="button" data-i18n="detectTimezone">Use browser timezone</button></div></label>
-            <datalist id="timezone-suggestions"><option value="America/New_York"></option><option value="America/Chicago"></option><option value="America/Denver"></option><option value="America/Los_Angeles"></option><option value="America/Toronto"></option><option value="Europe/London"></option><option value="Europe/Paris"></option><option value="Europe/Berlin"></option><option value="Europe/Kyiv"></option><option value="Asia/Dubai"></option><option value="Asia/Tokyo"></option><option value="Australia/Sydney"></option></datalist>
-            <button id="save-profile" class="primary-action span-2" type="submit" data-i18n="save">Save shop profile</button>
-          </form>
-        </section>
+      <nav class="company-tabs" aria-label="Company sections">
+        <a href="#profile" data-i18n="profileTab">Profile</a>
+        <a href="#team" data-i18n="teamTab">Team</a>
+        <a href="#schedule" data-i18n="scheduleTab">Schedules</a>
+        <a href="#connections" data-i18n="connectionsTab">Connections</a>
+      </nav>
 
-        <section id="public-booking-card" class="settings-card hidden" aria-labelledby="booking-link-title">
-          <div class="settings-card-head">
-            <div>
-              <p class="eyebrow" data-i18n="bookingEyebrow">Customer access</p>
-              <h2 id="booking-link-title" data-i18n="bookingTitle">Public booking link</h2>
-              <p class="muted" data-i18n="bookingCopy">Share this stable link after your services and availability are ready.</p>
-            </div>
-          </div>
-          <div class="booking-link-row">
-            <code id="public-booking-link"></code>
-            <div class="booking-link-actions">
-              <button id="copy-booking-link" class="secondary-action" type="button" data-i18n="copy">Copy</button>
-              <a id="open-booking-link" class="secondary-action" href="#" target="_blank" rel="noopener" data-i18n="open">Open</a>
-            </div>
-          </div>
-        </section>
+      <section id="profile" class="company-card">
+        <div class="card-head">
+          <p class="eyebrow" data-i18n="profileEyebrow">Company profile</p>
+          <h2 data-i18n="profileTitle">Business details</h2>
+          <p class="muted" data-i18n="profileCopy">These saved details are used by your public booking experience.</p>
+        </div>
+        <form id="profile-form" class="profile-grid">
+          <label class="span-2"><span data-i18n="shopName">Shop name</span><input id="shop-name" maxlength="120" required autocomplete="organization" placeholder="Apex Auto Care" /></label>
+          <label><span data-i18n="phone">Phone</span><input id="shop-phone" maxlength="32" inputmode="tel" autocomplete="tel" placeholder="+1 414 555 0100" /></label>
+          <label><span data-i18n="address">Address</span><input id="shop-address" maxlength="160" autocomplete="street-address" placeholder="123 Main St" /></label>
+          <label><span data-i18n="city">City</span><input id="shop-city" maxlength="100" required autocomplete="address-level2" /></label>
+          <label><span data-i18n="region">Region / state</span><input id="shop-region" maxlength="100" autocomplete="address-level1" /></label>
+          <label><span data-i18n="country">Country code</span><input id="shop-country" maxlength="2" minlength="2" required autocomplete="country" placeholder="US" pattern="[A-Za-z]{2}" /></label>
+          <label><span data-i18n="postal">Postal code</span><input id="shop-postal" maxlength="24" autocomplete="postal-code" /></label>
+          <label class="span-2"><span data-i18n="timezone">Timezone</span><div class="inline-row"><input id="shop-timezone" maxlength="64" required list="timezone-suggestions" placeholder="America/Chicago" /><button id="detect-timezone" class="secondary-action" type="button" data-i18n="detectTimezone">Use browser timezone</button></div></label>
+          <datalist id="timezone-suggestions"><option value="America/New_York"></option><option value="America/Chicago"></option><option value="America/Denver"></option><option value="America/Los_Angeles"></option><option value="Europe/Kyiv"></option><option value="Europe/London"></option><option value="Europe/Paris"></option><option value="Europe/Berlin"></option></datalist>
+          <button id="save-profile" class="primary-action span-2" type="submit" data-i18n="saveProfile">Save company profile</button>
+        </form>
+      </section>
+
+      <section id="public-booking-card" class="company-card hidden">
+        <div class="card-head"><p class="eyebrow" data-i18n="bookingEyebrow">Customer access</p><h2 data-i18n="bookingTitle">Public booking link</h2><p class="muted" data-i18n="bookingCopy">Share this stable link after services and availability are ready.</p></div>
+        <div class="booking-row"><code id="public-booking-link"></code><div class="booking-actions"><button id="copy-booking-link" class="secondary-action" type="button" data-i18n="copy">Copy</button><a id="open-booking-link" class="secondary-action" href="#" target="_blank" rel="noopener" data-i18n="open">Open</a></div></div>
+      </section>
+
+      <section id="team" class="company-card">
+        <div class="card-head split-head">
+          <div><p class="eyebrow" data-i18n="teamEyebrow">People</p><h2 data-i18n="teamTitle">Team</h2><p class="muted" data-i18n="teamCopy">Add technicians, roles and specialties.</p></div>
+          <button id="new-staff" class="secondary-action" type="button" data-i18n="addEmployee">Add employee</button>
+        </div>
+        <form id="staff-form" class="staff-form hidden">
+          <input id="staff-id" type="hidden" />
+          <label><span data-i18n="employeeName">Employee name</span><input id="staff-name" maxlength="100" required /></label>
+          <label><span data-i18n="role">Role</span><input id="staff-role" maxlength="80" placeholder="Technician" /></label>
+          <label class="span-2"><span data-i18n="specialties">Specialties</span><input id="staff-specialties" maxlength="500" placeholder="Brakes, Diagnostics, Electrical" /></label>
+          <label class="check-label"><input id="staff-active" type="checkbox" checked /><span data-i18n="activeEmployee">Active employee</span></label>
+          <div class="form-actions span-2"><button class="primary-action" type="submit" data-i18n="saveEmployee">Save employee</button><button id="cancel-staff" class="secondary-action" type="button" data-i18n="cancel">Cancel</button></div>
+        </form>
+        <div id="staff-empty" class="empty-state" data-i18n="staffEmpty">No employees yet. Add your first technician or team member.</div>
+        <div id="staff-list" class="staff-list"></div>
+      </section>
+
+      <section id="schedule" class="company-card">
+        <div class="card-head"><p class="eyebrow" data-i18n="scheduleEyebrow">Working time</p><h2 data-i18n="scheduleTitle">Shifts & breaks</h2><p class="muted" data-i18n="scheduleCopy">Set each employee’s local weekly shift and breaks. Google Calendar free/busy conflicts will layer on top only after authorization.</p></div>
+        <label class="schedule-person"><span data-i18n="employee">Employee</span><select id="schedule-staff"></select></label>
+        <div id="schedule-empty" class="empty-state" data-i18n="scheduleEmpty">Add an employee before creating a schedule.</div>
+        <form id="schedule-form" class="schedule-form hidden">
+          <div class="schedule-head"><span data-i18n="day">Day</span><span data-i18n="working">Working</span><span data-i18n="shift">Shift</span><span data-i18n="break">Break</span></div>
+          <div id="schedule-days"></div>
+          <button class="primary-action" type="submit" data-i18n="saveSchedule">Save schedule</button>
+        </form>
+      </section>
+
+      <section id="connections" class="company-card">
+        <div class="card-head"><p class="eyebrow" data-i18n="connectionsEyebrow">Connections</p><h2 data-i18n="connectionsTitle">Apps & channels</h2><p class="muted" data-i18n="connectionsCopy">No live account is connected from this page yet. These statuses are intentionally honest.</p></div>
+        <div class="connection-grid">
+          <article class="connection-card priority"><div><strong>Google Calendar</strong><span class="connection-status needs-auth" data-i18n="needsAuth">Needs authorization</span></div><p data-i18n="calendarCopy">First adapter: privacy-minimal free/busy only. Titles, attendees and descriptions are not required. Hermes-created events need separate permission.</p><button type="button" disabled data-i18n="connectLater">Connect after adapter approval</button></article>
+          <article class="connection-card"><div><strong data-i18n="email">Email</strong><span class="connection-status planned" data-i18n="planned">Planned</span></div><p data-i18n="emailCopy">Company mailbox connection for owner-authorized operational context.</p></article>
+          <article class="connection-card"><div><strong data-i18n="websiteBrand">Website & brandbook</strong><span class="connection-status planned" data-i18n="planned">Planned</span></div><p data-i18n="brandCopy">Logo, colors and brand assets can later flow into the public company page after owner approval.</p></article>
+          <article class="connection-card"><div><strong data-i18n="socials">Social channels</strong><span class="connection-status planned" data-i18n="planned">Planned</span></div><p>Instagram · Facebook · Threads · LinkedIn · X</p></article>
+          <article class="connection-card"><div><strong data-i18n="jobs">Jobs</strong><span class="connection-status planned" data-i18n="planned">Planned</span></div><p data-i18n="jobsCopy">Vacancy synchronization will use owner-approved sources. Nothing is published automatically.</p></article>
+        </div>
       </section>
     </div>
   </main>
 </BaseLayout>
 
 <script>
-  type Shop = {
-    id:string;
-    name:string;
-    slug:string;
-    phone?:string|null;
-    address_line1?:string|null;
-    city:string;
-    state:string;
-    region?:string|null;
-    country_code?:string|null;
-    postal_code?:string|null;
-    timezone:string;
-  };
+  type Staff = { id:string; name:string; role:string; specialties:string[]; active:boolean };
+  type ScheduleDay = { day_of_week:number; is_working:boolean; start_time:string|null; end_time:string|null; breaks:{start_time:string;end_time:string}[] };
   const supported = new Set(["en","ru","uk","es","it","fr"]);
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(location.search);
   const requested = (params.get("lang") || "en").toLowerCase();
   const locale = supported.has(requested) ? requested : "en";
-  const copy: Record<string, Record<string,string>> = {
-    en:{eyebrow:"Repair Shop CRM",title:"Settings",subtitle:"Manage the saved shop profile used by your public booking link and operating timezone.",notConfigured:"Not configured",saved:"Saved",profileEyebrow:"Business profile",profileTitle:"Shop profile",profileCopy:"These are the same saved business details Hermes Connect uses for public booking.",shopName:"Shop name",shopNamePlaceholder:"Apex Auto Care",phone:"Phone",address:"Address",city:"City",region:"Region / state",country:"Country code",postal:"Postal code",timezone:"Timezone",detectTimezone:"Use browser timezone",save:"Save shop profile",bookingEyebrow:"Customer access",bookingTitle:"Public booking link",bookingCopy:"Share this stable link after your services and availability are ready.",copy:"Copy",open:"Open",loadFailed:"Unable to load shop settings.",saveFailed:"Unable to save shop settings.",sessionFailed:"Unable to verify your secure session.",savedMessage:"Shop settings saved.",copied:"Public booking link copied.",copyFailed:"Could not copy the booking link."},
-    ru:{eyebrow:"CRM СТО",title:"Настройки",subtitle:"Управляйте сохранённым профилем СТО, публичной ссылкой записи и рабочим часовым поясом.",notConfigured:"Не настроено",saved:"Сохранено",profileEyebrow:"Профиль бизнеса",profileTitle:"Профиль СТО",profileCopy:"Эти же сохранённые данные Hermes Connect использует для публичной записи клиентов.",shopName:"Название СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адрес",city:"Город",region:"Регион / штат",country:"Код страны",postal:"Почтовый индекс",timezone:"Часовой пояс",detectTimezone:"Определить по браузеру",save:"Сохранить профиль СТО",bookingEyebrow:"Доступ клиентов",bookingTitle:"Публичная ссылка записи",bookingCopy:"Делитесь этой постоянной ссылкой после настройки услуг и графика.",copy:"Копировать",open:"Открыть",loadFailed:"Не удалось загрузить настройки СТО.",saveFailed:"Не удалось сохранить настройки СТО.",sessionFailed:"Не удалось проверить защищённую сессию.",savedMessage:"Настройки СТО сохранены.",copied:"Ссылка записи скопирована.",copyFailed:"Не удалось скопировать ссылку записи."},
-    uk:{eyebrow:"CRM СТО",title:"Налаштування",subtitle:"Керуйте збереженим профілем СТО, публічним посиланням запису та робочим часовим поясом.",notConfigured:"Не налаштовано",saved:"Збережено",profileEyebrow:"Профіль бізнесу",profileTitle:"Профіль СТО",profileCopy:"Ці самі збережені дані Hermes Connect використовує для публічного запису клієнтів.",shopName:"Назва СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адреса",city:"Місто",region:"Регіон / штат",country:"Код країни",postal:"Поштовий індекс",timezone:"Часовий пояс",detectTimezone:"Визначити за браузером",save:"Зберегти профіль СТО",bookingEyebrow:"Доступ клієнтів",bookingTitle:"Публічне посилання запису",bookingCopy:"Діліться цим постійним посиланням після налаштування послуг і графіка.",copy:"Копіювати",open:"Відкрити",loadFailed:"Не вдалося завантажити налаштування СТО.",saveFailed:"Не вдалося зберегти налаштування СТО.",sessionFailed:"Не вдалося перевірити захищену сесію.",savedMessage:"Налаштування СТО збережено.",copied:"Посилання запису скопійовано.",copyFailed:"Не вдалося скопіювати посилання запису."},
-    es:{eyebrow:"CRM del taller",title:"Ajustes",subtitle:"Gestiona el perfil guardado del taller, el enlace público de reservas y la zona horaria operativa.",notConfigured:"Sin configurar",saved:"Guardado",profileEyebrow:"Perfil del negocio",profileTitle:"Perfil del taller",profileCopy:"Son los mismos datos guardados que Hermes Connect utiliza en la reserva pública.",shopName:"Nombre del taller",shopNamePlaceholder:"Apex Auto Care",phone:"Teléfono",address:"Dirección",city:"Ciudad",region:"Región / estado",country:"Código de país",postal:"Código postal",timezone:"Zona horaria",detectTimezone:"Usar zona del navegador",save:"Guardar perfil",bookingEyebrow:"Acceso de clientes",bookingTitle:"Enlace público de reservas",bookingCopy:"Comparte este enlace estable cuando tus servicios y horarios estén listos.",copy:"Copiar",open:"Abrir",loadFailed:"No se pudieron cargar los ajustes.",saveFailed:"No se pudieron guardar los ajustes.",sessionFailed:"No se pudo verificar la sesión segura.",savedMessage:"Ajustes del taller guardados.",copied:"Enlace de reservas copiado.",copyFailed:"No se pudo copiar el enlace."},
-    it:{eyebrow:"CRM officina",title:"Impostazioni",subtitle:"Gestisci il profilo salvato dell’officina, il link pubblico di prenotazione e il fuso orario operativo.",notConfigured:"Non configurato",saved:"Salvato",profileEyebrow:"Profilo attività",profileTitle:"Profilo officina",profileCopy:"Sono gli stessi dati salvati che Hermes Connect usa per la prenotazione pubblica.",shopName:"Nome officina",shopNamePlaceholder:"Apex Auto Care",phone:"Telefono",address:"Indirizzo",city:"Città",region:"Regione / stato",country:"Codice paese",postal:"Codice postale",timezone:"Fuso orario",detectTimezone:"Usa fuso del browser",save:"Salva profilo",bookingEyebrow:"Accesso clienti",bookingTitle:"Link pubblico di prenotazione",bookingCopy:"Condividi questo link stabile quando servizi e orari sono pronti.",copy:"Copia",open:"Apri",loadFailed:"Impossibile caricare le impostazioni.",saveFailed:"Impossibile salvare le impostazioni.",sessionFailed:"Impossibile verificare la sessione sicura.",savedMessage:"Impostazioni officina salvate.",copied:"Link di prenotazione copiato.",copyFailed:"Impossibile copiare il link."},
-    fr:{eyebrow:"CRM atelier",title:"Paramètres",subtitle:"Gérez le profil enregistré de l’atelier, le lien public de réservation et le fuseau horaire opérationnel.",notConfigured:"Non configuré",saved:"Enregistré",profileEyebrow:"Profil de l’entreprise",profileTitle:"Profil de l’atelier",profileCopy:"Ce sont les mêmes informations enregistrées que Hermes Connect utilise pour la réservation publique.",shopName:"Nom de l’atelier",shopNamePlaceholder:"Apex Auto Care",phone:"Téléphone",address:"Adresse",city:"Ville",region:"Région / état",country:"Code pays",postal:"Code postal",timezone:"Fuseau horaire",detectTimezone:"Utiliser le fuseau du navigateur",save:"Enregistrer le profil",bookingEyebrow:"Accès clients",bookingTitle:"Lien public de réservation",bookingCopy:"Partagez ce lien stable une fois les services et horaires prêts.",copy:"Copier",open:"Ouvrir",loadFailed:"Impossible de charger les paramètres.",saveFailed:"Impossible d’enregistrer les paramètres.",sessionFailed:"Impossible de vérifier la session sécurisée.",savedMessage:"Paramètres de l’atelier enregistrés.",copied:"Lien de réservation copié.",copyFailed:"Impossible de copier le lien."},
-  };
-  const t = copy[locale] || copy.en;
-  const $ = <T extends HTMLElement>(selector:string) => document.querySelector(selector) as T | null;
-  const form = $("#profile-form") as HTMLFormElement | null;
-  const saveButton = $("#save-profile") as HTMLButtonElement | null;
+  const common = {
+    en:{title:"Company",subtitle:"Company profile, team, shifts, breaks and connection readiness in one place.",profileTab:"Profile",teamTab:"Team",scheduleTab:"Schedules",connectionsTab:"Connections",teamTitle:"Team",scheduleTitle:"Shifts & breaks",connectionsTitle:"Apps & channels",needsAuth:"Needs authorization",planned:"Planned",addEmployee:"Add employee",employeeName:"Employee name",role:"Role",specialties:"Specialties",activeEmployee:"Active employee",saveEmployee:"Save employee",cancel:"Cancel",staffEmpty:"No employees yet. Add your first technician or team member.",employee:"Employee",scheduleEmpty:"Add an employee before creating a schedule.",day:"Day",working:"Working",shift:"Shift",break:"Break",saveSchedule:"Save schedule",saveProfile:"Save company profile",saved:"Saved",notConfigured:"Not configured",edit:"Edit",remove:"Remove",deleteConfirm:"Remove this employee?",loadFailed:"Unable to load company settings.",saveFailed:"Unable to save changes.",savedMessage:"Changes saved.",connectionsCopy:"No live account is connected from this page yet. These statuses are intentionally honest."},
+    ru:{title:"Компания",subtitle:"Профиль компании, сотрудники, смены, перерывы и готовность подключений — в одном месте.",profileTab:"Профиль",teamTab:"Команда",scheduleTab:"Графики",connectionsTab:"Подключения",teamTitle:"Команда",scheduleTitle:"Смены и перерывы",connectionsTitle:"Приложения и каналы",needsAuth:"Нужна авторизация",planned:"Запланировано",addEmployee:"Добавить сотрудника",employeeName:"Имя сотрудника",role:"Роль",specialties:"Специализации",activeEmployee:"Активный сотрудник",saveEmployee:"Сохранить сотрудника",cancel:"Отмена",staffEmpty:"Сотрудников пока нет. Добавьте первого мастера или члена команды.",employee:"Сотрудник",scheduleEmpty:"Сначала добавьте сотрудника, затем настройте график.",day:"День",working:"Работает",shift:"Смена",break:"Перерыв",saveSchedule:"Сохранить график",saveProfile:"Сохранить профиль компании",saved:"Сохранено",notConfigured:"Не настроено",edit:"Изменить",remove:"Удалить",deleteConfirm:"Удалить этого сотрудника?",loadFailed:"Не удалось загрузить раздел компании.",saveFailed:"Не удалось сохранить изменения.",savedMessage:"Изменения сохранены.",connectionsCopy:"С этой страницы пока не подключается ни один живой аккаунт. Статусы показывают реальное состояние."},
+    uk:{title:"Компанія",profileTab:"Профіль",teamTab:"Команда",scheduleTab:"Графіки",connectionsTab:"Підключення",teamTitle:"Команда",scheduleTitle:"Зміни та перерви",connectionsTitle:"Застосунки та канали",needsAuth:"Потрібна авторизація",planned:"Заплановано",addEmployee:"Додати співробітника",saveProfile:"Зберегти профіль компанії",saved:"Збережено",notConfigured:"Не налаштовано"},
+    es:{title:"Empresa",profileTab:"Perfil",teamTab:"Equipo",scheduleTab:"Horarios",connectionsTab:"Conexiones",teamTitle:"Equipo",scheduleTitle:"Turnos y descansos",connectionsTitle:"Aplicaciones y canales",needsAuth:"Requiere autorización",planned:"Planificado",addEmployee:"Añadir empleado",saveProfile:"Guardar perfil",saved:"Guardado",notConfigured:"Sin configurar"},
+    it:{title:"Azienda",profileTab:"Profilo",teamTab:"Team",scheduleTab:"Orari",connectionsTab:"Connessioni",teamTitle:"Team",scheduleTitle:"Turni e pause",connectionsTitle:"App e canali",needsAuth:"Autorizzazione necessaria",planned:"Pianificato",addEmployee:"Aggiungi dipendente",saveProfile:"Salva profilo",saved:"Salvato",notConfigured:"Non configurato"},
+    fr:{title:"Entreprise",profileTab:"Profil",teamTab:"Équipe",scheduleTab:"Horaires",connectionsTab:"Connexions",teamTitle:"Équipe",scheduleTitle:"Équipes et pauses",connectionsTitle:"Applications et canaux",needsAuth:"Autorisation requise",planned:"Planifié",addEmployee:"Ajouter un employé",saveProfile:"Enregistrer le profil",saved:"Enregistré",notConfigured:"Non configuré"},
+  } as Record<string,Record<string,string>>;
+  const fallback = common.en;
+  const t = { ...fallback, ...(common[locale] || {}) };
+  const days = locale === "ru" ? ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"] : locale === "uk" ? ["Нд","Пн","Вт","Ср","Чт","Пт","Сб"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const $ = <T extends HTMLElement>(selector:string) => document.querySelector(selector) as T|null;
   const alertBox = $("#page-alert");
+  let staff:Staff[] = [];
   let publicBookingUrl = "";
 
-  const applyI18n = () => {
-    document.documentElement.lang = locale;
-    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => { const key=node.dataset.i18n || ""; if (t[key]) node.textContent=t[key]; });
-    document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]").forEach((node) => { const key=node.dataset.i18nPlaceholder || ""; if (t[key]) node.placeholder=t[key]; });
-  };
-  const setAlert = (message:string, tone:"error"|"success"="error") => { if(!alertBox)return; alertBox.textContent=message; alertBox.classList.remove("hidden","success"); if(tone==="success")alertBox.classList.add("success"); };
-  const clearAlert = () => { if(!alertBox)return; alertBox.textContent=""; alertBox.classList.add("hidden"); alertBox.classList.remove("success"); };
-  const authRedirect = () => { const url=new URL("/services/hermes-connect/repair-shops/auth/",window.location.origin); if(locale!=="en")url.searchParams.set("lang",locale); window.location.assign(`${url.pathname}${url.search}`); };
-  const requestJson = async (url:string, init?:RequestInit) => { const response=await fetch(url,{credentials:"same-origin",...init}); let data:any={}; try{data=await response.json();}catch{} return {response,data}; };
+  document.documentElement.lang = locale;
+  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node)=>{ const key=node.dataset.i18n||""; if(t[key]) node.textContent=t[key]; });
+  const setAlert=(message:string,tone:"error"|"success"="error")=>{if(!alertBox)return;alertBox.textContent=message;alertBox.classList.remove("hidden","success");if(tone==="success")alertBox.classList.add("success");};
+  const clearAlert=()=>{if(!alertBox)return;alertBox.textContent="";alertBox.classList.add("hidden");alertBox.classList.remove("success");};
+  const authRedirect=()=>{const url=new URL("/services/hermes-connect/repair-shops/auth/",location.origin);if(locale!=="en")url.searchParams.set("lang",locale);location.assign(`${url.pathname}${url.search}`);};
+  const requestJson=async(url:string,init?:RequestInit)=>{const response=await fetch(url,{credentials:"same-origin",...init,headers:{"Content-Type":"application/json",...(init?.headers||{})}});if(response.status===401){authRedirect();throw new Error("not_authenticated");}const data=await response.json().catch(()=>({success:false,error:"invalid_response"}));if(!response.ok||!data?.success)throw new Error(String(data?.error||"request_failed"));return data;};
+  const escapeHtml=(value:string)=>value.replace(/[&<>'"]/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[char]||char));
 
-  const fillProfile = (shop:Shop|null) => {
-    const state=$("#profile-state");
-    const bookingCard=$("#public-booking-card");
-    if(!shop){ if(state)state.textContent=t.notConfigured; bookingCard?.classList.add("hidden"); return; }
-    if(state)state.textContent=t.saved;
-    ($("#shop-name") as HTMLInputElement | null)!.value=shop.name || "";
-    ($("#shop-phone") as HTMLInputElement | null)!.value=shop.phone || "";
-    ($("#shop-address") as HTMLInputElement | null)!.value=shop.address_line1 || "";
-    ($("#shop-city") as HTMLInputElement | null)!.value=shop.city || "";
-    ($("#shop-region") as HTMLInputElement | null)!.value=shop.region || shop.state || "";
-    ($("#shop-country") as HTMLInputElement | null)!.value=(shop.country_code || "US").toUpperCase();
-    ($("#shop-postal") as HTMLInputElement | null)!.value=shop.postal_code || "";
-    ($("#shop-timezone") as HTMLInputElement | null)!.value=shop.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    publicBookingUrl=`${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
-    const code=$("#public-booking-link"); if(code)code.textContent=publicBookingUrl;
-    const open=$("#open-booking-link") as HTMLAnchorElement | null; if(open)open.href=publicBookingUrl;
-    bookingCard?.classList.remove("hidden");
-  };
+  const fillProfile=(shop:any)=>{if(!shop)return;($<HTMLInputElement>("#shop-name")!).value=shop.name||"";($<HTMLInputElement>("#shop-phone")!).value=shop.phone||"";($<HTMLInputElement>("#shop-address")!).value=shop.address_line1||"";($<HTMLInputElement>("#shop-city")!).value=shop.city||"";($<HTMLInputElement>("#shop-region")!).value=shop.region||shop.state||"";($<HTMLInputElement>("#shop-country")!).value=shop.country_code||"US";($<HTMLInputElement>("#shop-postal")!).value=shop.postal_code||"";($<HTMLInputElement>("#shop-timezone")!).value=shop.timezone||"";const state=$("#profile-state");if(state)state.textContent=t.saved;$("#public-booking-card")?.classList.remove("hidden");const url=new URL(`/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`,location.origin);if(locale!=="en")url.searchParams.set("lang",locale);publicBookingUrl=url.href;const code=$("#public-booking-link");if(code)code.textContent=publicBookingUrl;const open=$("#open-booking-link") as HTMLAnchorElement|null;if(open)open.href=publicBookingUrl;};
+  $("#profile-form")?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();try{const body={name:$<HTMLInputElement>("#shop-name")?.value.trim(),phone:$<HTMLInputElement>("#shop-phone")?.value.trim(),address_line1:$<HTMLInputElement>("#shop-address")?.value.trim(),city:$<HTMLInputElement>("#shop-city")?.value.trim(),region:$<HTMLInputElement>("#shop-region")?.value.trim(),country_code:$<HTMLInputElement>("#shop-country")?.value.trim().toUpperCase(),postal_code:$<HTMLInputElement>("#shop-postal")?.value.trim(),timezone:$<HTMLInputElement>("#shop-timezone")?.value.trim()};const data=await requestJson("/api/repair-shop/profile",{method:"PUT",body:JSON.stringify(body)});fillProfile(data.shop);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
+  $("#detect-timezone")?.addEventListener("click",()=>{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;const input=$<HTMLInputElement>("#shop-timezone");if(tz&&input)input.value=tz;});
+  $("#copy-booking-link")?.addEventListener("click",async()=>{if(!publicBookingUrl)return;try{await navigator.clipboard.writeText(publicBookingUrl);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
 
-  const load = async () => {
-    try {
-      const session=await requestJson("/api/auth/me");
-      if(session.response.status===401)return authRedirect();
-      if(!session.response.ok || !session.data.success || !session.data.specialist)return setAlert(t.sessionFailed);
-      const result=await requestJson("/api/repair-shop/profile");
-      if(result.response.status===401)return authRedirect();
-      if(!result.response.ok || !result.data.success)return setAlert(t.loadFailed);
-      fillProfile(result.data.shop || null);
-      if(!result.data.shop){
-        const browserTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const timezoneInput=$("#shop-timezone") as HTMLInputElement | null;
-        if(timezoneInput && browserTimezone) timezoneInput.value=browserTimezone;
-      }
-    } catch { setAlert(t.loadFailed); }
-  };
+  const staffForm=$("#staff-form") as HTMLFormElement|null;
+  const showStaffForm=(member?:Staff)=>{staffForm?.classList.remove("hidden");($<HTMLInputElement>("#staff-id")!).value=member?.id||"";($<HTMLInputElement>("#staff-name")!).value=member?.name||"";($<HTMLInputElement>("#staff-role")!).value=member?.role||"Technician";($<HTMLInputElement>("#staff-specialties")!).value=(member?.specialties||[]).join(", ");($<HTMLInputElement>("#staff-active")!).checked=member?.active??true;$<HTMLInputElement>("#staff-name")?.focus();};
+  const hideStaffForm=()=>{staffForm?.classList.add("hidden");staffForm?.reset();const id=$<HTMLInputElement>("#staff-id");if(id)id.value="";};
+  $("#new-staff")?.addEventListener("click",()=>showStaffForm());$("#cancel-staff")?.addEventListener("click",hideStaffForm);
+  const renderStaff=()=>{const list=$("#staff-list");const empty=$("#staff-empty");const select=$<HTMLSelectElement>("#schedule-staff");if(!list||!select)return;list.innerHTML="";select.innerHTML="";empty?.classList.toggle("hidden",staff.length>0);staff.forEach((member)=>{const card=document.createElement("article");card.className="staff-card";card.innerHTML=`<div><strong>${escapeHtml(member.name)}</strong><span>${escapeHtml(member.role)}</span><small>${escapeHtml(member.specialties.join(" · ")||"—")}</small></div><div class="staff-card-actions"><span class="status-pill ${member.active?"active":"inactive"}">${member.active?"Active":"Inactive"}</span><button type="button" data-edit="${member.id}">${t.edit}</button><button type="button" data-remove="${member.id}">${t.remove}</button></div>`;list.appendChild(card);const option=document.createElement("option");option.value=member.id;option.textContent=member.name;select.appendChild(option);});document.querySelectorAll<HTMLElement>("[data-edit]").forEach((button)=>button.addEventListener("click",()=>{const member=staff.find((item)=>item.id===button.dataset.edit);if(member)showStaffForm(member);}));document.querySelectorAll<HTMLElement>("[data-remove]").forEach((button)=>button.addEventListener("click",async()=>{const id=button.dataset.remove||"";if(!id||!confirm(t.deleteConfirm))return;try{const data=await requestJson("/api/repair-shop/staff",{method:"DELETE",body:JSON.stringify({id})});staff=data.staff||[];renderStaff();setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}}));$("#schedule-empty")?.classList.toggle("hidden",staff.length>0);$("#schedule-form")?.classList.toggle("hidden",staff.length===0);if(staff.length)void refreshSchedule();};
+  staffForm?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();const id=$<HTMLInputElement>("#staff-id")?.value.trim()||"";const body={id,name:$<HTMLInputElement>("#staff-name")?.value.trim(),role:$<HTMLInputElement>("#staff-role")?.value.trim(),specialties:($<HTMLInputElement>("#staff-specialties")?.value||"").split(",").map((item)=>item.trim()).filter(Boolean),active:Boolean($<HTMLInputElement>("#staff-active")?.checked)};try{const data=await requestJson("/api/repair-shop/staff",{method:id?"PUT":"POST",body:JSON.stringify(body)});staff=data.staff||[];hideStaffForm();renderStaff();setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
 
-  $("#detect-timezone")?.addEventListener("click", () => {
-    const browserTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const timezoneInput=$("#shop-timezone") as HTMLInputElement | null;
-    if(timezoneInput && browserTimezone) timezoneInput.value=browserTimezone;
-  });
+  const defaultDays=():ScheduleDay[]=>Array.from({length:7},(_,day)=>({day_of_week:day,is_working:day>0&&day<6,start_time:day>0&&day<6?"09:00":null,end_time:day>0&&day<6?"17:00":null,breaks:day>0&&day<6?[{start_time:"12:00",end_time:"12:30"}]:[]}));
+  const renderSchedule=(values:ScheduleDay[])=>{const root=$("#schedule-days");if(!root)return;root.innerHTML="";const map=new Map(values.map((item)=>[item.day_of_week,item]));defaultDays().forEach((fallback)=>{const value=map.get(fallback.day_of_week)||fallback;const firstBreak=value.breaks?.[0]||{start_time:"",end_time:""};const row=document.createElement("div");row.className="schedule-row";row.dataset.day=String(value.day_of_week);row.innerHTML=`<strong>${days[value.day_of_week]}</strong><label><input class="working-input" type="checkbox" ${value.is_working?"checked":""}/></label><div class="time-pair"><input class="start-input" type="time" value="${value.start_time||"09:00"}"/><span>–</span><input class="end-input" type="time" value="${value.end_time||"17:00"}"/></div><div class="time-pair"><input class="break-start-input" type="time" value="${firstBreak.start_time||""}"/><span>–</span><input class="break-end-input" type="time" value="${firstBreak.end_time||""}"/></div>`;root.appendChild(row);});};
+  async function refreshSchedule(){const select=$<HTMLSelectElement>("#schedule-staff");if(!select?.value)return;try{const data=await requestJson(`/api/repair-shop/staff-schedule?staff_id=${encodeURIComponent(select.value)}`);renderSchedule(data.schedules||[]);}catch{renderSchedule(defaultDays());}}
+  $("#schedule-staff")?.addEventListener("change",()=>void refreshSchedule());
+  $("#schedule-form")?.addEventListener("submit",async(event)=>{event.preventDefault();const select=$<HTMLSelectElement>("#schedule-staff");if(!select?.value)return;const payload=[...document.querySelectorAll<HTMLElement>(".schedule-row")].map((row)=>{const isWorking=Boolean(row.querySelector<HTMLInputElement>(".working-input")?.checked);const breakStart=row.querySelector<HTMLInputElement>(".break-start-input")?.value||"";const breakEnd=row.querySelector<HTMLInputElement>(".break-end-input")?.value||"";return{day_of_week:Number(row.dataset.day),is_working:isWorking,start_time:isWorking?(row.querySelector<HTMLInputElement>(".start-input")?.value||""):null,end_time:isWorking?(row.querySelector<HTMLInputElement>(".end-input")?.value||""):null,breaks:isWorking&&breakStart&&breakEnd?[{start_time:breakStart,end_time:breakEnd}]:[]};});try{const data=await requestJson("/api/repair-shop/staff-schedule",{method:"PUT",body:JSON.stringify({staff_id:select.value,days:payload})});renderSchedule(data.schedules||[]);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
 
-  $("#shop-country")?.addEventListener("input", (event) => {
-    const input=event.currentTarget as HTMLInputElement;
-    input.value=input.value.replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase();
-  });
-
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault(); clearAlert(); if(saveButton)saveButton.disabled=true;
-    try {
-      const region=($("#shop-region") as HTMLInputElement | null)?.value || "";
-      const body={
-        name:($("#shop-name") as HTMLInputElement | null)?.value,
-        phone:($("#shop-phone") as HTMLInputElement | null)?.value,
-        address_line1:($("#shop-address") as HTMLInputElement | null)?.value,
-        city:($("#shop-city") as HTMLInputElement | null)?.value,
-        region,
-        state:region,
-        country_code:($("#shop-country") as HTMLInputElement | null)?.value,
-        postal_code:($("#shop-postal") as HTMLInputElement | null)?.value,
-        timezone:($("#shop-timezone") as HTMLInputElement | null)?.value,
-      };
-      const result=await requestJson("/api/repair-shop/profile",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-      if(result.response.status===401)return authRedirect();
-      if(!result.response.ok || !result.data.success)return setAlert(t.saveFailed);
-      fillProfile(result.data.shop || null); setAlert(t.savedMessage,"success");
-    } catch { setAlert(t.saveFailed); }
-    finally { if(saveButton)saveButton.disabled=false; }
-  });
-
-  $("#copy-booking-link")?.addEventListener("click", async () => { if(!publicBookingUrl)return; try{await navigator.clipboard.writeText(publicBookingUrl);setAlert(t.copied,"success");}catch{setAlert(t.copyFailed);} });
-  applyI18n();
-  load();
+  const init=async()=>{try{const [profile,staffData]=await Promise.all([requestJson("/api/repair-shop/profile"),requestJson("/api/repair-shop/staff")]);if(profile.shop)fillProfile(profile.shop);staff=staffData.staff||[];renderStaff();}catch{setAlert(t.loadFailed);}};void init();
 </script>
 
 <style>
-  .settings-account-source{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-  .settings-page{min-height:100vh;background:#f4f6f8;color:#172033}
-  .settings-page .shell{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:28px 0 56px}
-  .settings-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:22px}
-  .settings-hero h1{margin:4px 0 8px;font-size:clamp(30px,5vw,44px);letter-spacing:-.035em}.settings-hero p{max-width:720px}
-  .eyebrow{margin:0;color:#6f7c8e;text-transform:uppercase;letter-spacing:.11em;font-size:11px;font-weight:850}.muted{margin:0;color:#6f7c8e;line-height:1.55}
-  .pill{display:inline-flex;align-items:center;min-height:32px;padding:0 11px;border:1px solid #dfe5ec;border-radius:999px;background:#fff;color:#5d6979;font-size:12px;font-weight:800;white-space:nowrap}
-  .settings-card{margin-top:16px;padding:24px;border:1px solid #e0e5eb;border-radius:20px;background:#fff;box-shadow:0 14px 38px rgba(22,32,51,.06)}
-  .settings-card-head{display:flex;justify-content:space-between;gap:18px;margin-bottom:18px}.settings-card h2{margin:4px 0 6px;font-size:22px}
-  .settings-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.settings-form label{display:grid;gap:7px;color:#344054;font-size:12px;font-weight:800}.settings-form .span-2{grid-column:1/-1}
-  .settings-form input{width:100%;min-height:46px;box-sizing:border-box;padding:0 13px;border:1px solid #d8dee7;border-radius:11px;background:#fff;color:#172033;font:inherit;font-weight:650;outline:none}.settings-form input:focus{border-color:#6aa8e8;box-shadow:0 0 0 3px rgba(30,136,255,.12)}
-  .timezone-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}
-  .primary-action,.secondary-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:11px;font:inherit;font-size:13px;font-weight:850;text-decoration:none;cursor:pointer}.primary-action{border:1px solid #172033;background:#172033;color:#fff}.primary-action:disabled{opacity:.55;cursor:wait}.secondary-action{border:1px solid #d8dee7;background:#fff;color:#344054}
-  .booking-link-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid #e1e6ec;border-radius:13px;background:#f8fafc}.booking-link-row code{min-width:0;overflow-wrap:anywhere;color:#344054;font-size:12px}.booking-link-actions{display:flex;gap:8px;flex:0 0 auto}
-  .alert{margin:0 0 16px;padding:12px 14px;border:1px solid #efc8ce;border-radius:12px;background:#fff3f5;color:#9a2f42;font-size:13px;font-weight:700}.alert.success{border-color:#bfe4d0;background:#effaf4;color:#28704a}.hidden{display:none!important}
-  @media(max-width:760px){.settings-page .shell{width:min(100% - 24px,1040px);padding:18px 0 40px}.settings-hero{display:grid;gap:12px}.settings-form{grid-template-columns:1fr}.settings-form .span-2{grid-column:auto}.settings-card{padding:18px;border-radius:16px}.timezone-row{grid-template-columns:1fr}.booking-link-row{align-items:stretch;flex-direction:column}.booking-link-actions{display:grid;grid-template-columns:1fr 1fr}.secondary-action{width:100%}}
+  :global(body){background:#f2f6fb;color:#142033}.company-page{min-height:100vh;padding:2rem 1rem 4rem;background:linear-gradient(180deg,#f8fbff 0%,#f2f6fb 42%,#edf3f9 100%)}.company-shell{width:min(1120px,100%);margin:0 auto;display:grid;gap:1rem}.company-hero,.company-card{border:1px solid #dce6f0;background:#fff;box-shadow:0 16px 54px rgba(35,63,92,.065)}.company-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;padding:1.5rem;border-radius:24px}.company-hero h1{margin:.15rem 0 .35rem;font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.04em}.eyebrow{margin:0;color:#3974b9;font-size:.72rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.muted{margin:.3rem 0 0;color:#66788d;line-height:1.55}.company-tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.35rem;border:1px solid #dce6f0;border-radius:999px;background:#fff;scrollbar-width:none}.company-tabs::-webkit-scrollbar{display:none}.company-tabs a{white-space:nowrap;padding:.62rem .95rem;border-radius:999px;color:#53677e;text-decoration:none;font-size:.84rem;font-weight:800}.company-tabs a:hover,.company-tabs a:focus{background:#edf5ff;color:#155fa9}.company-card{padding:1.35rem;border-radius:22px}.card-head{margin-bottom:1rem}.card-head h2{margin:.15rem 0 .35rem;font-size:1.4rem}.split-head{display:flex;justify-content:space-between;gap:1rem}.profile-grid,.staff-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.profile-grid label,.staff-form label,.schedule-person{display:grid;gap:.35rem;color:#4d6279;font-size:.78rem;font-weight:800}.span-2{grid-column:1/-1}.inline-row,.booking-row,.booking-actions,.form-actions,.time-pair{display:flex;align-items:center;gap:.6rem}input,select{width:100%;box-sizing:border-box;min-height:44px;padding:.68rem .78rem;border:1px solid #ccd9e6;border-radius:12px;background:#fff;color:#142033;font:inherit;outline:none}input:focus,select:focus{border-color:#428fdf;box-shadow:0 0 0 3px rgba(66,143,223,.12)}button,.secondary-action,.primary-action{min-height:42px;padding:.6rem .85rem;border:1px solid #cad7e5;border-radius:12px;background:#fff;color:#294760;font-weight:800;text-decoration:none;cursor:pointer}.primary-action{border-color:#1677d2;background:#1677d2;color:#fff}.primary-action:hover{background:#1067b8}button:disabled{opacity:.55;cursor:not-allowed}.booking-row{justify-content:space-between;flex-wrap:wrap}.booking-row code{max-width:100%;overflow-wrap:anywhere;padding:.65rem .8rem;border-radius:12px;background:#f3f7fb}.status-pill,.connection-status{display:inline-flex;padding:.28rem .62rem;border-radius:999px;background:#eef3f8;color:#5f7288;font-size:.72rem;font-weight:850}.status-pill.active{background:#e8f7ed;color:#247443}.status-pill.inactive{background:#f0f2f5;color:#7b8794}.needs-auth{background:#fff2cf;color:#8b5c00}.planned{background:#eef2f8;color:#63728a}.company-alert{padding:.85rem 1rem;border:1px solid #ffd2d2;border-radius:14px;background:#fff0f0;color:#9c3838}.company-alert.success{border-color:#c7ead3;background:#ebf9f0;color:#287146}.hidden{display:none!important}.staff-list{display:grid;gap:.65rem}.staff-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem;border:1px solid #e0e8f0;border-radius:16px;background:#fbfdff}.staff-card>div:first-child{display:grid;gap:.18rem}.staff-card span,.staff-card small{color:#66788d}.staff-card-actions{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}.staff-card-actions button{min-height:34px;padding:.38rem .6rem;font-size:.74rem}.check-label{display:flex!important;align-items:center;gap:.5rem}.check-label input{width:18px;min-height:18px}.empty-state{padding:1rem;border:1px dashed #c8d7e6;border-radius:14px;background:#f8fbfe;color:#74859a;text-align:center}.schedule-person{max-width:360px;margin-bottom:.8rem}.schedule-form{display:grid;gap:.6rem}.schedule-head,.schedule-row{display:grid;grid-template-columns:72px 80px minmax(190px,1fr) minmax(190px,1fr);align-items:center;gap:.7rem}.schedule-head{padding:0 .65rem;color:#7b8999;font-size:.7rem;font-weight:850;text-transform:uppercase}.schedule-row{padding:.7rem;border:1px solid #e0e8f0;border-radius:14px;background:#fbfdff}.schedule-row label input{width:18px;min-height:18px}.connection-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.connection-card{padding:1rem;border:1px solid #dfe8f1;border-radius:16px;background:#fbfdff}.connection-card.priority{border-color:#bad8f6;background:linear-gradient(135deg,#f8fcff,#f3f8ff)}.connection-card>div{display:flex;justify-content:space-between;align-items:center;gap:.7rem}.connection-card p{margin:.65rem 0 0;color:#66788d;line-height:1.5}.connection-card button{margin-top:.75rem}
+  @media(max-width:760px){.company-page{padding:1rem .7rem 3rem}.company-hero,.split-head{align-items:flex-start;flex-direction:column}.profile-grid,.staff-form,.connection-grid{grid-template-columns:1fr}.span-2{grid-column:auto}.inline-row,.booking-row{align-items:stretch;flex-direction:column}.schedule-head{display:none}.schedule-row{grid-template-columns:56px 48px 1fr}.schedule-row .time-pair:last-child{grid-column:3}.staff-card{align-items:flex-start;flex-direction:column}.staff-card-actions{width:100%}}
 </style>
