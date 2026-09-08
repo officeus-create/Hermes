@@ -10,12 +10,22 @@ const faqs = [
     question: "What is the intended role of AI Command Center?",
     answer: "The capability is designed to classify incoming requests, surface intent and urgency signals, and organize recommended operational actions in one decision view.",
   },
+  {
+    question: "Would AI Command Center act autonomously on customers?",
+    answer: "Not by default. A safe implementation separates classification and recommendations from external actions, keeps confidence visible, and requires explicit authority for messages, commitments, account changes, or other consequential operations.",
+  },
 ];
 
 const capabilities = [
   { title: "Intent scoring", body: "Classify request intent and confidence so operators can see which conversations need attention first." },
   { title: "Action queue", body: "Group time-sensitive requests and recommended next actions into one prioritized operational view." },
   { title: "Product-family orchestration", body: "Provide a shared decision layer that can eventually coordinate specialized Hermes Connect workflows without creating separate product silos." },
+];
+
+const evaluationPoints = [
+  { title: "Evidence before recommendation", body: "A recommendation should point back to the request, account state, approved business rule, or other authoritative input instead of presenting model confidence as operational truth." },
+  { title: "Human and permission boundary", body: "Classification can be automated more safely than commitments. Outbound messages, pricing, account changes, booking, payment, or customer-impacting actions require the correct permission and approval path." },
+  { title: "One operational queue", body: "The concept should reduce duplicate dashboards by routing work into the existing Hermes Connect owner surface rather than creating a second CRM, inbox, or task database." },
 ];
 ---
 
@@ -26,6 +36,9 @@ const capabilities = [
   canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/"
   lead="A decision-layer concept for classifying incoming requests, prioritizing operational work, and presenting recommended next actions inside the Hermes Connect product family."
   capabilities={capabilities}
+  decisionTitle="How an AI decision layer should differ from an autonomous operator"
+  decisionBody="The intended value is faster triage and clearer next actions while preserving evidence, permissions and human ownership. A command center should consolidate decisions around the existing product state, not silently create a new source of truth."
+  evaluationPoints={evaluationPoints}
   boundary="This capability is not presented as a current public beta or production runtime. External ERP/CRM synchronization and autonomous operational actions are not claimed as live. Use the Repair Shop product for the current pilot flow."
   faqs={faqs}
 />
