@@ -1,0 +1,43 @@
+name: Load Board snippet schema patch
+
+on:
+  push:
+    branches:
+      - seo/load-board-snippet-schema-20260909
+    paths:
+      - .github/workflows/load-board-snippet-schema.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: seo/load-board-snippet-schema-20260909
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply bounded snippet/schema patch
+        run: python scripts/patch-load-board-snippet-schema.py
+      - name: Verify install, build, and rendered metadata
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          grep -F "Car Hauling Load Board for Carriers | Hermes Logistics" dist/load-board/index.html
+          grep -F '"CollectionPage"' dist/load-board/index.html
+          grep -F '"BreadcrumbList"' dist/load-board/index.html
+      - name: Commit generated source change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/load-board-snippet-schema.yml scripts/patch-load-board-snippet-schema.py
+          git add src/pages/load-board.astro
+          git diff --cached --check
+          git commit -m "feat(seo): improve Load Board snippet and structured data"
+          git push origin HEAD:seo/load-board-snippet-schema-20260909
