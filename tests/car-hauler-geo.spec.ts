@@ -47,9 +47,10 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
     "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/",
   );
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Colorado Springs, CO?");
-  await expect(page.getByText(/Colorado Springs sits on Colorado's Front Range/)).toBeVisible();
-  await expect(page.getByText("Fountain, CO")).toBeVisible();
-  await expect(page.getByText("Pueblo, CO")).toBeVisible();
+  const marketContext = page.locator(".carrier-geo-market-card");
+  await expect(marketContext.getByText(/Colorado Springs sits on Colorado's Front Range/)).toBeVisible();
+  await expect(marketContext.getByText("Fountain, CO")).toBeVisible();
+  await expect(marketContext.getByText("Pueblo, CO")).toBeVisible();
 
   await expect(page.getByRole("heading", { name: /First keep the truck moving/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Here-and-now load search" })).toBeVisible();
@@ -76,9 +77,10 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
 test("carrier GEO pages have distinct local value and emit privacy-safe GA4-reportable depth and CTA events", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/puyallup-wa/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Puyallup, WA?");
-  await expect(page.getByText(/Puyallup is a useful South Puget Sound operating point/)).toBeVisible();
-  await expect(page.getByText("Tacoma, WA")).toBeVisible();
-  await expect(page.getByText("Auburn, WA")).toBeVisible();
+  const marketContext = page.locator(".carrier-geo-market-card");
+  await expect(marketContext.getByText(/Puyallup is a useful South Puget Sound operating point/)).toBeVisible();
+  await expect(marketContext.getByText("Tacoma, WA")).toBeVisible();
+  await expect(marketContext.getByText("Auburn, WA")).toBeVisible();
 
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_section_view")).length).toBeGreaterThan(0);
