@@ -24,7 +24,12 @@ assert.match(followupEndpoint, /ON CONFLICT\(booking_id\) DO UPDATE/);
 assert.match(followupEndpoint, /DELETE FROM repair_shop_booking_followups/);
 
 const noShowExclusions = bookingSource.match(/NOT IN \('cancelled','canceled','no_show'\)/g) || [];
-assert.equal(noShowExclusions.length, 2, "no_show must release capacity in both availability and booking writes");
+assert.ok(noShowExclusions.length >= 3, "no_show must release public availability, shop capacity and technician capacity");
+assert.match(
+  bookingSource,
+  /technician_id = \?[\s\S]*lower\(status\) NOT IN \('cancelled','canceled','no_show'\)[\s\S]*start_time < \?[\s\S]*end_time > \?/,
+  "no_show must release the assigned technician for overlapping future bookings",
+);
 
 assert.match(operationsSource, /\/api\/repair-shop\/followups/);
 assert.match(operationsSource, /status:\s*"no_show"/);
