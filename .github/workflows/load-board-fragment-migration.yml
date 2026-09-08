@@ -26,95 +26,153 @@ jobs:
       - name: Migrate Load Board state to fragments
         shell: bash
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const path = require('node:path');
+          python - <<'PY'
+          from pathlib import Path
+          import re
 
-          const roots = ['src', 'tests', 'scripts'];
-          const extensions = new Set(['.astro', '.ts', '.tsx', '.js', '.mjs', '.md']);
-          const changed = new Set();
+          allowed = {'.astro', '.ts', '.tsx', '.js', '.mjs', '.md'}
+          changed = set()
 
-          const walk = (root) => {
-            if (!fs.existsSync(root)) return [];
-            const out = [];
-            for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-              const full = path.join(root, entry.name);
-              if (entry.isDirectory()) out.push(...walk(full));
-              else if (extensions.has(path.extname(entry.name))) out.push(full);
+          def migrate_url(match):
+              tail = match.group(1).replace('&amp;', '&')
+              if '#' in tail:
+                  query, target = tail.split('#', 1)
+              else:
+                  query, target = tail, ''
+              fragment = query + (('&' if query else '') + 'target=' + target if target else '')
+              return '/load-board/#' + fragment
+
+          for root in ('src', 'tests', 'scripts'):
+              for file in Path(root).rglob('*'):
+                  if not file.is_file() or file.suffix not in allowed:
+                      continue
+                  before = file.read_text()
+                  after = re.sub(r'/load-board/\?([^"\'`\s<>()]+)', migrate_url, before)
+                  after = after.replace('href="?role=carrier#available-loads"', 'href="/load-board/#role=carrier&target=available-loads"')
+                  if after != before:
+                      file.write_text(after)
+                      changed.add(str(file))
+
+          load_board_path = Path('src/pages/load-board.astro')
+          load_board = load_board_path.read_text()
+          old_state = '''  const activeRole = new URLSearchParams(window.location.search).get("role");
+          const sourceOrigin = new URLSearchParams(window.location.search).get("origin");
+          const sourceArea = new URLSearchParams(window.location.search).get("area");'''
+          new_state = '''  const legacyParams = new URLSearchParams(window.location.search);
+          const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+          const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+          const legacyAnchor = rawHash && !rawHash.includes("=") ? rawHash : "";
+          const loadBoardParam = (key: string) => fragmentParams.get(key) || legacyParams.get(key);
+          const approvedRoles = new Set(["carrier", "broker", "shipper", "dealer", "private_party"]);
+          const requestedRole = loadBoardParam("role");
+          const activeRole = requestedRole && approvedRoles.has(requestedRole) ? requestedRole : null;
+          const sourceOrigin = loadBoardParam("origin");
+          const sourceArea = loadBoardParam("area");
+          const requestedTarget = fragmentParams.get("target") || legacyAnchor;
+          const legacyStateKeys = ["role", "equipment", "origin", "area"];
+          const hasLegacyState = legacyStateKeys.some((key) => legacyParams.has(key));
+          if (hasLegacyState) {
+            const nextSearch = new URLSearchParams(legacyParams);
+            const nextFragment = new URLSearchParams(fragmentParams);
+            for (const key of legacyStateKeys) {
+              const value = legacyParams.get(key);
+              if (value && !nextFragment.has(key)) nextFragment.set(key, value);
+              nextSearch.delete(key);
             }
-            return out;
-          };
+            if (legacyAnchor && !nextFragment.has("target")) nextFragment.set("target", legacyAnchor);
+            const search = nextSearch.toString();
+            const fragment = nextFragment.toString();
+            window.history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}${fragment ? `#${fragment}` : ""}`);
+          }'''
+          if old_state not in load_board:
+              raise SystemExit('Load Board state block not found')
+          load_board = load_board.replace(old_state, new_state, 1)
+          prefill_anchor = '  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);'
+          if prefill_anchor not in load_board:
+              raise SystemExit('Load Board prefill anchor not found')
+          load_board = load_board.replace(prefill_anchor, prefill_anchor + '''
+          if (requestedTarget) {
+            window.requestAnimationFrame(() => document.getElementById(requestedTarget)?.scrollIntoView({ block: "start" }));
+          }''', 1)
+          load_board_path.write_text(load_board)
+          changed.add(str(load_board_path))
 
-          const migrateHref = (text) => text.replace(/\/load-board\/\?([^"'`\s<>()]+)/g, (whole, tail) => {
-            const normalized = tail.replaceAll('&amp;', '&');
-            const hashIndex = normalized.indexOf('#');
-            const query = hashIndex >= 0 ? normalized.slice(0, hashIndex) : normalized;
-            const target = hashIndex >= 0 ? normalized.slice(hashIndex + 1) : '';
-            const fragment = query + (target ? `${query ? '&' : ''}target=${target}` : '');
-            return `/load-board/#${fragment}`;
+          contact_path = Path('src/components/ContactLinkEnhancer.astro')
+          contact = contact_path.read_text()
+          old_equipment = '    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");'
+          new_equipment = '''    const currentUrl = new URL(window.location.href);
+              const rawHash = currentUrl.hash.startsWith("#") ? currentUrl.hash.slice(1) : "";
+              const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+              const requestedEquipment = fragmentParams.get("equipment") || currentUrl.searchParams.get("equipment");'''
+          if old_equipment not in contact:
+              raise SystemExit('Equipment prefill block not found')
+          contact = contact.replace(old_equipment, new_equipment, 1)
+          old_role = '    const role = target.searchParams.get("role") || "unspecified";'
+          new_role = '''    const rawHash = target.hash.startsWith("#") ? target.hash.slice(1) : "";
+              const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+              const role = fragmentParams.get("role") || target.searchParams.get("role") || "unspecified";'''
+          if old_role not in contact:
+              raise SystemExit('CTA role block not found')
+          contact = contact.replace(old_role, new_role, 1)
+          contact_path.write_text(contact)
+          changed.add(str(contact_path))
+
+          journey_path = Path('src/components/CarrierContractJourney.astro')
+          journey = journey_path.read_text()
+          old_gate = '      if (bar.hasAttribute("data-carrier-role-gated") && new URLSearchParams(window.location.search).get("role") === "carrier") {'
+          new_gate = '''      const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+                const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;
+                const queryRole = new URLSearchParams(window.location.search).get("role");
+                if (bar.hasAttribute("data-carrier-role-gated") && (fragmentRole || queryRole) === "carrier") {'''
+          if old_gate not in journey:
+              raise SystemExit('Carrier journey gate not found')
+          journey = journey.replace(old_gate, new_gate, 1)
+          journey_path.write_text(journey)
+          changed.add(str(journey_path))
+
+          test_path = Path('tests/load-board-carrier-operating-path.spec.ts')
+          test = test_path.read_text()
+          old_assert = '''  expect(journey).toContain('new URLSearchParams(window.location.search).get("role") === "carrier"');'''
+          new_assert = '''  expect(journey).toContain('const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;');
+            expect(journey).toContain('(fragmentRole || queryRole) === "carrier"');'''
+          test = test.replace(old_assert, new_assert, 1)
+          if 'legacy Load Board role query normalizes to canonical fragment state' not in test:
+              test += r'''
+
+          test("legacy Load Board role query normalizes to canonical fragment state", async ({ page }) => {
+            await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");
+            await expect(page).toHaveURL(/\/load-board\/#role=carrier&equipment=car_hauler&target=available-loads$/);
+            await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
+            await expect(page.locator("[data-carrier-contract-journey]")).not.toHaveAttribute("data-carrier-role-gated", "");
           });
 
-          for (const file of roots.flatMap(walk)) {
-            const before = fs.readFileSync(file, 'utf8');
-            let after = migrateHref(before);
-            after = after.replace('href="?role=carrier#available-loads"', 'href="/load-board/#role=carrier&target=available-loads"');
-            if (after !== before) {
-              fs.writeFileSync(file, after);
-              changed.add(file);
+          test("source graph does not publish query-state Load Board links", async () => {
+            const pending = [resolve(process.cwd(), "src")];
+            const offenders: string[] = [];
+            while (pending.length) {
+              const current = pending.pop();
+              if (!current) continue;
+              const entries = await import("node:fs/promises").then(({ readdir }) => readdir(current, { withFileTypes: true }));
+              for (const entry of entries) {
+                const full = resolve(current, entry.name);
+                if (entry.isDirectory()) pending.push(full);
+                else if (/\.(astro|ts|tsx|js|mjs)$/.test(entry.name) && (await source(full)).includes("/load-board/?")) offenders.push(full);
+              }
             }
-          }
+            expect(offenders).toEqual([]);
+          });
+          '''
+          test_path.write_text(test)
+          changed.add(str(test_path))
 
-          const loadBoardPath = 'src/pages/load-board.astro';
-          let loadBoard = fs.readFileSync(loadBoardPath, 'utf8');
-          const oldStateBlock = `  const activeRole = new URLSearchParams(window.location.search).get("role");\n  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");\n  const sourceArea = new URLSearchParams(window.location.search).get("area");`;
-          const newStateBlock = `  const legacyParams = new URLSearchParams(window.location.search);\n  const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";\n  const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n  const legacyAnchor = rawHash && !rawHash.includes("=") ? rawHash : "";\n  const loadBoardParam = (key: string) => fragmentParams.get(key) || legacyParams.get(key);\n  const approvedRoles = new Set(["carrier", "broker", "shipper", "dealer", "private_party"]);\n  const requestedRole = loadBoardParam("role");\n  const activeRole = requestedRole && approvedRoles.has(requestedRole) ? requestedRole : null;\n  const sourceOrigin = loadBoardParam("origin");\n  const sourceArea = loadBoardParam("area");\n  const requestedTarget = fragmentParams.get("target") || legacyAnchor;\n  const legacyStateKeys = ["role", "equipment", "origin", "area"];\n  const hasLegacyState = legacyStateKeys.some((key) => legacyParams.has(key));\n  if (hasLegacyState) {\n    const nextSearch = new URLSearchParams(legacyParams);\n    const nextFragment = new URLSearchParams(fragmentParams);\n    for (const key of legacyStateKeys) {\n      const value = legacyParams.get(key);\n      if (value && !nextFragment.has(key)) nextFragment.set(key, value);\n      nextSearch.delete(key);\n    }\n    if (legacyAnchor && !nextFragment.has("target")) nextFragment.set("target", legacyAnchor);\n    const search = nextSearch.toString();\n    const fragment = nextFragment.toString();\n    window.history.replaceState(null, "", \`${window.location.pathname}${search ? \`?${search}\` : ""}${fragment ? \`#${fragment}\` : ""}\`);\n  }`;
-          if (!loadBoard.includes(oldStateBlock)) throw new Error('Load Board state block not found');
-          loadBoard = loadBoard.replace(oldStateBlock, newStateBlock);
-          const rolePrefillEnd = `  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);`;
-          if (!loadBoard.includes(rolePrefillEnd)) throw new Error('Load Board prefill anchor not found');
-          loadBoard = loadBoard.replace(rolePrefillEnd, `${rolePrefillEnd}\n  if (requestedTarget) {\n    window.requestAnimationFrame(() => document.getElementById(requestedTarget)?.scrollIntoView({ block: "start" }));\n  }`);
-          fs.writeFileSync(loadBoardPath, loadBoard);
-          changed.add(loadBoardPath);
+          offenders = [str(file) for file in Path('src').rglob('*') if file.is_file() and file.suffix in allowed and '/load-board/?' in file.read_text()]
+          if offenders:
+              raise SystemExit('Query-state Load Board links remain in src: ' + ', '.join(offenders))
 
-          const contactPath = 'src/components/ContactLinkEnhancer.astro';
-          let contact = fs.readFileSync(contactPath, 'utf8');
-          const oldEquipment = `    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");`;
-          const newEquipment = `    const currentUrl = new URL(window.location.href);\n    const rawHash = currentUrl.hash.startsWith("#") ? currentUrl.hash.slice(1) : "";\n    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n    const requestedEquipment = fragmentParams.get("equipment") || currentUrl.searchParams.get("equipment");`;
-          if (!contact.includes(oldEquipment)) throw new Error('Equipment prefill block not found');
-          contact = contact.replace(oldEquipment, newEquipment);
-          const oldRole = `    const role = target.searchParams.get("role") || "unspecified";`;
-          const newRole = `    const rawHash = target.hash.startsWith("#") ? target.hash.slice(1) : "";\n    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n    const role = fragmentParams.get("role") || target.searchParams.get("role") || "unspecified";`;
-          if (!contact.includes(oldRole)) throw new Error('CTA role block not found');
-          contact = contact.replace(oldRole, newRole);
-          fs.writeFileSync(contactPath, contact);
-          changed.add(contactPath);
-
-          const journeyPath = 'src/components/CarrierContractJourney.astro';
-          let journey = fs.readFileSync(journeyPath, 'utf8');
-          const oldJourneyGate = `      if (bar.hasAttribute("data-carrier-role-gated") && new URLSearchParams(window.location.search).get("role") === "carrier") {`;
-          const newJourneyGate = `      const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";\n      const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;\n      const queryRole = new URLSearchParams(window.location.search).get("role");\n      if (bar.hasAttribute("data-carrier-role-gated") && (fragmentRole || queryRole) === "carrier") {`;
-          if (!journey.includes(oldJourneyGate)) throw new Error('Carrier journey gate not found');
-          journey = journey.replace(oldJourneyGate, newJourneyGate);
-          fs.writeFileSync(journeyPath, journey);
-          changed.add(journeyPath);
-
-          const operatingTestPath = 'tests/load-board-carrier-operating-path.spec.ts';
-          let operatingTest = fs.readFileSync(operatingTestPath, 'utf8');
-          operatingTest = operatingTest.replace(
-            `  expect(journey).toContain('new URLSearchParams(window.location.search).get("role") === "carrier"');`,
-            `  expect(journey).toContain('const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;');\n  expect(journey).toContain('(fragmentRole || queryRole) === "carrier"');`,
-          );
-          const legacyTest = `\n\ntest("legacy Load Board role query normalizes to canonical fragment state", async ({ page }) => {\n  await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");\n  await expect(page).toHaveURL(/\\/load-board\\/#role=carrier&equipment=car_hauler&target=available-loads$/);\n  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");\n  await expect(page.locator("[data-carrier-contract-journey]")).not.toHaveAttribute("data-carrier-role-gated", "");\n});\n\ntest("source graph does not publish query-state Load Board links", async () => {\n  const roots = ["src"];\n  const pending = roots.map((root) => resolve(process.cwd(), root));\n  const offenders: string[] = [];\n  while (pending.length) {\n    const current = pending.pop();\n    if (!current) continue;\n    const entries = await import("node:fs/promises").then(({ readdir }) => readdir(current, { withFileTypes: true }));\n    for (const entry of entries) {\n      const full = resolve(current, entry.name);\n      if (entry.isDirectory()) pending.push(full);\n      else if (/\\.(astro|ts|tsx|js|mjs)$/.test(entry.name) && (await source(full)).includes("/load-board/?")) offenders.push(full);\n    }\n  }\n  expect(offenders).toEqual([]);\n});\n`;
-          if (!operatingTest.includes('legacy Load Board role query normalizes to canonical fragment state')) operatingTest += legacyTest;
-          fs.writeFileSync(operatingTestPath, operatingTest);
-          changed.add(operatingTestPath);
-
-          const sourceOffenders = roots[0] && walk('src').filter((file) => fs.readFileSync(file, 'utf8').includes('/load-board/?'));
-          if (sourceOffenders.length) throw new Error(`Query-state Load Board links remain in src: ${sourceOffenders.join(', ')}`);
-
-          console.log(`Changed ${changed.size} files:`);
-          for (const file of [...changed].sort()) console.log(`- ${file}`);
-          NODE
+          print('Changed files:', len(changed))
+          for file in sorted(changed):
+              print('-', file)
+          PY
       - name: Verify dependency install and build
         run: |
           npm ci --ignore-scripts
