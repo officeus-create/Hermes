@@ -1,0 +1,33 @@
+name: Repair mobile visible actions one-shot
+
+on:
+  push:
+    branches:
+      - fix/repair-mobile-visible-actions-20260909
+    paths:
+      - .github/workflows/repair-mobile-visible-actions-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/repair-mobile-visible-actions-20260909
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Apply visible mobile owner actions
+        run: node scripts/repair-mobile-visible-actions-one-shot.mjs
+      - name: Remove one-shot patch files
+        run: git rm .github/workflows/repair-mobile-visible-actions-one-shot.yml scripts/repair-mobile-visible-actions-one-shot.mjs
+      - name: Commit bounded product change
+        run: |
+          git config user.name "officeus-create"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add src/components/RepairShopOwnerNavEnhancer.astro public/repair-shop-driver-discount.js tests/repair-shop-owner-clickability.spec.ts
+          git commit -m "fix(repair): expose mobile owner actions and driver discount"
+          git push origin HEAD:fix/repair-mobile-visible-actions-20260909
