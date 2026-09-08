@@ -1,0 +1,146 @@
+/* SEO/GEO closeout accessibility layer — scoped to the two current money pages only. */
+
+/* Shared chrome on dark money-page surfaces. */
+body:has(.load-board-page) .site-header,
+body:has(.repair-pilot-page) .site-header {
+  color: #fff !important;
+  background: rgba(7, 17, 60, .96) !important;
+  border-color: rgba(255,255,255,.24) !important;
+}
+body:has(.load-board-page) .site-header :is(a, button, span, strong),
+body:has(.repair-pilot-page) .site-header :is(a, button, span, strong) {
+  color: #fff !important;
+}
+body:has(.load-board-page) .site-header .header-cta,
+body:has(.repair-pilot-page) .site-header .header-cta {
+  color: #06111f !important;
+  background: #67e8f9 !important;
+  border-color: #67e8f9 !important;
+}
+body:has(.load-board-page) footer,
+body:has(.repair-pilot-page) footer {
+  color: #f8fafc !important;
+  background: #07113c !important;
+}
+body:has(.load-board-page) footer :is(p, span, small, a, strong),
+body:has(.repair-pilot-page) footer :is(p, span, small, a, strong) {
+  color: #f8fafc !important;
+}
+
+/* Load Board: dark areas use white/cyan; light areas use navy/slate. */
+body:has(.load-board-page) .load-board-hero,
+body:has(.load-board-page) .load-board-role-router,
+body:has(.load-board-page) .load-board-demo-panel,
+body:has(.load-board-page) #live-marketplace {
+  color: #f8fafc !important;
+}
+body:has(.load-board-page) .load-board-hero :is(h1,h2,h3,strong,p,span,small,a),
+body:has(.load-board-page) .load-board-role-router :is(h1,h2,h3,strong,p,span,small,a),
+body:has(.load-board-page) .load-board-demo-panel :is(h1,h2,h3,strong,p,span,small,a,li),
+body:has(.load-board-page) #live-marketplace :is(h1,h2,h3,strong,p,span,small,a,li) {
+  color: #f8fafc !important;
+}
+body:has(.load-board-page) .load-board-hero .eyebrow,
+body:has(.load-board-page) .load-board-role-router .eyebrow,
+body:has(.load-board-page) .load-board-demo-panel .eyebrow,
+body:has(.load-board-page) #live-marketplace .hlb-live-eyebrow {
+  color: #c4b5fd !important;
+}
+body:has(.load-board-page) .load-board-page .section,
+body:has(.load-board-page) .load-board-page .available-loads-preview,
+body:has(.load-board-page) .load-board-page .carrier-workspace-preview,
+body:has(.load-board-page) .load-board-page .load-board-form,
+body:has(.load-board-page) .load-board-page .load-board-result {
+  color: #111827 !important;
+}
+body:has(.load-board-page) .load-board-page .section :is(h1,h2,h3,strong,label,legend),
+body:has(.load-board-page) .load-board-page .available-loads-preview :is(h1,h2,h3,strong,label,legend),
+body:has(.load-board-page) .load-board-page .carrier-workspace-preview :is(h1,h2,h3,strong,label,legend),
+body:has(.load-board-page) .load-board-page .load-board-form :is(h1,h2,h3,strong,label,legend),
+body:has(.load-board-page) .load-board-page .load-board-result :is(h1,h2,h3,strong,label,legend) {
+  color: #111827 !important;
+}
+body:has(.load-board-page) .load-board-page .section :is(p,span,small,li,dd,dt),
+body:has(.load-board-page) .load-board-page .available-loads-preview :is(p,span,small,li,dd,dt),
+body:has(.load-board-page) .load-board-page .carrier-workspace-preview :is(p,span,small,li,dd,dt),
+body:has(.load-board-page) .load-board-page .load-board-form :is(p,span,small,li,dd,dt),
+body:has(.load-board-page) .load-board-page .load-board-result :is(p,span,small,li,dd,dt) {
+  color: #475569 !important;
+}
+body:has(.load-board-page) .load-board-page .section .eyebrow,
+body:has(.load-board-page) .load-board-page .available-loads-preview .eyebrow,
+body:has(.load-board-page) .load-board-page .carrier-workspace-preview .eyebrow,
+body:has(.load-board-page) .load-board-page .load-board-form .eyebrow {
+  color: #5b21b6 !important;
+}
+body:has(.load-board-page) :is(.button-primary, button.button-primary) {
+  color: #fff !important;
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+body:has(.load-board-page) .load-board-page :is(input,select,textarea) {
+  color: #111827 !important;
+  background: #fff !important;
+  border-color: #64748b !important;
+}
+
+/* Repair Shops is a dark product surface: keep all supporting copy above AA contrast. */
+body:has(.repair-pilot-page) .repair-pilot-page {
+  color: #f8fafc !important;
+  background: #090d16 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page :is(h1,h2,h3,strong,label,legend) {
+  color: #f8fafc !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page :is(p,span,small,li) {
+  color: #cbd5e1 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page .repair-kicker {
+  color: #c4b5fd !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page :is(.repair-primary,.repair-submit) {
+  color: #06111f !important;
+  background: #67e8f9 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page .repair-secondary {
+  color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  background: #111827 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page :is(input,select,textarea) {
+  color: #fff !important;
+  background: #0d111b !important;
+  border-color: #64748b !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page :is(.repair-capability-grid article,.repair-link-grid a,.repair-faq-grid article,.repair-offer-card,.repair-live-card) {
+  background-color: #111827 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page .step-item {
+  color: #cbd5e1 !important;
+  background: #111827 !important;
+  border-color: #475569 !important;
+}
+body:has(.repair-pilot-page) .repair-pilot-page .step-item.active {
+  color: #ecfdf5 !important;
+  background: #064e3b !important;
+  border-color: #10b981 !important;
+}
+
+/* Shared injected product/consent surfaces outside the page root. */
+body:has(.load-board-page) .hc-launcher-banner,
+body:has(.repair-pilot-page) .hc-launcher-banner {
+  color: #111827 !important;
+  background: #fff !important;
+}
+body:has(.load-board-page) .hc-launcher-banner :is(h2,h3,strong,p,span,small),
+body:has(.repair-pilot-page) .hc-launcher-banner :is(h2,h3,strong,p,span,small) {
+  color: #334155 !important;
+}
+body:has(.load-board-page) .hc-launcher-banner :is(h2,h3,strong),
+body:has(.repair-pilot-page) .hc-launcher-banner :is(h2,h3,strong) {
+  color: #111827 !important;
+}
+body:has(.load-board-page) :is(#tracking-consent-title,.tracking-consent-detail,.tracking-consent-policy-link),
+body:has(.repair-pilot-page) :is(#tracking-consent-title,.tracking-consent-detail,.tracking-consent-policy-link) {
+  color: #111827 !important;
+}
