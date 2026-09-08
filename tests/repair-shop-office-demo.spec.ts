@@ -7,6 +7,9 @@ const staffSchema = readFileSync("functions/api/_lib/repair-shop-staff-schema.mj
 const bookingSchema = readFileSync("functions/api/_lib/repair-shop-bookings-schema.mjs", "utf8");
 const bookingsApi = readFileSync("functions/api/repair-shop/bookings.ts", "utf8");
 const customersApi = readFileSync("functions/api/repair-shop/customers.ts", "utf8");
+const vehiclesApi = readFileSync("functions/api/repair-shop/vehicles.ts", "utf8");
+
+const syntheticSeeder = "ensureRepairShopSyntheticDemoData";
 
 test("Office Repair demo is synthetic-only, additive and seeded through year end", async () => {
   expect(registrationOps).toContain("HERMES_SYNTHETIC_ACCOUNT_EMAILS");
@@ -42,11 +45,12 @@ test("demo coverage spans motorcycles through heavy and oversized equipment", as
   expect(demo).toContain("Benjamin Clark");
 });
 
-test("technicians are first-class booking data and Office demo hydrates real CRM APIs", async () => {
+test("technicians are first-class booking data and synthetic tenants hydrate every core CRM read path", async () => {
   expect(staffSchema).toContain("CREATE TABLE IF NOT EXISTS repair_shop_staff");
   expect(bookingSchema).toContain("technician_id TEXT");
   expect(bookingSchema).toContain("technician_name TEXT");
-  expect(bookingsApi).toContain("ensureOfficeRepairDemoData");
+  expect(bookingsApi).toContain(syntheticSeeder);
   expect(bookingsApi).toContain("technician_id,technician_name");
-  expect(customersApi).toContain("ensureOfficeRepairDemoData");
+  expect(customersApi).toContain(syntheticSeeder);
+  expect(vehiclesApi).toContain(syntheticSeeder);
 });
