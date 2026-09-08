@@ -14,6 +14,11 @@ interface Faq {
   answer: string;
 }
 
+interface EvaluationPoint {
+  title: string;
+  body: string;
+}
+
 interface Props {
   name: string;
   pageTitle: string;
@@ -23,6 +28,9 @@ interface Props {
   capabilities: Capability[];
   boundary: string;
   faqs: Faq[];
+  decisionTitle?: string;
+  decisionBody?: string;
+  evaluationPoints?: EvaluationPoint[];
 }
 
 const {
@@ -34,6 +42,9 @@ const {
   capabilities,
   boundary,
   faqs,
+  decisionTitle,
+  decisionBody,
+  evaluationPoints = [],
 } = Astro.props;
 
 const productHubUrl = "https://hermeslogisticsus.com/services/hermes-connect/";
@@ -119,6 +130,24 @@ const schema = [
         </div>
       </section>
 
+      {decisionTitle && decisionBody && evaluationPoints.length > 0 && (
+        <section class="hc-capability-section hc-decision-section" aria-labelledby="decision-title">
+          <div class="hc-section-heading">
+            <p>Decision context</p>
+            <h2 id="decision-title">{decisionTitle}</h2>
+            <p class="hc-section-intro">{decisionBody}</p>
+          </div>
+          <div class="hc-evaluation-grid">
+            {evaluationPoints.map((point) => (
+              <article>
+                <h3>{point.title}</h3>
+                <p>{point.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section class="hc-boundary" aria-label="Current availability boundary">
         <ShieldCheck size={22} aria-hidden="true" />
         <div>
@@ -170,15 +199,16 @@ const schema = [
   .hc-secondary-action{border:1px solid rgba(11,13,18,.12);background:rgba(255,255,255,.66);color:#0b0d12}
   .hc-primary-action:hover,.hc-secondary-action:hover{transform:translateY(-1px)}
   .hc-capability-section{margin:0 0 clamp(3.5rem,6vw,5rem)}
-  .hc-section-heading{max-width:740px;margin-bottom:1.55rem}.hc-section-heading>p{margin:0 0 .5rem;color:#6956d6;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.hc-section-heading h2{margin:0;font-size:clamp(1.9rem,3.8vw,3rem);line-height:1.02;letter-spacing:-.045em;text-wrap:balance}
-  .hc-capability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
-  .hc-capability-grid article,.hc-faq-grid article{border:1px solid rgba(11,13,18,.09);border-radius:22px;background:rgba(255,255,255,.76);box-shadow:0 18px 50px rgba(42,32,90,.055);backdrop-filter:blur(14px)}
+  .hc-section-heading{max-width:740px;margin-bottom:1.55rem}.hc-section-heading>p{margin:0 0 .5rem;color:#6956d6;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.hc-section-heading h2{margin:0;font-size:clamp(1.9rem,3.8vw,3rem);line-height:1.02;letter-spacing:-.045em;text-wrap:balance}.hc-section-heading .hc-section-intro{margin-top:.9rem;color:#68707d;font-size:.98rem;font-weight:400;letter-spacing:0;text-transform:none;line-height:1.65}
+  .hc-capability-grid,.hc-evaluation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .hc-capability-grid article,.hc-faq-grid article,.hc-evaluation-grid article{border:1px solid rgba(11,13,18,.09);border-radius:22px;background:rgba(255,255,255,.76);box-shadow:0 18px 50px rgba(42,32,90,.055);backdrop-filter:blur(14px)}
   .hc-capability-grid article{min-height:205px;padding:1.45rem;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
   .hc-capability-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.2);box-shadow:0 24px 60px rgba(42,32,90,.08)}
   .hc-capability-grid svg{width:40px;height:40px;padding:9px;border:1px solid rgba(124,92,255,.13);border-radius:12px;background:rgba(124,92,255,.07);color:#715de7;box-sizing:border-box}
-  .hc-capability-grid h3{margin:.95rem 0 .5rem;font-size:1.06rem;letter-spacing:-.015em}.hc-capability-grid p,.hc-faq-grid p{margin:0;color:#68707d;line-height:1.62;font-size:.9rem}
+  .hc-capability-grid h3,.hc-evaluation-grid h3{margin:.95rem 0 .5rem;font-size:1.06rem;letter-spacing:-.015em}.hc-capability-grid p,.hc-faq-grid p,.hc-evaluation-grid p{margin:0;color:#68707d;line-height:1.62;font-size:.9rem}
+  .hc-evaluation-grid article{padding:1.35rem}.hc-evaluation-grid h3{margin:0 0 .5rem}
   .hc-boundary{display:flex;gap:.9rem;align-items:flex-start;margin:clamp(3rem,5vw,4.5rem) 0;padding:1.15rem 1.2rem;border:1px solid rgba(171,122,0,.16);border-radius:18px;background:rgba(251,191,36,.075);color:#0b0d12}.hc-boundary svg{flex:0 0 auto;color:#a97800}.hc-boundary strong{display:block;margin-bottom:.28rem}.hc-boundary p{margin:0;color:#75662e;line-height:1.55;font-size:.88rem}
   .hc-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.hc-faq-grid article{padding:1.3rem 1.35rem}.hc-faq-grid h3{margin:0 0 .5rem;font-size:1rem;line-height:1.3}
-  @media(max-width:760px){.hc-capability-page{padding:6.25rem .75rem 4rem}.hc-capability-grid,.hc-faq-grid{grid-template-columns:1fr}.hc-capability-grid article{min-height:0}.hc-capability-actions{flex-direction:column}.hc-primary-action,.hc-secondary-action{width:100%}.hc-boundary{padding:1rem}.hc-capability-hero{text-align:left;margin-bottom:4rem}.hc-capability-actions{align-items:stretch}.hc-reference-badge{line-height:1.35}.hc-capability-hero>p{margin-left:0}}
+  @media(max-width:760px){.hc-capability-page{padding:6.25rem .75rem 4rem}.hc-capability-grid,.hc-evaluation-grid,.hc-faq-grid{grid-template-columns:1fr}.hc-capability-grid article{min-height:0}.hc-capability-actions{flex-direction:column}.hc-primary-action,.hc-secondary-action{width:100%}.hc-boundary{padding:1rem}.hc-capability-hero{text-align:left;margin-bottom:4rem}.hc-capability-actions{align-items:stretch}.hc-reference-badge{line-height:1.35}.hc-capability-hero>p{margin-left:0}}
   @media(prefers-reduced-motion:reduce){.hc-primary-action,.hc-secondary-action,.hc-capability-grid article{transition:none}}
 </style>
