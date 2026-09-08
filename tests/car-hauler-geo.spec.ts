@@ -73,7 +73,7 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
   expect(body).not.toMatch(/259|260\+|OFFICE 374|Autobidmaster|Carvana|customer ID/i);
 });
 
-test("carrier GEO pages have distinct local value and emit privacy-safe depth and CTA events", async ({ page }) => {
+test("carrier GEO pages have distinct local value and emit privacy-safe GA4-reportable depth and CTA events", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/puyallup-wa/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Puyallup, WA?");
   await expect(page.getByText(/Puyallup is a useful South Puget Sound operating point/)).toBeVisible();
@@ -82,6 +82,7 @@ test("carrier GEO pages have distinct local value and emit privacy-safe depth an
 
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_section_view")).length).toBeGreaterThan(0);
+  await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_reach_hero")).length).toBe(1);
 
   await page.evaluate(() => {
     document.addEventListener("click", (event) => {
@@ -92,8 +93,10 @@ test("carrier GEO pages have distinct local value and emit privacy-safe depth an
   await page.locator('[data-carrier-geo-cta="start_review"]').first().click();
 
   const geoCtas = await analyticsEvents(page, "carrier_geo_cta_click");
+  const reportableStartReview = await analyticsEvents(page, "carrier_geo_click_start_review");
   const commercialCtas = await analyticsEvents(page, "commercial_cta_click");
   expect(geoCtas).toHaveLength(1);
+  expect(reportableStartReview).toHaveLength(1);
   expect(geoCtas[0]).toMatchObject({
     event: "carrier_geo_cta_click",
     cta_type: "start_review",
@@ -103,6 +106,11 @@ test("carrier GEO pages have distinct local value and emit privacy-safe depth an
     page_path: "/logistics/car-hauler-loads/puyallup-wa/",
     destination_path: "/logistics/start-car-hauling-dispatch/",
   });
+  expect(reportableStartReview[0]).toMatchObject({
+    event: "carrier_geo_click_start_review",
+    cta_type: "start_review",
+    page_path: "/logistics/car-hauler-loads/puyallup-wa/",
+  });
   expect(commercialCtas).toHaveLength(1);
   expect(commercialCtas[0]).toMatchObject({
     event: "commercial_cta_click",
@@ -111,6 +119,6 @@ test("carrier GEO pages have distinct local value and emit privacy-safe depth an
     service_group: "car_hauler_geo",
   });
 
-  const serialized = JSON.stringify({ geoCtas, commercialCtas });
+  const serialized = JSON.stringify({ geoCtas, reportableStartReview, commercialCtas });
   expect(serialized).not.toMatch(/MC\s*\d+|USDOT\s*\d+|@|\+1|Puyallup.*Tacoma/i);
 });
