@@ -38,6 +38,15 @@ test("verified synthetic Officea owner aliases hydrate through the existing Offi
   expect(syntheticDemo).toContain("ensureOfficeRepairDemoData");
 });
 
+test("the explicitly confirmed Officea Baka Shop Owner can self-classify into the synthetic test lane", async () => {
+  expect(syntheticDemo).toContain('new Set(["officea baka"])');
+  expect(syntheticDemo).toContain("isExplicitSyntheticTestOwner");
+  expect(syntheticDemo).toContain('specialist?.role === "Shop Owner"');
+  expect(syntheticDemo).toContain("explicitTestEnv");
+  expect(syntheticDemo).toContain("syncSyntheticFlagForAccount");
+  expect(syntheticDemo).not.toContain('new Set(["officea"])');
+});
+
 test("demo coverage spans motorcycles through heavy and oversized equipment", async () => {
   for (const phrase of [
     "Motorcycle Oil & Filter Service",
