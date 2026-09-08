@@ -11,13 +11,16 @@ test("money-page Pa11y baseline includes Repair Shops", () => {
   expect(pa11y).toContain("http://127.0.0.1:4321/services/hermes-connect/repair-shops/");
 });
 
-test("labelled Load Board and footer groups receive permitted ARIA roles", () => {
+test("labelled money-page and footer groups receive permitted ARIA roles", () => {
   for (const selector of [
     ".footer-contacts",
     ".hlb-live-stats",
     ".load-search-bar",
     ".demo-city-choices",
     ".available-load-list",
+    ".repair-lifecycle",
+    ".repair-geo-market-grid",
+    ".repair-geo-actions",
   ]) {
     expect(enhancer).toContain(`"${selector}"`);
   }
