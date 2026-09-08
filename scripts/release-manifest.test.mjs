@@ -1,5 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
-import { join, relative, sep } from "node:path";
+import { basename, join, relative, sep } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
@@ -39,6 +39,14 @@ function routeFromHtmlPath(absolutePath) {
   if (outputPath === "404.html") return "/404.html";
   if (outputPath.endsWith("/index.html")) return "/" + outputPath.slice(0, -"index.html".length);
   return "/" + outputPath;
+}
+
+const googleVerificationFilenamePattern = /^google[a-z0-9]+\.html$/i;
+async function isGoogleVerificationArtifact(absolutePath) {
+  const outputPath = relative(dist, absolutePath).split(sep).join("/");
+  if (outputPath.includes("/") || !googleVerificationFilenamePattern.test(basename(outputPath))) return false;
+  const html = await readFile(absolutePath, "utf8");
+  return html.trim() === `google-site-verification: ${basename(outputPath)}`;
 }
 
 async function collectFiles(directory) {
@@ -129,7 +137,15 @@ for (const filename of sitemapFiles) {
   }
 }
 
-const htmlFiles = (await collectFiles(dist)).filter((path) => path.endsWith(".html"));
+const generatedHtmlFiles = (await collectFiles(dist)).filter((path) => path.endsWith(".html"));
+const htmlFiles = [];
+const verificationArtifacts = [];
+for (const htmlFile of generatedHtmlFiles) {
+  if (await isGoogleVerificationArtifact(htmlFile)) verificationArtifacts.push(htmlFile);
+  else htmlFiles.push(htmlFile);
+}
+assert(verificationArtifacts.length <= 1, `Expected at most one Google ownership verification artifact, found ${verificationArtifacts.length}.`);
+
 const baselineRows = manifest.routes.filter((row) => row.source_state === "current_main");
 const manifestByRoute = new Map();
 for (const row of [...baselineRows, ...deltaRows]) {
@@ -144,7 +160,7 @@ for (const removal of deltaRemovals) {
   manifestByRoute.delete(removal.route);
 }
 const currentRows = [...manifestByRoute.values()];
-assert(currentRows.length === htmlFiles.length, `Manifest plus deltas after removals has ${currentRows.length} current-main routes; build has ${htmlFiles.length}.`);
+assert(currentRows.length === htmlFiles.length, `Manifest plus deltas after removals has ${currentRows.length} current-main routes; build has ${htmlFiles.length} routable HTML pages plus ${verificationArtifacts.length} ownership artifact(s).`);
 assert(sitemapFiles.length === 8, `Expected 8 sitemap files including the London market sitemap, found ${sitemapFiles.length}.`);
 
 let indexableCount = 0;
@@ -203,5 +219,5 @@ assert(markdown.includes("| pr_85 | open_draft_stale | 0 |"), "Markdown PR #85 r
 assert(markdown.includes("| merged_pr_86 | merged_into_current_main | 5 |"), "Markdown PR #86 route count is missing.");
 
 console.log(
-  `Release manifest checks passed: ${baselineRows.length} baseline routes + ${deltaRows.length} declared delta route(s), ${indexableCount} indexable routes, ${sitemapFiles.length} sitemap files, production baseline 95, immutable release 46.`,
+  `Release manifest checks passed: ${baselineRows.length} baseline routes + ${deltaRows.length} declared delta route(s), ${indexableCount} indexable routes, ${sitemapFiles.length} sitemap files, ${verificationArtifacts.length} Google ownership artifact(s), production baseline 95, immutable release 46.`,
 );
