@@ -2,7 +2,7 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-09-01
+> Verification date: 2026-09-08
 
 Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
@@ -20,12 +20,15 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 ### Hermes Logistics
 - [Logistics direction](https://hermeslogisticsus.com/paths/logistics/)
 - [Car-hauling dispatch](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/)
+- [Car-hauler load search by U.S. market](https://hermeslogisticsus.com/logistics/car-hauler-loads/)
 - [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
 - [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)
 - [Direct vehicle transport network](https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/)
 - [Appleton, Wisconsin vehicle transport](https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/)
 - [Logistics resources](https://hermeslogisticsus.com/logistics/resources/)
 - [RPM calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/)
+
+The Car Hauler Load Search market pages are carrier-acquisition and dispatch-support pages. They do not publish live freight, private shipment history, or office-location claims. A city page identifies a search market and local operating context; actual freight, access, rates, timing, and carrier fit require review.
 
 The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper request workflow. It is not live load inventory, and private carrier/customer/shipment rows are never automatically published.
 

@@ -1,0 +1,16 @@
+---
+import CarHaulerGeoPage from "../../../components/CarHaulerGeoPage.astro";
+import { carHaulerGeoMarkets, type CarHaulerGeoMarket } from "../../../data/car-hauler-geo-markets";
+
+export function getStaticPaths() {
+  return carHaulerGeoMarkets.map((market) => ({
+    params: { market: market.slug },
+    props: { market },
+  }));
+}
+
+interface Props { market: CarHaulerGeoMarket; }
+const { market } = Astro.props;
+---
+
+<CarHaulerGeoPage market={market} />

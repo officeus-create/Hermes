@@ -13,6 +13,8 @@ module.exports = {
   urls: [
     "http://127.0.0.1:4321/",
     "http://127.0.0.1:4321/paths/logistics/",
+    "http://127.0.0.1:4321/logistics/car-hauler-loads/",
+    "http://127.0.0.1:4321/logistics/car-hauler-loads/colorado-springs-co/",
     "http://127.0.0.1:4321/paths/marketing/",
     "http://127.0.0.1:4321/paths/technology/",
     "http://127.0.0.1:4321/paths/academy/",
