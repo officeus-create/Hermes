@@ -171,21 +171,22 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (!hydrated?.eligible) {
       return jsonResponse(409, { success: false, error: "synthetic_demo_identity_required" });
     }
+    const hydrationRecord = hydrated as Record<string, unknown>;
     if (!hydrated?.seeded) {
-      return jsonResponse(503, { success: false, error: String(hydrated?.error || "synthetic_demo_seed_failed") });
+      return jsonResponse(503, { success: false, error: String(hydrationRecord.error || "synthetic_demo_seed_failed") });
     }
     return jsonResponse(200, {
       success: true,
       specialist_id: specialistId,
       hydration: {
-        demo_account: String(hydrated.demo_account || ""),
-        seed_version: String(hydrated.seed_version || ""),
-        seeded_through: String(hydrated.seeded_through || ""),
-        appointment_count: Number(hydrated.appointment_count || 0),
-        staff_count: Number(hydrated.staff_count || 0),
-        service_count: Number(hydrated.service_count || 0),
-        benchmark_service_count: Number(hydrated.benchmark_service_count || 0),
-        schedule_rows: Number(hydrated.schedule_rows || 0),
+        demo_account: String(hydrationRecord.demo_account || ""),
+        seed_version: String(hydrationRecord.seed_version || ""),
+        seeded_through: String(hydrationRecord.seeded_through || ""),
+        appointment_count: Number(hydrationRecord.appointment_count || 0),
+        staff_count: Number(hydrationRecord.staff_count || 0),
+        service_count: Number(hydrationRecord.service_count || 0),
+        benchmark_service_count: Number(hydrationRecord.benchmark_service_count || 0),
+        schedule_rows: Number(hydrationRecord.schedule_rows || 0),
       },
     });
   }
