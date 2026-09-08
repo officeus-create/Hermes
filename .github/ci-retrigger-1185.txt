@@ -1,1 +1,0 @@
-Retrigger London index-selection recovery checks against the security-fixed main after #1186.
