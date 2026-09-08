@@ -95,6 +95,7 @@ async function captureSchedule(page: Page, testInfo: TestInfo) {
   await mkdir(directory, { recursive: true });
   const schedule = page.locator("#schedule");
   await schedule.scrollIntoViewIfNeeded();
+  await page.addStyleTag({ content: ".skip-link,.repair-crm-topbar{display:none!important}" });
   await schedule.screenshot({
     path: path.join(directory, `company-schedule-layout-${testInfo.project.name}.png`),
     animations: "disabled",
