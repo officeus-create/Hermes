@@ -151,12 +151,12 @@ async function fillSyntheticStaffSchedules(db, specialist) {
 
   const days = [
     [0, 0, null, null, []],
-    [1, 1, "07:30", "18:30", [{ start_time: "07:30", end_time: "08:00" }]],
-    [2, 1, "07:30", "18:30", [{ start_time: "07:30", end_time: "08:00" }]],
-    [3, 1, "07:30", "18:30", [{ start_time: "07:30", end_time: "08:00" }]],
-    [4, 1, "07:30", "18:30", [{ start_time: "07:30", end_time: "08:00" }]],
-    [5, 1, "07:30", "18:30", [{ start_time: "07:30", end_time: "08:00" }]],
-    [6, 1, "08:30", "15:30", [{ start_time: "08:30", end_time: "09:00" }]],
+    [1, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
+    [2, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
+    [3, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
+    [4, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
+    [5, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
+    [6, 1, "08:30", "15:30", [{ start_time: "11:30", end_time: "12:00" }]],
   ];
 
   const statements = [];
