@@ -1,0 +1,131 @@
+name: Load Board canonical fragment migration
+
+on:
+  push:
+    branches:
+      - seo/load-board-canonical-fragment-state-20260909
+    paths:
+      - '.github/workflows/load-board-fragment-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: seo/load-board-canonical-fragment-state-20260909
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Migrate Load Board state to fragments
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          const roots = ['src', 'tests', 'scripts'];
+          const extensions = new Set(['.astro', '.ts', '.tsx', '.js', '.mjs', '.md']);
+          const changed = new Set();
+
+          const walk = (root) => {
+            if (!fs.existsSync(root)) return [];
+            const out = [];
+            for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+              const full = path.join(root, entry.name);
+              if (entry.isDirectory()) out.push(...walk(full));
+              else if (extensions.has(path.extname(entry.name))) out.push(full);
+            }
+            return out;
+          };
+
+          const migrateHref = (text) => text.replace(/\/load-board\/\?([^"'`\s<>()]+)/g, (whole, tail) => {
+            const normalized = tail.replaceAll('&amp;', '&');
+            const hashIndex = normalized.indexOf('#');
+            const query = hashIndex >= 0 ? normalized.slice(0, hashIndex) : normalized;
+            const target = hashIndex >= 0 ? normalized.slice(hashIndex + 1) : '';
+            const fragment = query + (target ? `${query ? '&' : ''}target=${target}` : '');
+            return `/load-board/#${fragment}`;
+          });
+
+          for (const file of roots.flatMap(walk)) {
+            const before = fs.readFileSync(file, 'utf8');
+            let after = migrateHref(before);
+            after = after.replace('href="?role=carrier#available-loads"', 'href="/load-board/#role=carrier&target=available-loads"');
+            if (after !== before) {
+              fs.writeFileSync(file, after);
+              changed.add(file);
+            }
+          }
+
+          const loadBoardPath = 'src/pages/load-board.astro';
+          let loadBoard = fs.readFileSync(loadBoardPath, 'utf8');
+          const oldStateBlock = `  const activeRole = new URLSearchParams(window.location.search).get("role");\n  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");\n  const sourceArea = new URLSearchParams(window.location.search).get("area");`;
+          const newStateBlock = `  const legacyParams = new URLSearchParams(window.location.search);\n  const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";\n  const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n  const legacyAnchor = rawHash && !rawHash.includes("=") ? rawHash : "";\n  const loadBoardParam = (key: string) => fragmentParams.get(key) || legacyParams.get(key);\n  const approvedRoles = new Set(["carrier", "broker", "shipper", "dealer", "private_party"]);\n  const requestedRole = loadBoardParam("role");\n  const activeRole = requestedRole && approvedRoles.has(requestedRole) ? requestedRole : null;\n  const sourceOrigin = loadBoardParam("origin");\n  const sourceArea = loadBoardParam("area");\n  const requestedTarget = fragmentParams.get("target") || legacyAnchor;\n  const legacyStateKeys = ["role", "equipment", "origin", "area"];\n  const hasLegacyState = legacyStateKeys.some((key) => legacyParams.has(key));\n  if (hasLegacyState) {\n    const nextSearch = new URLSearchParams(legacyParams);\n    const nextFragment = new URLSearchParams(fragmentParams);\n    for (const key of legacyStateKeys) {\n      const value = legacyParams.get(key);\n      if (value && !nextFragment.has(key)) nextFragment.set(key, value);\n      nextSearch.delete(key);\n    }\n    if (legacyAnchor && !nextFragment.has("target")) nextFragment.set("target", legacyAnchor);\n    const search = nextSearch.toString();\n    const fragment = nextFragment.toString();\n    window.history.replaceState(null, "", \`${window.location.pathname}${search ? \`?${search}\` : ""}${fragment ? \`#${fragment}\` : ""}\`);\n  }`;
+          if (!loadBoard.includes(oldStateBlock)) throw new Error('Load Board state block not found');
+          loadBoard = loadBoard.replace(oldStateBlock, newStateBlock);
+          const rolePrefillEnd = `  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);`;
+          if (!loadBoard.includes(rolePrefillEnd)) throw new Error('Load Board prefill anchor not found');
+          loadBoard = loadBoard.replace(rolePrefillEnd, `${rolePrefillEnd}\n  if (requestedTarget) {\n    window.requestAnimationFrame(() => document.getElementById(requestedTarget)?.scrollIntoView({ block: "start" }));\n  }`);
+          fs.writeFileSync(loadBoardPath, loadBoard);
+          changed.add(loadBoardPath);
+
+          const contactPath = 'src/components/ContactLinkEnhancer.astro';
+          let contact = fs.readFileSync(contactPath, 'utf8');
+          const oldEquipment = `    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");`;
+          const newEquipment = `    const currentUrl = new URL(window.location.href);\n    const rawHash = currentUrl.hash.startsWith("#") ? currentUrl.hash.slice(1) : "";\n    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n    const requestedEquipment = fragmentParams.get("equipment") || currentUrl.searchParams.get("equipment");`;
+          if (!contact.includes(oldEquipment)) throw new Error('Equipment prefill block not found');
+          contact = contact.replace(oldEquipment, newEquipment);
+          const oldRole = `    const role = target.searchParams.get("role") || "unspecified";`;
+          const newRole = `    const rawHash = target.hash.startsWith("#") ? target.hash.slice(1) : "";\n    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();\n    const role = fragmentParams.get("role") || target.searchParams.get("role") || "unspecified";`;
+          if (!contact.includes(oldRole)) throw new Error('CTA role block not found');
+          contact = contact.replace(oldRole, newRole);
+          fs.writeFileSync(contactPath, contact);
+          changed.add(contactPath);
+
+          const journeyPath = 'src/components/CarrierContractJourney.astro';
+          let journey = fs.readFileSync(journeyPath, 'utf8');
+          const oldJourneyGate = `      if (bar.hasAttribute("data-carrier-role-gated") && new URLSearchParams(window.location.search).get("role") === "carrier") {`;
+          const newJourneyGate = `      const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";\n      const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;\n      const queryRole = new URLSearchParams(window.location.search).get("role");\n      if (bar.hasAttribute("data-carrier-role-gated") && (fragmentRole || queryRole) === "carrier") {`;
+          if (!journey.includes(oldJourneyGate)) throw new Error('Carrier journey gate not found');
+          journey = journey.replace(oldJourneyGate, newJourneyGate);
+          fs.writeFileSync(journeyPath, journey);
+          changed.add(journeyPath);
+
+          const operatingTestPath = 'tests/load-board-carrier-operating-path.spec.ts';
+          let operatingTest = fs.readFileSync(operatingTestPath, 'utf8');
+          operatingTest = operatingTest.replace(
+            `  expect(journey).toContain('new URLSearchParams(window.location.search).get("role") === "carrier"');`,
+            `  expect(journey).toContain('const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;');\n  expect(journey).toContain('(fragmentRole || queryRole) === "carrier"');`,
+          );
+          const legacyTest = `\n\ntest("legacy Load Board role query normalizes to canonical fragment state", async ({ page }) => {\n  await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");\n  await expect(page).toHaveURL(/\\/load-board\\/#role=carrier&equipment=car_hauler&target=available-loads$/);\n  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");\n  await expect(page.locator("[data-carrier-contract-journey]")).not.toHaveAttribute("data-carrier-role-gated", "");\n});\n\ntest("source graph does not publish query-state Load Board links", async () => {\n  const roots = ["src"];\n  const pending = roots.map((root) => resolve(process.cwd(), root));\n  const offenders: string[] = [];\n  while (pending.length) {\n    const current = pending.pop();\n    if (!current) continue;\n    const entries = await import("node:fs/promises").then(({ readdir }) => readdir(current, { withFileTypes: true }));\n    for (const entry of entries) {\n      const full = resolve(current, entry.name);\n      if (entry.isDirectory()) pending.push(full);\n      else if (/\\.(astro|ts|tsx|js|mjs)$/.test(entry.name) && (await source(full)).includes("/load-board/?")) offenders.push(full);\n    }\n  }\n  expect(offenders).toEqual([]);\n});\n`;
+          if (!operatingTest.includes('legacy Load Board role query normalizes to canonical fragment state')) operatingTest += legacyTest;
+          fs.writeFileSync(operatingTestPath, operatingTest);
+          changed.add(operatingTestPath);
+
+          const sourceOffenders = roots[0] && walk('src').filter((file) => fs.readFileSync(file, 'utf8').includes('/load-board/?'));
+          if (sourceOffenders.length) throw new Error(`Query-state Load Board links remain in src: ${sourceOffenders.join(', ')}`);
+
+          console.log(`Changed ${changed.size} files:`);
+          for (const file of [...changed].sort()) console.log(`- ${file}`);
+          NODE
+      - name: Verify dependency install and build
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npx playwright test tests/load-board-carrier-operating-path.spec.ts --list
+      - name: Commit bounded migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/load-board-fragment-migration.yml
+          git add src tests scripts
+          git diff --cached --check
+          git commit -m "fix(seo): move Load Board role state behind fragments"
+          git push origin HEAD:seo/load-board-canonical-fragment-state-20260909
