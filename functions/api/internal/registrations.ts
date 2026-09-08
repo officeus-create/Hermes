@@ -3,6 +3,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopSalesAttributionSchema } from "../_lib/repair-shop-sales-attribution.mjs";
 import { ensureRepairShopAccessSchema } from "../_lib/repair-shop-access.mjs";
+import { ensureRepairShopSyntheticDemoData } from "../_lib/repair-shop-synthetic-demo.mjs";
 import {
   deliverTelegramRegistrationAlert,
   ensureRegistrationOpsSchema,
@@ -130,8 +131,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const specialistId = cleanId(body.specialist_id);
   if (!specialistId) return jsonResponse(400, { success: false, error: "invalid_specialist_id" });
-  const exists = await env.DB.prepare("SELECT id FROM specialists WHERE id=? LIMIT 1").bind(specialistId).first();
-  if (!exists) return jsonResponse(404, { success: false, error: "registration_not_found" });
+  const specialist = await env.DB.prepare("SELECT id,name,email,role,created_at FROM specialists WHERE id=? LIMIT 1").bind(specialistId).first();
+  if (!specialist?.id) return jsonResponse(404, { success: false, error: "registration_not_found" });
 
   const action = String(body.action || "").trim();
   if (action === "review") {
@@ -156,6 +157,37 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         WHERE specialist_id=? AND status IN ('pending','failed')`).bind(now, specialistId).run();
     }
     return jsonResponse(200, { success: true, specialist_id: specialistId, synthetic: Boolean(synthetic) });
+  }
+
+  if (action === "hydrate_synthetic_repair_demo") {
+    if (String(specialist.role || "") !== "Shop Owner") {
+      return jsonResponse(409, { success: false, error: "synthetic_shop_owner_required" });
+    }
+    const flag = await env.DB.prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id=? LIMIT 1").bind(specialistId).first();
+    if (Number(flag?.synthetic) !== 1) {
+      return jsonResponse(409, { success: false, error: "synthetic_verification_required" });
+    }
+    const hydrated = await ensureRepairShopSyntheticDemoData({ db: env.DB, env, specialist });
+    if (!hydrated?.eligible) {
+      return jsonResponse(409, { success: false, error: "synthetic_demo_identity_required" });
+    }
+    if (!hydrated?.seeded) {
+      return jsonResponse(503, { success: false, error: String(hydrated?.error || "synthetic_demo_seed_failed") });
+    }
+    return jsonResponse(200, {
+      success: true,
+      specialist_id: specialistId,
+      hydration: {
+        demo_account: String(hydrated.demo_account || ""),
+        seed_version: String(hydrated.seed_version || ""),
+        seeded_through: String(hydrated.seeded_through || ""),
+        appointment_count: Number(hydrated.appointment_count || 0),
+        staff_count: Number(hydrated.staff_count || 0),
+        service_count: Number(hydrated.service_count || 0),
+        benchmark_service_count: Number(hydrated.benchmark_service_count || 0),
+        schedule_rows: Number(hydrated.schedule_rows || 0),
+      },
+    });
   }
 
   if (action === "retry_registration_alert") {
