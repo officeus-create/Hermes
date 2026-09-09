@@ -9,7 +9,7 @@ import { ensureRepairShopProfileSchema } from "./repair-shop-schema.mjs";
 import { ensureRepairShopStaffSchema } from "./repair-shop-staff-schema.mjs";
 import { listServicesForContext } from "./service-context.mjs";
 
-const SEED_VERSION = "office-repair-demo-2026-09-05-v1";
+const SEED_VERSION = "office-repair-demo-2026-09-09-v2";
 const START_DATE = "2026-09-05";
 const END_DATE = "2026-12-31";
 

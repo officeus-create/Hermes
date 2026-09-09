@@ -18,7 +18,7 @@ const BENCHMARK_SERVICES = [
   ["High-Mileage Oil Change", 40],
 ];
 
-const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"]);
+const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka", "волкогон в.", "volkogon v."]);
 const EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"]);
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
 const cleanName = (value) => String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
@@ -34,7 +34,7 @@ function demoAccountKind(specialist) {
     /^office\b/i.test(name) ||
     /^officea\b/i.test(name);
   if (officeIdentity) return "office";
-  if (/(^|[._+-])volkogon($|[._+-])/i.test(local) || /^volkogon\b/i.test(name)) return "volkogon";
+  if (/(^|[._+-])volkogon($|[._+-])/i.test(local) || /^volkogon\b/i.test(name) || /^волкогон\b/i.test(name)) return "volkogon";
   return null;
 }
 
