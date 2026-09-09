@@ -1,0 +1,267 @@
+---
+import { ArrowRight, Calculator, ExternalLink, MapPin, ShieldCheck, TrendingUp } from "@lucide/astro";
+import {
+  HERMES_BREAK_EVEN_GROSS_UPLIFT_PCT,
+  HERMES_DISPATCH_FEE_PCT,
+  HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT,
+  HERMES_MODELED_GROSS_UPLIFT_LOW_PCT,
+  carrierEquipmentEconomics,
+  carrierMarketAnchors,
+  getRelevantBoards,
+  marketPageHref,
+  type CarrierEquipmentSlug,
+} from "../data/carrier-market-economics";
+
+interface Props {
+  equipment: CarrierEquipmentSlug;
+  market?: { city: string; state: string; region?: string } | null;
+  showMarkets?: boolean;
+}
+
+const { equipment, market = null, showMarkets = false } = Astro.props;
+const config = carrierEquipmentEconomics[equipment];
+const boards = getRelevantBoards(equipment);
+const instanceId = `carrier-economics-${equipment}-${market?.city?.toLowerCase().replace(/[^a-z0-9]+/g, "-") ?? "national"}`;
+const marketLabel = market ? `${market.city}, ${market.state}` : "your market";
+const loadBoardHref = `/load-board/#role=carrier&equipment=${encodeURIComponent(config.loadBoardEquipment)}&target=available-loads`;
+---
+
+<section class="carrier-economics section" id={instanceId} data-carrier-economics data-equipment={equipment}>
+  <div class="shell">
+    <div class="carrier-economics-heading">
+      <div>
+        <p class="eyebrow">Market economics · {config.label}</p>
+        <h2>Compare the board benchmark. Then judge the load by total-mile economics.</h2>
+        <p>
+          Hermes can compare approved freight sources, route fit, deadhead, timing, and negotiation context. The calculator below models what a
+          <strong>+{HERMES_MODELED_GROSS_UPLIFT_LOW_PCT}% to +{HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT}% gross-rate target</strong>
+          would look like against a benchmark you enter for {marketLabel}.
+        </p>
+      </div>
+      <div class="carrier-economics-kpis" aria-label="Hermes modeled economics">
+        <article><span>Dispatch fee</span><strong>{HERMES_DISPATCH_FEE_PCT}%</strong><small>current model used in this calculator</small></article>
+        <article><span>Modeled gross target</span><strong>+{HERMES_MODELED_GROSS_UPLIFT_LOW_PCT}–{HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT}%</strong><small>target scenario, not a promise</small></article>
+        <article><span>Gross break-even</span><strong>≈{HERMES_BREAK_EVEN_GROSS_UPLIFT_PCT}%</strong><small>to offset an 8% fee before other value/costs</small></article>
+      </div>
+    </div>
+
+    <div class="carrier-economics-grid">
+      <article class="carrier-calculator-card">
+        <div class="carrier-card-title"><Calculator size={22} aria-hidden="true" /><div><p class="eyebrow">Editable scenario</p><h3>Rate / revenue impact calculator</h3></div></div>
+        <p class="carrier-card-intro">Enter a current lane or load-board benchmark. The page does not hard-code a city rate because rates change by lane, timing, equipment, commodity, and market conditions.</p>
+
+        <div class="carrier-calculator-fields">
+          <label>
+            <span>Benchmark rate ($/mile)</span>
+            <input type="number" min="0" step="0.01" inputmode="decimal" placeholder="3.00" data-benchmark-rpm />
+          </label>
+          <label>
+            <span>Loaded miles / week</span>
+            <input type="number" min="0" step="50" inputmode="numeric" placeholder="2500" data-loaded-miles />
+          </label>
+        </div>
+
+        <div class="carrier-calculator-results" aria-live="polite">
+          <article>
+            <span>Current benchmark</span>
+            <strong data-base-rpm>—</strong>
+            <small data-base-weekly>Enter both fields</small>
+          </article>
+          <article>
+            <span>+{HERMES_MODELED_GROSS_UPLIFT_LOW_PCT}% gross target</span>
+            <strong data-low-rpm>—</strong>
+            <small data-low-weekly>Modeled only</small>
+          </article>
+          <article>
+            <span>+{HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT}% gross target</span>
+            <strong data-high-rpm>—</strong>
+            <small data-high-weekly>Modeled only</small>
+          </article>
+          <article class="carrier-net-result">
+            <span>Carrier net after {HERMES_DISPATCH_FEE_PCT}% fee</span>
+            <strong data-net-range>—</strong>
+            <small data-net-weekly>Before fuel, truck, insurance, tolls, taxes, detention, and other operating costs</small>
+          </article>
+        </div>
+
+        <div class="carrier-calculator-boundary">
+          <ShieldCheck size={19} aria-hidden="true" />
+          <p>This is a planning model, not an earnings claim. Hermes does not guarantee a +10%, +15%, or any other rate increase. Use current authorized market data and the carrier's real operating costs before approving freight.</p>
+        </div>
+      </article>
+
+      <article class="carrier-fit-card">
+        <div class="carrier-card-title"><TrendingUp size={22} aria-hidden="true" /><div><p class="eyebrow">What changes the answer</p><h3>{config.label} fit checks</h3></div></div>
+        <p>{config.marketFocus}</p>
+        <ul>{config.fitChecks.map((item) => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
+        <a class="button button-primary" href={loadBoardHref}>Open {config.label} Load Board view <ArrowRight size={17} aria-hidden="true" /></a>
+      </article>
+    </div>
+
+    <div class="carrier-board-block">
+      <div class="carrier-board-heading">
+        <div>
+          <p class="eyebrow">Load-board comparison</p>
+          <h3>Public subscription price is only one part of the decision.</h3>
+        </div>
+        <p>Hermes should compare the freight itself: lane, total miles, deadhead, timing, equipment fit, broker/shipper quality, payment risk, and carrier-approved minimums.</p>
+      </div>
+
+      <div class="carrier-board-table-wrap" tabindex="0" aria-label={`${config.label} load board comparison table`}>
+        <table class="carrier-board-table">
+          <thead><tr><th>Load board / network</th><th>Public carrier price</th><th>Rate / market intelligence</th><th>Source</th></tr></thead>
+          <tbody>
+            {boards.map((board) => (
+              <tr>
+                <th scope="row">{board.name}<small>{board.pricingNote}</small></th>
+                <td>{board.publicCarrierPrice}</td>
+                <td>{board.marketData}</td>
+                <td><a href={board.url} rel="nofollow noopener" target="_blank">Public pricing / product page <ExternalLink size={14} aria-hidden="true" /></a><small>Checked {board.verifiedOn}</small></td>
+              </tr>
+            ))}
+            <tr class="carrier-board-hermes-row">
+              <th scope="row">Hermes dispatch model<small>Not a load board subscription.</small></th>
+              <td>{HERMES_DISPATCH_FEE_PCT}% dispatch fee model</td>
+              <td>Modeled +{HERMES_MODELED_GROSS_UPLIFT_LOW_PCT}% to +{HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT}% gross target against the carrier's chosen benchmark; no guaranteed uplift.</td>
+              <td><a href="/carrier/">Carrier plans & agreement <ArrowRight size={14} aria-hidden="true" /></a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="carrier-board-footnote">Third-party names and prices are reference information from their public pages and do not imply partnership, endorsement, access, or redistribution rights. Verify current pricing and eligibility with each provider.</p>
+    </div>
+
+    {showMarkets && (
+      <div class="carrier-market-links">
+        <div class="carrier-board-heading">
+          <div><p class="eyebrow">25 market anchors</p><h3>Open the {config.label} view by city.</h3></div>
+          <p>Car hauling uses the existing indexed market owners. Other equipment-market pages stay evidence-gated until they have enough equipment-specific search and market evidence to become separate organic-search owners.</p>
+        </div>
+        <div class="carrier-market-link-grid">
+          {carrierMarketAnchors.map((item) => (
+            <a href={marketPageHref(equipment, item.slug)}>
+              <MapPin size={16} aria-hidden="true" />
+              <span><strong>{item.city}, {item.state}</strong><small>{item.region}</small></span>
+              <ArrowRight size={15} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<script define:vars={{ feePct: HERMES_DISPATCH_FEE_PCT, lowPct: HERMES_MODELED_GROSS_UPLIFT_LOW_PCT, highPct: HERMES_MODELED_GROSS_UPLIFT_HIGH_PCT }}>
+  const money = (value) => Number.isFinite(value) ? `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}/wk` : "—";
+  const rpm = (value) => Number.isFinite(value) ? `$${value.toFixed(2)}/mi` : "—";
+
+  document.querySelectorAll("[data-carrier-economics]").forEach((root) => {
+    if (root.dataset.economicsReady === "true") return;
+    root.dataset.economicsReady = "true";
+
+    const benchmarkInput = root.querySelector("[data-benchmark-rpm]");
+    const milesInput = root.querySelector("[data-loaded-miles]");
+    const baseRpm = root.querySelector("[data-base-rpm]");
+    const baseWeekly = root.querySelector("[data-base-weekly]");
+    const lowRpm = root.querySelector("[data-low-rpm]");
+    const lowWeekly = root.querySelector("[data-low-weekly]");
+    const highRpm = root.querySelector("[data-high-rpm]");
+    const highWeekly = root.querySelector("[data-high-weekly]");
+    const netRange = root.querySelector("[data-net-range]");
+    const netWeekly = root.querySelector("[data-net-weekly]");
+
+    const update = () => {
+      const benchmark = Number(benchmarkInput?.value || 0);
+      const miles = Number(milesInput?.value || 0);
+      if (!(benchmark > 0) || !(miles > 0)) {
+        [baseRpm, lowRpm, highRpm, netRange].forEach((node) => { if (node) node.textContent = "—"; });
+        if (baseWeekly) baseWeekly.textContent = "Enter both fields";
+        if (lowWeekly) lowWeekly.textContent = "Modeled only";
+        if (highWeekly) highWeekly.textContent = "Modeled only";
+        return;
+      }
+
+      const baseGross = benchmark * miles;
+      const lowGrossRpm = benchmark * (1 + lowPct / 100);
+      const highGrossRpm = benchmark * (1 + highPct / 100);
+      const lowGross = lowGrossRpm * miles;
+      const highGross = highGrossRpm * miles;
+      const lowNetRpm = lowGrossRpm * (1 - feePct / 100);
+      const highNetRpm = highGrossRpm * (1 - feePct / 100);
+      const lowNet = lowGross * (1 - feePct / 100);
+      const highNet = highGross * (1 - feePct / 100);
+
+      if (baseRpm) baseRpm.textContent = rpm(benchmark);
+      if (baseWeekly) baseWeekly.textContent = money(baseGross);
+      if (lowRpm) lowRpm.textContent = rpm(lowGrossRpm);
+      if (lowWeekly) lowWeekly.textContent = money(lowGross);
+      if (highRpm) highRpm.textContent = rpm(highGrossRpm);
+      if (highWeekly) highWeekly.textContent = money(highGross);
+      if (netRange) netRange.textContent = `${rpm(lowNetRpm)} – ${rpm(highNetRpm)}`;
+      if (netWeekly) netWeekly.textContent = `${money(lowNet)} – ${money(highNet)} after the ${feePct}% fee, before operating costs`;
+    };
+
+    benchmarkInput?.addEventListener("input", update);
+    milesInput?.addEventListener("input", update);
+    update();
+  });
+</script>
+
+<style>
+  .carrier-economics { background: #f7f9fc; border-block: 1px solid rgba(15, 23, 42, .08); }
+  .carrier-economics-heading { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 2rem; align-items: end; margin-bottom: 2rem; }
+  .carrier-economics-heading h2 { max-width: 880px; margin-bottom: .8rem; }
+  .carrier-economics-heading p { max-width: 900px; }
+  .carrier-economics-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+  .carrier-economics-kpis article { background: white; border: 1px solid rgba(15,23,42,.1); border-radius: 16px; padding: 1rem; box-shadow: 0 10px 28px rgba(15,23,42,.05); }
+  .carrier-economics-kpis span, .carrier-economics-kpis small { display: block; color: #64748b; }
+  .carrier-economics-kpis strong { display: block; font-size: 1.35rem; margin: .25rem 0; color: #0f172a; }
+  .carrier-economics-kpis small { font-size: .76rem; line-height: 1.35; }
+  .carrier-economics-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, .6fr); gap: 1rem; }
+  .carrier-calculator-card, .carrier-fit-card { background: white; border: 1px solid rgba(15,23,42,.1); border-radius: 20px; padding: 1.35rem; box-shadow: 0 14px 34px rgba(15,23,42,.05); }
+  .carrier-card-title { display: flex; gap: .7rem; align-items: flex-start; }
+  .carrier-card-title h3 { margin: .1rem 0 0; }
+  .carrier-card-intro { color: #475569; margin: .8rem 0 1rem; }
+  .carrier-calculator-fields { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .8rem; }
+  .carrier-calculator-fields label span { display: block; font-weight: 700; font-size: .88rem; margin-bottom: .35rem; }
+  .carrier-calculator-fields input { width: 100%; min-height: 48px; border: 1px solid #cbd5e1; border-radius: 12px; padding: .7rem .85rem; font: inherit; background: #fff; color: #0f172a; }
+  .carrier-calculator-results { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .7rem; margin-top: 1rem; }
+  .carrier-calculator-results article { background: #f8fafc; border-radius: 14px; padding: .85rem; border: 1px solid #e2e8f0; }
+  .carrier-calculator-results span, .carrier-calculator-results small { display: block; color: #64748b; font-size: .76rem; line-height: 1.35; }
+  .carrier-calculator-results strong { display: block; margin: .3rem 0; font-size: 1.1rem; color: #0f172a; }
+  .carrier-calculator-results .carrier-net-result { background: #eefbf4; border-color: #b7e7c9; }
+  .carrier-calculator-boundary { display: flex; gap: .65rem; align-items: flex-start; margin-top: 1rem; padding: .85rem 1rem; border-radius: 14px; background: #fff8e8; color: #6b4f00; font-size: .84rem; }
+  .carrier-calculator-boundary p { margin: 0; }
+  .carrier-fit-card p { color: #475569; }
+  .carrier-fit-card ul { padding: 0; margin: 1rem 0 1.2rem; list-style: none; display: grid; gap: .6rem; }
+  .carrier-fit-card li { display: flex; gap: .55rem; align-items: flex-start; }
+  .carrier-fit-card li span { color: #15803d; font-weight: 900; }
+  .carrier-board-block, .carrier-market-links { margin-top: 2rem; }
+  .carrier-board-heading { display: grid; grid-template-columns: minmax(0,1fr) minmax(280px,.8fr); gap: 1.4rem; align-items: end; margin-bottom: 1rem; }
+  .carrier-board-heading h3 { margin: .15rem 0 0; font-size: clamp(1.35rem, 2vw, 2rem); }
+  .carrier-board-heading > p { color: #475569; margin: 0; }
+  .carrier-board-table-wrap { overflow-x: auto; border: 1px solid #dbe3ee; border-radius: 16px; background: white; }
+  .carrier-board-table { width: 100%; min-width: 920px; border-collapse: collapse; font-size: .9rem; }
+  .carrier-board-table th, .carrier-board-table td { text-align: left; vertical-align: top; padding: .9rem 1rem; border-bottom: 1px solid #e7edf4; }
+  .carrier-board-table thead th { background: #0f172a; color: white; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .carrier-board-table tbody th { color: #0f172a; min-width: 180px; }
+  .carrier-board-table small { display: block; color: #64748b; font-weight: 400; margin-top: .25rem; line-height: 1.35; }
+  .carrier-board-table a { display: inline-flex; gap: .3rem; align-items: center; font-weight: 700; }
+  .carrier-board-hermes-row th, .carrier-board-hermes-row td { background: #eefbf4; }
+  .carrier-board-footnote { color: #64748b; font-size: .8rem; margin-top: .65rem; }
+  .carrier-market-link-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .65rem; }
+  .carrier-market-link-grid a { display: grid; grid-template-columns: auto 1fr auto; gap: .55rem; align-items: center; background: white; border: 1px solid #dbe3ee; border-radius: 13px; padding: .8rem; color: #0f172a; text-decoration: none; }
+  .carrier-market-link-grid a:hover { border-color: #94a3b8; transform: translateY(-1px); }
+  .carrier-market-link-grid strong, .carrier-market-link-grid small { display: block; }
+  .carrier-market-link-grid small { color: #64748b; margin-top: .15rem; }
+  @media (max-width: 1000px) {
+    .carrier-economics-heading, .carrier-economics-grid, .carrier-board-heading { grid-template-columns: 1fr; }
+    .carrier-economics-kpis { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .carrier-calculator-results { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .carrier-market-link-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 640px) {
+    .carrier-economics-kpis, .carrier-calculator-fields, .carrier-calculator-results, .carrier-market-link-grid { grid-template-columns: 1fr; }
+    .carrier-calculator-card, .carrier-fit-card { padding: 1rem; border-radius: 16px; }
+  }
+</style>
