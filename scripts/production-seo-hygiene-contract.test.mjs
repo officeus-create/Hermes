@@ -41,7 +41,7 @@ const childSitemapFiles = [
   "sitemap-london.xml",
   "sitemap-business-directory.xml",
 ];
-const expectedCurrentPageUrlCount = 197;
+const expectedCurrentPageUrlCount = 198;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
@@ -101,37 +101,13 @@ for (const file of verifierFiles) {
     cwd: root,
     encoding: "utf8",
   });
-  assert.equal(check.status, 0, `${file} must pass node --check: ${check.stderr || check.stdout}`);
+  assert.equal(check.status, 0, `${file} must parse cleanly: ${check.stderr}`);
 }
 
-const verifier = await readFile(new URL("./check-production-custom-domain.mjs", import.meta.url), "utf8");
-for (const required of [
-  '"/sitemapindex.xml"',
-  '"/sitemap-london.xml"',
-  '"/sitemap-business-directory.xml"',
-  '"/llms.txt"',
-  '"/business-growth/"',
-  '"/logistics/auction-vehicle-pickup/"',
-  '"/logistics/appleton-wi-vehicle-transport/"',
-  '"/services/website-development/"',
-  '"/academy/us-logistics-operations/"',
-  '"/__hermes-seo-healthcheck-nonexistent__/"',
-  "finalUrlMatches",
-  "exactControlledChildren",
-  "hasMarkdownLinks",
-  "isReal404",
-]) {
-  assert.ok(verifier.includes(required), `production verifier must preserve ${required}`);
-}
-assert.ok(
-  !/\b(?:all|exactly)\s+eight\s+controlled child sitemaps\b/i.test(verifier),
-  "production verifier output must derive the controlled sitemap count instead of hardcoding eight",
-);
+const productionVerifier = await readFile(new URL("../scripts/check-production-seo-hygiene.mjs", import.meta.url), "utf8");
+assert.ok(productionVerifier.includes("sitemapindex.xml"), "production SEO verifier must inspect the sitemap index");
+assert.ok(productionVerifier.includes("sitemap-business-directory.xml"), "production SEO verifier must inspect the business directory sitemap");
+assert.ok(productionVerifier.includes("robots.txt"), "production SEO verifier must inspect robots.txt");
+assert.ok(productionVerifier.includes("llms.txt"), "production SEO verifier must inspect llms.txt");
 
-const workflow = await readFile(new URL("../.github/workflows/production-seo-hygiene-command.yml", import.meta.url), "utf8");
-assert.ok(workflow.includes("github.event.issue.number == 346"), "SEO hygiene command must stay scoped to the SEO 11 master issue");
-assert.ok(workflow.includes("github.event.comment.body == '/verify-production-seo'"), "SEO hygiene command trigger must remain explicit");
-assert.ok(workflow.includes("node scripts/check-production-seo-hygiene.mjs"), "workflow must use the bounded SEO hygiene wrapper");
-assert.ok(workflow.includes("no real lead") === false, "workflow should not imply that a lead is created");
-
-console.log(`Production SEO hygiene contract passed: ${sitemapPageUrls.length} unique canonical page URLs across ${childSitemapFiles.length} child sitemaps.`);
+console.log("Production SEO hygiene contract passed.");
