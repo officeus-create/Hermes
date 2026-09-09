@@ -12,14 +12,19 @@ const vehiclesApi = readFileSync("functions/api/repair-shop/vehicles.ts", "utf8"
 
 const syntheticSeeder = "ensureRepairShopSyntheticDemoData";
 
-test("Office Repair demo is synthetic-only, additive and seeded through year end", async () => {
+test("Office Repair demo is synthetic-only, additive and keeps a rolling 12-hour monthly load", async () => {
   expect(registrationOps).toContain("HERMES_SYNTHETIC_ACCOUNT_EMAILS");
   expect(demo).toContain("syncSyntheticFlagForAccount");
   expect(demo).toContain("hermes_registration_flags");
   expect(demo).toContain("Shop Owner");
   expect(demo).toContain("office");
-  expect(demo).toContain('const END_DATE = "2026-12-31"');
-  expect(demo).toContain('const START_DATE = "2026-09-05"');
+  expect(demo).toContain("const DEMO_OPEN_HOUR = 7");
+  expect(demo).toContain("const DEMO_CLOSE_HOUR = 19");
+  expect(demo).toContain("const DEMO_HISTORY_DAYS = 7");
+  expect(demo).toContain("const DEMO_FORWARD_DAYS = 30");
+  expect(demo).toContain("currentDemoWindow");
+  expect(demo).toContain("end.setUTCDate(end.getUTCDate() + DEMO_FORWARD_DAYS - 1)");
+  expect(demo).toContain("DEMO_CLOSE_HOUR - DEMO_OPEN_HOUR");
   expect(demo).toContain("INSERT OR IGNORE INTO repair_shop_bookings");
   expect(demo).toContain("INSERT OR IGNORE INTO repair_shop_booking_vehicles");
   expect(demo).toContain("INSERT OR IGNORE INTO repair_shop_booking_history");
@@ -63,6 +68,10 @@ test("demo coverage spans motorcycles through heavy and oversized equipment", as
     "Bus / Coach Preventive Maintenance",
     "Heavy Equipment Diagnostics",
     "Oversize / Specialized Equipment Repair",
+    "Collision Damage Estimate",
+    "Towing / Recovery",
+    "Reefer Unit Diagnostics & Repair",
+    "Welding & Fabrication",
   ]) expect(demo).toContain(phrase);
   expect(demo).toContain("Daniel Foster");
   expect(demo).toContain("Sophia Martinez");
