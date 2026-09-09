@@ -195,13 +195,13 @@ async function fillSyntheticStaffSchedules(db, specialist) {
   const now = new Date().toISOString();
 
   const days = [
-    [0, 0, null, null, []],
-    [1, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [2, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [3, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [4, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [5, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [6, 1, "08:30", "15:30", [{ start_time: "11:30", end_time: "12:00" }]],
+    [0, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [1, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [2, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [3, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [4, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [5, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [6, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
   ];
 
   const statements = [];
@@ -209,9 +209,12 @@ async function fillSyntheticStaffSchedules(db, specialist) {
     for (const [day, working, start, end, breaks] of days) {
       statements.push(
         db.prepare(`
-          INSERT OR IGNORE INTO repair_shop_staff_schedule
+          INSERT INTO repair_shop_staff_schedule
             (staff_id,shop_id,owner_specialist_id,day_of_week,is_working,start_time,end_time,breaks,updated_at)
           VALUES (?,?,?,?,?,?,?,?,?)
+          ON CONFLICT(staff_id,day_of_week) DO UPDATE SET
+            shop_id=excluded.shop_id,owner_specialist_id=excluded.owner_specialist_id,is_working=excluded.is_working,
+            start_time=excluded.start_time,end_time=excluded.end_time,breaks=excluded.breaks,updated_at=excluded.updated_at
         `).bind(member.id, shop.id, specialist.id, day, working, start, end, JSON.stringify(breaks), now),
       );
     }

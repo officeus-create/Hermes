@@ -9,9 +9,12 @@ import { ensureRepairShopProfileSchema } from "./repair-shop-schema.mjs";
 import { ensureRepairShopStaffSchema } from "./repair-shop-staff-schema.mjs";
 import { listServicesForContext } from "./service-context.mjs";
 
-const SEED_VERSION = "office-repair-demo-2026-09-09-v2";
-const START_DATE = "2026-09-05";
-const END_DATE = "2026-12-31";
+const SEED_VERSION = "office-repair-demo-2026-09-09-v3";
+const DEMO_OPEN_HOUR = 7;
+const DEMO_CLOSE_HOUR = 19;
+const DEMO_HISTORY_DAYS = 7;
+const DEMO_FORWARD_DAYS = 30;
+const DEMO_TIMEZONE = "America/Chicago";
 
 const STAFF = [
   ["Daniel Foster", ["Motorcycle", "Powersports"]],
@@ -28,6 +31,10 @@ const STAFF = [
   ["Luke Harrison", ["Heavy equipment", "Hydraulics", "Undercarriage"]],
   ["Benjamin Clark", ["Oversize equipment", "Specialized vehicles"]],
   ["Sophia Martinez", ["Fleet PM", "DOT inspections", "Quality control"]],
+  ["Avery Collins", ["Collision", "Body repair", "Paint", "Glass"]],
+  ["Olivia Parker", ["Detailing", "Glass", "Interior", "Exterior"]],
+  ["Gabriel Rivera", ["Roadside", "Towing", "Recovery", "Mobile service"]],
+  ["Henry Adams", ["Welding", "Fabrication", "Liftgates", "Specialty equipment"]],
 ];
 
 const SERVICES = [
@@ -104,6 +111,76 @@ const SERVICES = [
   ["Oversize / Specialized Equipment Inspection",120,"Benjamin Clark","oversize"],
   ["Oversize / Specialized Equipment Repair",300,"Benjamin Clark","oversize"],
   ["Specialized Transport Equipment Safety Check",120,"Benjamin Clark","oversize"],
+  ["Tire Rotation",30,"Caleb Brooks","passenger"],
+  ["Flat Tire Repair",45,"Caleb Brooks","passenger"],
+  ["TPMS Inspection & Sensor Service",45,"Caleb Brooks","passenger"],
+  ["Brake Fluid Exchange",60,"Ethan Walker","passenger"],
+  ["Complete Vehicle Inspection",75,"Sophia Martinez","passenger"],
+  ["Coolant & Radiator Fluid Exchange",90,"Liam Carter","passenger"],
+  ["Engine Tune-Up & Spark Plug Service",120,"Ethan Walker","passenger"],
+  ["Fuel System Cleaning",75,"Liam Carter","passenger"],
+  ["Wiper Blade Replacement",20,"Ethan Walker","passenger"],
+  ["Exterior & Interior Light Service",30,"Marcus Johnson","passenger"],
+  ["ABS Diagnostic & Service",90,"Marcus Johnson","passenger"],
+  ["High-Mileage Oil Change",40,"Ethan Walker","passenger"],
+  ["Engine Air Filter Replacement",30,"Ethan Walker","passenger"],
+  ["Cabin Air Filter Replacement",30,"Ethan Walker","passenger"],
+  ["Serpentine Belt Replacement",90,"Liam Carter","passenger"],
+  ["Radiator / Cooling Hose Replacement",120,"Liam Carter","passenger"],
+  ["Power Steering Fluid Service",60,"Caleb Brooks","passenger"],
+  ["Shock & Strut Replacement",180,"Caleb Brooks","passenger"],
+  ["Wheel Bearing / Hub Assembly Replacement",180,"Caleb Brooks","passenger"],
+  ["CV Axle Replacement",180,"Noah Bennett","passenger"],
+  ["Driveshaft / U-Joint Service",180,"Noah Bennett","passenger"],
+  ["Check Engine Light Diagnostics",60,"Marcus Johnson","passenger"],
+  ["Oxygen Sensor Replacement",90,"Marcus Johnson","passenger"],
+  ["Catalytic Converter Replacement",180,"Ethan Walker","passenger"],
+  ["Muffler / Exhaust Replacement",150,"Ethan Walker","passenger"],
+  ["State Safety Inspection",60,"Sophia Martinez","passenger"],
+  ["State Emissions Inspection",60,"Sophia Martinez","passenger"],
+  ["Vehicle Programming / Module Relearn",90,"Marcus Johnson","passenger"],
+  ["Key Fob / Immobilizer Programming",60,"Marcus Johnson","passenger"],
+  ["Windshield Wiper Motor Repair",120,"Marcus Johnson","passenger"],
+  ["Auto Glass Chip Repair",60,"Olivia Parker","passenger"],
+  ["Windshield Replacement",180,"Olivia Parker","passenger"],
+  ["Interior Detailing",180,"Olivia Parker","passenger"],
+  ["Exterior Detailing",180,"Olivia Parker","passenger"],
+  ["Paint Correction",240,"Olivia Parker","passenger"],
+  ["Ceramic Coating",360,"Olivia Parker","passenger"],
+  ["Headlight Restoration",90,"Olivia Parker","passenger"],
+  ["Collision Damage Estimate",60,"Avery Collins","passenger"],
+  ["Bumper / Fender Repair",240,"Avery Collins","passenger"],
+  ["Paint & Refinish",360,"Avery Collins","passenger"],
+  ["Paintless Dent Repair",180,"Avery Collins","passenger"],
+  ["Frame / Unibody Measurement",120,"Avery Collins","passenger"],
+  ["Mobile Roadside Diagnostic",60,"Gabriel Rivera","passenger"],
+  ["Jump Start / Battery Assist",45,"Gabriel Rivera","passenger"],
+  ["Vehicle Lockout Assist",45,"Gabriel Rivera","passenger"],
+  ["Roadside Tire Change",45,"Gabriel Rivera","passenger"],
+  ["Towing / Recovery",90,"Gabriel Rivera","passenger"],
+  ["Winch-Out Recovery",90,"Gabriel Rivera","passenger"],
+  ["Emergency Fuel Delivery",45,"Gabriel Rivera","passenger"],
+  ["EV 12-Volt Battery Replacement",60,"Ryan Mitchell","ev"],
+  ["EV Brake Fluid Service",60,"Ryan Mitchell","ev"],
+  ["EV Thermal Management Diagnostics",120,"Ryan Mitchell","ev"],
+  ["Heavy Truck Computer Diagnostics",120,"Mason Reed","heavy"],
+  ["Forced DPF Regeneration",120,"Mason Reed","heavy"],
+  ["Heavy Truck Air System Leak Diagnostics",120,"Jackson Hayes","heavy"],
+  ["Fifth Wheel Inspection & Service",120,"Jackson Hayes","heavy"],
+  ["Heavy Truck Alignment",180,"Caleb Brooks","heavy"],
+  ["Trailer ABS Diagnostics",120,"Tyler Morgan","trailer"],
+  ["Trailer Door / Roof / Floor Repair",240,"Henry Adams","trailer"],
+  ["Trailer Landing Gear Repair",180,"Tyler Morgan","trailer"],
+  ["Liftgate Inspection & Repair",180,"Henry Adams","trailer"],
+  ["Reefer Unit Diagnostics & Repair",240,"Tyler Morgan","trailer"],
+  ["Trailer Body Welding & Fabrication",240,"Henry Adams","trailer"],
+  ["RV Generator Service",180,"Samuel Cooper","rv"],
+  ["RV Electrical Systems Service",180,"Samuel Cooper","rv"],
+  ["RV Plumbing / Water Systems Service",180,"Samuel Cooper","rv"],
+  ["Mobile Hydraulic Hose Repair",180,"Luke Harrison","equipment"],
+  ["Welding & Fabrication",240,"Henry Adams","equipment"],
+  ["Mobile Fleet Preventive Maintenance",180,"Sophia Martinez","diesel"],
+  ["Fleet Inspection Program",120,"Sophia Martinez","diesel"],
 ];
 
 const FIRST_NAMES = ["James","Michael","Robert","John","David","William","Richard","Joseph","Thomas","Christopher","Charles","Matthew"];
@@ -127,6 +204,14 @@ const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").sli
 const slug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 54);
 const isoDate = (date) => date.toISOString().slice(0, 10);
 const pad2 = (value) => String(value).padStart(2, "0");
+const currentDemoWindow = (now = new Date()) => {
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0));
+  const start = new Date(today);
+  start.setUTCDate(start.getUTCDate() - DEMO_HISTORY_DAYS);
+  const end = new Date(today);
+  end.setUTCDate(end.getUTCDate() + DEMO_FORWARD_DAYS - 1);
+  return { start, end, startDate: isoDate(start), endDate: isoDate(end) };
+};
 
 async function runStatements(db, statements, size = 40) {
   for (let index = 0; index < statements.length; index += size) {
@@ -152,7 +237,7 @@ async function officeSyntheticAccount(db, env, specialist) {
   const email = cleanEmail(specialist.email);
   const local = email.split("@")[0] || "";
   const name = String(specialist.name || "").trim();
-  return /(^|[._+-])office($|[._+-])/i.test(local) || /^office\b/i.test(name);
+  return /(^|[._+-])officea?($|[._+-])/i.test(local) || /^officea?\b/i.test(name);
 }
 
 async function ensureSeedStateSchema(db) {
@@ -240,24 +325,29 @@ async function ensureDemoAvailability(db, shop) {
   await ensureRepairShopAvailabilitySchema(db);
   const now = new Date().toISOString();
   const schedule = [
-    [0,0,null,null],
-    [1,1,"08:00","18:00"],
-    [2,1,"08:00","18:00"],
-    [3,1,"08:00","18:00"],
-    [4,1,"08:00","18:00"],
-    [5,1,"08:00","18:00"],
-    [6,1,"09:00","15:00"],
+    [0,1,"07:00","19:00"],
+    [1,1,"07:00","19:00"],
+    [2,1,"07:00","19:00"],
+    [3,1,"07:00","19:00"],
+    [4,1,"07:00","19:00"],
+    [5,1,"07:00","19:00"],
+    [6,1,"07:00","19:00"],
   ];
   await runStatements(db, schedule.map(([day, open, start, end]) => db.prepare(`
-    INSERT OR IGNORE INTO repair_shop_availability (shop_id,day_of_week,is_open,start_time,end_time,updated_at)
+    INSERT INTO repair_shop_availability (shop_id,day_of_week,is_open,start_time,end_time,updated_at)
     VALUES (?,?,?,?,?,?)
+    ON CONFLICT(shop_id,day_of_week) DO UPDATE SET
+      is_open=excluded.is_open,start_time=excluded.start_time,end_time=excluded.end_time,updated_at=excluded.updated_at
   `).bind(shop.id, day, open, start, end, now)));
 
   await ensureRepairShopCapabilitiesSchema(db);
   await db.prepare(`
-    INSERT OR IGNORE INTO repair_shop_capabilities
+    INSERT INTO repair_shop_capabilities
       (shop_id,vehicle_types,fleet_service,mobile_roadside,emergency_24_7,parallel_booking_capacity,updated_at)
-    VALUES (?, ?,1,1,0,10,?)
+    VALUES (?, ?,1,1,1,10,?)
+    ON CONFLICT(shop_id) DO UPDATE SET
+      vehicle_types=excluded.vehicle_types,fleet_service=1,mobile_roadside=1,emergency_24_7=1,
+      parallel_booking_capacity=10,updated_at=excluded.updated_at
   `).bind(shop.id, JSON.stringify(["passenger_light","commercial_truck","trailer","reefer","flatbed_open_deck","other"]), now).run();
 }
 
@@ -293,7 +383,7 @@ function chooseService(slotAtMs, cursor, busyUntil) {
   return { service, nextCursor: cursor + 1, end: endTime(new Date(slotAtMs).getUTCHours(), service[1]) || "18:00" };
 }
 
-async function ensureDemoBookings(db, specialist, shop, staffByName, servicesByName) {
+async function ensureDemoBookings(db, specialist, shop, staffByName, servicesByName, window) {
   await ensureRepairShopBookingsSchema(db);
   await ensureRepairShopBookingVehicleSchema(db);
   await ensureRepairShopBookingHistorySchema(db);
@@ -303,12 +393,12 @@ async function ensureDemoBookings(db, specialist, shop, staffByName, servicesByN
   const busyUntil = new Map();
   let cursor = 0;
   let slotIndex = 0;
-  const start = new Date(`${START_DATE}T12:00:00Z`);
-  const end = new Date(`${END_DATE}T12:00:00Z`);
+  const start = new Date(window.start);
+  const end = new Date(window.end);
+  const today = isoDate(new Date());
 
   for (let day = new Date(start); day <= end; day.setUTCDate(day.getUTCDate() + 1)) {
-    const dow = day.getUTCDay();
-    const hours = dow === 0 ? [] : dow === 6 ? [9,10,11,12,13,14] : [8,9,10,11,12,13,14,15,16,17];
+    const hours = Array.from({ length: DEMO_CLOSE_HOUR - DEMO_OPEN_HOUR }, (_, index) => DEMO_OPEN_HOUR + index);
     const date = isoDate(day);
     for (const hour of hours) {
       const slotAt = Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), hour, 0, 0);
@@ -322,13 +412,14 @@ async function ensureDemoBookings(db, specialist, shop, staffByName, servicesByN
       const customer = customerFor(category, slotIndex);
       const bookingId = `demo-${ownerPart}-${category}-c${String(customer.number).padStart(3,"0")}-${date.replaceAll("-","")}-${pad2(hour)}-${String(slotIndex).padStart(4,"0")}`;
       const createdAt = `${date}T12:00:00.000Z`;
+      const status = date < today ? "completed" : "confirmed";
       statements.push(db.prepare(`
         INSERT OR IGNORE INTO repair_shop_bookings
           (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,
            client_name,client_email,client_phone,technician_id,technician_name,created_at,updated_at)
-        VALUES (?,?,?,?,?,?,?,?,?,'confirmed',?,?,?,?,?,?,?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       `).bind(
-        bookingId, shop.id, specialist.id, service.id, serviceName, duration, date, `${pad2(hour)}:00`, picked.end,
+        bookingId, shop.id, specialist.id, service.id, serviceName, duration, date, `${pad2(hour)}:00`, picked.end, status,
         customer.name, customer.email, customer.phone, technicianId, technicianName, createdAt, createdAt,
       ));
       slotIndex += 1;
@@ -368,7 +459,7 @@ async function ensureDemoBookings(db, specialist, shop, staffByName, servicesByN
 
   await db.prepare(`
     INSERT OR IGNORE INTO repair_shop_booking_history (id,booking_id,owner_specialist_id,from_status,to_status,changed_at)
-    SELECT 'demo-history-' || b.id,b.id,b.owner_specialist_id,NULL,'confirmed',b.created_at
+    SELECT 'demo-history-' || b.id,b.id,b.owner_specialist_id,NULL,b.status,b.created_at
     FROM repair_shop_bookings b
     WHERE b.owner_specialist_id = ? AND b.id LIKE ?
   `).bind(specialist.id, prefix).run();
@@ -387,8 +478,9 @@ export async function ensureOfficeRepairDemoData({ db, env, specialist }) {
   const current = await db.prepare(
     "SELECT seed_version,seeded_through,appointment_count,updated_at FROM repair_shop_demo_seed_state WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
-  if (current?.seed_version === SEED_VERSION && current?.seeded_through === END_DATE) {
-    return { eligible: true, seeded: true, seed_version: SEED_VERSION, seeded_through: END_DATE, appointment_count: Number(current.appointment_count || 0) };
+  const window = currentDemoWindow();
+  if (current?.seed_version === SEED_VERSION && current?.seeded_through === window.endDate) {
+    return { eligible: true, seeded: true, seed_version: SEED_VERSION, seeded_from: window.startDate, seeded_through: window.endDate, appointment_count: Number(current.appointment_count || 0) };
   }
 
   const servicesTable = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='services' LIMIT 1").first();
@@ -399,7 +491,7 @@ export async function ensureOfficeRepairDemoData({ db, env, specialist }) {
   const staffByName = await ensureDemoStaff(db, specialist, shop);
   const servicesByName = await ensureDemoServices(db, specialist, shop);
   await ensureDemoAvailability(db, shop);
-  const appointmentCount = await ensureDemoBookings(db, specialist, shop, staffByName, servicesByName);
+  const appointmentCount = await ensureDemoBookings(db, specialist, shop, staffByName, servicesByName, window);
   const now = new Date().toISOString();
 
   await db.prepare(`
@@ -410,17 +502,18 @@ export async function ensureOfficeRepairDemoData({ db, env, specialist }) {
       seeded_through=excluded.seeded_through,
       appointment_count=excluded.appointment_count,
       updated_at=excluded.updated_at
-  `).bind(specialist.id, SEED_VERSION, END_DATE, appointmentCount, now).run();
+  `).bind(specialist.id, SEED_VERSION, window.endDate, appointmentCount, now).run();
 
   return {
     eligible: true,
     seeded: true,
     seed_version: SEED_VERSION,
-    seeded_through: END_DATE,
+    seeded_from: window.startDate,
+    seeded_through: window.endDate,
     appointment_count: appointmentCount,
     staff_count: STAFF.length,
     service_count: SERVICES.length,
   };
 }
 
-export { END_DATE as OFFICE_REPAIR_DEMO_END_DATE, SEED_VERSION as OFFICE_REPAIR_DEMO_SEED_VERSION };
+export { DEMO_CLOSE_HOUR as OFFICE_REPAIR_DEMO_CLOSE_HOUR, DEMO_OPEN_HOUR as OFFICE_REPAIR_DEMO_OPEN_HOUR, DEMO_TIMEZONE as OFFICE_REPAIR_DEMO_TIMEZONE, SEED_VERSION as OFFICE_REPAIR_DEMO_SEED_VERSION };

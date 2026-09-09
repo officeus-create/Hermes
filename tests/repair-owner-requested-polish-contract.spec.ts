@@ -43,8 +43,29 @@ test("the explicit Officea Baka test shop hydrates through the existing additive
   expect(synthetic).toContain('if (!explicitOwner && !explicitShop) return false');
   expect(synthetic).toContain('ensureOfficeRepairDemoData');
   expect(synthetic).toContain('fillSyntheticStaffSchedules');
-  expect(demo).toContain('const START_DATE = "2026-09-05"');
-  expect(demo).toContain('const END_DATE = "2026-12-31"');
+  expect(demo).toContain('const DEMO_OPEN_HOUR = 7');
+  expect(demo).toContain('const DEMO_CLOSE_HOUR = 19');
+  expect(demo).toContain('const DEMO_HISTORY_DAYS = 7');
+  expect(demo).toContain('const DEMO_FORWARD_DAYS = 30');
+  expect(demo).toContain('currentDemoWindow');
+  expect(demo).toContain('end.setUTCDate(end.getUTCDate() + DEMO_FORWARD_DAYS - 1)');
+  expect(demo).toContain('officea?');
   expect(demo).toContain('INSERT INTO repair_shop_staff');
   expect(demo).toContain('INSERT OR IGNORE INTO repair_shop_bookings');
+});
+
+
+test("owner CRM keeps the customer booking link visible and pulses only actionable missing setup", async () => {
+  const activation = await source("public/repair-shop-activation.js");
+  const enhancer = await source("src/components/RepairShopActivationEnhancer.astro");
+
+  expect(activation).toContain("ownerWorkspacePaths");
+  expect(activation).toContain("mountBookingShareBar");
+  expect(activation).toContain("Send this link to customers so they can choose an available service time.");
+  expect(activation).toContain("data-repair-booking-sharebar");
+  expect(activation).toContain("data-needs-attention");
+  expect(activation).toContain("navigator.clipboard.writeText");
+  expect(enhancer).toContain("repair-booking-sharebar");
+  expect(enhancer).toContain("repairAttentionPulse");
+  expect(enhancer).toContain("prefers-reduced-motion:reduce");
 });
