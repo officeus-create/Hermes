@@ -36,3 +36,18 @@ test("Business directory profile stays unclaimed and indexable", async ({ page }
   const schema = await page.locator('script[type="application/ld+json"]').allTextContents();
   expect(schema.join("\n")).toContain("AutoRepair");
 });
+
+test("Business directory exposes a 50-state coverage map without empty state links", async ({ page }) => {
+  await page.goto("/businesses/", { waitUntil:"domcontentloaded" });
+  await expect(page.getByRole("heading", { level:2, name:"U.S. repair shop coverage map" })).toBeVisible();
+  await expect(page.locator('a[href="/businesses/arkansas/"]')).toBeVisible();
+  await expect(page.locator('a[href="/businesses/california/"]')).toHaveCount(0);
+  await expect(page.locator('.state-tile.pending[aria-label="California: research queue"]')).toBeVisible();
+});
+
+test("Business directory has a state landing before city and profile routes", async ({ page }) => {
+  await page.goto("/businesses/arkansas/", { waitUntil:"domcontentloaded" });
+  await expect(page.getByRole("heading", { level:1, name:"Auto repair businesses in Arkansas" })).toBeVisible();
+  await expect(page.locator('a[href="/businesses/arkansas/sherwood/"]')).toBeVisible();
+  await expect(page.getByText("1 business profile", { exact:true })).toBeVisible();
+});
