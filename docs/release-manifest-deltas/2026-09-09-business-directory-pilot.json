@@ -2,16 +2,17 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-09-business-directory-pilot",
-  "generated_at": "2026-09-09T20:15:00Z",
+  "generated_at": "2026-09-10T00:40:00Z",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {"route":"/businesses/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/arkansas/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/arkansas/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
     {"route":"/businesses/arkansas/sherwood/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/arkansas/sherwood/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
     {"route":"/businesses/arkansas/sherwood/seans-autopro-mobile/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/[slug].astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}}
   ],
   "acceptance": {
-    "route_count_added": 3,
-    "indexable_route_count_added": 3,
+    "route_count_added": 4,
+    "indexable_route_count_added": 4,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
