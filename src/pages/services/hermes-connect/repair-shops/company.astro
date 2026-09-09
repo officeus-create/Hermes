@@ -1,0 +1,76 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAccountSwitcher.astro";
+---
+
+<BaseLayout title="Company | Hermes Connect Repair Shop" description="Owner-only repair shop business profile and booking identity." robots="noindex,nofollow">
+  <div class="site-header company-account-source" aria-hidden="true"><HermesConnectAccountSwitcher current="repair" mode="menu" /></div>
+  <main id="main-content" class="company-v4-page">
+    <div class="hc4-page-shell">
+      <header class="hc4-page-head">
+        <div><p class="hc4-kicker" data-i18n="kicker">Business identity</p><h1 data-i18n="title">Company</h1><p data-i18n="subtitle">Keep the business details customers see in booking accurate. Team, schedules and connections now live in their own workspaces.</p></div>
+        <span id="profile-state" class="hc4-status" data-i18n="loading">Loading…</span>
+      </header>
+      <div id="page-alert" class="hc4-alert hc4-hidden" role="status" aria-live="polite"></div>
+
+      <section class="hc4-card">
+        <div class="hc4-card-head"><div><p class="hc4-eyebrow" data-i18n="profile">Company profile</p><h2 data-i18n="details">Business details</h2><p data-i18n="detailsCopy">These saved fields are used by the real public booking experience.</p></div></div>
+        <form id="profile-form" class="hc4-form-grid">
+          <label class="hc4-field span-2"><span data-i18n="name">Shop name</span><input id="shop-name" maxlength="120" required autocomplete="organization" /></label>
+          <label class="hc4-field"><span data-i18n="phone">Phone</span><input id="shop-phone" maxlength="32" inputmode="tel" autocomplete="tel" /></label>
+          <label class="hc4-field"><span data-i18n="address">Address</span><input id="shop-address" maxlength="160" autocomplete="street-address" /></label>
+          <label class="hc4-field"><span data-i18n="city">City</span><input id="shop-city" maxlength="100" required autocomplete="address-level2" /></label>
+          <label class="hc4-field"><span data-i18n="region">Region / state</span><input id="shop-region" maxlength="100" autocomplete="address-level1" /></label>
+          <label class="hc4-field"><span data-i18n="country">Country code</span><input id="shop-country" maxlength="2" minlength="2" required autocomplete="country" pattern="[A-Za-z]{2}" /></label>
+          <label class="hc4-field"><span data-i18n="postal">Postal code</span><input id="shop-postal" maxlength="24" autocomplete="postal-code" /></label>
+          <label class="hc4-field span-2"><span data-i18n="timezone">Timezone</span><input id="shop-timezone" maxlength="64" required list="timezone-suggestions" placeholder="America/Chicago" /></label>
+          <datalist id="timezone-suggestions"><option value="America/New_York"></option><option value="America/Chicago"></option><option value="America/Denver"></option><option value="America/Los_Angeles"></option><option value="Europe/Kyiv"></option><option value="Europe/London"></option><option value="Europe/Paris"></option><option value="Europe/Berlin"></option></datalist>
+          <div class="hc4-actions span-2"><button id="detect-timezone" class="hc4-button" type="button" data-i18n="detect">Use browser timezone</button><button id="save-profile" class="hc4-button primary" type="submit" data-i18n="save">Save company profile</button></div>
+        </form>
+      </section>
+
+      <section id="public-booking-card" class="hc4-card hc4-hidden">
+        <div class="hc4-card-head"><div><p class="hc4-eyebrow" data-i18n="customerAccess">Customer access</p><h2 data-i18n="bookingLink">Public booking link</h2><p data-i18n="bookingCopy">Share this stable URL after services and schedule are ready.</p></div></div>
+        <div class="hc4-booking-link"><code id="public-booking-link"></code><div class="hc4-actions"><button id="copy-booking-link" class="hc4-button" type="button" data-i18n="copy">Copy</button><a id="open-booking-link" class="hc4-button" href="#" target="_blank" rel="noopener" data-i18n="open">Open</a></div></div>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const supported = new Set(["en","ru","uk","es","it","fr"]);
+  const requested = (new URLSearchParams(location.search).get("lang") || "en").toLowerCase();
+  const locale = supported.has(requested) ? requested : "en";
+  const strings:Record<string,Record<string,string>> = {
+    en:{kicker:"Business identity",title:"Company",subtitle:"Keep the business details customers see in booking accurate. Team, schedules and connections now live in their own workspaces.",loading:"Loading…",saved:"Saved",notConfigured:"Not configured",profile:"Company profile",details:"Business details",detailsCopy:"These saved fields are used by the real public booking experience.",name:"Shop name",phone:"Phone",address:"Address",city:"City",region:"Region / state",country:"Country code",postal:"Postal code",timezone:"Timezone",detect:"Use browser timezone",save:"Save company profile",customerAccess:"Customer access",bookingLink:"Public booking link",bookingCopy:"Share this stable URL after services and schedule are ready.",copy:"Copy",open:"Open",savedMessage:"Company profile saved.",loadFailed:"Unable to load company profile.",saveFailed:"Unable to save company profile.",copied:"Booking link copied."},
+    ru:{kicker:"Данные бизнеса",title:"Компания",subtitle:"Поддерживайте актуальными данные, которые видят клиенты при записи. Команда, графики и подключения вынесены в отдельные рабочие экраны.",loading:"Загрузка…",saved:"Сохранено",notConfigured:"Не настроено",profile:"Профиль компании",details:"Данные компании",detailsCopy:"Эти сохранённые поля используются в реальной публичной записи.",name:"Название СТО",phone:"Телефон",address:"Адрес",city:"Город",region:"Регион / штат",country:"Код страны",postal:"Почтовый индекс",timezone:"Часовой пояс",detect:"Часовой пояс браузера",save:"Сохранить профиль",customerAccess:"Доступ клиентов",bookingLink:"Публичная ссылка для записи",bookingCopy:"Делитесь постоянной ссылкой после настройки услуг и графика.",copy:"Копировать",open:"Открыть",savedMessage:"Профиль компании сохранён.",loadFailed:"Не удалось загрузить профиль компании.",saveFailed:"Не удалось сохранить профиль компании.",copied:"Ссылка скопирована."},
+    uk:{kicker:"Дані бізнесу",title:"Компанія",subtitle:"Підтримуйте актуальними дані, які клієнти бачать під час запису. Команда, графіки та підключення мають окремі екрани.",loading:"Завантаження…",saved:"Збережено",notConfigured:"Не налаштовано",profile:"Профіль компанії",details:"Дані компанії",detailsCopy:"Ці поля використовуються у реальному публічному записі.",name:"Назва СТО",phone:"Телефон",address:"Адреса",city:"Місто",region:"Регіон / штат",country:"Код країни",postal:"Поштовий індекс",timezone:"Часовий пояс",detect:"Часовий пояс браузера",save:"Зберегти профіль",customerAccess:"Доступ клієнтів",bookingLink:"Публічне посилання для запису",bookingCopy:"Поширюйте посилання після налаштування послуг і графіка.",copy:"Копіювати",open:"Відкрити",savedMessage:"Профіль компанії збережено.",loadFailed:"Не вдалося завантажити профіль.",saveFailed:"Не вдалося зберегти профіль.",copied:"Посилання скопійовано."},
+    es:{kicker:"Identidad del negocio",title:"Empresa",subtitle:"Mantén actualizados los datos que ven los clientes al reservar. Equipo, horarios y conexiones tienen pantallas separadas.",loading:"Cargando…",saved:"Guardado",notConfigured:"Sin configurar",profile:"Perfil de empresa",details:"Datos del negocio",detailsCopy:"Estos campos se usan en la reserva pública real.",name:"Nombre del taller",phone:"Teléfono",address:"Dirección",city:"Ciudad",region:"Región / estado",country:"Código de país",postal:"Código postal",timezone:"Zona horaria",detect:"Usar zona del navegador",save:"Guardar perfil",customerAccess:"Acceso de clientes",bookingLink:"Enlace público de reserva",bookingCopy:"Comparte el enlace después de configurar servicios y horario.",copy:"Copiar",open:"Abrir",savedMessage:"Perfil guardado.",loadFailed:"No se pudo cargar el perfil.",saveFailed:"No se pudo guardar el perfil.",copied:"Enlace copiado."},
+    it:{kicker:"Identità aziendale",title:"Azienda",subtitle:"Mantieni aggiornati i dati visibili ai clienti. Team, orari e connessioni hanno schermate dedicate.",loading:"Caricamento…",saved:"Salvato",notConfigured:"Non configurato",profile:"Profilo azienda",details:"Dati aziendali",detailsCopy:"Questi campi sono usati nella prenotazione pubblica reale.",name:"Nome officina",phone:"Telefono",address:"Indirizzo",city:"Città",region:"Regione / stato",country:"Codice paese",postal:"CAP",timezone:"Fuso orario",detect:"Usa fuso del browser",save:"Salva profilo",customerAccess:"Accesso clienti",bookingLink:"Link pubblico prenotazioni",bookingCopy:"Condividi il link dopo aver configurato servizi e orari.",copy:"Copia",open:"Apri",savedMessage:"Profilo salvato.",loadFailed:"Impossibile caricare il profilo.",saveFailed:"Impossibile salvare il profilo.",copied:"Link copiato."},
+    fr:{kicker:"Identité de l’entreprise",title:"Entreprise",subtitle:"Gardez à jour les informations visibles lors de la réservation. Équipe, planning et connexions ont leurs propres écrans.",loading:"Chargement…",saved:"Enregistré",notConfigured:"Non configuré",profile:"Profil de l’entreprise",details:"Informations",detailsCopy:"Ces champs alimentent la réservation publique réelle.",name:"Nom de l’atelier",phone:"Téléphone",address:"Adresse",city:"Ville",region:"Région / état",country:"Code pays",postal:"Code postal",timezone:"Fuseau horaire",detect:"Fuseau du navigateur",save:"Enregistrer le profil",customerAccess:"Accès clients",bookingLink:"Lien public de réservation",bookingCopy:"Partagez ce lien après avoir configuré services et planning.",copy:"Copier",open:"Ouvrir",savedMessage:"Profil enregistré.",loadFailed:"Impossible de charger le profil.",saveFailed:"Impossible d’enregistrer le profil.",copied:"Lien copié."},
+  };
+  const t = strings[locale] || strings.en;
+  document.documentElement.lang = locale;
+  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node)=>{const key=node.dataset.i18n||"";if(t[key])node.textContent=t[key]});
+  const $=<T extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as T|null;
+  const alertBox=$("page-alert");
+  let bookingUrl="";
+  const setAlert=(message:string,tone="")=>{if(!alertBox)return;alertBox.textContent=message;alertBox.className=`hc4-alert ${tone}`.trim()};
+  const redirectAuth=()=>{const url=new URL("/services/hermes-connect/repair-shops/auth/",location.origin);if(locale!=="en")url.searchParams.set("lang",locale);location.assign(`${url.pathname}${url.search}`)};
+  const read=async(response:Response)=>{try{return await response.json()}catch{return {success:false}}};
+  const fill=(shop:any)=>{
+    if(!shop){$("profile-state")!.textContent=t.notConfigured;return}
+    $("profile-state")!.textContent=t.saved;
+    ($<HTMLInputElement>("shop-name")!).value=shop.name||"";($<HTMLInputElement>("shop-phone")!).value=shop.phone||"";($<HTMLInputElement>("shop-address")!).value=shop.address_line1||"";($<HTMLInputElement>("shop-city")!).value=shop.city||"";($<HTMLInputElement>("shop-region")!).value=shop.region||shop.state||"";($<HTMLInputElement>("shop-country")!).value=(shop.country_code||"US").toUpperCase();($<HTMLInputElement>("shop-postal")!).value=shop.postal_code||"";($<HTMLInputElement>("shop-timezone")!).value=shop.timezone||"America/Chicago";
+    if(shop.slug){bookingUrl=`${location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;$("public-booking-link")!.textContent=bookingUrl;($<HTMLAnchorElement>("open-booking-link")!).href=bookingUrl;$("public-booking-card")?.classList.remove("hc4-hidden")}
+  };
+  async function load(){const response=await fetch("/api/repair-shop/profile",{credentials:"same-origin"});if(response.status===401)return redirectAuth();const data=await read(response);if(!response.ok||!data.success)return setAlert(t.loadFailed,"error");fill(data.shop||null)}
+  $("detect-timezone")?.addEventListener("click",()=>{const zone=Intl.DateTimeFormat().resolvedOptions().timeZone;if(zone)($<HTMLInputElement>("shop-timezone")!).value=zone});
+  $("profile-form")?.addEventListener("submit",async(event)=>{event.preventDefault();const save=$<HTMLButtonElement>("save-profile");if(save)save.disabled=true;try{const payload={name:$<HTMLInputElement>("shop-name")?.value,phone:$<HTMLInputElement>("shop-phone")?.value,address_line1:$<HTMLInputElement>("shop-address")?.value,city:$<HTMLInputElement>("shop-city")?.value,region:$<HTMLInputElement>("shop-region")?.value,country_code:$<HTMLInputElement>("shop-country")?.value.toUpperCase(),postal_code:$<HTMLInputElement>("shop-postal")?.value,timezone:$<HTMLInputElement>("shop-timezone")?.value};const response=await fetch("/api/repair-shop/profile",{method:"PUT",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});if(response.status===401)return redirectAuth();const data=await read(response);if(!response.ok||!data.success)return setAlert(t.saveFailed,"error");fill(data.shop);setAlert(t.savedMessage,"success")}catch{setAlert(t.saveFailed,"error")}finally{if(save)save.disabled=false}});
+  $("copy-booking-link")?.addEventListener("click",async()=>{if(!bookingUrl)return;try{await navigator.clipboard.writeText(bookingUrl);setAlert(t.copied,"success")}catch{}});
+  load();
+</script>
+
+<style>
+  .hc4-booking-link{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.hc4-booking-link code{min-width:0;padding:10px 12px;border:1px solid #e3e8ef;border-radius:10px;background:#f8fafc;color:#4a596e;font-size:11px;overflow-wrap:anywhere}@media(max-width:780px){.hc4-booking-link{grid-template-columns:1fr}.hc4-booking-link .hc4-actions{grid-template-columns:1fr 1fr}}
+</style>
