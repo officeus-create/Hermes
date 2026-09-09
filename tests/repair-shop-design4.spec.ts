@@ -110,6 +110,18 @@ for (const screen of screens) {
       await expect(page.locator("[data-repair-crm-time]")).not.toHaveText("");
     }
 
+    if (screen.slug === "team") {
+      await expect(page.locator(".hc4-team-card")).toHaveCount(2);
+      const teamLayout = await page.locator(".hc4-team-card").first().evaluate((node) => ({
+        display:getComputedStyle(node).display,
+        gap:getComputedStyle(node).gap,
+        infoDisplay:getComputedStyle(node.querySelector(".hc4-team-info") as HTMLElement).display,
+      }));
+      expect(teamLayout.display).toBe("flex");
+      expect(Number.parseFloat(teamLayout.gap)).toBeGreaterThan(0);
+      expect(teamLayout.infoDisplay).toBe("grid");
+    }
+
     await capture(page, testInfo, `design4-${screen.slug}`);
   });
 }
@@ -120,6 +132,8 @@ test("Design 4 mobile Schedule edits one day at a time instead of seven stacked 
   await page.goto("/services/hermes-connect/repair-shops/schedule/?lang=ru", { waitUntil:"domcontentloaded" });
   await expect(page.locator("#shop-day-tabs")).toBeVisible();
   await expect(page.locator("#shop-hours-list .hc4-schedule-row.is-mobile-selected")).toHaveCount(1);
+  await expect(page.locator("#shop-hours-list .hc4-schedule-row:visible")).toHaveCount(1);
   await page.locator("#shop-day-tabs button").nth(3).click();
   await expect(page.locator("#shop-hours-list .hc4-schedule-row.is-mobile-selected")).toHaveCount(1);
+  await expect(page.locator("#shop-hours-list .hc4-schedule-row:visible")).toHaveCount(1);
 });
