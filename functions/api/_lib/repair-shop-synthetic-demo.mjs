@@ -230,14 +230,17 @@ async function fillSyntheticStaffSchedules(db, specialist) {
 }
 
 export async function ensureRepairShopSyntheticDemoData({ db, env, specialist }) {
-  if (!db || !specialist) return { eligible: false, seeded: false };
-  const kind = demoAccountKind(specialist);
+  if (!db || !specialist || specialist.role !== "Shop Owner") return { eligible: false, seeded: false };
+  const explicitShop = await isExplicitSyntheticTestShop(db, specialist);
+  const kind = demoAccountKind(specialist) || (explicitShop ? "office" : null);
   if (!kind) return { eligible: false, seeded: false };
   if (!(await isSyntheticAccount(db, env, specialist))) return { eligible: false, seeded: false };
 
   const seedSpecialist = kind === "volkogon"
     ? { ...specialist, name: `Office ${String(specialist.name || "Volkogon").trim()}` }
-    : specialist;
+    : explicitShop
+      ? { ...specialist, name: "Officea Baka" }
+      : specialist;
   const seedEnv = {
     ...env,
     HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
