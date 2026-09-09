@@ -20,6 +20,10 @@ assert.match(helper, /public_profile_enabled INTEGER NOT NULL DEFAULT 0/);
 assert.match(helper, /INSERT OR IGNORE INTO repair_shop_prospects/);
 assert.doesNotMatch(helper, /INSERT(?:\s+OR\s+\w+)?\s+INTO\s+repair_shops\b/i, "Prospect seed must never create a live repair_shop");
 assert.doesNotMatch(helper, /owner_specialist_id\s*:/i, "Prospect fixtures must not impersonate a real owner");
+assert.match(helper, /PUBLIC-WEB-SEANS-AUTOPRO-20260909/);
+assert.match(helper, /ensurePublicDirectoryProspects/);
+assert.match(helper, /public_profile_enabled=1/);
+
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /ensureVadymPrefilledProspects/);

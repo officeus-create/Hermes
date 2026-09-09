@@ -21,8 +21,8 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
           <p class="kicker"><ShieldCheck size={15} /> {isRu ? "Только владелец · не публично" : "Owner only · private"}</p>
           <h1>{isRu ? "Предзаполненные профили СТО" : "Prefilled repair-shop profiles"}</h1>
           <p>{isRu
-            ? "Пять небольших СТО из листа VADYM. Данные собраны из рабочей таблицы и проверяемых публичных источников. Пока владелец бизнеса не подтвердил профиль, здесь нет публичной страницы, booking и регистрации пользователя."
-            : "Five small shops from the VADYM calling sheet. Data comes from the working CRM and verifiable public sources. Until a real business owner claims a profile, it has no public page, booking, or user registration."}</p>
+            ? "Профили СТО из Sales/VADYM и отдельные публичные directory-пилоты. Данные собраны из рабочей таблицы и проверяемых публичных источников. Пока владелец бизнеса не подтвердил профиль, здесь нет публичной страницы, booking и регистрации пользователя."
+            : "Repair-shop profiles from Sales/VADYM plus bounded public-directory pilots. Data comes from the working CRM and verifiable public sources. Until a real business owner claims a profile, it has no public page, booking, or user registration."}</p>
         </div>
         <span class="private-badge"><UserRoundCheck size={16} /> {isRu ? "Prefill → Claim" : "Prefill → Claim"}</span>
       </header>

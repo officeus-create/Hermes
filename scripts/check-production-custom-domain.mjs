@@ -31,6 +31,7 @@ const childSitemapPaths = [
   "/sitemap-cases.xml",
   "/sitemap-trust.xml",
   "/sitemap-london.xml",
+  "/sitemap-business-directory.xml",
 ];
 const sitemapIndexPath = "/sitemapindex.xml";
 const sitemapPaths = [sitemapIndexPath, ...childSitemapPaths];
