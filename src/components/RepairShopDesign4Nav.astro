@@ -1,0 +1,193 @@
+---
+import "../styles/hermes-repair-design4.css";
+
+const repairShopRoot = "/services/hermes-connect/repair-shops";
+const normalizedPath = Astro.url.pathname.replace(/\/+$/, "");
+const ownerPaths = new Set([
+  `${repairShopRoot}/dashboard`,
+  `${repairShopRoot}/appointments`,
+  `${repairShopRoot}/customers`,
+  `${repairShopRoot}/vehicles`,
+  `${repairShopRoot}/services`,
+  `${repairShopRoot}/team`,
+  `${repairShopRoot}/schedule`,
+  `${repairShopRoot}/company`,
+  `${repairShopRoot}/driver-benefits`,
+  `${repairShopRoot}/preferences`,
+  `${repairShopRoot}/availability`,
+  `${repairShopRoot}/settings`,
+]);
+const isOwnerWorkspace = ownerPaths.has(normalizedPath);
+
+const strings = {
+  en: { workspace:"Repair Shop", context:"Owner workspace", dashboard:"Dashboard", bookings:"Bookings", customers:"Customers", vehicles:"Vehicles", services:"Services", team:"Team", schedule:"Schedule", company:"Company", benefits:"Driver Benefits", settings:"Settings", more:"More", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation", language:"Language" },
+  ru: { workspace:"СТО", context:"Кабинет владельца", dashboard:"Обзор", bookings:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", team:"Команда", schedule:"График", company:"Компания", benefits:"Льготы водителям", settings:"Настройки", more:"Ещё", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню", language:"Язык" },
+  uk: { workspace:"СТО", context:"Кабінет власника", dashboard:"Огляд", bookings:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", team:"Команда", schedule:"Графік", company:"Компанія", benefits:"Пільги водіям", settings:"Налаштування", more:"Ще", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню", language:"Мова" },
+  es: { workspace:"Taller", context:"Espacio del propietario", dashboard:"Panel", bookings:"Reservas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", team:"Equipo", schedule:"Horario", company:"Empresa", benefits:"Beneficios", settings:"Ajustes", more:"Más", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación", language:"Idioma" },
+  it: { workspace:"Officina", context:"Spazio proprietario", dashboard:"Dashboard", bookings:"Prenotazioni", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", team:"Team", schedule:"Orari", company:"Azienda", benefits:"Vantaggi autisti", settings:"Impostazioni", more:"Altro", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione", language:"Lingua" },
+  fr: { workspace:"Atelier", context:"Espace propriétaire", dashboard:"Tableau de bord", bookings:"Réservations", customers:"Clients", vehicles:"Véhicules", services:"Services", team:"Équipe", schedule:"Planning", company:"Entreprise", benefits:"Avantages conducteurs", settings:"Réglages", more:"Plus", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation", language:"Langue" },
+} as const;
+type Locale = keyof typeof strings;
+const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase();
+const locale: Locale = requested in strings ? requested as Locale : "en";
+const copy = strings[locale];
+const locales = Object.keys(strings) as Locale[];
+
+const icons: Record<string, string> = {
+  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+  bookings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/></svg>',
+  customers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11a4 4 0 0 1 5 3.9M18 21a6 6 0 0 0-2-4.5"/></svg>',
+  vehicles:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m5 11 1.5-4.5h11L19 11"/><path d="M5 11h14a2 2 0 0 1 2 2v5H3v-5a2 2 0 0 1 2-2Z"/><path d="M7 18v2M17 18v2"/></svg>',
+  services:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14.7 6.3a1 1 0 0 0-1.4-1.4l-9.8 9.8a2 2 0 1 0 2.8 2.8l9.8-9.8a1 1 0 0 0-1.4-1.4Z"/><path d="M16 3a5 5 0 0 1 5 5l-3 1-2-2 1-4Z"/></svg>',
+  team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2 21a6 6 0 0 1 12 0M14 17a5 5 0 0 1 8 4"/></svg>',
+  schedule:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  company:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 21V6l8-3v18M12 9h8v12M7 9h2M7 13h2M7 17h2M15 13h2M15 17h2"/></svg>',
+  benefits:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12 12 20 4 12l8-8 8 8Z"/><path d="M8 12h8M12 8v8"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.1 2.1-.06-.06a1.7 1.7 0 0 0-1.88-.34A1.7 1.7 0 0 0 14.73 20v.1h-3V20A1.7 1.7 0 0 0 10.7 18.6a1.7 1.7 0 0 0-1.88.34l-.06.06-2.1-2.1.06-.06A1.7 1.7 0 0 0 7.06 15a1.7 1.7 0 0 0-1.56-1.03H5.4v-3h.1A1.7 1.7 0 0 0 7.06 9.94a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.1-2.1.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.73 4.74v-.1h3v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.1 2.1-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03h.1v3h-.1A1.7 1.7 0 0 0 19.4 15Z"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+};
+
+const withLocale = (path: string) => {
+  const url = new URL(path, Astro.url.origin);
+  if (locale !== "en") url.searchParams.set("lang", locale);
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+const route = (slug: string) => withLocale(`${repairShopRoot}/${slug}/`);
+const legacyCompany = normalizedPath === `${repairShopRoot}/settings`;
+
+const items = [
+  { key:"dashboard", label:copy.dashboard, href:route("dashboard"), active:normalizedPath === `${repairShopRoot}/dashboard`, icon:"dashboard", group:"work" },
+  { key:"bookings", label:copy.bookings, href:route("appointments"), active:normalizedPath === `${repairShopRoot}/appointments`, icon:"bookings", group:"work" },
+  { key:"customers", label:copy.customers, href:route("customers"), active:normalizedPath === `${repairShopRoot}/customers`, icon:"customers", group:"work" },
+  { key:"vehicles", label:copy.vehicles, href:route("vehicles"), active:normalizedPath === `${repairShopRoot}/vehicles`, icon:"vehicles", group:"work" },
+  { key:"services", label:copy.services, href:route("services"), active:normalizedPath === `${repairShopRoot}/services`, icon:"services", group:"work" },
+  { key:"team", label:copy.team, href:route("team"), active:normalizedPath === `${repairShopRoot}/team`, icon:"team", group:"business" },
+  { key:"schedule", label:copy.schedule, href:route("schedule"), active:normalizedPath === `${repairShopRoot}/schedule` || normalizedPath === `${repairShopRoot}/availability`, icon:"schedule", group:"business" },
+  { key:"company", label:copy.company, href:route("company"), active:normalizedPath === `${repairShopRoot}/company` || legacyCompany, icon:"company", group:"business" },
+  { key:"benefits", label:copy.benefits, href:route("driver-benefits"), active:normalizedPath === `${repairShopRoot}/driver-benefits`, icon:"benefits", group:"business" },
+  { key:"settings", label:copy.settings, href:route("preferences"), active:normalizedPath === `${repairShopRoot}/preferences`, icon:"settings", group:"business" },
+];
+const activeItem = items.find((item) => item.active) || items[0];
+const dashboardHref = route("dashboard");
+const productHubHref = withLocale("/services/hermes-connect/");
+const logoutRedirect = route("auth");
+const workItems = items.filter((item) => item.group === "work");
+const businessItems = items.filter((item) => item.group === "business");
+---
+
+{isOwnerWorkspace && (
+  <div class="repair-crm-shell repair-crm-shell-v4" data-repair-crm-shell data-open="false">
+    <button class="repair-crm-overlay" type="button" aria-label={copy.close} data-repair-crm-overlay></button>
+    <aside class="repair-crm-sidebar" aria-label={`${copy.workspace} CRM`}>
+      <a class="repair-crm-brand" href={dashboardHref}>
+        <span class="repair-crm-mark" aria-hidden="true"></span>
+        <span><strong>Hermes Connect</strong><small>{copy.workspace}</small></span>
+      </a>
+      <div class="repair-crm-nav-scroll">
+        <p class="repair-crm-nav-label">Workspace</p>
+        <nav class="repair-crm-nav" aria-label={`${copy.workspace} navigation`}>
+          {workItems.map((item) => (
+            <a href={item.href} class:list={["repair-crm-nav-item", item.active && "is-active"]} aria-current={item.active ? "page" : undefined} data-repair-crm-link>
+              <span class="repair-crm-icon" aria-hidden="true" set:html={icons[item.icon]}></span><span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+        <p class="repair-crm-nav-label repair-crm-nav-label-secondary">Business</p>
+        <nav class="repair-crm-nav" aria-label={`${copy.workspace} business navigation`}>
+          {businessItems.map((item) => (
+            <a href={item.href} class:list={["repair-crm-nav-item", item.active && "is-active"]} aria-current={item.active ? "page" : undefined} data-repair-crm-link>
+              <span class="repair-crm-icon" aria-hidden="true" set:html={icons[item.icon]}></span><span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+      <div class="repair-crm-sidebar-footer">
+        <a href={productHubHref} class="repair-crm-product-hub" data-repair-crm-link>
+          <span class="repair-crm-icon" aria-hidden="true" set:html={icons.dashboard}></span><span>{copy.products}</span>
+        </a>
+        <button class="repair-crm-mobile-logout" type="button" data-repair-crm-logout>{copy.logout}</button>
+      </div>
+    </aside>
+
+    <header class="repair-crm-topbar">
+      <div class="repair-crm-topbar-left">
+        <button class="repair-crm-menu" type="button" aria-label={copy.menu} aria-expanded="false" data-repair-crm-menu>
+          <span></span><span></span><span></span>
+        </button>
+        <div class="repair-crm-context"><small>{copy.context}</small><strong>{activeItem.label}</strong></div>
+      </div>
+      <div class="repair-crm-live-context"><span data-repair-crm-date></span><b aria-hidden="true">·</b><span data-repair-crm-time></span></div>
+      <div class="repair-crm-topbar-actions">
+        <details class="repair-crm-language">
+          <summary aria-label={`${copy.language}: ${locale.toUpperCase()}`}>{locale.toUpperCase()}</summary>
+          <nav aria-label={copy.language}>
+            {locales.map((language) => (
+              <a href={language === "en" ? Astro.url.pathname : `${Astro.url.pathname}?lang=${language}`} lang={language} aria-current={language === locale ? "page" : undefined}>{language.toUpperCase()}</a>
+            ))}
+          </nav>
+        </details>
+        <div class="repair-crm-account-slot" data-repair-crm-account-slot></div>
+        <button class="repair-crm-logout" type="button" data-repair-crm-logout>{copy.logout}</button>
+      </div>
+    </header>
+
+    <nav class="repair-crm-mobile-quick" aria-label="Mobile workspace navigation">
+      {items.filter((item) => ["dashboard","bookings","customers","schedule"].includes(item.key)).map((item) => (
+        <a href={item.href} class:list={[item.active && "is-active"]} aria-current={item.active ? "page" : undefined} data-repair-crm-link>
+          <span aria-hidden="true" set:html={icons[item.icon]}></span><small>{item.label}</small>
+        </a>
+      ))}
+      <button type="button" data-repair-crm-more aria-label={copy.more}><span aria-hidden="true" set:html={icons.more}></span><small>{copy.more}</small></button>
+    </nav>
+  </div>
+)}
+
+{isOwnerWorkspace && (
+<script is:inline define:vars={{ logoutRedirect, locale }}>
+  (() => {
+    const shell = document.querySelector("[data-repair-crm-shell]");
+    if (!(shell instanceof HTMLElement)) return;
+    document.documentElement.classList.add("hc-repair-crm", "hc-repair-design4");
+    const menu = shell.querySelector("[data-repair-crm-menu]");
+    const more = shell.querySelector("[data-repair-crm-more]");
+    const overlay = shell.querySelector("[data-repair-crm-overlay]");
+    const setOpen = (open) => {
+      shell.dataset.open = open ? "true" : "false";
+      if (menu instanceof HTMLElement) menu.setAttribute("aria-expanded", String(open));
+      document.documentElement.classList.toggle("hc-repair-menu-open", open);
+    };
+    menu?.addEventListener("click", () => setOpen(shell.dataset.open !== "true"));
+    more?.addEventListener("click", () => setOpen(true));
+    overlay?.addEventListener("click", () => setOpen(false));
+    shell.querySelectorAll("[data-repair-crm-link]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
+
+    const slot = shell.querySelector("[data-repair-crm-account-slot]");
+    const placeAccount = () => {
+      if (!(slot instanceof HTMLElement) || slot.children.length) return;
+      const source = document.querySelector(".company-account-source details[data-hc-account-switcher], .site-header details[data-hc-account-switcher]");
+      if (source instanceof HTMLElement) slot.append(source);
+    };
+    placeAccount();
+    window.setTimeout(placeAccount, 120);
+
+    const dateNode = shell.querySelector("[data-repair-crm-date]");
+    const timeNode = shell.querySelector("[data-repair-crm-time]");
+    const updateClock = () => {
+      const now = new Date();
+      const localeTag = locale === "en" ? "en-US" : locale;
+      if (dateNode) dateNode.textContent = new Intl.DateTimeFormat(localeTag, { weekday:"short", month:"short", day:"numeric" }).format(now);
+      if (timeNode) timeNode.textContent = new Intl.DateTimeFormat(localeTag, { hour:"2-digit", minute:"2-digit" }).format(now);
+    };
+    updateClock();
+    window.setInterval(updateClock, 60000);
+
+    const logout = async () => {
+      shell.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { if (button instanceof HTMLButtonElement) button.disabled = true; });
+      try { await fetch("/api/auth/logout", { method:"POST", credentials:"same-origin" }); } catch {}
+      window.location.assign(logoutRedirect);
+    };
+    shell.querySelectorAll("[data-repair-crm-logout]").forEach((button) => button.addEventListener("click", logout));
+  })();
+</script>
+)}
