@@ -44,8 +44,31 @@ test("Repair Shop private workspace reads as a full CRM app with separate workin
   await expect(crm.locator("[data-repair-crm-date]")).not.toHaveText("");
   await expect(crm.locator("[data-repair-crm-time]")).not.toHaveText("");
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-  expect(overflow).toBe(false);
+  const overflowState = await page.evaluate(() => {
+    const clientWidth = document.documentElement.clientWidth;
+    const scrollWidth = document.documentElement.scrollWidth;
+    const offenders = Array.from(document.querySelectorAll<HTMLElement>("body *"))
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          tag: node.tagName,
+          id: node.id,
+          className: typeof node.className === "string" ? node.className.slice(0, 180) : "",
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          scrollWidth: node.scrollWidth,
+          clientWidth: node.clientWidth,
+          position: getComputedStyle(node).position,
+        };
+      })
+      .filter((item) => item.right > clientWidth + 1)
+      .sort((a, b) => b.right - a.right)
+      .slice(0, 30);
+    return { clientWidth, scrollWidth, offenders };
+  });
+  console.log("CRM_OVERFLOW_DIAGNOSTIC", JSON.stringify(overflowState));
+  expect(overflowState.scrollWidth).toBeLessThanOrEqual(overflowState.clientWidth);
 });
 
 test("Repair Shop CRM uses persistent bottom app navigation and a More drawer on a 390px phone", async ({ page }) => {
