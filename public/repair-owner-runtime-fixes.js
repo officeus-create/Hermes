@@ -38,7 +38,7 @@
 
   const setText = (selector, value) => {
     const node = document.querySelector(selector);
-    if (node) node.textContent = value;
+    if (node && node.textContent !== value) node.textContent = value;
   };
   const labelForHref = (href) => {
     const url = new URL(href, window.location.origin);
@@ -54,11 +54,11 @@
       const label = labelForHref(link.href);
       if (!label) return;
       const target = link.querySelector("span:last-child") || link;
-      target.textContent = label;
+      if (target.textContent !== label) target.textContent = label;
     });
     setText(".repair-crm-context small", copy.context);
     setText(".repair-crm-product-hub span:last-child", copy.products);
-    document.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { button.textContent = copy.logout; });
+    document.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { if (button.textContent !== copy.logout) button.textContent = copy.logout; });
     setText(".repair-crm-language summary", locale.toUpperCase());
 
     document.querySelectorAll(".repair-crm-language a[lang]").forEach((link) => {
@@ -83,12 +83,14 @@
     const title = document.querySelector(".repair-crm-context strong");
     if (!title) return;
     if (path !== `${ROOT}/dashboard`) {
-      title.textContent = routeLabels[path] || copy.overview;
+      const value = routeLabels[path] || copy.overview;
+      if (title.textContent !== value) title.textContent = value;
       return;
     }
-    title.textContent = new Intl.DateTimeFormat(dateLocale, {
+    const value = new Intl.DateTimeFormat(dateLocale, {
       weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
     }).format(new Date());
+    if (title.textContent !== value) title.textContent = value;
   };
 
   const installPolish = () => {
@@ -117,7 +119,7 @@
     installPolish();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
+  window.setTimeout(init, 250);
+  window.setTimeout(init, 1000);
   window.setInterval(updateContextTitle, 60000);
-  const observer = new MutationObserver(() => { localizeOwnerShell(); installPolish(); });
-  observer.observe(document.documentElement, { childList:true, subtree:true });
 })();
