@@ -10,10 +10,11 @@ import {
   type CarrierEquipmentSlug,
 } from "../../../../data/carrier-market-economics";
 
-const equipmentSlugs = Object.keys(carrierEquipmentEconomics) as CarrierEquipmentSlug[];
-
 export function getStaticPaths() {
-  return equipmentSlugs.map((equipment) => ({ params: { equipment }, props: { equipment } }));
+  return (Object.keys(carrierEquipmentEconomics) as CarrierEquipmentSlug[]).map((equipment) => ({
+    params: { equipment },
+    props: { equipment },
+  }));
 }
 
 interface Props { equipment: CarrierEquipmentSlug; }
