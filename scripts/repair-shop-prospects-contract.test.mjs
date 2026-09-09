@@ -24,9 +24,10 @@ assert.match(helper, /PUBLIC-WEB-SEANS-AUTOPRO-20260909/);
 assert.match(helper, /ensurePublicDirectoryProspects/);
 assert.match(helper, /public_profile_enabled=1/);
 
-
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /ensureVadymPrefilledProspects/);
+assert.match(api, /source_system = 'PUBLIC_WEB' AND public_profile_enabled = 1/);
+assert.doesNotMatch(api, /source_ref\s*=\s*'PUBLIC-WEB-SEANS-AUTOPRO-20260909'/, "Public CRM view must not be hard-coded to one directory profile");
 assert.match(api, /counted_as_registration:\s*false/);
 assert.match(api, /public_booking_enabled:\s*false/);
 assert.match(api, /claim_ready:\s*false/);
