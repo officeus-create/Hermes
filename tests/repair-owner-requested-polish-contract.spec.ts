@@ -29,3 +29,20 @@ test("owner controls keep capacity and driver-discount layouts compact", async (
   expect(runtime).toContain(".hc-driver-discount-v2>.panel-heading");
   expect(runtime).toContain("grid-template-columns:46px minmax(0,1fr)!important");
 });
+
+test("only the existing v3 CEO QA owner can hydrate the synthetic month workspace", async () => {
+  const runtime = await source("public/repair-owner-runtime-fixes.js");
+  const endpoint = await source("functions/api/repair-shop/ceo-qa-seed.ts");
+  const demo = await source("functions/api/_lib/repair-shop-office-demo.mjs");
+
+  expect(runtime).toContain('/api/repair-shop/ceo-qa-seed');
+  expect(runtime).toContain('officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com');
+  expect(endpoint).toContain('getAuthenticatedSpecialist');
+  expect(endpoint).toContain('specialist.role !== "Shop Owner"');
+  expect(endpoint).toContain('ensureRepairShopSyntheticDemoData');
+  expect(endpoint).toContain('synthetic: true');
+  expect(demo).toContain('const START_DATE = "2026-09-05"');
+  expect(demo).toContain('const END_DATE = "2026-12-31"');
+  expect(demo).toContain('INSERT INTO repair_shop_staff');
+  expect(demo).toContain('INSERT OR IGNORE INTO repair_shop_bookings');
+});
