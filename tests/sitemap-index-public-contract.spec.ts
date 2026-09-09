@@ -9,6 +9,7 @@ const childSitemaps = [
   "https://hermeslogisticsus.com/sitemap-cases.xml",
   "https://hermeslogisticsus.com/sitemap-trust.xml",
   "https://hermeslogisticsus.com/sitemap-london.xml",
+  "https://hermeslogisticsus.com/sitemap-business-directory.xml",
 ];
 
 test("sitemap index exposes each declared public child sitemap exactly once", async ({ page }) => {

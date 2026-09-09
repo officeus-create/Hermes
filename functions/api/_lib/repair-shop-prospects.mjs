@@ -126,6 +126,34 @@ export const VADYM_PREFILLED_PROSPECTS = Object.freeze([
   },
 ]);
 
+export const PUBLIC_DIRECTORY_PROSPECTS = Object.freeze([
+  {
+    id: "prospect-public-seans-autopro-mobile",
+    source_system: "PUBLIC_WEB",
+    source_ref: "PUBLIC-WEB-SEANS-AUTOPRO-20260909",
+    business_name: "Sean's AutoPro Mobile",
+    shop_type: "Mobile Auto Repair",
+    state: "AR",
+    city: "Sherwood",
+    address_line1: "",
+    phone: "904-864-6183",
+    email: "",
+    website: "",
+    social_url: "",
+    contact_name: "Sean",
+    contact_role: "Owner / operator (third-party listing attribution; owner verification pending)",
+    services_summary: "Mobile auto repair; engine rebuild/replacement; transmission replacement; electrical work; brakes; suspension; custom installations. Source-derived, owner verification pending.",
+    website_observation: "BBB, Manta, HireRush and WhoDoYou independently support the business identity or service-area history. No current owned website was confirmed in the bounded verification.",
+    social_observation: "A historical Facebook reference appears in third-party listings; an official current social profile was not independently confirmed for publication.",
+    crm_stage: "Research",
+    crm_call_result: "Not Called",
+    crm_decision_maker_reached: "Unknown",
+    crm_interest_level: "Unknown",
+    crm_budget_range: "Not Discussed",
+    provenance_json: JSON.stringify({ source: "bounded public-web verification", selected_for: "Hermes Business Directory SEO/GEO pilot", verified_at: "2026-09-09", google_business_profile: "not_confirmed_not_proven_absent" }),
+  },
+]);
+
 export async function ensureRepairShopProspectSchema(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS repair_shop_prospects (
@@ -204,6 +232,30 @@ export async function ensureVadymPrefilledProspects(db) {
       prospect.provenance_json,
       now,
       now,
+    ).run();
+  }
+}
+export async function ensurePublicDirectoryProspects(db) {
+  await ensureRepairShopProspectSchema(db);
+  const now = new Date().toISOString();
+  const sql = `
+    INSERT INTO repair_shop_prospects (
+      id, source_system, source_ref, business_name, shop_type, state, city, address_line1, phone, email, website, social_url,
+      contact_name, contact_role, services_summary, website_observation, social_observation, crm_stage, crm_call_result,
+      crm_decision_maker_reached, crm_interest_level, crm_budget_range, profile_state, claim_state, public_profile_enabled,
+      claimed_shop_id, claimed_owner_specialist_id, claimed_at, provenance_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'prefilled', 'unclaimed', 1, NULL, NULL, NULL, ?, ?, ?)
+    ON CONFLICT(source_ref) DO UPDATE SET
+      business_name=excluded.business_name,shop_type=excluded.shop_type,state=excluded.state,city=excluded.city,phone=excluded.phone,
+      services_summary=excluded.services_summary,website_observation=excluded.website_observation,social_observation=excluded.social_observation,
+      provenance_json=excluded.provenance_json,public_profile_enabled=1,updated_at=excluded.updated_at
+  `;
+  for (const prospect of PUBLIC_DIRECTORY_PROSPECTS) {
+    await db.prepare(sql).bind(
+      prospect.id,prospect.source_system,prospect.source_ref,prospect.business_name,prospect.shop_type,prospect.state,prospect.city,
+      prospect.address_line1,prospect.phone,prospect.email,prospect.website,prospect.social_url,prospect.contact_name,prospect.contact_role,
+      prospect.services_summary,prospect.website_observation,prospect.social_observation,prospect.crm_stage,prospect.crm_call_result,
+      prospect.crm_decision_maker_reached,prospect.crm_interest_level,prospect.crm_budget_range,prospect.provenance_json,now,now,
     ).run();
   }
 }

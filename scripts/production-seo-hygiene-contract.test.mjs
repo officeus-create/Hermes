@@ -39,8 +39,9 @@ const childSitemapFiles = [
   "sitemap-cases.xml",
   "sitemap-trust.xml",
   "sitemap-london.xml",
+  "sitemap-business-directory.xml",
 ];
-const expectedCurrentPageUrlCount = 194;
+const expectedCurrentPageUrlCount = 197;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
@@ -107,6 +108,7 @@ const verifier = await readFile(new URL("./check-production-custom-domain.mjs", 
 for (const required of [
   '"/sitemapindex.xml"',
   '"/sitemap-london.xml"',
+  '"/sitemap-business-directory.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
   '"/logistics/auction-vehicle-pickup/"',

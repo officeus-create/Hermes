@@ -161,7 +161,7 @@ for (const removal of deltaRemovals) {
 }
 const currentRows = [...manifestByRoute.values()];
 assert(currentRows.length === htmlFiles.length, `Manifest plus deltas after removals has ${currentRows.length} current-main routes; build has ${htmlFiles.length} routable HTML pages plus ${verificationArtifacts.length} ownership artifact(s).`);
-assert(sitemapFiles.length === 8, `Expected 8 sitemap files including the London market sitemap, found ${sitemapFiles.length}.`);
+assert(sitemapFiles.length === 9, `Expected 9 sitemap files including the London market and business directory sitemaps, found ${sitemapFiles.length}.`);
 
 let indexableCount = 0;
 for (const htmlFile of htmlFiles) {

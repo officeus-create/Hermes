@@ -1,6 +1,6 @@
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
-import { ensureVadymPrefilledProspects } from "../_lib/repair-shop-prospects.mjs";
+import { ensurePublicDirectoryProspects, ensureVadymPrefilledProspects } from "../_lib/repair-shop-prospects.mjs";
 
 type Env = { DB?: any };
 
@@ -12,6 +12,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_unavailable" });
 
   await ensureVadymPrefilledProspects(env.DB);
+  await ensurePublicDirectoryProspects(env.DB);
   const result = await env.DB.prepare(`
     SELECT
       id, source_system, source_ref, business_name, shop_type, state, city, address_line1,
@@ -21,8 +22,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       profile_state, claim_state, public_profile_enabled, claimed_shop_id,
       claimed_owner_specialist_id, claimed_at, provenance_json, created_at, updated_at
     FROM repair_shop_prospects
-    WHERE source_system = 'VADYM'
-      AND source_ref IN ('VY-0001','VY-0002','VY-0003','VY-0007','VY-0024')
+    WHERE (source_system = 'VADYM' AND source_ref IN ('VY-0001','VY-0002','VY-0003','VY-0007','VY-0024'))
+       OR source_ref = 'PUBLIC-WEB-SEANS-AUTOPRO-20260909'
     ORDER BY source_ref ASC
   `).all();
 

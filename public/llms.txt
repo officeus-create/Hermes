@@ -104,3 +104,6 @@ Localized pages are language-specific public overviews; they are not proof that 
 - Do not infer rankings, traffic, customers, revenue, capacity, availability, pricing, response time, uptime, fleet size, student count, reviews, or conversion statistics without a current approved source.
 - Do not expose or reconstruct private customer, carrier, shipment, lead, employee, candidate, MC/USDOT, VIN, rate, invoice, payment, document, credential, account, or live-position data.
 - Prototype = prototype. Demo = demo. Not configured = not configured.
+
+## Hermes Business Directory pilot
+- [Sean's AutoPro Mobile — unclaimed directory profile](https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/): Evidence-backed directory profile for Sherwood / Little Rock, Arkansas. Booking remains off until verified owner activation.
