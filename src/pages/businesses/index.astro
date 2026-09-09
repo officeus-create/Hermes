@@ -3,7 +3,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../data/repair-shop-directory";
-const schema={"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes Business Directory",url:"https://hermeslogisticsus.com/businesses/",mainEntity:{"@type":"ItemList",itemListElement:repairShopDirectory.map((b: RepairShopDirectoryEntry,i: number)=>({"@type":"ListItem",position:i+1,url:`https://hermeslogisticsus.com/businesses/${b.stateSlug}/${b.citySlug}/${b.slug}/`,name:b.businessName}))}};
+const directoryUrl="https://hermeslogisticsus.com/businesses/";
+const schema=[
+  {"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes Business Directory",url:directoryUrl,mainEntity:{"@type":"ItemList",itemListElement:repairShopDirectory.map((b: RepairShopDirectoryEntry,i: number)=>({"@type":"ListItem",position:i+1,url:`https://hermeslogisticsus.com/businesses/${b.stateSlug}/${b.citySlug}/${b.slug}/`,name:b.businessName}))}},
+  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Business Directory",item:directoryUrl}]}
+];
 ---
 <BaseLayout title="U.S. Business Directory | Hermes" description="Evidence-backed public business profiles with claim status, source notes, and optional Hermes Connect activation." schema={schema}>
 <SiteHeader activePath="/paths/technology/" />
