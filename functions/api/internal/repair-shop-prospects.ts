@@ -23,8 +23,12 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       claimed_owner_specialist_id, claimed_at, provenance_json, created_at, updated_at
     FROM repair_shop_prospects
     WHERE (source_system = 'VADYM' AND source_ref IN ('VY-0001','VY-0002','VY-0003','VY-0007','VY-0024'))
-       OR source_ref = 'PUBLIC-WEB-SEANS-AUTOPRO-20260909'
-    ORDER BY source_ref ASC
+       OR (source_system = 'PUBLIC_WEB' AND public_profile_enabled = 1)
+    ORDER BY
+      CASE WHEN source_system = 'PUBLIC_WEB' THEN 0 ELSE 1 END,
+      state ASC,
+      city ASC,
+      business_name ASC
   `).all();
 
   const prospects = (Array.isArray(result?.results) ? result.results : []).map((row: Record<string, unknown>) => {
