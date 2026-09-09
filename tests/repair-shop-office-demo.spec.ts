@@ -38,13 +38,17 @@ test("verified synthetic Officea owner aliases hydrate through the existing Offi
   expect(syntheticDemo).toContain("ensureOfficeRepairDemoData");
 });
 
-test("the explicitly confirmed Officea Baka Shop Owner can self-classify into the synthetic test lane", async () => {
-  expect(syntheticDemo).toContain('new Set(["officea baka"])');
+test("the explicitly confirmed Officea Baka test identity can self-classify by owner or exact shop name", async () => {
+  expect(syntheticDemo).toContain('EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"])');
+  expect(syntheticDemo).toContain('EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"])');
   expect(syntheticDemo).toContain("isExplicitSyntheticTestOwner");
+  expect(syntheticDemo).toContain("isExplicitSyntheticTestShop");
+  expect(syntheticDemo).toContain('SELECT name FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1');
   expect(syntheticDemo).toContain('specialist?.role === "Shop Owner"');
+  expect(syntheticDemo).toContain("const explicitShop = await isExplicitSyntheticTestShop(db, specialist)");
+  expect(syntheticDemo).toContain("if (!explicitOwner && !explicitShop) return false");
   expect(syntheticDemo).toContain("explicitTestEnv");
   expect(syntheticDemo).toContain("syncSyntheticFlagForAccount");
-  expect(syntheticDemo).not.toContain('new Set(["officea"])');
 });
 
 test("demo coverage spans motorcycles through heavy and oversized equipment", async () => {
