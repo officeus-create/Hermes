@@ -4,6 +4,7 @@ import fs from "node:fs";
 const helper = fs.readFileSync("functions/api/_lib/repair-shop-prospects.mjs", "utf8");
 const api = fs.readFileSync("functions/api/internal/repair-shop-prospects.ts", "utf8");
 const page = fs.readFileSync("src/pages/services/hermes-connect/internal/prospects/index.astro", "utf8");
+const directory = fs.readFileSync("src/data/repair-shop-directory.ts", "utf8");
 
 for (const ref of ["VY-0001", "VY-0002", "VY-0003", "VY-0007", "VY-0024"]) {
   assert.match(helper, new RegExp(ref), `Expected selected VADYM prospect ${ref}`);
@@ -23,6 +24,13 @@ assert.doesNotMatch(helper, /owner_specialist_id\s*:/i, "Prospect fixtures must 
 assert.match(helper, /PUBLIC-WEB-SEANS-AUTOPRO-20260909/);
 assert.match(helper, /ensurePublicDirectoryProspects/);
 assert.match(helper, /public_profile_enabled=1/);
+
+const directorySourceRefs = [...directory.matchAll(/sourceRef:\s*"([^"]+)"/g)].map((match) => match[1]);
+assert.ok(directorySourceRefs.length > 0, "Business directory must contain at least one evidence-backed sourceRef");
+assert.equal(new Set(directorySourceRefs).size, directorySourceRefs.length, "Business directory sourceRef values must remain unique");
+for (const sourceRef of directorySourceRefs) {
+  assert.match(helper, new RegExp(`source_ref:\\s*"${sourceRef.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`), `Public directory profile ${sourceRef} must also exist in repair_shop_prospects CRM seed data`);
+}
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /ensureVadymPrefilledProspects/);
