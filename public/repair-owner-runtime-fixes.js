@@ -3,7 +3,8 @@
   const path = window.location.pathname.replace(/\/+$/, "");
   const ownerRoutes = new Set([
     `${ROOT}/dashboard`, `${ROOT}/appointments`, `${ROOT}/availability`, `${ROOT}/customers`,
-    `${ROOT}/vehicles`, `${ROOT}/services`, `${ROOT}/settings`,
+    `${ROOT}/vehicles`, `${ROOT}/services`, `${ROOT}/settings`, `${ROOT}/team`, `${ROOT}/schedule`,
+    `${ROOT}/company`, `${ROOT}/driver-benefits`, `${ROOT}/preferences`,
   ]);
   if (!ownerRoutes.has(path)) return;
 
@@ -18,21 +19,26 @@
   try { window.localStorage.setItem("hermes-connect-language", locale); } catch {}
 
   const copy = {
-    en: { context: "Owner workspace", overview: "Overview", appointments: "Appointments", customers: "Customers", vehicles: "Vehicles", services: "Services", availability: "Availability", feedback: "Feedback", discount: "Driver discount", settings: "Company", products: "Product Hub", logout: "Logout" },
-    ru: { context: "Кабинет владельца", overview: "Обзор", appointments: "Записи", customers: "Клиенты", vehicles: "Автомобили", services: "Услуги", availability: "График", feedback: "Отзывы", discount: "Скидка водителям", settings: "Компания", products: "Все продукты", logout: "Выйти" },
-    uk: { context: "Кабінет власника", overview: "Огляд", appointments: "Записи", customers: "Клієнти", vehicles: "Автомобілі", services: "Послуги", availability: "Графік", feedback: "Відгуки", discount: "Знижка водіям", settings: "Компанія", products: "Усі продукти", logout: "Вийти" },
-    es: { context: "Espacio del propietario", overview: "Resumen", appointments: "Citas", customers: "Clientes", vehicles: "Vehículos", services: "Servicios", availability: "Horario", feedback: "Comentarios", discount: "Descuento conductores", settings: "Empresa", products: "Productos", logout: "Salir" },
-    it: { context: "Spazio proprietario", overview: "Panoramica", appointments: "Appuntamenti", customers: "Clienti", vehicles: "Veicoli", services: "Servizi", availability: "Orari", feedback: "Feedback", discount: "Sconto autisti", settings: "Azienda", products: "Prodotti", logout: "Esci" },
-    fr: { context: "Espace propriétaire", overview: "Aperçu", appointments: "Rendez-vous", customers: "Clients", vehicles: "Véhicules", services: "Services", availability: "Horaires", feedback: "Avis", discount: "Remise conducteurs", settings: "Entreprise", products: "Produits", logout: "Déconnexion" },
+    en: { context: "Owner workspace", overview: "Overview", dashboard: "Dashboard", appointments: "Bookings", customers: "Customers", vehicles: "Vehicles", services: "Services", availability: "Schedule", team: "Team", schedule: "Schedule", company: "Company", benefits: "Driver Benefits", preferences: "Settings", feedback: "Feedback", discount: "Driver Benefits", settings: "Company", products: "Product Hub", logout: "Logout" },
+    ru: { context: "Кабинет владельца", overview: "Обзор", dashboard: "Обзор", appointments: "Записи", customers: "Клиенты", vehicles: "Автомобили", services: "Услуги", availability: "График", team: "Команда", schedule: "График", company: "Компания", benefits: "Льготы водителям", preferences: "Настройки", feedback: "Отзывы", discount: "Льготы водителям", settings: "Компания", products: "Все продукты", logout: "Выйти" },
+    uk: { context: "Кабінет власника", overview: "Огляд", dashboard: "Огляд", appointments: "Записи", customers: "Клієнти", vehicles: "Автомобілі", services: "Послуги", availability: "Графік", team: "Команда", schedule: "Графік", company: "Компанія", benefits: "Пільги водіям", preferences: "Налаштування", feedback: "Відгуки", discount: "Пільги водіям", settings: "Компанія", products: "Усі продукти", logout: "Вийти" },
+    es: { context: "Espacio del propietario", overview: "Resumen", dashboard: "Panel", appointments: "Reservas", customers: "Clientes", vehicles: "Vehículos", services: "Servicios", availability: "Horario", team: "Equipo", schedule: "Horario", company: "Empresa", benefits: "Beneficios", preferences: "Ajustes", feedback: "Comentarios", discount: "Beneficios", settings: "Empresa", products: "Productos", logout: "Salir" },
+    it: { context: "Spazio proprietario", overview: "Panoramica", dashboard: "Dashboard", appointments: "Prenotazioni", customers: "Clienti", vehicles: "Veicoli", services: "Servizi", availability: "Orari", team: "Team", schedule: "Orari", company: "Azienda", benefits: "Vantaggi autisti", preferences: "Impostazioni", feedback: "Feedback", discount: "Vantaggi autisti", settings: "Azienda", products: "Prodotti", logout: "Esci" },
+    fr: { context: "Espace propriétaire", overview: "Aperçu", dashboard: "Tableau de bord", appointments: "Réservations", customers: "Clients", vehicles: "Véhicules", services: "Services", availability: "Planning", team: "Équipe", schedule: "Planning", company: "Entreprise", benefits: "Avantages conducteurs", preferences: "Réglages", feedback: "Avis", discount: "Avantages conducteurs", settings: "Entreprise", products: "Produits", logout: "Déconnexion" },
   }[locale];
 
   const routeLabels = {
-    [`${ROOT}/dashboard`]: copy.overview,
+    [`${ROOT}/dashboard`]: copy.dashboard || copy.overview,
     [`${ROOT}/appointments`]: copy.appointments,
     [`${ROOT}/customers`]: copy.customers,
     [`${ROOT}/vehicles`]: copy.vehicles,
     [`${ROOT}/services`]: copy.services,
     [`${ROOT}/availability`]: copy.availability,
+    [`${ROOT}/team`]: copy.team,
+    [`${ROOT}/schedule`]: copy.schedule,
+    [`${ROOT}/company`]: copy.company,
+    [`${ROOT}/driver-benefits`]: copy.benefits,
+    [`${ROOT}/preferences`]: copy.preferences,
     [`${ROOT}/settings`]: copy.settings,
   };
 
@@ -53,13 +59,15 @@
       if (!(link instanceof HTMLAnchorElement)) return;
       const label = labelForHref(link.href);
       if (!label) return;
-      const target = link.querySelector("span:last-child") || link;
-      if (target.textContent !== label) target.textContent = label;
+      const target = link.classList.contains("repair-crm-nav-item") ? link.querySelector("span:last-child") : link.querySelector("small");
+      if (target && target.textContent !== label) target.textContent = label;
     });
     setText(".repair-crm-context small", copy.context);
+    setText(".repair-crm-context strong", routeLabels[path] || copy.dashboard || copy.overview);
     setText(".repair-crm-product-hub span:last-child", copy.products);
     document.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { if (button.textContent !== copy.logout) button.textContent = copy.logout; });
-    setText(".repair-crm-language summary", locale.toUpperCase());
+    const summary = document.querySelector(".repair-crm-language summary");
+    if (summary) summary.textContent = locale.toUpperCase();
 
     document.querySelectorAll(".repair-crm-language a[lang]").forEach((link) => {
       if (!(link instanceof HTMLAnchorElement)) return;
@@ -80,17 +88,16 @@
 
   const dateLocale = { en:"en-US", ru:"ru-RU", uk:"uk-UA", es:"es-ES", it:"it-IT", fr:"fr-FR" }[locale] || "en-US";
   const updateContextTitle = () => {
+    const dateNode = document.querySelector("[data-repair-crm-date]");
+    const timeNode = document.querySelector("[data-repair-crm-time]");
+    const now = new Date();
+    const dateValue = new Intl.DateTimeFormat(dateLocale, { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(now);
+    const timeValue = new Intl.DateTimeFormat(dateLocale, { hour: "2-digit", minute: "2-digit" }).format(now);
+    if (dateNode && dateNode.textContent !== dateValue) dateNode.textContent = dateValue;
+    if (timeNode && timeNode.textContent !== timeValue) timeNode.textContent = timeValue;
     const title = document.querySelector(".repair-crm-context strong");
-    if (!title) return;
-    if (path !== `${ROOT}/dashboard`) {
-      const value = routeLabels[path] || copy.overview;
-      if (title.textContent !== value) title.textContent = value;
-      return;
-    }
-    const value = new Intl.DateTimeFormat(dateLocale, {
-      weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
-    }).format(new Date());
-    if (title.textContent !== value) title.textContent = value;
+    const routeTitle = routeLabels[path] || copy.dashboard || copy.overview;
+    if (title && title.textContent !== routeTitle) title.textContent = routeTitle;
   };
 
   const installPolish = () => {
