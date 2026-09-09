@@ -1,0 +1,168 @@
+/* Hermes Connect Repair Shop — Design 4 visual / UX layer only. */
+:root{
+  --hc4-bg:#f5f7fb;
+  --hc4-surface:#fff;
+  --hc4-surface-soft:#f8fafc;
+  --hc4-border:#e4e9f0;
+  --hc4-border-strong:#d8e0ea;
+  --hc4-text:#182235;
+  --hc4-muted:#6d7b8d;
+  --hc4-blue:#1769d2;
+  --hc4-blue-soft:#edf5ff;
+  --hc4-purple:#6d5dfc;
+  --hc4-green:#208a56;
+  --hc4-danger:#b42318;
+  --hc4-sidebar:238px;
+  --hc4-topbar:64px;
+  --hc4-radius:16px;
+  --hc4-shadow:0 10px 34px rgba(28,46,74,.065);
+}
+html.hc-repair-design4{background:var(--hc4-bg);color-scheme:light}
+html.hc-repair-design4 body{background:var(--hc4-bg)!important;color:var(--hc4-text)!important}
+html.hc-repair-design4 body>.site-header:not(.company-account-source),html.hc-repair-design4 body>.site-footer{display:none!important}
+html.hc-repair-design4 .company-account-source{position:fixed!important;left:-10000px!important;top:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+.repair-crm-shell-v4{position:relative;z-index:1000;color:var(--hc4-text);font-family:inherit}
+.repair-crm-shell-v4 .repair-crm-sidebar{position:fixed;inset:0 auto 0 0;z-index:1004;display:flex;flex-direction:column;width:var(--hc4-sidebar);padding:16px 13px 14px;border-right:1px solid var(--hc4-border);background:rgba(255,255,255,.98);box-shadow:8px 0 30px rgba(35,50,75,.035)}
+.repair-crm-shell-v4 .repair-crm-brand{display:flex;align-items:center;gap:11px;min-height:50px;margin:0 2px 15px;padding:7px 9px;border-radius:13px;color:var(--hc4-text);text-decoration:none}
+.repair-crm-shell-v4 .repair-crm-mark{width:34px;height:34px;flex:0 0 34px;border:1px solid rgba(109,93,252,.14);border-radius:11px;background:#fff url('/demos/hermes-connect/icon.svg') center/25px no-repeat;box-shadow:0 5px 18px rgba(73,104,153,.09)}
+.repair-crm-shell-v4 .repair-crm-brand>span:last-child{display:grid;gap:1px;min-width:0}
+.repair-crm-shell-v4 .repair-crm-brand strong{font-size:14px;letter-spacing:-.01em}
+.repair-crm-shell-v4 .repair-crm-brand small{color:var(--hc4-muted);font-size:10px;font-weight:720}
+.repair-crm-nav-scroll{min-height:0;overflow:auto;padding:0 2px 10px;scrollbar-width:thin}
+.repair-crm-nav-label{margin:10px 9px 6px;color:#9aa6b5;font-size:9px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+.repair-crm-nav-label-secondary{margin-top:18px}
+.repair-crm-shell-v4 .repair-crm-nav{display:grid;gap:3px}
+.repair-crm-shell-v4 .repair-crm-nav-item,.repair-crm-shell-v4 .repair-crm-product-hub{display:flex;align-items:center;gap:10px;min-height:42px;padding:8px 10px;border:1px solid transparent;border-radius:11px;color:#536176;text-decoration:none;font-size:12.5px;font-weight:735;line-height:1.1;transition:background .12s ease,border-color .12s ease,color .12s ease}
+.repair-crm-shell-v4 .repair-crm-nav-item:hover,.repair-crm-shell-v4 .repair-crm-nav-item:focus-visible,.repair-crm-shell-v4 .repair-crm-product-hub:hover,.repair-crm-shell-v4 .repair-crm-product-hub:focus-visible{border-color:#e3e9f1;background:#f7f9fc;color:#223049;outline:none}
+.repair-crm-shell-v4 .repair-crm-nav-item.is-active{border-color:#d9e7fb;background:linear-gradient(90deg,#edf5ff,#f7f5ff);color:#165dad;box-shadow:inset 3px 0 0 #4387da}
+.repair-crm-shell-v4 .repair-crm-icon{display:grid;place-items:center;width:20px;height:20px;flex:0 0 20px}
+.repair-crm-shell-v4 .repair-crm-icon svg{width:18px;height:18px}
+.repair-crm-shell-v4 .repair-crm-sidebar-footer{display:grid;gap:7px;margin-top:auto;padding:10px 2px 0;border-top:1px solid #eef1f5}
+.repair-crm-shell-v4 .repair-crm-mobile-logout{display:none;min-height:42px;border:1px solid #e2e7ee;border-radius:10px;background:#fff;color:#49566a;font:inherit;font-size:12px;font-weight:750}
+
+.repair-crm-shell-v4 .repair-crm-topbar{position:fixed;left:var(--hc4-sidebar);right:0;top:0;z-index:1002;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;height:var(--hc4-topbar);padding:0 22px;border-bottom:1px solid rgba(222,228,236,.92);background:rgba(255,255,255,.91);backdrop-filter:blur(18px);box-shadow:0 5px 20px rgba(37,50,75,.035)}
+.repair-crm-topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+.repair-crm-menu{display:none;width:42px;height:42px;padding:10px;border:1px solid var(--hc4-border);border-radius:11px;background:#fff}
+.repair-crm-menu span{display:block;height:2px;margin:4px 0;border-radius:2px;background:#39485d}
+.repair-crm-context{display:grid;gap:1px;min-width:0}
+.repair-crm-context small{color:#8b97a7;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.repair-crm-context strong{overflow:hidden;color:#223047;font-size:14px;text-overflow:ellipsis;white-space:nowrap}
+.repair-crm-live-context{display:flex;align-items:center;gap:6px;color:#697789;font-size:11px;font-weight:700;white-space:nowrap}
+.repair-crm-live-context b{color:#c0c8d2;font-weight:500}
+.repair-crm-topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
+.repair-crm-language{position:relative}
+.repair-crm-language summary,.repair-crm-logout{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 11px;border:1px solid var(--hc4-border);border-radius:10px;background:#fff;color:#46546a;font:inherit;font-size:11px;font-weight:800;cursor:pointer;list-style:none}
+.repair-crm-language summary::-webkit-details-marker{display:none}
+.repair-crm-language nav{position:absolute;right:0;top:44px;display:grid;grid-template-columns:repeat(3,44px);gap:4px;padding:7px;border:1px solid var(--hc4-border);border-radius:12px;background:#fff;box-shadow:0 16px 44px rgba(38,52,77,.13)}
+.repair-crm-language nav a{display:grid;place-items:center;min-height:36px;border-radius:8px;color:#566378;text-decoration:none;font-size:10px;font-weight:850}
+.repair-crm-language nav a[aria-current="page"]{background:#edf4ff;color:#145faa}
+.repair-crm-account-slot{min-width:0}
+.repair-crm-account-slot details[data-hc-account-switcher]{margin:0!important}
+.repair-crm-account-slot details[data-hc-account-switcher] summary{min-height:38px!important;max-width:180px!important;padding:0 11px!important;border:1px solid var(--hc4-border)!important;border-radius:10px!important;background:#fff!important;color:#46546a!important;font-size:11px!important}
+.repair-crm-logout{color:#637084}
+.repair-crm-mobile-quick{display:none}
+.repair-crm-overlay{display:none}
+
+html.hc-repair-design4 body :is(.workspace-page,.appointments-page,.customers-page,.vehicles-page,.services-page,.availability-page,.company-page,.company-v4-page,.team-page,.schedule-page,.benefits-page,.settings-v4-page){box-sizing:border-box;width:auto!important;min-height:100vh!important;margin-left:var(--hc4-sidebar)!important;padding:calc(var(--hc4-topbar) + 22px) 22px 54px!important;background:var(--hc4-bg)!important;color:var(--hc4-text)!important}
+html.hc-repair-design4 body :is(.workspace-page,.appointments-page,.customers-page,.vehicles-page,.services-page,.availability-page,.company-page,.company-v4-page,.team-page,.schedule-page,.benefits-page,.settings-v4-page)>.shell,
+html.hc-repair-design4 body :is(.workspace-page,.appointments-page,.customers-page,.vehicles-page,.services-page,.availability-page) .shell,
+html.hc-repair-design4 body :is(.company-v4-page,.team-page,.schedule-page,.benefits-page,.settings-v4-page) .hc4-page-shell{width:min(1180px,100%)!important;margin:0 auto!important}
+
+/* Normalize old standalone Repair Shop pages into the application surface. */
+html.hc-repair-design4 body :is(.workspace-page,.appointments-page,.customers-page,.vehicles-page,.services-page,.availability-page) :is(.back-link,.workspace-actions .secondary-btn,#logout-btn){display:none!important}
+html.hc-repair-design4 body :is(.workspace-header,.appointments-header,.customers-page .hero,.services-page .hero,.availability-page .page-header){min-height:0!important;margin:0 0 18px!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;color:var(--hc4-text)!important}
+html.hc-repair-design4 body :is(.workspace-header,.appointments-header,.customers-page .hero,.services-page .hero,.availability-page .page-header) h1{margin:0!important;color:#172238!important;font-size:clamp(24px,3vw,34px)!important;line-height:1.1!important;letter-spacing:-.035em!important}
+html.hc-repair-design4 body :is(.workspace-header,.appointments-header,.customers-page .hero,.services-page .hero,.availability-page .page-header) .eyebrow{margin:0 0 5px!important;color:#7a8697!important;font-size:9px!important;letter-spacing:.11em!important}
+html.hc-repair-design4 body :is(.workspace-header,.appointments-header,.customers-page .hero,.services-page .hero,.availability-page .page-header) .muted{margin-top:5px!important;color:#778496!important;font-size:12px!important;line-height:1.45!important}
+html.hc-repair-design4 body :is(.panel,.note-panel,.state-card,.service-create-card,.service-toolbar,.appointments-toolbar,.customer-card,.detail-panel,.company-card){border:1px solid var(--hc4-border)!important;border-radius:var(--hc4-radius)!important;background:#fff!important;box-shadow:var(--hc4-shadow)!important;color:var(--hc4-text)!important}
+html.hc-repair-design4 body :is(.panel,.company-card){padding:20px!important}
+html.hc-repair-design4 body :is(.panel-heading,.card-head) h2{color:#1e2b40!important;font-size:18px!important;letter-spacing:-.02em!important}
+html.hc-repair-design4 body :is(.panel-heading,.card-head) .muted{color:#768397!important;font-size:11px!important;line-height:1.5!important}
+html.hc-repair-design4 body :is(input,select,textarea){box-sizing:border-box;max-width:100%;border-color:#dce3eb!important;background:#fff!important;color:#1c293d!important;color-scheme:light!important}
+html.hc-repair-design4 body :is(input,select,button,textarea):focus-visible{outline:3px solid rgba(23,105,210,.13)!important;outline-offset:1px!important}
+html.hc-repair-design4 body :is(.primary-btn,.primary-action){border:0!important;background:#1769d2!important;color:#fff!important;box-shadow:none!important}
+html.hc-repair-design4 body :is(.secondary-btn,.secondary-action){border:1px solid #dce3eb!important;background:#fff!important;color:#3e4c60!important}
+html.hc-repair-design4 body :is(.danger-btn,.service-delete){border-color:#f0d5d2!important;background:#fff7f6!important;color:#a72b22!important}
+
+/* Dashboard: visually reduce the legacy all-in-one page while preserving DOM/API truth. */
+html.hc-repair-design4 body .workspace-page .shell{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:16px;align-items:start}
+html.hc-repair-design4 body .workspace-page .workspace-header,html.hc-repair-design4 body .workspace-page #workspace-alert{grid-column:1/-1}
+html.hc-repair-design4 body .workspace-page .panel{margin:0!important}
+html.hc-repair-design4 body .workspace-page .panel:has(#profile-form),html.hc-repair-design4 body .workspace-page .panel:has(#service-form),html.hc-repair-design4 body .workspace-page .panel:has(#feedback-form){display:none!important}
+html.hc-repair-design4 body .workspace-page .availability-panel{grid-column:2;grid-row:3;display:grid!important;gap:14px!important;align-items:start!important}
+html.hc-repair-design4 body .workspace-page .panel:has(#bookings-list){grid-column:1;grid-row:2/5}
+html.hc-repair-design4 body .workspace-page [data-repair-capabilities]{grid-column:2}
+html.hc-repair-design4 body .workspace-page [data-driver-discount-owner]{display:none!important}
+html.hc-repair-design4 body .workspace-page .booking-list>.booking-card:nth-child(n+5){display:none!important}
+
+/* Shared Design 4 pages. */
+.hc4-page-shell{display:grid;gap:16px}
+.hc4-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;min-height:54px}
+.hc4-page-head>div{min-width:0}
+.hc4-page-head .hc4-kicker{margin:0 0 5px;color:#7b8798;font-size:9px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+.hc4-page-head h1{margin:0;color:#172238;font-size:clamp(25px,3vw,34px);line-height:1.08;letter-spacing:-.035em}
+.hc4-page-head p:last-child{max-width:760px;margin:6px 0 0;color:#748196;font-size:12px;line-height:1.5}
+.hc4-count,.hc4-status{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border:1px solid #e0e6ee;border-radius:999px;background:#fff;color:#677588;font-size:10px;font-weight:800;white-space:nowrap}
+.hc4-card{padding:18px;border:1px solid var(--hc4-border);border-radius:var(--hc4-radius);background:#fff;box-shadow:var(--hc4-shadow)}
+.hc4-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+.hc4-card-head h2{margin:2px 0 4px;color:#1d2a3f;font-size:17px;letter-spacing:-.02em}
+.hc4-card-head p{margin:0;color:#788598;font-size:11px;line-height:1.45}
+.hc4-eyebrow{margin:0!important;color:#7c899a!important;font-size:9px!important;font-weight:850!important;letter-spacing:.11em!important;text-transform:uppercase!important}
+.hc4-grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hc4-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.hc4-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hc4-form-grid .span-2{grid-column:1/-1}
+.hc4-field{display:grid;gap:6px;min-width:0;color:#536176;font-size:10px;font-weight:780}
+.hc4-field :is(input,select,textarea){width:100%;min-height:42px;padding:0 11px;border:1px solid #dce3eb;border-radius:10px;font:inherit;font-size:12px;font-weight:560}
+.hc4-field textarea{min-height:90px;padding:10px 11px;resize:vertical}
+.hc4-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hc4-button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border:1px solid #dbe3ec;border-radius:10px;background:#fff;color:#425066;font:inherit;font-size:11px;font-weight:800;cursor:pointer;text-decoration:none}
+.hc4-button.primary{border-color:#1769d2;background:#1769d2;color:#fff}
+.hc4-button.danger{border-color:#f0d5d2;background:#fff7f6;color:#a72b22}
+.hc4-button:disabled{opacity:.5;cursor:not-allowed}
+.hc4-alert{padding:11px 13px;border:1px solid #dce5ef;border-radius:11px;background:#fff;color:#526176;font-size:11px;font-weight:700}
+.hc4-alert.success{border-color:#cfe8d7;background:#f2fbf5;color:#246742}
+.hc4-alert.error{border-color:#f0d3cf;background:#fff6f5;color:#a3332a}
+.hc4-hidden{display:none!important}
+.hc4-empty{padding:28px 18px;border:1px dashed #d8e0ea;border-radius:13px;background:#fbfcfe;color:#7d8998;text-align:center;font-size:12px}
+
+@media(max-width:980px){
+  :root{--hc4-sidebar:218px}
+  .repair-crm-shell-v4 .repair-crm-topbar{grid-template-columns:minmax(0,1fr) auto}.repair-crm-live-context{display:none}
+  html.hc-repair-design4 body .workspace-page .shell{grid-template-columns:1fr}
+  html.hc-repair-design4 body .workspace-page .panel:has(#bookings-list),html.hc-repair-design4 body .workspace-page .availability-panel,html.hc-repair-design4 body .workspace-page [data-repair-capabilities]{grid-column:auto;grid-row:auto}
+  .hc4-grid-3{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:780px){
+  :root{--hc4-topbar:58px}
+  html.hc-repair-menu-open{overflow:hidden}
+  .repair-crm-shell-v4 .repair-crm-sidebar{width:min(84vw,310px);transform:translateX(-105%);transition:transform .18s ease;box-shadow:20px 0 60px rgba(26,38,58,.2)}
+  .repair-crm-shell-v4[data-open="true"] .repair-crm-sidebar{transform:translateX(0)}
+  .repair-crm-shell-v4 .repair-crm-overlay{position:fixed;inset:0;z-index:1003;display:block;pointer-events:none;border:0;background:rgba(18,29,46,.32);opacity:0;transition:opacity .18s ease}
+  .repair-crm-shell-v4[data-open="true"] .repair-crm-overlay{pointer-events:auto;opacity:1}
+  .repair-crm-shell-v4 .repair-crm-mobile-logout{display:block}
+  .repair-crm-shell-v4 .repair-crm-topbar{left:0;grid-template-columns:minmax(0,1fr) auto;height:var(--hc4-topbar);padding:0 13px}
+  .repair-crm-menu{display:block}
+  .repair-crm-context small{display:none}.repair-crm-context strong{font-size:13px}
+  .repair-crm-topbar-actions{gap:5px}.repair-crm-logout,.repair-crm-account-slot{display:none}.repair-crm-language summary{min-height:36px;padding:0 9px}
+  .repair-crm-mobile-quick{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:1002;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));height:62px;padding:5px;border:1px solid rgba(215,223,233,.95);border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 16px 44px rgba(30,44,67,.16);backdrop-filter:blur(18px)}
+  .repair-crm-mobile-quick :is(a,button){display:grid;place-items:center;align-content:center;gap:2px;min-width:0;border:0;border-radius:12px;background:transparent;color:#7a8798;text-decoration:none;font:inherit}
+  .repair-crm-mobile-quick :is(a,button)>span{display:grid;place-items:center;width:22px;height:22px}.repair-crm-mobile-quick svg{width:20px;height:20px}
+  .repair-crm-mobile-quick small{overflow:hidden;max-width:100%;font-size:8.5px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}
+  .repair-crm-mobile-quick a.is-active{background:#edf5ff;color:#145fae}
+  html.hc-repair-design4 body :is(.workspace-page,.appointments-page,.customers-page,.vehicles-page,.services-page,.availability-page,.company-page,.company-v4-page,.team-page,.schedule-page,.benefits-page,.settings-v4-page){margin-left:0!important;padding:calc(var(--hc4-topbar) + 15px) 12px 92px!important}
+  html.hc-repair-design4 body :is(.panel,.company-card){padding:15px!important}
+  .hc4-page-shell{gap:12px}.hc4-page-head{align-items:flex-start;flex-direction:column;gap:8px}.hc4-page-head h1{font-size:25px}.hc4-page-head p:last-child{font-size:11px}
+  .hc4-card{padding:15px}.hc4-card-head{margin-bottom:13px}.hc4-grid-2,.hc4-grid-3,.hc4-form-grid{grid-template-columns:1fr}.hc4-form-grid .span-2{grid-column:auto}
+  .hc4-button{min-height:44px}.hc4-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.hc4-actions>.hc4-button:only-child{grid-column:1/-1}
+  html.hc-repair-design4 body :is(input,select,button,textarea){min-height:44px}
+}
+
+@media(max-width:460px){
+  .repair-crm-mobile-quick{left:6px;right:6px}.repair-crm-mobile-quick small{font-size:8px}
+  .hc4-actions{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){.repair-crm-shell-v4 .repair-crm-sidebar,.repair-crm-shell-v4 .repair-crm-overlay{transition:none}}
