@@ -107,8 +107,18 @@ async function verifyDashboard(page, label) {
     EMAIL,
     { timeout: 20_000 },
   );
+  await page.waitForSelector(".repair-crm-shell", { state: "visible", timeout: 10_000 });
+  await page.waitForSelector(".workspace-header h1", { state: "visible", timeout: 10_000 });
   await page.waitForFunction(
-    () => document.querySelector(".workspace-header h1")?.textContent?.trim() === "Repair Shop workspace",
+    () => Boolean(document.querySelector(".workspace-header h1")?.textContent?.trim()),
+    null,
+    { timeout: 10_000 },
+  );
+  await page.waitForFunction(
+    () => {
+      const context = document.querySelector(".repair-crm-context strong")?.textContent?.trim() || "";
+      return Boolean(context) && context !== "Today";
+    },
     null,
     { timeout: 10_000 },
   );

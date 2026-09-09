@@ -13,40 +13,21 @@ test("WEB 10 keeps one canonical department order across header and localized su
   for (const file of [header, localized, footer]) expect(file).toMatch(canonicalOrder);
 });
 
-test("WEB 10 keeps Russian direction discovery on the existing localized overview and reuses canonical product backends", async () => {
+test("WEB 10 keeps the primary header simple and Russian direction discovery on localized overviews", async () => {
   const header = await source("src/components/SiteHeader.astro");
-  const loader = await source("src/components/DepartmentMenuEnhancer.astro");
-  const menu = await source("public/department-menu.js");
+  const motion = await source("src/components/MotionLayer.astro");
   const integrity = await source("src/components/RussianLocaleIntegrity.astro");
 
   expect(header).toContain('url: `${localeBase}#${path.id}`');
-  expect(loader).toContain('/department-menu.js');
-  expect(loader).toContain('/department-menu.css');
-  for (const [id, href] of [
-    ["logistics", "/ru/#logistics"],
-    ["marketing", "/ru/#marketing"],
-    ["technology", "/ru/#technology"],
-    ["academy", "/ru/#academy"],
-  ]) {
-    expect(menu).toContain(`${id}: "${href}"`);
+  expect(header).toContain('<nav class="desktop-nav"');
+  expect(motion).not.toContain("DepartmentMenuEnhancer");
+  expect(motion).not.toContain("DepartmentMenuLocalization");
+  expect(motion).not.toContain("/department-menu.js");
+  expect(motion).not.toContain("/department-menu.css");
+
+  for (const href of ["/ru/#logistics", "/ru/#marketing", "/ru/#technology", "/ru/#academy"]) {
     expect(integrity).toContain(href);
   }
-
-  for (const localizedPath of [
-    "/ru/business-growth/",
-    "/ru/business-growth/website/",
-    "/ru/business-growth/seo/",
-    "/ru/business-growth/social-media/",
-    "/ru/business-growth/advertising/",
-  ]) {
-    expect(menu).toContain(localizedPath);
-  }
-
-  expect(menu).toContain('/services/hermes-connect/?lang=ru');
-  expect(menu).toContain('/ru/gb/london/it-web-development/');
-  expect(menu).not.toContain('/ru/load-board/');
-  expect(menu).not.toContain('/ru/carrier/');
-  expect(menu).not.toContain('/ru/paths/');
 });
 
 test("WEB 10 keeps five Academy tracks public but commercial activation gated", async () => {

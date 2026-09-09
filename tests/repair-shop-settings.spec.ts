@@ -129,6 +129,11 @@ test("Company is a private owner workspace backed by profile, team and schedule 
   await expect(page.locator("#public-booking-link")).toContainText("/services/hermes-connect/repair-shops/booking/?shop=hermes-test-garage");
   await expect(page.locator("#staff-list")).toContainText("Alex Rivera");
   await expect(page.locator("#staff-list")).toContainText("Brakes · Diagnostics");
+  const staffCard = page.locator("#staff-list .staff-card").first();
+  await expect(staffCard).toBeVisible();
+  expect(await staffCard.evaluate((node) => getComputedStyle(node).display)).toBe("flex");
+  expect(await staffCard.locator("div").first().evaluate((node) => getComputedStyle(node).display)).toBe("grid");
+  expect(await staffCard.locator(".staff-card-actions").evaluate((node) => getComputedStyle(node).display)).toBe("flex");
   await expect(page.locator("#schedule-form")).toBeVisible();
   await expect(page.getByText("Google Calendar", { exact:true })).toBeVisible();
   await expect(page.getByText("Needs authorization", { exact:true })).toBeVisible();
@@ -213,7 +218,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   if (viewport && viewport.width <= 760) {
     await page.locator("[data-repair-crm-menu]").click();
     await expect(page.locator(".repair-crm-sidebar")).toBeInViewport();
-    await expect(page.getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".repair-crm-nav").getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
     await captureEvidence(page, testInfo, "company-ru-mobile-drawer", false);
   }
 });

@@ -16,7 +16,7 @@ test.describe("Repair Shop synthetic demonstration mode", () => {
 
     const menu = page.locator("[data-repair-crm-menu]");
     if (await menu.isVisible()) await menu.click();
-    await page.getByRole("link", { name: "График" }).click();
+    await page.locator(".repair-crm-nav").getByRole("link", { name: "График" }).click();
     await expect(page).toHaveURL(/availability\/\?lang=ru&demo=1/);
     await expect(page.getByRole("button", { name: "Сохранить недельный график" })).toBeVisible();
     await expect(page.locator('input[type="time"]')).toHaveCount(14);

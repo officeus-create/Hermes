@@ -18,7 +18,8 @@ const BENCHMARK_SERVICES = [
   ["High-Mileage Oil Change", 40],
 ];
 
-const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"]);
+const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka", "волкогон в.", "volkogon v."]);
+const EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"]);
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
 const cleanName = (value) => String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").slice(0, 24) || "synthetic";
@@ -33,12 +34,21 @@ function demoAccountKind(specialist) {
     /^office\b/i.test(name) ||
     /^officea\b/i.test(name);
   if (officeIdentity) return "office";
-  if (/(^|[._+-])volkogon($|[._+-])/i.test(local) || /^volkogon\b/i.test(name)) return "volkogon";
+  if (/(^|[._+-])volkogon($|[._+-])/i.test(local) || /^volkogon\b/i.test(name) || /^волкогон\b/i.test(name)) return "volkogon";
   return null;
 }
 
 function isExplicitSyntheticTestOwner(specialist) {
   return specialist?.role === "Shop Owner" && EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES.has(cleanName(specialist?.name));
+}
+
+async function isExplicitSyntheticTestShop(db, specialist) {
+  if (!specialist?.id || specialist.role !== "Shop Owner") return false;
+  const row = await db
+    .prepare("SELECT name FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
+    .bind(specialist.id)
+    .first();
+  return EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES.has(cleanName(row?.name));
 }
 
 async function readSyntheticFlag(db, specialistId) {
@@ -63,7 +73,9 @@ async function isSyntheticAccount(db, env, specialist) {
   });
   if (await readSyntheticFlag(db, specialist.id)) return true;
 
-  if (!isExplicitSyntheticTestOwner(specialist)) return false;
+  const explicitOwner = isExplicitSyntheticTestOwner(specialist);
+  const explicitShop = await isExplicitSyntheticTestShop(db, specialist);
+  if (!explicitOwner && !explicitShop) return false;
   const explicitTestEnv = {
     ...env,
     HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
@@ -183,13 +195,13 @@ async function fillSyntheticStaffSchedules(db, specialist) {
   const now = new Date().toISOString();
 
   const days = [
-    [0, 0, null, null, []],
-    [1, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [2, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [3, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [4, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [5, 1, "07:30", "18:30", [{ start_time: "12:00", end_time: "12:30" }]],
-    [6, 1, "08:30", "15:30", [{ start_time: "11:30", end_time: "12:00" }]],
+    [0, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [1, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [2, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [3, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [4, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [5, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
+    [6, 1, "07:00", "19:00", [{ start_time: "12:00", end_time: "12:30" }]],
   ];
 
   const statements = [];
@@ -197,9 +209,12 @@ async function fillSyntheticStaffSchedules(db, specialist) {
     for (const [day, working, start, end, breaks] of days) {
       statements.push(
         db.prepare(`
-          INSERT OR IGNORE INTO repair_shop_staff_schedule
+          INSERT INTO repair_shop_staff_schedule
             (staff_id,shop_id,owner_specialist_id,day_of_week,is_working,start_time,end_time,breaks,updated_at)
           VALUES (?,?,?,?,?,?,?,?,?)
+          ON CONFLICT(staff_id,day_of_week) DO UPDATE SET
+            shop_id=excluded.shop_id,owner_specialist_id=excluded.owner_specialist_id,is_working=excluded.is_working,
+            start_time=excluded.start_time,end_time=excluded.end_time,breaks=excluded.breaks,updated_at=excluded.updated_at
         `).bind(member.id, shop.id, specialist.id, day, working, start, end, JSON.stringify(breaks), now),
       );
     }
@@ -218,14 +233,17 @@ async function fillSyntheticStaffSchedules(db, specialist) {
 }
 
 export async function ensureRepairShopSyntheticDemoData({ db, env, specialist }) {
-  if (!db || !specialist) return { eligible: false, seeded: false };
-  const kind = demoAccountKind(specialist);
+  if (!db || !specialist || specialist.role !== "Shop Owner") return { eligible: false, seeded: false };
+  const explicitShop = await isExplicitSyntheticTestShop(db, specialist);
+  const kind = demoAccountKind(specialist) || (explicitShop ? "office" : null);
   if (!kind) return { eligible: false, seeded: false };
   if (!(await isSyntheticAccount(db, env, specialist))) return { eligible: false, seeded: false };
 
   const seedSpecialist = kind === "volkogon"
     ? { ...specialist, name: `Office ${String(specialist.name || "Volkogon").trim()}` }
-    : specialist;
+    : explicitShop
+      ? { ...specialist, name: "Officea Baka" }
+      : specialist;
   const seedEnv = {
     ...env,
     HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
