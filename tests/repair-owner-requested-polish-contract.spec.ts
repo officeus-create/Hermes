@@ -31,9 +31,12 @@ test("owner controls keep capacity and driver-discount layouts compact", async (
 });
 
 test("the explicit Officea Baka test shop hydrates through the existing additive synthetic lane", async () => {
+  const runtime = await source("public/repair-owner-runtime-fixes.js");
   const synthetic = await source("functions/api/_lib/repair-shop-synthetic-demo.mjs");
   const demo = await source("functions/api/_lib/repair-shop-office-demo.mjs");
 
+  expect(runtime).not.toContain('/api/repair-shop/ceo-qa-seed');
+  expect(runtime).not.toContain('hc-owner-qa-v3');
   expect(synthetic).toContain('EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"])');
   expect(synthetic).toContain('SELECT name FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1');
   expect(synthetic).toContain('const explicitShop = await isExplicitSyntheticTestShop(db, specialist)');
