@@ -4,29 +4,179 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
 
+const academyId = "https://hermeslogisticsus.com/#academy";
+
 export function getStaticPaths(){
   const pages = [
-    {track:"us-logistics-course",title:"US Logistics Course London | Hermes Academy",h1:"Build a working map of the US logistics system.",description:"Applied US logistics education for people living in London and the UK, covering operations, load flow, carriers, brokers, sales and disciplined execution.",points:["Carrier, broker, shipper and dealer roles","Loads, equipment and operating flow","Metrics, communication and workflow discipline"]},
-    {track:"freight-dispatcher-training",title:"Freight Dispatcher Training London | Hermes Academy",h1:"Learn dispatch as an operating workflow, not a list of load boards.",description:"Freight dispatcher training for UK residents focused on US-market load sourcing, execution, communication, tracking and decision discipline.",points:["Load sourcing and qualification","Driver, broker and load communication","Execution, tracking and exception handling"]},
-    {track:"load-planner-training",title:"Load Planner Training London | Hermes Academy",h1:"Learn to plan freight around equipment, geography, timing and gross.",description:"US load planner training in London covering lane logic, equipment constraints, sequencing, rate context and operational trade-offs.",points:["Lane and equipment logic","Scheduling and route sequencing","Gross, deadhead and operational trade-offs"]},
-    {track:"carrier-sales-training",title:"Carrier Sales Training London | Hermes Academy",h1:"Learn carrier conversations through qualification, value and follow-up.",description:"Carrier sales training for people in the UK who want to understand US trucking customer acquisition, qualification, objections, follow-up and pipeline discipline.",points:["Carrier qualification","Value positioning and objections","CRM stages and follow-up discipline"]},
-    {track:"shipper-dealer-sales-training",title:"Shipper & Dealer Sales Training London | Hermes Academy",h1:"Learn to create direct freight demand conversations.",description:"US shipper and dealer sales training for London and UK residents, focused on research, discovery questions, value, negotiation and pipeline progression.",points:["Prospect research and discovery","Needs, value and negotiation","Follow-up and pipeline progression"]},
-    {track:"english-readiness",title:"English for US Logistics Readiness | London",h1:"Use English as an operating skill for US-market communication.",description:"English-readiness guidance for Hermes Academy logistics tracks. Live calls, negotiations and communication-heavy practice require working spoken English at B2 or higher.",points:["Listening under call pressure","Questions, clarification and negotiation","Professional vocabulary and concise follow-up"]},
-    {track:"how-training-works",title:"How US Logistics Training Works in the UK | Hermes Academy",h1:"Progress from understanding to practice through clear gates.",description:"How Hermes Academy logistics training works for UK residents: learning, observation, exercises, readiness checks and approved practice without employment or income guarantees.",points:["Learn the operating model","Demonstrate understanding and discipline","Enter approved practice when requirements are met"]},
-    {track:"apply",title:"Apply to Hermes Academy from the UK | London",h1:"Apply with your language level, schedule and relevant experience.",description:"UK application entry point for Hermes Academy. Fit depends on track capacity, language, schedule, discipline, experience and applicable legal or compliance requirements.",points:["State location and languages","Describe recent experience and measurable results","Choose the training direction you want to pursue"]},
-    {track:"faq",title:"US Logistics Training FAQ London | Hermes Academy",h1:"Questions to answer before choosing a US logistics training track.",description:"London and UK FAQ for Hermes Academy US logistics training covering English readiness, format, progression, outcomes and compliance boundaries.",points:["Live US communication requires B2+ English","Training does not guarantee a job, placement or income","Progression depends on readiness, capacity and program requirements"]},
+    {
+      track:"us-logistics-course",
+      title:"US Logistics Course London | Hermes Academy",
+      h1:"Build a working map of the US logistics system.",
+      description:"Applied US logistics education for people living in London and the UK, covering operations, load flow, carriers, brokers, sales and disciplined execution.",
+      fit:"This track is for learners who need the whole operating map before choosing a narrower role. It connects the commercial parties, equipment, documents, communication and decisions that move freight through the US market.",
+      points:[
+        {title:"Carrier, broker, shipper and dealer roles",body:"Understand who owns each decision, what information moves between the parties, where conflicts appear, and why one company's workflow can differ from another."},
+        {title:"Loads, equipment and operating flow",body:"Follow a load from opportunity through qualification, booking, pickup, tracking, delivery, documents and payment context while keeping equipment and timing constraints visible."},
+        {title:"Metrics, communication and workflow discipline",body:"Learn how response time, data accuracy, follow-up, exception handling and concise communication affect execution before trying to optimise gross or sales volume."}
+      ],
+      practice:"Exercises focus on reconstructing a load or customer journey, explaining the decision owner at each stage, identifying missing information, and comparing stronger and weaker operating choices.",
+      readiness:"Progression depends on the selected role, English level, schedule, accuracy and ability to explain decisions. General system understanding comes before any approved communication-heavy practice."
+    },
+    {
+      track:"freight-dispatcher-training",
+      title:"Freight Dispatcher Training London | Hermes Academy",
+      h1:"Learn dispatch as an operating workflow, not a list of load boards.",
+      description:"Freight dispatcher training for UK residents focused on US-market load sourcing, execution, communication, tracking and decision discipline.",
+      fit:"This track fits learners who want to understand day-to-day carrier execution: finding possible freight, evaluating fit, coordinating with drivers and brokers, protecting documents, and managing exceptions after a load is accepted.",
+      points:[
+        {title:"Load sourcing and qualification",body:"Compare a candidate load against equipment, location, timing, deadhead, operating limits and carrier instructions before treating the posting as a workable option."},
+        {title:"Driver, broker and load communication",body:"Practise concise questions, confirmations and updates around rate context, pickup and delivery requirements, documents and changes without representing unapproved commitments."},
+        {title:"Execution, tracking and exception handling",body:"Follow the load after booking, record meaningful status, escalate delays or document problems, and distinguish what the dispatcher can solve from what requires carrier approval."}
+      ],
+      practice:"Practice uses structured load-review and communication scenarios. The goal is to explain why a load is acceptable or weak and what must be confirmed before the next step, not to memorise a script.",
+      readiness:"Live US-market practice requires working spoken English, consistent data accuracy, schedule discipline and demonstrated understanding of carrier control and no-guarantee boundaries."
+    },
+    {
+      track:"load-planner-training",
+      title:"Load Planner Training London | Hermes Academy",
+      h1:"Learn to plan freight around equipment, geography, timing and gross.",
+      description:"US load planner training in London covering lane logic, equipment constraints, sequencing, rate context and operational trade-offs.",
+      fit:"This track is for learners interested in the decisions between individual loads: where equipment will finish, what the next market may offer, how appointment windows interact, and how deadhead or timing can change the value of a sequence.",
+      points:[
+        {title:"Lane and equipment logic",body:"Evaluate origin, destination, equipment type, capacity, operating restrictions and market context together instead of judging a load only by its posted gross."},
+        {title:"Scheduling and route sequencing",body:"Map pickup and delivery windows, realistic transit, driver availability and likely next positions so one load does not make the following move impossible."},
+        {title:"Gross, deadhead and operational trade-offs",body:"Compare loaded and empty miles, time, risk, service fees and next-market options while recognising that no single metric guarantees the best commercial result."}
+      ],
+      practice:"Exercises compare alternative sequences and require a written reason for the selected option, including the assumptions that would change the decision.",
+      readiness:"Progression requires reliable basic math, careful location and time handling, understanding of equipment limits and the ability to explain trade-offs without presenting estimates as guaranteed results."
+    },
+    {
+      track:"carrier-sales-training",
+      title:"Carrier Sales Training London | Hermes Academy",
+      h1:"Learn carrier conversations through qualification, value and follow-up.",
+      description:"Carrier sales training for people in the UK who want to understand US trucking customer acquisition, qualification, objections, follow-up and pipeline discipline.",
+      fit:"This track suits learners who want to work on carrier acquisition or relationship development and need to understand the carrier's equipment, operating model, pain points and decision criteria before presenting a service or next step.",
+      points:[
+        {title:"Carrier qualification",body:"Ask about equipment, authority context, lanes or service area, operating goals, current process and decision owner before deciding whether the conversation belongs in the active pipeline."},
+        {title:"Value positioning and objections",body:"Connect a real operational problem to the relevant Hermes or logistics support scope, answer objections without guarantees, and avoid generic pressure language that ignores carrier control."},
+        {title:"CRM stages and follow-up discipline",body:"Record what was learned, the next agreed action, timing and reason for follow-up so pipeline movement reflects evidence rather than repeated calls without context."}
+      ],
+      practice:"Learners analyse call recordings or role-play scenarios, identify missed discovery questions, rewrite weak value statements, and prepare a concise next-step follow-up based on the actual conversation.",
+      readiness:"Communication-heavy practice requires B2+ spoken English, calm pace, accurate note-taking, ability to handle objections and respect for opt-out, approval and no-guarantee boundaries."
+    },
+    {
+      track:"shipper-dealer-sales-training",
+      title:"Shipper & Dealer Sales Training London | Hermes Academy",
+      h1:"Learn to create direct freight demand conversations.",
+      description:"US shipper and dealer sales training for London and UK residents, focused on research, discovery questions, value, negotiation and pipeline progression.",
+      fit:"This track is for learners who want to understand how direct transportation demand is researched and developed with dealers, auctions, shippers or other business buyers rather than relying only on posted loads.",
+      points:[
+        {title:"Prospect research and discovery",body:"Prepare the company context, likely vehicle or freight need, geography and contact role, then use questions to confirm the real workflow instead of assuming demand from a directory listing."},
+        {title:"Needs, value and negotiation",body:"Explore service expectations, timing, communication, capacity and current pain points before discussing a solution, and keep pricing or service commitments inside approved authority."},
+        {title:"Follow-up and pipeline progression",body:"Document the decision process, required next material, timing and blockers so follow-up advances a real opportunity rather than creating activity without buyer intent."}
+      ],
+      practice:"Exercises include prospect research, discovery-call planning, objection analysis and follow-up writing. Private customer data is not required for training examples.",
+      readiness:"Learners must demonstrate research discipline, B2+ communication for live US calls, clear commercial boundaries and the ability to separate interest, qualification, opportunity and signed business."
+    },
+    {
+      track:"english-readiness",
+      title:"English for US Logistics Readiness | London",
+      h1:"Use English as an operating skill for US-market communication.",
+      description:"English-readiness guidance for Hermes Academy logistics tracks. Live calls, negotiations and communication-heavy practice require working spoken English at B2 or higher.",
+      fit:"This track is a readiness layer for learners who understand logistics concepts but need stronger listening, clarification, number handling and concise professional English before communication-heavy practice is appropriate.",
+      points:[
+        {title:"Listening under call pressure",body:"Practise extracting locations, times, rates, equipment, restrictions and objections from fast conversations without silently guessing when a detail is unclear."},
+        {title:"Questions, clarification and negotiation",body:"Use short confirmation questions, paraphrasing and controlled negotiation language to keep the operational meaning accurate while the conversation moves quickly."},
+        {title:"Professional vocabulary and concise follow-up",body:"Build usable logistics vocabulary in context and turn a call into a short written summary with decision, owner, next step and unresolved questions."}
+      ],
+      practice:"Practice can include listening review, shadowing, call-note reconstruction, number and location drills, clarification patterns and rewritten follow-ups rather than vocabulary lists alone.",
+      readiness:"B2+ is a working threshold for live communication tracks, not a certificate guarantee. Actual readiness is demonstrated through comprehension, speaking, clarification and accurate follow-up under realistic conditions."
+    },
+    {
+      track:"how-training-works",
+      title:"How US Logistics Training Works in the UK | Hermes Academy",
+      h1:"Progress from understanding to practice through clear gates.",
+      description:"How Hermes Academy logistics training works for UK residents: learning, observation, exercises, readiness checks and approved practice without employment or income guarantees.",
+      fit:"Use this page when the main question is not which logistics role to choose but how progression is controlled, what evidence shows readiness, and where private or live operational access begins to require separate authorization.",
+      points:[
+        {title:"Learn the operating model",body:"Start with roles, terminology, workflow, boundaries and examples so later tasks have context and errors can be explained rather than memorised away."},
+        {title:"Demonstrate understanding and discipline",body:"Complete analysis, exercises, notes, call reviews or structured tasks that show accuracy, communication, schedule reliability and the ability to explain decisions."},
+        {title:"Enter approved practice when requirements are met",body:"Move into communication-heavy or operational practice only when language, readiness, capacity and authorization gates are satisfied; access is not automatic."}
+      ],
+      practice:"The sequence is evidence based: learn, observe, analyse, practise in a bounded environment, receive feedback and repeat. A learner can remain at a stage when a readiness requirement is not yet met.",
+      readiness:"Training status does not create employment, client access, private-system access or income entitlement. Each external or production-facing step has its own approval and compliance boundary."
+    },
+    {
+      track:"apply",
+      title:"Apply to Hermes Academy from the UK | London",
+      h1:"Apply with your language level, schedule and relevant experience.",
+      description:"UK application entry point for Hermes Academy. Fit depends on track capacity, language, schedule, discipline, experience and applicable legal or compliance requirements.",
+      fit:"The application is a qualification handoff for people who have reviewed the program scope and can provide enough context for a human to decide which track, if any, should be discussed next.",
+      points:[
+        {title:"State location and languages",body:"Provide current country or city, languages and realistic spoken-English level so the team can judge communication-heavy track readiness and time-zone fit."},
+        {title:"Describe recent experience and measurable results",body:"Summarise relevant logistics, sales, operations, customer service, marketing or other work with concrete responsibilities rather than copying a generic biography."},
+        {title:"Choose the training direction you want to pursue",body:"Select the track that matches the role you want to understand and explain the practical objective you expect the training to support."}
+      ],
+      practice:"The application itself is not a training exercise. Information is used for human review and should not include passwords, identity documents, unnecessary sensitive data or unsupported claims.",
+      readiness:"Submission does not guarantee admission, a seat, employment or response time. Capacity, language, schedule, program status and legal or compliance requirements can affect the next step."
+    },
+    {
+      track:"faq",
+      title:"US Logistics Training FAQ London | Hermes Academy",
+      h1:"Questions to answer before choosing a US logistics training track.",
+      description:"London and UK FAQ for Hermes Academy US logistics training covering English readiness, format, progression, outcomes and compliance boundaries.",
+      fit:"Use this overview to resolve the common expectation gaps before applying: language readiness, role differences, progression, live practice, privacy, access and what training does or does not promise.",
+      points:[
+        {title:"Live US communication requires B2+ English",body:"Communication-heavy tracks depend on listening, speaking, clarification and concise written follow-up; a vocabulary test alone does not establish readiness."},
+        {title:"Training does not guarantee a job, placement or income",body:"Education and approved practice can improve readiness, but hiring, client acquisition, compensation and external commercial outcomes remain separate decisions."},
+        {title:"Progression depends on readiness, capacity and program requirements",body:"Different learners may move at different speeds because language, schedule, accuracy, discipline, available practice and authorization requirements are not identical."}
+      ],
+      practice:"Before applying, compare the role pages, identify the track that fits your objective and prepare questions about any boundary or requirement that is still unclear.",
+      readiness:"If a requirement is unknown, treat it as unknown rather than assuming admission or access. Human review remains the final step for current availability and fit."
+    },
   ];
   return pages.map(page=>({params:{track:page.track},props:{page}}));
 }
-const {page}=Astro.props; const url=`https://hermeslogisticsus.com/gb/london/academy/${page.track}/`;
+const {page}=Astro.props;
+const url=`https://hermeslogisticsus.com/gb/london/academy/${page.track}/`;
 const applyHref=`/academy/apply/?program=us-logistics-operations&utm_source=london&utm_medium=organic&utm_campaign=london-academy&utm_content=${page.track}&track=${page.track}`;
 const schema:any[]=[{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London Academy",item:"https://hermeslogisticsus.com/gb/london/academy/"},{"@type":"ListItem",position:2,name:page.h1,item:url}]}];
 if(!["apply","faq","how-training-works"].includes(page.track)) {
-  schema.push({"@context":"https://schema.org","@type":"Course",name:page.h1,description:page.description,provider:{"@type":"Organization",name:"Hermes Academy",sameAs:"https://hermeslogisticsus.com/academy/"},url});
+  schema.push({"@context":"https://schema.org","@type":"Course",name:page.h1,description:page.description,provider:{"@id":academyId},url});
 } else {
-  schema.push({"@context":"https://schema.org","@type":"WebPage",name:page.h1,description:page.description,url});
+  schema.push({"@context":"https://schema.org","@type":"WebPage",name:page.h1,description:page.description,url,about:{"@id":academyId}});
 }
 ---
 <BaseLayout title={page.title} description={page.description} schema={schema}>
-<SiteHeader theme="dark" /><main id="main-content"><section class="section detail-overview"><div class="shell detail-intro"><p class="eyebrow">London · Hermes Academy</p><h1>{page.h1}</h1><p>{page.description}</p><p><a class="button button-primary" href={applyHref}>Apply to Academy</a> <a class="button" href="/gb/london/academy/">London Academy hub</a></p></div></section><section class="section"><div class="shell grid">{page.points.map(point=><article><h2>{point}</h2><p>Training scope and progression are reviewed against the selected track, readiness and approved program format.</p></article>)}</div></section><section class="section"><div class="shell"><p><strong>Boundary:</strong> education and practice do not guarantee employment, placement, earnings or business outcomes. Participation is subject to capacity and applicable legal/compliance requirements.</p></div></section></main><LondonAnalytics /><SiteFooter /></BaseLayout>
-<style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.25rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview"><div class="shell detail-intro">
+      <p class="eyebrow">London · Hermes Academy</p><h1>{page.h1}</h1><p>{page.description}</p>
+      <p><a class="button button-primary" href={applyHref}>Apply to Academy</a> <a class="button" href="/gb/london/academy/">London Academy hub</a></p>
+    </div></section>
+
+    <section class="section"><div class="shell context-card">
+      <p class="eyebrow">Track fit</p><h2>Choose the track by the decisions you want to understand.</h2><p>{page.fit}</p>
+    </div></section>
+
+    <section class="section" aria-labelledby="track-scope-title"><div class="shell">
+      <div class="section-heading"><p class="eyebrow">Learning scope</p><h2 id="track-scope-title">What this track concentrates on.</h2></div>
+      <div class="grid">{page.points.map(point=><article><h3>{point.title}</h3><p>{point.body}</p></article>)}</div>
+    </div></section>
+
+    <section class="section"><div class="shell detail-grid">
+      <article><p class="eyebrow">Practice model</p><h2>How understanding is tested.</h2><p>{page.practice}</p></article>
+      <article><p class="eyebrow">Readiness gate</p><h2>What must be true before progression.</h2><p>{page.readiness}</p></article>
+    </div></section>
+
+    <section class="section"><div class="shell boundary"><p><strong>Boundary:</strong> education and practice do not guarantee employment, placement, earnings or business outcomes. Participation is subject to capacity and applicable legal/compliance requirements.</p></div></section>
+  </main>
+  <LondonAnalytics />
+  <SiteFooter />
+</BaseLayout>
+<style>
+  .context-card,.boundary{max-width:900px}.context-card{padding:1.5rem;border:1px solid #dce3f3;border-radius:16px;background:#fbfcff}.context-card h2{margin:.35rem 0 .75rem}.context-card p:last-child{color:#55627d;line-height:1.75}
+  .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.25rem;border:1px solid #dce3f3;border-radius:12px}.grid h3{margin:.1rem 0 .65rem}.grid p,.detail-grid p{color:#64718f;line-height:1.65}
+  .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.detail-grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:14px}.detail-grid h2{margin:.35rem 0 .7rem}
+  @media(max-width:800px){.grid,.detail-grid{grid-template-columns:1fr}}
+</style>
