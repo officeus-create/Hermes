@@ -213,7 +213,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   if (viewport && viewport.width <= 760) {
     await page.locator("[data-repair-crm-menu]").click();
     await expect(page.locator(".repair-crm-sidebar")).toBeInViewport();
-    await expect(page.getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".repair-crm-nav").getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
     await captureEvidence(page, testInfo, "company-ru-mobile-drawer", false);
   }
 });
