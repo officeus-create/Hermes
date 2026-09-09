@@ -113,28 +113,6 @@
     document.head.append(style);
   };
 
-  const hydrateExactCeoQaWorkspace = async () => {
-    if (path !== `${ROOT}/dashboard` && path !== `${ROOT}/settings`) return;
-    const seedKey = "hermes-ceo-qa-seed-office-repair-demo-2026-09-05-v1";
-    try {
-      if (window.localStorage.getItem(seedKey) === "done") return;
-      const meResponse = await fetch("/api/auth/me", { credentials:"same-origin", cache:"no-store" });
-      if (!meResponse.ok) return;
-      const me = await meResponse.json().catch(() => ({}));
-      const email = String(me?.specialist?.email || "").trim().toLowerCase();
-      if (email !== "officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com") return;
-      const response = await fetch("/api/repair-shop/ceo-qa-seed", { method:"POST", credentials:"same-origin", headers:{ Accept:"application/json" } });
-      if (!response.ok) return;
-      const result = await response.json().catch(() => ({}));
-      if (result?.success !== true || result?.synthetic !== true) return;
-      window.localStorage.setItem(seedKey, "done");
-      if (window.sessionStorage.getItem(`${seedKey}-reload`) !== "done") {
-        window.sessionStorage.setItem(`${seedKey}-reload`, "done");
-        window.location.reload();
-      }
-    } catch {}
-  };
-
   const init = () => {
     localizeOwnerShell();
     updateContextTitle();
@@ -143,6 +121,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
   window.setTimeout(init, 250);
   window.setTimeout(init, 1000);
-  window.setTimeout(hydrateExactCeoQaWorkspace, 1200);
   window.setInterval(updateContextTitle, 60000);
 })();
