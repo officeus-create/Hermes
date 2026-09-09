@@ -121,10 +121,12 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const matches = (booking: Booking) => {
     const q = (search?.value || "").trim().toLowerCase();
     const status = statusFilter?.value || "all";
+    const technicianFilter = (document.getElementById("appointment-technician") as HTMLSelectElement | null)?.value || "all";
+    const technician = booking.technician?.name || "";
     if (status !== "all" && booking.status !== status && !(status === "cancelled" && booking.status === "canceled")) return false;
+    if (technicianFilter !== "all" && technician !== technicianFilter) return false;
     if (!q) return true;
     const vehicle = booking.vehicle ? `${booking.vehicle.year ?? ""} ${booking.vehicle.make} ${booking.vehicle.model} ${booking.vehicle.vin ?? ""}` : "";
-    const technician = booking.technician?.name || "";
     return `${booking.service_name} ${booking.client_name} ${booking.client_email} ${booking.client_phone} ${vehicle} ${technician}`.toLowerCase().includes(q);
   };
 
@@ -226,6 +228,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   search?.addEventListener("input", render);
   statusFilter?.addEventListener("change", render);
+  window.addEventListener("hc:appointments-agenda-request", render);
   initialize().catch(() => showAlert(t.unable));
 </script>
 <script is:inline src="/repair-shop-appointments-calendar.js"></script>

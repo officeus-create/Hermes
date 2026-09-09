@@ -27,7 +27,7 @@ test("Repair Shop appointments exposes Day Week Month Agenda and Google Calendar
 
 test("Business directory profile stays unclaimed and indexable", async ({ page }) => {
   await page.goto("/businesses/arkansas/sherwood/seans-autopro-mobile/", { waitUntil:"domcontentloaded" });
-  await expect(page.getByRole("heading", { name:"Sean's AutoPro Mobile" })).toBeVisible();
+  await expect(page.getByRole("heading", { level:1, name:"Sean's AutoPro Mobile", exact:true })).toBeVisible();
   await expect(page.getByText("Unclaimed profile", { exact:true })).toBeVisible();
   await expect(page.getByText("Not a Hermes customer", { exact:true })).toBeVisible();
   await expect(page.getByText("Off until owner verification", { exact:true })).toBeVisible();

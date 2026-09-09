@@ -92,18 +92,20 @@
 
   function render() {
     const wrap=document.querySelector("[data-hc-calendar]"); if(!wrap) return;
+    const {q}=currentFilters();
+    const agendaLike=mode==="agenda"||Boolean(q);
     const items=filtered();
-    wrap.querySelector("[data-cal-title]").textContent=titleText();
+    wrap.querySelector("[data-cal-title]").textContent=q?copy.agenda:titleText();
     wrap.querySelector("[data-cal-count]").textContent=`${items.length} ${copy.appointments}`;
-    wrap.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("is-active",btn.dataset.view===mode));
+    wrap.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("is-active",btn.dataset.view===(agendaLike?"agenda":mode)));
     const canvas=wrap.querySelector("[data-cal-canvas]");
-    if(mode==="day") canvas.innerHTML=dayView(items);
-    else if(mode==="week") canvas.innerHTML=weekView(items);
-    else if(mode==="month") canvas.innerHTML=monthView(items);
+    if(!agendaLike&&mode==="day") canvas.innerHTML=dayView(items);
+    else if(!agendaLike&&mode==="week") canvas.innerHTML=weekView(items);
+    else if(!agendaLike&&mode==="month") canvas.innerHTML=monthView(items);
     else canvas.innerHTML="";
-    canvas.classList.toggle("hidden",mode==="agenda");
+    canvas.classList.toggle("hidden",agendaLike);
     const list=document.getElementById("appointments-list"),emptyNode=document.getElementById("appointments-empty");
-    if(mode!=="agenda"){list?.classList.add("hidden");emptyNode?.classList.add("hidden");}
+    if(!agendaLike){list?.classList.add("hidden");emptyNode?.classList.add("hidden");}
     else window.dispatchEvent(new Event("hc:appointments-agenda-request"));
     canvas.querySelectorAll("[data-jump-date]").forEach(btn=>btn.addEventListener("click",()=>{focus=parseDate(btn.dataset.jumpDate);mode="day";localStorage.setItem("hc-appointments-view",mode);render();}));
   }
