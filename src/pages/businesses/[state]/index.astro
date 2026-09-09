@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { directoryStates, directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../../data/repair-shop-directory";
+
+type DirectoryState = (typeof directoryStates)[number];
+export function getStaticPaths(){
+  return directoryStates.map((state: DirectoryState)=>({params:{state:state.slug},props:{state}}));
+}
+const {state}=Astro.props as { state: DirectoryState };
+const rows: RepairShopDirectoryEntry[] = repairShopDirectory.filter((business)=>business.stateSlug===state.slug);
+const cities = directoryCities.filter((city)=>city.stateSlug===state.slug);
+const stateUrl=`https://hermeslogisticsus.com/businesses/${state.slug}/`;
+const schema=[
+  {"@context":"https://schema.org","@type":"CollectionPage",name:`Auto repair businesses in ${state.name}`,url:stateUrl,mainEntity:{"@type":"ItemList",itemListElement:rows.map((business,index)=>({"@type":"ListItem",position:index+1,url:`https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`,name:business.businessName}))}},
+  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Business Directory",item:"https://hermeslogisticsus.com/businesses/"},{"@type":"ListItem",position:2,name:state.name,item:stateUrl}]}
+];
+---
+<BaseLayout title={`Auto Repair Businesses in ${state.name} | Hermes Directory`} description={`Evidence-backed auto repair business profiles in ${state.name}, grouped by city with claim state and source verification.`} schema={schema}>
+<SiteHeader activePath="/paths/technology/"/>
+<main class="state-page"><div class="shell">
+  <a class="back" href="/businesses/">← U.S. Business Directory</a>
+  <header><p class="eyebrow">Hermes Business Directory · {state.name}</p><h1>Auto repair businesses in {state.name}</h1><p>Each public profile keeps discovery separate from ownership. Unclaimed listings do not imply a Hermes customer relationship, and Hermes Connect booking or CRM stays off until the business owner verifies the profile.</p></header>
+  <section class="summary" aria-label="State directory summary"><div><strong>{rows.length}</strong><span>business profile{rows.length===1?"":"s"}</span></div><div><strong>{cities.length}</strong><span>city location{cities.length===1?"":"s"}</span></div></section>
+  <section class="cities"><h2>Browse {state.name} by city</h2>{cities.map((city)=><a href={`/businesses/${city.stateSlug}/${city.citySlug}/`}><strong>{city.city}, {city.state}</strong><span>{rows.filter((business)=>business.citySlug===city.citySlug).length} profile</span></a>)}</section>
+  <section class="evidence"><h2>How a listing becomes active</h2><p>Hermes may publish a bounded public directory profile from independent sources. The business owner can then claim it, verify or correct details, and choose whether to activate scheduling, CRM, team management, or public booking in Hermes Connect.</p></section>
+</div></main><SiteFooter/>
+</BaseLayout>
+<style>
+.state-page{min-height:70vh;background:#f6f7f9;color:#172033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:110px 0 80px}.back{color:#47729e;text-decoration:none;font-weight:800}.eyebrow{margin:28px 0 8px;color:#2168a6;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:900}h1{max-width:850px;margin:0;font-size:clamp(36px,5vw,62px);line-height:1.04}header>p,.evidence p{max-width:800px;color:#657286;line-height:1.65}.summary{display:flex;gap:12px;margin:28px 0}.summary div{min-width:150px;padding:18px;border:1px solid #e0e6ed;border-radius:15px;background:#fff}.summary strong{display:block;font-size:30px}.summary span{color:#718095;font-size:13px}.cities{display:grid;gap:12px;margin-top:30px}.cities h2{margin-bottom:2px}.cities>a{display:flex;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e0e6ed;border-radius:14px;background:#fff;color:#1e2d40;text-decoration:none}.cities span{color:#718095;font-size:13px}.evidence{max-width:850px;margin-top:32px;padding:22px;border:1px solid #dce5ef;border-radius:16px;background:#eef5fb}@media(max-width:700px){.summary{display:grid;grid-template-columns:1fr 1fr}.cities>a{display:grid}}
+</style>
