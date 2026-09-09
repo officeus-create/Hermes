@@ -2,6 +2,15 @@ import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopSyntheticDemoData } from "../_lib/repair-shop-synthetic-demo.mjs";
 
 type Env = { DB?: any; HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string };
+type SeedResult = {
+  eligible?: boolean;
+  seeded?: boolean;
+  seed_version?: string;
+  seeded_through?: string;
+  appointment_count?: number;
+  benchmark_service_count?: number;
+  schedule_rows?: number;
+};
 
 const CEO_QA_EMAIL = "officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com";
 
@@ -22,8 +31,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       .join(","),
   };
   const seedSpecialist = { ...specialist, name: "Office CEO QA" };
-  const result = await ensureRepairShopSyntheticDemoData({ db: env.DB, env: seedEnv, specialist: seedSpecialist });
-  if (!result?.eligible || !result?.seeded) {
+  const result = await ensureRepairShopSyntheticDemoData({ db: env.DB, env: seedEnv, specialist: seedSpecialist }) as SeedResult;
+  if (!result.eligible || !result.seeded) {
     return jsonResponse(409, { success: false, error: "synthetic_seed_not_ready" });
   }
 
