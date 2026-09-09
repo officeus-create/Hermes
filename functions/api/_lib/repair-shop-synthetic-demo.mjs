@@ -19,6 +19,7 @@ const BENCHMARK_SERVICES = [
 ];
 
 const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"]);
+const EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"]);
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
 const cleanName = (value) => String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").slice(0, 24) || "synthetic";
@@ -39,6 +40,15 @@ function demoAccountKind(specialist) {
 
 function isExplicitSyntheticTestOwner(specialist) {
   return specialist?.role === "Shop Owner" && EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES.has(cleanName(specialist?.name));
+}
+
+async function isExplicitSyntheticTestShop(db, specialist) {
+  if (!specialist?.id || specialist.role !== "Shop Owner") return false;
+  const row = await db
+    .prepare("SELECT name FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
+    .bind(specialist.id)
+    .first();
+  return EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES.has(cleanName(row?.name));
 }
 
 async function readSyntheticFlag(db, specialistId) {
@@ -63,7 +73,9 @@ async function isSyntheticAccount(db, env, specialist) {
   });
   if (await readSyntheticFlag(db, specialist.id)) return true;
 
-  if (!isExplicitSyntheticTestOwner(specialist)) return false;
+  const explicitOwner = isExplicitSyntheticTestOwner(specialist);
+  const explicitShop = await isExplicitSyntheticTestShop(db, specialist);
+  if (!explicitOwner && !explicitShop) return false;
   const explicitTestEnv = {
     ...env,
     HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
@@ -218,14 +230,17 @@ async function fillSyntheticStaffSchedules(db, specialist) {
 }
 
 export async function ensureRepairShopSyntheticDemoData({ db, env, specialist }) {
-  if (!db || !specialist) return { eligible: false, seeded: false };
-  const kind = demoAccountKind(specialist);
+  if (!db || !specialist || specialist.role !== "Shop Owner") return { eligible: false, seeded: false };
+  const explicitShop = await isExplicitSyntheticTestShop(db, specialist);
+  const kind = demoAccountKind(specialist) || (explicitShop ? "office" : null);
   if (!kind) return { eligible: false, seeded: false };
   if (!(await isSyntheticAccount(db, env, specialist))) return { eligible: false, seeded: false };
 
   const seedSpecialist = kind === "volkogon"
     ? { ...specialist, name: `Office ${String(specialist.name || "Volkogon").trim()}` }
-    : specialist;
+    : explicitShop
+      ? { ...specialist, name: "Officea Baka" }
+      : specialist;
   const seedEnv = {
     ...env,
     HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
