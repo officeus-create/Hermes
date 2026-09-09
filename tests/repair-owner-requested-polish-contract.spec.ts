@@ -30,17 +30,16 @@ test("owner controls keep capacity and driver-discount layouts compact", async (
   expect(runtime).toContain("grid-template-columns:46px minmax(0,1fr)!important");
 });
 
-test("only the existing v3 CEO QA owner can hydrate the synthetic month workspace", async () => {
-  const runtime = await source("public/repair-owner-runtime-fixes.js");
-  const endpoint = await source("functions/api/repair-shop/ceo-qa-seed.ts");
+test("the explicit Officea Baka test shop hydrates through the existing additive synthetic lane", async () => {
+  const synthetic = await source("functions/api/_lib/repair-shop-synthetic-demo.mjs");
   const demo = await source("functions/api/_lib/repair-shop-office-demo.mjs");
 
-  expect(runtime).toContain('/api/repair-shop/ceo-qa-seed');
-  expect(runtime).toContain('officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com');
-  expect(endpoint).toContain('getAuthenticatedSpecialist');
-  expect(endpoint).toContain('specialist.role !== "Shop Owner"');
-  expect(endpoint).toContain('ensureRepairShopSyntheticDemoData');
-  expect(endpoint).toContain('synthetic: true');
+  expect(synthetic).toContain('EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"])');
+  expect(synthetic).toContain('SELECT name FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1');
+  expect(synthetic).toContain('const explicitShop = await isExplicitSyntheticTestShop(db, specialist)');
+  expect(synthetic).toContain('if (!explicitOwner && !explicitShop) return false');
+  expect(synthetic).toContain('ensureOfficeRepairDemoData');
+  expect(synthetic).toContain('fillSyntheticStaffSchedules');
   expect(demo).toContain('const START_DATE = "2026-09-05"');
   expect(demo).toContain('const END_DATE = "2026-12-31"');
   expect(demo).toContain('INSERT INTO repair_shop_staff');
