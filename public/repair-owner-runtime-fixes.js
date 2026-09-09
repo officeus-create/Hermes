@@ -105,6 +105,9 @@
     const style = document.createElement("style");
     style.id = "hc-owner-requested-polish";
     style.textContent = `
+      html.hc-repair-design4 body .workspace-page,html.hc-repair-design4 body .workspace-page *{box-sizing:border-box!important}
+      html.hc-repair-design4 body .workspace-page .shell{max-width:100%!important}
+      html.hc-repair-design4 body .workspace-page .shell>*{min-width:0!important;max-width:100%!important}
       html.hc-repair-crm .hc-capacity-control{grid-template-columns:minmax(0,1fr) max-content!important;align-items:end!important;gap:16px!important}
       html.hc-repair-crm .hc-capacity-control form{display:grid!important;grid-template-columns:104px max-content!important;align-items:end!important;gap:10px!important}
       html.hc-repair-crm .hc-capacity-control label{min-width:0!important}
