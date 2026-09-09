@@ -39,7 +39,7 @@ test("verified synthetic Officea owner aliases hydrate through the existing Offi
 });
 
 test("the explicitly confirmed Officea Baka test workspace can self-classify by owner or exact shop name", async () => {
-  expect(syntheticDemo).toContain('EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"])');
+  expect(syntheticDemo).toContain('EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka", "волкогон в.", "volkogon v."])');
   expect(syntheticDemo).toContain('EXPLICIT_SYNTHETIC_TEST_SHOP_NAMES = new Set(["officea baka"])');
   expect(syntheticDemo).toContain("isExplicitSyntheticTestOwner");
   expect(syntheticDemo).toContain("isExplicitSyntheticTestShop");

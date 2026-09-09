@@ -12,11 +12,12 @@ const [syntheticSource, officeSeedSource, staffSource, bookingsSource, customers
 
 assert.match(syntheticSource, /return "office"/);
 assert.match(syntheticSource, /return "volkogon"/);
+assert.match(syntheticSource, /\^волкогон\\b/);
 assert.match(syntheticSource, /syncSyntheticFlagForAccount/);
 assert.match(syntheticSource, /async function readSyntheticFlag\(db, specialistId\)/);
 assert.match(syntheticSource, /return Number\(row\?\.synthetic\) === 1/);
 assert.match(syntheticSource, /await readSyntheticFlag\(db, specialist\.id\)/);
-assert.match(syntheticSource, /EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set\(\["officea baka"\]\)/);
+assert.match(syntheticSource, /EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set\(\["officea baka", "волкогон в\.", "volkogon v\."\]\)/);
 assert.match(syntheticSource, /specialist\?\.role === "Shop Owner"/);
 assert.match(syntheticSource, /isExplicitSyntheticTestOwner\(specialist\)/);
 assert.match(syntheticSource, /ensureOfficeRepairDemoData/);
