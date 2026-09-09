@@ -106,4 +106,4 @@ Localized pages are language-specific public overviews; they are not proof that 
 - Prototype = prototype. Demo = demo. Not configured = not configured.
 
 ## Hermes Business Directory pilot
-- https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/ — Unclaimed, evidence-backed Sean's AutoPro Mobile directory profile for Sherwood / Little Rock, Arkansas. Booking remains off until verified owner activation.
+- [Sean's AutoPro Mobile — unclaimed directory profile](https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/) — Evidence-backed directory profile for Sherwood / Little Rock, Arkansas. Booking remains off until verified owner activation.
