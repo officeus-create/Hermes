@@ -119,6 +119,18 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 <style is:global>
   .repair-auth-forgot{display:block;margin:-4px 0 16px;text-align:right;color:#a694ff;text-decoration:none;font-size:13px;font-weight:750}
   .repair-auth-forgot:hover{text-decoration:underline}
+  .repair-booking-sharebar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 20px;padding:16px 18px;border:1px solid rgba(17,24,39,.10);border-radius:16px;background:linear-gradient(135deg,#fff,#f7f5ff 56%,#eef8ff);box-shadow:0 14px 38px rgba(17,24,39,.10);color:#182033}
+  .repair-booking-sharebar-copy{display:grid;gap:4px;min-width:0}
+  .repair-booking-sharebar-copy span{color:#6957c9;text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:900}
+  .repair-booking-sharebar-copy strong{font-size:14px;line-height:1.4}
+  .repair-booking-sharebar-copy small{max-width:680px;overflow-wrap:anywhere;color:#6b7280;font-size:11px;line-height:1.4}
+  .repair-booking-sharebar-actions{display:flex;align-items:center;gap:8px;flex:none}
+  .repair-booking-sharebar-actions a,.repair-booking-sharebar-actions button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;box-sizing:border-box;padding:10px 13px;border:1px solid rgba(17,24,39,.12);border-radius:10px;background:#fff;color:#20283a;text-decoration:none;font:800 12px/1.2 inherit;cursor:pointer}
+  .repair-booking-sharebar-actions a[data-repair-open-booking]{border-color:#111827;background:#111827;color:#fff}
+  .repair-booking-sharebar-actions button[data-repair-share-booking]{border-color:rgba(105,87,201,.25);background:#f4f1ff;color:#5142aa}
+  .repair-booking-sharebar[data-ready="false"]{border-color:rgba(245,158,11,.28);background:linear-gradient(135deg,#fff,#fff9ec)}
+  [data-repair-attention="true"],.repair-activation-step[data-needs-attention="true"]{animation:repairAttentionPulse 2.8s ease-in-out infinite}
+  @keyframes repairAttentionPulse{0%,72%,100%{transform:translateZ(0);box-shadow:0 0 0 0 rgba(124,92,255,0)}82%{transform:translateY(-1px);box-shadow:0 0 0 6px rgba(124,92,255,.11)}90%{transform:translateZ(0);box-shadow:0 0 0 0 rgba(124,92,255,0)}}
   .repair-activation-panel{margin:0 0 24px;padding:20px;border:1px solid rgba(110,231,183,.24);border-radius:18px;background:linear-gradient(135deg,rgba(52,211,153,.07),rgba(90,200,250,.045),rgba(157,136,255,.05));box-shadow:0 18px 55px rgba(0,0,0,.16)}
   .repair-activation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px}
   .repair-activation-eyebrow{margin:0 0 6px;color:#6ee7b7;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:850}
@@ -155,6 +167,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   html.hc-experience .site-header .mobile-language-switcher a[aria-current="page"]{color:#fff!important;border-color:#111827!important;background:#111827!important}
 
   @media(max-width:780px){html.hc-repair-design4 body .schedule-page .hc4-schedule-row{display:none!important}html.hc-repair-design4 body .schedule-page .hc4-schedule-row.is-mobile-selected{display:grid!important}}
-  @media(max-width:760px){.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}#public-link-wrap .link-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}#public-link-wrap .link-actions>*{width:100%;box-sizing:border-box}}
-  @media(max-width:440px){.repair-activation-steps{grid-template-columns:1fr}#public-link-wrap .link-actions{grid-template-columns:1fr}}
+  @media(max-width:760px){.repair-booking-sharebar{align-items:stretch;flex-direction:column}.repair-booking-sharebar-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.repair-booking-sharebar-actions>*{width:100%}.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}#public-link-wrap .link-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}#public-link-wrap .link-actions>*{width:100%;box-sizing:border-box}}
+  @media(max-width:440px){.repair-booking-sharebar-actions{grid-template-columns:1fr}.repair-activation-steps{grid-template-columns:1fr}#public-link-wrap .link-actions{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){[data-repair-attention="true"],.repair-activation-step[data-needs-attention="true"]{animation:none}}
 </style>
