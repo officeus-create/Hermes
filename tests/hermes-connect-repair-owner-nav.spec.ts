@@ -25,7 +25,7 @@ test("Repair Shop CRM navigation is one localized context across the private wor
   const nav = shell.locator(".repair-crm-nav");
   await expect(shell).toBeVisible();
   await expect(shell.locator(".repair-crm-sidebar")).toHaveAttribute("aria-label", "СТО CRM");
-  await expect(nav.getByRole("link", { name: "Сегодня" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Обзор" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "График" })).toHaveAttribute("href", /availability\/\?lang=ru$/);
   await expect(nav.getByRole("link", { name: "Клиенты" })).toHaveAttribute("href", /customers\/\?lang=ru$/);
   await expect(shell.getByRole("link", { name: "Все продукты" })).toHaveAttribute("href", /services\/hermes-connect\/\?lang=ru$/);
