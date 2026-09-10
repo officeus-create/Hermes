@@ -192,6 +192,17 @@ test("Company accepts non-US region, country and IANA timezone", async ({ page }
   await expect(page.locator("#shop-timezone")).toHaveValue("Europe/Kyiv");
 });
 
+test("Company restores the saved Repair Shop locale when the URL has no lang query", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("hermes-connect-language", "ru"));
+  await mockOwnerApis(page);
+  await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator('[data-i18n="title"]')).toHaveText("Компания");
+  await expect(page.locator('[data-i18n="profileTitle"]')).toHaveText("Данные компании");
+  await expect(page.locator('[data-i18n="scheduleTitle"]')).toHaveText("Смены и перерывы");
+});
+
 test("Company preserves Russian core UX and mobile CRM navigation", async ({ page }, testInfo) => {
   await mockOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/settings/?lang=ru", { waitUntil: "domcontentloaded" });
