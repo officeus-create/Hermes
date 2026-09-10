@@ -47,9 +47,42 @@ test("Business directory exposes a 50-state coverage map without empty state lin
 
 test("Business directory has a state landing before city and profile routes", async ({ page }) => {
   await page.goto("/businesses/arkansas/", { waitUntil:"domcontentloaded" });
-  await expect(page.getByRole("heading", { level:1, name:"Auto repair businesses in Arkansas" })).toBeVisible();
+  await expect(page.getByRole("heading", { level:1, name:"Repair businesses in Arkansas" })).toBeVisible();
   await expect(page.locator('a[href="/businesses/arkansas/sherwood/"]')).toBeVisible();
   const profileSummary = page.locator('.summary div').first();
   await expect(profileSummary.locator('strong')).toHaveText("1");
   await expect(profileSummary.locator('span')).toHaveText("business profile");
+});
+
+
+test("Business directory wave 2 exposes only evidence-backed Alaska and Wyoming routes", async ({ page }) => {
+  await page.goto("/businesses/", { waitUntil:"domcontentloaded" });
+  await expect(page.locator('a[href="/businesses/alaska/"]')).toBeVisible();
+  await expect(page.locator('a[href="/businesses/wyoming/"]')).toBeVisible();
+  await expect(page.locator('a[href="/businesses/california/"]')).toHaveCount(0);
+
+  for (const entry of [
+    { path:"/businesses/alaska/palmer/gold-standard-diesel-and-fleet/", name:"Gold Standard Diesel and Fleet LLC", canonical:"https://hermeslogisticsus.com/businesses/alaska/palmer/gold-standard-diesel-and-fleet/" },
+    { path:"/businesses/wyoming/glenrock/iron-nation-services/", name:"Iron Nation Services LLC", canonical:"https://hermeslogisticsus.com/businesses/wyoming/glenrock/iron-nation-services/" },
+  ]) {
+    await page.goto(entry.path, { waitUntil:"domcontentloaded" });
+    await expect(page.getByRole("heading", { level:1, name:entry.name, exact:true })).toBeVisible();
+    await expect(page.getByText("Unclaimed profile", { exact:true })).toBeVisible();
+    await expect(page.getByText("Not a Hermes customer", { exact:true })).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", entry.canonical);
+    await expect(page.getByText(/not provided by, endorsed by, or bundled with/i).first()).toBeVisible();
+  }
+});
+
+test("Wave 2 city pages add useful fact-derived local context", async ({ page }) => {
+  await page.goto("/businesses/alaska/palmer/", { waitUntil:"domcontentloaded" });
+  await expect(page.getByRole("heading", { level:1 })).toHaveText("Vehicle repair businesses in Palmer, AK");
+  await expect(page.getByText("Mobile Diesel & Fleet Repair", { exact:true }).first()).toBeVisible();
+  await expect(page.getByText("Statewide Alaska mobile service", { exact:true })).toBeVisible();
+  await expect(page.getByText(/Source-described services:/).first()).toBeVisible();
+
+  await page.goto("/businesses/wyoming/glenrock/", { waitUntil:"domcontentloaded" });
+  await expect(page.getByRole("heading", { level:1 })).toHaveText("Vehicle repair businesses in Glenrock, WY");
+  await expect(page.getByText("Mobile Truck Repair", { exact:true }).first()).toBeVisible();
+  await expect(page.getByText("Converse County, Wyoming", { exact:true })).toBeVisible();
 });
