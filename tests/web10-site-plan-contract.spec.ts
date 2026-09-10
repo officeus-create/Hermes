@@ -4,13 +4,15 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("WEB 10 keeps one canonical department order across header and localized surfaces", async () => {
+test("WEB 10 keeps the approved header order without rewriting localized or footer discovery", async () => {
   const header = await source("src/components/SiteHeader.astro");
   const localized = await source("src/components/LocalizedOverviewPage.astro");
   const footer = await source("src/components/SiteFooter.astro");
-  const canonicalOrder = /logistics:\s*0[\s\S]*marketing:\s*1[\s\S]*technology:\s*2[\s\S]*academy:\s*3/;
+  const headerOrder = /logistics:\s*0[\s\S]*technology:\s*1[\s\S]*marketing:\s*2[\s\S]*academy:\s*3/;
+  const existingSurfaceOrder = /logistics:\s*0[\s\S]*marketing:\s*1[\s\S]*technology:\s*2[\s\S]*academy:\s*3/;
 
-  for (const file of [header, localized, footer]) expect(file).toMatch(canonicalOrder);
+  expect(header).toMatch(headerOrder);
+  for (const file of [localized, footer]) expect(file).toMatch(existingSurfaceOrder);
 });
 
 test("WEB 10 keeps the primary header simple and Russian direction discovery on localized overviews", async () => {
@@ -19,7 +21,7 @@ test("WEB 10 keeps the primary header simple and Russian direction discovery on 
   const integrity = await source("src/components/RussianLocaleIntegrity.astro");
 
   expect(header).toContain('url: `${localeBase}#${path.id}`');
-  expect(header).toContain('<nav class="desktop-nav"');
+  expect(header).toMatch(/<nav class="desktop-nav(?: [^"]*)?"/);
   expect(motion).not.toContain("DepartmentMenuEnhancer");
   expect(motion).not.toContain("DepartmentMenuLocalization");
   expect(motion).not.toContain("/department-menu.js");

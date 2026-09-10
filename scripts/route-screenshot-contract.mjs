@@ -7,6 +7,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "path-marketing", path: "/paths/marketing/" },
   { id: "path-academy", path: "/paths/academy/" },
   { id: "path-technology", path: "/paths/technology/" },
+  { id: "hermes-catalog", path: "/businesses/" },
   { id: "car-hauling-dispatch", path: "/logistics/car-hauling-dispatch/" },
   { id: "carrier-audience", path: "/logistics/carrier/" },
   { id: "carrier-sales", path: "/carrier/" },

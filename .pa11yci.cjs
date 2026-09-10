@@ -18,6 +18,7 @@ module.exports = {
     "http://127.0.0.1:4321/paths/marketing/",
     "http://127.0.0.1:4321/paths/technology/",
     "http://127.0.0.1:4321/paths/academy/",
+    "http://127.0.0.1:4321/businesses/",
     "http://127.0.0.1:4321/load-board/",
     "http://127.0.0.1:4321/services/hermes-connect/repair-shops/",
     "http://127.0.0.1:4321/carrier/",
