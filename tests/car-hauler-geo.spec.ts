@@ -84,6 +84,7 @@ test("carrier GEO pages wait for explicit analytics consent, then emit privacy-s
   await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "granted");
 
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
+  await page.locator('[data-carrier-geo-section="hero"]').scrollIntoViewIfNeeded();
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_section_view")).length).toBeGreaterThan(0);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_reach_hero")).length).toBe(1);
 
