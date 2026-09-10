@@ -15,6 +15,7 @@ assert.match(schema, /pending_review/);
 assert.doesNotMatch(schema, /password_hash|password_salt|refresh_token|access_token/i);
 
 assert.match(intake, /HERMES_LOADBOARD_INGEST_TOKEN/);
+assert.match(intake, /LEAD_SERVICE_TOKEN/);
 assert.match(intake, /Authorization/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);

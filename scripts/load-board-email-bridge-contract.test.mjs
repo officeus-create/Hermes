@@ -179,6 +179,36 @@ assert.equal(payload.records[0].raw_evidence_ref, "email:src_broker_example:load
 assert.doesNotMatch(capturedRequest.options.body, /LOAD OFFER/);
 assert.doesNotMatch(capturedRequest.options.body, /test-runtime-token/);
 
+let sharedTokenRequest = null;
+await handleLoadBoardInboundEmail({
+  to: "loads@hermeslogisticsus.com",
+  from: "broker@example.com",
+  headers: new Headers({
+    From: "Broker Example <broker@example.com>",
+    Subject: "Dry Van load Chicago to Atlanta",
+    "Message-ID": "<load-bridge-shared-token@example.com>",
+    Date: bridgeDate,
+  }),
+  raw: stream(rawEmail.replace("load-bridge-001@example.com", "load-bridge-shared-token@example.com")),
+}, {
+  LOADBOARD_EMAIL_RECIPIENT: "loads@hermeslogisticsus.com",
+  LOADBOARD_INGEST_URL: "https://hermeslogisticsus.com/api/load-board/intake",
+  LEAD_SERVICE_TOKEN: "shared-private-service-token",
+  LOADBOARD_EMAIL_SOURCE_CONFIG: JSON.stringify({
+    "broker@example.com": {
+      id: "src_broker_example",
+      name: "Broker Example",
+      redistribution_permission: "internal_only",
+      requested_visibility: "internal_only",
+      require_authentication: false,
+    },
+  }),
+}, null, { fetch: async (url, options) => {
+  sharedTokenRequest = { url, options };
+  return new Response(JSON.stringify({ success: true, accepted: 1, quarantined: 0 }), { status: 202 });
+} });
+assert.equal(sharedTokenRequest.options.headers.Authorization, "Bearer shared-private-service-token");
+
 let publicPayload = null;
 await handleLoadBoardInboundEmail({
   to: "loads@hermeslogisticsus.com",

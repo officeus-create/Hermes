@@ -8,7 +8,9 @@ Track the remaining production dependency after canonical `/load-board/` is wire
 
 `approved source -> inbound email/API adapter -> parser -> D1 intake -> /api/load-board/active -> /load-board/`
 
-The application code now supports this path. Production still needs actual source routing and runtime configuration; existing Gmail history is not automatically backfilled by the Cloudflare inbound-email worker.
+The application code now supports this path. Production still needs actual source routing; existing Gmail history is not automatically backfilled by the Cloudflare inbound-email worker. Runtime readback on 2026-09-10 confirmed `LEAD_SERVICE_TOKEN` already exists on both the Hermes Pages project and `hermes-lead-email`, so the bridge may reuse that existing private service trust instead of requiring a second token.
+
+Cloudflare Email Routing for the apex domain was also read back as disabled/unconfigured on 2026-09-10. Do **not** enable or change apex MX merely to activate Load Board ingestion while Google Workspace is the corporate mail authority. Prefer an authorized Gmail/API adapter or another route that does not replace the production mail MX.
 
 ## Canonical inbound target
 
@@ -17,7 +19,8 @@ The application code now supports this path. Production still needs actual sourc
 - Required runtime configuration:
   - `LOADBOARD_EMAIL_RECIPIENT`
   - `LOADBOARD_INGEST_URL`
-  - `LOADBOARD_INGEST_TOKEN` (secret; never store in this file)
+  - `LOADBOARD_INGEST_TOKEN` (optional dedicated secret; never store in this file)
+  - existing shared private `LEAD_SERVICE_TOKEN` may be used as the authenticated service fallback on both sides, avoiding a duplicate secret when the same Pages↔Worker trust boundary is used
   - `LOADBOARD_EMAIL_SOURCE_CONFIG`
 
 ## Known mailbox source status

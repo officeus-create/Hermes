@@ -1,7 +1,7 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 
-type Env = { DB?: any; HERMES_LOADBOARD_INGEST_TOKEN?: string };
+type Env = { DB?: any; HERMES_LOADBOARD_INGEST_TOKEN?: string; LEAD_SERVICE_TOKEN?: string };
 
 type Visibility = "internal_only" | "carrier_only" | "public";
 type RecordType = "load" | "capacity";
@@ -46,7 +46,7 @@ async function stableId(prefix: string, sourceId: string, sourceMessageId: strin
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-  const configuredToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || "");
+  const configuredToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!configuredToken) return jsonResponse(503, { success: false, error: "ingest_secret_not_configured" });
   if (request.headers.get("Authorization") !== `Bearer ${configuredToken}`) {
     return jsonResponse(401, { success: false, error: "unauthorized" });
