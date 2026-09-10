@@ -71,7 +71,7 @@ test("public booking shows only configured shop capabilities", async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   const publicPayload = {
     success: true,
-    shop,
+    shop: { ...shop, name: "Volkogon Complete Auto & Fleet Test Center", city: "Dallas", state: "TX", phone: "+12025550199" },
     services: [{ id: "svc-1", name: "Truck diagnostics", duration_minutes: 45 }],
     availability: days,
     capabilities: {
@@ -92,6 +92,34 @@ test("public booking shows only configured shop capabilities", async ({ page }) 
   await expect(capabilities).toContainText("Мобильный / roadside сервис");
   await expect(capabilities).not.toContainText("Экстренный roadside 24/7");
 
-  const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
-  expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+  const layout = await page.evaluate(() => {
+    const hero = document.querySelector<HTMLElement>(".booking-page .hero");
+    const title = document.querySelector<HTMLElement>("#shop-title");
+    const meta = document.querySelector<HTMLElement>("#shop-meta");
+    const caps = document.querySelector<HTMLElement>("[data-public-shop-capabilities]");
+    if (!hero || !title || !meta || !caps) return null;
+    const heroRect = hero.getBoundingClientRect();
+    const titleRect = title.getBoundingClientRect();
+    const metaRect = meta.getBoundingClientRect();
+    const capsRect = caps.getBoundingClientRect();
+    return {
+      display: getComputedStyle(hero).display,
+      heroHeight: heroRect.height,
+      viewportHeight: window.innerHeight,
+      titleBottom: titleRect.bottom,
+      metaTop: metaRect.top,
+      metaBottom: metaRect.bottom,
+      capsTop: capsRect.top,
+      capsRight: capsRect.right,
+      viewportWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(layout).not.toBeNull();
+  expect(layout!.display).toBe("block");
+  expect(layout!.heroHeight).toBeLessThan(layout!.viewportHeight * 0.55);
+  expect(layout!.metaTop).toBeGreaterThanOrEqual(layout!.titleBottom - 1);
+  expect(layout!.capsTop).toBeGreaterThanOrEqual(layout!.metaBottom - 1);
+  expect(layout!.capsRight).toBeLessThanOrEqual(layout!.viewportWidth + 1);
+  expect(layout!.scrollWidth).toBeLessThanOrEqual(layout!.viewportWidth + 1);
 });
