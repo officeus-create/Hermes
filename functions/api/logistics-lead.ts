@@ -212,6 +212,12 @@ export async function onRequestPost({ request, env }: Context) {
     !env.LEAD_LIMITS ||
     !env.LEAD_SERVICE_TOKEN
   ) {
+    console.warn("LEAD_DELIVERY_NOT_CONFIGURED", {
+      modeLive: env.LEAD_DELIVERY_MODE === "live",
+      emailService: Boolean(env.LEAD_EMAIL_SERVICE),
+      limits: Boolean(env.LEAD_LIMITS),
+      serviceToken: Boolean(env.LEAD_SERVICE_TOKEN),
+    });
     return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
   }
   if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
