@@ -344,7 +344,7 @@ const buildSourcePayload = (source, recipient) => ({
 
 const submitIntake = async (env, payload, fetchImpl = fetch) => {
   const endpoint = clean(env.LOADBOARD_INGEST_URL, 500);
-  const token = String(env.LOADBOARD_INGEST_TOKEN || "");
+  const token = String(env.LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!endpoint || !/^https:\/\//i.test(endpoint) || !token) throw new Error("loadboard_bridge_not_configured");
   const response = await fetchImpl(endpoint, {
     method: "POST",
