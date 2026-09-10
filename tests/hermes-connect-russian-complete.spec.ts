@@ -37,9 +37,9 @@ test("Repair Shops Russian locale translates the mobile landing surface", async 
   await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
   await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
 
-  await expect(page.locator(".repair-live-hero h1")).toHaveText("Дайте клиентам одну ссылку для записи в ваш автосервис.");
+  await expect(page.locator(".repair-live-hero h1")).toHaveText("Онлайн-запись и расписание для независимых автосервисов.");
   await expect(page.locator(".repair-live-hero .repair-lead")).toContainText("Hermes Connect для СТО помогает независимым автосервисам");
-  await expect(page.locator(".repair-live-hero")).not.toContainText("Give customers one link to book your repair shop.");
+  await expect(page.locator(".repair-live-hero")).not.toContainText("Online booking & scheduling software for independent auto repair shops.");
 
   const family = page.locator(".hc-family-nav");
   const links = family.locator(":scope > a");

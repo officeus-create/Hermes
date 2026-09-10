@@ -18,7 +18,9 @@ test("repair shop commercial funnel is attributable to the existing canonical ow
   const component = read("src/components/Seo4ConversionEnhancer.astro");
   const enhancer = read("public/seo4-conversion-enhancer.js");
   const auth = read("src/pages/services/hermes-connect/repair-shops/auth.astro");
+  const repairOwner = read("src/pages/services/hermes-connect/repair-shops.astro");
 
+  expect(repairOwner).toContain("<h1>Online booking & scheduling software for independent auto repair shops.</h1>");
   expect(component).toContain('src="/seo4-conversion-enhancer.js"');
   expect(enhancer).toContain('cta_type: "repair_shop_registration"');
   expect(enhancer).toContain('cta_type: "repair_shop_plan"');
