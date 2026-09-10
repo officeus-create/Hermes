@@ -41,7 +41,7 @@ const childSitemapFiles = [
   "sitemap-london.xml",
   "sitemap-business-directory.xml",
 ];
-const expectedCurrentPageUrlCount = 198;
+const expectedCurrentPageUrlCount = 204;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-10-business-directory-truck-repair-wave-2",
+  "generated_at": "2026-09-10T04:31:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {"route":"/businesses/alaska/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/alaska/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/alaska/palmer/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/alaska/palmer/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/alaska/palmer/gold-standard-diesel-and-fleet/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/alaska/palmer/gold-standard-diesel-and-fleet/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/[slug].astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/wyoming/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/wyoming/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/wyoming/glenrock/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/wyoming/glenrock/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/index.astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}},
+    {"route":"/businesses/wyoming/glenrock/iron-nation-services/","source_state":"current_main","indexability":"indexable","robots":"index,follow,max-image-preview:large","canonical":"https://hermeslogisticsus.com/businesses/wyoming/glenrock/iron-nation-services/","sitemap_owner":"public/sitemap-business-directory.xml","source_file":"src/pages/businesses/[state]/[city]/[slug].astro","status":"COMPLETE","blocker":null,"response_status":200,"comparison":{"production":"pending_deployment","immutable_release":"missing"}}
+  ],
+  "acceptance": {
+    "route_count_added": 6,
+    "indexable_route_count_added": 6,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
