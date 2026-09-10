@@ -61,6 +61,16 @@ test("Repair Shop landing shows the active Russian September 15 free-registratio
   expect(overflow).toBe(false);
 });
 
+test("owner login stays operational without free-registration countdown pressure", async ({ page }) => {
+  await freezeNow(page, activeNow);
+  await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
+  await page.goto("/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("#login-form")).toHaveClass(/active/);
+  await expect(page.locator(visibleOffer)).toHaveCount(0);
+  await expect(page.locator("[data-launch-timer]:visible")).toHaveCount(0);
+});
+
 test("direct free-registration CTA opens the Repair Shop registration form while the offer is active", async ({ page }) => {
   await freezeNow(page, activeNow);
   await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
