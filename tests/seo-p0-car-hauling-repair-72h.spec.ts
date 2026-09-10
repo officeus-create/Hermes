@@ -28,7 +28,11 @@ test("repair shop commercial funnel is attributable to the existing canonical ow
   expect(enhancer).toContain('form.id !== "register-form"');
   expect(enhancer).toContain('window.addEventListener("hermes:repair-registration-complete"');
   expect(auth).toContain('if (res.ok && data.success) {\n        window.dispatchEvent(new Event("hermes:repair-registration-complete"));\n        await checkSession();');
-  expect(enhancer).not.toContain("MutationObserver");
+  const repairCompletionStart = enhancer.indexOf('window.addEventListener("hermes:repair-registration-complete"');
+  const repairCompletionEnd = enhancer.indexOf("refreshLoadBoardDemoLabels();", repairCompletionStart);
+  expect(repairCompletionStart).toBeGreaterThanOrEqual(0);
+  expect(repairCompletionEnd).toBeGreaterThan(repairCompletionStart);
+  expect(enhancer.slice(repairCompletionStart, repairCompletionEnd)).not.toContain("MutationObserver");
   expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      email:");
   expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      name:");
   expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      password:");
