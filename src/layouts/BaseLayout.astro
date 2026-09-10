@@ -50,6 +50,7 @@ const {
 } = Astro.props;
 
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
+const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
 const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
 const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);
@@ -241,6 +242,7 @@ const safeSchema = schema
       }, { once: true });
     </script>
     {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
+    {isRepairShopBookingRoute && <script is:inline src="/repair-shop-public-read-dedupe.js"></script>}
     {isRepairShopLaunchRoute && <script is:inline src="/repair-shop-local-demo.js"></script>}
     <title>{title}</title>
   </head>
