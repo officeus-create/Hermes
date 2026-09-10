@@ -127,7 +127,6 @@
   .hc-experience .desktop-nav { gap: .55rem !important; font-size: .7rem !important; }
   .hc-experience .hc-launcher-header { padding-right: .5rem !important; }
 }
-
 @media (max-width: 760px) {
   .site-header {
     top: .45rem !important;
@@ -399,5 +398,156 @@
       .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
       .department-technology-card-link, .department-technology-link, .hc-lab-links a) svg {
     transition: none !important;
+  }
+}
+
+/* 13. Hermes Connect mobile visual quick wins — 2026-09-10.
+   Scope is the public Product Hub only; no product/auth/runtime behavior changes. */
+@media (max-width: 760px) {
+  html.hc-experience body:has(.hc-brand-page) .site-header {
+    min-height: 56px !important;
+    height: auto !important;
+    padding: .35rem .65rem !important;
+    border-radius: 18px !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .site-header .wordmark {
+    gap: .42rem !important;
+    font-size: .92rem !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .site-header .wordmark-mark {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9px !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .site-header + .hc-product-context {
+    margin-top: 66px !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-product-context {
+    top: 62px !important;
+    width: calc(100% - .5rem) !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    background: rgba(8,12,21,.96) !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-product-context__inner {
+    padding: .3rem .2rem !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-family-nav {
+    display: flex !important;
+    gap: .38rem !important;
+    overflow-x: auto !important;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding: .18rem .28rem !important;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-family-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-family-nav a {
+    flex: 0 0 auto !important;
+    min-height: 38px !important;
+    padding: .5rem .68rem !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 999px !important;
+    color: #d6dbe5 !important;
+    background: rgba(255,255,255,.045) !important;
+    white-space: nowrap;
+  }
+
+  html.hc-experience body:has(.hc-brand-page) .hc-family-nav a[aria-current="page"] {
+    color: #fff !important;
+    border-color: rgba(124,92,255,.38) !important;
+    background: linear-gradient(135deg,rgba(90,200,250,.16),rgba(124,92,255,.20)) !important;
+  }
+
+  .hc-brand-page .hc-workspace-body {
+    grid-template-columns: 1fr !important;
+    min-height: 0 !important;
+  }
+
+  .hc-brand-page .hc-workspace-body > aside {
+    display: none !important;
+  }
+
+  .hc-brand-page .hc-workspace-main {
+    padding: .9rem !important;
+  }
+
+  .hc-brand-page .hc-workspace-top {
+    padding: .78rem .9rem !important;
+    font-size: .52rem !important;
+  }
+
+  .hc-brand-page .hc-metrics {
+    grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+    gap: .42rem !important;
+  }
+
+  .hc-brand-page .hc-metrics article {
+    min-height: 82px;
+    padding: .62rem !important;
+  }
+
+  .hc-brand-page .hc-metrics strong {
+    font-size: 1rem !important;
+  }
+
+  .hc-brand-page .hc-metrics span {
+    display: none !important;
+  }
+
+  .hc-brand-page .hc-work-panels {
+    grid-template-columns: 1fr !important;
+  }
+
+  .hc-brand-page .hc-work-panels article {
+    min-height: 128px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .hc-brand-page .hc-knot-stage {
+    min-height: 560px !important;
+  }
+
+  .hc-brand-page .hc-knot {
+    left: 50% !important;
+    top: 3.1rem !important;
+    animation: none !important;
+    scale: .82 !important;
+    translate: -50% 0 !important;
+  }
+
+  .hc-brand-page .hc-signal-list {
+    left: .65rem !important;
+    right: .65rem !important;
+    top: auto !important;
+    bottom: .75rem !important;
+    width: auto !important;
+    transform: none !important;
+    gap: .42rem !important;
+  }
+
+  .hc-brand-page .hc-signal-list > div {
+    padding: .62rem .68rem !important;
+    border-color: rgba(124,92,255,.14) !important;
+    background: rgba(255,255,255,.94) !important;
+    box-shadow: 0 10px 24px rgba(42,32,90,.07) !important;
+  }
+
+  .hc-brand-page .hc-signal-list strong {
+    color: #0b0d12 !important;
+  }
+
+  .hc-brand-page .hc-signal-list small {
+    color: #646b78 !important;
   }
 }
