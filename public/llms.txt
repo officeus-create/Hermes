@@ -23,8 +23,6 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Car-hauler load search by U.S. market](https://hermeslogisticsus.com/logistics/car-hauler-loads/)
 - [Owner-operator dispatch support](https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/)
 - [New-authority car-hauler support](https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/)
-- [Start car-hauling dispatch](https://hermeslogisticsus.com/logistics/start-car-hauling-dispatch/)
-- [Carrier agreement and onboarding](https://hermeslogisticsus.com/carrier/)
 - [Load Board](https://hermeslogisticsus.com/load-board/)
 - [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
 - [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)
@@ -33,7 +31,7 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Logistics resources](https://hermeslogisticsus.com/logistics/resources/)
 - [RPM calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/)
 
-For a carrier, the public operating journey is: use the Car Hauler Load Search hub and market pages to understand relevant U.S. search markets; use Car-Hauling Dispatch, Owner-Operator Dispatch Support, or New-Authority Car-Hauler Support to evaluate fit; use Start Car-Hauling Dispatch and the Carrier Agreement and Onboarding page for qualification and required steps; and use the canonical Load Board page for the public Load Board workflow. Audience, equipment, origin, area, and section state may be represented in client-side URL fragments; those fragments do not create separate canonical content owners.
+For a carrier, the public discovery journey is: use the Car Hauler Load Search hub and market pages to understand relevant U.S. search markets; use Car-Hauling Dispatch, Owner-Operator Dispatch Support, or New-Authority Car-Hauler Support to evaluate fit; and use the canonical Load Board page to understand the public Load Board workflow. Qualification, agreements, and onboarding continue through the appropriate site workflow after fit is established; private or noindex workflow URLs are intentionally not listed as public AI-search owners. Audience, equipment, origin, area, and section state may be represented in client-side URL fragments; those fragments do not create separate canonical content owners.
 
 The Car Hauler Load Search market pages are carrier-acquisition and dispatch-support pages. They do not publish live freight, private shipment history, or office-location claims. A city page identifies a search market and local operating context; actual freight, access, rates, timing, and carrier fit require review.
 
