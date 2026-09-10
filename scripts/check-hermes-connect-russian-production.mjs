@@ -51,7 +51,7 @@ try {
   {
     const page = await newPage();
     const status = await goto(page, `${repairRoot}?lang=ru`);
-    await waitForText(page, ".repair-live-hero h1", "Дайте клиентам одну ссылку для записи в ваш автосервис.");
+    await waitForText(page, ".repair-live-hero h1", "Онлайн-запись и расписание для независимых автосервисов.");
     const state = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       languageLabel: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
@@ -71,7 +71,7 @@ try {
         state.languageLabel === "Русский" &&
         state.contentLanguage === "Язык контента: русский" &&
         state.englishOnlyCount === 0 &&
-        state.hero === "Дайте клиентам одну ссылку для записи в ваш автосервис." &&
+        state.hero === "Онлайн-запись и расписание для независимых автосервисов." &&
         state.lead.includes("Hermes Connect для СТО помогает независимым автосервисам") &&
         state.familyText.includes("СТО") &&
         state.familyText.includes("ИИ-командный центр") &&
