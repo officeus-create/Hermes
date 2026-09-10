@@ -1,26 +1,130 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../data/repair-shop-directory";
 import { usStateDirectoryTiles } from "../../data/us-state-directory-map";
-const directoryUrl="https://hermeslogisticsus.com/businesses/";
+
+const directoryUrl = "https://hermeslogisticsus.com/businesses/";
 const stateCounts = new Map<string, number>();
-for (const business of repairShopDirectory) stateCounts.set(business.stateSlug,(stateCounts.get(business.stateSlug)??0)+1);
-const schema=[
-  {"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes Business Directory",url:directoryUrl,mainEntity:{"@type":"ItemList",itemListElement:repairShopDirectory.map((b: RepairShopDirectoryEntry,i: number)=>({"@type":"ListItem",position:i+1,url:`https://hermeslogisticsus.com/businesses/${b.stateSlug}/${b.citySlug}/${b.slug}/`,name:b.businessName}))}},
-  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Business Directory",item:directoryUrl}]}
+for (const business of repairShopDirectory) stateCounts.set(business.stateSlug, (stateCounts.get(business.stateSlug) ?? 0) + 1);
+const categoryCounts = [...new Map(repairShopDirectory.map((business) => [business.category, repairShopDirectory.filter((item) => item.category === business.category).length])).entries()];
+const popularTerms = [...new Set(repairShopDirectory.flatMap((business) => [business.category, ...business.services]))].slice(0, 7);
+const ecosystem = [
+  { id: "logistics", label: "Logistics", title: "Keep business discovery close to real transportation operations.", body: "Repair and service discovery can support carriers, fleets and drivers while Hermes Logistics remains a separate operating relationship.", href: "/paths/logistics/", cta: "Explore Logistics" },
+  { id: "technology", label: "IT", title: "Turn a claimed profile into an operating workspace.", body: "Hermes Connect is the activation layer for owner-controlled profiles, appointments, customers, services, teams and booking when those capabilities are verified live.", href: "/services/hermes-connect/", cta: "Open Hermes Connect" },
+  { id: "marketing", label: "Marketing", title: "Grow a verified business beyond the free listing.", body: "Claimed businesses can move into website, SEO/GEO, social and demand-generation work without mixing marketing claims into unverified directory facts.", href: "/paths/marketing/", cta: "Explore Marketing" },
+  { id: "academy", label: "Academy", title: "Connect business owners and teams with practical learning.", body: "Hermes Academy remains the education layer for logistics, marketing, IT, sales and operations skills rather than being folded into the directory itself.", href: "/paths/academy/", cta: "Explore Academy" },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "CollectionPage", name: "Hermes Catalog", alternateName: "Hermes Business Directory", url: directoryUrl, description: "Evidence-backed public business discovery with owner claim state and optional Hermes Connect activation.", mainEntity: { "@type": "ItemList", itemListElement: repairShopDirectory.map((business: RepairShopDirectoryEntry, index: number) => ({ "@type": "ListItem", position: index + 1, url: `https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`, name: business.businessName })) } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Hermes Catalog", item: directoryUrl }] },
 ];
 ---
-<BaseLayout title="U.S. Business Directory | Hermes" description="Evidence-backed public business profiles with claim status, source notes, and optional Hermes Connect activation." schema={schema}>
-<SiteHeader activePath="/paths/technology/" />
-<main class="dir"><div class="shell">
-  <header class="hero"><p class="eyebrow">Hermes Business Directory</p><h1>Find repair businesses across the United States.</h1><p>Profiles can be discovered before a business becomes a Hermes customer. Unclaimed profiles do not enable booking, impersonate an owner, or imply a commercial relationship.</p></header>
-  <section class="coverage" aria-labelledby="coverage-title"><div class="coverage-copy"><p class="eyebrow">50-state rollout</p><h2 id="coverage-title">U.S. repair shop coverage map</h2><p>This tile map tracks directory coverage by state. A highlighted state has at least one evidence-backed profile. States without a profile remain research targets and do not generate empty SEO pages.</p><div class="legend"><span class="legend-active">Live directory state</span><span class="legend-pending">Research queue</span></div></div><div class="map-scroll"><div class="tile-map" role="img" aria-label="United States tile map showing active Hermes Business Directory states">{usStateDirectoryTiles.map((state)=>{const count=stateCounts.get(state.slug)??0;const style=`grid-row:${state.row};grid-column:${state.col};`;return count>0?<a class="state-tile active" style={style} href={`/businesses/${state.slug}/`} aria-label={`${state.name}: ${count} business profile`}><strong>{state.abbreviation}</strong><span>{count}</span></a>:<span class="state-tile pending" style={style} title={`${state.name}: research queue`} aria-label={`${state.name}: research queue`}><strong>{state.abbreviation}</strong></span>;})}</div></div></section>
-  <section class="how"><p class="eyebrow">How profiles work</p><h2>Discovery first. Owner verification before activation.</h2><p>Hermes separates public business discovery from customer activation. A profile may start from bounded public sources with its claim state and evidence notes visible. An authorized owner can later claim the profile, verify or correct the business details, and decide whether to activate Hermes Connect. Appointment booking, customer records, team scheduling, and other private business tools stay off until that verified activation happens.</p></section>
-  <section class="cities"><h2>Browse live locations</h2>{directoryCities.map((c: (typeof directoryCities)[number])=><a href={`/businesses/${c.stateSlug}/${c.citySlug}/`}><strong>{c.city}, {c.state}</strong><span>{repairShopDirectory.filter((b: RepairShopDirectoryEntry)=>b.stateSlug===c.stateSlug&&b.citySlug===c.citySlug).length} business profile</span></a>)}</section>
-</div></main><SiteFooter />
+<BaseLayout title="Hermes Catalog | Find Businesses, Services & Locations" description="Search evidence-backed public business profiles by company, service and location. Claim a profile and connect verified business details to Hermes Connect, Marketing, Logistics and Academy." schema={schema}>
+  <SiteHeader theme="light" activePath="/businesses/" />
+  <DirectionProductNav direction="catalog" theme="light" />
+
+  <main class="catalog-page">
+    <div class="shell catalog-shell">
+      <header class="catalog-hero">
+        <p class="eyebrow">Hermes Catalog</p>
+        <h1>Find the right business. Anywhere.</h1>
+        <p class="hero-copy">Search the public Hermes business discovery layer by company, service or location. The catalog starts with evidence-backed repair and vehicle-service profiles and expands only when useful source evidence exists.</p>
+        <form class="catalog-search" id="catalog-search" data-catalog-search role="search">
+          <label>
+            <span>What do you need?</span>
+            <input type="search" name="q" autocomplete="off" placeholder="Business, service, city or state" data-catalog-input />
+          </label>
+          <button type="submit">Search Catalog</button>
+        </form>
+        <div class="popular-searches" aria-label="Popular catalog searches">
+          <span>Try:</span>
+          {popularTerms.map((term) => <button type="button" data-catalog-query={term}>{term}</button>)}
+        </div>
+      </header>
+
+      <section class="catalog-results" aria-labelledby="catalog-results-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Live profiles</p><h2 id="catalog-results-title">Businesses you can discover now</h2></div>
+          <p data-catalog-count>{repairShopDirectory.length} profiles</p>
+        </div>
+        <div class="business-grid" data-catalog-grid>
+          {repairShopDirectory.map((business) => (
+            <article class="business-card" data-catalog-card data-search-text={[business.businessName, business.category, business.city, business.state, business.region, ...business.services, ...business.serviceArea].join(" ").toLowerCase()}>
+              <div class="business-card__top"><span>{business.category}</span><span>{business.claimState === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
+              <h3>{business.businessName}</h3>
+              <p>{business.city}, {business.state} · {business.serviceArea[0]}</p>
+              <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
+              <div class="business-card__actions"><a href={`/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`}>View profile</a><span>{business.bookingEnabled ? "Online booking available" : "Booking after owner activation"}</span></div>
+            </article>
+          ))}
+        </div>
+        <p class="catalog-empty" data-catalog-empty hidden>No live catalog profile matches that search yet. Try a broader service or location.</p>
+      </section>
+
+      <section class="catalog-categories" id="categories" aria-labelledby="categories-title">
+        <div class="section-heading"><div><p class="eyebrow">Browse by category</p><h2 id="categories-title">Current evidence-backed categories</h2></div><p>Only categories represented by live profiles are shown.</p></div>
+        <div class="category-grid">
+          {categoryCounts.map(([category, count]) => <button type="button" data-catalog-query={category}><strong>{category}</strong><span>{count} profile{count === 1 ? "" : "s"}</span></button>)}
+        </div>
+      </section>
+
+      <section class="coverage" id="locations" aria-labelledby="coverage-title">
+        <div class="coverage-copy"><p class="eyebrow">Browse by location</p><h2 id="coverage-title">U.S. repair shop coverage map</h2><p>A highlighted state has at least one evidence-backed profile. States without a profile remain research targets and do not generate empty SEO pages.</p><div class="legend"><span class="legend-active">Live Catalog state</span><span class="legend-pending">Research queue</span></div></div>
+        <div class="map-scroll"><div class="tile-map" role="img" aria-label="United States tile map showing active Hermes Catalog states">{usStateDirectoryTiles.map((state) => { const count = stateCounts.get(state.slug) ?? 0; const style = `grid-row:${state.row};grid-column:${state.col};`; return count > 0 ? <a class="state-tile active" style={style} href={`/businesses/${state.slug}/`} aria-label={`${state.name}: ${count} business profile`}><strong>{state.abbreviation}</strong><span>{count}</span></a> : <span class="state-tile pending" style={style} title={`${state.name}: research queue`} aria-label={`${state.name}: research queue`}><strong>{state.abbreviation}</strong></span>; })}</div></div>
+      </section>
+
+      <section class="cities" aria-labelledby="cities-title"><div class="section-heading"><div><p class="eyebrow">Live locations</p><h2 id="cities-title">Browse cities with published profiles</h2></div></div>{directoryCities.map((city: (typeof directoryCities)[number]) => <a href={`/businesses/${city.stateSlug}/${city.citySlug}/`}><strong>{city.city}, {city.state}</strong><span>{repairShopDirectory.filter((business: RepairShopDirectoryEntry) => business.stateSlug === city.stateSlug && business.citySlug === city.citySlug).length} business profile</span></a>)}</section>
+
+      <section class="owner-panel" id="business-owners" aria-labelledby="business-owner-title">
+        <div><p class="eyebrow">Own a business?</p><h2 id="business-owner-title">Start free. Claim only what is yours.</h2><p>A public profile can exist before a business becomes a Hermes customer. An authorized owner can verify or correct the public facts and then independently decide whether to activate Hermes Connect or any paid growth service.</p></div>
+        <div class="owner-actions"><a class="primary" href="mailto:officeus@hermeslogisticsus.com?subject=Add%20my%20business%20to%20Hermes%20Catalog">Add your business free</a><a href="#catalog-search">Find and claim an existing profile</a><a href="/services/hermes-connect/">Connect your business</a></div>
+        <ol class="catalog-funnel" aria-label="Hermes Catalog business path"><li>Free listing</li><li>Claim profile</li><li>Hermes Connect</li><li>Enhanced Catalog</li><li>SEO / GEO</li><li>Website</li><li>Sponsored position</li></ol>
+      </section>
+
+      <section class="hermes-ecosystem" id="hermes-ecosystem" aria-labelledby="ecosystem-title">
+        <div class="section-heading"><div><p class="eyebrow">Connected across Hermes</p><h2 id="ecosystem-title">Catalog is the discovery layer. The four directions stay distinct.</h2></div><p>Useful internal paths connect discovery to the next real need without turning Catalog into a fifth business direction.</p></div>
+        <div class="ecosystem-grid">
+          {ecosystem.map((item) => <article id={`catalog-${item.id}`}><span>{item.label}</span><h3>{item.title}</h3><p>{item.body}</p><a href={item.href}>{item.cta} →</a></article>)}
+        </div>
+      </section>
+
+      <section class="how"><p class="eyebrow">How profiles work</p><h2>Discovery first. Owner verification before activation.</h2><p>Hermes separates public business discovery from customer activation. A profile may start from bounded public sources with its claim state and evidence notes visible. An authorized owner can later claim the profile, verify or correct the business details, and decide whether to activate Hermes Connect. Appointment booking, customer records, team scheduling, and other private business tools stay off until that verified activation happens.</p></section>
+    </div>
+  </main>
+  <SiteFooter />
 </BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-catalog-search]");
+  const input = document.querySelector<HTMLInputElement>("[data-catalog-input]");
+  const cards = [...document.querySelectorAll<HTMLElement>("[data-catalog-card]")];
+  const count = document.querySelector<HTMLElement>("[data-catalog-count]");
+  const empty = document.querySelector<HTMLElement>("[data-catalog-empty]");
+  const normalize = (value: string) => value.trim().toLowerCase();
+  const applySearch = (rawQuery: string) => {
+    const query = normalize(rawQuery);
+    let visible = 0;
+    cards.forEach((card) => {
+      const matches = !query || (card.dataset.searchText ?? "").includes(query);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    if (count) count.textContent = `${visible} profile${visible === 1 ? "" : "s"}`;
+    if (empty) empty.hidden = visible !== 0;
+  };
+  form?.addEventListener("submit", (event) => { event.preventDefault(); applySearch(input?.value ?? ""); });
+  input?.addEventListener("input", () => applySearch(input.value));
+  document.querySelectorAll<HTMLButtonElement>("[data-catalog-query]").forEach((button) => button.addEventListener("click", () => {
+    const query = button.dataset.catalogQuery ?? "";
+    if (input) input.value = query;
+    applySearch(query);
+    document.querySelector("#catalog-search")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }));
+</script>
+
 <style>
-.dir{min-height:70vh;background:#f6f7f9;color:#152033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:120px 0 80px}.hero{max-width:850px}.eyebrow{color:#2168a6;text-transform:uppercase;letter-spacing:.11em;font-size:12px;font-weight:900}.hero h1{font-size:clamp(38px,6vw,68px);line-height:1.02;margin:.3rem 0 1rem}.hero p,.how p,.coverage-copy p{color:#657286;line-height:1.7}.coverage{margin-top:34px;padding:24px;border:1px solid #dfe6ee;border-radius:18px;background:#fff}.coverage-copy{max-width:850px}.coverage-copy h2{margin:.25rem 0 .4rem;font-size:clamp(26px,4vw,40px)}.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:#536276}.legend span:before{content:"";width:12px;height:12px;border-radius:3px;border:1px solid #cad4df}.legend-active:before{background:#e9f4ff;border-color:#69a8df!important}.legend-pending:before{background:#f2f4f7}.map-scroll{margin-top:20px;overflow-x:auto;padding-bottom:6px}.tile-map{display:grid;grid-template-columns:repeat(14,46px);grid-template-rows:repeat(7,46px);gap:5px;min-width:709px;align-items:stretch}.state-tile{display:grid;place-items:center;position:relative;border:1px solid #d7dee7;border-radius:9px;background:#f3f5f7;color:#8a97a6;font-size:12px;text-decoration:none}.state-tile strong{font-size:12px}.state-tile span{position:absolute;right:4px;bottom:2px;font-size:9px}.state-tile.active{background:#e9f4ff;border-color:#69a8df;color:#155f9f;box-shadow:0 4px 12px rgba(33,104,166,.08)}.state-tile.active:hover,.state-tile.active:focus-visible{outline:2px solid #2168a6;outline-offset:2px;background:#dcedfb}.how{max-width:860px;margin-top:28px;padding:22px;border:1px solid #e1e6ed;border-radius:16px;background:#fff}.how .eyebrow{margin:0 0 7px}.how h2{margin:0 0 8px;font-size:24px}.how p:last-child{margin:0}.cities{margin-top:36px;display:grid;gap:12px}.cities>a{display:flex;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e1e6ed;border-radius:14px;background:#fff;color:#1e2d40;text-decoration:none}.cities span{color:#718095;font-size:13px}@media(max-width:700px){.shell{padding-top:96px}.coverage{padding:18px}.cities>a{display:grid}}
+  .catalog-page{min-height:70vh;background:#f5f7fa;color:#152033}.catalog-shell{width:min(1160px,calc(100% - 2rem));margin:auto;padding:112px 0 88px}.eyebrow{margin:0 0 8px;color:#2168a6;text-transform:uppercase;letter-spacing:.11em;font-size:11px;font-weight:900}.catalog-hero{max-width:980px}.catalog-hero h1{max-width:900px;margin:.2rem 0 1rem;font-size:clamp(44px,7vw,78px);line-height:.98;letter-spacing:-.045em}.hero-copy{max-width:820px;color:#657286;line-height:1.7;font-size:clamp(16px,1.6vw,19px)}.catalog-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-top:30px;padding:9px;border:1px solid #d8e1eb;border-radius:18px;background:#fff;box-shadow:0 20px 55px rgba(34,68,103,.09)}.catalog-search label{display:grid;gap:5px;padding:5px 10px}.catalog-search label span{color:#728197;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}.catalog-search input{width:100%;border:0;outline:0;background:transparent;color:#152033;font:inherit;font-size:17px}.catalog-search button,.owner-actions .primary{border:0;border-radius:12px;background:#152033;color:#fff;font-weight:850;cursor:pointer}.catalog-search button{min-width:150px;padding:0 18px}.popular-searches{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:13px;color:#768398;font-size:12px}.popular-searches button,.category-grid button{border:1px solid #dbe3ec;background:#fff;color:#315676;cursor:pointer}.popular-searches button{padding:7px 10px;border-radius:999px;font-size:11px}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:24px}.section-heading h2{margin:0;font-size:clamp(28px,4vw,42px);letter-spacing:-.035em}.section-heading>p,.section-heading>div>p:last-child{max-width:520px;color:#6d7b8e;line-height:1.55}.catalog-results,.catalog-categories,.coverage,.cities,.owner-panel,.hermes-ecosystem,.how{scroll-margin-top:160px;margin-top:48px}.business-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.business-card{display:flex;flex-direction:column;min-height:300px;padding:19px;border:1px solid #dde5ed;border-radius:17px;background:#fff;box-shadow:0 10px 30px rgba(37,65,94,.04)}.business-card[hidden]{display:none}.business-card__top{display:flex;justify-content:space-between;gap:10px;color:#6d7b8e;font-size:10px;font-weight:850;text-transform:uppercase}.business-card__top span:last-child{color:#896813}.business-card h3{margin:18px 0 6px;font-size:22px}.business-card>p{margin:0;color:#6b788a;font-size:13px}.business-card ul{padding-left:18px;color:#5f6f82;line-height:1.65;font-size:12px}.business-card__actions{display:grid;gap:8px;margin-top:auto;padding-top:15px;border-top:1px solid #edf1f4}.business-card__actions a{color:#1668b0;text-decoration:none;font-weight:850}.business-card__actions span{color:#8591a1;font-size:10px}.catalog-empty{padding:24px;border:1px dashed #cdd8e3;border-radius:14px;background:#fff;color:#6d7b8e}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:17px}.category-grid button{display:grid;gap:4px;padding:17px;border-radius:14px;text-align:left}.category-grid button strong{font-size:14px}.category-grid button span{color:#788699;font-size:11px}.coverage{padding:24px;border:1px solid #dfe6ee;border-radius:18px;background:#fff}.coverage-copy{max-width:850px}.coverage-copy h2{margin:.25rem 0 .4rem;font-size:clamp(28px,4vw,42px)}.coverage-copy>p:last-of-type,.how p,.owner-panel p,.hermes-ecosystem p{color:#657286;line-height:1.7}.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:#536276}.legend span:before{content:"";width:12px;height:12px;border-radius:3px;border:1px solid #cad4df}.legend-active:before{background:#e9f4ff;border-color:#69a8df!important}.legend-pending:before{background:#f2f4f7}.map-scroll{margin-top:20px;overflow-x:auto;padding-bottom:6px}.tile-map{display:grid;grid-template-columns:repeat(14,46px);grid-template-rows:repeat(7,46px);gap:5px;min-width:709px;align-items:stretch}.state-tile{display:grid;place-items:center;position:relative;border:1px solid #d7dee7;border-radius:9px;background:#f3f5f7;color:#8a97a6;font-size:12px;text-decoration:none}.state-tile strong{font-size:12px}.state-tile span{position:absolute;right:4px;bottom:2px;font-size:9px}.state-tile.active{background:#e9f4ff;border-color:#69a8df;color:#155f9f;box-shadow:0 4px 12px rgba(33,104,166,.08)}.state-tile.active:hover,.state-tile.active:focus-visible{outline:2px solid #2168a6;outline-offset:2px;background:#dcedfb}.cities{display:grid;gap:12px}.cities .section-heading{margin-bottom:4px}.cities>a{display:flex;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e1e6ed;border-radius:14px;background:#fff;color:#1e2d40;text-decoration:none}.cities span{color:#718095;font-size:13px}.owner-panel{padding:clamp(22px,4vw,36px);border:1px solid #d5e1ec;border-radius:22px;background:linear-gradient(135deg,#fff 0%,#eef7ff 55%,#f4f0ff 100%)}.owner-panel h2{max-width:760px;margin:0 0 10px;font-size:clamp(30px,4vw,46px)}.owner-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}.owner-actions a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #ccd8e4;border-radius:11px;background:#fff;color:#295a84;text-decoration:none;font-size:12px;font-weight:850}.owner-actions .primary{border-color:#152033;background:#152033;color:#fff}.catalog-funnel{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:18px 0 0;border-top:1px solid rgba(52,94,131,.13);list-style:none}.catalog-funnel li{display:flex;align-items:center;gap:8px;color:#53677d;font-size:11px;font-weight:800}.catalog-funnel li:not(:last-child)::after{content:"→";color:#98a7b7}.ecosystem-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}.ecosystem-grid article{padding:22px;border:1px solid #dde4ec;border-radius:17px;background:#fff}.ecosystem-grid article>span{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eef5fb;color:#27679e;font-size:10px;font-weight:900;text-transform:uppercase}.ecosystem-grid h3{margin:13px 0 8px;font-size:21px}.ecosystem-grid p{font-size:13px}.ecosystem-grid a{color:#1768af;text-decoration:none;font-size:12px;font-weight:850}.how{max-width:900px;padding:24px;border:1px solid #dbe5ef;border-radius:18px;background:#fff}.how h2{margin:0 0 8px;font-size:27px}.how p:last-child{margin:0}@media(max-width:900px){.business-grid,.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){.catalog-shell{padding-top:96px}.catalog-search{grid-template-columns:1fr}.catalog-search button{min-height:46px}.section-heading{display:grid;gap:8px}.business-grid,.category-grid,.ecosystem-grid{grid-template-columns:1fr}.coverage{padding:18px}.cities>a{display:grid}.catalog-funnel{display:grid}.catalog-funnel li:not(:last-child)::after{content:"↓"}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
 </style>

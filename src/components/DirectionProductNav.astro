@@ -16,7 +16,7 @@ import {
   Workflow,
 } from "@lucide/astro";
 
-export type DirectionId = "logistics" | "marketing" | "technology" | "academy";
+export type DirectionId = "logistics" | "marketing" | "technology" | "academy" | "catalog";
 
 interface Props {
   direction: DirectionId;
@@ -41,6 +41,7 @@ const configs = {
       { id: "shippers-dealers", label: "Shippers & Dealers", href: "/paths/logistics/customers/vehicle-transport/", icon: Building2 },
       { id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow },
       { id: "path", label: "Find Your Path", href: "/paths/logistics/find-your-path/", icon: ArrowUpRight },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Search },
     ],
   },
   marketing: {
@@ -56,6 +57,7 @@ const configs = {
       { id: "ads", label: "Meta Ads", href: "/gb/london/meta-ads/", icon: Sparkles },
       { id: "london", label: "London", href: "/gb/london/", icon: Building2 },
       { id: "learn", label: "Learn Marketing", href: "/academy/marketing/", icon: GraduationCap },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Building2 },
     ],
   },
   technology: {
@@ -71,6 +73,7 @@ const configs = {
       { id: "brief", label: "Project Brief", href: "/paths/technology/#project-brief", icon: BriefcaseBusiness },
       { id: "case", label: "IT Development", href: "/case/it-development/", icon: Code2 },
       { id: "academy", label: "Learn IT & AI", href: "/paths/academy/#academy-it", icon: BookOpen },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Building2 },
     ],
   },
   academy: {
@@ -86,6 +89,21 @@ const configs = {
       { id: "operations", label: "COO / Operations", href: "/paths/academy/#academy-operations", icon: Workflow },
       { id: "method", label: "How Training Works", href: "/academy/how-training-works/", icon: BookOpen },
       { id: "apply", label: "Apply", href: "/academy/apply/", icon: GraduationCap },
+      { id: "catalog", label: "Catalog", href: "/businesses/", icon: Building2 },
+    ],
+  },
+  catalog: {
+    brand: "Hermes Catalog",
+    subtitle: "Businesses · services · locations · Connect",
+    home: "/businesses/",
+    accent: "#246fb5",
+    items: [
+      { id: "search", label: "Search", href: "/businesses/#catalog-search", icon: Search },
+      { id: "categories", label: "Categories", href: "/businesses/#categories", icon: BriefcaseBusiness },
+      { id: "locations", label: "Locations", href: "/businesses/#locations", icon: Route },
+      { id: "owners", label: "Business Owners", href: "/businesses/#business-owners", icon: UsersRound },
+      { id: "ecosystem", label: "Hermes Services", href: "/businesses/#hermes-ecosystem", icon: Workflow },
+      { id: "connect", label: "Hermes Connect", href: "/services/hermes-connect/", icon: Sparkles },
     ],
   },
 } as const;

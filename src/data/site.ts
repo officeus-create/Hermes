@@ -68,9 +68,9 @@ export const site = {
   ],
   navigation: [
     { label: "Logistics", href: "paths/logistics/" },
+    { label: "Technology", href: "paths/technology/" },
     { label: "Marketing", href: "paths/marketing/" },
     { label: "Academy", href: "paths/academy/" },
-    { label: "Technology", href: "paths/technology/" },
   ],
   hero: {
     eyebrow: "Logistics · Growth · Education · Technology",

@@ -63,7 +63,7 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
 };
-const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 };
+const directionOrder: Record<string, number> = { logistics: 0, technology: 1, marketing: 2, academy: 3 };
 const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
 const orderedNavigation = [...site.navigation].sort(
   (a, b) => (directionOrder[navDirectionId(a.href)] ?? 99) - (directionOrder[navDirectionId(b.href)] ?? 99),
@@ -78,6 +78,7 @@ const navigation = activeLocale === "en"
       return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
+const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
@@ -108,8 +109,9 @@ const languageLinks = siteLocales.map((language) => {
     <span>{site.brand}</span>
   </a>
 
-  <nav class="desktop-nav" aria-label="Primary navigation">
+  <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
+    <a class="catalog-nav-link" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
   </nav>
 
   <div class="header-actions">
@@ -146,15 +148,16 @@ const languageLinks = siteLocales.map((language) => {
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
-    {!privateWorkspace && isHermesConnectRoute && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe /></div>}
+    {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
+    <a class="mobile-catalog-link" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
     <HermesConnectLauncher
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
     />
-    {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
+    {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
+    {!privateWorkspace && isHermesConnectRoute && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe /></div>}
     <a href="#contact">{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
       <strong>{localeConfig[activeLocale].name}</strong>
@@ -226,6 +229,60 @@ const languageLinks = siteLocales.map((language) => {
 </script>
 
 <style is:global>
+  .desktop-nav--ecosystem {
+    gap: clamp(.72rem, 1.2vw, 1.25rem);
+    margin-left: clamp(1rem, 2vw, 2.5rem);
+    font-size: clamp(.78rem, .9vw, .86rem);
+  }
+  .desktop-nav .catalog-nav-link {
+    margin-left: clamp(.45rem, 1vw, 1rem);
+    padding-left: clamp(.9rem, 1.4vw, 1.35rem);
+  }
+  .desktop-nav .catalog-nav-link::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1px;
+    height: 22px;
+    background: currentColor;
+    content: "";
+    opacity: .22;
+    transform: translateY(-50%);
+  }
+  .desktop-nav .catalog-nav-link span,
+  .mobile-nav .mobile-catalog-link span {
+    background: linear-gradient(100deg, currentColor 0%, #8ed8ff 28%, #b6a4ff 50%, #73d7c7 70%, currentColor 100%);
+    background-size: 240% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: hermes-catalog-shimmer 5.5s ease-in-out infinite;
+  }
+  .site-header-light .desktop-nav .catalog-nav-link span,
+  .site-header-light .mobile-nav .mobile-catalog-link span {
+    background-image: linear-gradient(100deg, #111324 0%, #1970b8 30%, #6d51c8 52%, #168b7b 72%, #111324 100%);
+  }
+  .mobile-nav .mobile-catalog-link {
+    margin-top: .25rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    padding-top: .8rem;
+  }
+  @keyframes hermes-catalog-shimmer {
+    0%, 18% { background-position: 100% 50%; }
+    50%, 68% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+  @media (max-width: 1180px) and (min-width: 901px) {
+    .desktop-nav--ecosystem { gap: .68rem; margin-left: 1rem; font-size: .76rem; }
+    .desktop-nav .catalog-nav-link { margin-left: .25rem; padding-left: .72rem; }
+    .site-header .header-actions { gap: .55rem; }
+    .site-header .header-cta { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-nav .catalog-nav-link span,
+    .mobile-nav .mobile-catalog-link span { animation: none; background-position: 50% 50%; }
+  }
+
   /* Hermes Connect safe-polish layer. Scoped so the rest of the site is untouched. */
   .hc-experience .site-header {
     min-height: 76px;
