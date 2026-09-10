@@ -49,5 +49,7 @@ test("Business directory has a state landing before city and profile routes", as
   await page.goto("/businesses/arkansas/", { waitUntil:"domcontentloaded" });
   await expect(page.getByRole("heading", { level:1, name:"Auto repair businesses in Arkansas" })).toBeVisible();
   await expect(page.locator('a[href="/businesses/arkansas/sherwood/"]')).toBeVisible();
-  await expect(page.getByText("1 business profile", { exact:true })).toBeVisible();
+  const profileSummary = page.locator('.summary div').first();
+  await expect(profileSummary.locator('strong')).toHaveText("1");
+  await expect(profileSummary.locator('span')).toHaveText("business profile");
 });
