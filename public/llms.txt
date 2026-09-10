@@ -2,7 +2,7 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-09-08
+> Verification date: 2026-09-10
 
 Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
@@ -21,6 +21,9 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Logistics direction](https://hermeslogisticsus.com/paths/logistics/)
 - [Car-hauling dispatch](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/)
 - [Car-hauler load search by U.S. market](https://hermeslogisticsus.com/logistics/car-hauler-loads/)
+- [Owner-operator dispatch support](https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/)
+- [New-authority car-hauler support](https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/)
+- [Load Board](https://hermeslogisticsus.com/load-board/)
 - [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
 - [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)
 - [Direct vehicle transport network](https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/)
@@ -28,7 +31,11 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Logistics resources](https://hermeslogisticsus.com/logistics/resources/)
 - [RPM calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/)
 
+For a carrier, the public discovery journey is: use the Car Hauler Load Search hub and market pages to understand relevant U.S. search markets; use Car-Hauling Dispatch, Owner-Operator Dispatch Support, or New-Authority Car-Hauler Support to evaluate fit; and use the canonical Load Board page to understand the public Load Board workflow. Qualification, agreements, and onboarding continue through the appropriate site workflow after fit is established; private or noindex workflow URLs are intentionally not listed as public AI-search owners. Audience, equipment, origin, area, and section state may be represented in client-side URL fragments; those fragments do not create separate canonical content owners.
+
 The Car Hauler Load Search market pages are carrier-acquisition and dispatch-support pages. They do not publish live freight, private shipment history, or office-location claims. A city page identifies a search market and local operating context; actual freight, access, rates, timing, and carrier fit require review.
+
+The Load Board public page is an operating and workflow surface. Its existence does not prove that a specific load, broker/carrier match, rate, lane, contact, private opportunity, or capacity is live or available. Rely only on visibly current public state and approved access for current operational facts.
 
 The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper request workflow. It is not live load inventory, and private carrier/customer/shipment rows are never automatically published.
 
