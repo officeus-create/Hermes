@@ -20,14 +20,8 @@ test("car-hauler GEO hub exposes exactly 25 indexable market links with one comm
 
   const marketLinks = page.locator('a[href^="/logistics/car-hauler-loads/"][data-carrier-geo-cta="market_select"]');
   await expect(marketLinks).toHaveCount(25);
-  await expect(page.getByRole("link", { name: /Colorado Springs, CO/i })).toHaveAttribute(
-    "href",
-    "/logistics/car-hauler-loads/colorado-springs-co/",
-  );
-  await expect(page.getByRole("link", { name: /Puyallup, WA/i })).toHaveAttribute(
-    "href",
-    "/logistics/car-hauler-loads/puyallup-wa/",
-  );
+  await expect(page.getByRole("link", { name: /Colorado Springs, CO/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/colorado-springs-co/");
+  await expect(page.getByRole("link", { name: /Puyallup, WA/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/puyallup-wa/");
 
   const primary = page.locator('[data-commercial-primary-cta][data-service-group="car_hauler_geo"]').first();
   await expect(primary).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
@@ -42,10 +36,7 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
   await page.goto("/logistics/car-hauler-loads/colorado-springs-co/");
 
   await expect(page).toHaveTitle(/Car Hauler Loads in Colorado Springs, CO/);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/",
-  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Colorado Springs, CO?");
   const marketContext = page.locator(".carrier-geo-market-card");
   await expect(marketContext.getByText(/Colorado Springs sits on Colorado's Front Range/)).toBeVisible();
@@ -66,7 +57,7 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
 
   const supportItems = page.locator(".carrier-geo-support-list > li");
   await expect(supportItems).toHaveCount(20);
-  await expect(page.getByRole("link", { name: /Preview Load Board/i })).toHaveAttribute("href", /\/load-board\//);
+  await expect(page.getByRole("link", { name: /Preview Load Board/i })).toHaveAttribute("href", "/load-board/#available-loads");
   await expect(page.getByText(/illustrative\/demo surface/i)).toBeVisible();
   await expect(page.getByText(/discounts, parts offers, or partner benefits are shown only/i)).toBeVisible();
 
@@ -74,7 +65,7 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
   expect(body).not.toMatch(/259|260\+|OFFICE 374|Autobidmaster|Carvana|customer ID/i);
 });
 
-test("carrier GEO pages have distinct local value and emit privacy-safe GA4-reportable depth and CTA events", async ({ page }) => {
+test("carrier GEO pages wait for explicit analytics consent, then emit privacy-safe GA4-reportable depth and CTA events once", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/puyallup-wa/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Puyallup, WA?");
   const marketContext = page.locator(".carrier-geo-market-card");
@@ -82,9 +73,23 @@ test("carrier GEO pages have distinct local value and emit privacy-safe GA4-repo
   await expect(marketContext.getByText("Tacoma, WA")).toBeVisible();
   await expect(marketContext.getByText("Auburn, WA")).toBeVisible();
 
+  expect(await analyticsEvents(page, "carrier_geo_page_view")).toHaveLength(0);
+  expect(await analyticsEvents(page, "carrier_geo_section_view")).toHaveLength(0);
+  expect(await analyticsEvents(page, "carrier_geo_reach_hero")).toHaveLength(0);
+  await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "denied");
+
+  await page.locator("[data-consent-settings]").click();
+  await expect(page.locator("[data-consent-banner]")).toBeVisible();
+  await page.locator("[data-consent-accept]").click();
+  await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "granted");
+
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
+  await page.locator('[data-carrier-geo-section="hero"]').scrollIntoViewIfNeeded();
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_section_view")).length).toBeGreaterThan(0);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_reach_hero")).length).toBe(1);
+
+  await page.evaluate(() => { document.documentElement.dataset.analyticsConsent = "granted"; });
+  await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
 
   await page.evaluate(() => {
     document.addEventListener("click", (event) => {
@@ -99,27 +104,10 @@ test("carrier GEO pages have distinct local value and emit privacy-safe GA4-repo
   const commercialCtas = await analyticsEvents(page, "commercial_cta_click");
   expect(geoCtas).toHaveLength(1);
   expect(reportableStartReview).toHaveLength(1);
-  expect(geoCtas[0]).toMatchObject({
-    event: "carrier_geo_cta_click",
-    cta_type: "start_review",
-    audience_type: "carrier",
-    page_group: "car_hauler_geo",
-    service_group: "car_hauler_geo",
-    page_path: "/logistics/car-hauler-loads/puyallup-wa/",
-    destination_path: "/logistics/start-car-hauling-dispatch/",
-  });
-  expect(reportableStartReview[0]).toMatchObject({
-    event: "carrier_geo_click_start_review",
-    cta_type: "start_review",
-    page_path: "/logistics/car-hauler-loads/puyallup-wa/",
-  });
+  expect(geoCtas[0]).toMatchObject({ event: "carrier_geo_cta_click", cta_type: "start_review", audience_type: "carrier", page_group: "car_hauler_geo", service_group: "car_hauler_geo", page_path: "/logistics/car-hauler-loads/puyallup-wa/", destination_path: "/logistics/start-car-hauling-dispatch/" });
+  expect(reportableStartReview[0]).toMatchObject({ event: "carrier_geo_click_start_review", cta_type: "start_review", page_path: "/logistics/car-hauler-loads/puyallup-wa/" });
   expect(commercialCtas).toHaveLength(1);
-  expect(commercialCtas[0]).toMatchObject({
-    event: "commercial_cta_click",
-    cta_type: "carrier_intake",
-    page_group: "car_hauler_geo",
-    service_group: "car_hauler_geo",
-  });
+  expect(commercialCtas[0]).toMatchObject({ event: "commercial_cta_click", cta_type: "carrier_intake", page_group: "car_hauler_geo", service_group: "car_hauler_geo" });
 
   const serialized = JSON.stringify({ geoCtas, reportableStartReview, commercialCtas });
   expect(serialized).not.toMatch(/MC\s*\d+|USDOT\s*\d+|@|\+1|Puyallup.*Tacoma/i);
