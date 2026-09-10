@@ -13,6 +13,8 @@ test("Catalog uses the shared horizontal product navigation and connects Hermes 
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   const nav = page.locator('[data-direction-product-nav="catalog"]');
   await expect(nav).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Search", exact: true })).toHaveAttribute("href", "/businesses/#catalog-search");
+  await expect(page.locator("#catalog-search")).toBeVisible();
   for (const label of ["Search", "Categories", "Locations", "Business Owners", "Hermes Services", "Hermes Connect"]) {
     await expect(nav.getByRole("link", { name: new RegExp(`^${label}$`, "i") })).toBeVisible();
   }
@@ -39,4 +41,7 @@ test("Catalog preserves evidence boundaries and free owner activation path", asy
   await expect(page.getByRole("link", { name: "Connect your business" })).toHaveAttribute("href", "/services/hermes-connect/");
   await expect(page.locator(".catalog-funnel")).toContainText("Free listing");
   await expect(page.locator(".catalog-funnel")).toContainText("Sponsored position");
+  await page.goto("/businesses/arkansas/sherwood/seans-autopro-mobile/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".crumb a").first()).toHaveText("Hermes Catalog");
+  await expect(page.getByText("Catalog FAQ", { exact: true })).toBeVisible();
 });
