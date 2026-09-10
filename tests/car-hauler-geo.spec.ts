@@ -76,7 +76,10 @@ test("carrier GEO pages wait for explicit analytics consent, then emit privacy-s
   expect(await analyticsEvents(page, "carrier_geo_page_view")).toHaveLength(0);
   expect(await analyticsEvents(page, "carrier_geo_section_view")).toHaveLength(0);
   expect(await analyticsEvents(page, "carrier_geo_reach_hero")).toHaveLength(0);
+  await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "denied");
 
+  await page.locator("[data-consent-settings]").click();
+  await expect(page.locator("[data-consent-banner]")).toBeVisible();
   await page.locator("[data-consent-accept]").click();
   await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "granted");
 
