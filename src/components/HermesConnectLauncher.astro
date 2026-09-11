@@ -45,6 +45,7 @@ const copy = {
     currentFamily: "Hermes Connect · Current product family",
     explore: "Explore Hermes Connect",
     bannerSuffix: "No legacy workspace or historical pricing is presented as the current product.",
+    crm: "CRM",
   },
   ru: {
     context: {
@@ -63,6 +64,7 @@ const copy = {
     currentFamily: "Hermes Connect · текущее семейство продуктов",
     explore: "Открыть Hermes Connect",
     bannerSuffix: "Устаревшие рабочие пространства и исторические цены не показываются как текущий продукт.",
+    crm: "CRM",
   },
 } as const;
 
@@ -92,8 +94,10 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 
 {variant === "header" && (
   <a href={localizedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
-    <img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="22" height="22" loading="eager" alt="Hermes Connect mark" />
-    <span>{displayTitle}</span>
+    <span class="hc-launcher-header-copy">
+      <small>{localeCopy.crm}</small>
+      <span>{displayTitle}</span>
+    </span>
     <ArrowUpRight size={15} aria-hidden="true" />
   </a>
 )}
@@ -140,7 +144,15 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 <style>
   .hc-brand-mark{display:block;flex:0 0 auto;border-radius:6px;box-shadow:0 6px 18px rgba(92,78,255,.18)}
   .hc-brand-mark-mobile{grid-row:1 / span 2}.hc-brand-mark-link{margin-right:.05rem}.hc-brand-mark-inline{border-radius:5px}
-  .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}.hc-launcher-header{padding:.35rem .72rem .35rem .38rem;border:1px solid rgba(157,136,255,.3);border-radius:999px;background:rgba(109,40,217,.12);color:#f8fafc;font-size:.82rem;font-weight:700}.hc-launcher-header:hover{background:rgba(109,40,217,.24);border-color:rgba(157,136,255,.5)}
+  .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}
+  .hc-launcher-header{position:relative;isolation:isolate;overflow:hidden;gap:.48rem;padding:.31rem .5rem .3rem .56rem;border:1px solid rgba(157,136,255,.2);border-radius:9px;background:linear-gradient(120deg,rgba(109,40,217,.08),rgba(157,136,255,.035));color:#f8fafc;font-size:.82rem;font-weight:700;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+  .hc-launcher-header::before{content:"";position:absolute;z-index:-1;inset:-70% -30%;background:linear-gradient(110deg,transparent 36%,rgba(196,181,253,.18) 49%,rgba(255,255,255,.28) 52%,rgba(196,181,253,.13) 56%,transparent 68%);transform:translateX(-72%);animation:hc-connect-shimmer 5.5s ease-in-out infinite;pointer-events:none}
+  .hc-launcher-header:hover{background:linear-gradient(120deg,rgba(109,40,217,.16),rgba(157,136,255,.07));border-color:rgba(157,136,255,.42);transform:translateY(-1px)}
+  .hc-launcher-header-copy{display:grid;grid-template-columns:auto auto;align-items:baseline;gap:.34rem;line-height:1;white-space:nowrap}
+  .hc-launcher-header-copy small{font-size:.56rem;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:#c4b5fd;font-weight:850}
+  .hc-launcher-header-copy>span{font-size:.81rem;line-height:1;font-weight:760}
+  @keyframes hc-connect-shimmer{0%,58%,100%{transform:translateX(-72%)}72%{transform:translateX(72%)}}
+  @media(prefers-reduced-motion:reduce){.hc-launcher-header::before{animation:none}.hc-launcher-header{transition:none}}
   .hc-launcher-mobile{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem 1rem;padding:1rem;border:1px solid rgba(157,136,255,.22);border-radius:14px;background:rgba(13,17,27,.9);color:#fff;text-decoration:none}.hc-launcher-mobile div{min-width:0}.hc-launcher-mobile strong,.hc-launcher-mobile small{display:block}.hc-launcher-mobile small{margin-top:.2rem;color:#9ba7ba;font-size:.72rem;line-height:1.35}.hc-launcher-mobile>span{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;color:#bcaeff;font-size:.8rem;font-weight:700}
   .hc-launcher-panel{display:grid;gap:.7rem;padding:1.15rem;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(11,15,24,.55);backdrop-filter:blur(18px)}.hc-launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.hc-launcher-panel-brand{display:inline-flex!important;align-items:center;gap:.5rem;padding:0!important;background:transparent!important;color:#fff!important;font-size:inherit!important;text-transform:none!important}.hc-launcher-panel-head>span:last-child{padding:.2rem .45rem;border-radius:999px;background:rgba(52,211,153,.1);color:#6ee7b7;font-size:.68rem;font-weight:800;text-transform:uppercase}.hc-launcher-panel p{margin:0;color:#c0c8d6;font-size:.8rem;line-height:1.5}.hc-launcher-panel-actions{display:flex;flex-wrap:wrap;gap:.5rem .85rem;align-items:center}.hc-launcher-panel-actions a{display:inline-flex;align-items:center;gap:.35rem;color:#fff;text-decoration:none;font-size:.82rem;font-weight:750}.hc-launcher-panel-actions .hc-launcher-live-entry{color:#bcaeff;font-size:.76rem}
   .hc-launcher-banner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:1160px;margin:2.5rem auto;padding:1.5rem;border:1px solid rgba(157,136,255,.25);border-radius:20px;background:linear-gradient(140deg,rgba(109,40,217,.12),rgba(11,15,24,.9))}.hc-launcher-badge{display:inline-flex;align-items:center;gap:.4rem;color:#9d88ff;font-size:.72rem;font-weight:800;text-transform:uppercase}.hc-launcher-banner h3{margin:.35rem 0}.hc-launcher-banner p{margin:0;color:#9ba7ba;line-height:1.5;font-size:.86rem}.hc-launcher-banner>a{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:.58rem .82rem .58rem .58rem;border-radius:12px;background:#6d28d9;color:#fff;text-decoration:none;font-size:.84rem;font-weight:750}
