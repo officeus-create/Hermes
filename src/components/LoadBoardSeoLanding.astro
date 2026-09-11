@@ -1,0 +1,199 @@
+---
+import { ArrowRight, CheckCircle2, Database, Search, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import { carHaulerGeoMarkets } from "../data/car-hauler-geo-markets";
+import { loadBoardEquipmentPages, loadBoardProviderPages, type LoadBoardSeoPage } from "../data/load-board-seo";
+
+interface Props {
+  page: LoadBoardSeoPage;
+  kind: "provider" | "equipment";
+}
+
+const { page, kind } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const isCarHauling = kind === "provider" ? ["ship-cars", "central-dispatch", "super-dispatch"].includes(page.slug) : page.slug === "car-hauler";
+const relatedPages = (kind === "provider" ? loadBoardProviderPages : loadBoardEquipmentPages)
+  .filter((item) => item.slug !== page.slug)
+  .slice(0, 6);
+const relatedBase = kind === "provider" ? "/load-board/providers/" : "/load-board/equipment/";
+const marketLinks = carHaulerGeoMarkets.slice(0, 12);
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: page.title,
+    description: page.description,
+    isPartOf: { "@type": "WebSite", name: "Hermes", url: "https://hermeslogisticsus.com/" },
+    about: { "@type": "Thing", name: kind === "provider" ? `${page.name} logistics integration` : `${page.name} freight load search` },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Load Board", item: "https://hermeslogisticsus.com/load-board/" },
+      { "@type": "ListItem", position: 3, name: kind === "provider" ? "Provider integrations" : "Equipment load search", item: canonical },
+      { "@type": "ListItem", position: 4, name: page.name, item: canonical },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: page.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={page.title} description={page.description} schema={schema}>
+  <div class="lb-seo-page">
+    <SiteHeader theme="dark" activePath="/load-board/" />
+    <main id="main-content">
+      <section class="lb-seo-hero">
+        <div class="lb-seo-shell lb-seo-hero-grid">
+          <div>
+            <p class="lb-seo-eyebrow">Hermes Load Board · {page.eyebrow}</p>
+            <h1>{page.name} {kind === "provider" ? "Integration for Freight Dispatch" : "Loads and Dispatcher Search"}</h1>
+            <p class="lb-seo-lead">{page.description}</p>
+            <div class="lb-seo-actions">
+              <a class="lb-button lb-button-primary" href="/load-board/#live-marketplace">Open Hermes Load Board <ArrowRight size={17} aria-hidden="true" /></a>
+              <a class="lb-button" href="/logistics/car-hauling-dispatch/">Dispatch support</a>
+            </div>
+          </div>
+          <aside class="lb-answer" data-ai-answer>
+            <p>Quick answer</p>
+            <strong>{page.answer}</strong>
+          </aside>
+        </div>
+      </section>
+
+      <section class="lb-seo-section">
+        <div class="lb-seo-shell lb-seo-two">
+          <div>
+            <p class="lb-seo-eyebrow">What Hermes adds</p>
+            <h2>Turn load-board records into dispatcher decisions.</h2>
+            <p>Hermes uses one normalized opportunity model instead of forcing a dispatcher to re-read the same fields in every source. Approved records can be ranked by lane fit, equipment, rate, RPM, deadhead, freshness, and data quality, then deduplicated before review.</p>
+            <ul class="lb-checks">
+              {page.capabilities.map((item) => <li><CheckCircle2 size={18} aria-hidden="true" /><span>{item}</span></li>)}
+            </ul>
+          </div>
+          <div class="lb-flow" aria-label="Hermes load intelligence workflow">
+            <div><Database size={22} aria-hidden="true" /><span>Approved source</span><small>Official API, webhook, email, or permitted export</small></div>
+            <div><Search size={22} aria-hidden="true" /><span>Normalize + dedupe</span><small>One comparable Hermes opportunity contract</small></div>
+            <div><Truck size={22} aria-hidden="true" /><span>Score + dispatch</span><small>Lane, RPM, deadhead, freshness, equipment</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lb-seo-section lb-seo-section-alt">
+        <div class="lb-seo-shell">
+          <div class="lb-boundary">
+            <ShieldCheck size={26} aria-hidden="true" />
+            <div>
+              <p class="lb-seo-eyebrow">Data-rights boundary</p>
+              <h2>Official access first. No marketplace scraping.</h2>
+              <p>{page.boundary}</p>
+              <p>Hermes public SEO/GEO pages describe the workflow, equipment, lane logic, and dispatcher decision process. Third-party marketplace records remain controlled by their source visibility, retention, and redistribution rights.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lb-seo-section">
+        <div class="lb-seo-shell">
+          <p class="lb-seo-eyebrow">Search intent</p>
+          <h2>What operators are trying to solve</h2>
+          <div class="lb-intents">
+            {page.searchIntent.map((intent) => <span>{intent}</span>)}
+          </div>
+          <p class="lb-intent-copy">Those searches usually point to the same operating problem: find compatible freight quickly, compare the real economics, avoid stale or duplicate opportunities, and keep the next reload in view before the truck is committed.</p>
+        </div>
+      </section>
+
+      {isCarHauling ? (
+        <section class="lb-seo-section lb-seo-section-alt">
+          <div class="lb-seo-shell">
+            <p class="lb-seo-eyebrow">U.S. car-hauler markets</p>
+            <h2>Continue from platform research into a real operating market.</h2>
+            <p>Hermes already maintains market-specific car-hauler search pages. Each page focuses on practical radius, nearby cities, lane direction, deadhead, and carrier-fit review instead of pretending that a city name guarantees freight.</p>
+            <div class="lb-market-grid">
+              {marketLinks.map((market) => (
+                <a href={`/logistics/car-hauler-loads/${market.slug}/`}>
+                  <strong>{market.city}, {market.state}</strong>
+                  <span>{market.region}</span>
+                </a>
+              ))}
+            </div>
+            <p class="lb-more"><a href="/logistics/car-hauler-loads/">View the full U.S. car-hauler market cluster <ArrowRight size={16} aria-hidden="true" /></a></p>
+          </div>
+        </section>
+      ) : (
+        <section class="lb-seo-section lb-seo-section-alt">
+          <div class="lb-seo-shell">
+            <p class="lb-seo-eyebrow">Multi-source search</p>
+            <h2>Use the equipment page as an entry point, not a dead-end article.</h2>
+            <p>From here a dispatcher can move into the canonical Hermes Load Board, filter normalized opportunities by equipment and lane, and compare approved sources without exposing provider credentials or third-party private data to search engines.</p>
+            <div class="lb-link-cards">
+              <a href="/load-board/#live-marketplace"><strong>Live Load Board</strong><span>Source-gated active records</span></a>
+              <a href="/paths/logistics/carriers/new-authority/"><strong>New authority</strong><span>Readiness and operating path</span></a>
+              <a href="/paths/logistics/carriers/direct-freight-development/"><strong>Direct freight development</strong><span>Build demand beyond marketplace dependency</span></a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section class="lb-seo-section">
+        <div class="lb-seo-shell">
+          <p class="lb-seo-eyebrow">Questions operators ask</p>
+          <h2>{page.name} load-search FAQ</h2>
+          <div class="lb-faq">
+            {page.faq.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="lb-seo-section lb-seo-related">
+        <div class="lb-seo-shell">
+          <p class="lb-seo-eyebrow">Continue the load-search cluster</p>
+          <h2>Related {kind === "provider" ? "load-board integrations" : "equipment searches"}</h2>
+          <div class="lb-link-cards">
+            {relatedPages.map((item) => (
+              <a href={`${relatedBase}${item.slug}/`}>
+                <strong>{item.name}</strong>
+                <span>{item.eyebrow}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="lb-seo-cta">
+        <div class="lb-seo-shell">
+          <div>
+            <p class="lb-seo-eyebrow">Hermes Logistics</p>
+            <h2>Search less. Review the right freight first.</h2>
+            <p>The Load Board is the product surface. SEO/GEO brings the right operator to it; the normalized data layer and scoring engine help the dispatcher decide what deserves attention.</p>
+          </div>
+          <a class="lb-button lb-button-primary" href="/load-board/">Go to Load Board <ArrowRight size={17} aria-hidden="true" /></a>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .lb-seo-page{background:#f6f8fc;color:#101935}.lb-seo-shell{width:min(1180px,calc(100% - 40px));margin:0 auto}.lb-seo-hero{padding:82px 0 68px;background:radial-gradient(circle at 88% 12%,rgba(101,126,255,.22),transparent 32%),linear-gradient(155deg,#07112f,#122252);color:#fff}.lb-seo-hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.72fr);gap:3rem;align-items:center}.lb-seo-eyebrow{margin:0 0 .65rem;text-transform:uppercase;letter-spacing:.105em;font-size:.72rem;font-weight:900;color:#6881c8}.lb-seo-hero .lb-seo-eyebrow,.lb-seo-cta .lb-seo-eyebrow{color:#9fb1e8}.lb-seo-hero h1{margin:.35rem 0 1rem;max-width:16ch;font-size:clamp(2.55rem,5vw,5.2rem);line-height:.96;letter-spacing:-.045em}.lb-seo-lead{max-width:760px;color:#c5cee5;font-size:1.05rem;line-height:1.7}.lb-seo-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:1.45rem}.lb-button{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.88rem 1rem;border:1px solid rgba(255,255,255,.2);border-radius:11px;color:inherit;text-decoration:none;font-weight:850;font-size:.82rem}.lb-button-primary{background:#fff;color:#0a1538;border-color:#fff}.lb-answer{padding:1.35rem;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.07);box-shadow:0 20px 70px rgba(0,0,0,.16)}.lb-answer p{margin:0 0 .55rem;color:#91a6df;text-transform:uppercase;letter-spacing:.08em;font-size:.68rem;font-weight:900}.lb-answer strong{display:block;font-size:1rem;line-height:1.65}.lb-seo-section{padding:70px 0}.lb-seo-section-alt{background:#fff}.lb-seo-two{display:grid;grid-template-columns:1.2fr .8fr;gap:3rem;align-items:start}.lb-seo-section h2,.lb-seo-cta h2{margin:.25rem 0 1rem;font-size:clamp(2rem,4vw,3.5rem);line-height:1.04;letter-spacing:-.035em;max-width:20ch}.lb-seo-section p{line-height:1.72;color:#53607a}.lb-checks{list-style:none;padding:0;margin:1.3rem 0 0;display:grid;gap:.65rem}.lb-checks li{display:flex;gap:.65rem;align-items:flex-start}.lb-checks svg{flex:none;color:#2548b5;margin-top:.12rem}.lb-flow{display:grid;gap:.72rem}.lb-flow>div{display:grid;grid-template-columns:auto 1fr;column-gap:.7rem;padding:1rem;border:1px solid #dfe5f1;border-radius:15px;background:#fff}.lb-flow svg{grid-row:1/3;color:#2548b5}.lb-flow span{font-weight:900}.lb-flow small{margin-top:.18rem;color:#71809a}.lb-boundary{display:grid;grid-template-columns:auto 1fr;gap:1rem;padding:1.25rem;border:1px solid #d7deed;border-radius:18px;background:#f7f9fd}.lb-boundary>svg{color:#2447b4}.lb-boundary h2{font-size:clamp(1.8rem,3vw,2.7rem)}.lb-intents{display:flex;flex-wrap:wrap;gap:.55rem;margin:1.15rem 0}.lb-intents span{padding:.58rem .72rem;border:1px solid #dbe2ef;border-radius:999px;background:#fff;font-size:.75rem;font-weight:800}.lb-intent-copy{max-width:900px}.lb-market-grid,.lb-link-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1.2rem}.lb-market-grid a,.lb-link-cards a{display:grid;gap:.28rem;padding:1rem;border:1px solid #dfe5f1;border-radius:14px;background:#fff;color:#172243;text-decoration:none}.lb-market-grid a:hover,.lb-link-cards a:hover{border-color:#8ca1db;transform:translateY(-1px)}.lb-market-grid span,.lb-link-cards span{color:#687793;font-size:.74rem}.lb-more a{display:inline-flex;align-items:center;gap:.35rem;color:#2146b0;font-weight:850;text-decoration:none}.lb-faq{display:grid;gap:.65rem;max-width:900px}.lb-faq details{border:1px solid #dfe5f1;border-radius:14px;background:#fff;padding:0 1rem}.lb-faq summary{cursor:pointer;padding:1rem 0;font-weight:900}.lb-faq p{margin:0 0 1rem}.lb-seo-related{border-top:1px solid #e4e9f2}.lb-seo-cta{padding:65px 0;background:#0b163a;color:#fff}.lb-seo-cta>.lb-seo-shell{display:flex;justify-content:space-between;gap:2rem;align-items:end}.lb-seo-cta h2{margin-bottom:.55rem}.lb-seo-cta p:not(.lb-seo-eyebrow){margin:0;max-width:760px;color:#b9c4de;line-height:1.65}@media(max-width:900px){.lb-seo-hero-grid,.lb-seo-two{grid-template-columns:1fr}.lb-market-grid,.lb-link-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.lb-seo-cta>.lb-seo-shell{align-items:flex-start;flex-direction:column}}@media(max-width:580px){.lb-seo-shell{width:min(100% - 24px,1180px)}.lb-seo-hero{padding:58px 0 50px}.lb-seo-hero h1{font-size:2.6rem}.lb-seo-section{padding:52px 0}.lb-market-grid,.lb-link-cards{grid-template-columns:1fr}.lb-seo-actions{display:grid}.lb-button{width:100%}.lb-boundary{grid-template-columns:1fr}.lb-seo-cta{padding:52px 0}}
+</style>
