@@ -97,7 +97,7 @@ fi
 if [[ "$INTERNAL_AI" == "1" ]]; then
   printf '\n== Internal AI read-only preflight ==\n'
 
-  if [[ -f "$REPO_ROOT/AGENTS.md" && -d "$REPO_ROOT/.git" ]]; then
+  if [[ -f "$REPO_ROOT/AGENTS.md" && -e "$REPO_ROOT/.git" ]]; then
     pass "Hermes repository boundary exists at $REPO_ROOT"
   else
     fail "Hermes repository boundary is missing at $REPO_ROOT"

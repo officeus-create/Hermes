@@ -17,6 +17,7 @@ const runner = read("scripts/ai/hermes-internal-ai-runner.py");
 const fccCompatibilityPatch = read("scripts/ai/patch-fcc-ollama-thinking.py");
 const codexHermesPath = resolve(root, "scripts/ai/codex-hermes");
 const codexHermes = read("scripts/ai/codex-hermes");
+const codexDoctor = read("scripts/ai/codex-hermes-doctor");
 const sanitizerPath = resolve(root, "scripts/ai/hermes-internal-ai-sanitize.py");
 const sanitizer = read("scripts/ai/hermes-internal-ai-sanitize.py");
 const bootstrap = read("functions/api/internal-ai/bootstrap-owner.ts");
@@ -79,6 +80,7 @@ assert.match(codexHermes, /python3 \"\$SANITIZER\"/, "Internal AI runner output 
 assert.match(codexHermes, /PIPESTATUS/, "wrapper must preserve FCC/Codex and sanitizer exit status separately");
 assert.match(codexHermes, /sanitizer failed; refusing to treat output as safe evidence/, "sanitizer failure must fail closed");
 assert.match(codexHermes, /exec \"\$FCC_CODEX\" \"\$@\"/, "manual codex-hermes usage must retain the ordinary direct exec path");
+assert.match(codexDoctor, /-f \"\$REPO_ROOT\/AGENTS\.md\" && -e \"\$REPO_ROOT\/\.git\"/, "Internal AI doctor must accept both primary checkouts and Git worktrees as repository boundaries");
 assert.match(agentPolicy, /Browser-queued Internal AI is stricter/, "canonical agent policy must describe the stricter unattended runner boundary");
 assert.match(agentPolicy, /sandbox denial is a blocker\/evidence signal/i, "canonical agent policy must treat sandbox denial as evidence rather than permission escalation");
 assert.doesNotMatch(agentPolicy, /preferred Hermes invocation is `\.\/scripts\/ai\/codex-hermes --approve-for-me`/, "canonical agent policy must not recommend the superseded auto-review invocation");
