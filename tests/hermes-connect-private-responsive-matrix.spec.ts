@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// Each scenario performs five authenticated navigations; keep the full matrix stable under CI load.
+test.setTimeout(90_000);
+
 const viewports = [
   { name: "mobile", width: 390, height: 844 },
   { name: "mobile-wide", width: 430, height: 932 },
