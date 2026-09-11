@@ -107,11 +107,30 @@ jobs:
           EOF
           sed -i 's/^          //' "$TMP/vadym-shops.txt"
 
-          normalize='def norm: ascii_downcase | gsub("[^a-z0-9]+"; " ") | gsub("^ +| +$"; "");'
-          jq "$normalize [.registrations[] | select((.email // "" | ascii_downcase) == "officeus@hermeslogisticsus.com" or (.email // "" | ascii_downcase | startswith("office@")))]" "$TMP/ledger.json" > "$TMP/office.json"
+          jq '
+            [.registrations[]
+              | select(
+                  ((.email // "") | ascii_downcase) == "officeus@hermeslogisticsus.com"
+                  or (((.email // "") | ascii_downcase) | startswith("office@"))
+                )
+            ]
+          ' "$TMP/ledger.json" > "$TMP/office.json"
 
           jq -Rn '[inputs | select(length>0) | ascii_downcase | gsub("[^a-z0-9]+"; " ") | gsub("^ +| +$"; "")]' < "$TMP/vadym-shops.txt" > "$TMP/vadym-names.json"
-          jq --slurpfile names "$TMP/vadym-names.json" "$normalize [.registrations[] | . as $r | ((.shop_name // "") | norm) as $shop | (([.salesperson_code,.source,.email] | map(. // "") | join(" ")) | ascii_downcase) as $attrib | select(($shop != "" and ($names[0] | index($shop)) != null) or ($attrib | test("vadim|vadym")))]" "$TMP/ledger.json" > "$TMP/vadym.json"
+          jq --slurpfile names "$TMP/vadym-names.json" '
+            def norm:
+              ascii_downcase
+              | gsub("[^a-z0-9]+"; " ")
+              | gsub("^ +| +$"; "");
+            [.registrations[]
+              | ((.shop_name // "") | norm) as $shop
+              | (([.salesperson_code, .source, .email] | map(. // "") | join(" ")) | ascii_downcase) as $attrib
+              | select(
+                  ($shop != "" and ($names[0] | index($shop)) != null)
+                  or ($attrib | test("vadim|vadym"))
+                )
+            ]
+          ' "$TMP/ledger.json" > "$TMP/vadym.json"
 
           mask_email() {
             local email="$1"
