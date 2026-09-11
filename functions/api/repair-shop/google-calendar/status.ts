@@ -21,18 +21,23 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     ownerId: String(context.specialist.id),
   });
   const configuration = googleCalendarConfigurationState(env);
+  const hasConnected = connections.some((item: any) => item.state === "connected");
+  const hasDegraded = connections.some((item: any) => item.state === "degraded");
+  const needsAuthorization = connections.some((item: any) => item.state === "needs_authorization");
   return jsonResponse(200, {
     success: true,
     provider: "google",
     configuration,
     state: configuration === "configuration_required"
       ? "configuration_required"
-      : connections.some((item: any) => item.state === "degraded")
+      : hasDegraded
         ? "degraded"
-        : connections.some((item: any) => item.state === "connected")
-          ? "connected"
-          : "not_configured",
-    conflict_source: connections.some((item: any) => item.state === "connected") ? "google_freebusy_available" : "local_only",
+        : needsAuthorization
+          ? "needs_authorization"
+          : hasConnected
+            ? "connected"
+            : "not_configured",
+    conflict_policy: hasConnected ? "google_freebusy_with_local_fallback" : "local_only",
     connections,
   });
 }

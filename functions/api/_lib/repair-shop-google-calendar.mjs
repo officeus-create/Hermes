@@ -116,7 +116,6 @@ export function googleCalendarAuthorizationUrl(env, rawState) {
   url.searchParams.set("scope", FREEBUSY_SCOPE);
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("prompt", "consent");
-  url.searchParams.set("include_granted_scopes", "true");
   url.searchParams.set("state", rawState);
   return url.toString();
 }

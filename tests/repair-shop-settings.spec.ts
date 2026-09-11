@@ -84,6 +84,14 @@ async function mockOwnerApis(page: Page) {
     }
     return route.fulfill(json({ success:true, shop_id:shop.id, staff }));
   });
+  await page.route("**/api/repair-shop/google-calendar/status", (route) => route.fulfill(json({
+    success: true,
+    provider: "google",
+    configuration: "configuration_required",
+    state: "configuration_required",
+    conflict_policy: "local_only",
+    connections: [],
+  })));
   await page.route("**/api/repair-shop/staff-schedule**", async (route) => {
     const method = route.request().method();
     if (method === "PUT") {
@@ -136,7 +144,8 @@ test("Company is a private owner workspace backed by profile, team and schedule 
   expect(await staffCard.locator(".staff-card-actions").evaluate((node) => getComputedStyle(node).display)).toBe("flex");
   await expect(page.locator("#schedule-form")).toBeVisible();
   await expect(page.getByText("Google Calendar", { exact:true })).toBeVisible();
-  await expect(page.getByText("Needs authorization", { exact:true })).toBeVisible();
+  await expect(page.getByText("Configuration required", { exact:true })).toBeVisible();
+  await expect(page.locator("#connect-google-calendar")).toBeDisabled();
 
   await page.locator("#shop-name").fill("Hermes Test Garage Updated");
   await page.locator("#shop-city").fill("Little Rock");
@@ -151,6 +160,26 @@ test("Company is a private owner workspace backed by profile, team and schedule 
   await expect(page.locator("#shop-region")).toHaveValue("Arkansas");
   await expect(page.locator("#shop-country")).toHaveValue("US");
   await captureEvidence(page, testInfo, "company-en-workspace");
+});
+
+test("Company shows Google Calendar authorization truth for the selected employee", async ({ page }) => {
+  await mockOwnerApis(page);
+  await page.unroute("**/api/repair-shop/google-calendar/status");
+  await page.route("**/api/repair-shop/google-calendar/status", (route) => route.fulfill(json({
+    success: true,
+    provider: "google",
+    configuration: "ready",
+    state: "connected",
+    conflict_policy: "google_freebusy_with_local_fallback",
+    connections: [{ staff_id:"staff-1", state:"connected", calendar_ref:"primary", scope:"https://www.googleapis.com/auth/calendar.freebusy", token_expires_at:null, error_class:null }],
+  })));
+  await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("#google-calendar-staff")).toHaveValue("staff-1");
+  await expect(page.locator("#google-calendar-status")).toHaveText("Connected");
+  await expect(page.locator("#connect-google-calendar")).toBeHidden();
+  await expect(page.locator("#disconnect-google-calendar")).toBeVisible();
+  await expect(page.locator("#schedule-calendar-policy")).toContainText("free/busy per request");
 });
 
 test("Company can add an employee and save weekly shifts", async ({ page }) => {
@@ -215,7 +244,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   await expect(page.locator('[data-i18n="calendarCopy"]')).toContainText("минимальные данные free/busy");
   await expect(page.locator('[data-i18n="scheduleTitle"]')).toHaveText("Смены и перерывы");
   await expect(page.locator('[data-i18n="connectionsTitle"]')).toHaveText("Приложения и каналы");
-  await expect(page.locator('[data-i18n="needsAuth"]')).toHaveText("Нужна авторизация");
+  await expect(page.locator("#google-calendar-status")).toHaveText("Нужна конфигурация");
   await expect(page.locator('[data-i18n="profileTitle"]')).toHaveText("Данные компании");
   await expect(page.locator('[data-i18n="bookingTitle"]')).toHaveText("Публичная ссылка для записи");
   await expect(page.locator('[data-i18n="connectionsCopy"]')).toContainText("Статусы показывают реальное состояние");
