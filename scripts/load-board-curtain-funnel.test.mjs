@@ -1,0 +1,72 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+const enhancer = read("src/components/LoadBoardCapacityEnhancer.astro");
+const accessPage = read("src/pages/services/hermes-connect/load-board/access/index.astro");
+const companyHelper = read("functions/api/_lib/hermes-company-profiles.mjs");
+const companyApi = read("functions/api/hermes-connect/company.ts");
+const catalogApi = read("functions/api/catalog/companies.ts");
+const summaryApi = read("functions/api/load-board/summary.ts");
+const activeApi = read("functions/api/load-board/active.ts");
+const opportunitiesApi = read("functions/api/load-board/opportunities.ts");
+const dispatchPlanApi = read("functions/api/load-board/dispatch-plan.ts");
+const releaseDelta = JSON.parse(read("docs/release-manifest-deltas/2026-09-11-load-board-access-funnel.json"));
+
+assert.match(enhancer, /See the board before you create an account\./);
+assert.match(enhancer, /data-live-load-count/);
+assert.match(enhancer, /\/api\/load-board\/summary/);
+assert.match(enhancer, /Interface preview rows are not inventory/);
+assert.match(enhancer, /hlb-live-row--locked/);
+assert.match(enhancer, /\/services\/hermes-connect\/load-board\/access\//);
+assert.match(enhancer, /Register company &amp; unlock Load Board/);
+assert.match(enhancer, /\/api\/catalog\/companies/);
+assert.match(enhancer, /Self-submitted · verification pending/);
+
+assert.match(accessPage, /robots="noindex,nofollow"/);
+assert.match(accessPage, /One Hermes account\. One company profile\. Load Board unlocked\./);
+assert.match(accessPage, /\/api\/auth\/register/);
+assert.match(accessPage, /\/api\/auth\/login/);
+assert.match(accessPage, /\/api\/auth\/me/);
+assert.match(accessPage, /\/api\/hermes-connect\/company/);
+assert.match(accessPage, /catalogOptIn/);
+assert.match(accessPage, /Self-submitted · verification pending/);
+assert.match(accessPage, /\/load-board\/\?access=unlocked#live-marketplace/);
+
+assert.match(companyHelper, /CREATE TABLE IF NOT EXISTS hermes_company_profiles/);
+assert.match(companyHelper, /owner_specialist_id TEXT NOT NULL UNIQUE/);
+assert.match(companyHelper, /catalog_opt_in INTEGER NOT NULL DEFAULT 1/);
+assert.match(companyHelper, /load_board_access INTEGER NOT NULL DEFAULT 1/);
+assert.match(companyHelper, /specialistHasLoadBoardAccess/);
+
+assert.match(companyApi, /getAuthenticatedSpecialist/);
+assert.match(companyApi, /ON CONFLICT\(owner_specialist_id\)/);
+assert.match(companyApi, /load_board_access: true/);
+assert.match(companyApi, /catalog_status/);
+assert.match(companyApi, /next_url: "\/load-board\/\?access=unlocked#live-marketplace"/);
+
+assert.match(catalogApi, /catalog_opt_in = 1/);
+assert.match(catalogApi, /self_submitted/);
+assert.match(catalogApi, /verified_public/);
+assert.doesNotMatch(catalogApi, /authority_number|owner_specialist_id|credential|password|phone|email/i);
+
+assert.match(summaryApi, /visibility IN \('public', 'carrier_only'\)/);
+assert.match(summaryApi, /record_type IN \('load', 'capacity'\)/);
+assert.match(summaryApi, /available_loads/);
+assert.match(summaryApi, /Demo rows and internal-only records are excluded/);
+assert.doesNotMatch(summaryApi, /SELECT \*/);
+
+for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
+  assert.match(api, /specialistHasLoadBoardAccess/);
+  assert.match(api, /carrier_only/);
+}
+assert.match(activeApi, /company_registration_unlocks_access: true/);
+assert.match(opportunitiesApi, /company_registration_unlocks_access: true/);
+assert.match(dispatchPlanApi, /company_registration_unlocks_access: true/);
+
+assert.equal(releaseDelta.additions?.[0]?.route, "/services/hermes-connect/load-board/access/");
+assert.equal(releaseDelta.additions?.[0]?.indexability, "noindex");
+assert.equal(releaseDelta.acceptance?.route_count_added, 1);
+assert.equal(releaseDelta.acceptance?.indexable_route_count_added, 0);
+
+console.log("Load Board curtain funnel contract passed: truthful aggregate count, locked preview, Hermes account + company access, safe Catalog listing and noindex registration flow are wired.");
