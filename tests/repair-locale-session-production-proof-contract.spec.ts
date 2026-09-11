@@ -9,7 +9,8 @@ test("locale/session production proof stays on the canonical bounded Repair Shop
   expect(script).toContain('/api/repair-shop/cleanup-booking-smoke');
   expect(script).toContain('Current-main Cloudflare Pages deployment is not successful');
   expect(script).toContain('.repair-crm-language');
-  expect(script).toContain('a[lang="ru"]');
+  expect(script).toContain('a[lang="${locale}"]');
+  expect(script).toContain('switchLocale(page, "ru"');
   expect(script).toContain('hermes-connect-language');
   expect(script).toContain('page.goBack');
   expect(script).toContain('/api/auth/logout');
