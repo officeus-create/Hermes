@@ -52,8 +52,12 @@ const alternateMap=(html)=>{
 
 const sitemap = await readFile(join(dist,"sitemap-london.xml"),"utf8");
 const robots = await readFile(join(dist,"robots.txt"),"utf8");
+const redirects = await readFile(join(dist,"_redirects"),"utf8");
 if(!robots.includes(`${origin}/sitemap-london.xml`)) errors.push("robots.txt: London sitemap declaration missing");
 if(sitemap.includes("/uk/london/")) errors.push("sitemap-london.xml: obsolete /uk/london/ route detected");
+for(const [from,to] of [["/uk/london/","/gb/london/"],["/uk/london/marketing/","/gb/london/marketing/"],["/uk/london/it-web-development/","/gb/london/it-web-development/"],["/uk/london/us-logistics-training/","/gb/london/us-logistics-training/"]]){
+  if(!redirects.includes(`${from} ${to} 301`)) errors.push(`${from}: missing legacy London 301 to ${to}`);
+}
 
 for(const route of expectedRoutes){
   const absolute=`${origin}${route}`;
