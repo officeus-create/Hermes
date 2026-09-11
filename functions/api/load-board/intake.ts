@@ -1,14 +1,25 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
+import {
+  buildOpportunityDedupeKey,
+  deriveRatePerMile,
+  finiteInteger,
+  finiteNumber,
+  normalizeEquipment,
+  parseLocation,
+  scoreOpportunity,
+} from "../_lib/load-board-opportunity.mjs";
 
 type Env = { DB?: any; HERMES_LOADBOARD_INGEST_TOKEN?: string; LEAD_SERVICE_TOKEN?: string };
 
 type Visibility = "internal_only" | "carrier_only" | "public";
 type RecordType = "load" | "capacity";
+type SourceType = "email" | "api" | "csv" | "manual" | "webhook";
 
 const VISIBILITY = new Set<Visibility>(["internal_only", "carrier_only", "public"]);
 const RECORD_TYPES = new Set<RecordType>(["load", "capacity"]);
 const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
+const SOURCE_TYPES = new Set<SourceType>(["email", "api", "csv", "manual", "webhook"]);
 
 function text(value: unknown, max = 240) {
   return String(value ?? "").trim().replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, max);
@@ -24,11 +35,34 @@ function boolInt(value: unknown, fallback: boolean) {
   return fallback ? 1 : 0;
 }
 
+function nullableBoolInt(value: unknown) {
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (value === 1 || value === "1" || String(value).toLowerCase() === "true") return 1;
+  if (value === 0 || value === "0" || String(value).toLowerCase() === "false") return 0;
+  return null;
+}
+
 function validIso(value: unknown, fallback?: string) {
   const normalized = text(value, 64);
   const date = normalized ? new Date(normalized) : fallback ? new Date(fallback) : null;
   if (!date || Number.isNaN(date.getTime())) return null;
   return date.toISOString();
+}
+
+function safeHttpsUrl(value: unknown) {
+  const normalized = optionalText(value, 500);
+  if (!normalized) return null;
+  try {
+    const parsed = new URL(normalized);
+    return parsed.protocol === "https:" ? parsed.toString().slice(0, 500) : null;
+  } catch {
+    return null;
+  }
+}
+
+function stateCode(value: unknown, fallback: string | null) {
+  const normalized = text(value, 2).toUpperCase();
+  return /^[A-Z]{2}$/.test(normalized) ? normalized : fallback;
 }
 
 function clampVisibility(requested: Visibility, permission: string): Visibility {
@@ -56,8 +90,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   try { payload = await request.json(); } catch { return jsonResponse(400, { success: false, error: "invalid_json" }); }
 
   const sourceId = text(payload?.source?.id, 160);
-  const provider = text(payload?.source?.provider || "email", 40);
+  const provider = text(payload?.source?.provider || "email", 80);
   const sourceName = text(payload?.source?.name, 160);
+  const requestedSourceType = text(payload?.source?.source_type || (provider === "email" ? "email" : "api"), 20) as SourceType;
+  const sourceType: SourceType = SOURCE_TYPES.has(requestedSourceType) ? requestedSourceType : "api";
   const mailboxEmail = optionalText(payload?.source?.mailbox_email, 254);
   const credentialRef = optionalText(payload?.source?.credential_ref, 240);
   const redistributionPermission = REDISTRIBUTION.has(String(payload?.source?.redistribution_permission))
@@ -82,11 +118,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       car_hauling_ingest_allowed, car_hauling_outreach_hold,
       redistribution_permission, contact_reveal_permission,
       last_successful_sync, last_error, status, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, 'email', ?, ?, ?, ?, 0, ?, 1, 1, ?, ?, ?, NULL, 'active', ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 1, 1, ?, ?, ?, NULL, 'active', ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       provider = excluded.provider,
       mailbox_email = excluded.mailbox_email,
       source_name = excluded.source_name,
+      source_type = excluded.source_type,
       credential_ref = excluded.credential_ref,
       history_cursor = excluded.history_cursor,
       watch_expires_at = excluded.watch_expires_at,
@@ -106,6 +143,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     provider,
     mailboxEmail,
     sourceName,
+    sourceType,
     credentialRef,
     optionalText(payload?.source?.history_cursor, 240),
     validIso(payload?.source?.watch_expires_at),
@@ -169,9 +207,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const sourceMessageId = text(record.source_message_id, 220);
     const fingerprint = text(record.fingerprint, 220);
     const recordType = text(record.record_type, 20) as RecordType;
-    const equipment = text(record.equipment || "other", 80);
-    const origin = text(record.origin, 160);
-    const destination = optionalText(record.destination, 160);
+    const equipment = normalizeEquipment(record.equipment || "other");
+    const origin = text(record.origin, 180);
+    const destination = optionalText(record.destination, 180);
     const receivedAt = validIso(record.received_at, now);
     const observedAt = validIso(record.observed_at, receivedAt || now);
     const expiresAt = validIso(record.expires_at);
@@ -194,13 +232,52 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       : Number(rawRate);
     const safeRate = rateAmount !== null && Number.isFinite(rateAmount) && rateAmount >= 0 ? rateAmount : null;
 
+    const originParts = parseLocation(origin);
+    const destinationParts = destination ? parseLocation(destination) : { label: "", city: null, state: null, zip: null };
+    const originCity = optionalText(record.origin_city || originParts.city, 100);
+    const originState = stateCode(record.origin_state, originParts.state);
+    const originZip = optionalText(record.origin_zip || originParts.zip, 10);
+    const destinationCity = optionalText(record.destination_city || destinationParts.city, 100);
+    const destinationState = stateCode(record.destination_state, destinationParts.state);
+    const destinationZip = optionalText(record.destination_zip || destinationParts.zip, 10);
+    const distanceMiles = finiteNumber(record.distance_miles, { min: 0, max: 100000 });
+    const deadheadMiles = finiteNumber(record.deadhead_miles, { min: 0, max: 5000 });
+    const vehicleCount = finiteInteger(record.vehicle_count, { min: 0, max: 100 });
+    const ratePerMile = deriveRatePerMile(safeRate, distanceMiles, record.rate_per_mile);
+    const providerRecordId = optionalText(record.provider_record_id, 220);
+    const normalizedForScore = {
+      ...record,
+      equipment,
+      origin_state: originState,
+      destination_state: destinationState,
+      rate_amount: safeRate,
+      distance_miles: distanceMiles,
+      deadhead_miles: deadheadMiles,
+      rate_per_mile: ratePerMile,
+      vehicle_count: vehicleCount,
+      provider_record_id: providerRecordId,
+      observed_at: observedAt,
+    };
+    const quality = scoreOpportunity(normalizedForScore);
+    const dedupeKey = optionalText(record.dedupe_key, 320) || buildOpportunityDedupeKey({
+      ...normalizedForScore,
+      origin,
+      destination,
+      pickup_window: record.pickup_window,
+    });
+
     await env.DB.prepare(`
       INSERT INTO hermes_load_records (
         id, source_id, source_message_id, fingerprint, record_type, source_name,
         equipment, origin, destination, pickup_window, availability_text, team,
         rate_amount, rate_currency, received_at, observed_at, last_seen_at,
-        expires_at, status, visibility, raw_evidence_ref, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        expires_at, status, visibility, raw_evidence_ref,
+        provider_record_id, origin_city, origin_state, origin_zip,
+        destination_city, destination_state, destination_zip,
+        distance_miles, deadhead_miles, vehicle_count, operable, enclosed,
+        payment_terms, rate_per_mile, source_quality_score, dedupe_key, provider_url,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(source_id, source_message_id, fingerprint) DO UPDATE SET
         record_type = excluded.record_type,
         source_name = excluded.source_name,
@@ -218,6 +295,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         status = excluded.status,
         visibility = excluded.visibility,
         raw_evidence_ref = excluded.raw_evidence_ref,
+        provider_record_id = excluded.provider_record_id,
+        origin_city = excluded.origin_city,
+        origin_state = excluded.origin_state,
+        origin_zip = excluded.origin_zip,
+        destination_city = excluded.destination_city,
+        destination_state = excluded.destination_state,
+        destination_zip = excluded.destination_zip,
+        distance_miles = excluded.distance_miles,
+        deadhead_miles = excluded.deadhead_miles,
+        vehicle_count = excluded.vehicle_count,
+        operable = excluded.operable,
+        enclosed = excluded.enclosed,
+        payment_terms = excluded.payment_terms,
+        rate_per_mile = excluded.rate_per_mile,
+        source_quality_score = excluded.source_quality_score,
+        dedupe_key = excluded.dedupe_key,
+        provider_url = excluded.provider_url,
         updated_at = excluded.updated_at
     `).bind(
       id,
@@ -241,6 +335,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       status,
       visibility,
       optionalText(record.raw_evidence_ref, 300),
+      providerRecordId,
+      originCity,
+      originState,
+      originZip,
+      destinationCity,
+      destinationState,
+      destinationZip,
+      distanceMiles,
+      deadheadMiles,
+      vehicleCount,
+      nullableBoolInt(record.operable),
+      nullableBoolInt(record.enclosed),
+      optionalText(record.payment_terms, 120),
+      ratePerMile,
+      quality.score,
+      dedupeKey,
+      safeHttpsUrl(record.provider_url),
       now,
       now,
     ).run();
@@ -250,9 +361,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   return jsonResponse(202, {
     success: true,
     source_id: sourceId,
+    provider,
+    source_type: sourceType,
     accepted,
     quarantined,
     rejected,
+    normalized_opportunity_fields: true,
+    dedupe_ready: true,
+    scoring_ready: true,
     outbound_enabled: false,
     car_hauling_ingest_allowed: true,
     car_hauling_broker_outreach_hold: true,
