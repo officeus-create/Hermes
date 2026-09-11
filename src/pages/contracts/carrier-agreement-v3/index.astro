@@ -43,7 +43,7 @@ const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d
   <SiteFooter />
 </BaseLayout>
 
-<script define:vars={{ pdfAssetPath }}>
+<script is:inline define:vars={{ pdfAssetPath }}>
   document.querySelector("[data-download-pdf]")?.addEventListener("click", () => {
     const link = document.createElement("a");
     link.href = pdfAssetPath;
