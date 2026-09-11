@@ -14,6 +14,7 @@ const runnerTaskEndpoint = read("functions/api/internal-ai/runner/task.ts");
 const complete = read("functions/api/internal-ai/runner/complete.ts");
 const event = read("functions/api/internal-ai/runner/event.ts");
 const runner = read("scripts/ai/hermes-internal-ai-runner.py");
+const fccCompatibilityPatch = read("scripts/ai/patch-fcc-ollama-thinking.py");
 const codexHermesPath = resolve(root, "scripts/ai/codex-hermes");
 const codexHermes = read("scripts/ai/codex-hermes");
 const sanitizerPath = resolve(root, "scripts/ai/hermes-internal-ai-sanitize.py");
@@ -51,6 +52,9 @@ assert.match(runnerTaskEndpoint, /runnerTask\(/, "runner state polling may recei
 assert.match(complete, /needs_approval/, "real approval state must be represented");
 assert.match(complete, /approval_gate_required/, "approval state needs a defined consequential gate");
 assert.match(event, /organization_scope, task_id, event_type/, "events must be internal tenant scoped");
+assert.match(fccCompatibilityPatch, /current\.count\(replacement\.new\) != 1/, "FCC patcher must require one exact reviewed new fragment");
+assert.match(fccCompatibilityPatch, /remainder = current\.replace\(replacement\.new, "", 1\)/, "FCC patcher must remove the applied fragment before checking for stale overlap");
+assert.match(fccCompatibilityPatch, /return replacement\.old not in remainder/, "FCC patcher must distinguish embedded old text from a separate stale old fragment");
 assert.match(runner, /subprocess\.Popen\(/, "runner invokes Codex through an argument array");
 assert.doesNotMatch(runner, /shell\s*=\s*True/, "runner must never interpolate task text into a shell");
 assert.doesNotMatch(runner, /socket\.|listen\(|HTTPServer|Flask|FastAPI/, "runner remains outbound-only with no remote shell");

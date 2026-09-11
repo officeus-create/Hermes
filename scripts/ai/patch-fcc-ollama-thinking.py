@@ -104,6 +104,18 @@ def fail(message: str) -> "NoReturn":
     raise SystemExit(1)
 
 
+def _replacement_is_applied(current: str, replacement: Replacement) -> bool:
+    """Return True only when one reviewed new fragment exists with no stale old copy."""
+
+    if current.count(replacement.new) != 1:
+        return False
+    # Some reviewed `old` fragments are prefixes/substrings of their `new`
+    # replacements. Remove the one exact new fragment before checking whether a
+    # separate stale old fragment is still present.
+    remainder = current.replace(replacement.new, "", 1)
+    return replacement.old not in remainder
+
+
 def _apply_replacements(
     site_packages: pathlib.Path, *, check: bool
 ) -> tuple[pathlib.Path, ...]:
@@ -130,7 +142,7 @@ def _apply_replacements(
             old_count = current.count(replacement.old)
             new_count = current.count(replacement.new)
 
-            if new_count == 1 and old_count == 0:
+            if _replacement_is_applied(current, replacement):
                 continue
 
             if check:
