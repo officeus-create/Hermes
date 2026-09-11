@@ -2,7 +2,7 @@
 import { ChevronDown } from "@lucide/astro";
 
 export interface Props {
-  current: "repair" | "academy" | "ai" | "beauty" | "hr" | "neutral";
+  current: "repair" | "academy" | "ai" | "beauty" | "hr" | "loadboard" | "neutral";
   mode?: "panel" | "menu";
   publicSafe?: boolean;
 }
@@ -10,12 +10,12 @@ export interface Props {
 const { current, mode = "panel", publicSafe = false } = Astro.props;
 const switcherCurrent = current === "neutral" ? undefined : current;
 const copy = {
-  en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", beauty: "Beauty", hr: "HR Review", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…", logout: "Log out" },
-  ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", beauty: "Beauty", hr: "HR-проверка", owned: "Ваш бизнес", shared: "Общее пространство Hermes", internal: "Внутренний доступ", setup: "Настройка пространства", preparing: "Пространство готовится", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…", logout: "Выйти" },
-  uk: { account: "Акаунт Hermes", signedIn: "Ви увійшли", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", ai: "AI Connect", beauty: "Beauty", hr: "HR-перевірка", owned: "Ваш бізнес", shared: "Спільний простір Hermes", internal: "Внутрішній доступ", setup: "Налаштування простору", preparing: "Простір готується", current: "Зараз", open: "Відкрити", loading: "Завантажуємо акаунт…", logout: "Вийти" },
-  es: { account: "Cuenta Hermes", signedIn: "Sesión iniciada", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", ai: "AI Connect", beauty: "Beauty", hr: "Revisión HR", owned: "Tu negocio", shared: "Espacio Hermes compartido", internal: "Acceso interno", setup: "Configurar espacio", preparing: "Espacio en preparación", current: "Actual", open: "Abrir", loading: "Cargando cuenta…", logout: "Cerrar sesión" },
-  it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", ai: "AI Connect", beauty: "Beauty", hr: "Revisione HR", owned: "La tua attività", shared: "Spazio Hermes condiviso", internal: "Accesso interno", setup: "Configura spazio", preparing: "Spazio in preparazione", current: "Attuale", open: "Apri", loading: "Caricamento account…", logout: "Esci" },
-  fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", ai: "AI Connect", beauty: "Beauty", hr: "Revue RH", owned: "Votre entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", setup: "Configurer l’espace", preparing: "Espace en préparation", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…", logout: "Se déconnecter" },
+  en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR Review", owned: "Owned business", company: "Company workspace", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…", logout: "Log out" },
+  ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR-проверка", owned: "Ваш бизнес", company: "Пространство компании", shared: "Общее пространство Hermes", internal: "Внутренний доступ", setup: "Настройка пространства", preparing: "Пространство готовится", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…", logout: "Выйти" },
+  uk: { account: "Акаунт Hermes", signedIn: "Ви увійшли", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR-перевірка", owned: "Ваш бізнес", company: "Простір компанії", shared: "Спільний простір Hermes", internal: "Внутрішній доступ", setup: "Налаштування простору", preparing: "Простір готується", current: "Зараз", open: "Відкрити", loading: "Завантажуємо акаунт…", logout: "Вийти" },
+  es: { account: "Cuenta Hermes", signedIn: "Sesión iniciada", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revisión HR", owned: "Tu negocio", company: "Espacio de empresa", shared: "Espacio Hermes compartido", internal: "Acceso interno", setup: "Configurar espacio", preparing: "Espacio en preparación", current: "Actual", open: "Abrir", loading: "Cargando cuenta…", logout: "Cerrar sesión" },
+  it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revisione HR", owned: "La tua attività", company: "Spazio aziendale", shared: "Spazio Hermes condiviso", internal: "Accesso interno", setup: "Configura spazio", preparing: "Spazio in preparazione", current: "Attuale", open: "Apri", loading: "Caricamento account…", logout: "Esci" },
+  fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revue RH", owned: "Votre entreprise", company: "Espace entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", setup: "Configurer l’espace", preparing: "Espace en préparation", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…", logout: "Se déconnecter" },
 } as const;
 const t = copy.en;
 ---
@@ -31,80 +31,33 @@ const t = copy.en;
       </div>
     </div>
     <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label data-hc-dynamic-workspaces={publicSafe ? "true" : undefined}>
-        {!publicSafe && (
-          <>
-      <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
-        <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span>
-        <em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em>
-      </a>
-      <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-workspace-academy data-hc-workspace-link="academy" hidden>
-        <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span>
-        <em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em>
-      </a>
-      <a class:list={["hc-account-workspace", "hr", current === "hr" && "is-current"]} href="/demos/hermes-connect/hr-admin.html" data-workspace-hr data-hc-workspace-link="hr" hidden>
-        <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-hc-copy="hr">{t.hr}</strong><small data-hc-copy="internal">{t.internal}</small></span>
-        <em data-hc-copy={current === "hr" ? "current" : "open"}>{current === "hr" ? t.current : t.open}</em>
-      </a>
-      <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden>
-        <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
-        <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
-      </a>
-      <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden>
-        <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
-        <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
-      </a>
-
-          </>
-        )}
-      </div>
-      <button type="button" class="hc-account-logout" data-hc-global-logout data-hc-copy="logout">{t.logout}</button>
+      {!publicSafe && (
+        <>
+          <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span><em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em></a>
+          <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-workspace-academy data-hc-workspace-link="academy" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span><em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em></a>
+          <a class:list={["hc-account-workspace", "loadboard", current === "loadboard" && "is-current"]} href="/load-board/?access=unlocked#live-marketplace" data-workspace-loadboard data-hc-workspace-link="loadboard" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="loadboard">{t.loadboard}</strong><small data-hc-copy="company">{t.company}</small></span><em data-hc-copy={current === "loadboard" ? "current" : "open"}>{current === "loadboard" ? t.current : t.open}</em></a>
+          <a class:list={["hc-account-workspace", "hr", current === "hr" && "is-current"]} href="/demos/hermes-connect/hr-admin.html" data-workspace-hr data-hc-workspace-link="hr" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="hr">{t.hr}</strong><small data-hc-copy="internal">{t.internal}</small></span><em data-hc-copy={current === "hr" ? "current" : "open"}>{current === "hr" ? t.current : t.open}</em></a>
+          <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span><em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em></a>
+          <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span><em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em></a>
+        </>
+      )}
+    </div>
+    <button type="button" class="hc-account-logout" data-hc-global-logout data-hc-copy="logout">{t.logout}</button>
   </section>
 ) : (
   <details class="hc-account-menu" data-hc-account-switcher data-current={switcherCurrent} data-public-safe={publicSafe ? "true" : undefined} data-locale="en" hidden>
-    <summary aria-label={t.workspaces} data-hc-workspaces-label>
-      <span class="hc-account-avatar hc-account-avatar-compact" aria-hidden="true" data-account-avatar>H</span>
-      <span class="hc-account-menu-copy">
-        <strong data-account-name data-hc-copy="account">{t.account}</strong>
-        <small data-account-email data-hc-copy="loading">{t.loading}</small>
-      </span>
-      <ChevronDown size={15} aria-hidden="true" />
-    </summary>
+    <summary aria-label={t.workspaces} data-hc-workspaces-label><span class="hc-account-avatar hc-account-avatar-compact" aria-hidden="true" data-account-avatar>H</span><span class="hc-account-menu-copy"><strong data-account-name data-hc-copy="account">{t.account}</strong><small data-account-email data-hc-copy="loading">{t.loading}</small></span><ChevronDown size={15} aria-hidden="true" /></summary>
     <div class="hc-account-menu-popover">
       <span class="hc-account-menu-label" data-hc-copy="workspaces">{t.workspaces}</span>
       <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label data-hc-dynamic-workspaces={publicSafe ? "true" : undefined}>
         {!publicSafe && (
           <>
-        <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
-          <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span>
-          <em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em>
-        </a>
-        <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-workspace-academy data-hc-workspace-link="academy" hidden>
-          <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span>
-          <em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em>
-        </a>
-        <a class:list={["hc-account-workspace", "hr", current === "hr" && "is-current"]} href="/demos/hermes-connect/hr-admin.html" data-workspace-hr data-hc-workspace-link="hr" hidden>
-          <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-hc-copy="hr">{t.hr}</strong><small data-hc-copy="internal">{t.internal}</small></span>
-          <em data-hc-copy={current === "hr" ? "current" : "open"}>{current === "hr" ? t.current : t.open}</em>
-        </a>
-        <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden>
-          <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
-          <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
-        </a>
-        <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden>
-          <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
-          <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
-        </a>
-
+            <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span><em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em></a>
+            <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-workspace-academy data-hc-workspace-link="academy" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span><em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em></a>
+            <a class:list={["hc-account-workspace", "loadboard", current === "loadboard" && "is-current"]} href="/load-board/?access=unlocked#live-marketplace" data-workspace-loadboard data-hc-workspace-link="loadboard" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="loadboard">{t.loadboard}</strong><small data-hc-copy="company">{t.company}</small></span><em data-hc-copy={current === "loadboard" ? "current" : "open"}>{current === "loadboard" ? t.current : t.open}</em></a>
+            <a class:list={["hc-account-workspace", "hr", current === "hr" && "is-current"]} href="/demos/hermes-connect/hr-admin.html" data-workspace-hr data-hc-workspace-link="hr" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="hr">{t.hr}</strong><small data-hc-copy="internal">{t.internal}</small></span><em data-hc-copy={current === "hr" ? "current" : "open"}>{current === "hr" ? t.current : t.open}</em></a>
+            <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span><em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em></a>
+            <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden><span class="hc-workspace-dot" aria-hidden="true"></span><span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span><em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em></a>
           </>
         )}
       </div>
@@ -119,24 +72,25 @@ const t = copy.en;
       success?: boolean;
       identity?: { name?: string | null; email?: string | null };
       owned_businesses?: Array<{ key?: string; name?: string; href?: string | null; workspace_state?: string }>;
-      workspaces?: Array<{ key?: string; href?: string; available?: boolean }>;
+      workspaces?: Array<{ key?: string; href?: string; available?: boolean; state?: Record<string, unknown> }>;
     };
 
     const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
     const requested = new URLSearchParams(window.location.search).get("lang") || "en";
     const locale = supported.has(requested) ? requested : "en";
     const clientCopy: Record<string, Record<string, string>> = {
-      en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", beauty: "Beauty", hr: "HR Review", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…", logout: "Log out" },
-      ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", beauty: "Beauty", hr: "HR-проверка", owned: "Ваш бизнес", shared: "Общее пространство Hermes", internal: "Внутренний доступ", setup: "Настройка пространства", preparing: "Пространство готовится", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…", logout: "Выйти" },
-      uk: { account: "Акаунт Hermes", signedIn: "Ви увійшли", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", ai: "AI Connect", beauty: "Beauty", hr: "HR-перевірка", owned: "Ваш бізнес", shared: "Спільний простір Hermes", internal: "Внутрішній доступ", setup: "Налаштування простору", preparing: "Простір готується", current: "Зараз", open: "Відкрити", loading: "Завантажуємо акаунт…", logout: "Вийти" },
-      es: { account: "Cuenta Hermes", signedIn: "Sesión iniciada", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", ai: "AI Connect", beauty: "Beauty", hr: "Revisión HR", owned: "Tu negocio", shared: "Espacio Hermes compartido", internal: "Acceso interno", setup: "Configurar espacio", preparing: "Espacio en preparación", current: "Actual", open: "Abrir", loading: "Cargando cuenta…", logout: "Cerrar sesión" },
-      it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", ai: "AI Connect", beauty: "Beauty", hr: "Revisione HR", owned: "La tua attività", shared: "Spazio Hermes condiviso", internal: "Accesso interno", setup: "Configura spazio", preparing: "Spazio in preparazione", current: "Attuale", open: "Apri", loading: "Caricamento account…", logout: "Esci" },
-      fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", ai: "AI Connect", beauty: "Beauty", hr: "Revue RH", owned: "Votre entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", setup: "Configurer l’espace", preparing: "Espace en préparation", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…", logout: "Se déconnecter" },
+      en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR Review", owned: "Owned business", company: "Company workspace", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…", logout: "Log out" },
+      ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR-проверка", owned: "Ваш бизнес", company: "Пространство компании", shared: "Общее пространство Hermes", internal: "Внутренний доступ", setup: "Настройка пространства", preparing: "Пространство готовится", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…", logout: "Выйти" },
+      uk: { account: "Акаунт Hermes", signedIn: "Ви увійшли", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "HR-перевірка", owned: "Ваш бізнес", company: "Простір компанії", shared: "Спільний простір Hermes", internal: "Внутрішній доступ", setup: "Налаштування простору", preparing: "Простір готується", current: "Зараз", open: "Відкрити", loading: "Завантажуємо акаунт…", logout: "Вийти" },
+      es: { account: "Cuenta Hermes", signedIn: "Sesión iniciada", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revisión HR", owned: "Tu negocio", company: "Espacio de empresa", shared: "Espacio Hermes compartido", internal: "Acceso interno", setup: "Configurar espacio", preparing: "Espacio en preparación", current: "Actual", open: "Abrir", loading: "Cargando cuenta…", logout: "Cerrar sesión" },
+      it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revisione HR", owned: "La tua attività", company: "Spazio aziendale", shared: "Spazio Hermes condiviso", internal: "Accesso interno", setup: "Configura spazio", preparing: "Spazio in preparazione", current: "Attuale", open: "Apri", loading: "Caricamento account…", logout: "Esci" },
+      fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", loadboard: "Load Board", ai: "AI Connect", beauty: "Beauty", hr: "Revue RH", owned: "Votre entreprise", company: "Espace entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", setup: "Configurer l’espace", preparing: "Espace en préparation", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…", logout: "Se déconnecter" },
     };
     const runtimeCopy = clientCopy[locale] || clientCopy.en;
     const workspacePaths: Record<string, string> = {
       repair: "/services/hermes-connect/repair-shops/dashboard/",
       academy: "/services/hermes-connect/academy/dashboard/",
+      loadboard: "/load-board/?access=unlocked#live-marketplace",
       hr: "/demos/hermes-connect/hr-admin.html",
       ai: "/services/hermes-connect/internal/ai-connect/",
       beauty: "/services/hermes-connect/beauty/workspace/",
@@ -171,9 +125,7 @@ const t = copy.en;
         const key = node.dataset.hcCopy || "";
         if (runtimeCopy[key]) node.textContent = runtimeCopy[key];
       });
-      root.querySelectorAll<HTMLElement>("[data-hc-workspaces-label]").forEach((node) => {
-        node.setAttribute("aria-label", runtimeCopy.workspaces);
-      });
+      root.querySelectorAll<HTMLElement>("[data-hc-workspaces-label]").forEach((node) => node.setAttribute("aria-label", runtimeCopy.workspaces));
       root.querySelectorAll<HTMLAnchorElement>("[data-hc-workspace-link]").forEach((link) => {
         const key = link.dataset.hcWorkspaceLink || "";
         if (workspacePaths[key]) link.href = withLocale(workspacePaths[key]);
@@ -185,11 +137,7 @@ const t = copy.en;
         logout.dataset.pending = "true";
         logout.disabled = true;
         try {
-          const response = await fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: { Accept: "application/json" },
-          });
+          const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin", headers: { Accept: "application/json" } });
           if (!response.ok) throw new Error("logout_failed");
           window.location.assign(withLocale("/services/hermes-connect/"));
         } catch {
@@ -212,17 +160,19 @@ const t = copy.en;
         const repairBusiness = owned.find((item) => item?.key === "repair_shop");
         const beautyBusiness = owned.find((item) => item?.key === "beauty_salon");
         const academyWorkspace = workspaces.find((item) => item?.key === "academy" && item?.available !== false);
+        const loadBoardWorkspace = workspaces.find((item) => item?.key === "load_board" && item?.available !== false);
         const hrWorkspace = workspaces.find((item) => item?.key === "hr" && item?.available !== false);
         const aiWorkspace = workspaces.find((item) => item?.key === "internal_ai" && item?.available !== false);
 
         if (publicSafe) {
           const dynamicWorkspaces = root.querySelector<HTMLElement>("[data-hc-dynamic-workspaces]");
-          const entries: Array<{ key: string; label: string; kind: string }> = [];
-          if (repairBusiness) entries.push({ key: "repair", label: String(repairBusiness.name || runtimeCopy.repair), kind: runtimeCopy.owned });
-          if (academyWorkspace) entries.push({ key: "academy", label: runtimeCopy.academy, kind: runtimeCopy.shared });
-          if (hrWorkspace) entries.push({ key: "hr", label: runtimeCopy.hr, kind: runtimeCopy.internal });
-          if (aiWorkspace) entries.push({ key: "ai", label: runtimeCopy.ai, kind: runtimeCopy.internal });
-          if (beautyBusiness) entries.push({ key: "beauty", label: String(beautyBusiness.name || runtimeCopy.beauty), kind: runtimeCopy.owned });
+          const entries: Array<{ key: string; label: string; kind: string; href?: string }> = [];
+          if (repairBusiness) entries.push({ key: "repair", label: String(repairBusiness.name || runtimeCopy.repair), kind: runtimeCopy.owned, href: repairBusiness.href || undefined });
+          if (academyWorkspace) entries.push({ key: "academy", label: runtimeCopy.academy, kind: runtimeCopy.shared, href: academyWorkspace.href });
+          if (loadBoardWorkspace) entries.push({ key: "loadboard", label: runtimeCopy.loadboard, kind: runtimeCopy.company, href: loadBoardWorkspace.href });
+          if (hrWorkspace) entries.push({ key: "hr", label: runtimeCopy.hr, kind: runtimeCopy.internal, href: hrWorkspace.href });
+          if (aiWorkspace) entries.push({ key: "ai", label: runtimeCopy.ai, kind: runtimeCopy.internal, href: aiWorkspace.href });
+          if (beautyBusiness) entries.push({ key: "beauty", label: String(beautyBusiness.name || runtimeCopy.beauty), kind: runtimeCopy.owned, href: beautyBusiness.href || undefined });
 
           if (!dynamicWorkspaces || entries.length === 0) {
             root.hidden = true;
@@ -231,30 +181,20 @@ const t = copy.en;
 
           dynamicWorkspaces.replaceChildren();
           entries.forEach((entry) => {
-            const href = workspacePaths[entry.key];
+            const href = entry.href || workspacePaths[entry.key];
             if (!href) return;
             const link = document.createElement("a");
             link.className = `hc-account-workspace ${entry.key}`;
             link.dataset.hcWorkspaceLink = entry.key;
             link.href = withLocale(href);
-
-            const dot = document.createElement("span");
-            dot.className = "hc-workspace-dot";
-            dot.setAttribute("aria-hidden", "true");
-
+            const dot = document.createElement("span"); dot.className = "hc-workspace-dot"; dot.setAttribute("aria-hidden", "true");
             const text = document.createElement("span");
-            const strong = document.createElement("strong");
-            strong.textContent = entry.label;
-            const small = document.createElement("small");
-            small.textContent = entry.kind;
+            const strong = document.createElement("strong"); strong.textContent = entry.label;
+            const small = document.createElement("small"); small.textContent = entry.kind;
             text.append(strong, small);
-
-            const action = document.createElement("em");
-            action.textContent = runtimeCopy.open;
+            const action = document.createElement("em"); action.textContent = runtimeCopy.open;
             link.append(dot, text, action);
-            link.addEventListener("click", () => {
-              if (root instanceof HTMLDetailsElement) root.open = false;
-            });
+            link.addEventListener("click", () => { if (root instanceof HTMLDetailsElement) root.open = false; });
             dynamicWorkspaces.append(link);
           });
 
@@ -281,6 +221,12 @@ const t = copy.en;
 
         const academy = root.querySelector<HTMLElement>("[data-workspace-academy]");
         if (academyWorkspace && academy) academy.hidden = false;
+
+        const loadboard = root.querySelector<HTMLAnchorElement>("[data-workspace-loadboard]");
+        if (loadBoardWorkspace && loadboard) {
+          if (loadBoardWorkspace.href) loadboard.href = withLocale(loadBoardWorkspace.href);
+          loadboard.hidden = false;
+        }
 
         const hr = root.querySelector<HTMLAnchorElement>("[data-workspace-hr]");
         if (hrWorkspace && hr) {
@@ -309,9 +255,7 @@ const t = copy.en;
         root.hidden = true;
       });
 
-      if (root instanceof HTMLDetailsElement) {
-        root.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { root.open = false; }));
-      }
+      if (root instanceof HTMLDetailsElement) root.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { root.open = false; }));
     });
 
     if (document.documentElement.dataset.hcAccountOutsideClick !== "true") {
@@ -330,7 +274,7 @@ const t = copy.en;
 <style>
   .hc-account-switcher{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,2fr);gap:1rem;align-items:stretch;margin:0 0 1rem;padding:1rem;border:1px solid rgba(17,22,31,.09);border-radius:1.2rem;background:rgba(255,255,255,.8);box-shadow:0 16px 38px rgba(24,32,48,.07);backdrop-filter:blur(16px)}
   .hc-account-identity{display:flex;align-items:center;gap:.75rem;min-width:0;padding:.35rem .45rem}.hc-account-avatar{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border-radius:13px;background:var(--hermes-obsidian,#11161f);color:#fff;font-weight:850;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.hc-account-copy{min-width:0}.hc-account-copy span,.hc-account-copy strong,.hc-account-copy small{display:block}.hc-account-copy span{color:#7c8798;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.hc-account-copy strong{margin-top:.15rem;color:#11161f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-account-copy small{margin-top:.15rem;color:#697386;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .hc-account-workspaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}.hc-account-workspace{--workspace-accent:var(--hermes-academy,#7c5cff);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.55rem;min-width:0;padding:.68rem .72rem;border:1px solid color-mix(in srgb,var(--workspace-accent) 18%,#dfe4ec);border-radius:.9rem;background:color-mix(in srgb,var(--workspace-accent) 5%,#fff);color:#11161f;text-decoration:none}.hc-account-workspace.repair{--workspace-accent:var(--hermes-repair,#1e88ff)}.hc-account-workspace.academy{--workspace-accent:var(--hermes-academy,#7c5cff)}.hc-account-workspace.ai{--workspace-accent:var(--hermes-ai-product,#ff7a00)}.hc-account-workspace.hr{--workspace-accent:var(--hermes-obsidian,#11161f)}.hc-account-workspace.beauty{--workspace-accent:#7c8798}.hc-account-workspace.is-current{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--workspace-accent) 45%,transparent)}.hc-account-workspace.is-disabled{cursor:default;opacity:.78}.hc-workspace-dot{width:9px;height:9px;border-radius:999px;background:var(--workspace-accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--workspace-accent) 12%,transparent)}.hc-account-workspace span:nth-child(2){min-width:0}.hc-account-workspace strong,.hc-account-workspace small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-account-workspace strong{font-size:.82rem}.hc-account-workspace small{margin-top:.12rem;color:#747f91;font-size:.68rem}.hc-account-workspace em{font-style:normal;color:var(--workspace-accent);font-size:.68rem;font-weight:850}.hc-account-workspace:not(.is-disabled):hover,.hc-account-workspace:not(.is-disabled):focus-visible{transform:translateY(-1px);border-color:color-mix(in srgb,var(--workspace-accent) 42%,#dfe4ec)}
+  .hc-account-workspaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}.hc-account-workspace{--workspace-accent:var(--hermes-academy,#7c5cff);display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.55rem;min-width:0;padding:.68rem .72rem;border:1px solid color-mix(in srgb,var(--workspace-accent) 18%,#dfe4ec);border-radius:.9rem;background:color-mix(in srgb,var(--workspace-accent) 5%,#fff);color:#11161f;text-decoration:none}.hc-account-workspace.repair{--workspace-accent:var(--hermes-repair,#1e88ff)}.hc-account-workspace.academy{--workspace-accent:var(--hermes-academy,#7c5cff)}.hc-account-workspace.loadboard{--workspace-accent:#2f78ff}.hc-account-workspace.ai{--workspace-accent:var(--hermes-ai-product,#ff7a00)}.hc-account-workspace.hr{--workspace-accent:var(--hermes-obsidian,#11161f)}.hc-account-workspace.beauty{--workspace-accent:#7c8798}.hc-account-workspace.is-current{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--workspace-accent) 45%,transparent)}.hc-account-workspace.is-disabled{cursor:default;opacity:.78}.hc-workspace-dot{width:9px;height:9px;border-radius:999px;background:var(--workspace-accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--workspace-accent) 12%,transparent)}.hc-account-workspace span:nth-child(2){min-width:0}.hc-account-workspace strong,.hc-account-workspace small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-account-workspace strong{font-size:.82rem}.hc-account-workspace small{margin-top:.12rem;color:#747f91;font-size:.68rem}.hc-account-workspace em{font-style:normal;color:var(--workspace-accent);font-size:.68rem;font-weight:850}.hc-account-workspace:not(.is-disabled):hover,.hc-account-workspace:not(.is-disabled):focus-visible{transform:translateY(-1px);border-color:color-mix(in srgb,var(--workspace-accent) 42%,#dfe4ec)}
   .hc-account-logout{grid-column:1/-1;justify-self:end;min-height:36px;padding:.45rem .75rem;border:1px solid rgba(17,22,31,.12);border-radius:.75rem;background:#fff;color:#344054;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}.hc-account-logout:hover,.hc-account-logout:focus-visible{border-color:rgba(17,22,31,.28);color:#11161f}.hc-account-logout:disabled{cursor:wait;opacity:.6}
   .hc-account-menu{position:relative}.hc-account-menu>summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.45rem;min-height:38px;max-width:230px;padding:.28rem .55rem .28rem .32rem;border:1px solid rgba(11,13,18,.14);border-radius:999px;background:rgba(255,255,255,.58);color:#11161f;cursor:pointer;list-style:none}.hc-account-menu>summary::-webkit-details-marker{display:none}.hc-account-avatar-compact{width:28px;height:28px;flex-basis:28px;border-radius:9px;font-size:.72rem}.hc-account-menu-copy{min-width:0}.hc-account-menu-copy strong,.hc-account-menu-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-account-menu-copy strong{font-size:.72rem}.hc-account-menu-copy small{margin-top:.05rem;color:#747f91;font-size:.58rem}.hc-account-menu[open]>summary{border-color:rgba(124,92,255,.32);background:#fff}.hc-account-menu-popover{position:absolute;z-index:120;top:calc(100% + .55rem);right:0;width:min(420px,calc(100vw - 2rem));padding:.7rem;border:1px solid rgba(17,22,31,.1);border-radius:1rem;background:rgba(255,255,255,.98);box-shadow:0 22px 60px rgba(24,32,48,.16);backdrop-filter:blur(20px)}.hc-account-menu-label{display:block;margin:0 0 .5rem .15rem;color:#7c8798;font-size:.62rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.hc-account-menu .hc-account-workspaces{grid-template-columns:1fr}.hc-account-menu-logout{width:100%;justify-self:stretch;margin-top:.6rem}
   @media(max-width:860px){.hc-account-switcher{grid-template-columns:1fr}.hc-account-workspaces{grid-template-columns:1fr}}
