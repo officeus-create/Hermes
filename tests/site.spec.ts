@@ -54,6 +54,12 @@ const routes = [
 
 for (const route of routes) {
   test(`${route} renders without broken layout`, async ({ page }) => {
+    await page.route("**/api/hermes-connect/account", (request) => request.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: false, error: "not_authenticated" }),
+    }));
+
     const errors: string[] = [];
     page.on("console", (message) => {
       if (message.type() === "error") errors.push(message.text());
