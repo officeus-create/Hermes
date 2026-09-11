@@ -10,6 +10,7 @@ import { ensureRepairShopStaffScheduleSchema } from "../_lib/repair-shop-staff-s
 import { normalizeRepairShopCapacity, saturatedRepairShopIntervals } from "../_lib/repair-shop-capacity.mjs";
 import { findServiceForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
+import { readGoogleBusyIntervalsForDate } from "../_lib/repair-shop-google-calendar.mjs";
 
 type Env = { DB?: any };
 type BookingInput = {
@@ -238,13 +239,25 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const activeIntervals = await readBusyIntervals(env.DB, shop.id, date);
   const capacityBusy = saturatedRepairShopIntervals(activeIntervals, capacity);
   const team = await readTeamSchedule(env.DB, String(shop.id), String(shop.owner_specialist_id), date);
+  const calendar = team.configured
+    ? await readGoogleBusyIntervalsForDate(env.DB, env, {
+        shopId: String(shop.id),
+        ownerId: String(shop.owner_specialist_id),
+        staffIds: team.staff.map((member) => member.id),
+        date,
+        timezone: String(shop.timezone),
+      })
+    : { intervals: [] as BusyInterval[], source: "local_only", connected: false, error_class: null };
+  const staffBusyIntervals = [...activeIntervals, ...(calendar.intervals as BusyInterval[])];
   const response: Record<string, unknown> = {
     success: true,
     shop: { slug: shop.slug, timezone: shop.timezone },
     date,
     capacity,
-    busy: team.configured ? [...capacityBusy, ...teamUnavailableIntervals(team.staff, activeIntervals)] : capacityBusy,
+    busy: team.configured ? [...capacityBusy, ...teamUnavailableIntervals(team.staff, staffBusyIntervals)] : capacityBusy,
     staff_scheduling: team.configured ? "staff_schedule" : "legacy_shop_capacity",
+    calendar_conflicts_source: calendar.source,
+    calendar_error_class: calendar.error_class,
     available_starts: null,
   };
 
@@ -270,7 +283,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         const endTime = fromMinutes(start + durationMinutes);
         if (capacityIsBusy(activeIntervals, capacity, startTime, endTime)) continue;
         const hasStaff = team.staff.some(
-          (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(activeIntervals, member.id, startTime, endTime),
+          (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(staffBusyIntervals, member.id, startTime, endTime),
         );
         if (hasStaff) starts.push(startTime);
       }
@@ -361,8 +374,20 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (hasVehicleInput) await ensureRepairShopBookingVehicleSchema(env.DB);
   const capacity = await readBookingCapacity(env.DB, shop.id);
   const team = await readTeamSchedule(env.DB, String(shop.id), String(shop.owner_specialist_id), appointmentDate);
+  const calendar = team.configured
+    ? await readGoogleBusyIntervalsForDate(env.DB, env, {
+        shopId: String(shop.id),
+        ownerId: String(shop.owner_specialist_id),
+        staffIds: team.staff.map((member) => member.id),
+        date: appointmentDate,
+        timezone: String(shop.timezone),
+      })
+    : { intervals: [] as BusyInterval[], source: "local_only", connected: false, error_class: null };
+  const googleBusyIntervals = calendar.intervals as BusyInterval[];
   const candidates = team.configured
-    ? team.staff.filter((member) => staffCoversWindow(member, startTime, endTime))
+    ? team.staff.filter(
+        (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(googleBusyIntervals, member.id, startTime, endTime),
+      )
     : [null];
   if (team.configured && candidates.length === 0) {
     return jsonResponse(409, { success: false, error: "slot_unavailable" });
@@ -488,6 +513,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         ? { year: vehicleYear, make: vehicleMake, model: vehicleModel, mileage, vin: vin || null }
         : null,
       timezone: shop.timezone,
+      calendar_conflicts_source: calendar.source,
     },
   });
 }
