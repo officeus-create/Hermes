@@ -46,10 +46,10 @@ jobs:
         shell: bash
         run: bash scripts/repair-customer-crm-production-smoke.sh
 
-      - name: Verify owner desktop/mobile journey and private feedback
+      - name: Verify canonical owner desktop/mobile journey and private feedback
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/repair-owner-browser-production-smoke.mjs
+        run: node scripts/repair-p0-production-proof-v2.mjs
 
       - name: Publish sanitized proof result
         if: always()
@@ -67,6 +67,7 @@ jobs:
             if [ "${JOB_STATUS}" = "success" ]; then
               echo "- ✅ Repeat-customer CRM aggregation, completed/next-appointment history, and vehicle/service context passed against production."
               echo "- ✅ Real Chromium owner journey passed on desktop and 390px: landing → registration/login → authenticated dashboard."
+              echo "- ✅ Profile, three persisted services, availability, public booking, owner status/history, repeat customer/vehicle CRM, and default access readback passed."
               echo "- ✅ Private feedback submit/readback passed from the authenticated 390px dashboard."
               echo "- ✅ Temporary synthetic owner/customer/feedback rows were cleaned by the bounded cleanup paths."
             else
