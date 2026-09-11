@@ -42,7 +42,7 @@ function first(source: any, paths: string[]) {
   return null;
 }
 
-function number(value: unknown) {
+function numeric(value: unknown) {
   if (value === null || value === undefined || value === "") return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
@@ -77,15 +77,15 @@ function vehicleList(posting: any) {
 function boolValue(value: unknown) {
   if (typeof value === "boolean") return value;
   const normalized = String(value ?? "").trim().toLowerCase();
-  if (["true", "1", "yes", "operable", "open", "enclosed"].includes(normalized)) return true;
+  if (["true", "1", "yes", "operable"].includes(normalized)) return true;
   if (["false", "0", "no", "inoperable"].includes(normalized)) return false;
   return null;
 }
 
-function centsOrAmount(posting: any) {
-  const cents = number(first(posting, ["carrierPayInCents", "carrier_pay_in_cents", "loadLeg.carrierPayInCents", "posting.carrierPayInCents"]));
+function carrierPay(posting: any) {
+  const cents = numeric(first(posting, ["carrierPayInCents", "carrier_pay_in_cents", "loadLeg.carrierPayInCents", "posting.carrierPayInCents"]));
   if (cents !== null) return cents / 100;
-  return number(first(posting, ["totalCarrierPay", "carrierPay", "payment.amount", "rate", "price"]));
+  return numeric(first(posting, ["totalCarrierPay", "carrierPay", "payment.amount", "rate", "price"]));
 }
 
 function normalizeShipCarsPosting(posting: any, index: number, visibility: "carrier_only" | "public") {
@@ -95,22 +95,13 @@ function normalizeShipCarsPosting(posting: any, index: number, visibility: "carr
   const origin = locationLabel(pickup, first(posting, ["pickupAddress", "origin", "pickup"]));
   const destination = locationLabel(delivery, first(posting, ["deliveryAddress", "destination", "delivery"]));
   const vehicles = vehicleList(posting);
-  const firstVehicle = vehicles[0] || {};
-  const rateAmount = centsOrAmount(posting);
-  const distanceMiles = number(first(posting, ["route.distanceInMiles", "distanceInMiles", "distance", "loadLeg.route.distanceInMiles"]));
-  const explicitRpm = number(first(posting, ["pricePerMile", "price_per_mile", "ratePerMile"]));
+  const observedRaw = text(first(posting, ["lastModified", "updatedAt", "updated_at", "createdAt", "created_at"]), 64);
+  const observedTime = observedRaw && !Number.isNaN(new Date(observedRaw).getTime()) ? new Date(observedRaw).getTime() : Date.now();
+  const explicitVehicleCount = numeric(first(posting, ["numberVehicles", "number_vehicles", "vehicleCount"]));
+  const vehicleCount = explicitVehicleCount ?? (vehicles.length > 0 ? vehicles.length : null);
   const trailerRaw = String(first(posting, ["trailerType", "load.useEnclosedTrailer", "useEnclosedTrailer", "posting.useEnclosedTrailer"]) ?? "");
-  const enclosed = /enclosed|true|1/i.test(trailerRaw);
   const operableRaw = first(posting, ["operable", "vehicleCondition", "vehicles.0.operableType", "shippingItems.0.operableType"]);
-  const operable = boolValue(operableRaw);
-  const observedAt = text(first(posting, ["lastModified", "updatedAt", "updated_at", "createdAt", "created_at"]), 64) || new Date().toISOString();
-  const observedTime = Number.isNaN(new Date(observedAt).getTime()) ? Date.now() : new Date(observedAt).getTime();
-  const expiresAt = new Date(Math.max(Date.now(), observedTime) + 2 * 60 * 60 * 1000).toISOString();
-  const pickupWindow = text(first(posting, ["route.pickupDateDetail.estimatedStartDate", "pickupDate", "pickup_window", "loadLeg.route.pickupDateDetail.estimatedStartDate"]), 160);
-  const paymentTerms = text(first(posting, ["paymentTerms", "payment_terms", "payments.0.terms", "payment.type"]), 120);
-  const vehicleCount = number(first(posting, ["numberVehicles", "number_vehicles", "vehicleCount"])) ?? vehicles.length || null;
   const providerUrlCandidate = text(first(posting, ["url", "postingUrl", "webUrl"]), 500);
-  const providerUrl = providerUrlCandidate.startsWith("https://") ? providerUrlCandidate : null;
   const fingerprintVersion = text(first(posting, ["lastModified", "updatedAt", "updated_at", "version", "status"]), 80) || "current";
 
   return {
@@ -121,29 +112,22 @@ function normalizeShipCarsPosting(posting: any, index: number, visibility: "carr
     equipment: "car_hauler",
     origin,
     destination: destination || null,
-    pickup_window: pickupWindow || null,
+    pickup_window: text(first(posting, ["route.pickupDateDetail.estimatedStartDate", "pickupDate", "pickup_window", "loadLeg.route.pickupDateDetail.estimatedStartDate"]), 160) || null,
     availability_text: text(first(posting, ["status", "negotiationState", "availability"]), 120) || null,
-    rate_amount: rateAmount,
+    rate_amount: carrierPay(posting),
     rate_currency: "USD",
-    distance_miles: distanceMiles,
+    distance_miles: numeric(first(posting, ["route.distanceInMiles", "distanceInMiles", "distance", "loadLeg.route.distanceInMiles"])),
     vehicle_count: vehicleCount,
-    operable,
-    enclosed,
-    payment_terms: paymentTerms || null,
-    rate_per_mile: explicitRpm,
+    operable: boolValue(operableRaw),
+    enclosed: /enclosed|true|1/i.test(trailerRaw),
+    payment_terms: text(first(posting, ["paymentTerms", "payment_terms", "payments.0.terms", "payment.type"]), 120) || null,
+    rate_per_mile: numeric(first(posting, ["pricePerMile", "price_per_mile", "ratePerMile"])),
     received_at: new Date().toISOString(),
     observed_at: new Date(observedTime).toISOString(),
-    expires_at: expiresAt,
+    expires_at: new Date(Math.max(Date.now(), observedTime) + 2 * 60 * 60 * 1000).toISOString(),
     visibility,
-    provider_url: providerUrl,
+    provider_url: providerUrlCandidate.startsWith("https://") ? providerUrlCandidate : null,
     raw_evidence_ref: `ship_cars:${providerId}`,
-    vehicle_summary: vehicles.length ? vehicles.slice(0, 10).map((vehicle: any) => ({
-      year: first(vehicle, ["year"]),
-      make: first(vehicle, ["make"]),
-      model: first(vehicle, ["model"]),
-      bodyType: first(vehicle, ["bodyType", "type"]),
-      operableType: first(vehicle, ["operableType"]),
-    })) : firstVehicle ? undefined : undefined,
   };
 }
 
@@ -179,14 +163,11 @@ function appendFilter(params: URLSearchParams, key: string, value: any) {
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-  if (env.HERMES_PROVIDER_SYNC_ENABLED !== "true") {
-    return jsonResponse(503, { success: false, error: "provider_sync_disabled" });
-  }
+  if (env.HERMES_PROVIDER_SYNC_ENABLED !== "true") return jsonResponse(503, { success: false, error: "provider_sync_disabled" });
+
   const syncToken = String(env.HERMES_PROVIDER_SYNC_TOKEN || env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
   if (!syncToken) return jsonResponse(503, { success: false, error: "provider_sync_token_not_configured" });
-  if (request.headers.get("Authorization") !== `Bearer ${syncToken}`) {
-    return jsonResponse(401, { success: false, error: "unauthorized" });
-  }
+  if (request.headers.get("Authorization") !== `Bearer ${syncToken}`) return jsonResponse(401, { success: false, error: "unauthorized" });
 
   let body: any;
   try { body = await request.json(); } catch { body = {}; }
@@ -204,7 +185,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(403, { success: false, error: "ship_cars_rights_not_approved" });
   }
 
-  const accessToken = await shipCarsAccessToken(env);
+  let accessToken: string | null;
+  try { accessToken = await shipCarsAccessToken(env); }
+  catch (error) { return jsonResponse(502, { success: false, error: "ship_cars_auth_failed", detail: String(error) }); }
   if (!accessToken) return jsonResponse(503, { success: false, error: "ship_cars_credentials_not_configured" });
 
   const params = new URLSearchParams();
@@ -217,24 +200,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const sourceResponse = await fetch(`https://ship.cars/api/loadboard/v3/postings?${params.toString()}`, {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
   });
-  if (!sourceResponse.ok) {
-    return jsonResponse(502, { success: false, error: "ship_cars_fetch_failed", status: sourceResponse.status });
-  }
+  if (!sourceResponse.ok) return jsonResponse(502, { success: false, error: "ship_cars_fetch_failed", status: sourceResponse.status });
+
   const sourcePayload = await sourceResponse.json();
   const rawRecords = asArray(sourcePayload).slice(0, requestedLimit);
   const visibility: "carrier_only" | "public" = env.HERMES_SHIP_CARS_PUBLIC_DISPLAY_APPROVED === "true" ? "public" : "carrier_only";
-  const records = rawRecords
-    .map((posting, index) => normalizeShipCarsPosting(posting, index, visibility))
-    .filter((record) => record.origin);
+  const records = rawRecords.map((posting, index) => normalizeShipCarsPosting(posting, index, visibility)).filter((record) => record.origin);
 
   if (!records.length) {
-    return jsonResponse(200, {
-      success: true,
-      provider: "ship_cars",
-      fetched: rawRecords.length,
-      accepted: 0,
-      message: "No mappable active postings returned for this filter set.",
-    });
+    return jsonResponse(200, { success: true, provider: "ship_cars", fetched: rawRecords.length, accepted: 0, message: "No mappable active postings returned for this filter set." });
   }
 
   const ingestToken = String(env.HERMES_LOADBOARD_INGEST_TOKEN || env.LEAD_SERVICE_TOKEN || "");
