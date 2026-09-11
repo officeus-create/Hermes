@@ -5,6 +5,11 @@ on:
     paths:
       - "functions/api/_lib/repair-shop-schema.mjs"
       - "functions/api/repair-shop/profile.ts"
+      - "functions/api/_lib/repair-shop-google-calendar.mjs"
+      - "functions/api/_lib/repair-shop-google-calendar-owner.mjs"
+      - "functions/api/repair-shop/google-calendar/**"
+      - "functions/api/public/repair-booking.ts"
+      - "scripts/repair-shop-google-calendar-contract.test.mjs"
       - "functions/api/public/repair-shop.ts"
       - "public/repair-shop-design-polish.css"
       - "src/pages/services/hermes-connect/repair-shops/settings.astro"
@@ -22,6 +27,11 @@ on:
     paths:
       - "functions/api/_lib/repair-shop-schema.mjs"
       - "functions/api/repair-shop/profile.ts"
+      - "functions/api/_lib/repair-shop-google-calendar.mjs"
+      - "functions/api/_lib/repair-shop-google-calendar-owner.mjs"
+      - "functions/api/repair-shop/google-calendar/**"
+      - "functions/api/public/repair-booking.ts"
+      - "scripts/repair-shop-google-calendar-contract.test.mjs"
       - "functions/api/public/repair-shop.ts"
       - "public/repair-shop-design-polish.css"
       - "src/pages/services/hermes-connect/repair-shops/settings.astro"
@@ -53,6 +63,8 @@ jobs:
         run: npm ci
       - name: Validate Settings API and privacy contract
         run: node scripts/repair-shop-settings-contract.test.mjs
+      - name: Validate Google Calendar privacy and booking contract
+        run: node scripts/repair-shop-google-calendar-contract.test.mjs
       - name: Build website
         run: npm run build
       - name: Install Chromium
