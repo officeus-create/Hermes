@@ -56,6 +56,8 @@ for (const market of repairPilotMarkets) {
 }
 
 assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
+assert.match(loadBoardPage, /Car Hauler Load Board \| Review Auto Transport Loads \| Hermes/);
+assert.match(loadBoardPage, /car hauling and auto transport load opportunities/);
 assert.match(carrierPage, /\/load-board\/\?role=carrier/);
 assert.match(carrierPage, /not Hermes office locations/);
 
