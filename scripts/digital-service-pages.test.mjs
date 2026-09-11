@@ -77,7 +77,9 @@ const schemaTypes = (html) => [...html.matchAll(/<script[^>]+type=["']applicatio
   });
 
 const sitemap = await readFile(join(dist, "sitemap-digital-services.xml"), "utf8");
+const serviceSource = await readFile(join(root, "src/data/digital-service-pages.ts"), "utf8");
 const robots = await readFile(join(dist, "robots.txt"), "utf8");
+assert.ok(!/Proven Growth System/i.test(serviceSource), "national SEO metadata must not make an unsupported proven-growth claim");
 const home = await readFile(join(dist, "index.html"), "utf8");
 
 for (const page of routes) {

@@ -124,7 +124,7 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
   seo: {
     slug: "/services/seo/",
     title: "SEO Services for U.S. Businesses | Hermes",
-    description: "SEO Services for U.S. Businesses: Technical Audits, Search Intent Architecture, Schema & Proven Growth System. Get Your Free SEO Scope.",
+    description: "SEO services for U.S. businesses: technical audits, search-intent architecture, schema, internal linking and privacy-safe measurement. Request an SEO scope.",
     eyebrow: "Hermes IT Development · Search Growth",
     h1: "SEO Services Built on Technical Quality and Useful Content",
     intro: "Hermes combines technical SEO, search-intent research, commercial content architecture, internal linking, structured data, measurement, and controlled improvement. The work is tied to real services and customer needs rather than mass-produced pages or ranking promises.",

@@ -13,7 +13,7 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "Logistics & Trucking SEO Services | Hermes",
+    title: "SEO for Logistics Companies & Trucking | Hermes",
     h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
       "Commercial query-to-page ownership",
@@ -74,7 +74,9 @@ const parseSchema = (html) => [...html.matchAll(/<script[^>]+type=["']applicatio
   });
 
 const sitemap = await readFile(join(dist, "sitemap-digital-services.xml"), "utf8");
+const nicheSource = await readFile(join(root, "src/data/digital-niche-service-pages.ts"), "utf8");
 const seoHub = await readFile(join(dist, "services/seo/index.html"), "utf8");
+assert.ok(!/Proven Growth System/i.test(nicheSource), "niche SEO metadata must not make an unsupported proven-growth claim");
 
 for (const page of pages) {
   const html = await readFile(join(dist, page.file), "utf8");

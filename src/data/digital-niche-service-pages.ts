@@ -3,8 +3,8 @@ import type { DigitalServicePageContent } from "./digital-service-pages";
 export const digitalNicheServicePages: Record<string, DigitalServicePageContent> = {
   logisticsSeo: {
     slug: "/services/seo-for-logistics-companies/",
-    title: "Logistics & Trucking SEO Services | Hermes",
-    description: "Logistics & Trucking SEO: Technical Audits, Fleet Query Ownership, Service Architecture & Proven Growth System. Get Your Free Audit Scope.",
+    title: "SEO for Logistics Companies & Trucking | Hermes",
+    description: "SEO for logistics companies and trucking businesses: technical audits, query ownership, service architecture and search-to-inquiry measurement. Request an audit scope.",
     eyebrow: "ProgressoPro · Logistics SEO",
     h1: "SEO for Logistics, Trucking and Dispatch Companies",
     intro: "Logistics SEO must separate carrier, customer, equipment, service, location and problem-solving intent without turning private operational data into public claims. Hermes applies first-party experience from building and testing its own logistics website architecture, dispatch and carrier paths, vehicle-transport pages, checklists, qualification flows and measurement controls.",
@@ -63,7 +63,7 @@ export const digitalNicheServicePages: Record<string, DigitalServicePageContent>
   autoDealerSeo: {
     slug: "/services/seo-for-independent-auto-dealers/",
     title: "Auto Dealer SEO Services | Used & Independent Dealerships | Hermes",
-    description: "Auto Dealer SEO: Local Market Search Ownership, Vehicle Page Audits, Mobile Inquiry Paths & Proven Growth System. Get Your Free Audit Scope.",
+    description: "Auto dealer SEO for independent and used dealerships: local search ownership, vehicle-page audits, mobile inquiry paths and measurable search architecture. Request an audit scope.",
     eyebrow: "ProgressoPro · Independent Dealer SEO",
     h1: "SEO for Independent and Used Car Dealers",
     intro: "Independent and used car dealers need more than changing inventory pages. A useful search system connects the real dealership, markets served, vehicle categories, financing and trade-in boundaries, evergreen buying guidance, auction and transport needs, local proof, and mobile inquiry paths without inventing inventory, approvals, prices, reviews or customer results.",
