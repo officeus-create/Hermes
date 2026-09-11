@@ -1,12 +1,9 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
+import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
 import { finiteNumber, normalizeEquipment, scoreOpportunity } from "../_lib/load-board-opportunity.mjs";
 
 type Env = { DB?: any };
-
-function roleCanPlan(role: unknown) {
-  return /carrier|owner[- ]?operator|dispatcher|operations/i.test(String(role ?? ""));
-}
 
 function stateCode(value: string | null) {
   const normalized = String(value || "").trim().toUpperCase();
@@ -24,7 +21,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "authentication_required" });
-  if (!roleCanPlan(specialist.role)) return jsonResponse(403, { success: false, error: "dispatcher_or_carrier_role_required" });
+  if (!(await specialistHasLoadBoardAccess(env.DB, specialist))) {
+    return jsonResponse(403, { success: false, error: "dispatcher_or_carrier_role_required", next_url: "/services/hermes-connect/load-board/access/" });
+  }
 
   const url = new URL(request.url);
   const equipment = normalizeEquipment(url.searchParams.get("equipment") || "car_hauler");
@@ -35,11 +34,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const maxDeadhead = finiteNumber(url.searchParams.get("max_deadhead"), { min: 0, max: 5000 });
 
   const conditions = [
-    "r.record_type = 'load'",
-    "r.status = 'active'",
-    "r.expires_at > ?",
-    "r.visibility IN ('public', 'carrier_only')",
-    "r.equipment = ?",
+    "r.record_type = 'load'", "r.status = 'active'", "r.expires_at > ?", "r.visibility IN ('public', 'carrier_only')", "r.equipment = ?",
   ];
   const bindings: any[] = [new Date().toISOString(), equipment];
   if (minRpm !== null) { conditions.push("r.rate_per_mile >= ?"); bindings.push(minRpm); }
@@ -61,39 +56,17 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   `).bind(...bindings).all();
 
   const candidates = (result?.results || []).map((row: any) => {
-    const scored = scoreOpportunity(row, {
-      equipment,
-      originState: originState || undefined,
-      destinationState: preferredDestinationState || undefined,
-    });
+    const scored = scoreOpportunity(row, { equipment, originState: originState || undefined, destinationState: preferredDestinationState || undefined });
     return {
-      id: row.id,
-      provider: row.provider || null,
-      source: row.source_name,
-      providerRecordId: row.provider_record_id || null,
-      providerUrl: row.provider_url || null,
-      equipment: row.equipment,
-      origin: row.origin,
-      originCity: row.origin_city || null,
-      originState: row.origin_state || null,
-      destination: row.destination || null,
-      destinationCity: row.destination_city || null,
-      destinationState: row.destination_state || null,
-      pickupWindow: row.pickup_window || null,
-      availability: row.availability_text || null,
-      rateAmount: row.rate_amount == null ? null : Number(row.rate_amount),
-      rateCurrency: row.rate_currency || "USD",
-      distanceMiles: row.distance_miles == null ? null : Number(row.distance_miles),
-      deadheadMiles: row.deadhead_miles == null ? null : Number(row.deadhead_miles),
-      vehicleCount: row.vehicle_count == null ? null : Number(row.vehicle_count),
-      operable: row.operable == null ? null : Boolean(row.operable),
-      enclosed: row.enclosed == null ? null : Boolean(row.enclosed),
-      paymentTerms: row.payment_terms || null,
-      ratePerMile: scored.ratePerMile,
-      score: scored.score,
-      scoreReasons: scored.reasons,
-      observedAt: row.observed_at,
-      expiresAt: row.expires_at,
+      id: row.id, provider: row.provider || null, source: row.source_name, providerRecordId: row.provider_record_id || null,
+      providerUrl: row.provider_url || null, equipment: row.equipment, origin: row.origin, originCity: row.origin_city || null,
+      originState: row.origin_state || null, destination: row.destination || null, destinationCity: row.destination_city || null,
+      destinationState: row.destination_state || null, pickupWindow: row.pickup_window || null, availability: row.availability_text || null,
+      rateAmount: row.rate_amount == null ? null : Number(row.rate_amount), rateCurrency: row.rate_currency || "USD",
+      distanceMiles: row.distance_miles == null ? null : Number(row.distance_miles), deadheadMiles: row.deadhead_miles == null ? null : Number(row.deadhead_miles),
+      vehicleCount: row.vehicle_count == null ? null : Number(row.vehicle_count), operable: row.operable == null ? null : Boolean(row.operable),
+      enclosed: row.enclosed == null ? null : Boolean(row.enclosed), paymentTerms: row.payment_terms || null,
+      ratePerMile: scored.ratePerMile, score: scored.score, scoreReasons: scored.reasons, observedAt: row.observed_at, expiresAt: row.expires_at,
       dedupeKey: row.dedupe_key || row.id,
     };
   });
@@ -101,9 +74,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const bestByDedupe = new Map<string, (typeof candidates)[number]>();
   for (const candidate of candidates) {
     const current = bestByDedupe.get(candidate.dedupeKey);
-    if (!current || candidate.score > current.score || (candidate.score === current.score && String(candidate.observedAt) > String(current.observedAt))) {
-      bestByDedupe.set(candidate.dedupeKey, candidate);
-    }
+    if (!current || candidate.score > current.score || (candidate.score === current.score && String(candidate.observedAt) > String(current.observedAt))) bestByDedupe.set(candidate.dedupeKey, candidate);
   }
   const unique = [...bestByDedupe.values()];
 
@@ -114,12 +85,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     const eligible = unique
       .filter((candidate) => !used.has(candidate.id))
       .filter((candidate) => !currentState || candidate.originState === currentState)
-      .map((candidate) => ({
-        candidate,
-        chainScore: candidate.score
-          + (leg === 0 && preferredDestinationState && candidate.destinationState === preferredDestinationState ? 8 : 0)
-          + (leg > 0 ? 5 : 0),
-      }))
+      .map((candidate) => ({ candidate, chainScore: candidate.score + (leg === 0 && preferredDestinationState && candidate.destinationState === preferredDestinationState ? 8 : 0) + (leg > 0 ? 5 : 0) }))
       .sort((a, b) => b.chainScore - a.chainScore || (b.candidate.ratePerMile ?? -1) - (a.candidate.ratePerMile ?? -1));
     const best = eligible[0]?.candidate;
     if (!best) break;
@@ -148,6 +114,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     planner_version: "hermes_chain_v1",
     planning_only: true,
     booking_performed: false,
+    company_registration_unlocks_access: true,
     equipment,
     requested_origin_state: originState || null,
     preferred_destination_state: preferredDestinationState || null,
@@ -162,8 +129,5 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     },
     alternatives,
     caveat: "This plan prioritizes currently approved normalized opportunities. It is not a booking, rate confirmation, HOS decision, route guarantee, or substitute for dispatcher verification.",
-  }, {
-    "Cache-Control": "private, no-store",
-    "X-Robots-Tag": "noindex, nofollow",
-  });
+  }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
 }
