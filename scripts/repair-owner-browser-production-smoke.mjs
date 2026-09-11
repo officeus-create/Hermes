@@ -40,7 +40,9 @@ async function cleanup() {
 }
 
 async function gotoOk(page, path) {
-  const response = await page.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  const url = new URL(path, BASE);
+  url.searchParams.set("_hermes_ga4_smoke", "1");
+  const response = await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 30_000 });
   if (!response || response.status() !== 200) throw new Error(`Unexpected HTTP status for ${path}: ${response?.status() ?? 0}`);
 }
 
