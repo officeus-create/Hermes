@@ -29,4 +29,5 @@ for (const f of files) { const source = fs.readFileSync(path.join(root,f),"utf8"
 let loaderCount=0,gtm=0,meta=0,ads=0; const sourceFiles=[]; const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const a=path.join(d,e.name);if(e.isDirectory())walk(a);else if(/\.(astro|ts|js|mjs)$/i.test(e.name))sourceFiles.push(a)}}; walk(path.join(root,"src")); walk(path.join(root,"public/demos/hermes-connect"));
 for(const f of sourceFiles){const c=fs.readFileSync(f,"utf8");loaderCount+=(c.match(loaderPattern)??[]).length;gtm+=(c.match(/GTM-[A-Z0-9]+/g)??[]).length;meta+=(c.match(/(?:connect\.facebook\.net|facebook\.com\/tr|\bfbq\s*\()/gi)??[]).length;ads+=(c.match(/(?:AW-[0-9]+|googleadservices\.com|doubleclick\.net)/gi)??[]).length;}
 assert.equal(loaderCount,2);assert.equal(gtm,0);assert.equal(meta,0);assert.equal(ads,0);
-console.log("Analytics/vendor consent contract passed: main + Connect GA4 are consent-gated, production-host gated, shared events keep a local QA path, and advertising vendors remain blocked.");
+await import("./repair-shop-posthog-contract.test.mjs");
+console.log("Analytics/vendor consent contract passed: main + Connect GA4 are consent-gated, production-host gated, shared events keep a local QA path, Repair Shop PostHog events are privacy-gated, and advertising vendors remain blocked.");

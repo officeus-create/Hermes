@@ -1,6 +1,9 @@
 ---
+import RepairShopAnalytics from "./RepairShopAnalytics.astro";
+
 const measurementId = "G-RY26321PVW";
 const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-connect");
+const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 ---
 
 <div class:list={["tracking-consent", { "tracking-consent-connect": isHermesConnectRoute }]} data-tracking-consent data-measurement-id={measurementId}>
@@ -8,7 +11,11 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     <div class="tracking-consent-copy">
       <p class="tracking-consent-eyebrow">Privacy settings</p>
       <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
-      <p class="tracking-consent-detail">Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.</p>
+      <p class="tracking-consent-detail">
+        {isRepairShopRoute
+          ? "Hermes uses Google Analytics 4 and a privacy-limited PostHog product event stream to understand visits and whether core Repair Shop workflows work. Analytics stays off until you choose “Allow analytics.” No names, emails, phones, shop/customer identifiers, VINs, notes, calendar data, or payment identifiers are sent in Repair Shop product events. Advertising storage, ad personalization, and advertising user data remain disabled."
+          : "Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled."}
+      </p>
       <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>
     </div>
     <div class="tracking-consent-actions">
@@ -19,6 +26,8 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
   </div>
   <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog" hidden>Privacy settings</button>
 </div>
+
+{isRepairShopRoute && <RepairShopAnalytics />}
 
 <script is:inline define:vars={{ measurementId }}>
   (() => {

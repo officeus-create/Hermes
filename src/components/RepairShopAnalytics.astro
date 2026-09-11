@@ -1,0 +1,204 @@
+---
+const projectKey = import.meta.env.PUBLIC_POSTHOG_PROJECT_KEY ?? "";
+const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
+---
+
+<div
+  data-repair-shop-analytics
+  data-posthog-project-key={projectKey}
+  data-posthog-host={posthogHost}
+  hidden
+></div>
+
+<script>
+  import { trackEvent } from "../lib/analytics";
+
+  const REPAIR_ROOT = "/services/hermes-connect/repair-shops/";
+  const CONSENT_KEY = "hermes-analytics-consent";
+  const PROD_HOSTS = new Set([
+    "hermeslogisticsus.com",
+    "www.hermeslogisticsus.com",
+    "connect.hermeslogisticsus.com",
+  ]);
+  const ALLOWED_EVENTS = new Set([
+    "hc_repair_owner_opened",
+    "hc_repair_profile_saved",
+    "hc_repair_service_saved",
+    "hc_repair_schedule_saved",
+    "hc_repair_public_booking_opened",
+    "hc_repair_booking_created",
+    "hc_repair_booking_completed",
+    "hc_repair_paid_intent_submitted",
+  ]);
+  const ALLOWED_PROPERTIES = new Set([
+    "locale",
+    "viewport_class",
+    "vertical",
+    "authenticated",
+    "surface",
+    "result_class",
+    "synthetic",
+  ]);
+
+  const analyticsRoot = document.querySelector<HTMLElement>("[data-repair-shop-analytics]");
+  const currentPath = window.location.pathname;
+  const isRepairRoute = currentPath.startsWith(REPAIR_ROOT);
+  const transportFetch = window.fetch.bind(window);
+  let ownerAuthenticatedObserved = false;
+  let ownerOpenedDelivered = false;
+  let publicBookingOpenedDelivered = false;
+
+  const consentGranted = () => {
+    try { return window.localStorage.getItem(CONSENT_KEY) === "granted"; }
+    catch { return false; }
+  };
+
+  const locale = () => {
+    const requested = new URLSearchParams(window.location.search).get("lang")?.toLowerCase() || "";
+    if (["en", "ru", "uk", "es", "it", "fr"].includes(requested)) return requested;
+    const html = (document.documentElement.lang || "en").toLowerCase();
+    return ["en", "ru", "uk", "es", "it", "fr"].includes(html) ? html : "en";
+  };
+
+  const viewportClass = () => window.innerWidth <= 700 ? "mobile" : window.innerWidth <= 1024 ? "tablet" : "desktop";
+  const synthetic = () => new URLSearchParams(window.location.search).get("analytics_smoke") === "synthetic";
+  const surfaceForPath = () => {
+    if (currentPath.endsWith("/dashboard/")) return "owner_dashboard";
+    if (currentPath.endsWith("/settings/")) return "company_settings";
+    if (currentPath.endsWith("/booking/")) return "public_booking";
+    if (currentPath.endsWith("/plan/")) return "founding_plan";
+    if (currentPath.endsWith("/services/")) return "services";
+    if (currentPath.endsWith("/availability/")) return "availability";
+    if (currentPath.endsWith("/appointments/")) return "appointments";
+    return "repair_shop";
+  };
+
+  const eventProperties = (authenticated: boolean, resultClass = "success") => ({
+    locale: locale(),
+    viewport_class: viewportClass(),
+    vertical: "repair_shop",
+    authenticated,
+    surface: surfaceForPath(),
+    result_class: resultClass,
+    synthetic: synthetic(),
+  });
+
+  const safeDistinctId = () => {
+    const key = "hc-posthog-session-id";
+    try {
+      const existing = window.sessionStorage.getItem(key);
+      if (existing) return existing;
+      const generated = `hc_${window.crypto?.randomUUID?.() || `${Date.now()}_${Math.random().toString(16).slice(2)}`}`;
+      window.sessionStorage.setItem(key, generated);
+      return generated;
+    } catch {
+      return `hc_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+  };
+
+  const normalizedPostHogConfig = () => {
+    const key = analyticsRoot?.dataset.posthogProjectKey?.trim() || "";
+    const rawHost = analyticsRoot?.dataset.posthogHost?.trim() || "";
+    if (!key || !rawHost) return null;
+    try {
+      const url = new URL(rawHost);
+      if (url.protocol !== "https:") return null;
+      return { key, host: url.origin };
+    } catch {
+      return null;
+    }
+  };
+
+  const forwardToPostHog = (detail: Record<string, unknown>) => {
+    if (!isRepairRoute || !PROD_HOSTS.has(window.location.hostname) || !consentGranted()) return;
+    const name = typeof detail.name === "string" ? detail.name : "";
+    if (!ALLOWED_EVENTS.has(name)) return;
+    const config = normalizedPostHogConfig();
+    if (!config) return;
+
+    const safeProperties: Record<string, string | boolean> = {
+      distinct_id: safeDistinctId(),
+      "$process_person_profile": false,
+      "$geoip_disable": true,
+    };
+    for (const [key, value] of Object.entries(detail)) {
+      if (!ALLOWED_PROPERTIES.has(key)) continue;
+      if (typeof value === "string" || typeof value === "boolean") safeProperties[key] = value;
+    }
+
+    void transportFetch(`${config.host}/capture/`, {
+      method: "POST",
+      mode: "cors",
+      keepalive: true,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: config.key,
+        event: name,
+        properties: safeProperties,
+      }),
+    }).catch(() => undefined);
+  };
+
+  if (isRepairRoute) {
+    window.addEventListener("hermes:analytics", (event) => {
+      if (!(event instanceof CustomEvent) || !event.detail || typeof event.detail !== "object") return;
+      forwardToPostHog(event.detail as Record<string, unknown>);
+    });
+
+    const emit = (name: string, authenticated: boolean, resultClass = "success") => {
+      if (!ALLOWED_EVENTS.has(name) || !consentGranted()) return;
+      trackEvent(name, eventProperties(authenticated, resultClass));
+    };
+
+    const emitObservedOpenEvents = () => {
+      if (currentPath.endsWith("/booking/") && !publicBookingOpenedDelivered) {
+        publicBookingOpenedDelivered = true;
+        emit("hc_repair_public_booking_opened", false, "opened");
+      }
+      if (currentPath.endsWith("/dashboard/") && ownerAuthenticatedObserved && !ownerOpenedDelivered) {
+        ownerOpenedDelivered = true;
+        emit("hc_repair_owner_opened", true, "opened");
+      }
+    };
+
+    queueMicrotask(emitObservedOpenEvents);
+    document.querySelector("[data-consent-accept]")?.addEventListener("click", () => {
+      window.setTimeout(emitObservedOpenEvents, 0);
+    });
+
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = async (input, init) => {
+      const request = input instanceof Request ? input : null;
+      const method = String(init?.method || request?.method || "GET").toUpperCase();
+      let url: URL | null = null;
+      try { url = new URL(request?.url || String(input), window.location.origin); } catch { /* keep product request untouched */ }
+      const response = await originalFetch(input, init);
+
+      if (!url || url.origin !== window.location.origin || !response.ok) return response;
+      const path = url.pathname;
+
+      if (currentPath.endsWith("/dashboard/") && method === "GET" && path === "/api/auth/me") {
+        ownerAuthenticatedObserved = true;
+        queueMicrotask(emitObservedOpenEvents);
+      } else if (method === "PUT" && path === "/api/repair-shop/profile") {
+        queueMicrotask(() => emit("hc_repair_profile_saved", true));
+      } else if (["POST", "PUT", "PATCH"].includes(method) && path === "/api/services") {
+        queueMicrotask(() => emit("hc_repair_service_saved", true));
+      } else if (["POST", "PUT", "PATCH"].includes(method) && (path === "/api/repair-shop/availability" || path === "/api/repair-shop/staff-schedule")) {
+        queueMicrotask(() => emit("hc_repair_schedule_saved", true));
+      } else if (method === "POST" && path === "/api/public/repair-booking") {
+        queueMicrotask(() => emit("hc_repair_booking_created", false));
+      } else if (method === "PATCH" && /^\/api\/repair-shop\/bookings\/[^/]+\/status$/.test(path)) {
+        try {
+          const rawBody = typeof init?.body === "string" ? init.body : "";
+          const status = rawBody ? JSON.parse(rawBody)?.status : null;
+          if (status === "completed") queueMicrotask(() => emit("hc_repair_booking_completed", true));
+        } catch { /* never let analytics affect booking operations */ }
+      } else if (currentPath.endsWith("/plan/") && method === "POST" && path === "/api/logistics-lead") {
+        queueMicrotask(() => emit("hc_repair_paid_intent_submitted", true));
+      }
+
+      return response;
+    };
+  }
+</script>
