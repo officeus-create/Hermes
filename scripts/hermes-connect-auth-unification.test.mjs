@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import "./repair-shop-feedback-contract.test.mjs";
 import { createHash, createHmac } from "node:crypto";
-import { hashPassword, verifyPassword, createSessionToken } from "../src/legacy-prototype/auth.mjs";
-import { getAuthenticatedSpecialist } from "../functions/api/_lib/session.mjs";
+import { hashPassword, verifyPassword } from "../src/legacy-prototype/auth.mjs";
 import { onRequestPost as handleRegister } from "../functions/api/auth/register.ts";
 import { onRequestPost as handleLogin } from "../functions/api/auth/login.ts";
 import { onRequestPost as handleLogout } from "../functions/api/auth/logout.ts";

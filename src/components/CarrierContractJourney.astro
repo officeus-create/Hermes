@@ -37,7 +37,7 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
 )}
 
 {journey && (
-  <script define:vars={{ shortUrl, smsCopy }}>
+  <script is:inline define:vars={{ shortUrl, smsCopy }}>
     const bar = document.querySelector("[data-carrier-contract-journey]");
     if (bar instanceof HTMLElement) {
       if (bar.hasAttribute("data-carrier-role-gated") && new URLSearchParams(window.location.search).get("role") === "carrier") {
