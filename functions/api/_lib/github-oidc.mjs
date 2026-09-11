@@ -1,10 +1,19 @@
 const GITHUB_OIDC_ISSUER = "https://token.actions.githubusercontent.com";
 const GITHUB_OIDC_JWKS = "https://token.actions.githubusercontent.com/.well-known/jwks";
-const EXPECTED_AUDIENCE = "hermes-connect-weekly-inactivity-reminders";
 const EXPECTED_REPOSITORY = "officeus-create/Hermes";
 const EXPECTED_REF = "refs/heads/main";
-const EXPECTED_WORKFLOW_REF = "officeus-create/Hermes/.github/workflows/hermes-connect-weekly-inactivity-reminders.yml@refs/heads/main";
-const ALLOWED_EVENTS = new Set(["schedule", "workflow_dispatch"]);
+
+const REMINDER_IDENTITY = {
+  audience: "hermes-connect-weekly-inactivity-reminders",
+  workflowRef: "officeus-create/Hermes/.github/workflows/hermes-connect-weekly-inactivity-reminders.yml@refs/heads/main",
+  allowedEvents: new Set(["schedule", "workflow_dispatch"]),
+};
+
+const CABINET_AUDIT_IDENTITY = {
+  audience: "hermes-connect-cabinet-audit",
+  workflowRef: "officeus-create/Hermes/.github/workflows/hc-cabinet-audit.yml@refs/heads/main",
+  allowedEvents: new Set(["issue_comment"]),
+};
 
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
@@ -18,23 +27,31 @@ function parseJsonSegment(value) {
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-export function validateGitHubOidcClaims(claims, now = new Date()) {
-  if (!claims || typeof claims !== "object") return false;
+function validateClaimsForIdentity(claims, identity, now = new Date()) {
+  if (!claims || typeof claims !== "object" || !identity) return false;
   const nowSeconds = Math.floor(now.getTime() / 1000);
   const exp = Number(claims.exp || 0);
   const nbf = Number(claims.nbf || 0);
   const iat = Number(claims.iat || 0);
 
   if (claims.iss !== GITHUB_OIDC_ISSUER) return false;
-  if (claims.aud !== EXPECTED_AUDIENCE) return false;
+  if (claims.aud !== identity.audience) return false;
   if (claims.repository !== EXPECTED_REPOSITORY) return false;
   if (claims.ref !== EXPECTED_REF) return false;
-  if (claims.workflow_ref !== EXPECTED_WORKFLOW_REF) return false;
-  if (!ALLOWED_EVENTS.has(String(claims.event_name || ""))) return false;
+  if (claims.workflow_ref !== identity.workflowRef) return false;
+  if (!identity.allowedEvents.has(String(claims.event_name || ""))) return false;
   if (!Number.isFinite(exp) || exp <= nowSeconds) return false;
   if (Number.isFinite(nbf) && nbf > nowSeconds + 30) return false;
   if (!Number.isFinite(iat) || iat > nowSeconds + 30 || iat < nowSeconds - 20 * 60) return false;
   return true;
+}
+
+export function validateGitHubOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, REMINDER_IDENTITY, now);
+}
+
+export function validateGitHubCabinetAuditOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, CABINET_AUDIT_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -55,7 +72,7 @@ async function fetchSigningKey(kid) {
   );
 }
 
-export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
+async function verifyGitHubOidcToken(token, validateClaims, now = new Date()) {
   try {
     const parts = String(token || "").split(".");
     if (parts.length !== 3) return false;
@@ -63,7 +80,7 @@ export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
     const header = parseJsonSegment(encodedHeader);
     const claims = parseJsonSegment(encodedClaims);
     if (header?.alg !== "RS256" || !header?.kid) return false;
-    if (!validateGitHubOidcClaims(claims, now)) return false;
+    if (!validateClaims(claims, now)) return false;
 
     const key = await fetchSigningKey(header.kid);
     if (!key) return false;
@@ -73,6 +90,14 @@ export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
   } catch {
     return false;
   }
+}
+
+export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubOidcClaims, now);
+}
+
+export async function verifyGitHubCabinetAuditOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubCabinetAuditOidcClaims, now);
 }
 
 export function bearerToken(request) {

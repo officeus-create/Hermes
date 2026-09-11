@@ -1,4 +1,5 @@
 import { requireInternalOwner } from "../_lib/internal-ai.mjs";
+import { bearerToken, verifyGitHubCabinetAuditOidcToken } from "../_lib/github-oidc.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopSalesAttributionSchema } from "../_lib/repair-shop-sales-attribution.mjs";
@@ -98,9 +99,20 @@ async function registrationRows(db: any) {
   return Array.isArray(result?.results) ? result.results : [];
 }
 
-export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
+async function requireRegistrationLedgerReadAccess(request: Request, env: Env) {
   const owner = await requireInternalOwner(request, env);
-  if (owner.response) return owner.response;
+  if (!owner.response) return owner;
+
+  const token = bearerToken(request);
+  if (!token) return owner;
+  if (!await verifyGitHubCabinetAuditOidcToken(token)) return owner;
+  if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
+  return { cabinetAudit: true, response: undefined };
+}
+
+export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
+  const access = await requireRegistrationLedgerReadAccess(request, env);
+  if (access.response) return access.response;
   await ensureSchemas(env.DB);
   await syncConfiguredSyntheticAccounts(env.DB, env);
   const [summary, registrations] = await Promise.all([registrationSummary(env.DB), registrationRows(env.DB)]);
