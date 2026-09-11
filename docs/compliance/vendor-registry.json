@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-08-10",
+  "reviewed_at": "2026-09-11",
   "principle": "No tracking, advertising, remarketing, or data-processing integration may be activated unless it has an explicit registry record and the required consent, disclosure, contract, transfer, retention, and production-verification review.",
   "vendors": [
     {
@@ -12,6 +12,30 @@
       "purpose": "Website analytics and privacy-safe aggregate measurement after affirmative analytics consent.",
       "consent_category": "analytics",
       "default_state": "denied",
+      "advertising_use": false,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
+      "id": "posthog-repair-shop-product-analytics",
+      "vendor": "PostHog",
+      "product": "PostHog product analytics — Hermes Connect Repair Shops",
+      "status": "approved_analytics_only",
+      "purpose": "Consent-gated, allowlisted product-event measurement for the canonical Hermes Connect Repair Shop workflow.",
+      "pages_or_workflows": ["/services/hermes-connect/repair-shops/"],
+      "data_categories": ["coarse locale", "viewport class", "feature surface", "authenticated boolean", "result class", "synthetic-test boolean", "session-scoped random pseudonymous identifier"],
+      "storage_or_tracking_technology": "Direct event capture only after affirmative analytics consent; random session-scoped identifier in sessionStorage; no PostHog SDK cookies, autocapture, automatic pageviews, session recording, identify, or person profiles.",
+      "identifier_or_form_data_access": "No names, emails, phones, shop/customer identifiers, addresses, VINs, plates, free text, calendar/OAuth data, payment/invoice identifiers, or request payloads may enter the event transport.",
+      "controller_or_processor_role": "Hermes determines the bounded product measurement purpose; PostHog acts as the analytics service provider for configured event delivery.",
+      "contract_or_dpa_status": "Production use remains subject to the applicable PostHog account terms and organizational compliance review.",
+      "hosting_or_transfer_geography": "Use the explicitly configured PostHog project host; do not guess or silently switch regions.",
+      "retention_controls": "Project retention and organization controls apply; event payload is data-minimized and person profiles are disabled.",
+      "consent_category": "analytics",
+      "default_state": "denied",
+      "withdrawal_or_opt_out_behavior": "Changing Hermes Privacy settings to denied stops subsequent delivery; the product workflow remains functional.",
+      "privacy_notice_impact": "Privacy Notice updated 2026-09-11 for bounded Repair Shop product analytics.",
+      "production_verification_owner": "Hermes Connect Repair Shop release gate",
+      "production_verification_date": null,
       "advertising_use": false,
       "private_form_fields_allowed": false,
       "production_verification_required": true
