@@ -17,7 +17,7 @@ const technologyExpectationReplacements = new Map([
   ["No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet", "Repair Shops is the current live pilot. Other verticals and modules are not presented as live until separately verified."],
 ]);
 const loadBoardExpectationReplacements = new Map([
-  ["Car Hauling Loads &amp; Load Board Preview", "Car Hauling Load Board | Live Feed + Demo Review"],
+  ["Car Hauling Loads &amp; Load Board Preview", "Car Hauler Load Board | Review Auto Transport Loads"],
   ["Dry-run only", "Source-gated live + demo"],
 ]);
 
