@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [carrierPage, carrierMarkets, dealerPage, repairEnhancer] = await Promise.all([
+const [carrierPage, loadBoardPage, carrierMarkets, dealerPage, repairEnhancer] = await Promise.all([
   readFile(new URL("../src/pages/logistics/car-hauling-dispatch/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/load-board.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/data/car-hauler-geo-markets.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/dealer-vehicle-transportation/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
@@ -32,6 +33,7 @@ assert.match(carrierPage, /Missouri\/Kansas/);
 assert.match(carrierPage, /Chicago-area markets/);
 assert.match(carrierPage, /Fremont \/ the Bay Area/);
 assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
+assert.match(loadBoardPage, /href="\/logistics\/car-hauler-loads\/"/, "Load Board must provide a contextual discovery link to the Carrier GEO hub");
 
 // Dealer/shipper acquisition remains a separate owner until that funnel is
 // intentionally migrated. This carrier launch must not silently rewrite it.
