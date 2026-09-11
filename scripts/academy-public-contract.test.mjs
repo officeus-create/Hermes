@@ -48,8 +48,16 @@ for (const text of [
   "Paid cohort",
   "Free practice opportunity",
   "Five learning tracks stay clearly separated.",
+  "Russian-speaking and Ukrainian-speaking adults worldwide",
+  "Worldwide remote application review",
+  "Can Russian-speaking or Ukrainian-speaking applicants apply from any country?",
 ]) {
   assert.ok(academyText.includes(text), `Academy public page is missing: ${text}`);
+}
+
+assert.ok(academyHtml.includes('"name":"Worldwide"'), "Academy schema must describe worldwide service area");
+for (const language of ["Russian", "Ukrainian", "English"]) {
+  assert.ok(academyHtml.includes(`"${language}"`), `Academy schema must include ${language}`);
 }
 
 for (const text of [

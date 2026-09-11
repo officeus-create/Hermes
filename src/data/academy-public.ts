@@ -1,19 +1,19 @@
 import type { PathDetail } from "./site";
 
 export const academyPublicPathOverrides: Partial<PathDetail> = {
-  title: "Build practical skills across five Hermes Academy tracks.",
-  body: "Explore Logistics, Marketing, IT & AI, Sales, and COO / Operations as public learning tracks connected to real business workflows.",
+  title: "Build practical skills in Russian, Ukrainian, or English across five Hermes Academy tracks.",
+  body: "Apply from anywhere for a human-reviewed learning path in Logistics, Marketing, IT & AI, Sales, or COO / Operations. Country, language, schedule, and program fit are reviewed before participation.",
   points: [
-    "U.S. Logistics Operations",
-    "Marketing · IT & AI · Sales",
-    "COO / Operations",
+    "Russian or Ukrainian learning coordination",
+    "Five practical professional tracks",
+    "Worldwide remote application review",
   ],
-  audience: "For learners and working professionals building practical capability across logistics, marketing, technology, sales, and operations.",
-  overview: "Hermes Business Academy publicly presents five learning tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. A visible learning track does not by itself mean a paid cohort or enrollment window is open. These tracks describe learning direction and practical scope; they do not imply that a paid cohort, seat, price, schedule, certificate, employment path, or enrollment checkout is currently open. Paid cohorts and free practice opportunities use separate eligibility, scope, and participation rules. Exact dates, scope, capacity, and prices are published only after the specific offer is approved. Training and practice do not guarantee employment, income, clients, certification, promotion, or future paid work.",
-  seoTitle: "Logistics, Marketing, IT, Sales & Operations Training | Hermes Academy",
-  seoDescription: "Practical Hermes Academy learning tracks in U.S. logistics, marketing, IT & AI, sales, and operations with approval-gated cohort terms.",
-  seoServiceName: "Practical logistics, marketing, IT, sales, and operations education",
-  localFocus: "U.S.-market and international learning tracks · Email coordination only",
+  audience: "For Russian-speaking, Ukrainian-speaking, and English-speaking adults worldwide who want practical capability in logistics, marketing, technology, sales, or operations.",
+  overview: "As of September 2026, Hermes Academy accepts application previews from Russian-speaking and Ukrainian-speaking adults worldwide. Applicants choose one of five learning tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, or COO / Operations. Country, city, working languages, English level, experience, weekly availability, and time-zone fit are reviewed by a person before any participation decision. A visible track is not proof that a paid cohort or enrollment window is open. Exact dates, scope, capacity, prices, payment terms, and participation rules are shared only for an approved offer. Training and practice do not guarantee admission, employment, income, clients, certification, promotion, or future paid work.",
+  seoTitle: "Russian & Ukrainian Learning Paths Worldwide | Hermes Academy",
+  seoDescription: "Apply worldwide in Russian, Ukrainian, or English for practical Hermes Academy tracks in U.S. logistics, marketing, IT, sales, and operations.",
+  seoServiceName: "Remote practical training for Russian- and Ukrainian-speaking learners",
+  localFocus: "Worldwide remote application review · Russian, Ukrainian, or English · Email coordination only",
   offerings: [
     { title: "U.S. Logistics Operations", body: "Dispatch foundations, carrier and broker communication, documents, equipment logic, load lifecycle, negotiation practice, and operating routines for the U.S. market." },
     { title: "Marketing", body: "Positioning, content, campaigns, customer journeys, sales follow-up, analytics, and practical growth execution for U.S. and international service businesses." },
@@ -33,6 +33,9 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
     { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
     { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment unless that exact offer is separately activated." },
     { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
+    { question: "Can Russian-speaking or Ukrainian-speaking applicants apply from any country?", answer: "Yes. The application accepts country, city, language, schedule, and program information from applicants worldwide. A person reviews program fit, current capacity, time-zone overlap, contact route, and applicable legal or sanctions restrictions before any participation decision." },
+    { question: "Which language should I use for the Academy application?", answer: "You may prepare the application in Russian, Ukrainian, or English. U.S. Logistics and other communication-heavy work may also require functional English, while local-market languages can strengthen a Marketing path." },
+    { question: "What information should an international applicant prepare?", answer: "Choose one learning track and provide country and city, working languages and levels, recent relevant experience, learning objective, weekly availability, U.S. time-zone availability where relevant, and the preferred contact route." },
   ],
 };
 

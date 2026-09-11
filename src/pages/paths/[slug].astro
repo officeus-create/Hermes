@@ -26,6 +26,8 @@ const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
 const contactInterestCategory = site.paths.find((item) => item.id === path.id)?.category ?? path.category;
 const areaServed = path.id === "logistics"
   ? [{ "@type": "Country", name: "United States" }]
+  : path.id === "academy"
+    ? [{ "@type": "Place", name: "Worldwide" }]
   : [
       { "@type": "Country", name: "United States" },
       { "@type": "Country", name: "Italy" },
@@ -42,6 +44,7 @@ const serviceSchema = {
   areaServed,
   provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
+  ...(path.id === "academy" ? { availableLanguage: ["Russian", "Ukrainian", "English"] } : {}),
 };
 const breadcrumbSchema = {
   "@context": "https://schema.org",

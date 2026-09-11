@@ -4,8 +4,9 @@ test.describe("Academy and careers governance", () => {
   test("Academy presents five learning tracks and separates paid cohort from free practice", async ({ page }) => {
     const response = await page.goto("/paths/academy/");
     expect(response?.ok()).toBeTruthy();
-    await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("h1")).toContainText("Build practical skills across five Hermes Academy tracks");
+    const academyHeading = page.locator("main h1");
+    await expect(academyHeading).toHaveCount(1);
+    await expect(academyHeading).toContainText("Build practical skills in Russian, Ukrainian, or English across five Hermes Academy tracks");
 
     await page.getByRole("button", { name: /Choose a track/ }).click();
     await expect(page.getByRole("tab")).toHaveCount(5);
