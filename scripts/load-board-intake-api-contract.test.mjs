@@ -15,6 +15,8 @@ const sitemap = fs.readFileSync(new URL("../public/sitemap.xml", import.meta.url
 const serviceSitemap = fs.readFileSync(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const indexNow = fs.readFileSync(new URL("../.github/workflows/indexnow-money-pages.yml", import.meta.url), "utf8");
 
+const forbiddenContactFields = /source_message_id|raw_evidence_ref|mailbox_email|credential_ref|contact_name|contact_email|email_address|phone_number|contact_phone/i;
+
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_sources/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_records/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_quarantine/);
@@ -101,7 +103,7 @@ assert.match(active, /deadheadMiles/);
 assert.match(active, /score/);
 assert.match(active, /contact_details_exposed: false/);
 assert.match(active, /X-Robots-Tag/);
-assert.doesNotMatch(active, /source_message_id|raw_evidence_ref|mailbox_email|credential_ref/);
+assert.doesNotMatch(active, forbiddenContactFields);
 assert.doesNotMatch(active, /hermes_load_quarantine/);
 
 assert.match(opportunities, /deduplicated: true/);
@@ -114,7 +116,8 @@ assert.match(opportunities, /provider/);
 assert.match(opportunities, /bestByDedupe/);
 assert.match(opportunities, /contact_details_exposed: false/);
 assert.match(opportunities, /X-Robots-Tag/);
-assert.doesNotMatch(opportunities, /source_message_id|raw_evidence_ref|mailbox_email|credential_ref|contact_name|phone|email/);
+assert.doesNotMatch(opportunities, forbiddenContactFields);
+assert.match(opportunities, /"email"/);
 
 assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
 assert.match(dispatchPlan, /planning_only: true/);
@@ -124,7 +127,7 @@ assert.match(dispatchPlan, /projectedLoadedRpm/);
 assert.match(dispatchPlan, /dispatcher_or_carrier_role_required/);
 assert.match(dispatchPlan, /dedupeKey/);
 assert.match(dispatchPlan, /X-Robots-Tag/);
-assert.doesNotMatch(dispatchPlan, /source_message_id|raw_evidence_ref|credential_ref|contact_name|phone|email/);
+assert.doesNotMatch(dispatchPlan, forbiddenContactFields);
 
 assert.match(agentContext, /HERMES_AI_LOGISTICS_TOKEN/);
 assert.match(agentContext, /"opportunities", "lanes", "providers"/);
@@ -133,7 +136,7 @@ assert.match(agentContext, /contact_details_exposed: false/);
 assert.match(agentContext, /raw_evidence_exposed: false/);
 assert.match(agentContext, /raw_credentials_exposed: false/);
 assert.match(agentContext, /X-Robots-Tag/);
-assert.doesNotMatch(agentContext, /credential_ref|source_message_id|raw_evidence_ref|contact_name|phone|email/);
+assert.doesNotMatch(agentContext, forbiddenContactFields);
 
 assert.match(providerSync, /https:\/\/ship\.cars\/api\/loadboard\/v3\/postings/);
 assert.match(providerSync, /HERMES_PROVIDER_SYNC_ENABLED/);
