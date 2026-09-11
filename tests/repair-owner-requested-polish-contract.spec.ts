@@ -10,7 +10,7 @@ test("owner shell restores saved locale instead of leaving SSR English labels be
   expect(runtime).toContain('localStorage.setItem("hermes-connect-language", locale)');
   expect(runtime).toContain('ru: { context: "Кабинет владельца", overview: "Обзор"');
   expect(runtime).toContain('.repair-crm-nav-item, .repair-crm-mobile-quick a');
-  expect(runtime).toContain('.repair-crm-language a[lang]');
+  expect(runtime).not.toContain('.repair-crm-language a[lang]');
 });
 
 test("dashboard context shows a real localized date and time rather than Today", async () => {
