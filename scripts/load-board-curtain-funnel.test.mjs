@@ -4,6 +4,8 @@ import fs from "node:fs";
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const enhancer = read("src/components/LoadBoardCapacityEnhancer.astro");
 const accessPage = read("src/pages/services/hermes-connect/load-board/access/index.astro");
+const accountApi = read("functions/api/hermes-connect/account.ts");
+const accountSwitcher = read("src/components/HermesConnectAccountSwitcher.astro");
 const companyHelper = read("functions/api/_lib/hermes-company-profiles.mjs");
 const companyApi = read("functions/api/hermes-connect/company.ts");
 const catalogApi = read("functions/api/catalog/companies.ts");
@@ -45,6 +47,20 @@ assert.match(companyApi, /load_board_access: true/);
 assert.match(companyApi, /catalog_status/);
 assert.match(companyApi, /next_url: "\/load-board\/\?access=unlocked#live-marketplace"/);
 
+assert.match(accountApi, /key: "load_board"/);
+assert.match(accountApi, /kind: "company_workspace"/);
+assert.match(accountApi, /href: "\/load-board\/\?access=unlocked#live-marketplace"/);
+assert.match(accountApi, /load_board: Boolean/);
+assert.match(accountApi, /catalog_status/);
+assert.doesNotMatch(accountApi, /authority_number/);
+
+assert.match(accountSwitcher, /data-workspace-loadboard/);
+assert.match(accountSwitcher, /data-hc-workspace-link="loadboard"/);
+assert.match(accountSwitcher, /item\?\.key === "load_board"/);
+assert.match(accountSwitcher, /workspacePaths[\s\S]*loadboard: "\/load-board\/\?access=unlocked#live-marketplace"/);
+assert.match(accountSwitcher, /if \(loadBoardWorkspace && loadboard\)/);
+assert.match(accountSwitcher, /runtimeCopy\.loadboard/);
+
 assert.match(catalogApi, /catalog_opt_in = 1/);
 assert.match(catalogApi, /self_submitted/);
 assert.match(catalogApi, /verified_public/);
@@ -69,4 +85,4 @@ assert.equal(releaseDelta.additions?.[0]?.indexability, "noindex");
 assert.equal(releaseDelta.acceptance?.route_count_added, 1);
 assert.equal(releaseDelta.acceptance?.indexable_route_count_added, 0);
 
-console.log("Load Board curtain funnel contract passed: truthful aggregate count, locked preview, Hermes account + company access, safe Catalog listing and noindex registration flow are wired.");
+console.log("Load Board curtain funnel contract passed: truthful aggregate count, locked preview, Hermes account + company access, account portfolio workspace, safe Catalog listing and noindex registration flow are wired.");
