@@ -34,6 +34,7 @@ assert.match(carrierPage, /Chicago-area markets/);
 assert.match(carrierPage, /Fremont \/ the Bay Area/);
 assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
 assert.match(loadBoardPage, /href="\/logistics\/car-hauler-loads\/"/, "Load Board must provide a contextual discovery link to the Carrier GEO hub");
+assert.match(carrierPage, /label: "Car Hauling Load Board", href: "\/load-board\/"/, "Dispatch owner must link to the canonical Load Board with a descriptive commercial anchor");
 
 // Dealer/shipper acquisition remains a separate owner until that funnel is
 // intentionally migrated. This carrier launch must not silently rewrite it.
@@ -53,7 +54,7 @@ for (const market of repairPilotMarkets) {
 }
 
 assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
-assert.match(carrierPage, /\/load-board\/\?role=carrier/);
+assert.match(carrierPage, /\/load-board\//);
 assert.match(carrierPage, /not Hermes office locations/);
 
 assert.match(dealerPage, /role=dealer&request=dealer_inventory/);
