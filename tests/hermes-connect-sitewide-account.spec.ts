@@ -36,12 +36,17 @@ test("signed-in Hermes identity remains visible from the public site header", as
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill(json(portfolio)));
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  const account = page.locator('.header-actions details[data-hc-account-switcher][data-public-safe="true"]');
+  const isMobile = (page.viewportSize()?.width ?? 1280) < 768;
+  if (isMobile) await page.getByRole("button", { name: "Open navigation" }).click();
+  const account = isMobile
+    ? page.locator('#mobile-menu [data-hc-account-switcher][data-public-safe="true"]')
+    : page.locator('.header-actions details[data-hc-account-switcher][data-public-safe="true"]');
+
   await expect(account).toBeVisible();
   await expect(account.locator("[data-account-name]")).toHaveText("Office Owner");
   await expect(account.locator("[data-account-email]")).toHaveText("office@example.com");
 
-  await account.locator("summary").click();
+  if (!isMobile) await account.locator("summary").click();
   await expect(account.getByText("Hermes Test Garage", { exact: true })).toBeVisible();
   await expect(account.getByText("Academy", { exact: true })).toBeVisible();
   await expect(account.getByText("AI Connect", { exact: true })).toHaveCount(0);
@@ -51,7 +56,10 @@ test("anonymous visitor does not see an account control on the public site", asy
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill(json({ success: false, error: "not_authenticated" }, 401)));
   await page.goto("/paths/logistics/", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator('[data-hc-account-switcher][data-public-safe="true"]')).toBeHidden();
+  const accounts = page.locator('[data-hc-account-switcher][data-public-safe="true"]');
+  await expect(accounts).toHaveCount(2);
+  await expect(accounts.nth(0)).toBeHidden();
+  await expect(accounts.nth(1)).toBeHidden();
 });
 
 test("mobile site menu shows the same signed-in Hermes identity", async ({ page }) => {
