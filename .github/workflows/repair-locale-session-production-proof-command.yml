@@ -1,0 +1,86 @@
+name: Repair Shop locale and session production proof
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  checks: read
+  issues: write
+
+concurrency:
+  group: repair-p0-production-closure-proof
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 1192 &&
+      github.event.comment.body == '/verify-repair-locale-session-production' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    name: Verify production Repair Shop locale and session boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install production proof dependencies
+        run: npm ci
+
+      - name: Install Chromium for production browser proof
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify live locale switching and session boundaries
+        id: proof
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          node scripts/repair-locale-session-production-proof.mjs
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized proof result
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Repair Shop locale/session production proof"
+            echo
+            echo "- Checked main commit: \`${GITHUB_SHA}\`"
+            echo "- Workflow run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            if [ "${{ steps.proof.outputs.status }}" = "0" ]; then
+              echo "- ✅ Clean synthetic owner browser defaulted to English and retained the shared authenticated Hermes session."
+              echo "- ✅ In-CRM EN → RU switch passed and RU survived owner navigation plus reload across Appointments, Customers, Services, Availability and Company."
+              echo "- ✅ Explicit locale selection overrode stale saved state; switching back to English removed the locale query and restored English owner copy."
+              echo "- ✅ 390px owner CRM exposed all six supported languages without clipping and switched to Russian in place."
+              echo "- ✅ Real logout invalidated the private API; browser Back did not restore authenticated private access or cached owner-summary data."
+              echo "- ✅ Synthetic owner/session rows were cleaned through the existing bounded Repair Shop QA cleanup lane."
+              echo "- Classification: **LIVE_REPAIR_LOCALE_SESSION_BOUNDARY_PASS**"
+            else
+              echo "- ❌ One or more exact-production locale/session checks failed. Do not close #1192 from this run."
+              echo "- Classification: **LIVE_REPAIR_LOCALE_SESSION_BOUNDARY_FAIL**"
+            fi
+            echo
+            echo "> Synthetic verification only. No credential value, private customer identifier, or real-shop data is published."
+          } > "${RUNNER_TEMP}/repair-locale-session-proof.md"
+          gh issue comment 1192 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/repair-locale-session-proof.md"
+
+      - name: Enforce live locale/session result
+        shell: bash
+        run: test "${{ steps.proof.outputs.status }}" = "0"
