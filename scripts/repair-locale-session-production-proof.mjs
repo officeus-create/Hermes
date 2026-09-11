@@ -123,7 +123,8 @@ async function loginOwner(page) {
 
 async function switchLocale(page, locale, expectedContext) {
   const details = page.locator(".repair-crm-language");
-  if (!(await details.getAttribute("open"))) await details.locator("summary").click();
+  const isOpen = await details.evaluate((element) => element.hasAttribute("open"));
+  if (!isOpen) await details.locator("summary").click();
   const link = details.locator(`a[lang="${locale}"]`);
   await link.waitFor({ state: "visible", timeout: 10_000 });
   await link.click();
@@ -215,8 +216,8 @@ try {
   await page.goBack({ waitUntil: "domcontentloaded", timeout: 15_000 }).catch(() => null);
   await page.waitForTimeout(500);
   if (await privateProfileStatus(desktop) !== 401) fail("Browser Back restored authenticated private API access");
-  const leakedOwnerSummary = await page.locator("#owner-summary").evaluateAll((nodes, email) => nodes.some((node) => (node.textContent || "").includes(email)), EMAIL);
-  if (leakedOwnerSummary) fail("Browser Back exposed cached private owner summary after logout");
+  const summaries = await page.locator("#owner-summary").allTextContents().catch(() => []);
+  if (summaries.some((text) => text.includes(EMAIL))) fail("Browser Back exposed cached private owner summary after logout");
   console.log("REPAIR_SESSION_LOGOUT_BACK_PRIVATE_BOUNDARY=PASS");
   await desktop.close();
 
@@ -229,8 +230,11 @@ try {
   await assertNoHorizontalOverflow(mobilePage, "mobile-390 RU dashboard");
   console.log("REPAIR_LOCALE_MOBILE_390_MENU=PASS");
 
+  await mobilePage.locator("[data-repair-crm-menu]").click();
+  const mobileLogoutButton = mobilePage.locator(".repair-crm-mobile-logout");
+  await mobileLogoutButton.waitFor({ state: "visible", timeout: 10_000 });
   const mobileLogoutResponse = mobilePage.waitForResponse((response) => response.url().endsWith("/api/auth/logout") && response.request().method() === "POST");
-  await mobilePage.locator("[data-repair-crm-logout]:visible").first().click();
+  await mobileLogoutButton.click();
   const mobileLogout = await mobileLogoutResponse;
   if (mobileLogout.status() !== 200) fail(`Mobile owner logout failed (${mobileLogout.status()})`);
   if (await privateProfileStatus(mobile) !== 401) fail("Mobile private API remained authenticated after logout");
