@@ -13,7 +13,7 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "Logistics & Trucking SEO Services | Hermes",
+    title: "SEO for Logistics Companies | Trucking SEO | Hermes",
     h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
       "Commercial query-to-page ownership",
