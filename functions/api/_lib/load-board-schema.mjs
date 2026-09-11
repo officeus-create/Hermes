@@ -1,3 +1,12 @@
+async function ensureColumns(db, table, columns) {
+  const existing = await db.prepare(`PRAGMA table_info(${table})`).all();
+  const names = new Set((existing?.results || []).map((row) => String(row.name)));
+  for (const [name, definition] of Object.entries(columns)) {
+    if (names.has(name)) continue;
+    await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`).run();
+  }
+}
+
 export async function ensureLoadBoardSchema(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_load_sources (
@@ -47,11 +56,48 @@ export async function ensureLoadBoardSchema(db) {
       status TEXT NOT NULL DEFAULT 'active',
       visibility TEXT NOT NULL DEFAULT 'internal_only',
       raw_evidence_ref TEXT,
+      provider_record_id TEXT,
+      origin_city TEXT,
+      origin_state TEXT,
+      origin_zip TEXT,
+      destination_city TEXT,
+      destination_state TEXT,
+      destination_zip TEXT,
+      distance_miles REAL,
+      deadhead_miles REAL,
+      vehicle_count INTEGER,
+      operable INTEGER,
+      enclosed INTEGER,
+      payment_terms TEXT,
+      rate_per_mile REAL,
+      source_quality_score REAL,
+      dedupe_key TEXT,
+      provider_url TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       UNIQUE(source_id, source_message_id, fingerprint)
     )
   `).run();
+
+  await ensureColumns(db, "hermes_load_records", {
+    provider_record_id: "TEXT",
+    origin_city: "TEXT",
+    origin_state: "TEXT",
+    origin_zip: "TEXT",
+    destination_city: "TEXT",
+    destination_state: "TEXT",
+    destination_zip: "TEXT",
+    distance_miles: "REAL",
+    deadhead_miles: "REAL",
+    vehicle_count: "INTEGER",
+    operable: "INTEGER",
+    enclosed: "INTEGER",
+    payment_terms: "TEXT",
+    rate_per_mile: "REAL",
+    source_quality_score: "REAL",
+    dedupe_key: "TEXT",
+    provider_url: "TEXT",
+  });
 
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_load_quarantine (
@@ -77,6 +123,10 @@ export async function ensureLoadBoardSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_active ON hermes_load_records(status, visibility, expires_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_source ON hermes_load_records(source_id, last_seen_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_type_equipment ON hermes_load_records(record_type, equipment, expires_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_lane ON hermes_load_records(origin_state, destination_state, equipment, expires_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_provider_id ON hermes_load_records(provider_record_id)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_dedupe ON hermes_load_records(dedupe_key, observed_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_score ON hermes_load_records(source_quality_score DESC, observed_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_pending ON hermes_load_quarantine(status, observed_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_source ON hermes_load_quarantine(source_id, observed_at DESC)").run();
 }
