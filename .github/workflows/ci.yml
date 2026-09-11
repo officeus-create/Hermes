@@ -94,6 +94,9 @@ jobs:
       - name: Validate Load Board mailbox intake contract
         run: node scripts/load-board-intake-api-contract.test.mjs
 
+      - name: Validate Load Board curtain and Hermes Connect funnel
+        run: node scripts/load-board-curtain-funnel.test.mjs
+
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
