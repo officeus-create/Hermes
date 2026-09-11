@@ -71,6 +71,7 @@ assert.ok(fs.existsSync(workspaceHtmlPath), 'workspace.html must exist');
 const workspaceHtml = fs.readFileSync(workspaceHtmlPath, 'utf8');
 assert.match(workspaceHtml, /<link rel="manifest" href="\.\/manifest\.webmanifest">/, 'workspace.html must link to manifest.webmanifest');
 assert.match(workspaceHtml, /<link rel="apple-touch-icon" href="\.\/apple-touch-icon\.png">/, 'workspace.html must link to apple-touch-icon.png');
+assert.match(workspaceHtml, /<img class="pwa-app-icon" src="\.\/apple-touch-icon\.png" alt="Hermes Connect" width="180" height="180" loading="lazy" decoding="async">/, 'workspace app icon must declare stable dimensions and lazy async image policy');
 assert.match(workspaceHtml, /<meta name="apple-mobile-web-app-capable" content="yes">/, 'workspace.html must specify apple-mobile-web-app-capable=yes');
 assert.match(workspaceHtml, /<title>.*<\/title>/, 'workspace.html must retain a valid title');
 assert.match(workspaceHtml, /<meta name="description" content="[^"]+">/, 'workspace.html must retain a valid description');

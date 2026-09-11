@@ -2,10 +2,10 @@
 
 Scope: non-visual performance warning cleanup only.
 
-Post-rule performance warnings that still require source-level review:
+Resolved source-level warnings:
 
-- `demos/hermes-connect/workspace.html`: `./apple-touch-icon.png` is missing explicit width/height on an actual `<img>` occurrence.
-- `demos/hermes-connect/workspace.html`: the same image has no explicit loading policy.
+- `demos/hermes-connect/workspace.html`: `./apple-touch-icon.png` now declares its real `180x180` dimensions.
+- The same preview image now uses explicit `loading="lazy"` and `decoding="async"` policy.
 
 The homepage `/demos/hermes-connect/icon-192.svg` occurrence is a fixed 28×28 decorative icon with explicit dimensions and `aria-hidden="true"`; the audit no longer treats the absence of an explicit `loading=` attribute on that tiny icon as a meaningful performance warning.
 
