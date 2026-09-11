@@ -150,6 +150,7 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
       { title: "Search Console review", body: "Measure indexing and query/page behavior, then continue only the clusters that show useful search and business signals." },
     ],
     boundaries: [
+      "Industry-specific search intent should stay with the dedicated niche owner when one exists. Logistics, trucking and transportation SEO intent belongs to /services/seo-for-logistics-companies/ rather than being duplicated on this general SEO page.",
       "Search engines control crawling, indexing, rankings, rich results, and traffic. Hermes does not guarantee positions, clicks, leads, revenue, timeline, or ROI.",
       "No city, niche, language, or route page is published only because a keyword tool reports low difficulty.",
       "Schema must match visible content and does not guarantee a rich result.",

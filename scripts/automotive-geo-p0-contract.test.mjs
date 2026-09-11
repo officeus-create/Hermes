@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [carrierPage, loadBoardPage, carrierMarkets, dealerPage, repairEnhancer] = await Promise.all([
+const [carrierPage, loadBoardPage, carrierMarkets, dealerPage, repairEnhancer, repairPage] = await Promise.all([
   readFile(new URL("../src/pages/logistics/car-hauling-dispatch/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/load-board.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/data/car-hauler-geo-markets.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/dealer-vehicle-transportation/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
 ]);
 
 // Carrier GEO is now owned by the owner-approved 2026 operating-history batch:
@@ -55,6 +56,8 @@ for (const market of repairPilotMarkets) {
 }
 
 assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
+assert.match(loadBoardPage, /Car Hauler Load Board \| Review Auto Transport Loads \| Hermes/);
+assert.match(loadBoardPage, /car hauling and auto transport load opportunities/);
 assert.match(carrierPage, /\/load-board\/\?role=carrier/);
 assert.match(carrierPage, /not Hermes office locations/);
 
@@ -64,6 +67,8 @@ assert.match(dealerPage, /\/services\/local-seo\//);
 assert.match(dealerPage, /\/services\/website-development\//);
 assert.match(dealerPage, /not claims of local Hermes offices/);
 
+assert.match(repairPage, /title="Auto Repair Scheduling & Shop Software \| Hermes Connect"/);
+assert.match(repairPage, /Online booking & scheduling software for independent auto repair shops\./);
 assert.match(repairEnhancer, /Arkansas First-5 pilot/);
 assert.match(repairEnhancer, /intentionally separate from the car-hauling automotive GEO markets/);
 assert.match(repairEnhancer, /\/services\/hermes-connect\/repair-shops\/auth\//);

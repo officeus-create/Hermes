@@ -187,17 +187,6 @@ const FIRST_NAMES = ["James","Michael","Robert","John","David","William","Richar
 const LAST_NAMES = ["Anderson","Thompson","Williams","Miller","Davis","Wilson","Moore","Taylor"];
 const CATEGORY_ORDER = ["motorcycle","passenger","ev","diesel","heavy","trailer","rv","equipment","oversize"];
 
-const VEHICLES = {
-  motorcycle: [[2023,"Harley-Davidson","Street Glide"],[2022,"Honda","Gold Wing"],[2024,"Indian","Chieftain"]],
-  passenger: [[2022,"Ford","F-150"],[2021,"Toyota","Camry"],[2023,"Chevrolet","Silverado 1500"],[2020,"Jeep","Grand Cherokee"]],
-  ev: [[2023,"Tesla","Model Y"],[2022,"Ford","F-150 Lightning"],[2024,"Hyundai","Ioniq 5"]],
-  diesel: [[2021,"Ford","F-350 Super Duty"],[2022,"Ram","3500"],[2020,"Chevrolet","Silverado 3500HD"]],
-  heavy: [[2022,"Freightliner","Cascadia"],[2021,"Kenworth","T680"],[2020,"Peterbilt","579"]],
-  trailer: [[2022,"Great Dane","Dry Van"],[2021,"Utility","3000R Reefer"],[2023,"Fontaine","Revolution Flatbed"]],
-  rv: [[2022,"Freightliner","XC Motorhome Chassis"],[2021,"Ford","F-53 Motorhome Chassis"],[2020,"Prevost","H3-45 Coach"]],
-  equipment: [[2021,"Caterpillar","320 Excavator"],[2022,"John Deere","544 P-Tier Loader"],[2020,"Bobcat","T76 Compact Track Loader"]],
-  oversize: [[2021,"Kenworth","T880 Heavy Haul"],[2022,"Peterbilt","389 Heavy Haul"],[2020,"Talbert","Lowboy Trailer"]],
-};
 
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
 const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").slice(0, 24) || "office";

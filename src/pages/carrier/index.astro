@@ -116,7 +116,7 @@ const schema = {
   <SiteFooter />
 </BaseLayout>
 
-<script define:vars={{ shareUrl, smsCopy }}>
+<script is:inline define:vars={{ shareUrl, smsCopy }}>
   const status = document.querySelector("[data-carrier-share-status]");
   const setStatus = (message) => { if (status instanceof HTMLElement) status.textContent = message; };
   const copyText = async (value) => {
