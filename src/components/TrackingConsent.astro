@@ -43,7 +43,14 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
 
-    const analyticsDeliveryAllowed = () => PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname);
+    const SYNTHETIC_ANALYTICS_OVERRIDE = "_hermes_ga4_smoke";
+    const analyticsDeliveryStatus = () => {
+      if (!PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname)) return "disabled-non-production";
+      const syntheticOverride = new URLSearchParams(window.location.search).get(SYNTHETIC_ANALYTICS_OVERRIDE) === "1";
+      if (navigator.webdriver === true && !syntheticOverride) return "disabled-automation";
+      return "ga4";
+    };
+    const analyticsDeliveryAllowed = () => analyticsDeliveryStatus() === "ga4";
 
     const readChoice = () => {
       try {
@@ -103,8 +110,9 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       });
       window.gtag('set', 'ads_data_redaction', true);
 
-      if (!analyticsDeliveryAllowed()) {
-        document.documentElement.dataset.analyticsTransport = "disabled-non-production";
+      const deliveryStatus = analyticsDeliveryStatus();
+      if (deliveryStatus !== "ga4") {
+        document.documentElement.dataset.analyticsTransport = deliveryStatus;
         return;
       }
 
