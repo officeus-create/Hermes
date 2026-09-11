@@ -232,7 +232,7 @@ await handleLoadBoardInboundEmail({
       requested_visibility: "public",
     },
   }),
-}, null, { fetch: async (url, options) => {
+}, null, { fetch: async (_url, options) => {
   publicPayload = JSON.parse(options.body);
   return new Response("{}", { status: 202 });
 } });

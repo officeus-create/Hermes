@@ -146,11 +146,9 @@
     }
   };
 
-  let currentLang = 'en';
 
   function applyLanguage(lang) {
     if (!i18n[lang]) return;
-    currentLang = lang;
     const t = i18n[lang];
 
     // Update ViewMeta kickers & titles
@@ -335,12 +333,6 @@
       <div class="activity-item"><span class="activity-icon">${icon}</span><div><b>${title}</b><small>${meta}</small></div><em>${time}</em></div>`).join('');
   }
 
-  function renderConversations() {
-    const target = $('[data-conversation-list]');
-    if (!target) return;
-    target.innerHTML = conversations.map(([initials,name,preview,time,state]) => `
-      <button class="conversation-card ${state}" type="button"><span class="conversation-avatar">${initials}</span><div><b>${name}</b><small>${preview}</small></div><em>${time}</em></button>`).join('');
-  }
 
   function renderCustomers() {
     const target = $('[data-customer-table]');

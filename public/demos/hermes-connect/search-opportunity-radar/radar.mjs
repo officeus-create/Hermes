@@ -187,7 +187,6 @@ export function classifySearchOpportunity(row) {
   const rule = findApprovedOwner(row.query);
   const page = normalizePage(row.page);
   const impressions = parseNumber(row.impressions, "impressions");
-  const clicks = parseNumber(row.clicks, "clicks");
   const ctr = typeof row.ctr === "number" ? row.ctr : parseCtr(row.ctr);
   const position = parseNumber(row.position, "position");
 

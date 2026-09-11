@@ -133,7 +133,7 @@ const schema = {
   <SiteFooter />
 </BaseLayout>
 
-<script define:vars={{ smsText, shortUrl }}>
+<script is:inline define:vars={{ smsText, shortUrl }}>
   const status = document.querySelector("[data-sign-share-status]");
   const setStatus = (message) => {
     if (status instanceof HTMLElement) status.textContent = message;
