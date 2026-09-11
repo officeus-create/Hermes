@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile, unlink, writeFile } from "node:fs/promises";
+import "./news-publishing-contract.test.mjs";
 
 const legacyValidatorUrl = new URL("./validate-build.mjs", import.meta.url);
 const temporaryValidatorUrl = new URL("./.validate-build-current.generated.mjs", import.meta.url);

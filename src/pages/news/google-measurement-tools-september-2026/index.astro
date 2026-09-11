@@ -1,0 +1,135 @@
+---
+import { ArrowRight, BarChart3, CheckCircle2, ExternalLink, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Google Measurement Tools Update: A Practical Funnel Map | Hermes Marketing";
+const description = "Hermes explains Google's September 2026 measurement updates and turns them into a practical source-to-sale measurement exercise for U.S. businesses.";
+const canonicalUrl = new URL("/news/google-measurement-tools-september-2026/", Astro.site).toString();
+const sourceUrl = "https://blog.google/products/ads-commerce/data-strength-updates/";
+const marketingHref = "/paths/marketing/?service=seo#contact";
+const academyHref = "/academy/marketing/";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: "Google Measurement Tools Update: Build a Source-to-Sale Measurement Map",
+    description,
+    datePublished: "2026-09-10",
+    dateModified: "2026-09-11",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Marketing" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+    citation: sourceUrl,
+    isBasedOn: { "@type": "Article", name: "Drive profitable growth with new data and measurement tools", url: sourceUrl },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Marketing", item: "https://hermeslogisticsus.com/paths/marketing/" },
+      { "@type": "ListItem", position: 3, name: "Google measurement tools update", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema} robots="noindex,nofollow">
+  <div class="news-page">
+    <SiteHeader activePath="/paths/marketing/" />
+    <main id="main-content">
+      <article>
+        <header class="news-hero">
+          <div class="shell hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Marketing Brief · September 11, 2026</p>
+              <h1>Google updated its measurement toolkit. Start with a clear source-to-sale map.</h1>
+              <p class="lead">Google announced additions across Data Manager and Meridian. The useful business question is simpler: can your team connect attention to a qualified lead, proposal, and sale without guessing?</p>
+              <div class="actions">
+                <a class="button button-primary" href={marketingHref} data-news-cta="marketing_review">Review your measurement system <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href={sourceUrl} target="_blank" rel="noopener noreferrer" data-news-cta="official_source">Read the official Google source <ExternalLink size={17} aria-hidden="true" /></a>
+              </div>
+            </div>
+            <aside class="brief-card">
+              <BarChart3 size={32} aria-hidden="true" />
+              <p class="eyebrow">Verified source</p>
+              <h2>Google Ads & Commerce Blog</h2>
+              <dl><div><dt>Published</dt><dd><time datetime="2026-09-10">September 10, 2026</time></dd></div><div><dt>Reviewed by Hermes</dt><dd><time datetime="2026-09-11">September 11, 2026</time></dd></div></dl>
+            </aside>
+          </div>
+        </header>
+
+        <section class="section" aria-labelledby="changed-title">
+          <div class="shell split">
+            <div><p class="eyebrow">What changed</p><h2 id="changed-title">Three developments worth watching.</h2></div>
+            <div class="cards">
+              <article><span>01</span><h3>Data connections</h3><p>Google described broader Data Manager integrations and a universal Data Manager API for managing first-party measurement inputs across supported tools.</p></article>
+              <article><span>02</span><h3>Data diagnostics</h3><p>New diagnostics are intended to identify data-quality problems before they distort campaign decisions.</p></article>
+              <article><span>03</span><h3>Incrementality modeling</h3><p>Google also announced Meridian improvements, including brand signals, guided modeling capabilities, and broader GeoX availability.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section exercise" aria-labelledby="exercise-title">
+          <div class="shell exercise-grid">
+            <div><p class="eyebrow">Hermes practical interpretation</p><h2 id="exercise-title">Build one measurement map before adding another dashboard.</h2><p>Choose one real customer journey. For each stage, record the source, owner, definition, and current evidence. If a stage has no reliable signal, mark the gap instead of replacing it with an estimate.</p></div>
+            <ol>
+              <li><strong>Source</strong><span>Where did attention begin?</span></li>
+              <li><strong>Qualified lead</strong><span>What conditions make an inquiry useful?</span></li>
+              <li><strong>Proposal</strong><span>Which reviewed offer was actually sent?</span></li>
+              <li><strong>Sale</strong><span>What evidence confirms the business result?</span></li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="section boundary" aria-labelledby="boundary-title">
+          <div class="shell boundary-grid"><ShieldCheck size={34} aria-hidden="true" /><div><p class="eyebrow">Evidence boundary</p><h2 id="boundary-title">A tool announcement is not a performance guarantee.</h2><p>Hermes does not claim that these features will improve rankings, leads, conversions, revenue, or return on advertising spend for a specific business. Results depend on data quality, implementation, offer, audience, competition, budget, sales follow-up, and other factors.</p></div></div>
+        </section>
+
+        <section class="section" aria-labelledby="measure-title">
+          <div class="shell split">
+            <div><p class="eyebrow">Measurement plan</p><h2 id="measure-title">Measure whether the brief creates a useful next step.</h2></div>
+            <ul class="check-list">
+              <li><CheckCircle2 size={20} aria-hidden="true" /><span>Page views after consent, without submitted business information.</span></li>
+              <li><CheckCircle2 size={20} aria-hidden="true" /><span>Clicks to the official source, Marketing review, and Academy track.</span></li>
+              <li><CheckCircle2 size={20} aria-hidden="true" /><span>Qualified intake remains measured by the existing privacy-safe Marketing funnel.</span></li>
+              <li><CheckCircle2 size={20} aria-hidden="true" /><span>No names, emails, phone numbers, websites, budgets, or messages enter this article event.</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section final-cta" id="contact">
+          <div class="shell final-card">
+            <div><p class="eyebrow">Choose the relevant next step</p><h2>Review the system or learn how to build one.</h2><p>Hermes can review the path from search and content to a qualified inquiry. Academy learners can practice the same framework as a supervised marketing exercise.</p></div>
+            <div class="actions"><a class="button button-primary" href={marketingHref} data-news-cta="marketing_review_bottom">Start a Marketing review <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href={academyHref} data-news-cta="academy_marketing">Explore Marketing Academy</a></div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const contentId = "google_measurement_tools_2026_09_10";
+  document.querySelectorAll<HTMLAnchorElement>("[data-news-cta]").forEach((link) => {
+    link.addEventListener("click", () => {
+      const target = new URL(link.href, window.location.origin);
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "content_cta_click",
+        content_id: contentId,
+        content_section: "marketing_news",
+        cta_type: link.dataset.newsCta || "unknown",
+        destination_path: target.origin === window.location.origin ? target.pathname : "official_source",
+      });
+    });
+  });
+</script>
+
+<style>
+  .news-page{--ink:#172033;--muted:#667085;--line:#e2e7ee;--soft:#f4f6f8;color:var(--ink);background:#fff}.shell{width:min(1120px,calc(100% - 40px));margin:0 auto}.news-hero{padding:72px 0 62px;background:linear-gradient(135deg,#f6f1ff 0%,#f5f8ff 52%,#edf8f5 100%)}.hero-grid,.split,.exercise-grid,.boundary-grid,.final-card{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:clamp(28px,6vw,72px);align-items:start}.eyebrow{margin:0 0 10px;color:#6941c6;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:850}.news-hero h1{max-width:850px;margin:0 0 20px;font-size:clamp(42px,6.5vw,76px);line-height:.98;letter-spacing:-.055em}.lead{max-width:760px;margin:0;color:#475467;font-size:clamp(17px,2vw,21px);line-height:1.55}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.button{gap:8px}.brief-card,.cards article,.boundary-grid,.final-card{border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 16px 42px rgba(23,32,51,.06)}.brief-card{padding:24px}.brief-card h2{margin:8px 0 20px;font-size:22px}.brief-card dl{display:grid;gap:12px;margin:0}.brief-card dl div{display:flex;justify-content:space-between;gap:16px;padding-top:12px;border-top:1px solid var(--line)}.brief-card dt{color:var(--muted);font-size:12px}.brief-card dd{margin:0;font-size:12px;font-weight:800}.section{padding:72px 0}.split h2,.exercise h2,.boundary h2,.final-card h2{margin:0;font-size:clamp(30px,4vw,48px);line-height:1.05;letter-spacing:-.04em}.cards{display:grid;gap:12px}.cards article{padding:22px}.cards article span{color:#6941c6;font-size:11px;font-weight:900}.cards h3{margin:12px 0 7px;font-size:20px}.cards p,.exercise p,.boundary p,.final-card p{margin:0;color:var(--muted);line-height:1.65}.exercise{background:var(--soft)}.exercise ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}.exercise li{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff}.exercise li span{color:var(--muted)}.boundary-grid,.final-card{padding:clamp(24px,4vw,42px);grid-template-columns:auto 1fr}.boundary-grid svg{color:#267a48}.check-list{display:grid;gap:13px;margin:0;padding:0;list-style:none}.check-list li{display:grid;grid-template-columns:auto 1fr;gap:10px;color:#475467;line-height:1.5}.check-list svg{color:#267a48}.final-cta{padding-top:0}.final-card{grid-template-columns:minmax(0,1fr) auto;align-items:center;background:#172033;color:#fff}.final-card .eyebrow{color:#c6b3ff}.final-card p{color:#cbd3df}.final-card .actions{justify-content:flex-end;margin-top:0}
+  @media(max-width:760px){.shell{width:min(100% - 24px,1120px)}.news-hero{padding:42px 0}.hero-grid,.split,.exercise-grid,.boundary-grid,.final-card{grid-template-columns:1fr;gap:24px}.news-hero h1{font-size:clamp(38px,13vw,58px)}.section{padding:48px 0}.actions{display:grid}.actions .button{width:100%;justify-content:center}.brief-card{padding:19px}.exercise li{grid-template-columns:1fr;gap:5px}.final-card .actions{width:100%}}
+</style>

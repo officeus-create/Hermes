@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-11-marketing-news-preview",
+  "generated_at": "2026-09-11T13:55:00Z",
+  "status": "LOCAL_PREVIEW_ONLY",
+  "additions": [
+    {
+      "route": "/news/google-measurement-tools-september-2026/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/news/google-measurement-tools-september-2026/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/news/google-measurement-tools-september-2026/index.astro",
+      "status": "COMPLETE",
+      "blocker": "owner_preview_review_before_publication",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

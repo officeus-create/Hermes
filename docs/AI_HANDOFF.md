@@ -991,3 +991,15 @@ entries — append only.
 - Rollback: revert this branch commit; the previous workflow behavior returns. Do not remove or rotate production bindings as rollback.
 - Verification required before promotion: focused contract, `git diff --check`, `npm run build`, `npm test`, `npm run test:e2e`, exact-head GitHub CI, then one workflow-dispatch PASS and approved inbox reconciliation.
 - Ecosystem compounding scorecard: primary outcome and conversion observability improve; SEO/public content/internal linking remain unchanged; reusable architecture improves through source-linked monitoring; data/privacy remains synthetic and sanitized; no adjacent expansion was taken.
+
+## 2026-09-11 — Codex — verified Marketing news preview
+
+- Agent/task owner: Codex; one local content-brief-to-page chain for a future Hermes News surface.
+- Branch/base: `feat/news-measurement-brief-preview-20260911` from `origin/main` `3bf1372cad29492f4e44914ddd8c465b9c19e86e`.
+- Source boundary: adapted the 2026-09-11 Marketing brief only after checking the linked official Google announcement. The page identifies the source and publication/review dates, distinguishes source facts from Hermes analysis, and makes no traffic, ranking, lead, or revenue guarantee.
+- Behavior delivered: one responsive article at `/news/google-measurement-tools-september-2026/`, `NewsArticle` and breadcrumb structured data, a verified Marketing intake CTA, an Academy learning CTA, and one consent-dependent privacy-safe `content_cta_click` event containing no visitor-entered data.
+- Publication boundary: the preview is explicitly `noindex,nofollow`, excluded from sitemap ownership, and recorded as `LOCAL_PREVIEW_ONLY`. No production deployment, search submission, Telegram publication, CRM write, or analytics configuration was performed.
+- Files changed: the article route, focused static and Playwright contracts, release-manifest delta, desktop/mobile screenshots, build validator registration, and this handoff.
+- Ecosystem compounding scorecard: conversion is connected to the existing Marketing intake; public knowledge is source-backed and reusable; internal linking connects Marketing and Academy without a duplicate service owner; privacy is protected by bounded analytics; architecture adds one ordinary Astro route without a second CMS or runtime; adjacent expansion is deferred.
+- Verification: focused news contract passed; `npm run build` passed with 274 Astro pages; full `npm test` passed with zero broken internal links; focused Playwright passed in desktop and 390px mobile (`4 passed`). Full `npm run test:e2e` completed with `1496 passed / 4 failed / 12 skipped`; all four failures were unrelated Repair Shop timing/state scenarios, and their exact bounded rerun passed `6/6` across desktop and mobile. No assertion was weakened and no Repair Shop file was changed.
+- Remaining gate: owner visual/content review. A later release change must deliberately decide indexability, sitemap ownership, a News hub/internal discovery path, and production measurement verification before any public claim.
