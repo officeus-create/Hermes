@@ -44,7 +44,9 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
   const currentPath = window.location.pathname;
   const isRepairRoute = currentPath.startsWith(REPAIR_ROOT);
   const transportFetch = window.fetch.bind(window);
-  let ownerOpenedEmitted = false;
+  let ownerAuthenticatedObserved = false;
+  let ownerOpenedDelivered = false;
+  let publicBookingOpenedDelivered = false;
 
   const consentGranted = () => {
     try { return window.localStorage.getItem(CONSENT_KEY) === "granted"; }
@@ -144,13 +146,25 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
     });
 
     const emit = (name: string, authenticated: boolean, resultClass = "success") => {
-      if (!ALLOWED_EVENTS.has(name)) return;
+      if (!ALLOWED_EVENTS.has(name) || !consentGranted()) return;
       trackEvent(name, eventProperties(authenticated, resultClass));
     };
 
-    if (currentPath.endsWith("/booking/")) {
-      queueMicrotask(() => emit("hc_repair_public_booking_opened", false, "opened"));
-    }
+    const emitObservedOpenEvents = () => {
+      if (currentPath.endsWith("/booking/") && !publicBookingOpenedDelivered) {
+        publicBookingOpenedDelivered = true;
+        emit("hc_repair_public_booking_opened", false, "opened");
+      }
+      if (currentPath.endsWith("/dashboard/") && ownerAuthenticatedObserved && !ownerOpenedDelivered) {
+        ownerOpenedDelivered = true;
+        emit("hc_repair_owner_opened", true, "opened");
+      }
+    };
+
+    queueMicrotask(emitObservedOpenEvents);
+    document.querySelector("[data-consent-accept]")?.addEventListener("click", () => {
+      window.setTimeout(emitObservedOpenEvents, 0);
+    });
 
     const originalFetch = window.fetch.bind(window);
     window.fetch = async (input, init) => {
@@ -163,9 +177,9 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
       if (!url || url.origin !== window.location.origin || !response.ok) return response;
       const path = url.pathname;
 
-      if (!ownerOpenedEmitted && currentPath.endsWith("/dashboard/") && method === "GET" && path === "/api/auth/me") {
-        ownerOpenedEmitted = true;
-        queueMicrotask(() => emit("hc_repair_owner_opened", true, "opened"));
+      if (currentPath.endsWith("/dashboard/") && method === "GET" && path === "/api/auth/me") {
+        ownerAuthenticatedObserved = true;
+        queueMicrotask(emitObservedOpenEvents);
       } else if (method === "PUT" && path === "/api/repair-shop/profile") {
         queueMicrotask(() => emit("hc_repair_profile_saved", true));
       } else if (["POST", "PUT", "PATCH"].includes(method) && path === "/api/services") {
