@@ -34,6 +34,8 @@ assert.match(carrierPage, /Chicago-area markets/);
 assert.match(carrierPage, /Fremont \/ the Bay Area/);
 assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
 assert.match(loadBoardPage, /href="\/logistics\/car-hauler-loads\/"/, "Load Board must provide a contextual discovery link to the Carrier GEO hub");
+assert.match(carrierPage, /label: "Car Hauling Load Board", href: "\/load-board\/"/, "Dispatch owner must provide a descriptive canonical Load Board anchor");
+assert.match(carrierPage, /label: "Preview the Load Board Demo", href: "\/load-board\/\?role=carrier&equipment=car_hauler#available-loads"/, "Dispatch owner must preserve the filtered car-hauler demo handoff");
 
 // Dealer/shipper acquisition remains a separate owner until that funnel is
 // intentionally migrated. This carrier launch must not silently rewrite it.
