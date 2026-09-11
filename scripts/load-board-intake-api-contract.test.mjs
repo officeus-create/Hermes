@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const schema = fs.readFileSync(new URL("../functions/api/_lib/load-board-schema.mjs", import.meta.url), "utf8");
 const helpers = fs.readFileSync(new URL("../functions/api/_lib/load-board-opportunity.mjs", import.meta.url), "utf8");
+const companyAccess = fs.readFileSync(new URL("../functions/api/_lib/hermes-company-profiles.mjs", import.meta.url), "utf8");
 const intake = fs.readFileSync(new URL("../functions/api/load-board/intake.ts", import.meta.url), "utf8");
 const active = fs.readFileSync(new URL("../functions/api/load-board/active.ts", import.meta.url), "utf8");
 const opportunities = fs.readFileSync(new URL("../functions/api/load-board/opportunities.ts", import.meta.url), "utf8");
@@ -40,6 +41,12 @@ assert.match(helpers, /rpm_3_plus/);
 assert.match(helpers, /deadhead_25_or_less/);
 assert.match(helpers, /fresh_30m/);
 assert.match(helpers, /equipment_exact/);
+
+assert.match(companyAccess, /function specialistHasLoadBoardAccess/);
+assert.match(companyAccess, /carrier\|owner\[- \]\?operator\|dispatcher\|operations/i);
+assert.match(companyAccess, /hermes_company_profiles/);
+assert.match(companyAccess, /load_board_access/);
+assert.match(companyAccess, /owner_specialist_id/);
 
 const { scoreOpportunity, buildOpportunityDedupeKey } = await import("../functions/api/_lib/load-board-opportunity.mjs");
 const recent = new Date().toISOString();
@@ -91,9 +98,10 @@ assert.match(intake, /clampVisibility/);
 assert.match(intake, /outbound_enabled: false/);
 
 assert.match(active, /getAuthenticatedSpecialist/);
-assert.match(active, /carrier\|owner\[- \]\?operator\|dispatcher/i);
+assert.match(active, /specialistHasLoadBoardAccess/);
 assert.match(active, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(active, /visibility = 'public'/);
+assert.match(active, /company_registration_unlocks_access: true/);
 for (const equipment of ["dry_van", "reefer", "flatbed", "step_deck", "power_only", "hotshot", "box_truck", "sprinter_van", "car_hauler"]) {
   assert.match(active, new RegExp(`"${equipment}"`));
 }
@@ -106,8 +114,10 @@ assert.match(active, /X-Robots-Tag/);
 assert.doesNotMatch(active, forbiddenContactFields);
 assert.doesNotMatch(active, /hermes_load_quarantine/);
 
+assert.match(opportunities, /specialistHasLoadBoardAccess/);
 assert.match(opportunities, /deduplicated: true/);
 assert.match(opportunities, /score_version: "hermes_opportunity_v1"/);
+assert.match(opportunities, /company_registration_unlocks_access: true/);
 assert.match(opportunities, /min_rpm/);
 assert.match(opportunities, /max_deadhead/);
 assert.match(opportunities, /origin_state/);
@@ -119,9 +129,11 @@ assert.match(opportunities, /X-Robots-Tag/);
 assert.doesNotMatch(opportunities, forbiddenContactFields);
 assert.match(opportunities, /"email"/);
 
+assert.match(dispatchPlan, /specialistHasLoadBoardAccess/);
 assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
 assert.match(dispatchPlan, /planning_only: true/);
 assert.match(dispatchPlan, /booking_performed: false/);
+assert.match(dispatchPlan, /company_registration_unlocks_access: true/);
 assert.match(dispatchPlan, /max_legs/);
 assert.match(dispatchPlan, /projectedLoadedRpm/);
 assert.match(dispatchPlan, /dispatcher_or_carrier_role_required/);
@@ -170,5 +182,5 @@ assert.match(seoLanding, /data-ai-answer/);
 assert.match(seoLanding, /No marketplace scraping/);
 assert.match(seoLanding, /\/load-board\/#live-marketplace/);
 
-console.log("load-board-intake-api-contract: normalized opportunity schema, scoring, safe search, planning, AI context, official Ship.Cars sync, and SEO/GEO distribution verified");
+console.log("load-board-intake-api-contract: normalized opportunity schema, company-aware access, scoring, safe search, planning, AI context, official Ship.Cars sync, and SEO/GEO distribution verified");
 await import("./load-board-email-bridge-contract.test.mjs");
