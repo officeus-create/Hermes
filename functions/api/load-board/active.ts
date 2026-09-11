@@ -1,5 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
+import { specialistHasLoadBoardAccess } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
 
@@ -17,16 +18,12 @@ const ALLOWED_EQUIPMENT = new Set([
   "other",
 ]);
 
-function looksLikeCarrierRole(role: unknown) {
-  return /carrier|owner[- ]?operator|dispatcher/i.test(String(role ?? ""));
-}
-
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureLoadBoardSchema(env.DB);
 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  const carrierCandidate = Boolean(specialist && looksLikeCarrierRole(specialist.role));
+  const carrierCandidate = await specialistHasLoadBoardAccess(env.DB, specialist);
   const url = new URL(request.url);
   const recordType = String(url.searchParams.get("type") || "").trim();
   const equipment = String(url.searchParams.get("equipment") || "").trim();
@@ -121,6 +118,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   return jsonResponse(200, {
     success: true,
     audience: carrierCandidate ? "carrier_candidate" : "public",
+    load_board_access: carrierCandidate,
+    company_registration_unlocks_access: true,
     carrier_verification_required_for_contact: true,
     contact_details_exposed: false,
     count: records.length,
