@@ -1,0 +1,230 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Hermes Connect Load Board Access"
+  description="Create or sign in to your Hermes account, register your company, and unlock the Hermes Load Board. Catalog publication remains clearly labeled until business facts are verified."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="lb-access">
+    <section class="lb-access-hero">
+      <div class="lb-access-shell">
+        <a class="lb-back" href="/load-board/">← Back to Load Board preview</a>
+        <p class="lb-kicker">Hermes Connect · Load Board access</p>
+        <h1>One Hermes account. One company profile. Load Board unlocked.</h1>
+        <p class="lb-lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and return to the board with carrier-access records enabled.</p>
+        <div class="lb-flow" aria-label="Load Board access steps">
+          <div><strong>1</strong><span>Hermes account</span><small>Create one or sign in</small></div>
+          <div><strong>2</strong><span>Company</span><small>Add operating company facts</small></div>
+          <div><strong>3</strong><span>Hermes Catalog</span><small>Optional self-submitted listing</small></div>
+          <div><strong>4</strong><span>Load Board</span><small>Carrier-access layer opens</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lb-access-body">
+      <div class="lb-access-shell lb-access-grid">
+        <div class="lb-access-card" data-auth-card>
+          <div class="lb-card-head">
+            <p class="lb-kicker">Step 1</p>
+            <h2>Your Hermes account</h2>
+            <p data-auth-state>Checking whether you are already signed in…</p>
+          </div>
+
+          <div class="lb-tabs" data-auth-tabs>
+            <button type="button" class="is-active" data-auth-tab="register">Create account</button>
+            <button type="button" data-auth-tab="login">Sign in</button>
+          </div>
+
+          <form class="lb-form" data-register-form>
+            <label>Full name<input name="name" autocomplete="name" required minlength="2" /></label>
+            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+            <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label>
+            <label>Your role
+              <select name="role" required>
+                <option value="Carrier">Carrier</option>
+                <option value="Owner-Operator">Owner-Operator</option>
+                <option value="Dispatcher">Dispatcher</option>
+                <option value="Fleet Owner">Fleet Owner</option>
+              </select>
+            </label>
+            <label>City / location<input name="location" required minlength="2" placeholder="Chicago, IL" /></label>
+            <button class="lb-primary" type="submit">Create Hermes account</button>
+          </form>
+
+          <form class="lb-form" data-login-form hidden>
+            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+            <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="lb-primary" type="submit">Sign in to Hermes</button>
+          </form>
+          <p class="lb-message" data-auth-message role="status"></p>
+        </div>
+
+        <div class="lb-access-card" data-company-card hidden>
+          <div class="lb-card-head">
+            <p class="lb-kicker">Step 2</p>
+            <h2>Register the company you operate with</h2>
+            <p>This company profile is what unlocks Load Board access. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.</p>
+          </div>
+          <form class="lb-form" data-company-form>
+            <label>Company name<input name="companyName" required minlength="2" /></label>
+            <label>Company type
+              <select name="companyType" required>
+                <option value="carrier">Carrier</option>
+                <option value="owner_operator">Owner-Operator</option>
+                <option value="fleet">Fleet</option>
+                <option value="dispatcher">Dispatcher / dispatch company</option>
+                <option value="broker">Broker</option>
+                <option value="shipper">Shipper</option>
+                <option value="dealer">Dealer</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <div class="lb-form-row">
+              <label>City<input name="city" required minlength="2" /></label>
+              <label>State<input name="state" required maxlength="2" minlength="2" placeholder="IL" /></label>
+            </div>
+            <label>Website <span>optional</span><input name="website" inputmode="url" placeholder="yourcompany.com" /></label>
+            <label>MC / USDOT <span>optional · private</span><input name="authorityNumber" autocomplete="off" /></label>
+            <label class="lb-check"><input name="catalogOptIn" type="checkbox" checked /><span><strong>Add my company to Hermes Catalog.</strong> Company name, category, city and state can appear immediately as “Self-submitted · verification pending.” Private authority/account data is not published. A dedicated SEO/GEO company page is not created until verification.</span></label>
+            <button class="lb-primary" type="submit">Save company & unlock Load Board</button>
+          </form>
+          <p class="lb-message" data-company-message role="status"></p>
+        </div>
+
+        <aside class="lb-access-side">
+          <p class="lb-kicker">What happens next</p>
+          <h2>This is one connected Hermes loop.</h2>
+          <ol>
+            <li><strong>Preview.</strong> You can see the Load Board interface and truthful aggregate inventory before registering.</li>
+            <li><strong>Register.</strong> The same Hermes identity is used across Hermes Connect.</li>
+            <li><strong>Company.</strong> Your operating company becomes the access owner for the Load Board.</li>
+            <li><strong>Catalog.</strong> If you opt in, a safe self-submitted company card can appear in Hermes Catalog while verification is pending.</li>
+            <li><strong>Operate.</strong> Return to the Load Board, search carrier-access opportunities, compare economics and use dispatcher planning tools.</li>
+          </ol>
+          <a href="/businesses/">See Hermes Catalog →</a>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const authCard = document.querySelector('[data-auth-card]');
+      const companyCard = document.querySelector('[data-company-card]');
+      const authState = document.querySelector('[data-auth-state]');
+      const authMessage = document.querySelector('[data-auth-message]');
+      const companyMessage = document.querySelector('[data-company-message]');
+      const registerForm = document.querySelector('[data-register-form]');
+      const loginForm = document.querySelector('[data-login-form]');
+      const companyForm = document.querySelector('[data-company-form]');
+      const tabs = [...document.querySelectorAll('[data-auth-tab]')];
+
+      const message = (node, text, error = false) => {
+        if (!(node instanceof HTMLElement)) return;
+        node.textContent = text || '';
+        node.dataset.error = error ? 'true' : 'false';
+      };
+      const json = async (url, options = {}) => {
+        const response = await fetch(url, { ...options, headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(options.headers || {}) }, cache: 'no-store' });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw Object.assign(new Error(payload.error || payload.errors?.join(', ') || `request_${response.status}`), { status: response.status, payload });
+        return payload;
+      };
+      const showCompany = async (specialist) => {
+        if (authState) authState.textContent = `Signed in as ${specialist?.name || specialist?.email || 'Hermes user'}.`;
+        if (authCard instanceof HTMLElement) authCard.classList.add('is-complete');
+        if (companyCard instanceof HTMLElement) companyCard.hidden = false;
+        try {
+          const existing = await json('/api/hermes-connect/company');
+          if (existing.company && companyForm instanceof HTMLFormElement) {
+            for (const [key, value] of Object.entries({
+              companyName: existing.company.companyName, companyType: existing.company.companyType,
+              city: existing.company.city, state: existing.company.state, website: existing.company.website || '',
+            })) {
+              const input = companyForm.elements.namedItem(key);
+              if (input && 'value' in input) input.value = String(value || '');
+            }
+            const opt = companyForm.elements.namedItem('catalogOptIn');
+            if (opt instanceof HTMLInputElement) opt.checked = Boolean(existing.company.catalogOptIn);
+          }
+        } catch {}
+        companyCard?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      tabs.forEach((tab) => tab.addEventListener('click', () => {
+        const mode = tab.getAttribute('data-auth-tab');
+        tabs.forEach((item) => item.classList.toggle('is-active', item === tab));
+        if (registerForm instanceof HTMLElement) registerForm.hidden = mode !== 'register';
+        if (loginForm instanceof HTMLElement) loginForm.hidden = mode !== 'login';
+        message(authMessage, '');
+      }));
+
+      registerForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(registerForm instanceof HTMLFormElement)) return;
+        const data = new FormData(registerForm);
+        const button = registerForm.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        message(authMessage, 'Creating your Hermes account…');
+        try {
+          const payload = await json('/api/auth/register', { method: 'POST', body: JSON.stringify({
+            name: data.get('name'), email: data.get('email'), password: data.get('password'), role: data.get('role'), location: data.get('location'),
+            bio: 'Hermes Connect Load Board access account for carrier operations and company registration.',
+          }) });
+          message(authMessage, 'Account created. Add your company to unlock the board.');
+          await showCompany(payload.specialist);
+        } catch (error) {
+          const text = error?.payload?.error === 'email_already_registered' ? 'This email already has a Hermes account. Use Sign in.' : `Could not create account: ${error.message}`;
+          message(authMessage, text, true);
+        } finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
+      });
+
+      loginForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(loginForm instanceof HTMLFormElement)) return;
+        const data = new FormData(loginForm);
+        const button = loginForm.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        message(authMessage, 'Signing in…');
+        try {
+          await json('/api/auth/login', { method: 'POST', body: JSON.stringify({ email: data.get('email'), password: data.get('password') }) });
+          const me = await json('/api/auth/me');
+          message(authMessage, 'Signed in. Add or confirm your company.');
+          await showCompany(me.specialist);
+        } catch (error) { message(authMessage, `Could not sign in: ${error.message}`, true); }
+        finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
+      });
+
+      companyForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(companyForm instanceof HTMLFormElement)) return;
+        const data = new FormData(companyForm);
+        const button = companyForm.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        message(companyMessage, 'Saving company and opening Load Board access…');
+        try {
+          const payload = await json('/api/hermes-connect/company', { method: 'POST', body: JSON.stringify({
+            companyName: data.get('companyName'), companyType: data.get('companyType'), city: data.get('city'), state: data.get('state'),
+            website: data.get('website'), authorityNumber: data.get('authorityNumber'), catalogOptIn: data.get('catalogOptIn') === 'on',
+          }) });
+          message(companyMessage, payload.catalog?.listed ? 'Company saved and added to Hermes Catalog as verification-pending. Opening the Load Board…' : 'Company saved. Opening the Load Board…');
+          window.location.assign(payload.next_url || '/load-board/?access=unlocked#live-marketplace');
+        } catch (error) { message(companyMessage, `Could not save company: ${error.message}`, true); }
+        finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
+      });
+
+      void (async () => {
+        try { const me = await json('/api/auth/me'); await showCompany(me.specialist); }
+        catch (error) { if (authState) authState.textContent = 'Create a Hermes account or sign in to continue.'; }
+      })();
+    })();
+  </script>
+
+  <style>
+    .lb-access{background:#f4f6fb;color:#0d1833;min-height:100vh}.lb-access-shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.lb-access-hero{padding:72px 0 44px;background:linear-gradient(145deg,#071431,#11265b);color:#fff}.lb-back{display:inline-block;margin-bottom:32px;color:#bcc9e8;text-decoration:none;font-weight:750}.lb-kicker{margin:0 0 10px;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:900;color:#6f89ca}.lb-access-hero .lb-kicker{color:#a9bbeb}.lb-access-hero h1{margin:0;max-width:860px;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.95;letter-spacing:-.045em}.lb-lead{max-width:780px;margin:22px 0 0;color:#c3cee7;font-size:1.05rem;line-height:1.7}.lb-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px}.lb-flow>div{padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.05);display:grid;gap:5px}.lb-flow strong{font-size:1.5rem}.lb-flow span{font-weight:850}.lb-flow small{color:#9eacd0}.lb-access-body{padding:44px 0 80px}.lb-access-grid{display:grid;grid-template-columns:1fr 1fr .86fr;gap:16px;align-items:start}.lb-access-card,.lb-access-side{background:#fff;border:1px solid #dfe4ef;border-radius:20px;padding:24px;box-shadow:0 12px 32px rgba(20,31,60,.06)}.lb-access-card.is-complete{border-color:#a8d7c3}.lb-card-head h2,.lb-access-side h2{margin:0 0 8px;font-size:1.55rem}.lb-card-head p:last-child,.lb-access-side{line-height:1.6;color:#58647d}.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:20px 0;background:#eef1f7;border-radius:12px}.lb-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;font-weight:800;color:#647089;cursor:pointer}.lb-tabs button.is-active{background:#fff;color:#0d1833;box-shadow:0 2px 8px rgba(20,31,60,.08)}.lb-form{display:grid;gap:14px}.lb-form label{display:grid;gap:6px;font-size:.78rem;font-weight:850;color:#35415b}.lb-form label span{font-weight:600;color:#7a859c}.lb-form input,.lb-form select{width:100%;box-sizing:border-box;border:1px solid #cfd6e4;border-radius:11px;padding:11px 12px;background:#fff;color:#0d1833;font:inherit;font-weight:600}.lb-form-row{display:grid;grid-template-columns:1fr 92px;gap:10px}.lb-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;padding:12px;border:1px solid #e0e5ef;border-radius:12px;background:#f9fafc}.lb-check input{width:auto;margin-top:3px}.lb-check span{line-height:1.5}.lb-primary{border:0;border-radius:12px;padding:13px 16px;background:#102963;color:#fff;font-weight:900;cursor:pointer}.lb-primary:disabled{opacity:.55;cursor:wait}.lb-message{min-height:1.35em;margin:14px 0 0;color:#197a55;font-size:.78rem;font-weight:750}.lb-message[data-error="true"]{color:#b33c43}.lb-access-side{position:sticky;top:18px}.lb-access-side ol{padding-left:20px}.lb-access-side li{margin:.75rem 0}.lb-access-side a{color:#173f93;font-weight:850;text-decoration:none}@media(max-width:980px){.lb-access-grid{grid-template-columns:1fr 1fr}.lb-access-side{grid-column:1/-1;position:static}.lb-flow{grid-template-columns:1fr 1fr}}@media(max-width:680px){.lb-access-hero{padding-top:52px}.lb-access-grid{grid-template-columns:1fr}.lb-access-side{grid-column:auto}.lb-flow{grid-template-columns:1fr}.lb-form-row{grid-template-columns:1fr}.lb-access-card,.lb-access-side{padding:19px}}
+  </style>
+</BaseLayout>
