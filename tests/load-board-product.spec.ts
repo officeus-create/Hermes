@@ -82,15 +82,43 @@ test("canonical Load Board renders approved live loads and capacity from separat
     });
   });
 
+  await page.route("**/api/load-board/summary", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 37, available_trucks: 1, latest_observed_at: now }) });
+  });
+
   await page.goto("/load-board/");
   const live = page.locator("[data-hlb-live-marketplace]");
   await expect(live).toBeVisible();
-  await expect(live.locator("[data-live-load-count]")).toHaveText("1");
+  await expect(live.locator("[data-live-load-count]")).toHaveText("37");
   await expect(live.locator("[data-live-capacity-count]")).toHaveText("1");
   await expect(live.getByText("Chicago, IL")).toBeVisible();
   await expect(live.getByText("Miami, FL")).toBeVisible();
   await expect(live.getByText("Williamsburg, VA")).toBeVisible();
   await expect(live.getByRole("link", { name: "Agreement & onboarding" })).toHaveAttribute("href", "/carrier/");
+  await expect(live.getByText("Interface preview rows are not inventory.")).toBeVisible();
+  await expect(live.locator(".hlb-live-row--locked").first()).toHaveAttribute("href", /\/services\/hermes-connect\/load-board\/access\//);
+});
+
+test("authenticated company access removes the curtain and shows full load economics", async ({ page }) => {
+  const now = new Date().toISOString();
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ load_board_access: true, audience: "carrier_candidate", records: [{ id: "private-1", equipment: "car_hauler", origin: "Dallas, TX", destination: "Phoenix, AZ", pickupWindow: "Tomorrow", rateAmount: 1800, rateCurrency: "USD", ratePerMile: 2.7, source: "Approved source", observedAt: now }] }) }));
+  await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 1, available_trucks: 0 }) }));
+  await page.goto("/load-board/");
+  const live = page.locator("[data-hlb-live-marketplace]");
+  await expect(live).toHaveClass(/is-unlocked/);
+  await expect(live.getByText("$1,800")).toBeVisible();
+  await expect(live.getByText("Hermes company access active")).toBeVisible();
+  await expect(live.locator("[data-hlb-curtain-card]")).toBeHidden();
+});
+
+test("Load Board access flow is private to search and explains account company Catalog sequence", async ({ page }) => {
+  await page.route("**/api/auth/me", async (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "authentication_required" }) }));
+  await page.goto("/services/hermes-connect/load-board/access/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+  await expect(page.getByRole("heading", { name: "One Hermes account. One company profile. Load Board unlocked." })).toBeVisible();
+  await expect(page.getByText("Hermes Catalog", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create Hermes account" })).toBeVisible();
 });
 
 test("Load Board v1 pilot still shows multiple equipment types and keeps private operational data gated", async ({ page }) => {
