@@ -226,7 +226,7 @@ jobs:
 
           if [[ "$TRUTH_OUTCOME" == "success" && "$SEND_OUTCOME" == "success" && "$DUPLICATE_OUTCOME" == "success" ]]; then
             overall="PASS"
-            summary="Production exposes the truthful $99/month Founding Shop request path, accepted one explicitly synthetic paid-intent request, and suppressed its duplicate. This is receiver evidence only — not a customer, payment, conversion, activation, or revenue event."
+            summary="Production exposes the truthful \$99/month Founding Shop request path, accepted one explicitly synthetic paid-intent request, and suppressed its duplicate. This is receiver evidence only — not a customer, payment, conversion, activation, or revenue event."
           else
             overall="FAIL"
             summary="Paid-intent production receiver proof is incomplete. No customer/payment claim is authorized from this run."
