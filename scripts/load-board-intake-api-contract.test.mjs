@@ -6,10 +6,13 @@ const helpers = fs.readFileSync(new URL("../functions/api/_lib/load-board-opport
 const intake = fs.readFileSync(new URL("../functions/api/load-board/intake.ts", import.meta.url), "utf8");
 const active = fs.readFileSync(new URL("../functions/api/load-board/active.ts", import.meta.url), "utf8");
 const opportunities = fs.readFileSync(new URL("../functions/api/load-board/opportunities.ts", import.meta.url), "utf8");
+const dispatchPlan = fs.readFileSync(new URL("../functions/api/load-board/dispatch-plan.ts", import.meta.url), "utf8");
+const agentContext = fs.readFileSync(new URL("../functions/api/load-board/agent-context.ts", import.meta.url), "utf8");
 const providerSync = fs.readFileSync(new URL("../functions/api/load-board/providers/sync.ts", import.meta.url), "utf8");
 const seoData = fs.readFileSync(new URL("../src/data/load-board-seo.ts", import.meta.url), "utf8");
 const seoLanding = fs.readFileSync(new URL("../src/components/LoadBoardSeoLanding.astro", import.meta.url), "utf8");
 const sitemap = fs.readFileSync(new URL("../public/sitemap.xml", import.meta.url), "utf8");
+const serviceSitemap = fs.readFileSync(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const indexNow = fs.readFileSync(new URL("../.github/workflows/indexnow-money-pages.yml", import.meta.url), "utf8");
 
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_sources/);
@@ -113,6 +116,25 @@ assert.match(opportunities, /contact_details_exposed: false/);
 assert.match(opportunities, /X-Robots-Tag/);
 assert.doesNotMatch(opportunities, /source_message_id|raw_evidence_ref|mailbox_email|credential_ref|contact_name|phone|email/);
 
+assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
+assert.match(dispatchPlan, /planning_only: true/);
+assert.match(dispatchPlan, /booking_performed: false/);
+assert.match(dispatchPlan, /max_legs/);
+assert.match(dispatchPlan, /projectedLoadedRpm/);
+assert.match(dispatchPlan, /dispatcher_or_carrier_role_required/);
+assert.match(dispatchPlan, /dedupeKey/);
+assert.match(dispatchPlan, /X-Robots-Tag/);
+assert.doesNotMatch(dispatchPlan, /source_message_id|raw_evidence_ref|credential_ref|contact_name|phone|email/);
+
+assert.match(agentContext, /HERMES_AI_LOGISTICS_TOKEN/);
+assert.match(agentContext, /"opportunities", "lanes", "providers"/);
+assert.match(agentContext, /data_classification: "internal-logistics-context"/);
+assert.match(agentContext, /contact_details_exposed: false/);
+assert.match(agentContext, /raw_evidence_exposed: false/);
+assert.match(agentContext, /raw_credentials_exposed: false/);
+assert.match(agentContext, /X-Robots-Tag/);
+assert.doesNotMatch(agentContext, /credential_ref|source_message_id|raw_evidence_ref|contact_name|phone|email/);
+
 assert.match(providerSync, /https:\/\/ship\.cars\/api\/loadboard\/v3\/postings/);
 assert.match(providerSync, /HERMES_PROVIDER_SYNC_ENABLED/);
 assert.match(providerSync, /HERMES_SHIP_CARS_COMMERCIAL_APPROVED/);
@@ -135,7 +157,8 @@ for (const slug of ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "
   assert.match(indexNow, new RegExp(`/load-board/equipment/${slug}/`));
 }
 for (const market of ["chicago-il", "denver-co", "seattle-wa", "fremont-ca", "kansas-city-mo-ks"]) {
-  assert.match(sitemap, new RegExp(`/logistics/car-hauler-loads/${market}/`));
+  assert.match(serviceSitemap, new RegExp(`/logistics/car-hauler-loads/${market}/`));
+  assert.doesNotMatch(sitemap, new RegExp(`/logistics/car-hauler-loads/${market}/`));
   assert.match(indexNow, new RegExp(`/logistics/car-hauler-loads/${market}/`));
 }
 assert.match(seoLanding, /FAQPage/);
@@ -144,5 +167,5 @@ assert.match(seoLanding, /data-ai-answer/);
 assert.match(seoLanding, /No marketplace scraping/);
 assert.match(seoLanding, /\/load-board\/#live-marketplace/);
 
-console.log("load-board-intake-api-contract: normalized opportunity schema, scoring, safe search, official Ship.Cars sync, and SEO/GEO distribution verified");
+console.log("load-board-intake-api-contract: normalized opportunity schema, scoring, safe search, planning, AI context, official Ship.Cars sync, and SEO/GEO distribution verified");
 await import("./load-board-email-bridge-contract.test.mjs");
