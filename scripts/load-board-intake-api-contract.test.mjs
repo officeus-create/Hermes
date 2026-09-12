@@ -148,7 +148,13 @@ assert.match(agentContext, /contact_details_exposed: false/);
 assert.match(agentContext, /raw_evidence_exposed: false/);
 assert.match(agentContext, /raw_credentials_exposed: false/);
 assert.match(agentContext, /X-Robots-Tag/);
-assert.doesNotMatch(agentContext, forbiddenContactFields);
+// Reading the presence of a private connection pointer is allowed; returning its value is not.
+// Remove only this exact boolean SQL projection, not arbitrary query/source text.
+const safePresenceProjection = "CASE WHEN s.credential_ref IS NOT NULL AND TRIM(s.credential_ref) <> '' THEN 1 ELSE 0 END AS connection_pointer_present,";
+assert.equal(agentContext.split(safePresenceProjection).length - 1, 2);
+assert.doesNotMatch(agentContext.replaceAll(safePresenceProjection, ""), forbiddenContactFields);
+assert.doesNotMatch(agentContext, /row\??\.credential_ref|credential_ref\s*:/i);
+assert.match(agentContext, /Boolean\(row\.connection_pointer_present\)/);
 
 assert.match(providerSync, /https:\/\/ship\.cars\/api\/loadboard\/v3\/postings/);
 assert.match(providerSync, /HERMES_PROVIDER_SYNC_ENABLED/);
