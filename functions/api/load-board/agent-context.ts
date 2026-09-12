@@ -9,6 +9,35 @@ function limitValue(value: string | null) {
   return Math.max(1, Math.min(500, Number.isFinite(parsed) ? parsed : 100));
 }
 
+function sourceSetup(row: any) {
+  const redistribution = String(row.redistribution_permission || "internal_only");
+  const contactMode = String(row.contact_reveal_permission || "hidden");
+  const sourceActive = String(row.status || "") === "active";
+  const readEnabled = Boolean(row.read_enabled);
+  const ingestEnabled = Boolean(row.ingest_enabled);
+  const canIngest = sourceActive && readEnabled && ingestEnabled;
+
+  return {
+    setup_checklist: {
+      identity_configured: Boolean(row.provider && row.source_name && row.source_type),
+      connection_pointer_present: Boolean(row.connection_pointer_present),
+      ingestion_enabled: canIngest,
+      redistribution_rule_defined: ["internal_only", "carrier_only", "public"].includes(redistribution),
+      contact_rule_defined: Boolean(contactMode),
+      sync_proven: Boolean(row.last_successful_sync),
+      error_free: !row.last_error,
+    },
+    action_rules: {
+      ingest_internal: canIngest,
+      configured_max_visibility: redistribution,
+      carrier_distribution_configured: canIngest && ["carrier_only", "public"].includes(redistribution),
+      public_distribution_configured: canIngest && redistribution === "public",
+      contact_reveal_mode: contactMode,
+      outbound_send: false,
+    },
+  };
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const token = String(env.HERMES_AI_LOGISTICS_TOKEN || "");
@@ -29,8 +58,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         s.source_name,
         s.source_type,
         s.redistribution_permission,
+        s.contact_reveal_permission,
         s.read_enabled,
         s.ingest_enabled,
+        CASE WHEN s.credential_ref IS NOT NULL AND TRIM(s.credential_ref) <> '' THEN 1 ELSE 0 END AS connection_pointer_present,
         s.last_successful_sync,
         s.last_error,
         s.status,
@@ -52,12 +83,14 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         source_name: row.source_name,
         source_type: row.source_type,
         redistribution_permission: row.redistribution_permission,
+        contact_reveal_permission: row.contact_reveal_permission,
         read_enabled: Boolean(row.read_enabled),
         ingest_enabled: Boolean(row.ingest_enabled),
         last_successful_sync: row.last_successful_sync || null,
         last_error: row.last_error || null,
         status: row.status,
         active_records: Number(row.active_records || 0),
+        ...sourceSetup(row),
       })),
     }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
   }
@@ -88,8 +121,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         s.source_name,
         s.source_type,
         s.redistribution_permission,
+        s.contact_reveal_permission,
         s.read_enabled,
         s.ingest_enabled,
+        CASE WHEN s.credential_ref IS NOT NULL AND TRIM(s.credential_ref) <> '' THEN 1 ELSE 0 END AS connection_pointer_present,
         s.status,
         s.last_successful_sync,
         s.last_error,
@@ -153,6 +188,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         source_name: row.source_name,
         source_type: row.source_type,
         redistribution_permission: row.redistribution_permission,
+        contact_reveal_permission: row.contact_reveal_permission,
         read_enabled: Boolean(row.read_enabled),
         ingest_enabled: Boolean(row.ingest_enabled),
         status: row.status,
@@ -164,6 +200,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         expired_records: numberValue(row.expired_records),
         quarantine_pending: numberValue(row.quarantine_pending),
         freshest_observed_at: row.freshest_observed_at || null,
+        ...sourceSetup(row),
       })),
       quarantine_reasons: (quarantineReasons?.results || []).map((row: any) => ({
         reason: row.reason,
