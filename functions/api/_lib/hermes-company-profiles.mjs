@@ -65,7 +65,6 @@ export function roleCanUseLoadBoard(role) {
 
 export async function specialistHasLoadBoardAccess(db, specialist) {
   if (!specialist) return false;
-  if (roleCanUseLoadBoard(specialist.role)) return true;
   await ensureHermesCompanyProfilesSchema(db);
   const company = await db.prepare(
     "SELECT load_board_access FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
