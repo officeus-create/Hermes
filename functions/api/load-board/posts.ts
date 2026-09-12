@@ -73,6 +73,15 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return jsonResponse(403, { success: false, error: "registered_company_required" }, privateHeaders);
   }
 
+  const now = new Date().toISOString();
+  await env.DB.prepare(`
+    UPDATE hermes_load_market_posts
+    SET status = 'expired', updated_at = ?
+    WHERE company_id = ? AND status = 'active' AND record_id IN (
+      SELECT id FROM hermes_load_records WHERE expires_at <= ? OR status = 'expired'
+    )
+  `).bind(now, company.id, now).run();
+
   const result = await env.DB.prepare(`
     SELECT
       p.id AS post_id, p.record_id, p.post_type, p.status AS post_status,
@@ -141,11 +150,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const distanceMiles = finiteNumber(body.distance_miles, { min: 0, max: 100000 });
   const deadheadMiles = finiteNumber(body.deadhead_miles, { min: 0, max: 5000 });
   const vehicleCount = finiteInteger(body.vehicle_count, { min: 1, max: 100 }) ?? 1;
-  const weightLbs = finiteNumber(body.weight_lbs, { min: 0, max: 500000 });
-  const lengthFeet = finiteNumber(body.length_feet, { min: 0, max: 200 });
-  const loadType = cleanMarketText(body.load_type, 30);
+  const weightLbs = postType === "load" ? finiteNumber(body.weight_lbs, { min: 0, max: 500000 }) : null;
+  const lengthFeet = postType === "load" ? finiteNumber(body.length_feet, { min: 0, max: 200 }) : null;
+  const loadType = postType === "load" ? cleanMarketText(body.load_type, 30) : "";
   const notes = cleanMarketText(body.notes, 360);
-  const paymentTerms = cleanMarketText(body.payment_terms, 120) || null;
+  const paymentTerms = postType === "load" ? (cleanMarketText(body.payment_terms, 120) || null) : null;
   const ttlHours = Math.max(1, Math.min(168, finiteInteger(body.expires_in_hours, { min: 1, max: 168 }) ?? (postType === "load" ? 24 : 48)));
   const now = new Date().toISOString();
   const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000).toISOString();
@@ -174,6 +183,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     rate_amount: offeredRate,
     vehicle_count: vehicleCount,
   });
+  const duplicate = await env.DB.prepare(`
+    SELECT p.id, p.record_id
+    FROM hermes_load_market_posts p
+    JOIN hermes_load_records r ON r.id = p.record_id
+    WHERE p.company_id = ? AND p.post_type = ? AND p.status = 'active'
+      AND r.status = 'active' AND r.expires_at > ? AND r.dedupe_key = ?
+    LIMIT 1
+  `).bind(company.id, postType, now, dedupeKey).first();
+  if (duplicate) {
+    return jsonResponse(409, {
+      success: false,
+      error: "duplicate_active_post",
+      existing_post_id: duplicate.id,
+      existing_record_id: duplicate.record_id,
+    }, privateHeaders);
+  }
+
   const scoring = scoreOpportunity({
     provider_record_id: postId,
     origin,

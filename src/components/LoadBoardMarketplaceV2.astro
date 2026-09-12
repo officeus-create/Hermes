@@ -285,8 +285,13 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       const title = host.querySelector<HTMLElement>("[data-lbv2-modal-title]");
       const kicker = host.querySelector<HTMLElement>("[data-lbv2-modal-kicker]");
       const destination = postForm.elements.namedItem("destination");
-      host.querySelectorAll<HTMLElement>("[data-lbv2-load-only]").forEach((node) => node.hidden = type !== "load");
+      host.querySelectorAll<HTMLElement>("[data-lbv2-load-only]").forEach((node) => {
+        node.hidden = type !== "load";
+        node.querySelectorAll<HTMLInputElement | HTMLSelectElement>("input, select").forEach((control) => { control.disabled = type !== "load"; });
+      });
       if (destination instanceof HTMLInputElement) destination.required = type === "load";
+      const destinationLabel = host.querySelector<HTMLElement>("[data-lbv2-destination-field] span");
+      if (destinationLabel) destinationLabel.textContent = type === "load" ? "Destination *" : "Preferred destination";
       if (title) title.textContent = type === "load" ? "Post a load" : "Post an available truck";
       if (kicker) kicker.textContent = type === "load" ? "Freight listing" : "Carrier capacity";
       const pickup = host.querySelector<HTMLElement>("[data-lbv2-pickup-label]");
