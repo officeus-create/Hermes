@@ -1,0 +1,88 @@
+<script>
+  const LOAD_BOARD_PATH = "/load-board/";
+
+  if (window.location.pathname === LOAD_BOARD_PATH) {
+    const root = document.querySelector<HTMLElement>("[data-hlb-live-marketplace]");
+    let enhancing = false;
+
+    const requestDetails = async (button: HTMLButtonElement, loadId: string) => {
+      if (button.disabled) return;
+      const original = button.textContent || "Request details";
+      button.disabled = true;
+      button.textContent = "Sending…";
+      try {
+        const response = await fetch("/api/load-board/interest", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify({ load_id: loadId }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || `request_${response.status}`);
+
+        button.textContent = "Requested for review";
+        button.dataset.requestStatus = String(payload.request?.status || "requested");
+        window.dispatchEvent(new CustomEvent("hermes:load-board-qualified-action", {
+          detail: {
+            action_type: "request_details",
+            load_id: loadId,
+            request_status: payload.request?.status || "requested",
+          },
+        }));
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = "Try request again";
+        button.title = error instanceof Error ? error.message : "request_failed";
+        window.setTimeout(() => {
+          if (!button.disabled && button.textContent === "Try request again") button.textContent = original;
+        }, 4000);
+      }
+    };
+
+    const enhanceOpenRows = async () => {
+      if (!root?.classList.contains("is-unlocked") || enhancing) return;
+      const rows = [...root.querySelectorAll<HTMLElement>(".hlb-live-row--open")];
+      if (!rows.length || rows.every((row) => row.querySelector("[data-load-board-qualified-action]"))) return;
+
+      enhancing = true;
+      try {
+        const response = await fetch("/api/load-board/active?type=load", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        const records = Array.isArray(payload.records) ? payload.records : [];
+
+        rows.forEach((row, index) => {
+          const record = records[index];
+          if (!record?.id || row.querySelector("[data-load-board-qualified-action]")) return;
+          const rate = row.querySelector<HTMLElement>(".hlb-live-rate");
+          if (!rate) return;
+
+          row.dataset.loadId = String(record.id).slice(0, 160);
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "hlb-request-details";
+          button.dataset.loadBoardQualifiedAction = "request_details";
+          button.textContent = "Request details";
+          button.addEventListener("click", () => void requestDetails(button, String(record.id)));
+          rate.appendChild(button);
+        });
+      } finally {
+        enhancing = false;
+      }
+    };
+
+    void enhanceOpenRows();
+    if (root && "MutationObserver" in window) {
+      const observer = new MutationObserver(() => void enhanceOpenRows());
+      observer.observe(root, { attributes: true, attributeFilter: ["class"], childList: true, subtree: true });
+    }
+  }
+</script>
+
+<style>
+  .hlb-request-details{margin-top:.45rem;padding:.46rem .58rem;border:1px solid rgba(255,255,255,.18);border-radius:8px;background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:.62rem;font-weight:850;cursor:pointer}.hlb-request-details:hover{background:rgba(255,255,255,.14)}.hlb-request-details:disabled{cursor:default;opacity:.72}
+</style>
