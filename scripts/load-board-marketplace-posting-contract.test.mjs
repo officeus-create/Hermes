@@ -11,6 +11,12 @@ for (const type of ["broker", "shipper", "dealer"]) assert.match(schema, new Reg
 for (const type of ["carrier", "owner_operator", "fleet", "dispatcher"]) assert.match(schema, new RegExp(`"${type}"`));
 assert.match(schema, /sameOriginMutation/);
 
+assert.match(schema, /specialistHasInternalOwnerCapability/);
+assert.match(schema, /HERMES_INTERNAL_OWNER/);
+assert.match(schema, /owner_full_marketplace_access/);
+assert.match(posts, /specialistHasInternalOwnerCapability/);
+assert.match(posts, /ownerFullMarketplaceAccess/);
+
 assert.match(posts, /posting_rights_attestation_required/);
 assert.match(posts, /company_cannot_post_loads/);
 assert.match(posts, /company_cannot_post_trucks/);

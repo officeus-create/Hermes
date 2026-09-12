@@ -16,6 +16,7 @@ import {
   getOwnedHermesCompany,
   publicPostPermissions,
   sameOriginMutation,
+  specialistHasInternalOwnerCapability,
 } from "../_lib/load-board-market-posts.mjs";
 
 type Env = { DB?: any };
@@ -72,6 +73,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!company || Number(company.load_board_access) !== 1) {
     return jsonResponse(403, { success: false, error: "registered_company_required" }, privateHeaders);
   }
+  const ownerFullMarketplaceAccess = await specialistHasInternalOwnerCapability(env.DB, specialist.id);
 
   const now = new Date().toISOString();
   await env.DB.prepare(`
@@ -102,7 +104,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       id: company.id,
       name: company.company_name,
       catalog_status: company.catalog_status,
-      ...publicPostPermissions(company.company_type),
+      ...publicPostPermissions(company.company_type, ownerFullMarketplaceAccess),
     },
     posts: (result?.results || []).map(marketPostRow),
   }, privateHeaders);
@@ -121,6 +123,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!company || Number(company.load_board_access) !== 1) {
     return jsonResponse(403, { success: false, error: "registered_company_required" }, privateHeaders);
   }
+  const ownerFullMarketplaceAccess = await specialistHasInternalOwnerCapability(env.DB, specialist.id);
 
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
@@ -128,11 +131,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const postType = cleanMarketText(body.type, 20) as PostType;
   if (!POST_TYPES.has(postType)) return jsonResponse(400, { success: false, error: "post_type_invalid" }, privateHeaders);
-  if (!canCompanyPost(company.company_type, postType)) {
+  if (!canCompanyPost(company.company_type, postType, ownerFullMarketplaceAccess)) {
     return jsonResponse(403, {
       success: false,
       error: postType === "load" ? "company_cannot_post_loads" : "company_cannot_post_trucks",
-      permissions: publicPostPermissions(company.company_type),
+      permissions: publicPostPermissions(company.company_type, ownerFullMarketplaceAccess),
     }, privateHeaders);
   }
   if (body.rights_attested !== true) {

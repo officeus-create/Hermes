@@ -1,4 +1,5 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
+import { ensureInternalAiSchema } from "./internal-ai.mjs";
 
 const CONTROL_CHARS = /[\u0000-\u001f\u007f<>]/g;
 export const LOAD_POST_COMPANY_TYPES = new Set(["broker", "shipper", "dealer"]);
@@ -43,15 +44,29 @@ export async function getOwnedHermesCompany(db, specialistId) {
   `).bind(specialistId).first();
 }
 
-export function canCompanyPost(companyType, postType) {
+export async function specialistHasInternalOwnerCapability(db, specialistId) {
+  if (!db || !specialistId) return false;
+  await ensureInternalAiSchema(db);
+  const row = await db.prepare(`
+    SELECT specialist_id
+    FROM hermes_internal_owner_access
+    WHERE specialist_id = ? AND active = 1 AND capability = 'HERMES_INTERNAL_OWNER'
+    LIMIT 1
+  `).bind(String(specialistId)).first();
+  return Boolean(row);
+}
+
+export function canCompanyPost(companyType, postType, fullMarketplaceAccess = false) {
+  if (fullMarketplaceAccess) return postType === "load" || postType === "capacity";
   const type = String(companyType || "");
   return postType === "load" ? LOAD_POST_COMPANY_TYPES.has(type) : TRUCK_POST_COMPANY_TYPES.has(type);
 }
 
-export function publicPostPermissions(companyType) {
+export function publicPostPermissions(companyType, fullMarketplaceAccess = false) {
   return {
     company_type: String(companyType || "other"),
-    can_post_load: LOAD_POST_COMPANY_TYPES.has(String(companyType || "")),
-    can_post_truck: TRUCK_POST_COMPANY_TYPES.has(String(companyType || "")),
+    can_post_load: fullMarketplaceAccess || LOAD_POST_COMPANY_TYPES.has(String(companyType || "")),
+    can_post_truck: fullMarketplaceAccess || TRUCK_POST_COMPANY_TYPES.has(String(companyType || "")),
+    owner_full_marketplace_access: Boolean(fullMarketplaceAccess),
   };
 }
