@@ -91,9 +91,11 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(live).toBeVisible();
   await expect(live.locator("[data-live-load-count]")).toHaveText("37");
   await expect(live.locator("[data-live-capacity-count]")).toHaveText("1");
-  await expect(live.getByText("Chicago, IL")).toBeVisible();
-  await expect(live.getByText("Miami, FL")).toBeVisible();
+  const approvedLoad = live.getByRole("link", { name: "Register in Hermes Connect to unlock load details" }).first();
+  await expect(approvedLoad).toContainText("Chicago, IL");
+  await expect(approvedLoad).toContainText("Miami, FL");
   await expect(live.getByText("Williamsburg, VA")).toBeVisible();
+  await expect(live.locator(".hlb-structural-preview")).toHaveCount(59);
   await expect(live.getByRole("link", { name: "Agreement & onboarding" })).toHaveAttribute("href", "/carrier/");
   await expect(live.getByText("Interface preview rows are not inventory.")).toBeVisible();
   await expect(live.locator(".hlb-live-row--locked").first()).toHaveAttribute("href", /\/services\/hermes-connect\/load-board\/access\//);

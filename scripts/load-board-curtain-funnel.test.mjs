@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const enhancer = read("src/components/LoadBoardCapacityEnhancer.astro");
+const baseLayout = read("src/layouts/BaseLayout.astro");
 const accessPage = read("src/pages/services/hermes-connect/load-board/access/index.astro");
 const accountApi = read("functions/api/hermes-connect/account.ts");
 const accountSwitcher = read("src/components/HermesConnectAccountSwitcher.astro");
@@ -24,6 +25,19 @@ assert.match(enhancer, /\/services\/hermes-connect\/load-board\/access\//);
 assert.match(enhancer, /Register company &amp; unlock Load Board/);
 assert.match(enhancer, /\/api\/catalog\/companies/);
 assert.match(enhancer, /Self-submitted · verification pending/);
+assert.match(baseLayout, /LoadBoardCapacityEnhancer/);
+assert.match(baseLayout, /<LoadBoardCapacityEnhancer \/>/);
+assert.match(enhancer, /const structuralCount = Math\.max\(54, 60 - Math\.min\(active\.length, 6\)\)/);
+assert.match(enhancer, /PREVIEW · NOT LIVE/);
+assert.match(enhancer, /Chicago, IL/);
+assert.match(enhancer, /Houston, TX/);
+assert.match(enhancer, /Seattle, WA/);
+for (const path of [
+  "/load-board/providers/ship-cars/", "/load-board/providers/central-dispatch/", "/load-board/providers/super-dispatch/",
+  "/load-board/providers/dat/", "/load-board/providers/truckstop/", "/load-board/providers/123loadboard/", "/load-board/providers/direct-freight/",
+  "/load-board/equipment/car-hauler/", "/load-board/equipment/dry-van/", "/load-board/equipment/reefer/", "/load-board/equipment/flatbed/",
+  "/load-board/equipment/step-deck/", "/load-board/equipment/hotshot/", "/load-board/equipment/power-only/", "/load-board/equipment/box-truck/",
+]) assert.ok(enhancer.includes(path), `Missing Load Board discovery link: ${path}`);
 
 assert.match(accessPage, /robots="noindex,nofollow"/);
 assert.match(accessPage, /One Hermes account\. One company profile\. Load Board unlocked\./);
