@@ -3,11 +3,13 @@
 
   const LOAD_BOARD_PATH = "/load-board/";
   const ACCESS_PATH = "/services/hermes-connect/load-board/access/";
+  const SOURCE_SETUP_PATH = "/services/hermes-connect/load-board/source/";
   const path = window.location.pathname;
   const isBoard = path === LOAD_BOARD_PATH;
   const isAccess = path === ACCESS_PATH;
+  const isSource = path === SOURCE_SETUP_PATH;
 
-  if (isBoard || isAccess) {
+  if (isBoard || isAccess || isSource) {
     const base = {
       audience_type: "carrier",
       page_group: "load_board",
@@ -15,7 +17,10 @@
       page_path: path,
     };
 
-    trackEvent(isBoard ? "load_board_page_view" : "load_board_access_view", base);
+    trackEvent(
+      isBoard ? "load_board_page_view" : isAccess ? "load_board_access_view" : "load_board_source_setup_view",
+      base,
+    );
 
     if (isBoard) {
       let unlockedTracked = false;
@@ -112,6 +117,19 @@
         if (companyMessage) observer.observe(companyMessage, { childList: true, subtree: true, characterData: true });
         if (authState) observer.observe(authState, { childList: true, subtree: true, characterData: true });
       }
+    }
+
+    if (isSource) {
+      window.addEventListener("hermes:load-board-source-requested", (event) => {
+        const detail = event instanceof CustomEvent && event.detail && typeof event.detail === "object"
+          ? event.detail as Record<string, unknown>
+          : {};
+        trackEvent("load_board_source_requested", {
+          ...base,
+          request_status: String(detail.status || "pending_review"),
+          source_type: String(detail.source_type || "unknown"),
+        });
+      });
     }
   }
 </script>
