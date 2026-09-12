@@ -1,0 +1,156 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Load Source Setup | Hermes Connect"
+  description="Broker, shipper and dealer companies can propose an authorized Load Board source for Hermes review. Submitting a source never activates ingestion automatically."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="lbs-source">
+    <section class="lbs-hero">
+      <div class="lbs-shell">
+        <a href="/load-board/">← Back to Load Board</a>
+        <p class="lbs-kicker">Hermes Connect · source setup</p>
+        <h1>Connect your freight source without giving Hermes a blank check.</h1>
+        <p>Broker, shipper and dealer companies can propose an API, email feed, webhook, CSV or manual source. Hermes reviews permissions before any ingestion or redistribution is enabled.</p>
+      </div>
+    </section>
+
+    <section class="lbs-body">
+      <div class="lbs-shell lbs-grid">
+        <div class="lbs-card">
+          <p class="lbs-kicker">Source application</p>
+          <h2>Propose one source</h2>
+          <p data-source-eligibility>Checking your Hermes company…</p>
+          <form data-source-form hidden>
+            <label>Source name<input name="sourceName" required minlength="2" placeholder="Example: Midwest dealer feed" /></label>
+            <label>Connection type
+              <select name="sourceType" required>
+                <option value="api">API</option>
+                <option value="email">Approved email feed</option>
+                <option value="webhook">Webhook</option>
+                <option value="csv">Controlled CSV</option>
+                <option value="manual">Manual entry</option>
+              </select>
+            </label>
+            <label>Provider / company name <span>optional</span><input name="providerName" placeholder="Provider or source owner" /></label>
+            <label>Feed reference <span>optional · no passwords/tokens</span><input name="feedReference" placeholder="API docs URL, sender mailbox, webhook documentation" /></label>
+            <label>Requested redistribution
+              <select name="redistributionPermission">
+                <option value="internal_only">Hermes internal review only</option>
+                <option value="carrier_only">Authenticated carrier companies</option>
+                <option value="public">Public visibility request</option>
+              </select>
+            </label>
+            <label>Requested contact handling
+              <select name="contactRevealPermission">
+                <option value="hidden">Keep source contact hidden</option>
+                <option value="hermes_review">Hermes reviews/contact handoff</option>
+                <option value="source_direct">Request direct source contact</option>
+              </select>
+            </label>
+            <label>Notes <span>Do not paste API keys, passwords, bearer tokens or secrets.</span><textarea name="notes" rows="5" placeholder="Describe what the feed contains, update frequency and what Hermes is allowed to show."></textarea></label>
+            <button type="submit">Send for Hermes review</button>
+          </form>
+          <p class="lbs-message" data-source-message role="status"></p>
+        </div>
+
+        <aside class="lbs-card lbs-rules">
+          <p class="lbs-kicker">Hard boundary</p>
+          <h2>A request is not a live integration.</h2>
+          <ul>
+            <li>No credentials are accepted in this form.</li>
+            <li>No ingestion starts from submission.</li>
+            <li>No load is redistributed automatically.</li>
+            <li>No provider is contacted automatically.</li>
+            <li>Hermes must separately approve source rights, connection method and visibility.</li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="lbs-shell lbs-existing">
+        <div class="lbs-card">
+          <p class="lbs-kicker">Your requests</p>
+          <h2>Source review queue</h2>
+          <div data-source-requests><p>No source requests loaded yet.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const eligibility = document.querySelector('[data-source-eligibility]');
+      const form = document.querySelector('[data-source-form]');
+      const message = document.querySelector('[data-source-message]');
+      const list = document.querySelector('[data-source-requests]');
+      const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
+      const setMessage = (text, error = false) => {
+        if (!(message instanceof HTMLElement)) return;
+        message.textContent = text || '';
+        message.dataset.error = error ? 'true' : 'false';
+      };
+      const api = async (options) => {
+        const response = await fetch('/api/load-board/source-requests', {
+          credentials: 'same-origin', cache: 'no-store', ...options,
+          headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...(options?.headers || {}) },
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw Object.assign(new Error(payload.error || payload.errors?.join(', ') || `request_${response.status}`), { payload });
+        return payload;
+      };
+      const render = (payload) => {
+        if (eligibility) {
+          eligibility.textContent = payload.eligible_to_propose_source
+            ? `${payload.company?.name || 'Your company'} can propose Load Board sources for Hermes review.`
+            : 'This workspace is available to registered broker, shipper and dealer companies.';
+        }
+        if (form instanceof HTMLElement) form.hidden = !payload.eligible_to_propose_source;
+        const requests = Array.isArray(payload.requests) ? payload.requests : [];
+        if (!(list instanceof HTMLElement)) return;
+        if (!requests.length) {
+          list.innerHTML = '<p>No source requests yet.</p>';
+          return;
+        }
+        list.innerHTML = requests.map((item) => `<article class="lbs-request"><div><strong>${esc(item.source_name)}</strong><span>${esc(item.source_type)}${item.provider_name ? ` · ${esc(item.provider_name)}` : ''}</span></div><div><b>${esc(item.status)}</b><small>Visibility request: ${esc(item.requested_redistribution_permission)} · Contact: ${esc(item.requested_contact_reveal_permission)}</small></div></article>`).join('');
+      };
+      const refresh = async () => {
+        try { render(await api({ method: 'GET' })); }
+        catch (error) {
+          if (eligibility) eligibility.textContent = error?.message === 'authentication_required' ? 'Sign in and register your company before proposing a source.' : `Could not load source setup: ${error.message}`;
+          if (form instanceof HTMLElement) form.hidden = true;
+        }
+      };
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(form instanceof HTMLFormElement)) return;
+        const data = new FormData(form);
+        const button = form.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        setMessage('Saving source request for Hermes review…');
+        try {
+          const payload = await api({ method: 'POST', body: JSON.stringify({
+            sourceName: data.get('sourceName'), sourceType: data.get('sourceType'), providerName: data.get('providerName'),
+            feedReference: data.get('feedReference'), redistributionPermission: data.get('redistributionPermission'),
+            contactRevealPermission: data.get('contactRevealPermission'), notes: data.get('notes'),
+          }) });
+          setMessage('Saved as pending review. No ingestion or redistribution has been activated.');
+          form.reset();
+          await refresh();
+          window.dispatchEvent(new CustomEvent('hermes:load-board-source-requested', { detail: { status: payload.request?.status || 'pending_review', source_type: payload.request?.source_type || 'unknown' } }));
+        } catch (error) { setMessage(`Could not save source request: ${error.message}`, true); }
+        finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
+      });
+
+      void refresh();
+    })();
+  </script>
+
+  <style>
+    .lbs-source{min-height:100vh;background:#f4f6fb;color:#0c1733}.lbs-shell{width:min(1080px,calc(100% - 32px));margin:0 auto}.lbs-hero{padding:70px 0 48px;background:linear-gradient(145deg,#071431,#142c66);color:#fff}.lbs-hero a{color:#c5d2ef;text-decoration:none;font-weight:800}.lbs-kicker{margin:24px 0 8px;color:#7088c8;text-transform:uppercase;letter-spacing:.11em;font-size:.7rem;font-weight:900}.lbs-hero .lbs-kicker{color:#a8bbed}.lbs-hero h1{max-width:850px;margin:0;font-size:clamp(2.35rem,5.8vw,5rem);line-height:.96;letter-spacing:-.045em}.lbs-hero p:last-child{max-width:780px;color:#c3cee7;line-height:1.7}.lbs-body{padding:40px 0 80px}.lbs-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.lbs-card{padding:24px;border:1px solid #dfe4ef;border-radius:20px;background:#fff;box-shadow:0 12px 32px rgba(20,31,60,.05)}.lbs-card h2{margin:0 0 10px}.lbs-card>.lbs-kicker{margin:0 0 8px}.lbs-card>p{color:#5f6c84;line-height:1.55}.lbs-card form{display:grid;gap:14px;margin-top:20px}.lbs-card label{display:grid;gap:6px;color:#35415b;font-size:.78rem;font-weight:850}.lbs-card label span{font-weight:600;color:#7b879d}.lbs-card input,.lbs-card select,.lbs-card textarea{box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cfd6e4;border-radius:10px;background:#fff;color:#0c1733;font:inherit}.lbs-card textarea{resize:vertical}.lbs-card button{padding:12px 14px;border:0;border-radius:10px;background:#0d1d48;color:#fff;font:inherit;font-weight:900;cursor:pointer}.lbs-card button:disabled{opacity:.6}.lbs-rules ul{padding-left:20px;color:#526079;line-height:1.7}.lbs-existing{margin-top:16px}.lbs-request{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid #edf0f5}.lbs-request:first-child{border-top:0}.lbs-request>div{display:grid;gap:4px}.lbs-request span,.lbs-request small{color:#78849a}.lbs-request b{text-transform:uppercase;font-size:.7rem;color:#5c6fa4}.lbs-message[data-error="true"]{color:#a12a2a}@media(max-width:760px){.lbs-grid{grid-template-columns:1fr}.lbs-request{display:grid}.lbs-hero{padding-top:48px}}
+  </style>
+</BaseLayout>
