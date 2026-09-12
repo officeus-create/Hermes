@@ -29,6 +29,8 @@ assert.match(baseLayout, /LoadBoardCapacityEnhancer/);
 assert.match(baseLayout, /<LoadBoardCapacityEnhancer \/>/);
 assert.match(enhancer, /const structuralCount = Math\.max\(54, 60 - Math\.min\(active\.length, 6\)\)/);
 assert.match(enhancer, /PREVIEW · NOT LIVE/);
+assert.match(enhancer, /renderImmediatePreview\(\)/);
+assert.match(enhancer, /rows\.innerHTML = previewRows\(60\)/);
 assert.match(enhancer, /Chicago, IL/);
 assert.match(enhancer, /Houston, TX/);
 assert.match(enhancer, /Seattle, WA/);

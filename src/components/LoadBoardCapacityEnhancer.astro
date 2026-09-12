@@ -185,6 +185,10 @@ const accessPath = "/services/hermes-connect/load-board/access/";
         const [origin, destination, equipment] = previewLaneExamples[index % previewLaneExamples.length];
         return `<a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href="${escapeHtml(registrationHref(null))}" aria-label="Preview lane ${escapeHtml(origin)} to ${escapeHtml(destination)}. Register in Hermes Connect to unlock Load Board access"><div class="hlb-live-route"><span>${escapeHtml(origin)}</span><b>→</b><span>${escapeHtml(destination)}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(equipment))}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div><div class="hlb-live-rate"><strong>🔒 Rate locked</strong><small>Register company to unlock</small></div></a>`;
       }).join('');
+      const renderImmediatePreview = () => {
+        const rows = root.querySelector("[data-live-load-rows]");
+        if (rows instanceof HTMLElement) rows.innerHTML = previewRows(60);
+      };
 
       const renderLoads = (records, accessGranted, aggregateCount) => {
         const rows = root.querySelector("[data-live-load-rows]");
@@ -254,6 +258,7 @@ const accessPath = "/services/hermes-connect/load-board/access/";
       };
 
       moveIntoCanonicalPosition();
+      renderImmediatePreview();
       void refresh();
       window.setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 30_000);
     })();
