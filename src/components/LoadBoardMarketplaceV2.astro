@@ -216,7 +216,9 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       if (saved && searchForm) {
         for (const key of ["origin", "destination", "equipment", "minRate", "sort"]) {
           const control = searchForm.elements.namedItem(key);
-          if (control && "value" in control && saved[key] != null) (control as HTMLInputElement | HTMLSelectElement).value = String(saved[key]);
+          if ((control instanceof HTMLInputElement || control instanceof HTMLSelectElement) && saved[key] != null) {
+            control.value = String(saved[key]);
+          }
         }
       }
     } catch {}

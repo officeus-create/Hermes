@@ -36,13 +36,6 @@ function boolValue(value: unknown) {
   return null;
 }
 
-function isoOrNull(value: unknown) {
-  const raw = cleanMarketText(value, 80);
-  if (!raw) return null;
-  const date = new Date(raw);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
 function marketPostRow(row: any) {
   return {
     id: row.post_id,
