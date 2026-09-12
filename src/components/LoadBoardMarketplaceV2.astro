@@ -370,13 +370,19 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
     };
     syncCounts();
     if ("MutationObserver" in window) {
-      const observer = new MutationObserver(() => {
+      const countNodes = [root.querySelector("[data-live-load-count]"), root.querySelector("[data-live-capacity-count]"), loadRows, capacityRows].filter(Boolean) as Node[];
+      let observer: MutationObserver;
+      const observeMarketplace = () => countNodes.forEach((node) => observer.observe(node, { childList: true, subtree: true, characterData: true }));
+      observer = new MutationObserver(() => {
+        // Filtering and sorting may re-append rows. Disconnect while applying our own DOM
+        // changes so the observer reacts only to upstream marketplace refreshes.
+        observer.disconnect();
         syncCounts();
         if (activeTab === "trucks") ensurePublicTruckPreview();
         if (activeTab !== "mine") applyFilters();
+        observeMarketplace();
       });
-      const countNodes = [root.querySelector("[data-live-load-count]"), root.querySelector("[data-live-capacity-count]"), loadRows, capacityRows].filter(Boolean) as Node[];
-      countNodes.forEach((node) => observer.observe(node, { childList: true, subtree: true, characterData: true }));
+      observeMarketplace();
     }
 
     void (async () => {
