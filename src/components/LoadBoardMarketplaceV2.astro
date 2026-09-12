@@ -1,0 +1,361 @@
+---
+import { ArrowLeftRight, Bookmark, PackagePlus, Search, Truck, X } from "@lucide/astro";
+const isLoadBoard = Astro.url.pathname === "/load-board/";
+---
+
+{isLoadBoard && (
+  <div class="lbv2-control-host" data-lbv2-control-host>
+    <section class="lbv2-toolbar" aria-label="Load Board workspace controls">
+      <div class="lbv2-product-row">
+        <div>
+          <p>Hermes Logistics</p>
+          <strong>Load Board</strong>
+          <span>Freight + capacity marketplace</span>
+        </div>
+        <div class="lbv2-product-actions">
+          <button type="button" data-lbv2-post="load"><PackagePlus size={16} aria-hidden="true" /> Post load</button>
+          <button type="button" data-lbv2-post="capacity"><Truck size={16} aria-hidden="true" /> Post truck</button>
+        </div>
+      </div>
+
+      <div class="lbv2-tabs" role="tablist" aria-label="Marketplace views">
+        <button type="button" role="tab" aria-selected="true" data-lbv2-tab="loads">Loads <span data-lbv2-tab-load-count>—</span></button>
+        <button type="button" role="tab" aria-selected="false" data-lbv2-tab="trucks">Trucks <span data-lbv2-tab-truck-count>—</span></button>
+        <button type="button" role="tab" aria-selected="false" data-lbv2-tab="mine">My posts <span data-lbv2-my-count>0</span></button>
+      </div>
+
+      <form class="lbv2-search" data-lbv2-search-form>
+        <label><span>Origin</span><input name="origin" placeholder="City, state or ZIP" autocomplete="off" /></label>
+        <button class="lbv2-swap" type="button" data-lbv2-swap aria-label="Swap origin and destination"><ArrowLeftRight size={17} aria-hidden="true" /></button>
+        <label><span>Destination</span><input name="destination" placeholder="Anywhere" autocomplete="off" /></label>
+        <label><span>Equipment</span><select name="equipment"><option value="">All equipment</option><option value="car hauler">Car Hauler</option><option value="dry van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step deck">Step Deck</option><option value="hotshot">Hotshot</option><option value="power only">Power Only</option><option value="box truck">Box Truck</option><option value="sprinter van">Sprinter Van</option></select></label>
+        <label><span>Min rate</span><input name="minRate" inputmode="decimal" placeholder="$0" /></label>
+        <label><span>Sort</span><select name="sort"><option value="best">Best match</option><option value="rate">Highest rate</option><option value="rpm">Highest RPM</option><option value="lane">Lane A–Z</option></select></label>
+        <button class="lbv2-search-button" type="submit"><Search size={16} aria-hidden="true" /> Search</button>
+      </form>
+
+      <div class="lbv2-quick-row">
+        <div class="lbv2-quick-filters" aria-label="Quick equipment filters">
+          <button type="button" data-lbv2-equipment="car hauler">Car Hauler</button>
+          <button type="button" data-lbv2-equipment="hotshot">Hotshot</button>
+          <button type="button" data-lbv2-equipment="dry van">Dry Van</button>
+          <button type="button" data-lbv2-equipment="reefer">Reefer</button>
+          <button type="button" data-lbv2-clear>Clear</button>
+        </div>
+        <div class="lbv2-search-tools">
+          <button type="button" data-lbv2-save><Bookmark size={15} aria-hidden="true" /> Save search</button>
+          <span data-lbv2-result-copy>Showing marketplace preview</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="lbv2-my-posts" data-lbv2-my-posts hidden aria-live="polite">
+      <div class="lbv2-my-posts-head"><div><p>Your marketplace</p><h3>My posted loads & trucks</h3></div><span data-lbv2-company-copy>Register a company to post.</span></div>
+      <div class="lbv2-my-posts-list" data-lbv2-my-posts-list><p>Sign in with a registered Hermes company to manage marketplace posts.</p></div>
+    </section>
+
+    <div class="lbv2-toast" data-lbv2-toast role="status" hidden></div>
+
+    <div class="lbv2-modal" data-lbv2-modal hidden>
+      <button class="lbv2-modal-backdrop" type="button" data-lbv2-close aria-label="Close posting form"></button>
+      <section class="lbv2-modal-card" role="dialog" aria-modal="true" aria-labelledby="lbv2-modal-title">
+        <div class="lbv2-modal-head"><div><p data-lbv2-modal-kicker>Marketplace post</p><h3 id="lbv2-modal-title" data-lbv2-modal-title>Post a load</h3></div><button type="button" data-lbv2-close aria-label="Close"><X size={18} aria-hidden="true" /></button></div>
+        <form class="lbv2-post-form" data-lbv2-post-form>
+          <input type="hidden" name="type" value="load" />
+          <div class="lbv2-form-grid">
+            <label><span>Origin *</span><input name="origin" required placeholder="Chicago, IL" /></label>
+            <label data-lbv2-destination-field><span>Destination *</span><input name="destination" required placeholder="Dallas, TX" /></label>
+            <label><span>Equipment *</span><select name="equipment" required><option value="car_hauler">Car Hauler</option><option value="dry_van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step_deck">Step Deck</option><option value="hotshot">Hotshot</option><option value="power_only">Power Only</option><option value="box_truck">Box Truck</option><option value="sprinter_van">Sprinter Van</option></select></label>
+            <label><span data-lbv2-pickup-label>Pickup / ready *</span><input name="pickup_window" required placeholder="Today · 2 PM–6 PM" /></label>
+            <label data-lbv2-load-only><span>Load type</span><select name="load_type"><option value="full">Full</option><option value="partial">Partial</option><option value="both">Full or partial</option></select></label>
+            <label data-lbv2-load-only><span>Rate offered</span><input name="rate_amount" type="number" min="0" step="1" placeholder="1800" /></label>
+            <label><span>Distance, mi</span><input name="distance_miles" type="number" min="0" step="1" placeholder="750" /></label>
+            <label><span data-lbv2-deadhead-label>Known deadhead, mi</span><input name="deadhead_miles" type="number" min="0" step="1" placeholder="35" /></label>
+            <label><span data-lbv2-units-label>Units</span><input name="vehicle_count" type="number" min="1" max="100" value="1" /></label>
+            <label data-lbv2-load-only><span>Weight, lb</span><input name="weight_lbs" type="number" min="0" step="100" placeholder="42000" /></label>
+            <label data-lbv2-load-only><span>Length, ft</span><input name="length_feet" type="number" min="0" step="1" placeholder="53" /></label>
+            <label data-lbv2-load-only><span>Payment terms</span><input name="payment_terms" placeholder="Net 30 / Quick Pay" /></label>
+            <label><span>Expires</span><select name="expires_in_hours"><option value="12">12 hours</option><option value="24" selected>24 hours</option><option value="48">48 hours</option><option value="72">72 hours</option><option value="168">7 days</option></select></label>
+          </div>
+          <label class="lbv2-notes"><span>Notes</span><textarea name="notes" rows="3" maxlength="360" placeholder="Appointment, vehicle condition, loading requirements, preferred lane…"></textarea></label>
+          <label class="lbv2-attest"><input name="rights_attested" type="checkbox" required /><span>I confirm my company is authorized to post this freight/capacity and that the information is current. Hermes keeps contact details hidden; this post does not create a booking.</span></label>
+          <div class="lbv2-form-footer"><span data-lbv2-form-status></span><button type="submit">Publish to Hermes marketplace</button></div>
+        </form>
+      </section>
+    </div>
+  </div>
+)}
+
+{isLoadBoard && (
+<script>
+  const ACCESS_PATH = "/services/hermes-connect/load-board/access/";
+  const root = document.querySelector<HTMLElement>("[data-hlb-live-marketplace]");
+  const host = document.querySelector<HTMLElement>("[data-lbv2-control-host]");
+
+  if (root && host) {
+    const shell = root.querySelector<HTMLElement>(".hlb-live-shell");
+    const head = root.querySelector<HTMLElement>(".hlb-live-head");
+    if (shell && head) head.insertAdjacentElement("afterend", host);
+
+    const heroTitle = document.querySelector<HTMLElement>(".load-board-hero h1");
+    const heroCopy = document.querySelector<HTMLElement>(".load-board-hero h1 + p");
+    const safety = document.querySelector<HTMLElement>(".load-board-safety strong");
+    const safetyCopy = document.querySelector<HTMLElement>(".load-board-safety span");
+    if (heroTitle) heroTitle.textContent = "One board for freight and truck capacity.";
+    if (heroCopy) heroCopy.textContent = "Search loads, post freight, post available trucks, compare lane economics, and move from discovery to a qualified Hermes review without switching systems.";
+    if (safety) safety.textContent = "Marketplace truth by design";
+    if (safetyCopy) safetyCopy.textContent = "Live counts come from active records. Preview rows are labeled. Company posts require rights attestation and never create an automatic booking.";
+
+    const headTitle = root.querySelector<HTMLElement>(".hlb-live-head h2");
+    const headCopy = root.querySelector<HTMLElement>(".hlb-live-head h2 + p");
+    if (headTitle) headTitle.textContent = "Find freight. Post loads. Post trucks.";
+    if (headCopy) headCopy.textContent = "Fast filters, real marketplace counts, carrier capacity and company posting live in one Hermes workspace.";
+
+    const searchForm = host.querySelector<HTMLFormElement>("[data-lbv2-search-form]");
+    const tabs = [...host.querySelectorAll<HTMLButtonElement>("[data-lbv2-tab]")];
+    const myPosts = host.querySelector<HTMLElement>("[data-lbv2-my-posts]");
+    const myPostsList = host.querySelector<HTMLElement>("[data-lbv2-my-posts-list]");
+    const myCount = host.querySelector<HTMLElement>("[data-lbv2-my-count]");
+    const companyCopy = host.querySelector<HTMLElement>("[data-lbv2-company-copy]");
+    const resultCopy = host.querySelector<HTMLElement>("[data-lbv2-result-copy]");
+    const modal = host.querySelector<HTMLElement>("[data-lbv2-modal]");
+    const postForm = host.querySelector<HTMLFormElement>("[data-lbv2-post-form]");
+    const toast = host.querySelector<HTMLElement>("[data-lbv2-toast]");
+    const loadGrid = root.querySelector<HTMLElement>(".hlb-live-grid");
+    const capacityPanel = root.querySelector<HTMLElement>(".hlb-capacity-panel");
+    const loadRows = root.querySelector<HTMLElement>("[data-live-load-rows]");
+    const capacityRows = root.querySelector<HTMLElement>("[data-live-capacity-rows]");
+
+    let companyState: any = null;
+    let ownPosts: any[] = [];
+    let activeTab = "loads";
+
+    const showToast = (message: string, error = false) => {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.hidden = false;
+      toast.dataset.error = error ? "true" : "false";
+      window.setTimeout(() => { toast.hidden = true; }, 4000);
+    };
+
+    const filters = () => {
+      if (!searchForm) return { origin: "", destination: "", equipment: "", minRate: 0, sort: "best" };
+      const data = new FormData(searchForm);
+      return {
+        origin: String(data.get("origin") || "").trim().toLowerCase(),
+        destination: String(data.get("destination") || "").trim().toLowerCase(),
+        equipment: String(data.get("equipment") || "").trim().toLowerCase(),
+        minRate: Number(String(data.get("minRate") || "").replace(/[^0-9.]/g, "")) || 0,
+        sort: String(data.get("sort") || "best"),
+      };
+    };
+
+    const rowRate = (row: HTMLElement) => {
+      const text = row.querySelector(".hlb-live-rate strong")?.textContent || "";
+      const match = text.replace(/,/g, "").match(/\$([0-9.]+)/);
+      return match ? Number(match[1]) : 0;
+    };
+    const rowRpm = (row: HTMLElement) => {
+      const text = row.querySelector(".hlb-live-rate small")?.textContent || "";
+      const match = text.match(/([0-9.]+)\s*RPM/i);
+      return match ? Number(match[1]) : 0;
+    };
+
+    const applyFilters = () => {
+      const state = filters();
+      const container = activeTab === "trucks" ? capacityRows : loadRows;
+      if (!container) return;
+      const rows = [...container.querySelectorAll<HTMLElement>(".hlb-live-row")];
+      let visible = 0;
+      rows.forEach((row) => {
+        const route = row.querySelectorAll<HTMLElement>(".hlb-live-route span");
+        const origin = (route[0]?.textContent || "").toLowerCase();
+        const destination = (route[1]?.textContent || "").toLowerCase();
+        const text = (row.textContent || "").toLowerCase();
+        const matches = (!state.origin || origin.includes(state.origin))
+          && (!state.destination || destination.includes(state.destination))
+          && (!state.equipment || text.includes(state.equipment))
+          && (!state.minRate || rowRate(row) >= state.minRate || row.classList.contains("hlb-structural-preview"));
+        row.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      const ordered = rows.filter((row) => !row.hidden);
+      if (state.sort === "rate") ordered.sort((a, b) => rowRate(b) - rowRate(a));
+      if (state.sort === "rpm") ordered.sort((a, b) => rowRpm(b) - rowRpm(a));
+      if (state.sort === "lane") ordered.sort((a, b) => (a.textContent || "").localeCompare(b.textContent || ""));
+      ordered.forEach((row) => container.appendChild(row));
+      if (resultCopy) resultCopy.textContent = `${visible} ${activeTab === "trucks" ? "truck" : "load"} rows match this view`;
+    };
+
+    searchForm?.addEventListener("submit", (event) => { event.preventDefault(); applyFilters(); });
+    searchForm?.addEventListener("input", () => applyFilters());
+    searchForm?.addEventListener("change", () => applyFilters());
+
+    host.querySelector("[data-lbv2-swap]")?.addEventListener("click", () => {
+      if (!searchForm) return;
+      const origin = searchForm.elements.namedItem("origin");
+      const destination = searchForm.elements.namedItem("destination");
+      if (!(origin instanceof HTMLInputElement) || !(destination instanceof HTMLInputElement)) return;
+      [origin.value, destination.value] = [destination.value, origin.value];
+      applyFilters();
+    });
+
+    host.querySelectorAll<HTMLButtonElement>("[data-lbv2-equipment]").forEach((button) => button.addEventListener("click", () => {
+      const select = searchForm?.elements.namedItem("equipment");
+      if (select instanceof HTMLSelectElement) select.value = button.dataset.lbv2Equipment || "";
+      applyFilters();
+    }));
+    host.querySelector("[data-lbv2-clear]")?.addEventListener("click", () => { searchForm?.reset(); applyFilters(); });
+    host.querySelector("[data-lbv2-save]")?.addEventListener("click", () => {
+      try { localStorage.setItem("hermes-load-board-saved-search", JSON.stringify(filters())); showToast("Search saved on this device."); }
+      catch { showToast("Could not save this search.", true); }
+    });
+
+    try {
+      const saved = JSON.parse(localStorage.getItem("hermes-load-board-saved-search") || "null");
+      if (saved && searchForm) {
+        for (const key of ["origin", "destination", "equipment", "minRate", "sort"]) {
+          const control = searchForm.elements.namedItem(key);
+          if (control && "value" in control && saved[key] != null) (control as HTMLInputElement | HTMLSelectElement).value = String(saved[key]);
+        }
+      }
+    } catch {}
+
+    const renderOwnPosts = () => {
+      if (myCount) myCount.textContent = String(ownPosts.filter((post) => post.status === "active").length);
+      if (!myPostsList) return;
+      if (!companyState) {
+        myPostsList.innerHTML = `<div class="lbv2-empty"><strong>Company profile required</strong><span>Create or sign in to Hermes, register the company you operate with, then post freight or truck capacity.</span><a href="${ACCESS_PATH}?source=my-posts">Register company</a></div>`;
+        return;
+      }
+      if (!ownPosts.length) {
+        myPostsList.innerHTML = `<div class="lbv2-empty"><strong>No marketplace posts yet</strong><span>Use Post load or Post truck above. Posts appear here immediately and expire automatically.</span></div>`;
+        return;
+      }
+      myPostsList.innerHTML = ownPosts.map((post) => `<article class="lbv2-post-card" data-post-id="${post.id}"><div><span>${post.type === "load" ? "LOAD" : "TRUCK"}</span><strong>${post.origin} → ${post.destination || "Open destination"}</strong><small>${String(post.equipment || "").replaceAll("_", " ")} · ${post.pickup_window || post.availability || "Current"}</small></div><div><b>${post.rate_amount ? `$${Number(post.rate_amount).toLocaleString("en-US")}` : post.type === "load" ? "Rate on request" : "Capacity"}</b><small>${post.status} · expires ${new Date(post.expires_at).toLocaleString()}</small>${post.status === "active" ? `<button type="button" data-archive-post="${post.id}">Archive</button>` : ""}</div></article>`).join("");
+      myPostsList.querySelectorAll<HTMLButtonElement>("[data-archive-post]").forEach((button) => button.addEventListener("click", async () => {
+        button.disabled = true;
+        const response = await fetch(`/api/load-board/posts/${encodeURIComponent(button.dataset.archivePost || "")}`, { method: "DELETE", headers: { Accept: "application/json" }, credentials: "same-origin" });
+        if (!response.ok) { button.disabled = false; showToast("Could not archive this post.", true); return; }
+        showToast("Marketplace post archived.");
+        await loadCompanyState();
+      }));
+    };
+
+    const loadCompanyState = async () => {
+      try {
+        const response = await fetch("/api/load-board/posts", { headers: { Accept: "application/json" }, credentials: "same-origin", cache: "no-store" });
+        if (!response.ok) throw new Error(String(response.status));
+        const payload = await response.json();
+        companyState = payload.company || null;
+        ownPosts = Array.isArray(payload.posts) ? payload.posts : [];
+        if (companyCopy && companyState) companyCopy.textContent = `${companyState.name} · ${String(companyState.company_type || "company").replaceAll("_", " ")}`;
+      } catch {
+        companyState = null;
+        ownPosts = [];
+        if (companyCopy) companyCopy.textContent = "Register a company to post.";
+      }
+      renderOwnPosts();
+    };
+
+    const setTab = (tab: string) => {
+      activeTab = tab;
+      tabs.forEach((button) => button.setAttribute("aria-selected", String(button.dataset.lbv2Tab === tab)));
+      if (loadGrid) loadGrid.hidden = tab !== "loads";
+      if (capacityPanel) capacityPanel.hidden = tab !== "trucks";
+      if (myPosts) myPosts.hidden = tab !== "mine";
+      if (tab === "mine") void loadCompanyState();
+      else applyFilters();
+    };
+    tabs.forEach((button) => button.addEventListener("click", () => setTab(button.dataset.lbv2Tab || "loads")));
+
+    const openPost = (type: "load" | "capacity") => {
+      if (!companyState) { window.location.assign(`${ACCESS_PATH}?source=${type === "load" ? "post-load" : "post-truck"}`); return; }
+      const allowed = type === "load" ? companyState.can_post_load : companyState.can_post_truck;
+      if (!allowed) {
+        showToast(type === "load" ? "Loads can be posted by broker, shipper or dealer companies." : "Trucks can be posted by carrier, owner-operator, fleet or dispatcher companies.", true);
+        return;
+      }
+      if (!modal || !postForm) return;
+      postForm.reset();
+      const typeInput = postForm.elements.namedItem("type");
+      if (typeInput instanceof HTMLInputElement) typeInput.value = type;
+      const title = host.querySelector<HTMLElement>("[data-lbv2-modal-title]");
+      const kicker = host.querySelector<HTMLElement>("[data-lbv2-modal-kicker]");
+      const destination = postForm.elements.namedItem("destination");
+      host.querySelectorAll<HTMLElement>("[data-lbv2-load-only]").forEach((node) => node.hidden = type !== "load");
+      if (destination instanceof HTMLInputElement) destination.required = type === "load";
+      if (title) title.textContent = type === "load" ? "Post a load" : "Post an available truck";
+      if (kicker) kicker.textContent = type === "load" ? "Freight listing" : "Carrier capacity";
+      const pickup = host.querySelector<HTMLElement>("[data-lbv2-pickup-label]");
+      const deadhead = host.querySelector<HTMLElement>("[data-lbv2-deadhead-label]");
+      const units = host.querySelector<HTMLElement>("[data-lbv2-units-label]");
+      if (pickup) pickup.textContent = type === "load" ? "Pickup / ready *" : "Available from *";
+      if (deadhead) deadhead.textContent = type === "load" ? "Known deadhead, mi" : "Pickup radius, mi";
+      if (units) units.textContent = type === "load" ? "Units" : "Truck capacity / units";
+      modal.hidden = false;
+      document.documentElement.classList.add("lbv2-modal-open");
+      postForm.querySelector<HTMLInputElement>('input[name="origin"]')?.focus();
+    };
+
+    host.querySelectorAll<HTMLButtonElement>("[data-lbv2-post]").forEach((button) => button.addEventListener("click", () => openPost(button.dataset.lbv2Post === "capacity" ? "capacity" : "load")));
+    host.querySelectorAll("[data-lbv2-close]").forEach((button) => button.addEventListener("click", () => { if (modal) modal.hidden = true; document.documentElement.classList.remove("lbv2-modal-open"); }));
+
+    postForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!(postForm instanceof HTMLFormElement)) return;
+      const data = new FormData(postForm);
+      const submit = postForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const status = host.querySelector<HTMLElement>("[data-lbv2-form-status]");
+      if (submit) submit.disabled = true;
+      if (status) status.textContent = "Publishing…";
+      const payload: Record<string, unknown> = Object.fromEntries(data.entries());
+      payload.rights_attested = data.get("rights_attested") === "on";
+      for (const key of ["rate_amount", "distance_miles", "deadhead_miles", "vehicle_count", "weight_lbs", "length_feet", "expires_in_hours"]) {
+        if (payload[key] === "") delete payload[key];
+        else if (payload[key] != null) payload[key] = Number(payload[key]);
+      }
+      try {
+        const response = await fetch("/api/load-board/posts", { method: "POST", credentials: "same-origin", headers: { Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.error || `request_${response.status}`);
+        if (modal) modal.hidden = true;
+        document.documentElement.classList.remove("lbv2-modal-open");
+        showToast(payload.type === "load" ? "Load published to registered Hermes marketplace users." : "Truck capacity published to registered Hermes marketplace users.");
+        await loadCompanyState();
+        setTab("mine");
+      } catch (error) {
+        if (status) status.textContent = error instanceof Error ? error.message.replaceAll("_", " ") : "Could not publish";
+      } finally { if (submit) submit.disabled = false; }
+    });
+
+    const syncCounts = () => {
+      const loadCount = root.querySelector("[data-live-load-count]")?.textContent || "—";
+      const truckCount = root.querySelector("[data-live-capacity-count]")?.textContent || "—";
+      const loadTab = host.querySelector<HTMLElement>("[data-lbv2-tab-load-count]");
+      const truckTab = host.querySelector<HTMLElement>("[data-lbv2-tab-truck-count]");
+      if (loadTab) loadTab.textContent = loadCount;
+      if (truckTab) truckTab.textContent = truckCount;
+    };
+    syncCounts();
+    if ("MutationObserver" in window) {
+      const observer = new MutationObserver(() => { syncCounts(); if (activeTab !== "mine") applyFilters(); });
+      const countNodes = [root.querySelector("[data-live-load-count]"), root.querySelector("[data-live-capacity-count]"), loadRows, capacityRows].filter(Boolean) as Node[];
+      countNodes.forEach((node) => observer.observe(node, { childList: true, subtree: true, characterData: true }));
+    }
+
+    void loadCompanyState();
+    setTab("loads");
+  }
+</script>
+)}
+
+{isLoadBoard && (
+<style is:global>
+  html.lbv2-modal-open{overflow:hidden}.load-board-page{background:var(--hermes-pearl);color:var(--hermes-ink)}.load-board-page .load-board-hero{background:radial-gradient(circle at 88% 4%,rgba(124,92,255,.09),transparent 34rem),radial-gradient(circle at 10% 30%,rgba(90,200,250,.08),transparent 28rem),var(--hermes-pearl);color:var(--hermes-ink);padding:clamp(3rem,6vw,5.5rem) 0;border-bottom:1px solid var(--hermes-line-light-soft)}.load-board-page .load-board-hero .eyebrow{color:var(--hermes-violet)}.load-board-page .load-board-hero h1{max-width:13ch;font-size:clamp(3rem,7vw,6.4rem);line-height:.91;letter-spacing:-.055em;color:var(--hermes-ink)}.load-board-page .load-board-hero p{color:var(--hermes-muted);max-width:820px;font-size:1.02rem}.load-board-page .load-board-safety{color:var(--hermes-ink);border:1px solid var(--hermes-line-light);background:rgba(255,255,255,.78);box-shadow:var(--hermes-shadow-card);backdrop-filter:blur(14px)}.load-board-page .load-board-safety svg{color:var(--hermes-violet)}.load-board-page .load-board-safety span{color:var(--hermes-muted)}
+  .load-board-page .load-board-role-router,.load-board-page .available-loads-preview,.load-board-page .carrier-workspace-preview,.load-board-page section.section[aria-labelledby="load-evaluation-title"]{display:none}
+  .hlb-live-marketplace{background:var(--hermes-pearl)!important;color:var(--hermes-ink)!important;padding:38px 0 70px!important}.hlb-live-shell{width:min(1360px,calc(100% - 40px))!important}.hlb-live-head{align-items:center!important;margin-bottom:.9rem!important}.hlb-live-head h2{font-size:clamp(2rem,3.6vw,3.8rem)!important;max-width:16ch!important;color:var(--hermes-ink)!important}.hlb-live-head>div>p:last-child{color:var(--hermes-muted)!important;max-width:760px!important}.hlb-live-eyebrow{color:var(--hermes-violet)!important}.hlb-live-actions a{border:1px solid var(--hermes-line-light)!important;color:var(--hermes-ink)!important;background:var(--hermes-paper)!important;border-radius:var(--hermes-radius-control)!important}.hlb-live-actions .hlb-live-primary{background:var(--hermes-obsidian)!important;color:#fff!important;border-color:var(--hermes-obsidian)!important}.hlb-access-strip{border:1px solid var(--hermes-line-light)!important;background:rgba(255,255,255,.7)!important;color:var(--hermes-muted)!important;border-radius:14px!important}.hlb-access-strip strong{color:var(--hermes-ink)!important}.hlb-access-dot{background:var(--hermes-violet)!important;box-shadow:0 0 0 4px rgba(124,92,255,.1)!important}.is-unlocked .hlb-access-dot{background:var(--hermes-success)!important;box-shadow:0 0 0 4px rgba(40,180,135,.1)!important}.hlb-live-stats{grid-template-columns:repeat(3,1fr)!important;gap:10px!important}.hlb-live-stats>div{padding:14px 16px!important;border:1px solid var(--hermes-line-light)!important;border-radius:16px!important;background:var(--hermes-paper)!important;box-shadow:none!important}.hlb-stat-primary{background:linear-gradient(135deg,rgba(124,92,255,.075),#fff)!important}.hlb-live-stats strong{color:var(--hermes-ink)!important;font-size:1.75rem!important}.hlb-live-stats span{color:var(--hermes-ink)!important}.hlb-live-stats small{color:var(--hermes-muted)!important}.hlb-live-grid{grid-template-columns:minmax(0,1fr) 330px!important}.hlb-live-panel{border:1px solid var(--hermes-line-light)!important;border-radius:18px!important;background:var(--hermes-paper)!important;box-shadow:0 16px 44px rgba(20,20,31,.045)!important}.hlb-live-panel-head{border-bottom:1px solid var(--hermes-line-light-soft)!important}.hlb-live-panel-head h3{color:var(--hermes-ink)!important}.hlb-live-badge{background:rgba(124,92,255,.08)!important;color:var(--hermes-violet)!important}.hlb-live-badge--capacity{background:rgba(11,13,18,.06)!important;color:var(--hermes-graphite)!important}.hlb-table-head{background:#faf9f7!important;color:#8b8e98!important;border-bottom:1px solid var(--hermes-line-light-soft)}.hlb-live-rows--scroll{max-height:690px!important;scrollbar-color:#c7c4bd #f4f3ef!important}.hlb-live-row{border-top:1px solid var(--hermes-line-light-soft)!important;color:var(--hermes-ink)!important;background:#fff!important}.hlb-live-row--locked:hover{background:#faf9ff!important;border-color:rgba(124,92,255,.16)!important}.hlb-live-route b{color:#a0a4ae!important}.hlb-live-meta{color:var(--hermes-muted)!important}.hlb-live-rate strong{color:var(--hermes-ink)!important}.hlb-live-rate small{color:#8a8f99!important}.hlb-structural-preview{opacity:1!important}.hlb-structural-preview:nth-child(even){background:#fcfbf9!important}.hlb-preview-note{background:#faf9f7!important;border-top:1px solid var(--hermes-line-light-soft)!important;color:var(--hermes-muted)!important}.hlb-preview-note strong{color:var(--hermes-ink)!important}.hlb-live-empty{color:var(--hermes-muted)!important}.hlb-live-empty strong{color:var(--hermes-ink)!important}.hlb-curtain-card{border:1px solid #161922!important;background:radial-gradient(circle at 90% 5%,rgba(124,92,255,.24),transparent 18rem),var(--hermes-obsidian)!important;color:#fff!important;box-shadow:0 22px 60px rgba(11,13,18,.14)!important}.hlb-curtain-card .hlb-live-eyebrow{color:#b8aaff!important}.hlb-curtain-card h3,.hlb-curtain-card li strong{color:#fff!important}.hlb-curtain-card li small{color:var(--hermes-muted-dark)!important}.hlb-curtain-card li>b{background:rgba(255,255,255,.08)!important;color:#d6d0ff!important}.hlb-curtain-cta{background:#fff!important;color:var(--hermes-ink)!important}.hlb-curtain-catalog{color:#c9c0ff!important}.hlb-capacity-panel{margin-top:12px!important}.hlb-discovery-hub>div{border:1px solid var(--hermes-line-light)!important;background:var(--hermes-paper)!important}.hlb-discovery-hub strong{color:var(--hermes-ink)!important}.hlb-discovery-hub a{color:#5e4dd0!important}.hlb-live-truth{border:1px solid rgba(40,180,135,.18)!important;background:rgba(40,180,135,.055)!important;color:var(--hermes-muted)!important}.hlb-live-truth strong{color:#16815f!important}
+  .lbv2-control-host{display:block}.lbv2-toolbar{margin:0 0 12px;border:1px solid var(--hermes-line-light);border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 12px 34px rgba(20,20,31,.045);overflow:hidden}.lbv2-product-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px;border-bottom:1px solid var(--hermes-line-light-soft)}.lbv2-product-row>div:first-child{display:flex;align-items:baseline;gap:9px;min-width:0}.lbv2-product-row p{margin:0;color:var(--hermes-violet);font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.lbv2-product-row strong{font-size:.92rem}.lbv2-product-row span{color:var(--hermes-muted);font-size:.72rem}.lbv2-product-actions{display:flex;gap:7px}.lbv2-product-actions button,.lbv2-search-tools button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hermes-line-light);border-radius:10px;background:#fff;color:var(--hermes-ink);padding:8px 10px;font:inherit;font-size:.7rem;font-weight:850;cursor:pointer}.lbv2-product-actions button:first-child{background:var(--hermes-obsidian);color:#fff;border-color:var(--hermes-obsidian)}.lbv2-tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--hermes-line-light-soft);gap:18px}.lbv2-tabs button{position:relative;border:0;background:transparent;padding:12px 2px 11px;color:#777c87;font:inherit;font-size:.72rem;font-weight:850;cursor:pointer}.lbv2-tabs button span{display:inline-grid;place-items:center;min-width:20px;height:19px;margin-left:4px;padding:0 5px;border-radius:999px;background:#f0efec;color:#555b66;font-size:.61rem}.lbv2-tabs button[aria-selected="true"]{color:var(--hermes-ink)}.lbv2-tabs button[aria-selected="true"]:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--hermes-violet)}.lbv2-search{display:grid;grid-template-columns:minmax(140px,1.15fr) 34px minmax(140px,1.15fr) minmax(130px,.85fr) minmax(90px,.55fr) minmax(120px,.72fr) auto;gap:8px;align-items:end;padding:13px 14px}.lbv2-search label{display:grid;gap:4px;min-width:0}.lbv2-search label span,.lbv2-notes>span{color:#7d828c;font-size:.6rem;font-weight:850;text-transform:uppercase;letter-spacing:.055em}.lbv2-search input,.lbv2-search select,.lbv2-post-form input,.lbv2-post-form select,.lbv2-post-form textarea{width:100%;box-sizing:border-box;border:1px solid #d9d7d1;border-radius:10px;background:#fff;color:var(--hermes-ink);padding:9px 10px;font:inherit;font-size:.72rem;outline:none;transition:border-color .15s,box-shadow .15s}.lbv2-search input:focus,.lbv2-search select:focus,.lbv2-post-form input:focus,.lbv2-post-form select:focus,.lbv2-post-form textarea:focus{border-color:rgba(124,92,255,.55);box-shadow:0 0 0 3px rgba(124,92,255,.08)}.lbv2-swap{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--hermes-line-light);border-radius:10px;background:#faf9f7;color:#696e79;cursor:pointer}.lbv2-search-button{height:35px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;background:var(--hermes-violet);color:#fff;padding:0 14px;font:inherit;font-size:.7rem;font-weight:900;cursor:pointer}.lbv2-quick-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 14px 12px;border-top:1px solid var(--hermes-line-light-soft)}.lbv2-quick-filters,.lbv2-search-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.lbv2-quick-filters button{border:1px solid #e1dfda;border-radius:999px;background:#faf9f7;color:#5d626d;padding:6px 9px;font:inherit;font-size:.63rem;font-weight:800;cursor:pointer}.lbv2-quick-filters button:hover{border-color:rgba(124,92,255,.28);color:var(--hermes-violet)}.lbv2-search-tools span{color:#898e98;font-size:.63rem}.lbv2-my-posts{margin:0 0 12px;border:1px solid var(--hermes-line-light);border-radius:18px;background:#fff;box-shadow:var(--hermes-shadow-card);overflow:hidden}.lbv2-my-posts-head{display:flex;align-items:end;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid var(--hermes-line-light-soft)}.lbv2-my-posts-head p{margin:0;color:var(--hermes-violet);font-size:.61rem;font-weight:900;text-transform:uppercase}.lbv2-my-posts-head h3{margin:3px 0 0}.lbv2-my-posts-head>span{color:var(--hermes-muted);font-size:.68rem}.lbv2-my-posts-list{display:grid}.lbv2-post-card{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:14px 18px;border-top:1px solid var(--hermes-line-light-soft)}.lbv2-post-card:first-child{border-top:0}.lbv2-post-card>div{display:grid;gap:3px}.lbv2-post-card>div:last-child{text-align:right}.lbv2-post-card span{color:var(--hermes-violet);font-size:.57rem;font-weight:900;letter-spacing:.06em}.lbv2-post-card strong{font-size:.82rem}.lbv2-post-card small{color:var(--hermes-muted);font-size:.64rem}.lbv2-post-card button{justify-self:end;margin-top:3px;border:1px solid var(--hermes-line-light);border-radius:8px;background:#fff;padding:5px 8px;font:inherit;font-size:.6rem;font-weight:800;cursor:pointer}.lbv2-empty{display:grid;gap:6px;padding:22px 18px;color:var(--hermes-muted);font-size:.72rem}.lbv2-empty strong{color:var(--hermes-ink);font-size:.9rem}.lbv2-empty a{width:max-content;color:var(--hermes-violet);font-weight:850}.lbv2-toast{position:fixed;right:22px;bottom:22px;z-index:10020;max-width:min(390px,calc(100vw - 44px));padding:12px 15px;border:1px solid rgba(40,180,135,.22);border-radius:12px;background:#fff;color:var(--hermes-ink);box-shadow:0 18px 60px rgba(11,13,18,.16);font-size:.72rem;font-weight:800}.lbv2-toast[data-error="true"]{border-color:rgba(216,75,95,.28);color:#a32f42}.lbv2-modal[hidden]{display:none}.lbv2-modal{position:fixed;inset:0;z-index:10010;display:grid;place-items:center;padding:20px}.lbv2-modal-backdrop{position:absolute;inset:0;border:0;background:rgba(11,13,18,.52);backdrop-filter:blur(6px)}.lbv2-modal-card{position:relative;width:min(820px,100%);max-height:min(88vh,900px);overflow:auto;border:1px solid rgba(255,255,255,.45);border-radius:24px;background:var(--hermes-paper);box-shadow:0 40px 120px rgba(11,13,18,.28)}.lbv2-modal-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid var(--hermes-line-light-soft)}.lbv2-modal-head p{margin:0;color:var(--hermes-violet);font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em}.lbv2-modal-head h3{margin:4px 0 0;font-size:1.45rem}.lbv2-modal-head button{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--hermes-line-light);border-radius:10px;background:#fff;cursor:pointer}.lbv2-post-form{padding:20px 22px 22px}.lbv2-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.lbv2-post-form label{display:grid;gap:5px}.lbv2-post-form label>span{color:#686e79;font-size:.64rem;font-weight:800}.lbv2-notes{margin-top:12px}.lbv2-attest{grid-template-columns:auto 1fr!important;align-items:start!important;gap:9px!important;margin-top:14px;padding:12px;border:1px solid var(--hermes-line-light-soft);border-radius:12px;background:#faf9f7}.lbv2-attest input{width:auto!important;margin-top:2px}.lbv2-attest span{color:var(--hermes-muted)!important;line-height:1.45}.lbv2-form-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}.lbv2-form-footer span{color:#a32f42;font-size:.66rem}.lbv2-form-footer button{border:0;border-radius:11px;background:var(--hermes-obsidian);color:#fff;padding:10px 14px;font:inherit;font-size:.72rem;font-weight:900;cursor:pointer}.lbv2-form-footer button:disabled{opacity:.55}
+  @media(max-width:1100px){.lbv2-search{grid-template-columns:1fr 34px 1fr 1fr}.lbv2-search label:nth-of-type(4),.lbv2-search label:nth-of-type(5),.lbv2-search-button{grid-column:auto}.lbv2-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.hlb-live-shell{width:min(100% - 22px,1360px)!important}.lbv2-product-row{align-items:flex-start;flex-direction:column}.lbv2-product-actions{width:100%}.lbv2-product-actions button{flex:1;justify-content:center}.lbv2-product-row>div:first-child{flex-wrap:wrap}.lbv2-product-row span{width:100%}.lbv2-tabs{overflow:auto}.lbv2-search{grid-template-columns:1fr 34px 1fr}.lbv2-search label:nth-of-type(n+3),.lbv2-search-button{grid-column:span 1}.lbv2-quick-row{align-items:flex-start;flex-direction:column}.hlb-live-stats{grid-template-columns:1fr!important}.lbv2-form-grid{grid-template-columns:1fr}.lbv2-post-card{grid-template-columns:1fr}.lbv2-post-card>div:last-child{text-align:left}.lbv2-post-card button{justify-self:start}.lbv2-modal{padding:10px}.lbv2-modal-card{border-radius:18px;max-height:94vh}.load-board-page .load-board-hero h1{font-size:clamp(2.8rem,14vw,4.8rem)}}
+</style>
+)}
