@@ -346,8 +346,12 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       countNodes.forEach((node) => observer.observe(node, { childList: true, subtree: true, characterData: true }));
     }
 
-    void loadCompanyState();
-    setTab("loads");
+    void (async () => {
+      await loadCompanyState();
+      setTab("loads");
+      const postIntent = new URLSearchParams(window.location.search).get("post");
+      if (postIntent === "load" || postIntent === "capacity") openPost(postIntent);
+    })();
   }
 </script>
 )}
