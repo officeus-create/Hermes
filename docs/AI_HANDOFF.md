@@ -1002,3 +1002,17 @@ entries — append only.
 - Privacy/architecture: no credentials, real customer fixtures, raw contacts, extra provider connections or auto-booking; existing identity/company/D1 primitives retained.
 - Rollback: revert this bounded commit on the same branch. Primary checkout untouched.
 - Next: exact-head release checks, authorized merge/deploy, then actual canonical-domain curtain, API, registration and company access readback. Real feed access remains conditional on independently established source rights.
+
+
+## 2026-09-12 — Load Board production curtain and local assistants receipt
+
+Owner: current Load Board workstream; bounded closeout authorized by the owner.
+
+- PR #1252 merged at `2d589dad0fe8601e5ced1371d883281dd8515fc6`; all eight checks were successful on exact PR head `c2b23afe`.
+- Canonical production `/load-board/` read in a real Chromium browser: HTTP 200, 60 clearly labeled structural preview rows, 0 real active loads, 0 available trucks. Preview rows do not inflate inventory.
+- Clicking a preview opens Hermes Connect access with `source=load-board-curtain`; registration form is visible. `?mode=login` shows login and hides registration. Mobile viewport 390px: 60 preview rows, no horizontal overflow.
+- All 15 linked provider/equipment guides return HTTP 200, self-canonical URLs and indexable robots metadata. Access and source setup remain noindex. This proves publishing/crawlability, not search indexing or traffic growth.
+- Anonymous company/source reads return 401; empty registration body returns 400 validation errors. Full successful production account creation -> company save -> Catalog -> unlocked board is NOT yet evidenced by a real controlled account. No synthetic account or public company was created in this pass.
+- Added two optional local-only helpers: `extract` and `review`, with eight deterministic tests and two real local model completions on clearly illustrative input. They use the already installed Ollama model, do not modify FCC Admin, and never publish, book, grant rights, download models or use cloud fallback.
+- Remaining external blocker: first authorized current freight source, connection credentials and redistribution permission. Existing source setup/review is not equivalent to connected inventory. Alerts, real-outcome scoring and negotiation remain pending real data/approval.
+- Compounding: visible acquisition surface + linked provider/equipment discovery + preserved noindex/private boundaries + reusable source-grounded local drafts. No new public routes, fake loads or external communications in this follow-up.
