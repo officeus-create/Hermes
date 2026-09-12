@@ -190,3 +190,4 @@ assert.match(seoLanding, /\/load-board\/#live-marketplace/);
 
 console.log("load-board-intake-api-contract: normalized opportunity schema, company-aware access, scoring, safe search, planning, AI context, official Ship.Cars sync, and SEO/GEO distribution verified");
 await import("./load-board-email-bridge-contract.test.mjs");
+await import("./load-board-marketplace-posting-contract.test.mjs");
