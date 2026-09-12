@@ -59,23 +59,6 @@
     setText(".repair-crm-context small", copy.context);
     setText(".repair-crm-product-hub span:last-child", copy.products);
     document.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { if (button.textContent !== copy.logout) button.textContent = copy.logout; });
-    setText(".repair-crm-language summary", locale.toUpperCase());
-
-    document.querySelectorAll(".repair-crm-language a[lang]").forEach((link) => {
-      if (!(link instanceof HTMLAnchorElement)) return;
-      const target = (link.getAttribute("lang") || "en").toLowerCase();
-      if (!supported.has(target)) return;
-      const next = new URL(window.location.href);
-      if (target === "en") next.searchParams.delete("lang"); else next.searchParams.set("lang", target);
-      link.href = `${next.pathname}${next.search}${next.hash}`;
-      if (link.dataset.localeBound === "true") return;
-      link.dataset.localeBound = "true";
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
-        window.location.assign(link.href);
-      });
-    });
   };
 
   const dateLocale = { en:"en-US", ru:"ru-RU", uk:"uk-UA", es:"es-ES", it:"it-IT", fr:"fr-FR" }[locale] || "en-US";
