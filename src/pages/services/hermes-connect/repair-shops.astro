@@ -15,6 +15,7 @@ const liveCapabilities = [
 
 const faqs = [
   { question: "What does Hermes Connect repair shop software include?", answer: "You can register an owner account, set up the shop profile and services, configure weekly availability, share a public online booking link, process bookings, review customer and vehicle context, and send private product feedback." },
+  { question: "Is Hermes Connect an auto repair CRM?", answer: "Hermes Connect includes a repair-shop CRM for customer and vehicle context, booking history and status, services, and availability in one owner workspace. It is not presented as a full repair-order, inventory, accounting, payroll, or payment-processing suite." },
   { question: "Can customers book repair appointments online?", answer: "Yes. Your shop can publish services and weekly availability and share one booking link. Customers choose a service and request an available time while Hermes Connect keeps the booking attached to the shop workflow." },
   { question: "How much is the Founding Shop Plan?", answer: "The current launch offer is $99 per month for one repair shop location. The website does not collect a card on the activation request; Hermes confirms the shop, plan scope, billing details, and invoice before paid activation." },
   { question: "Can I try the workspace before requesting paid activation?", answer: "Yes. Start with owner registration, configure the shop, and see whether the workflow is useful. When you are ready to keep using it as a paid shop, open the Founding Shop Plan and request activation." },
@@ -30,13 +31,13 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Auto repair shop software for online booking, scheduling, services, availability, booking operations, customers, and vehicle context.",
+    description: "Auto repair CRM and scheduling software for online booking, services, availability, booking operations, customers, vehicles, and booking history.",
     featureList: [
       "Repair shop profile and services",
       "Online appointment booking",
       "Weekly scheduling and availability",
       "Booking status workflow",
-      "Customer and vehicle context",
+      "Customer and vehicle CRM context",
       "Browser-first owner workspace",
     ],
   },
@@ -58,8 +59,8 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Auto Repair Scheduling & Shop Software | Hermes Connect"
-  description="Auto repair shop software for online booking, scheduling, services, availability, customers and vehicle context. Founding Shop Plan: $99/month."
+  title="Auto Repair CRM & Scheduling Software | Hermes Connect"
+  description="Auto repair CRM and scheduling software for online booking, services, availability, customers, vehicles and booking history. Founding Shop Plan: $99/month."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -68,9 +69,9 @@ const schema = [
     <section class="repair-live-hero">
       <div class="repair-shell repair-live-grid">
         <div>
-          <p class="repair-kicker">Hermes Connect · Auto Repair Shop Software</p>
-          <h1>Online booking & scheduling software for independent auto repair shops.</h1>
-          <p class="repair-lead">Hermes Connect repair shop software helps independent shops publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, and separate notes.</p>
+          <p class="repair-kicker">Hermes Connect · Auto Repair CRM & Scheduling Software</p>
+          <h1>Auto repair CRM, online booking & scheduling for independent shops.</h1>
+          <p class="repair-lead">Hermes Connect combines a repair-shop CRM with online booking and scheduling so independent shops can publish services and hours, accept appointment requests, process bookings, and keep customer, vehicle, and booking history together instead of coordinating everything across calls, messages, and separate notes.</p>
           <div class="repair-actions">
             <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/">Set up my shop <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">View $99 Founding Plan</a>
