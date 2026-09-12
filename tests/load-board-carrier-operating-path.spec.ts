@@ -60,7 +60,7 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
   expect(carrierEntry).toContain("Final production execution is not activated");
 });
 
-test("canonical Load Board source is wired to separate live load and capacity APIs", async () => {
+test("canonical Load Board source is wired to separate live load, capacity and truthful summary APIs", async () => {
   const layout = await source("src/layouts/BaseLayout.astro");
   const live = await source("src/components/LoadBoardCapacityEnhancer.astro");
   const parser = await source("workers/lead-email/src/load-board-inbound.mjs");
@@ -69,10 +69,14 @@ test("canonical Load Board source is wired to separate live load and capacity AP
   expect(layout).toContain('import LoadBoardCapacityEnhancer from "../components/LoadBoardCapacityEnhancer.astro"');
   expect(layout).toContain("<LoadBoardCapacityEnhancer />");
   expect(live).toContain('Astro.url.pathname === "/load-board/"');
-  expect(live).toContain('fetchRecords("load")');
-  expect(live).toContain('fetchRecords("capacity")');
-  expect(live).toContain("approved live loads");
+  expect(live).toContain("fetchJson('/api/load-board/active?type=load')");
+  expect(live).toContain("fetchJson('/api/load-board/active?type=capacity')");
+  expect(live).toContain("fetchJson('/api/load-board/summary')");
+  expect(live).toContain("Interface preview rows are not inventory.");
+  expect(live).toContain("Only the real count above represents active, unexpired records.");
   expect(live).toContain("available trucks");
+  expect(live).toContain("A truck is capacity, not freight.");
+  expect(live).toContain('const accessPath = "/services/hermes-connect/load-board/access/"');
   expect(live).toContain('href="/carrier/"');
   expect(parser).not.toContain('reason: "car_hauling_hold"');
   expect(parser).toContain('return "car_hauler"');
