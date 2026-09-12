@@ -8,7 +8,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   description="Create or sign in to your Hermes account, register your company, and unlock the Hermes Load Board. Catalog publication remains clearly labeled until business facts are verified."
   robots="noindex,nofollow"
 >
-  <SiteHeader activePath="/paths/logistics/" />
+  <SiteHeader theme="light" activePath="/paths/logistics/" />
   <main id="main-content" class="lb-access">
     <section class="lb-access-hero">
       <div class="lb-access-shell">
@@ -32,6 +32,11 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             <p class="lb-kicker">Step 1</p>
             <h2>Your Hermes account</h2>
             <p data-auth-state>Checking whether you are already signed in…</p>
+          </div>
+
+          <div class="lb-social-auth" data-social-auth hidden>
+            <div class="lb-google-button" data-google-auth-button aria-label="Continue with Google"></div>
+            <div class="lb-or" aria-hidden="true"><span></span><small>or continue with email</small><span></span></div>
           </div>
 
           <div class="lb-tabs" data-auth-tabs>
@@ -121,6 +126,9 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       const registerForm = document.querySelector('[data-register-form]');
       const loginForm = document.querySelector('[data-login-form]');
       const companyForm = document.querySelector('[data-company-form]');
+      const authTabs = document.querySelector('[data-auth-tabs]');
+      const socialAuth = document.querySelector('[data-social-auth]');
+      const googleButton = document.querySelector('[data-google-auth-button]');
       const tabs = [...document.querySelectorAll('[data-auth-tab]')];
 
       const message = (node, text, error = false) => {
@@ -137,6 +145,10 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       const showCompany = async (specialist) => {
         if (authState) authState.textContent = `Signed in as ${specialist?.name || specialist?.email || 'Hermes user'}.`;
         if (authCard instanceof HTMLElement) authCard.classList.add('is-complete');
+        if (authTabs instanceof HTMLElement) authTabs.hidden = true;
+        if (socialAuth instanceof HTMLElement) socialAuth.hidden = true;
+        if (registerForm instanceof HTMLElement) registerForm.hidden = true;
+        if (loginForm instanceof HTMLElement) loginForm.hidden = true;
         if (companyCard instanceof HTMLElement) companyCard.hidden = false;
         try {
           const existing = await json('/api/hermes-connect/company');
@@ -153,6 +165,55 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           }
         } catch {}
         companyCard?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      const loadGoogleIdentityScript = () => new Promise((resolve, reject) => {
+        if (globalThis.google?.accounts?.id) return resolve(globalThis.google);
+        const existing = document.querySelector('script[data-hermes-google-identity]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(globalThis.google), { once: true });
+          existing.addEventListener('error', reject, { once: true });
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.dataset.hermesGoogleIdentity = '';
+        script.addEventListener('load', () => resolve(globalThis.google), { once: true });
+        script.addEventListener('error', reject, { once: true });
+        document.head.appendChild(script);
+      });
+
+      const setupSocialAuth = async () => {
+        try {
+          const providers = await json('/api/auth/providers');
+          if (!providers?.google?.enabled || !providers.google.client_id || !(googleButton instanceof HTMLElement)) return;
+          await loadGoogleIdentityScript();
+          if (!globalThis.google?.accounts?.id) return;
+          if (socialAuth instanceof HTMLElement) socialAuth.hidden = false;
+          globalThis.google.accounts.id.initialize({
+            client_id: providers.google.client_id,
+            auto_select: false,
+            callback: async (response) => {
+              const credential = String(response?.credential || '');
+              if (!credential) return;
+              message(authMessage, 'Signing in securely with Google…');
+              try {
+                const payload = await json('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential }) });
+                message(authMessage, payload.state === 'created' ? 'Google account verified. Add your company to continue.' : 'Google identity verified.');
+                await showCompany(payload.specialist);
+              } catch (error) {
+                message(authMessage, `Google sign-in could not be completed: ${error.message}`, true);
+              }
+            },
+          });
+          globalThis.google.accounts.id.renderButton(googleButton, {
+            type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', logo_alignment: 'left', width: 320,
+          });
+        } catch {
+          // Social providers are optional. Email/password stays available if provider discovery or Google is unavailable.
+        }
       };
 
       tabs.forEach((tab) => tab.addEventListener('click', () => {
@@ -212,7 +273,13 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             website: data.get('website'), authorityNumber: data.get('authorityNumber'), catalogOptIn: data.get('catalogOptIn') === 'on',
           }) });
           message(companyMessage, payload.catalog?.listed ? 'Company saved and added to Hermes Catalog as verification-pending. Opening the Load Board…' : 'Company saved. Opening the Load Board…');
-          window.location.assign(payload.next_url || '/load-board/?access=unlocked#live-marketplace');
+          const sourceIntent = new URLSearchParams(window.location.search).get('source');
+          const nextUrl = sourceIntent === 'post-load'
+            ? '/load-board/?access=unlocked&post=load#live-marketplace'
+            : sourceIntent === 'post-truck'
+              ? '/load-board/?access=unlocked&post=capacity#live-marketplace'
+              : (payload.next_url || '/load-board/?access=unlocked#live-marketplace');
+          window.location.assign(nextUrl);
         } catch (error) { message(companyMessage, `Could not save company: ${error.message}`, true); }
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
@@ -222,13 +289,18 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       }
 
       void (async () => {
-        try { const me = await json('/api/auth/me'); await showCompany(me.specialist); }
-        catch (error) { if (authState) authState.textContent = 'Create a Hermes account or sign in to continue.'; }
+        try {
+          const me = await json('/api/auth/me');
+          await showCompany(me.specialist);
+        } catch {
+          if (authState) authState.textContent = 'Create a Hermes account or sign in to continue.';
+          await setupSocialAuth();
+        }
       })();
     })();
   </script>
 
   <style>
-    .lb-access{background:#f4f6fb;color:#0d1833;min-height:100vh}.lb-access-shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.lb-access-hero{padding:72px 0 44px;background:linear-gradient(145deg,#071431,#11265b);color:#fff}.lb-back{display:inline-block;margin-bottom:32px;color:#bcc9e8;text-decoration:none;font-weight:750}.lb-kicker{margin:0 0 10px;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:900;color:#6f89ca}.lb-access-hero .lb-kicker{color:#a9bbeb}.lb-access-hero h1{margin:0;max-width:860px;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.95;letter-spacing:-.045em}.lb-lead{max-width:780px;margin:22px 0 0;color:#c3cee7;font-size:1.05rem;line-height:1.7}.lb-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px}.lb-flow>div{padding:16px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.05);display:grid;gap:5px}.lb-flow strong{font-size:1.5rem}.lb-flow span{font-weight:850}.lb-flow small{color:#9eacd0}.lb-access-body{padding:44px 0 80px}.lb-access-grid{display:grid;grid-template-columns:1fr 1fr .86fr;gap:16px;align-items:start}.lb-access-card,.lb-access-side{background:#fff;border:1px solid #dfe4ef;border-radius:20px;padding:24px;box-shadow:0 12px 32px rgba(20,31,60,.06)}.lb-access-card.is-complete{border-color:#a8d7c3}.lb-card-head h2,.lb-access-side h2{margin:0 0 8px;font-size:1.55rem}.lb-card-head p:last-child,.lb-access-side{line-height:1.6;color:#58647d}.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:20px 0;background:#eef1f7;border-radius:12px}.lb-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;font-weight:800;color:#647089;cursor:pointer}.lb-tabs button.is-active{background:#fff;color:#0d1833;box-shadow:0 2px 8px rgba(20,31,60,.08)}.lb-form{display:grid;gap:14px}.lb-form label{display:grid;gap:6px;font-size:.78rem;font-weight:850;color:#35415b}.lb-form label span{font-weight:600;color:#7a859c}.lb-form input,.lb-form select{width:100%;box-sizing:border-box;border:1px solid #cfd6e4;border-radius:11px;padding:11px 12px;background:#fff;color:#0d1833;font:inherit;font-weight:600}.lb-form-row{display:grid;grid-template-columns:1fr 92px;gap:10px}.lb-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;padding:12px;border:1px solid #e0e5ef;border-radius:12px;background:#f9fafc}.lb-check input{width:auto;margin-top:3px}.lb-check span{line-height:1.5}.lb-primary{border:0;border-radius:12px;padding:13px 16px;background:#102963;color:#fff;font-weight:900;cursor:pointer}.lb-primary:disabled{opacity:.55;cursor:wait}.lb-message{min-height:1.35em;margin:14px 0 0;color:#197a55;font-size:.78rem;font-weight:750}.lb-message[data-error="true"]{color:#b33c43}.lb-access-side{position:sticky;top:18px}.lb-access-side ol{padding-left:20px}.lb-access-side li{margin:.75rem 0}.lb-access-side a{color:#173f93;font-weight:850;text-decoration:none}@media(max-width:980px){.lb-access-grid{grid-template-columns:1fr 1fr}.lb-access-side{grid-column:1/-1;position:static}.lb-flow{grid-template-columns:1fr 1fr}}@media(max-width:680px){.lb-access-hero{padding-top:52px}.lb-access-grid{grid-template-columns:1fr}.lb-access-side{grid-column:auto}.lb-flow{grid-template-columns:1fr}.lb-form-row{grid-template-columns:1fr}.lb-access-card,.lb-access-side{padding:19px}}
+    .lb-access{background:var(--hermes-pearl);color:var(--hermes-ink);min-height:100vh}.lb-access-shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.lb-access-hero{padding:72px 0 44px;background:radial-gradient(circle at 85% 5%,rgba(124,92,255,.10),transparent 28rem),radial-gradient(circle at 12% 35%,rgba(90,200,250,.08),transparent 24rem),var(--hermes-pearl);color:var(--hermes-ink);border-bottom:1px solid var(--hermes-line-light-soft)}.lb-back{display:inline-block;margin-bottom:32px;color:var(--hermes-muted);text-decoration:none;font-weight:750}.lb-kicker{margin:0 0 10px;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;font-weight:900;color:var(--hermes-violet)}.lb-access-hero .lb-kicker{color:var(--hermes-violet)}.lb-access-hero h1{margin:0;max-width:860px;font-size:clamp(2.4rem,6vw,5.2rem);line-height:.95;letter-spacing:-.045em}.lb-lead{max-width:780px;margin:22px 0 0;color:var(--hermes-muted);font-size:1.05rem;line-height:1.7}.lb-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:34px}.lb-flow>div{padding:16px;border:1px solid var(--hermes-line-light);border-radius:16px;background:rgba(255,255,255,.78);box-shadow:var(--hermes-shadow-card);display:grid;gap:5px}.lb-flow strong{font-size:1.5rem}.lb-flow span{font-weight:850}.lb-flow small{color:var(--hermes-muted)}.lb-access-body{padding:44px 0 80px}.lb-access-grid{display:grid;grid-template-columns:1fr 1fr .86fr;gap:16px;align-items:start}.lb-access-card,.lb-access-side{background:#fff;border:1px solid #dfe4ef;border-radius:20px;padding:24px;box-shadow:0 12px 32px rgba(20,31,60,.06)}.lb-access-card.is-complete{border-color:#a8d7c3}.lb-card-head h2,.lb-access-side h2{margin:0 0 8px;font-size:1.55rem}.lb-card-head p:last-child,.lb-access-side{line-height:1.6;color:#58647d}.lb-social-auth{display:grid;gap:12px;margin:20px 0 16px}.lb-social-auth[hidden]{display:none}.lb-google-button{min-height:44px;display:flex;justify-content:center}.lb-or{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;color:#7a859c}.lb-or span{height:1px;background:#e0e5ef}.lb-or small{font-size:.7rem;font-weight:750;text-transform:uppercase;letter-spacing:.08em}.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;margin:20px 0;background:#eef1f7;border-radius:12px}.lb-tabs button{border:0;border-radius:9px;padding:10px;background:transparent;font-weight:800;color:#647089;cursor:pointer}.lb-tabs button.is-active{background:#fff;color:#0d1833;box-shadow:0 2px 8px rgba(20,31,60,.08)}.lb-form{display:grid;gap:14px}.lb-form label{display:grid;gap:6px;font-size:.78rem;font-weight:850;color:#35415b}.lb-form label span{font-weight:600;color:#7a859c}.lb-form input,.lb-form select{width:100%;box-sizing:border-box;border:1px solid #cfd6e4;border-radius:11px;padding:11px 12px;background:#fff;color:#0d1833;font:inherit;font-weight:600}.lb-form-row{display:grid;grid-template-columns:1fr 92px;gap:10px}.lb-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:10px!important;padding:12px;border:1px solid #e0e5ef;border-radius:12px;background:#f9fafc}.lb-check input{width:auto;margin-top:3px}.lb-check span{line-height:1.5}.lb-primary{border:0;border-radius:12px;padding:13px 16px;background:var(--hermes-obsidian);color:#fff;font-weight:900;cursor:pointer}.lb-primary:disabled{opacity:.55;cursor:wait}.lb-message{min-height:1.35em;margin:14px 0 0;color:#197a55;font-size:.78rem;font-weight:750}.lb-message[data-error="true"]{color:#b33c43}.lb-access-side{position:sticky;top:18px}.lb-access-side ol{padding-left:20px}.lb-access-side li{margin:.75rem 0}.lb-access-side a{color:var(--hermes-violet);font-weight:850;text-decoration:none}@media(max-width:980px){.lb-access-grid{grid-template-columns:1fr 1fr}.lb-access-side{grid-column:1/-1;position:static}.lb-flow{grid-template-columns:1fr 1fr}}@media(max-width:680px){.lb-access-hero{padding-top:52px}.lb-access-grid{grid-template-columns:1fr}.lb-access-side{grid-column:auto}.lb-flow{grid-template-columns:1fr}.lb-form-row{grid-template-columns:1fr}.lb-access-card,.lb-access-side{padding:19px}}
   </style>
 </BaseLayout>
