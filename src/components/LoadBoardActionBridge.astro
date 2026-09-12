@@ -1,9 +1,11 @@
 <script>
   const LOAD_BOARD_PATH = "/load-board/";
+  const SOURCE_SETUP_PATH = "/services/hermes-connect/load-board/source/";
 
   if (window.location.pathname === LOAD_BOARD_PATH) {
     const root = document.querySelector<HTMLElement>("[data-hlb-live-marketplace]");
     let enhancing = false;
+    let sourceEligibilityChecked = false;
 
     const requestDetails = async (button: HTMLButtonElement, loadId: string) => {
       if (button.disabled) return;
@@ -39,8 +41,31 @@
       }
     };
 
+    const exposeSourceSetup = async () => {
+      if (!root?.classList.contains("is-unlocked") || sourceEligibilityChecked) return;
+      sourceEligibilityChecked = true;
+      try {
+        const response = await fetch("/api/load-board/source-requests", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (!payload.eligible_to_propose_source) return;
+        const actions = root.querySelector<HTMLElement>(".hlb-live-actions");
+        if (!actions || actions.querySelector('[data-load-source-setup-link]')) return;
+        const link = document.createElement("a");
+        link.href = SOURCE_SETUP_PATH;
+        link.dataset.loadSourceSetupLink = "";
+        link.textContent = "Manage load source";
+        actions.appendChild(link);
+      } catch {}
+    };
+
     const enhanceOpenRows = async () => {
       if (!root?.classList.contains("is-unlocked") || enhancing) return;
+      void exposeSourceSetup();
       const rows = [...root.querySelectorAll<HTMLElement>(".hlb-live-row--open")];
       if (!rows.length || rows.every((row) => row.querySelector("[data-load-board-qualified-action]"))) return;
 
