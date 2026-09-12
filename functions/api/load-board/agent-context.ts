@@ -2,7 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 
 type Env = { DB?: any; HERMES_AI_LOGISTICS_TOKEN?: string };
-type Model = "opportunities" | "lanes" | "providers";
+type Model = "opportunities" | "lanes" | "providers" | "health";
 
 function limitValue(value: string | null) {
   const parsed = Number.parseInt(String(value || "100"), 10);
@@ -18,7 +18,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureLoadBoardSchema(env.DB);
   const url = new URL(request.url);
   const requestedModel = String(url.searchParams.get("model") || "opportunities") as Model;
-  const model: Model = ["opportunities", "lanes", "providers"].includes(requestedModel) ? requestedModel : "opportunities";
+  const model: Model = ["opportunities", "lanes", "providers", "health"].includes(requestedModel) ? requestedModel : "opportunities";
   const limit = limitValue(url.searchParams.get("limit"));
   const now = new Date().toISOString();
 
@@ -58,6 +58,117 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         last_error: row.last_error || null,
         status: row.status,
         active_records: Number(row.active_records || 0),
+      })),
+    }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
+  }
+
+  if (model === "health") {
+    const summary = await env.DB.prepare(`
+      SELECT
+        (SELECT COUNT(*) FROM hermes_load_sources) AS source_count,
+        (SELECT COUNT(*) FROM hermes_load_sources WHERE status = 'active' AND ingest_enabled = 1) AS active_sources,
+        (SELECT COUNT(*) FROM hermes_load_sources WHERE last_error IS NOT NULL AND TRIM(last_error) <> '') AS sources_with_errors,
+        (SELECT COUNT(*) FROM hermes_load_records) AS records_retained,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE record_type = 'load') AS load_records_retained,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE record_type = 'capacity') AS capacity_records_retained,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE record_type = 'load' AND status = 'active' AND expires_at > ?) AS active_loads,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE record_type = 'load' AND status = 'active' AND expires_at > ? AND visibility IN ('public', 'carrier_only')) AS carrier_visible_active_loads,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE record_type = 'capacity' AND status = 'active' AND expires_at > ?) AS active_capacity,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE status = 'expired' OR expires_at <= ?) AS expired_records,
+        (SELECT COUNT(*) FROM hermes_load_records WHERE status = 'active' AND expires_at > ? AND visibility = 'internal_only') AS internal_only_active_records,
+        (SELECT COUNT(*) FROM hermes_load_quarantine WHERE status = 'pending_review') AS quarantine_pending,
+        (SELECT COUNT(DISTINCT COALESCE(NULLIF(dedupe_key, ''), id)) FROM hermes_load_records WHERE record_type = 'load') AS unique_load_opportunities,
+        (SELECT COUNT(*) - COUNT(DISTINCT COALESCE(NULLIF(dedupe_key, ''), id)) FROM hermes_load_records WHERE record_type = 'load') AS duplicate_candidates,
+        (SELECT MAX(observed_at) FROM hermes_load_records) AS freshest_observed_at
+    `).bind(now, now, now, now, now).first();
+
+    const sources = await env.DB.prepare(`
+      SELECT
+        s.provider,
+        s.source_name,
+        s.source_type,
+        s.redistribution_permission,
+        s.read_enabled,
+        s.ingest_enabled,
+        s.status,
+        s.last_successful_sync,
+        s.last_error,
+        (SELECT COUNT(*) FROM hermes_load_records r WHERE r.source_id = s.id) AS records_retained,
+        (SELECT COUNT(*) FROM hermes_load_records r WHERE r.source_id = s.id AND r.record_type = 'load' AND r.status = 'active' AND r.expires_at > ?) AS active_loads,
+        (SELECT COUNT(*) FROM hermes_load_records r WHERE r.source_id = s.id AND r.record_type = 'capacity' AND r.status = 'active' AND r.expires_at > ?) AS active_capacity,
+        (SELECT COUNT(*) FROM hermes_load_records r WHERE r.source_id = s.id AND (r.status = 'expired' OR r.expires_at <= ?)) AS expired_records,
+        (SELECT COUNT(*) FROM hermes_load_quarantine q WHERE q.source_id = s.id AND q.status = 'pending_review') AS quarantine_pending,
+        (SELECT MAX(r.observed_at) FROM hermes_load_records r WHERE r.source_id = s.id) AS freshest_observed_at
+      FROM hermes_load_sources s
+      ORDER BY
+        CASE WHEN s.last_error IS NOT NULL AND TRIM(s.last_error) <> '' THEN 0 ELSE 1 END,
+        s.provider ASC,
+        s.source_name ASC
+      LIMIT ?
+    `).bind(now, now, now, limit).all();
+
+    const quarantineReasons = await env.DB.prepare(`
+      SELECT reason, COUNT(*) AS record_count, MAX(observed_at) AS latest_observed_at
+      FROM hermes_load_quarantine
+      WHERE status = 'pending_review'
+      GROUP BY reason
+      ORDER BY record_count DESC, latest_observed_at DESC
+      LIMIT 25
+    `).all();
+
+    const numberValue = (value: unknown) => Number(value || 0);
+    return jsonResponse(200, {
+      success: true,
+      model,
+      generated_at: now,
+      data_classification: "internal-logistics-health",
+      raw_credentials_exposed: false,
+      contact_details_exposed: false,
+      raw_evidence_exposed: false,
+      summary: {
+        source_count: numberValue(summary?.source_count),
+        active_sources: numberValue(summary?.active_sources),
+        sources_with_errors: numberValue(summary?.sources_with_errors),
+        records_retained: numberValue(summary?.records_retained),
+        load_records_retained: numberValue(summary?.load_records_retained),
+        capacity_records_retained: numberValue(summary?.capacity_records_retained),
+        active_loads: numberValue(summary?.active_loads),
+        carrier_visible_active_loads: numberValue(summary?.carrier_visible_active_loads),
+        active_capacity: numberValue(summary?.active_capacity),
+        expired_records: numberValue(summary?.expired_records),
+        internal_only_active_records: numberValue(summary?.internal_only_active_records),
+        quarantine_pending: numberValue(summary?.quarantine_pending),
+        unique_load_opportunities: numberValue(summary?.unique_load_opportunities),
+        duplicate_candidates: numberValue(summary?.duplicate_candidates),
+        freshest_observed_at: summary?.freshest_observed_at || null,
+      },
+      definitions: {
+        records_retained: "Current normalized D1 records retained from authorized intake. This is not a raw email/message count.",
+        unique_load_opportunities: "Distinct normalized load opportunities using dedupe_key when available.",
+        duplicate_candidates: "Additional retained load records sharing a dedupe_key. This is a review signal, not a claim that source messages were automatically deleted.",
+        quarantine_pending: "Items retained for review and excluded from actionable Load Board inventory.",
+      },
+      sources: (sources?.results || []).map((row: any) => ({
+        provider: row.provider,
+        source_name: row.source_name,
+        source_type: row.source_type,
+        redistribution_permission: row.redistribution_permission,
+        read_enabled: Boolean(row.read_enabled),
+        ingest_enabled: Boolean(row.ingest_enabled),
+        status: row.status,
+        last_successful_sync: row.last_successful_sync || null,
+        last_error: row.last_error || null,
+        records_retained: numberValue(row.records_retained),
+        active_loads: numberValue(row.active_loads),
+        active_capacity: numberValue(row.active_capacity),
+        expired_records: numberValue(row.expired_records),
+        quarantine_pending: numberValue(row.quarantine_pending),
+        freshest_observed_at: row.freshest_observed_at || null,
+      })),
+      quarantine_reasons: (quarantineReasons?.results || []).map((row: any) => ({
+        reason: row.reason,
+        record_count: numberValue(row.record_count),
+        latest_observed_at: row.latest_observed_at || null,
       })),
     }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
   }
