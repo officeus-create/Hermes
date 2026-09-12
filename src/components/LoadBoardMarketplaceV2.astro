@@ -29,7 +29,7 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
         <button class="lbv2-swap" type="button" data-lbv2-swap aria-label="Swap origin and destination"><ArrowLeftRight size={17} aria-hidden="true" /></button>
         <label><span>Destination</span><input name="destination" placeholder="Anywhere" autocomplete="off" /></label>
         <label><span>Equipment</span><select name="equipment"><option value="">All equipment</option><option value="car hauler">Car Hauler</option><option value="dry van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step deck">Step Deck</option><option value="hotshot">Hotshot</option><option value="power only">Power Only</option><option value="box truck">Box Truck</option><option value="sprinter van">Sprinter Van</option></select></label>
-        <label><span>Min rate</span><input name="minRate" inputmode="decimal" placeholder="$0" /></label>
+        <label data-lbv2-rate-filter><span>Min rate</span><input name="minRate" inputmode="decimal" placeholder="$0" /></label>
         <label><span>Sort</span><select name="sort"><option value="best">Best match</option><option value="rate">Highest rate</option><option value="rpm">Highest RPM</option><option value="lane">Lane A–Z</option></select></label>
         <button class="lbv2-search-button" type="submit"><Search size={16} aria-hidden="true" /> Search</button>
       </form>
@@ -260,12 +260,36 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       renderOwnPosts();
     };
 
+    const truckPreviewRows = () => [
+      ["Chicago, IL", "Open destination", "Car Hauler", "Ready today"],
+      ["Dallas, TX", "Southeast preferred", "Hotshot", "Ready now"],
+      ["Atlanta, GA", "Open destination", "Dry Van", "Tomorrow"],
+      ["Phoenix, AZ", "West Coast preferred", "Flatbed", "Today"],
+      ["Columbus, OH", "Midwest preferred", "Car Hauler", "Tomorrow"],
+      ["Newark, NJ", "Open destination", "Reefer", "Ready today"],
+    ].map(([origin, destination, equipment, ready]) => `<article class="hlb-live-row hlb-live-row--capacity lbv2-truck-preview"><div class="hlb-live-route"><span>${origin}</span><b>→</b><span>${destination}</span></div><div class="hlb-live-meta"><span>${equipment}</span><span>${ready}</span><span>PREVIEW · NOT LIVE</span></div><div class="hlb-live-rate"><strong>Capacity preview</strong><small>Post or register to use marketplace</small></div></article>`).join("");
+
+    const ensurePublicTruckPreview = () => {
+      if (!capacityRows || root.classList.contains("is-unlocked")) return;
+      if (capacityRows.querySelector(".hlb-live-row")) return;
+      capacityRows.innerHTML = truckPreviewRows();
+    };
+
     const setTab = (tab: string) => {
       activeTab = tab;
       tabs.forEach((button) => button.setAttribute("aria-selected", String(button.dataset.lbv2Tab === tab)));
       if (loadGrid) loadGrid.hidden = tab !== "loads";
       if (capacityPanel) capacityPanel.hidden = tab !== "trucks";
       if (myPosts) myPosts.hidden = tab !== "mine";
+      const rateFilter = host.querySelector<HTMLElement>("[data-lbv2-rate-filter]");
+      const minRate = searchForm?.elements.namedItem("minRate");
+      const sort = searchForm?.elements.namedItem("sort");
+      if (rateFilter) rateFilter.hidden = tab === "trucks";
+      if (tab === "trucks") {
+        if (minRate instanceof HTMLInputElement) minRate.value = "";
+        if (sort instanceof HTMLSelectElement && ["rate", "rpm"].includes(sort.value)) sort.value = "best";
+        ensurePublicTruckPreview();
+      }
       if (tab === "mine") void loadCompanyState();
       else applyFilters();
     };
@@ -346,7 +370,11 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
     };
     syncCounts();
     if ("MutationObserver" in window) {
-      const observer = new MutationObserver(() => { syncCounts(); if (activeTab !== "mine") applyFilters(); });
+      const observer = new MutationObserver(() => {
+        syncCounts();
+        if (activeTab === "trucks") ensurePublicTruckPreview();
+        if (activeTab !== "mine") applyFilters();
+      });
       const countNodes = [root.querySelector("[data-live-load-count]"), root.querySelector("[data-live-capacity-count]"), loadRows, capacityRows].filter(Boolean) as Node[];
       countNodes.forEach((node) => observer.observe(node, { childList: true, subtree: true, characterData: true }));
     }
