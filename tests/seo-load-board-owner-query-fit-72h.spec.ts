@@ -18,10 +18,16 @@ test("canonical load board owner matches load-board intent with one truthful mix
   expect(source).toContain("No load below is available to book.");
 });
 
-test("load board truth boundary keeps live feed, demo freight and booking semantics separate", () => {
-  expect(liveEnhancer).toContain('/api/load-board/active?type=${type}');
-  expect(liveEnhancer).toContain("Only active, unexpired, permission-safe D1 records appear in the counters above.");
-  expect(liveEnhancer).toContain("0 approved live loads in D1 right now.");
+test("load board truth boundary keeps live feed, structural preview, demo freight and booking semantics separate", () => {
+  expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=load')");
+  expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=capacity')");
+  expect(liveEnhancer).toContain("fetchJson('/api/load-board/summary')");
+  expect(liveEnhancer).toContain("Interface preview rows are not inventory.");
+  expect(liveEnhancer).toContain("Only the real count above represents active, unexpired records.");
+  expect(liveEnhancer).toContain("No approved active freight right now");
+  expect(liveEnhancer).toContain("A truck is capacity, not freight.");
+  expect(liveEnhancer).toContain("visual preview rows are excluded.");
+  expect(liveEnhancer).toContain('const accessPath = "/services/hermes-connect/load-board/access/"');
   expect(source).toContain("submission itself is not a booking");
   expect(source).not.toContain("No load shown on this page is live or bookable.");
   expect(source).not.toContain("it does not publish live or bookable freight");

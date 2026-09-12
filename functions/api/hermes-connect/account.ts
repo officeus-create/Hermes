@@ -1,6 +1,7 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
+import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import {
   ensureAcademySchema,
   getAcademyLearnerProfile,
@@ -23,8 +24,8 @@ type OwnedBusiness = {
 };
 
 type Workspace = {
-  key: "academy" | "internal_ai" | "hr";
-  kind: "shared_workspace" | "capability_workspace";
+  key: "academy" | "internal_ai" | "hr" | "load_board";
+  kind: "shared_workspace" | "capability_workspace" | "company_workspace";
   href: string;
   available: true;
   state: Record<string, unknown>;
@@ -37,6 +38,16 @@ async function getOwnedRepairShop(db: any, ownerId: string) {
   return db.prepare(`
     SELECT id,name,slug
     FROM repair_shops
+    WHERE owner_specialist_id = ?
+    LIMIT 1
+  `).bind(ownerId).first();
+}
+
+async function getOwnedHermesCompany(db: any, ownerId: string) {
+  await ensureHermesCompanyProfilesSchema(db);
+  return db.prepare(`
+    SELECT id,company_name,slug,company_type,city,state,catalog_opt_in,catalog_status,load_board_access
+    FROM hermes_company_profiles
     WHERE owner_specialist_id = ?
     LIMIT 1
   `).bind(ownerId).first();
@@ -60,9 +71,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
+    getOwnedHermesCompany(env.DB, specialist.id),
     getAcademyLearnerProfile(env.DB, specialist.id),
     listAcademyEnrollments(env.DB, specialist.id),
     getAcademyReviewerAccess(env.DB, specialist.id),
@@ -118,6 +130,26 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     },
   ];
 
+  if (hermesCompany && Number(hermesCompany.load_board_access) === 1) {
+    workspaces.push({
+      key: "load_board",
+      kind: "company_workspace",
+      href: "/load-board/?access=unlocked#live-marketplace",
+      available: true,
+      state: {
+        company_id: String(hermesCompany.id),
+        company_name: String(hermesCompany.company_name || "Company"),
+        company_slug: String(hermesCompany.slug || ""),
+        company_type: String(hermesCompany.company_type || "other"),
+        city: String(hermesCompany.city || ""),
+        state: String(hermesCompany.state || ""),
+        catalog_opt_in: Number(hermesCompany.catalog_opt_in) === 1,
+        catalog_status: String(hermesCompany.catalog_status || "self_submitted"),
+        load_board_access: true,
+      },
+    });
+  }
+
   if (hrReviewerAccess) {
     workspaces.push({
       key: "hr",
@@ -155,6 +187,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     owned_businesses: ownedBusinesses,
     workspaces,
     capabilities: {
+      load_board: Boolean(hermesCompany && Number(hermesCompany.load_board_access) === 1),
       internal_ai: Boolean(internalAiAccess),
       hr_review: Boolean(hrReviewerAccess),
     },

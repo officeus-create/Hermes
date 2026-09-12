@@ -35,6 +35,16 @@ test('owned Repair Shop and shared Academy come only from the account portfolio 
   assert.match(source, /current === "repair"/);
 });
 
+test('registered Hermes company exposes Load Board as one company workspace', async () => {
+  const source = await loadSwitcher();
+  assert.match(source, /item\?\.key === "load_board"/);
+  assert.match(source, /data-workspace-loadboard data-hc-workspace-link="loadboard" hidden/);
+  assert.match(source, /loadboard:\s*"\/load-board\/\?access=unlocked#live-marketplace"/);
+  assert.match(source, /if \(loadBoardWorkspace && loadboard\)/);
+  assert.match(source, /entries\.push\(\{ key: "loadboard"/);
+  assert.match(source, /runtimeCopy\.company/);
+});
+
 test('internal AI stays fail-closed to the capability workspace returned by the backend', async () => {
   const source = await loadSwitcher();
   assert.match(source, /item\?\.key === "internal_ai"/);
@@ -60,6 +70,7 @@ test('switcher consumes canonical Design OS accents and preserves locale on real
   assert.match(source, /url\.searchParams\.set\("lang", locale\)/);
   assert.match(source, /data-hc-workspace-link="repair"/);
   assert.match(source, /data-hc-workspace-link="academy"/);
+  assert.match(source, /data-hc-workspace-link="loadboard"/);
   assert.match(source, /data-hc-workspace-link="ai"/);
   assert.match(source, /data-hc-workspace-link="beauty"/);
 });
@@ -71,7 +82,6 @@ test('account switcher remains fail-closed until a valid account payload is load
   assert.match(source, /root\.hidden = false/);
   assert.match(source, /\.catch\(\(\) => \{\s*root\.hidden = true;/);
 });
-
 
 test('authenticated Hermes account affordance persists site-wide without SSR private workspace anchors', async () => {
   const source = await loadSwitcher();

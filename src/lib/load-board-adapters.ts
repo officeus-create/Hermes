@@ -4,12 +4,24 @@ export type LoadBoardProviderId =
   | "truckstop"
   | "dat"
   | "ship_cars"
+  | "direct_freight"
+  | "loadboard_123"
   | "sanitized_csv";
 
-export type AdapterTransport = "rest_api" | "webhook" | "csv_export" | "manual_csv" | "partner_integration";
+export type AdapterTransport = "rest_api" | "soap_api" | "webhook" | "csv_export" | "manual_csv" | "partner_integration";
 export type AdapterReadiness = "research_only" | "owner_approval_required" | "contract_required" | "preview_ready";
 export type AdapterEnvironment = "preview" | "sandbox" | "production";
 export type AdapterOperation = "import_preview" | "read_opportunities" | "receive_webhook" | "write_or_book" | "public_export";
+export type AdapterCapability =
+  | "search_loads"
+  | "search_trucks"
+  | "rates"
+  | "tracking"
+  | "offers"
+  | "book_now"
+  | "load_posting"
+  | "documents"
+  | "webhooks";
 
 export const SCRAPING_ALLOWED = false;
 export const OUTBOUND_PROVIDER_REQUESTS_ENABLED = false;
@@ -20,11 +32,13 @@ export type LoadBoardAdapterDefinition = Readonly<{
   id: LoadBoardProviderId;
   label: string;
   transports: readonly AdapterTransport[];
+  capabilities: readonly AdapterCapability[];
   readiness: AdapterReadiness;
   providerConnectionEnabled: false;
   requiresOwnerApproval: boolean;
   requiresCommercialReview: boolean;
   requiresDataRightsReview: boolean;
+  documentationUrl?: string;
   notes: string;
 }>;
 
@@ -49,73 +63,111 @@ export type AdapterAccessDecision = Readonly<{
 }>;
 
 const transportList = (...transports: AdapterTransport[]): readonly AdapterTransport[] => Object.freeze(transports);
+const capabilityList = (...capabilities: AdapterCapability[]): readonly AdapterCapability[] => Object.freeze(capabilities);
 
 export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoardAdapterDefinition>> = Object.freeze({
   central_dispatch: Object.freeze({
     id: "central_dispatch",
     label: "Central Dispatch",
     transports: transportList("rest_api", "webhook", "partner_integration"),
+    capabilities: capabilityList("load_posting", "rates", "offers", "documents", "webhooks"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
-    notes: "Official APIs are documented, but Hermes account eligibility, scopes, storage, aggregation, display, and retention rights require review.",
+    documentationUrl: "https://api-docs.centraldispatch.com/",
+    notes: "Listings V2, Market Intelligence, Offers, documents, events and OAuth/bearer authentication are documented. Marketplace search rights for Hermes carrier workflows, storage, aggregation, display and retention still require provider approval.",
   }),
   super_dispatch: Object.freeze({
     id: "super_dispatch",
     label: "Super Dispatch",
     transports: transportList("rest_api", "webhook", "partner_integration"),
+    capabilities: capabilityList("search_loads", "offers", "rates", "tracking", "documents", "webhooks", "load_posting"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
-    notes: "Official vehicle-transport APIs and webhooks are documented; production credentials and cross-system data rights are not approved.",
+    documentationUrl: "https://developer.superdispatch.com/",
+    notes: "Official carrier and shipper APIs support orders, offers, loadboard workflows, pricing insights, tracking, eBOL/ePOD and webhooks. Production credentials and cross-system display/retention rights remain approval-gated.",
   }),
   truckstop: Object.freeze({
     id: "truckstop",
     label: "Truckstop",
-    transports: transportList("rest_api", "partner_integration"),
+    transports: transportList("rest_api", "soap_api", "partner_integration"),
+    capabilities: capabilityList("search_loads", "search_trucks", "load_posting", "rates"),
     readiness: "contract_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
-    notes: "A signed systems-integration agreement and licensed products are required before credentials or implementation.",
+    documentationUrl: "https://developer.truckstop.com/",
+    notes: "Official SOAP Load Search and Truck Search plus REST Load Management are documented. A systems-integration agreement, enabled web-service products and explicit data-use rights are required before Hermes activates credentials.",
   }),
   dat: Object.freeze({
     id: "dat",
     label: "DAT",
     transports: transportList("rest_api", "partner_integration"),
+    capabilities: capabilityList("search_loads", "book_now", "tracking", "load_posting", "rates"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
-    notes: "Official API families are advertised; detailed access, licensing, retention, and aggregation rights require Developer Portal review.",
+    documentationUrl: "https://www.dat.com/api-integration",
+    notes: "DAT advertises APIs for Load Board, BookNow, Tracking and Freight Posting through its Developer Portal. Endpoint access, licensing, retention, aggregation and deletion rights require an approved portal/account review.",
   }),
   ship_cars: Object.freeze({
     id: "ship_cars",
     label: "Ship.Cars",
     transports: transportList("rest_api", "csv_export", "partner_integration"),
-    readiness: "research_only",
+    capabilities: capabilityList("search_loads", "rates", "offers", "tracking", "load_posting"),
+    readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
-    notes: "Official products advertise API and CSV capabilities, but public endpoint, authentication, retention, and display documentation is incomplete.",
+    documentationUrl: "https://shipcars.readme.io/",
+    notes: "Official OAuth2 documentation and Loadboard v3 postings endpoint are public, including pickup/delivery, route, vehicle count, operability, trailer, payment, pay and price-per-mile filters. Hermes still needs account credentials and explicit internal display/retention rights before production sync.",
+  }),
+  direct_freight: Object.freeze({
+    id: "direct_freight",
+    label: "Direct Freight",
+    transports: transportList("rest_api", "partner_integration"),
+    capabilities: capabilityList("search_loads"),
+    readiness: "owner_approval_required",
+    providerConnectionEnabled: false,
+    requiresOwnerApproval: true,
+    requiresCommercialReview: true,
+    requiresDataRightsReview: true,
+    documentationUrl: "https://github.com/Direct-Freight/df-api-docs",
+    notes: "Direct Freight maintains a public OpenAPI/Swagger specification for its load-board API. Hermes can map the documented search model now, but production authentication, account entitlement, storage and redistribution rights must be confirmed before enabling requests.",
+  }),
+  loadboard_123: Object.freeze({
+    id: "loadboard_123",
+    label: "123Loadboard",
+    transports: transportList("rest_api", "partner_integration"),
+    capabilities: capabilityList("search_loads", "search_trucks", "rates", "offers", "book_now", "load_posting"),
+    readiness: "contract_required",
+    providerConnectionEnabled: false,
+    requiresOwnerApproval: true,
+    requiresCommercialReview: true,
+    requiresDataRightsReview: true,
+    documentationUrl: "https://www.123loadboard.com/api/",
+    notes: "123Loadboard advertises partner APIs for searching loads and trucks, rates, bidding, Book Now and load/truck posting. Partner onboarding and the provider's API/data-use agreement are required before Hermes activates a live connector.",
   }),
   sanitized_csv: Object.freeze({
     id: "sanitized_csv",
     label: "Owner-approved sanitized CSV",
     transports: transportList("manual_csv"),
+    capabilities: capabilityList("search_loads"),
     readiness: "preview_ready",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: false,
     requiresDataRightsReview: true,
-    notes: "The only currently permitted adapter path is local preview and quarantine of an owner-approved sanitized export; no write or publication follows automatically.",
+    notes: "The currently permitted local adapter path remains an owner-approved sanitized export entering preview/quarantine. It performs no provider write and grants no public redistribution rights.",
   }),
 });
 

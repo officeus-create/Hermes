@@ -1,0 +1,135 @@
+<script>
+  import { trackEvent } from "../lib/analytics";
+
+  const LOAD_BOARD_PATH = "/load-board/";
+  const ACCESS_PATH = "/services/hermes-connect/load-board/access/";
+  const SOURCE_SETUP_PATH = "/services/hermes-connect/load-board/source/";
+  const path = window.location.pathname;
+  const isBoard = path === LOAD_BOARD_PATH;
+  const isAccess = path === ACCESS_PATH;
+  const isSource = path === SOURCE_SETUP_PATH;
+
+  if (isBoard || isAccess || isSource) {
+    const base = {
+      audience_type: "carrier",
+      page_group: "load_board",
+      service_group: "load_board",
+      page_path: path,
+    };
+
+    trackEvent(
+      isBoard ? "load_board_page_view" : isAccess ? "load_board_access_view" : "load_board_source_setup_view",
+      base,
+    );
+
+    if (isBoard) {
+      let unlockedTracked = false;
+      const board = document.querySelector<HTMLElement>("[data-hlb-live-marketplace]");
+      const recordUnlocked = () => {
+        if (unlockedTracked || !board?.classList.contains("is-unlocked")) return;
+        unlockedTracked = true;
+        trackEvent("load_board_unlocked_view", {
+          ...base,
+          access_state: "company_access_open",
+        });
+      };
+
+      recordUnlocked();
+      if (board && "MutationObserver" in window) {
+        const observer = new MutationObserver(recordUnlocked);
+        observer.observe(board, { attributes: true, attributeFilter: ["class"] });
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!event.isTrusted) return;
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const link = target.closest<HTMLAnchorElement>("a[href]");
+        if (!link) return;
+
+        let destination: URL;
+        try { destination = new URL(link.href, window.location.origin); }
+        catch { return; }
+        if (destination.origin !== window.location.origin || destination.pathname !== ACCESS_PATH) return;
+
+        trackEvent("load_board_unlock_click", {
+          ...base,
+          destination_path: ACCESS_PATH,
+          preview_kind: link.classList.contains("hlb-structural-preview")
+            ? "structural_preview"
+            : link.classList.contains("hlb-live-row--locked")
+              ? "locked_load"
+              : "primary_cta",
+          has_load_reference: destination.searchParams.has("load"),
+        });
+      });
+
+      window.addEventListener("hermes:load-board-qualified-action", (event) => {
+        const detail = event instanceof CustomEvent && event.detail && typeof event.detail === "object"
+          ? event.detail as Record<string, unknown>
+          : {};
+        trackEvent("load_board_qualified_action", {
+          ...base,
+          action_type: String(detail.action_type || "request_details"),
+          request_status: String(detail.request_status || "requested"),
+          load_reference_present: Boolean(detail.load_id),
+        });
+      });
+    }
+
+    if (isAccess) {
+      const seen = new Set<string>();
+      const emitOnce = (eventName: string, payload: Record<string, string | number | boolean> = {}) => {
+        if (seen.has(eventName)) return;
+        seen.add(eventName);
+        trackEvent(eventName, { ...base, ...payload });
+      };
+
+      const authMessage = document.querySelector<HTMLElement>("[data-auth-message]");
+      const companyMessage = document.querySelector<HTMLElement>("[data-company-message]");
+      const authState = document.querySelector<HTMLElement>("[data-auth-state]");
+
+      const readState = () => {
+        const authText = authMessage?.textContent?.trim() || "";
+        const companyText = companyMessage?.textContent?.trim() || "";
+        const stateText = authState?.textContent?.trim() || "";
+
+        if (authText.startsWith("Account created.")) {
+          emitOnce("load_board_account_created", { auth_method: "registration" });
+        }
+        if (authText.startsWith("Signed in.")) {
+          emitOnce("load_board_sign_in_success", { auth_method: "login" });
+        }
+        if (stateText.startsWith("Signed in as ")) {
+          emitOnce("load_board_authenticated_access_view", { auth_state: "authenticated" });
+        }
+        if (companyText.startsWith("Company saved")) {
+          emitOnce("load_board_company_registered", {
+            catalog_opt_in_result: companyText.includes("added to Hermes Catalog") ? "listed_pending_verification" : "not_listed",
+          });
+        }
+      };
+
+      readState();
+      if ("MutationObserver" in window) {
+        const observer = new MutationObserver(readState);
+        if (authMessage) observer.observe(authMessage, { childList: true, subtree: true, characterData: true });
+        if (companyMessage) observer.observe(companyMessage, { childList: true, subtree: true, characterData: true });
+        if (authState) observer.observe(authState, { childList: true, subtree: true, characterData: true });
+      }
+    }
+
+    if (isSource) {
+      window.addEventListener("hermes:load-board-source-requested", (event) => {
+        const detail = event instanceof CustomEvent && event.detail && typeof event.detail === "object"
+          ? event.detail as Record<string, unknown>
+          : {};
+        trackEvent("load_board_source_requested", {
+          ...base,
+          request_status: String(detail.status || "pending_review"),
+          source_type: String(detail.source_type || "unknown"),
+        });
+      });
+    }
+  }
+</script>

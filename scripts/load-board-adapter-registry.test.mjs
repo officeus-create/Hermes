@@ -17,7 +17,7 @@ assert.equal(REAL_PROVIDER_CREDENTIALS_CONFIGURED, false);
 
 assert.deepEqual(
   Object.keys(LOAD_BOARD_ADAPTERS).sort(),
-  ["central_dispatch", "dat", "sanitized_csv", "ship_cars", "super_dispatch", "truckstop"],
+  ["central_dispatch", "dat", "direct_freight", "loadboard_123", "sanitized_csv", "ship_cars", "super_dispatch", "truckstop"],
 );
 assert.equal(Object.isFrozen(LOAD_BOARD_ADAPTERS), true);
 assert.equal(listEnabledProviderConnections().length, 0);
@@ -26,13 +26,19 @@ for (const adapter of Object.values(LOAD_BOARD_ADAPTERS)) {
   assert.equal(adapter.providerConnectionEnabled, false);
   assert.equal(Object.isFrozen(adapter), true);
   assert.equal(Object.isFrozen(adapter.transports), true);
+  assert.equal(Object.isFrozen(adapter.capabilities), true);
   assert.ok(adapter.notes.length > 20);
+  assert.ok(adapter.capabilities.length > 0);
 }
 
 assert.equal(getLoadBoardAdapter("central_dispatch").readiness, "owner_approval_required");
 assert.equal(getLoadBoardAdapter("super_dispatch").transports.includes("webhook"), true);
+assert.equal(getLoadBoardAdapter("truckstop").transports.includes("soap_api"), true);
 assert.equal(getLoadBoardAdapter("truckstop").readiness, "contract_required");
-assert.equal(getLoadBoardAdapter("ship_cars").readiness, "research_only");
+assert.equal(getLoadBoardAdapter("ship_cars").readiness, "owner_approval_required");
+assert.equal(getLoadBoardAdapter("ship_cars").capabilities.includes("search_loads"), true);
+assert.equal(getLoadBoardAdapter("direct_freight").capabilities.includes("search_loads"), true);
+assert.equal(getLoadBoardAdapter("loadboard_123").capabilities.includes("book_now"), true);
 assert.equal(getLoadBoardAdapter("sanitized_csv").readiness, "preview_ready");
 
 const providerRead = evaluateLoadBoardAdapterAccess({
@@ -131,4 +137,4 @@ const csvRead = evaluateLoadBoardAdapterAccess({
 assert.equal(csvRead.allowed, false);
 assert.match(csvRead.reason, /import preview only/i);
 
-console.log("Load-board adapter registry default-deny checks passed.");
+console.log("Load-board adapter registry default-deny checks passed for 8 official/safe source paths.");

@@ -116,3 +116,14 @@ Add or update one row with:
 - owner or agent;
 - smallest safe next action;
 - verification required to close.
+
+
+## 2026-09-12 — Load Board source setup release reconciliation
+
+PROBLEM: PR #1252 built successfully but Website checks #4608 failed static validation.
+ROOT_CAUSE: The private source-setup route was added without its release-manifest delta (310 generated routes versus 309 declared).
+FAILED_APPROACH: Expanding product code before reconciling the complete release inventory.
+WORKING_APPROACH: Declare the existing source-setup route in a separate noindex delta; preserve the access-funnel delta and every existing indexability guard.
+EVIDENCE: GitHub Actions run 34686669424, job 103534737278; the focused curtain contract and static suite passed locally before the additional scoped runtime fixes; final-head CI remains required.
+LESSON: A new private route still needs release inventory, not a sitemap entry.
+REUSE_RULE: Reconcile route, canonical, robots and manifest together; do not disable the manifest test.

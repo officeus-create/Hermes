@@ -991,3 +991,14 @@ entries — append only.
 - Rollback: revert this branch commit; the previous workflow behavior returns. Do not remove or rotate production bindings as rollback.
 - Verification required before promotion: focused contract, `git diff --check`, `npm run build`, `npm test`, `npm run test:e2e`, exact-head GitHub CI, then one workflow-dispatch PASS and approved inbox reconciliation.
 - Ecosystem compounding scorecard: primary outcome and conversion observability improve; SEO/public content/internal linking remain unchanged; reusable architecture improves through source-linked monitoring; data/privacy remains synthetic and sanitized; no adjacent expansion was taken.
+
+
+## Load Board release closeout — 2026-09-12
+
+- Owner: ChatGPT, current owner-requested Load Board release scope, PR #1252.
+- Implementation: reconciled the existing private source-setup route in its own noindex release delta; put 60 clearly labeled non-live preview rows into initial HTML; made runtime-row styles apply to inserted elements; honor login mode; distinguish unavailable inventory from zero; bind Request details directly to the rendered record ID without a second mismatched inventory fetch.
+- Verification: Node 22 build and npm test passed locally; 24 targeted desktop/mobile Playwright scenarios passed, including 8 executions of the four new behavioral regressions. Final pushed-head mandatory CI and production readback still required.
+- SEO/conversion: existing canonical Load Board and 15 provider/equipment acquisition pages retained; new source-setup form stays noindex/outside sitemaps. No live-inventory or ranking claim inferred from preview UI.
+- Privacy/architecture: no credentials, real customer fixtures, raw contacts, extra provider connections or auto-booking; existing identity/company/D1 primitives retained.
+- Rollback: revert this bounded commit on the same branch. Primary checkout untouched.
+- Next: exact-head release checks, authorized merge/deploy, then actual canonical-domain curtain, API, registration and company access readback. Real feed access remains conditional on independently established source rights.

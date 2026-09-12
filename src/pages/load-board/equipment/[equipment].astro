@@ -1,0 +1,16 @@
+---
+import LoadBoardSeoLanding from "../../../components/LoadBoardSeoLanding.astro";
+import { loadBoardEquipmentPages, type LoadBoardSeoPage } from "../../../data/load-board-seo";
+
+export function getStaticPaths() {
+  return loadBoardEquipmentPages.map((page) => ({
+    params: { equipment: page.slug },
+    props: { page },
+  }));
+}
+
+interface Props { page: LoadBoardSeoPage; }
+const { page } = Astro.props;
+---
+
+<LoadBoardSeoLanding page={page} kind="equipment" />

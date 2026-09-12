@@ -64,6 +64,20 @@ for (const [legacyExpectation, currentExpectation] of loadBoardExpectationReplac
   currentSource = currentSource.replace(legacyExpectation, currentExpectation);
 }
 
+// The legacy validator scans generated HTML text with an anchor regex. Inline client-side
+// template literals can legitimately contain href="${...}" strings that are not static DOM
+// links. Ignore only those interpolation placeholders; real rendered/static hrefs keep the
+// same broken-link enforcement.
+const legacyHrefGuard = 'if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;';
+const currentHrefGuard = 'if (!href || href.includes("${") || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;';
+const hrefGuardCount = currentSource.split(legacyHrefGuard).length - 1;
+assert.equal(
+  hrefGuardCount,
+  1,
+  `Expected exactly one legacy static href guard, found ${hrefGuardCount}. Update the compatibility runner intentionally if the legacy link validator changes.`,
+);
+currentSource = currentSource.replace(legacyHrefGuard, currentHrefGuard);
+
 await writeFile(temporaryValidatorUrl, currentSource, "utf8");
 
 try {

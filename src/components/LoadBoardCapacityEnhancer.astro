@@ -1,5 +1,22 @@
 ---
 const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
+const isHermesCatalog = Astro.url.pathname === "/businesses/";
+const accessPath = "/services/hermes-connect/load-board/access/";
+const initialPreviewLanes = [
+        ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
+        ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
+        ['Houston, TX','Dallas, TX','dry_van'], ['Atlanta, GA','Charlotte, NC','reefer'],
+        ['Phoenix, AZ','Las Vegas, NV','car_hauler'], ['Los Angeles, CA','Sacramento, CA','flatbed'],
+        ['Miami, FL','Orlando, FL','car_hauler'], ['Columbus, OH','Detroit, MI','dry_van'],
+        ['Newark, NJ','Boston, MA','reefer'], ['Kansas City, MO','Denver, CO','flatbed'],
+        ['Memphis, TN','Birmingham, AL','power_only'], ['San Antonio, TX','Oklahoma City, OK','hotshot'],
+        ['Seattle, WA','Portland, OR','car_hauler'], ['Savannah, GA','Jacksonville, FL','step_deck'],
+        ['St. Louis, MO','Louisville, KY','dry_van'], ['Tampa, FL','Atlanta, GA','car_hauler'],
+        ['Fremont, CA','Reno, NV','car_hauler'], ['Cleveland, OH','Pittsburgh, PA','box_truck'],
+        ['Minneapolis, MN','Omaha, NE','reefer'], ['Denver, CO','Salt Lake City, UT','flatbed'],
+        ['Charlotte, NC','Richmond, VA','power_only'], ['Indianapolis, IN','Chicago, IL','car_hauler'],
+      ];
+const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
 ---
 
 {isCanonicalLoadBoard && (
@@ -7,64 +24,99 @@ const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
     <div class="hlb-live-shell">
       <div class="hlb-live-head">
         <div>
-          <p class="hlb-live-eyebrow">Hermes Load Board · Live marketplace</p>
-          <h2 id="hlb-live-title">Approved freight and truck capacity, refreshed automatically.</h2>
-          <p>Live records come from approved source feeds and the Hermes intake pipeline. Demo cards remain separate below and are never counted as live freight.</p>
+          <p class="hlb-live-eyebrow">Hermes Load Board · marketplace preview</p>
+          <h2 id="hlb-live-title">See the board before you create an account.</h2>
+          <p>Scroll the real interface, see the truthful current inventory count, then unlock carrier-access records with one Hermes Connect account and your company profile.</p>
         </div>
         <div class="hlb-live-actions">
+          <a class="hlb-live-primary" href={accessPath}>Create account &amp; unlock</a>
+          <a href={`${accessPath}?mode=login`}>Sign in</a>
           <a href="/carrier/">Agreement &amp; onboarding</a>
-          <a href="/logistics/carrier/">Carrier access</a>
         </div>
       </div>
 
+      <div class="hlb-access-strip" data-hlb-access-strip>
+        <span class="hlb-access-dot"></span>
+        <strong data-hlb-access-label>Public curtain view</strong>
+        <span data-hlb-access-copy>Load count is real. Scroll 60 interface rows; preview lanes are clearly labeled and load details unlock after a Hermes account has a registered company.</span>
+      </div>
+
       <div class="hlb-live-stats" aria-label="Live Load Board status">
-        <div><strong data-live-load-count>—</strong><span>approved live loads</span><small data-live-load-status>Loading live feed…</small></div>
-        <div><strong data-live-capacity-count>—</strong><span>available trucks</span><small data-live-capacity-status>Loading capacity…</small></div>
+        <div class="hlb-stat-primary"><strong data-live-load-count>—</strong><span>loads available through Load Board access</span><small data-live-load-status>Checking active inventory…</small></div>
+        <div><strong data-live-capacity-count>—</strong><span>available trucks</span><small data-live-capacity-status>Checking capacity…</small></div>
         <div><strong>30s</strong><span>refresh cycle</span><small>Expired records disappear automatically</small></div>
       </div>
 
       <div class="hlb-live-grid">
-        <section class="hlb-live-panel" aria-labelledby="hlb-live-loads-title">
+        <section class="hlb-live-panel hlb-live-panel--loads" aria-labelledby="hlb-live-loads-title">
           <div class="hlb-live-panel-head">
-            <div><p class="hlb-live-eyebrow">Live freight</p><h3 id="hlb-live-loads-title">Available loads</h3></div>
-            <span class="hlb-live-badge">SOURCE-GATED</span>
+            <div><p class="hlb-live-eyebrow">Freight</p><h3 id="hlb-live-loads-title">Available loads</h3></div>
+            <span class="hlb-live-badge" data-hlb-mode-badge>CURTAIN VIEW</span>
           </div>
-          <div class="hlb-live-rows" data-live-load-rows aria-live="polite">
-            <div class="hlb-live-empty">Connecting to the approved live-load feed…</div>
+          <div class="hlb-table-head" aria-hidden="true"><span>Lane</span><span>Equipment / pickup</span><span>Economics</span></div>
+          <div class="hlb-live-rows hlb-live-rows--scroll" data-live-load-rows aria-live="polite">
+            {Array.from({ length: 60 }, (_, index) => {
+              const [origin, destination, equipment] = initialPreviewLanes[index % initialPreviewLanes.length];
+              return <a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href={`${accessPath}?source=load-board-curtain`} aria-label={`Preview lane ${origin} to ${destination}. Register in Hermes Connect to unlock Load Board access`}>
+                <div class="hlb-live-route"><span>{origin}</span><b>→</b><span>{destination}</span></div>
+                <div class="hlb-live-meta"><span>{previewEquipmentLabel(equipment)}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div>
+                <div class="hlb-live-rate"><strong>Rate locked</strong><small>Register company to unlock</small></div>
+              </a>;
+            })}
+          </div>
+          <div class="hlb-preview-note" data-hlb-preview-note>
+            <strong>Interface preview rows are not inventory.</strong>
+            <span>Only the real count above represents active, unexpired records. Locked structural rows exist only to let you inspect the Load Board experience before registration.</span>
           </div>
         </section>
 
-        <section class="hlb-live-panel" aria-labelledby="hlb-live-capacity-title">
-          <div class="hlb-live-panel-head">
-            <div><p class="hlb-live-eyebrow">Carrier capacity</p><h3 id="hlb-live-capacity-title">Available trucks</h3></div>
-            <span class="hlb-live-badge hlb-live-badge--capacity">SEPARATE FROM LOADS</span>
-          </div>
-          <div class="hlb-live-rows" data-live-capacity-rows aria-live="polite">
-            <div class="hlb-live-empty">Connecting to the approved truck-capacity feed…</div>
-          </div>
-        </section>
+        <aside class="hlb-curtain-card" data-hlb-curtain-card>
+          <p class="hlb-live-eyebrow">Unlock in Hermes Connect</p>
+          <h3>Click any locked load. Registration continues from the exact board you are previewing.</h3>
+          <ol>
+            <li><b>1</b><span><strong>Create or sign in to Hermes.</strong><small>One identity for Hermes Connect.</small></span></li>
+            <li><b>2</b><span><strong>Register your company.</strong><small>Company profile becomes the Load Board access owner.</small></span></li>
+            <li><b>3</b><span><strong>Join Hermes Catalog.</strong><small>Optional safe public card appears as self-submitted while verification is pending.</small></span></li>
+            <li><b>4</b><span><strong>Return to this board.</strong><small>Carrier-access opportunities and dispatcher tools open.</small></span></li>
+          </ol>
+          <a class="hlb-curtain-cta" href={accessPath}>Register company &amp; unlock Load Board →</a>
+          <a class="hlb-curtain-catalog" href="/businesses/">See Hermes Catalog</a>
+        </aside>
       </div>
+
+      <section class="hlb-live-panel hlb-capacity-panel" aria-labelledby="hlb-live-capacity-title">
+        <div class="hlb-live-panel-head">
+          <div><p class="hlb-live-eyebrow">Carrier capacity</p><h3 id="hlb-live-capacity-title">Available trucks</h3></div>
+          <span class="hlb-live-badge hlb-live-badge--capacity">SEPARATE FROM LOADS</span>
+        </div>
+        <div class="hlb-live-rows" data-live-capacity-rows aria-live="polite">
+          <div class="hlb-live-empty">Connecting to the approved truck-capacity feed…</div>
+        </div>
+      </section>
+
+      <nav class="hlb-discovery-hub" aria-label="Load Board provider and equipment guides">
+        <div><strong>Load Board providers</strong>
+          <a href="/load-board/providers/ship-cars/">Ship.Cars</a><a href="/load-board/providers/central-dispatch/">Central Dispatch</a><a href="/load-board/providers/super-dispatch/">Super Dispatch</a><a href="/load-board/providers/dat/">DAT</a><a href="/load-board/providers/truckstop/">Truckstop</a><a href="/load-board/providers/123loadboard/">123Loadboard</a><a href="/load-board/providers/direct-freight/">Direct Freight</a>
+        </div>
+        <div><strong>Equipment load guides</strong>
+          <a href="/load-board/equipment/car-hauler/">Car Hauler</a><a href="/load-board/equipment/dry-van/">Dry Van</a><a href="/load-board/equipment/reefer/">Reefer</a><a href="/load-board/equipment/flatbed/">Flatbed</a><a href="/load-board/equipment/step-deck/">Step Deck</a><a href="/load-board/equipment/hotshot/">Hotshot</a><a href="/load-board/equipment/power-only/">Power Only</a><a href="/load-board/equipment/box-truck/">Box Truck</a>
+        </div>
+      </nav>
 
       <div class="hlb-live-truth">
         <strong>Truth boundary:</strong>
-        <span>A truck is capacity, not a freight load. A demo is not live. Only active, unexpired, permission-safe D1 records appear in the counters above.</span>
+        <span>A truck is capacity, not freight. A demo is not live. The load counter uses active, unexpired public or carrier-access records; internal-only records and visual preview rows are excluded.</span>
       </div>
     </div>
   </section>
 )}
 
-{isCanonicalLoadBoard && (
-  <script is:inline>
+{(isCanonicalLoadBoard || isHermesCatalog) && (
+  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath }}>
     (() => {
-      const root = document.querySelector("[data-hlb-live-marketplace]");
-      if (!(root instanceof HTMLElement)) return;
-
       const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
-      const equipmentLabel = (value) => ({
-        dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck",
-        power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck",
-        sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other",
-      }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
+      const equipmentLabel = (value) => ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
+      const companyTypeLabel = (value) => ({ carrier: "Carrier", owner_operator: "Owner-Operator", fleet: "Fleet", dispatcher: "Dispatcher", broker: "Broker", shipper: "Shipper", dealer: "Dealer", other: "Business" }[String(value || "")] || "Business");
       const age = (value) => {
         const time = new Date(value || 0).getTime();
         if (!Number.isFinite(time) || time <= 0) return "recent";
@@ -80,28 +132,120 @@ const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
         return new Intl.NumberFormat("en-US", { style: "currency", currency: record?.rateCurrency || "USD", maximumFractionDigits: 0 }).format(amount);
       };
 
+      if (isHermesCatalog) {
+        const enhanceCatalog = async () => {
+          const grid = document.querySelector('[data-catalog-grid]');
+          const count = document.querySelector('[data-catalog-count]');
+          if (!(grid instanceof HTMLElement)) return;
+          try {
+            const response = await fetch('/api/catalog/companies', { headers: { Accept: 'application/json' } });
+            if (!response.ok) return;
+            const payload = await response.json();
+            const companies = Array.isArray(payload.companies) ? payload.companies : [];
+            const existingIds = new Set([...grid.querySelectorAll('[data-company-runtime-id]')].map((node) => node.getAttribute('data-company-runtime-id')));
+            for (const company of companies) {
+              if (!company?.id || existingIds.has(String(company.id))) continue;
+              const card = document.createElement('article');
+              card.className = 'business-card business-card--runtime';
+              card.setAttribute('data-catalog-card', '');
+              card.setAttribute('data-company-runtime-id', String(company.id));
+              card.setAttribute('data-search-text', `${company.companyName || ''} ${company.companyType || ''} ${company.city || ''} ${company.state || ''}`.toLowerCase());
+              card.innerHTML = `<div class="business-card__hero"><div class="business-card__category">${escapeHtml(companyTypeLabel(company.companyType))}</div><div class="business-card__identity"><h2>${escapeHtml(company.companyName)}</h2><p>${escapeHtml(company.city)}, ${escapeHtml(company.state)}</p></div></div><div class="business-card__body"><p class="business-card__claim-state">${escapeHtml(company.verificationLabel || 'Self-submitted · verification pending')}</p><p>Company registered through Hermes Connect. Public facts remain verification-pending before any dedicated SEO/GEO profile is released.</p></div>`;
+              grid.appendChild(card);
+            }
+            if (count) count.textContent = String(grid.querySelectorAll('[data-catalog-card]').length);
+
+            const search = document.querySelector('[data-catalog-search]');
+            if (search instanceof HTMLInputElement && search.dataset.runtimeBound !== 'true') {
+              search.dataset.runtimeBound = 'true';
+              search.addEventListener('input', () => {
+                const term = search.value.trim().toLowerCase();
+                grid.querySelectorAll('[data-catalog-card]').forEach((card) => {
+                  if (!(card instanceof HTMLElement)) return;
+                  card.hidden = Boolean(term) && !String(card.dataset.searchText || card.textContent || '').toLowerCase().includes(term);
+                });
+              });
+            }
+          } catch {}
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => void enhanceCatalog(), { once: true });
+        else void enhanceCatalog();
+        return;
+      }
+
+      if (!isCanonicalLoadBoard) return;
+      const root = document.querySelector("[data-hlb-live-marketplace]");
+      if (!(root instanceof HTMLElement)) return;
+
       const moveIntoCanonicalPosition = () => {
+        const hero = document.querySelector('.load-board-hero');
+        if (hero?.parentElement) { hero.insertAdjacentElement('afterend', root); return; }
         const demo = document.querySelector(".available-loads-preview");
         if (demo?.parentElement) demo.parentElement.insertBefore(root, demo);
       };
+      const registrationHref = (record) => {
+        const url = new URL(accessPath, window.location.origin);
+        url.searchParams.set('source', 'load-board-curtain');
+        if (record?.id) url.searchParams.set('load', String(record.id).slice(0, 80));
+        return url.pathname + url.search;
+      };
+      const previewLaneExamples = [
+        ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
+        ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
+        ['Houston, TX','Dallas, TX','dry_van'], ['Atlanta, GA','Charlotte, NC','reefer'],
+        ['Phoenix, AZ','Las Vegas, NV','car_hauler'], ['Los Angeles, CA','Sacramento, CA','flatbed'],
+        ['Miami, FL','Orlando, FL','car_hauler'], ['Columbus, OH','Detroit, MI','dry_van'],
+        ['Newark, NJ','Boston, MA','reefer'], ['Kansas City, MO','Denver, CO','flatbed'],
+        ['Memphis, TN','Birmingham, AL','power_only'], ['San Antonio, TX','Oklahoma City, OK','hotshot'],
+        ['Seattle, WA','Portland, OR','car_hauler'], ['Savannah, GA','Jacksonville, FL','step_deck'],
+        ['St. Louis, MO','Louisville, KY','dry_van'], ['Tampa, FL','Atlanta, GA','car_hauler'],
+        ['Fremont, CA','Reno, NV','car_hauler'], ['Cleveland, OH','Pittsburgh, PA','box_truck'],
+        ['Minneapolis, MN','Omaha, NE','reefer'], ['Denver, CO','Salt Lake City, UT','flatbed'],
+        ['Charlotte, NC','Richmond, VA','power_only'], ['Indianapolis, IN','Chicago, IL','car_hauler'],
+      ];
+      const previewRows = (count) => Array.from({ length: count }, (_, index) => {
+        const [origin, destination, equipment] = previewLaneExamples[index % previewLaneExamples.length];
+        return `<a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href="${escapeHtml(registrationHref(null))}" aria-label="Preview lane ${escapeHtml(origin)} to ${escapeHtml(destination)}. Register in Hermes Connect to unlock Load Board access"><div class="hlb-live-route"><span>${escapeHtml(origin)}</span><b>→</b><span>${escapeHtml(destination)}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(equipment))}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div><div class="hlb-live-rate"><strong>🔒 Rate locked</strong><small>Register company to unlock</small></div></a>`;
+      }).join('');
+      const renderImmediatePreview = () => {
+        const rows = root.querySelector("[data-live-load-rows]");
+        if (rows instanceof HTMLElement) rows.innerHTML = previewRows(60);
+      };
 
-      const renderLoads = (records) => {
+      const renderLoads = (records, accessGranted, aggregateCount) => {
         const rows = root.querySelector("[data-live-load-rows]");
         const count = root.querySelector("[data-live-load-count]");
         const status = root.querySelector("[data-live-load-status]");
+        const badge = root.querySelector('[data-hlb-mode-badge]');
+        const accessLabel = root.querySelector('[data-hlb-access-label]');
+        const accessCopy = root.querySelector('[data-hlb-access-copy]');
+        const previewNote = root.querySelector('[data-hlb-preview-note]');
+        const curtain = root.querySelector('[data-hlb-curtain-card]');
         if (!(rows instanceof HTMLElement)) return;
         const active = Array.isArray(records) ? records : [];
-        if (count) count.textContent = String(active.length);
-        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active freight in D1 yet";
-        if (!active.length) {
-          rows.innerHTML = '<div class="hlb-live-empty"><strong>0 approved live loads in D1 right now.</strong><span>The feed is connected; the next approved, fresh load record will appear here automatically.</span></div>';
+        const truthfulCount = aggregateCount != null && Number.isFinite(Number(aggregateCount)) && Number(aggregateCount) >= 0 ? Number(aggregateCount) : null;
+        if (count) count.textContent = truthfulCount === null ? "—" : String(truthfulCount);
+        if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? '' : 's'} · refreshed automatically` : "No approved active freight right now";
+        if (badge) badge.textContent = accessGranted ? 'ACCESS OPEN' : 'CURTAIN VIEW';
+        if (accessLabel) accessLabel.textContent = accessGranted ? 'Hermes company access active' : 'Public curtain view';
+        if (accessCopy) accessCopy.textContent = accessGranted ? 'Your company profile has unlocked carrier-access Load Board records.' : 'Load count is real. Scroll 60 interface rows; preview lanes are clearly labeled and load details unlock after a Hermes account has a registered company.';
+        if (previewNote instanceof HTMLElement) previewNote.hidden = accessGranted;
+        if (curtain instanceof HTMLElement) curtain.hidden = accessGranted;
+
+        if (accessGranted) {
+          root.classList.add('is-unlocked');
+          if (!active.length) {
+            rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active loads right now.</strong><span>Your access is open; new approved records will appear automatically.</span></div>';
+            return;
+          }
+          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
           return;
         }
-        rows.innerHTML = active.map((record) => `<article class="hlb-live-row">
-          <div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div>
-          <div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div>
-          <div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${escapeHtml(age(record.observedAt))}</small></div>
-        </article>`).join("");
+
+        root.classList.remove('is-unlocked');
+        const publicPreview = active.slice(0, 6).map((record) => `<a class="hlb-live-row hlb-live-row--locked" href="${escapeHtml(registrationHref(record))}" aria-label="Register in Hermes Connect to unlock load details"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || 'Destination locked')}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span class="hlb-mask">${escapeHtml(record.pickupWindow || 'Pickup window')}</span><span>Approved source</span></div><div class="hlb-live-rate"><strong>🔒 ${escapeHtml(money(record))}</strong><small>Open after company registration</small></div></a>`).join('');
+        const structuralCount = Math.max(54, 60 - Math.min(active.length, 6));
+        rows.innerHTML = publicPreview + previewRows(structuralCount);
       };
 
       const renderCapacity = (records) => {
@@ -111,52 +255,56 @@ const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
         if (!(rows instanceof HTMLElement)) return;
         const active = Array.isArray(records) ? records : [];
         if (count) count.textContent = String(active.length);
-        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active trucks in D1 yet";
-        if (!active.length) {
-          rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active capacity records in D1.</strong><span>Truck lists are counted separately and never inflate the live-load total.</span></div>';
-          return;
-        }
-        rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--capacity">
-          <div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div>
-          <div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || record.availability || "Available")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div>
-          <div class="hlb-live-rate"><strong>Truck available</strong><small>${escapeHtml(age(record.observedAt))}</small></div>
-        </article>`).join("");
+        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active trucks right now";
+        if (!active.length) { rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active capacity records.</strong><span>Truck lists are counted separately and never inflate the freight total.</span></div>'; return; }
+        rows.innerHTML = active.slice(0, 8).map((record) => `<article class="hlb-live-row hlb-live-row--capacity"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || record.availability || "Available")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>Truck available</strong><small>${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
       };
 
-      const fetchRecords = async (type) => {
-        const response = await fetch(`/api/load-board/active?type=${type}`, { headers: { Accept: "application/json" }, cache: "no-store" });
-        if (!response.ok) throw new Error(`load_board_${type}_${response.status}`);
-        const payload = await response.json();
-        return Array.isArray(payload.records) ? payload.records : [];
+      const fetchJson = async (url) => {
+        const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(8000) });
+        if (!response.ok) throw new Error(`load_board_${response.status}`);
+        return response.json();
       };
-
       const refresh = async () => {
-        const results = await Promise.allSettled([fetchRecords("load"), fetchRecords("capacity")]);
-        if (results[0].status === "fulfilled") renderLoads(results[0].value);
-        else {
-          const status = root.querySelector("[data-live-load-status]");
-          if (status) status.textContent = "Live-load API unavailable";
-          renderLoads([]);
+        const results = await Promise.allSettled([
+          fetchJson('/api/load-board/active?type=load'),
+          fetchJson('/api/load-board/active?type=capacity'),
+          fetchJson('/api/load-board/summary'),
+        ]);
+        const loadPayload = results[0].status === 'fulfilled' ? results[0].value : { records: [], load_board_access: false, audience: 'public' };
+        const capacityPayload = results[1].status === 'fulfilled' ? results[1].value : { records: [] };
+        const summaryPayload = results[2].status === 'fulfilled' ? results[2].value : null;
+        const accessGranted = Boolean(loadPayload.load_board_access || loadPayload.audience === 'carrier_candidate');
+        renderLoads(loadPayload.records, accessGranted, summaryPayload?.available_loads);
+        renderCapacity(capacityPayload.records);
+        if (results[0].status !== 'fulfilled') {
+          const status = root.querySelector('[data-live-load-status]');
+          if (status) status.textContent = 'Live feed temporarily unavailable. Interface preview is still available.';
         }
-        if (results[1].status === "fulfilled") renderCapacity(results[1].value);
-        else {
-          const status = root.querySelector("[data-live-capacity-status]");
-          if (status) status.textContent = "Capacity API unavailable";
-          renderCapacity([]);
+        if (results[1].status !== 'fulfilled') {
+          const count = root.querySelector('[data-live-capacity-count]');
+          const status = root.querySelector('[data-live-capacity-status]');
+          if (count) count.textContent = '—';
+          if (status) status.textContent = 'Truck feed temporarily unavailable';
         }
       };
 
       moveIntoCanonicalPosition();
+      renderImmediatePreview();
       void refresh();
-      window.setInterval(() => {
-        if (document.visibilityState === "visible") void refresh();
-      }, 30_000);
+      window.setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 30_000);
     })();
   </script>
 )}
 
 {isCanonicalLoadBoard && (
-  <style>
-    .hlb-live-marketplace{background:linear-gradient(180deg,#081232 0%,#0d1942 100%);color:#fff;padding:68px 0}.hlb-live-shell{width:min(1220px,calc(100% - 40px));margin:0 auto}.hlb-live-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.4rem}.hlb-live-head h2{max-width:21ch;margin:.35rem 0 .7rem;font-size:clamp(2rem,4vw,3.7rem);line-height:1}.hlb-live-head>div>p:last-child{max-width:780px;margin:0;color:#b4bfd8;line-height:1.65}.hlb-live-eyebrow{margin:0;text-transform:uppercase;letter-spacing:.11em;font-size:.69rem;font-weight:900;color:#8ea5df}.hlb-live-actions{display:flex;gap:.55rem;flex-wrap:wrap}.hlb-live-actions a{padding:.75rem .92rem;border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#fff;text-decoration:none;font-size:.72rem;font-weight:850;background:rgba(255,255,255,.055)}.hlb-live-actions a:first-child{background:#fff;color:#0b173c}.hlb-live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.25rem 0}.hlb-live-stats>div{padding:1rem 1.05rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045);display:grid}.hlb-live-stats strong{font-size:2rem;line-height:1}.hlb-live-stats span{margin-top:.35rem;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.hlb-live-stats small{margin-top:.38rem;color:#8f9dbc;font-size:.66rem}.hlb-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.hlb-live-panel{min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#111d47;overflow:hidden}.hlb-live-panel-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.09)}.hlb-live-panel-head h3{margin:.2rem 0 0;font-size:1.35rem}.hlb-live-badge{padding:.35rem .52rem;border-radius:999px;background:rgba(79,209,155,.12);color:#79dfb5;font-size:.58rem;font-weight:900;letter-spacing:.06em}.hlb-live-badge--capacity{background:rgba(147,121,255,.12);color:#b3a1ff}.hlb-live-rows{display:grid}.hlb-live-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:1rem;align-items:center;padding:.9rem 1.1rem;border-top:1px solid rgba(255,255,255,.065)}.hlb-live-row:first-child{border-top:0}.hlb-live-route{display:flex;align-items:center;gap:.42rem;min-width:0;font-size:.78rem;font-weight:850}.hlb-live-route span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hlb-live-route b{color:#6479b3}.hlb-live-meta{display:grid;gap:.16rem;color:#aeb9d2;font-size:.66rem}.hlb-live-rate{text-align:right;display:grid}.hlb-live-rate strong{font-size:.78rem}.hlb-live-rate small{margin-top:.18rem;color:#8492b2;font-size:.62rem}.hlb-live-empty{padding:1.2rem;display:grid;gap:.35rem;color:#9ba9c8;font-size:.74rem;line-height:1.5}.hlb-live-empty strong{color:#fff}.hlb-live-truth{display:flex;gap:.45rem;margin-top:1rem;padding:.85rem 1rem;border:1px solid rgba(79,209,155,.18);border-radius:12px;background:rgba(79,209,155,.055);color:#b6c2db;font-size:.7rem;line-height:1.5}.hlb-live-truth strong{flex:none;color:#79dfb5}@media(max-width:900px){.hlb-live-head{align-items:start;flex-direction:column}.hlb-live-stats{grid-template-columns:1fr}.hlb-live-grid{grid-template-columns:1fr}.hlb-live-row{grid-template-columns:1fr auto}.hlb-live-meta{grid-column:1/-1;grid-row:2}.hlb-live-rate{grid-column:2;grid-row:1}}@media(max-width:560px){.hlb-live-marketplace{padding:52px 0}.hlb-live-shell{width:min(100% - 24px,1220px)}.hlb-live-head h2{font-size:2.15rem}.hlb-live-actions{width:100%}.hlb-live-actions a{flex:1;text-align:center}.hlb-live-row{grid-template-columns:1fr}.hlb-live-rate{text-align:left;grid-column:1;grid-row:auto}.hlb-live-meta{grid-column:1;grid-row:auto}.hlb-live-truth{display:grid}}
+  <style is:global>
+    .hlb-live-marketplace{background:linear-gradient(180deg,#07112c 0%,#0b1740 62%,#101d49 100%);color:#fff;padding:56px 0 70px}.hlb-live-shell{width:min(1240px,calc(100% - 40px));margin:0 auto}.hlb-live-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.1rem}.hlb-live-head h2{max-width:19ch;margin:.35rem 0 .7rem;font-size:clamp(2.3rem,4.7vw,4.5rem);line-height:.95;letter-spacing:-.035em}.hlb-live-head>div>p:last-child{max-width:800px;margin:0;color:#b8c3df;line-height:1.65}.hlb-live-eyebrow{margin:0;text-transform:uppercase;letter-spacing:.11em;font-size:.69rem;font-weight:900;color:#91a8e3}.hlb-live-actions{display:flex;gap:.55rem;flex-wrap:wrap;justify-content:flex-end}.hlb-live-actions a{padding:.78rem .95rem;border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#fff;text-decoration:none;font-size:.7rem;font-weight:850;background:rgba(255,255,255,.055)}.hlb-live-actions .hlb-live-primary{background:#fff;color:#0b173c}.hlb-access-strip{display:flex;align-items:center;gap:.55rem;padding:.72rem .85rem;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.045);color:#aebbd8;font-size:.7rem}.hlb-access-strip strong{color:#fff}.hlb-access-dot{width:8px;height:8px;border-radius:99px;background:#f4b95d;box-shadow:0 0 0 4px rgba(244,185,93,.09)}.is-unlocked .hlb-access-dot{background:#63d6a7;box-shadow:0 0 0 4px rgba(99,214,167,.1)}.hlb-live-stats{display:grid;grid-template-columns:1.35fr .8fr .7fr;gap:.8rem;margin:1rem 0}.hlb-live-stats>div{padding:1rem 1.05rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045);display:grid}.hlb-stat-primary{background:linear-gradient(135deg,rgba(64,101,214,.2),rgba(255,255,255,.045))!important}.hlb-live-stats strong{font-size:2.2rem;line-height:1}.hlb-live-stats span{margin-top:.35rem;font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.hlb-live-stats small{margin-top:.38rem;color:#8f9dbc;font-size:.65rem}.hlb-live-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:1rem}.hlb-live-panel,.hlb-curtain-card{min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#101c46;overflow:hidden}.hlb-live-panel-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.09)}.hlb-live-panel-head h3{margin:.2rem 0 0;font-size:1.35rem}.hlb-live-badge{padding:.35rem .52rem;border-radius:999px;background:rgba(244,185,93,.12);color:#f2c77e;font-size:.58rem;font-weight:900;letter-spacing:.06em}.is-unlocked .hlb-live-badge{background:rgba(79,209,155,.12);color:#79dfb5}.hlb-live-badge--capacity{background:rgba(147,121,255,.12)!important;color:#b3a1ff!important}.hlb-table-head{display:grid;grid-template-columns:1.4fr 1fr auto;gap:1rem;padding:.56rem 1.1rem;background:rgba(0,0,0,.12);color:#7888ac;text-transform:uppercase;letter-spacing:.07em;font-size:.56rem;font-weight:900}.hlb-table-head span:last-child{text-align:right}.hlb-live-rows{display:grid}.hlb-live-rows--scroll{max-height:650px;overflow:auto;scrollbar-color:#4d6096 #101c46}.hlb-live-row{display:grid;grid-template-columns:1.4fr 1fr minmax(96px,auto);gap:1rem;align-items:center;padding:.85rem 1.1rem;border-top:1px solid rgba(255,255,255,.065);color:#fff;text-decoration:none}.hlb-live-row:first-child{border-top:0}.hlb-live-row--locked{transition:background .16s ease,border-color .16s ease;cursor:pointer}.hlb-live-row--locked:hover{background:rgba(108,134,210,.11);border-color:rgba(154,174,232,.18)}.hlb-live-route{display:flex;align-items:center;gap:.42rem;min-width:0;font-size:.76rem;font-weight:850}.hlb-live-route span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hlb-live-route b{color:#6479b3}.hlb-live-meta{display:grid;gap:.16rem;color:#aeb9d2;font-size:.65rem}.hlb-live-rate{text-align:right;display:grid}.hlb-live-rate strong{font-size:.76rem}.hlb-live-rate small{margin-top:.18rem;color:#8492b2;font-size:.61rem}.hlb-mask{filter:blur(3px);opacity:.58;user-select:none}.hlb-structural-preview{opacity:.86}.hlb-structural-preview .hlb-live-route,.hlb-structural-preview .hlb-live-meta{opacity:.94}.hlb-preview-note{padding:.8rem 1.05rem;border-top:1px solid rgba(255,255,255,.08);background:#0c173a;color:#8998ba;font-size:.64rem;line-height:1.5}.hlb-preview-note strong{color:#d8e0f4;margin-right:.35rem}.hlb-live-empty{padding:1.2rem;display:grid;gap:.35rem;color:#9ba9c8;font-size:.74rem;line-height:1.5}.hlb-live-empty strong{color:#fff}.hlb-curtain-card{padding:1.2rem;position:sticky;top:16px;height:max-content;background:linear-gradient(180deg,#142455,#101c46)}.hlb-curtain-card h3{margin:.35rem 0 1rem;font-size:1.35rem;line-height:1.15}.hlb-curtain-card ol{list-style:none;padding:0;margin:0;display:grid;gap:.7rem}.hlb-curtain-card li{display:grid;grid-template-columns:30px 1fr;gap:.6rem}.hlb-curtain-card li>b{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#aabdec;font-size:.7rem}.hlb-curtain-card li span{display:grid;gap:.12rem}.hlb-curtain-card li strong{font-size:.73rem}.hlb-curtain-card li small{color:#8f9dbc;font-size:.64rem;line-height:1.4}.hlb-curtain-cta{display:block;margin-top:1rem;padding:.8rem .9rem;border-radius:10px;background:#fff;color:#0d1942;text-decoration:none;text-align:center;font-size:.7rem;font-weight:900}.hlb-curtain-catalog{display:block;margin-top:.65rem;color:#9fb2e4;text-align:center;font-size:.66rem;font-weight:800;text-decoration:none}.hlb-capacity-panel{margin-top:1rem}.hlb-capacity-panel .hlb-live-rows{grid-template-columns:repeat(2,minmax(0,1fr))}.hlb-capacity-panel .hlb-live-row{grid-template-columns:1.3fr 1fr auto}.hlb-discovery-hub{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}.hlb-discovery-hub>div{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;padding:.85rem 1rem;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.035)}.hlb-discovery-hub strong{width:100%;color:#dce5fb;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}.hlb-discovery-hub a{color:#9fb2e4;text-decoration:none;font-size:.64rem;font-weight:750}.hlb-discovery-hub a:hover{text-decoration:underline}.hlb-live-truth{display:flex;gap:.45rem;margin-top:1rem;padding:.85rem 1rem;border:1px solid rgba(79,209,155,.18);border-radius:12px;background:rgba(79,209,155,.055);color:#b6c2db;font-size:.68rem;line-height:1.5}.hlb-live-truth strong{flex:none;color:#79dfb5}@media(max-width:980px){.hlb-discovery-hub{grid-template-columns:1fr}.hlb-live-head{align-items:start;flex-direction:column}.hlb-live-actions{justify-content:flex-start}.hlb-live-stats{grid-template-columns:1fr}.hlb-live-grid{grid-template-columns:1fr}.hlb-curtain-card{position:static}.hlb-capacity-panel .hlb-live-rows{grid-template-columns:1fr}}@media(max-width:620px){.hlb-live-marketplace{padding:46px 0 56px}.hlb-live-shell{width:min(100% - 24px,1240px)}.hlb-live-head h2{font-size:2.4rem}.hlb-live-actions{width:100%}.hlb-live-actions a{flex:1;text-align:center}.hlb-access-strip{align-items:flex-start;flex-wrap:wrap}.hlb-table-head{display:none}.hlb-live-row,.hlb-capacity-panel .hlb-live-row{grid-template-columns:1fr}.hlb-live-rate{text-align:left}.hlb-live-meta{grid-column:1}.hlb-live-truth{display:grid}}
+  </style>
+)}
+
+{isHermesCatalog && (
+  <style is:global>
+    .business-card--runtime{border-style:dashed}.business-card--runtime .business-card__claim-state{display:inline-flex;padding:.35rem .55rem;border-radius:999px;background:#fff7df;color:#805b13;font-size:.7rem;font-weight:850}
   </style>
 )}
