@@ -118,6 +118,20 @@ export async function ensureLoadBoardSchema(db) {
     )
   `).run();
 
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_load_interest_requests (
+      id TEXT PRIMARY KEY,
+      load_record_id TEXT NOT NULL,
+      specialist_id TEXT NOT NULL,
+      company_id TEXT NOT NULL,
+      action_type TEXT NOT NULL DEFAULT 'request_details',
+      status TEXT NOT NULL DEFAULT 'requested',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(load_record_id, company_id, action_type)
+    )
+  `).run();
+
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_mailbox ON hermes_load_sources(mailbox_email)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_status ON hermes_load_sources(status, ingest_enabled)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_active ON hermes_load_records(status, visibility, expires_at DESC)").run();
@@ -129,4 +143,6 @@ export async function ensureLoadBoardSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_score ON hermes_load_records(source_quality_score DESC, observed_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_pending ON hermes_load_quarantine(status, observed_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_source ON hermes_load_quarantine(source_id, observed_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_interest_company ON hermes_load_interest_requests(company_id, status, updated_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_interest_record ON hermes_load_interest_requests(load_record_id, status, updated_at DESC)").run();
 }
