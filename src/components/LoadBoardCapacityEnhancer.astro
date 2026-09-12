@@ -2,6 +2,21 @@
 const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
 const isHermesCatalog = Astro.url.pathname === "/businesses/";
 const accessPath = "/services/hermes-connect/load-board/access/";
+const initialPreviewLanes = [
+        ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
+        ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
+        ['Houston, TX','Dallas, TX','dry_van'], ['Atlanta, GA','Charlotte, NC','reefer'],
+        ['Phoenix, AZ','Las Vegas, NV','car_hauler'], ['Los Angeles, CA','Sacramento, CA','flatbed'],
+        ['Miami, FL','Orlando, FL','car_hauler'], ['Columbus, OH','Detroit, MI','dry_van'],
+        ['Newark, NJ','Boston, MA','reefer'], ['Kansas City, MO','Denver, CO','flatbed'],
+        ['Memphis, TN','Birmingham, AL','power_only'], ['San Antonio, TX','Oklahoma City, OK','hotshot'],
+        ['Seattle, WA','Portland, OR','car_hauler'], ['Savannah, GA','Jacksonville, FL','step_deck'],
+        ['St. Louis, MO','Louisville, KY','dry_van'], ['Tampa, FL','Atlanta, GA','car_hauler'],
+        ['Fremont, CA','Reno, NV','car_hauler'], ['Cleveland, OH','Pittsburgh, PA','box_truck'],
+        ['Minneapolis, MN','Omaha, NE','reefer'], ['Denver, CO','Salt Lake City, UT','flatbed'],
+        ['Charlotte, NC','Richmond, VA','power_only'], ['Indianapolis, IN','Chicago, IL','car_hauler'],
+      ];
+const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
 ---
 
 {isCanonicalLoadBoard && (
@@ -40,7 +55,14 @@ const accessPath = "/services/hermes-connect/load-board/access/";
           </div>
           <div class="hlb-table-head" aria-hidden="true"><span>Lane</span><span>Equipment / pickup</span><span>Economics</span></div>
           <div class="hlb-live-rows hlb-live-rows--scroll" data-live-load-rows aria-live="polite">
-            <div class="hlb-live-empty">Connecting to the approved live-load feed…</div>
+            {Array.from({ length: 60 }, (_, index) => {
+              const [origin, destination, equipment] = initialPreviewLanes[index % initialPreviewLanes.length];
+              return <a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href={`${accessPath}?source=load-board-curtain`} aria-label={`Preview lane ${origin} to ${destination}. Register in Hermes Connect to unlock Load Board access`}>
+                <div class="hlb-live-route"><span>{origin}</span><b>→</b><span>{destination}</span></div>
+                <div class="hlb-live-meta"><span>{previewEquipmentLabel(equipment)}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div>
+                <div class="hlb-live-rate"><strong>Rate locked</strong><small>Register company to unlock</small></div>
+              </a>;
+            })}
           </div>
           <div class="hlb-preview-note" data-hlb-preview-note>
             <strong>Interface preview rows are not inventory.</strong>
@@ -201,9 +223,9 @@ const accessPath = "/services/hermes-connect/load-board/access/";
         const curtain = root.querySelector('[data-hlb-curtain-card]');
         if (!(rows instanceof HTMLElement)) return;
         const active = Array.isArray(records) ? records : [];
-        const truthfulCount = Number.isFinite(Number(aggregateCount)) ? Number(aggregateCount) : active.length;
-        if (count) count.textContent = String(truthfulCount);
-        if (status) status.textContent = truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? '' : 's'} · refreshed automatically` : "No approved active freight right now";
+        const truthfulCount = aggregateCount != null && Number.isFinite(Number(aggregateCount)) && Number(aggregateCount) >= 0 ? Number(aggregateCount) : null;
+        if (count) count.textContent = truthfulCount === null ? "—" : String(truthfulCount);
+        if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? '' : 's'} · refreshed automatically` : "No approved active freight right now";
         if (badge) badge.textContent = accessGranted ? 'ACCESS OPEN' : 'CURTAIN VIEW';
         if (accessLabel) accessLabel.textContent = accessGranted ? 'Hermes company access active' : 'Public curtain view';
         if (accessCopy) accessCopy.textContent = accessGranted ? 'Your company profile has unlocked carrier-access Load Board records.' : 'Load count is real. Scroll 60 interface rows; preview lanes are clearly labeled and load details unlock after a Hermes account has a registered company.';
@@ -216,7 +238,7 @@ const accessPath = "/services/hermes-connect/load-board/access/";
             rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active loads right now.</strong><span>Your access is open; new approved records will appear automatically.</span></div>';
             return;
           }
-          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
+          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
           return;
         }
 
@@ -239,7 +261,7 @@ const accessPath = "/services/hermes-connect/load-board/access/";
       };
 
       const fetchJson = async (url) => {
-        const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" });
+        const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(8000) });
         if (!response.ok) throw new Error(`load_board_${response.status}`);
         return response.json();
       };
@@ -255,6 +277,16 @@ const accessPath = "/services/hermes-connect/load-board/access/";
         const accessGranted = Boolean(loadPayload.load_board_access || loadPayload.audience === 'carrier_candidate');
         renderLoads(loadPayload.records, accessGranted, summaryPayload?.available_loads);
         renderCapacity(capacityPayload.records);
+        if (results[0].status !== 'fulfilled') {
+          const status = root.querySelector('[data-live-load-status]');
+          if (status) status.textContent = 'Live feed temporarily unavailable. Interface preview is still available.';
+        }
+        if (results[1].status !== 'fulfilled') {
+          const count = root.querySelector('[data-live-capacity-count]');
+          const status = root.querySelector('[data-live-capacity-status]');
+          if (count) count.textContent = '—';
+          if (status) status.textContent = 'Truck feed temporarily unavailable';
+        }
       };
 
       moveIntoCanonicalPosition();
@@ -266,13 +298,13 @@ const accessPath = "/services/hermes-connect/load-board/access/";
 )}
 
 {isCanonicalLoadBoard && (
-  <style>
+  <style is:global>
     .hlb-live-marketplace{background:linear-gradient(180deg,#07112c 0%,#0b1740 62%,#101d49 100%);color:#fff;padding:56px 0 70px}.hlb-live-shell{width:min(1240px,calc(100% - 40px));margin:0 auto}.hlb-live-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.1rem}.hlb-live-head h2{max-width:19ch;margin:.35rem 0 .7rem;font-size:clamp(2.3rem,4.7vw,4.5rem);line-height:.95;letter-spacing:-.035em}.hlb-live-head>div>p:last-child{max-width:800px;margin:0;color:#b8c3df;line-height:1.65}.hlb-live-eyebrow{margin:0;text-transform:uppercase;letter-spacing:.11em;font-size:.69rem;font-weight:900;color:#91a8e3}.hlb-live-actions{display:flex;gap:.55rem;flex-wrap:wrap;justify-content:flex-end}.hlb-live-actions a{padding:.78rem .95rem;border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#fff;text-decoration:none;font-size:.7rem;font-weight:850;background:rgba(255,255,255,.055)}.hlb-live-actions .hlb-live-primary{background:#fff;color:#0b173c}.hlb-access-strip{display:flex;align-items:center;gap:.55rem;padding:.72rem .85rem;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.045);color:#aebbd8;font-size:.7rem}.hlb-access-strip strong{color:#fff}.hlb-access-dot{width:8px;height:8px;border-radius:99px;background:#f4b95d;box-shadow:0 0 0 4px rgba(244,185,93,.09)}.is-unlocked .hlb-access-dot{background:#63d6a7;box-shadow:0 0 0 4px rgba(99,214,167,.1)}.hlb-live-stats{display:grid;grid-template-columns:1.35fr .8fr .7fr;gap:.8rem;margin:1rem 0}.hlb-live-stats>div{padding:1rem 1.05rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045);display:grid}.hlb-stat-primary{background:linear-gradient(135deg,rgba(64,101,214,.2),rgba(255,255,255,.045))!important}.hlb-live-stats strong{font-size:2.2rem;line-height:1}.hlb-live-stats span{margin-top:.35rem;font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.hlb-live-stats small{margin-top:.38rem;color:#8f9dbc;font-size:.65rem}.hlb-live-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:1rem}.hlb-live-panel,.hlb-curtain-card{min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#101c46;overflow:hidden}.hlb-live-panel-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.09)}.hlb-live-panel-head h3{margin:.2rem 0 0;font-size:1.35rem}.hlb-live-badge{padding:.35rem .52rem;border-radius:999px;background:rgba(244,185,93,.12);color:#f2c77e;font-size:.58rem;font-weight:900;letter-spacing:.06em}.is-unlocked .hlb-live-badge{background:rgba(79,209,155,.12);color:#79dfb5}.hlb-live-badge--capacity{background:rgba(147,121,255,.12)!important;color:#b3a1ff!important}.hlb-table-head{display:grid;grid-template-columns:1.4fr 1fr auto;gap:1rem;padding:.56rem 1.1rem;background:rgba(0,0,0,.12);color:#7888ac;text-transform:uppercase;letter-spacing:.07em;font-size:.56rem;font-weight:900}.hlb-table-head span:last-child{text-align:right}.hlb-live-rows{display:grid}.hlb-live-rows--scroll{max-height:650px;overflow:auto;scrollbar-color:#4d6096 #101c46}.hlb-live-row{display:grid;grid-template-columns:1.4fr 1fr minmax(96px,auto);gap:1rem;align-items:center;padding:.85rem 1.1rem;border-top:1px solid rgba(255,255,255,.065);color:#fff;text-decoration:none}.hlb-live-row:first-child{border-top:0}.hlb-live-row--locked{transition:background .16s ease,border-color .16s ease;cursor:pointer}.hlb-live-row--locked:hover{background:rgba(108,134,210,.11);border-color:rgba(154,174,232,.18)}.hlb-live-route{display:flex;align-items:center;gap:.42rem;min-width:0;font-size:.76rem;font-weight:850}.hlb-live-route span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hlb-live-route b{color:#6479b3}.hlb-live-meta{display:grid;gap:.16rem;color:#aeb9d2;font-size:.65rem}.hlb-live-rate{text-align:right;display:grid}.hlb-live-rate strong{font-size:.76rem}.hlb-live-rate small{margin-top:.18rem;color:#8492b2;font-size:.61rem}.hlb-mask{filter:blur(3px);opacity:.58;user-select:none}.hlb-structural-preview{opacity:.86}.hlb-structural-preview .hlb-live-route,.hlb-structural-preview .hlb-live-meta{opacity:.94}.hlb-preview-note{padding:.8rem 1.05rem;border-top:1px solid rgba(255,255,255,.08);background:#0c173a;color:#8998ba;font-size:.64rem;line-height:1.5}.hlb-preview-note strong{color:#d8e0f4;margin-right:.35rem}.hlb-live-empty{padding:1.2rem;display:grid;gap:.35rem;color:#9ba9c8;font-size:.74rem;line-height:1.5}.hlb-live-empty strong{color:#fff}.hlb-curtain-card{padding:1.2rem;position:sticky;top:16px;height:max-content;background:linear-gradient(180deg,#142455,#101c46)}.hlb-curtain-card h3{margin:.35rem 0 1rem;font-size:1.35rem;line-height:1.15}.hlb-curtain-card ol{list-style:none;padding:0;margin:0;display:grid;gap:.7rem}.hlb-curtain-card li{display:grid;grid-template-columns:30px 1fr;gap:.6rem}.hlb-curtain-card li>b{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:#aabdec;font-size:.7rem}.hlb-curtain-card li span{display:grid;gap:.12rem}.hlb-curtain-card li strong{font-size:.73rem}.hlb-curtain-card li small{color:#8f9dbc;font-size:.64rem;line-height:1.4}.hlb-curtain-cta{display:block;margin-top:1rem;padding:.8rem .9rem;border-radius:10px;background:#fff;color:#0d1942;text-decoration:none;text-align:center;font-size:.7rem;font-weight:900}.hlb-curtain-catalog{display:block;margin-top:.65rem;color:#9fb2e4;text-align:center;font-size:.66rem;font-weight:800;text-decoration:none}.hlb-capacity-panel{margin-top:1rem}.hlb-capacity-panel .hlb-live-rows{grid-template-columns:repeat(2,minmax(0,1fr))}.hlb-capacity-panel .hlb-live-row{grid-template-columns:1.3fr 1fr auto}.hlb-discovery-hub{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}.hlb-discovery-hub>div{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;padding:.85rem 1rem;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(255,255,255,.035)}.hlb-discovery-hub strong{width:100%;color:#dce5fb;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}.hlb-discovery-hub a{color:#9fb2e4;text-decoration:none;font-size:.64rem;font-weight:750}.hlb-discovery-hub a:hover{text-decoration:underline}.hlb-live-truth{display:flex;gap:.45rem;margin-top:1rem;padding:.85rem 1rem;border:1px solid rgba(79,209,155,.18);border-radius:12px;background:rgba(79,209,155,.055);color:#b6c2db;font-size:.68rem;line-height:1.5}.hlb-live-truth strong{flex:none;color:#79dfb5}@media(max-width:980px){.hlb-discovery-hub{grid-template-columns:1fr}.hlb-live-head{align-items:start;flex-direction:column}.hlb-live-actions{justify-content:flex-start}.hlb-live-stats{grid-template-columns:1fr}.hlb-live-grid{grid-template-columns:1fr}.hlb-curtain-card{position:static}.hlb-capacity-panel .hlb-live-rows{grid-template-columns:1fr}}@media(max-width:620px){.hlb-live-marketplace{padding:46px 0 56px}.hlb-live-shell{width:min(100% - 24px,1240px)}.hlb-live-head h2{font-size:2.4rem}.hlb-live-actions{width:100%}.hlb-live-actions a{flex:1;text-align:center}.hlb-access-strip{align-items:flex-start;flex-wrap:wrap}.hlb-table-head{display:none}.hlb-live-row,.hlb-capacity-panel .hlb-live-row{grid-template-columns:1fr}.hlb-live-rate{text-align:left}.hlb-live-meta{grid-column:1}.hlb-live-truth{display:grid}}
   </style>
 )}
 
 {isHermesCatalog && (
-  <style>
+  <style is:global>
     .business-card--runtime{border-style:dashed}.business-card--runtime .business-card__claim-state{display:inline-flex;padding:.35rem .55rem;border-radius:999px;background:#fff7df;color:#805b13;font-size:.7rem;font-weight:850}
   </style>
 )}

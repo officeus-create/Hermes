@@ -217,6 +217,10 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
 
+      if (new URLSearchParams(window.location.search).get('mode') === 'login') {
+        document.querySelector('[data-auth-tab="login"]')?.click();
+      }
+
       void (async () => {
         try { const me = await json('/api/auth/me'); await showCompany(me.specialist); }
         catch (error) { if (authState) authState.textContent = 'Create a Hermes account or sign in to continue.'; }
