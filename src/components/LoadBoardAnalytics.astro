@@ -58,6 +58,18 @@
           has_load_reference: destination.searchParams.has("load"),
         });
       });
+
+      window.addEventListener("hermes:load-board-qualified-action", (event) => {
+        const detail = event instanceof CustomEvent && event.detail && typeof event.detail === "object"
+          ? event.detail as Record<string, unknown>
+          : {};
+        trackEvent("load_board_qualified_action", {
+          ...base,
+          action_type: String(detail.action_type || "request_details"),
+          request_status: String(detail.request_status || "requested"),
+          load_reference_present: Boolean(detail.load_id),
+        });
+      });
     }
 
     if (isAccess) {
