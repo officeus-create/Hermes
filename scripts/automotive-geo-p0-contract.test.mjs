@@ -69,6 +69,9 @@ assert.match(dealerPage, /not claims of local Hermes offices/);
 
 assert.match(repairPage, /title="Auto Repair Scheduling & Shop Software \| Hermes Connect"/);
 assert.match(repairPage, /Online booking & scheduling software for independent auto repair shops\./);
+assert.match(repairPage, /Is Hermes Connect an auto repair CRM\?/);
+assert.match(repairPage, /includes limited CRM capabilities/);
+assert.match(repairPage, /not presented as a full repair-order, inventory, accounting, payroll, or payment-processing suite/);
 assert.match(repairEnhancer, /Arkansas First-5 pilot/);
 assert.match(repairEnhancer, /intentionally separate from the car-hauling automotive GEO markets/);
 assert.match(repairEnhancer, /\/services\/hermes-connect\/repair-shops\/auth\//);
