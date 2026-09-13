@@ -6,6 +6,7 @@ const helpers = fs.readFileSync(new URL("../functions/api/_lib/load-board-opport
 const companyAccess = fs.readFileSync(new URL("../functions/api/_lib/hermes-company-profiles.mjs", import.meta.url), "utf8");
 const intake = fs.readFileSync(new URL("../functions/api/load-board/intake.ts", import.meta.url), "utf8");
 const active = fs.readFileSync(new URL("../functions/api/load-board/active.ts", import.meta.url), "utf8");
+const summary = fs.readFileSync(new URL("../functions/api/load-board/summary.ts", import.meta.url), "utf8");
 const opportunities = fs.readFileSync(new URL("../functions/api/load-board/opportunities.ts", import.meta.url), "utf8");
 const dispatchPlan = fs.readFileSync(new URL("../functions/api/load-board/dispatch-plan.ts", import.meta.url), "utf8");
 const agentContext = fs.readFileSync(new URL("../functions/api/load-board/agent-context.ts", import.meta.url), "utf8");
@@ -99,6 +100,8 @@ assert.match(active, /ROW_NUMBER\(\) OVER/);
 assert.match(active, /cluster_rank = 1/);
 assert.match(active, /duplicateCount/);
 assert.match(active, /reviewFlags/);
+assert.match(summary, /COUNT\(DISTINCT CASE/);
+assert.match(summary, /record_type \|\| '\|' \|\| dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);
 assert.match(intake, /car_hauling_outreach_hold = 1/);

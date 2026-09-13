@@ -10,7 +10,10 @@ export async function onRequestGet({ env }: { env: Env }) {
   const result = await env.DB.prepare(`
     SELECT
       record_type,
-      COUNT(*) AS record_count,
+      COUNT(DISTINCT CASE
+        WHEN dedupe_key IS NOT NULL AND dedupe_key <> '' THEN record_type || '|' || dedupe_key
+        ELSE record_type || '|' || id
+      END) AS record_count,
       MAX(observed_at) AS latest_observed_at
     FROM hermes_load_records
     WHERE status = 'active'
