@@ -11,14 +11,14 @@ test("canonical load board owner matches load-board intent with one truthful mix
   expect(source).toContain("Car Hauler Load Board | Review Auto Transport Loads | Hermes");
   expect(source).toContain("Review Car Hauling Loads Before You Commit");
   expect(source).toContain("Where can I find car hauling loads?");
-  expect(source).toContain("Source-gated live + demo");
+  expect(source).toContain("Source-gated live + market preview");
   expect(source).toContain("the Live marketplace shows only approved, active, unexpired public records");
   expect(source).toContain("may show zero");
-  expect(source).toContain("Available Loads · Demo data");
+  expect(source).toContain("Available Loads · Market preview");
   expect(source).toContain("No load below is available to book.");
 });
 
-test("load board truth boundary keeps live feed, structural preview, demo freight and booking semantics separate", () => {
+test("load board truth boundary keeps live feed, structural preview, preview freight and booking semantics separate", () => {
   expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=load')");
   expect(liveEnhancer).toContain("fetchJson('/api/load-board/active?type=capacity')");
   expect(liveEnhancer).toContain("fetchJson('/api/load-board/summary')");
@@ -37,7 +37,7 @@ test("load board truth boundary keeps live feed, structural preview, demo freigh
 
 test("direct-demand owner does not describe the canonical Load Board as fictional-only", () => {
   expect(directNetwork).toContain("source-gated Live marketplace can display approved active public records");
-  expect(directNetwork).toContain("demo cards remain fictional and non-bookable");
+  expect(directNetwork).toContain("preview rows remain non-live and non-bookable");
   expect(directNetwork).toContain('{ label: "Car Hauling Load Board", href: "/load-board/" }');
   expect(directNetwork).not.toContain("The public Load Board is a fictional product preview");
 });

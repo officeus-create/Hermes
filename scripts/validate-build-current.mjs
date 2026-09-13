@@ -18,7 +18,7 @@ const technologyExpectationReplacements = new Map([
 ]);
 const loadBoardExpectationReplacements = new Map([
   ["Car Hauling Loads &amp; Load Board Preview", "Car Hauler Load Board | Review Auto Transport Loads"],
-  ["Dry-run only", "Source-gated live + demo"],
+  ["Dry-run only", "Source-gated live + market preview"],
 ]);
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
