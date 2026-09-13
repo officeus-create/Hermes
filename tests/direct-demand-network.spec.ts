@@ -24,7 +24,7 @@ test("direct demand network separates real request flow from the mixed-mode Load
   expect(body).toMatch(/The public Hermes Load Board is a separate mixed-mode product surface/i);
   expect(body).toMatch(/source-gated Live marketplace can display approved active public records/i);
   expect(body).toMatch(/may show zero/i);
-  expect(body).toMatch(/demo cards remain fictional and non-bookable/i);
+  expect(body).toMatch(/preview rows remain non-live and non-bookable/i);
   expect(body).toMatch(/does not guarantee direct loads, customer demand, a route page, ranking, rate, mileage, utilization, or revenue/i);
   expect(body).toMatch(/Private carrier lanes and shipment records are not automatically published/i);
   expect(body).not.toMatch(/guaranteed direct loads|guaranteed rankings|rank in 2.?3 months|get direct loads in 2.?3 months/i);

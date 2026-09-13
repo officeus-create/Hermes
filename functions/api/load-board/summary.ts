@@ -31,7 +31,7 @@ export async function onRequestGet({ env }: { env: Env }) {
     available_loads: summary.load,
     available_trucks: summary.capacity,
     latest_observed_at: summary.latestObservedAt,
-    definition: "Active, unexpired public or carrier-access records. Demo rows and internal-only records are excluded.",
+    definition: "Active, unexpired public or carrier-access records. Preview rows and internal-only records are excluded.",
   }, {
     "Cache-Control": "public, max-age=15, s-maxage=30",
     "X-Robots-Tag": "noindex, nofollow",

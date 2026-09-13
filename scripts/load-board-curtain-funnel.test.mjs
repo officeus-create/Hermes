@@ -90,7 +90,7 @@ assert.doesNotMatch(catalogApi, /authority_number|owner_specialist_id|credential
 assert.match(summaryApi, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(summaryApi, /record_type IN \('load', 'capacity'\)/);
 assert.match(summaryApi, /available_loads/);
-assert.match(summaryApi, /Demo rows and internal-only records are excluded/);
+assert.match(summaryApi, /Preview rows and internal-only records are excluded/);
 assert.doesNotMatch(summaryApi, /SELECT \*/);
 
 for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
