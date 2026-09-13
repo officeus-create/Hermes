@@ -58,7 +58,8 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
     if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
   });
 
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const analyticsPath = process.env.HERMES_PRODUCTION_URL ? "/?_hermes_ga4_smoke=1" : "/";
+  await page.goto(analyticsPath, { waitUntil: "domcontentloaded" });
   expect(analyticsRequests).toEqual([]);
 
   const expectedTransport = await page.evaluate(() => {
