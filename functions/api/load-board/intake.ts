@@ -265,7 +265,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       pickup_window: record.pickup_window,
     });
     let id = await stableId("hlr", sourceId, sourceMessageId, fingerprint);
-    if (status === "active" && dedupeKey) {
+    const exactExisting = await env.DB.prepare(`
+      SELECT id
+      FROM hermes_load_records
+      WHERE source_id = ? AND source_message_id = ? AND fingerprint = ?
+      LIMIT 1
+    `).bind(sourceId, sourceMessageId, fingerprint).first();
+    if (exactExisting?.id) {
+      id = String(exactExisting.id);
+    } else if (status === "active" && dedupeKey) {
       const existingCanonical = await env.DB.prepare(`
         SELECT id
         FROM hermes_load_records

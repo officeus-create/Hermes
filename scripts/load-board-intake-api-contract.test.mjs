@@ -91,6 +91,7 @@ assert.doesNotMatch(intake, /reason: "car_hauling_hold"/);
 assert.match(intake, /car_hauling_ingest_allowed: true/);
 assert.match(intake, /car_hauling_broker_outreach_hold: true/);
 assert.match(intake, /ON CONFLICT DO UPDATE SET/);
+assert.match(intake, /WHERE source_id = \? AND source_message_id = \? AND fingerprint = \?/);
 assert.match(intake, /WHERE source_id = \? AND dedupe_key = \?/);
 assert.match(intake, /id <> \? AND status = 'active'/);
 assert.match(intake, /INSERT INTO hermes_load_quarantine/);
