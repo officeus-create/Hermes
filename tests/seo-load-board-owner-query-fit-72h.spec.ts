@@ -15,7 +15,7 @@ test("canonical load board owner matches load-board intent with one truthful mix
   expect(source).toContain("the Live marketplace shows only approved, active, unexpired public records");
   expect(source).toContain("may show zero");
   expect(source).toContain("Available Loads · Market preview");
-  expect(source).toContain("No load below is available to book.");
+  expect(source).toContain("They are not current inventory and cannot be booked.");
 });
 
 test("load board truth boundary keeps live feed, structural preview, preview freight and booking semantics separate", () => {
