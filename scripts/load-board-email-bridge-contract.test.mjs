@@ -80,7 +80,7 @@ const multiCapacity = await parseCapacityListEmail({
     "000-000-0000",
     "Fulton, NY -",
     "10:00 AM APPT",
-    "Delaware, OH -",
+    "Delaware, OH to Houston, TX -",
     "10:00 AM READY",
     "Saturday:",
     "dispatcher2@example.com",
@@ -100,7 +100,8 @@ assert.equal(multiCapacity.quarantine.length, 0);
 assert.equal(multiCapacity.records.length, 4);
 assert.deepEqual(multiCapacity.records.map((item) => item.origin), ["Fulton, NY", "Delaware, OH", "Joplin, MO", "Centre, AL"]);
 assert.deepEqual(multiCapacity.records.map((item) => item.equipment), ["dry_van", "dry_van", "dry_van", "reefer"]);
-assert.equal(multiCapacity.records[0].pickup_window, "10:00 AM APPT");
+assert.equal(multiCapacity.records[0].pickup_window, "Friday 10:00 AM APPT");
+assert.equal(multiCapacity.records[1].destination, "Houston, TX");
 assert.equal(multiCapacity.records[2].pickup_window, "Saturday 14:00 PM Team Truck");
 assert.equal(multiCapacity.records[2].team, true);
 assert.equal(multiCapacity.records[0].visibility, "carrier_only");
@@ -278,7 +279,7 @@ const capacityRawEmail = [
   "000-000-0000",
   "Fulton, NY -",
   "10:00 AM APPT",
-  "Delaware, OH - 10:00 AM READY",
+  "Delaware, OH to Houston, TX - 10:00 AM READY",
   "Saturday:",
   "Joplin, MO - 14:00 PM Team Truck",
   "REEFER Centre, AL - 10:00 READY",
@@ -315,6 +316,7 @@ await handleLoadBoardInboundEmail({
 } });
 assert.equal(capacityListPayload.records.length, 4);
 assert.equal(capacityListPayload.quarantine.length, 0);
+assert.equal(capacityListPayload.records[1].destination, "Houston, TX");
 assert.ok(capacityListPayload.records.every((item) => item.record_type === "capacity"));
 assert.ok(capacityListPayload.records.every((item) => item.visibility === "carrier_only"));
 assert.ok(capacityListPayload.records.every((item) => !JSON.stringify(item).includes("dispatcher@example.com")));
@@ -371,7 +373,7 @@ const forwardedRaw = [
   "dispatcher@example.com",
   "000-000-0000",
   "Fulton, NY - 10:00 AM READY",
-  "Delaware, OH - 12:00 PM READY",
+  "Delaware, OH to Houston, TX - 12:00 PM READY",
   "THANK YOU.",
 ].join("\r\n");
 await handleLoadBoardInboundEmail({

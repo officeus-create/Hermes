@@ -325,13 +325,16 @@ const capacityListEquipment = (text, fallback = "") => {
 };
 
 const capacityListLocation = (line) => {
-  const value = clean(line, 240).replace(/^[•*-]+\s*/, "");
-  const prefixed = value.match(/^(?:(REEFER|DRY\s*VAN|FLATBED|STEP\s*DECK|POWER\s*ONLY|HOT\s*SHOT|BOX\s*TRUCK)\s+)?([A-Za-z][A-Za-z .'-]{1,70},\s*[A-Z]{2})(?:\s*[-–—]\s*(.*))?$/i);
+  const value = clean(line, 320).replace(/^[•*-]+\s*/, "");
+  const location = "([A-Za-z][A-Za-z .'-]{1,70}?,\\s*[A-Z]{2})";
+  const pattern = new RegExp(`^(?:(REEFER|DRY\\s*VAN|FLATBED|STEP\\s*DECK|POWER\\s*ONLY|HOT\\s*SHOT|BOX\\s*TRUCK)\\s+)?${location}(?:\\s+(?:to|→|->)\\s+${location})?(?:\\s*[-–—]\\s*(.*))?$`, "i");
+  const prefixed = value.match(pattern);
   if (!prefixed) return null;
   return {
     equipment: capacityListEquipment(prefixed[1] || ""),
     origin: normalizeLocation(prefixed[2]),
-    availability: clean(prefixed[3], 160).replace(/^[-–—]\s*/, ""),
+    destination: normalizeLocation(prefixed[3] || ""),
+    availability: clean(prefixed[4], 160).replace(/^[-–—]\s*/, ""),
   };
 };
 
@@ -367,6 +370,8 @@ const parseCapacityListEmail = async ({ subject, body, receivedAt, observedAt, s
     const headingEquipment = /\bempty\b.*\blist\b/i.test(line) ? capacityListEquipment(line) : "";
     if (headingEquipment) {
       defaultEquipment = headingEquipment;
+      const headingDay = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s)?\b/i)?.[1] || "";
+      if (headingDay) currentDay = `${headingDay[0].toUpperCase()}${headingDay.slice(1).toLowerCase()}`;
       listStarted = true;
       continue;
     }
@@ -401,6 +406,7 @@ const parseCapacityListEmail = async ({ subject, body, receivedAt, observedAt, s
       record_type: "capacity",
       equipment,
       origin: parsed.origin,
+      ...(parsed.destination ? { destination: parsed.destination } : {}),
       ...(pickupWindow ? { pickup_window: pickupWindow, availability_text: pickupWindow } : {}),
       team: /\bteam\b/i.test(availability),
       received_at: receivedAt,
