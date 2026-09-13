@@ -53,6 +53,22 @@ const pages = [
       "/logistics/resources/auction-vehicle-pickup-checklist/",
     ],
   },
+  {
+    route: "/services/seo-for-auto-repair-shops/",
+    file: "services/seo-for-auto-repair-shops/index.html",
+    title: "SEO for Auto Repair Shops | Local Auto Repair SEO | Hermes",
+    h1: "SEO for Auto Repair Shops",
+    required: [
+      "Repair-service query ownership",
+      "Local eligibility and Google visibility review",
+      "Search-to-appointment conversion",
+      "Measurement before expansion",
+      "Should an auto repair shop create a page for every city and service?",
+      "Can SEO connect directly to online booking?",
+      "/services/auto-repair-website-design/",
+      "/services/hermes-connect/repair-shops/",
+    ],
+  },
 ];
 
 const decode = (value = "") => value
@@ -127,4 +143,4 @@ assert.equal(researchReady.status, "eligible_for_editorial_review");
 assert.deepEqual(researchReady.blockers, []);
 assert.notEqual(researchReady.status, "published");
 
-console.log("digital niche checks passed: logistics/dealer SEO pages, intent-aligned SEO proof, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.");
+console.log(`digital niche checks passed: ${pages.length} SEO niche owners, intent-aligned proof, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.`);

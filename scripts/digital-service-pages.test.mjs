@@ -55,6 +55,16 @@ const routes = [
     proofLabel: "View the SEO case",
     required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?"],
   },
+  {
+    route: "/services/auto-repair-website-design/",
+    file: "services/auto-repair-website-design/index.html",
+    title: "Auto Repair Website Design | Repair Shop Websites | Hermes",
+    h1: "Auto Repair Website Design for Independent Repair Shops",
+    reviewedAt: "September 13, 2026",
+    proofHref: "/case/it-development/",
+    proofLabel: "View the website case",
+    required: ["Repair-shop information architecture", "Mobile service and booking journey", "Local SEO technical foundation", "Can the website include online booking?", "/services/seo-for-auto-repair-shops/", "/services/hermes-connect/repair-shops/"],
+  },
 ];
 
 const decode = (value = "") => value
@@ -113,4 +123,4 @@ for (const prohibited of ["guaranteed rankings", "guaranteed leads", "guaranteed
   assert.ok(!serialized.includes(prohibited));
 }
 
-console.log("digital service page checks passed: four national hubs, intent-aligned proof, metadata, schema, sitemap, crawl paths, preview contact, and email-only routing.");
+console.log(`digital service page checks passed: ${routes.length} national/service owners, intent-aligned proof, metadata, schema, sitemap, crawl paths, preview contact, and email-only routing.`);

@@ -13,6 +13,8 @@ const commercialOwners = [
   "/logistics/auction-vehicle-pickup/",
   "/services/seo-for-logistics-companies/",
   "/services/seo-for-independent-auto-dealers/",
+  "/services/seo-for-auto-repair-shops/",
+  "/services/auto-repair-website-design/",
   "/services/seo/",
   "/services/local-seo/",
   "/services/website-development/",
