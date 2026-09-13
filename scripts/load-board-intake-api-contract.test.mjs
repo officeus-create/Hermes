@@ -6,6 +6,7 @@ const helpers = fs.readFileSync(new URL("../functions/api/_lib/load-board-opport
 const companyAccess = fs.readFileSync(new URL("../functions/api/_lib/hermes-company-profiles.mjs", import.meta.url), "utf8");
 const intake = fs.readFileSync(new URL("../functions/api/load-board/intake.ts", import.meta.url), "utf8");
 const active = fs.readFileSync(new URL("../functions/api/load-board/active.ts", import.meta.url), "utf8");
+const summary = fs.readFileSync(new URL("../functions/api/load-board/summary.ts", import.meta.url), "utf8");
 const opportunities = fs.readFileSync(new URL("../functions/api/load-board/opportunities.ts", import.meta.url), "utf8");
 const dispatchPlan = fs.readFileSync(new URL("../functions/api/load-board/dispatch-plan.ts", import.meta.url), "utf8");
 const agentContext = fs.readFileSync(new URL("../functions/api/load-board/agent-context.ts", import.meta.url), "utf8");
@@ -73,6 +74,11 @@ const weak = scoreOpportunity({
 assert.ok(strong.score > weak.score);
 assert.equal(strong.ratePerMile, 3.6);
 assert.match(buildOpportunityDedupeKey({ origin_state: "IL", destination_state: "WI", equipment: "car_hauler", rate_amount: 900, vehicle_count: 3 }), /il\|wi/);
+assert.notEqual(
+  buildOpportunityDedupeKey({ origin: "Chicago, IL", destination: "Madison, WI", equipment: "dry_van", rate_amount: 1200 }),
+  buildOpportunityDedupeKey({ origin: "Peoria, IL", destination: "Madison, WI", equipment: "dry_van", rate_amount: 1200 }),
+  "cross-source dedupe must not collapse distinct cities that share a state",
+);
 
 assert.match(intake, /HERMES_LOADBOARD_INGEST_TOKEN/);
 assert.match(intake, /LEAD_SERVICE_TOKEN/);
@@ -84,6 +90,18 @@ assert.match(intake, /scoreOpportunity/);
 assert.match(intake, /provider_record_id/);
 assert.match(intake, /rate_per_mile/);
 assert.match(intake, /source_quality_score/);
+assert.match(intake, /risk_flags/);
+assert.match(intake, /contact_data_present/);
+assert.match(intake, /rate_outlier_review/);
+assert.match(intake, /source_credential_missing/);
+assert.match(active, /COUNT\(\*\) OVER/);
+assert.match(active, /PARTITION BY r\.record_type/);
+assert.match(active, /ROW_NUMBER\(\) OVER/);
+assert.match(active, /cluster_rank = 1/);
+assert.match(active, /duplicateCount/);
+assert.match(active, /reviewFlags/);
+assert.match(summary, /COUNT\(DISTINCT CASE/);
+assert.match(summary, /record_type \|\| '\|' \|\| dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);
 assert.match(intake, /car_hauling_outreach_hold = 1/);

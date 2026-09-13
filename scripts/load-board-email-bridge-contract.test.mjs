@@ -495,6 +495,7 @@ assert.equal(publicPayload.quarantine.length, 1);
 assert.equal(publicPayload.quarantine[0].reason, "source_authentication_unverified");
 
 let unknownSourceCalls = 0;
+let unknownSourcePayload = null;
 await handleLoadBoardInboundEmail({
   to: "loads@hermeslogisticsus.com",
   from: "unknown@example.com",
@@ -507,10 +508,18 @@ await handleLoadBoardInboundEmail({
   LOADBOARD_EMAIL_SOURCE_CONFIG: JSON.stringify({
     "broker@example.com": { id: "src_broker_example", name: "Broker Example" },
   }),
-}, null, { fetch: async () => {
+}, null, { fetch: async (_url, options) => {
   unknownSourceCalls += 1;
+  unknownSourcePayload = JSON.parse(options.body);
   return new Response("{}", { status: 202 });
 } });
-assert.equal(unknownSourceCalls, 0);
+assert.equal(unknownSourceCalls, 1);
+assert.equal(unknownSourcePayload.source.id, "src_unapproved_email");
+assert.equal(unknownSourcePayload.source.ingest_enabled, false);
+assert.equal(unknownSourcePayload.records.length, 0);
+assert.equal(unknownSourcePayload.quarantine.length, 1);
+assert.equal(unknownSourcePayload.quarantine[0].reason, "source_not_approved");
+assert.equal(unknownSourcePayload.quarantine[0].subject, "");
+assert.doesNotMatch(JSON.stringify(unknownSourcePayload), /Unknown <unknown@example.com>/);
 
 console.log("load-board-email-bridge-contract: approved source, MIME parse, multi-record capacity, Car Hauling ingestion, authentication gate, TTL and no-raw-body handoff verified");

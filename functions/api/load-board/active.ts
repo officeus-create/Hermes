@@ -44,43 +44,30 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   }
 
   const query = `
+    WITH ranked AS (
+      SELECT
+        r.*,
+        s.provider,
+        COUNT(*) OVER (
+          PARTITION BY r.record_type, CASE WHEN r.dedupe_key IS NOT NULL AND r.dedupe_key <> '' THEN r.dedupe_key ELSE r.id END
+        ) AS duplicate_count,
+        ROW_NUMBER() OVER (
+          PARTITION BY r.record_type, CASE WHEN r.dedupe_key IS NOT NULL AND r.dedupe_key <> '' THEN r.dedupe_key ELSE r.id END
+          ORDER BY COALESCE(r.source_quality_score, 0) DESC, r.observed_at DESC, r.id ASC
+        ) AS cluster_rank
+      FROM hermes_load_records r
+      LEFT JOIN hermes_load_sources s ON s.id = r.source_id
+      WHERE ${conditions.join(" AND ")}
+    )
     SELECT
-      r.id,
-      r.record_type,
-      r.source_name,
-      s.provider,
-      r.equipment,
-      r.origin,
-      r.origin_city,
-      r.origin_state,
-      r.origin_zip,
-      r.destination,
-      r.destination_city,
-      r.destination_state,
-      r.destination_zip,
-      r.pickup_window,
-      r.delivery_window,
-      r.availability_text,
-      r.team,
-      r.rate_amount,
-      r.rate_currency,
-      r.distance_miles,
-      r.deadhead_miles,
-      r.weight_lbs,
-      r.length_feet,
-      r.vehicle_count,
-      r.operable,
-      r.enclosed,
-      r.payment_terms,
-      r.rate_per_mile,
-      r.source_quality_score,
-      r.provider_url,
-      r.observed_at,
-      r.expires_at
-    FROM hermes_load_records r
-    LEFT JOIN hermes_load_sources s ON s.id = r.source_id
-    WHERE ${conditions.join(" AND ")}
-    ORDER BY COALESCE(r.source_quality_score, 0) DESC, r.observed_at DESC
+      id, record_type, source_name, provider, equipment, origin, origin_city, origin_state, origin_zip,
+      destination, destination_city, destination_state, destination_zip, pickup_window, delivery_window,
+      availability_text, team, rate_amount, rate_currency, distance_miles, deadhead_miles, weight_lbs,
+      length_feet, vehicle_count, operable, enclosed, payment_terms, rate_per_mile, source_quality_score,
+      risk_flags, provider_url, observed_at, expires_at, duplicate_count
+    FROM ranked
+    WHERE cluster_rank = 1
+    ORDER BY COALESCE(source_quality_score, 0) DESC, observed_at DESC
     LIMIT 250
   `;
 
@@ -116,6 +103,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     paymentTerms: row.payment_terms || null,
     ratePerMile: row.rate_per_mile == null ? null : Number(row.rate_per_mile),
     score: row.source_quality_score == null ? null : Number(row.source_quality_score),
+    duplicateCount: carrierCandidate ? Math.max(1, Number(row.duplicate_count || 1)) : 1,
+    reviewFlags: carrierCandidate ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
     providerUrl: row.provider_url || null,
     observedAt: row.observed_at,
     expiresAt: row.expires_at,

@@ -74,6 +74,7 @@ export async function ensureLoadBoardSchema(db) {
       payment_terms TEXT,
       rate_per_mile REAL,
       source_quality_score REAL,
+      risk_flags TEXT,
       dedupe_key TEXT,
       provider_url TEXT,
       created_at TEXT NOT NULL,
@@ -101,6 +102,7 @@ export async function ensureLoadBoardSchema(db) {
     payment_terms: "TEXT",
     rate_per_mile: "REAL",
     source_quality_score: "REAL",
+    risk_flags: "TEXT",
     dedupe_key: "TEXT",
     provider_url: "TEXT",
   });

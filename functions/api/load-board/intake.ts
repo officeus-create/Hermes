@@ -249,6 +249,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const vehicleCount = finiteInteger(record.vehicle_count, { min: 0, max: 100 });
     const ratePerMile = deriveRatePerMile(safeRate, distanceMiles, record.rate_per_mile);
     const providerRecordId = optionalText(record.provider_record_id, 220);
+    const contactDataPresent = ["contact", "contact_name", "contact_email", "contact_phone", "email", "phone"]
+      .some((key) => optionalText(record[key], 254));
+    const reviewFlags: string[] = [];
+    if (!credentialRef) reviewFlags.push("source_credential_missing");
+    if (ratePerMile !== null && (ratePerMile < 0.25 || ratePerMile > 25)) reviewFlags.push("rate_outlier_review");
+    if (contactDataPresent) reviewFlags.push("contact_data_present");
+    const riskFlags = reviewFlags.length ? JSON.stringify(reviewFlags) : null;
     const normalizedForScore = {
       ...record,
       equipment,
@@ -384,9 +391,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
     await env.DB.prepare(`
       UPDATE hermes_load_records
-      SET delivery_window = ?, weight_lbs = ?, length_feet = ?, updated_at = ?
+      SET delivery_window = ?, weight_lbs = ?, length_feet = ?, risk_flags = ?, updated_at = ?
       WHERE id = ?
-    `).bind(deliveryWindow, weightLbs, lengthFeet, now, id).run();
+    `).bind(deliveryWindow, weightLbs, lengthFeet, riskFlags, now, id).run();
 
     if (status === "active" && dedupeKey) {
       const canonical = await env.DB.prepare(`

@@ -58,8 +58,8 @@ export function deriveRatePerMile(rateAmount, distanceMiles, explicitRatePerMile
 }
 
 export function buildOpportunityDedupeKey(record) {
-  const origin = String(record.origin_state || record.origin || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const destination = String(record.destination_state || record.destination || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const origin = String(record.origin || record.origin_state || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const destination = String(record.destination || record.destination_state || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const pickup = String(record.pickup_window || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
   const equipment = normalizeEquipment(record.equipment);
   const rate = finiteNumber(record.rate_amount, { min: 0, max: 1000000 });

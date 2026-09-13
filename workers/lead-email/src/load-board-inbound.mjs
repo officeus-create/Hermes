@@ -514,7 +514,25 @@ const handleLoadBoardInboundEmail = async (message, env, _ctx, deps = {}) => {
   const envelopeFrom = normalizeEmail(message?.from);
   const source = sources.find((candidate) => candidate.matchFrom === headerFrom || candidate.matchFrom === envelopeFrom);
   if (!source) {
-    logEvent("loadboard_email_source_rejected", { recipient, reason: "source_not_approved" });
+    const observedAt = new Date().toISOString();
+    const receivedAt = safeIso(getHeader(message?.headers, "date"), new Date(observedAt));
+    const sourceMessageId = clean(getHeader(message?.headers, "message-id").replace(/[<>]/g, ""), 220) || `unapproved_${(await sha256(`${envelopeFrom}|${observedAt}`)).slice(0, 48)}`;
+    const fingerprint = `sha256:${await sha256(`${sourceMessageId}|source_not_approved`)}`;
+    const payload = {
+      source: {
+        id: "src_unapproved_email", provider: "cloudflare_email_routing", source_type: "email",
+        name: "Unapproved inbound email", mailbox_email: recipient,
+        credential_ref: `cloudflare_email_routing:${recipient}`, redistribution_permission: "internal_only",
+        contact_reveal_permission: "hidden", read_enabled: false, ingest_enabled: false,
+      },
+      records: [],
+      quarantine: [{ source_message_id: sourceMessageId, fingerprint, reason: "source_not_approved", subject: "", received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: `email:unapproved:${sourceMessageId}` }],
+    };
+    try { await submitIntake(env, payload, deps.fetch || fetch); } catch (error) {
+      const status = Number(error?.status || 0);
+      if (!status || status >= 500) throw error;
+    }
+    logEvent("loadboard_email_source_quarantined", { recipient, reason: "source_not_approved" });
     return;
   }
 
