@@ -124,7 +124,13 @@ test("Trucks tab shows a sanitized email-feed demo when no approved live capacit
   await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
   await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) }));
   await page.goto("/load-board/");
+  await page.getByLabel("Min RPM").fill("3.50");
+  await page.getByLabel("Max DH").fill("25");
   await page.locator('[data-lbv2-tab="trucks"]').click();
+  await expect(page.locator('[data-lbv2-rpm-filter]')).toBeHidden();
+  await expect(page.locator('[data-lbv2-deadhead-filter]')).toBeHidden();
+  await expect(page.getByLabel("Min RPM")).toHaveValue("");
+  await expect(page.getByLabel("Max DH")).toHaveValue("");
   const live = page.locator("[data-hlb-live-marketplace]");
   const truckPreview = live.locator(".lbv2-truck-preview").first();
   await expect(truckPreview).toBeVisible();

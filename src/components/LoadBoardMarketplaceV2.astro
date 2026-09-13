@@ -30,8 +30,8 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
         <label><span>Destination</span><input name="destination" placeholder="Anywhere" autocomplete="off" /></label>
         <label><span>Equipment</span><select name="equipment"><option value="">All equipment</option><option value="car hauler">Car Hauler</option><option value="dry van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step deck">Step Deck</option><option value="hotshot">Hotshot</option><option value="power only">Power Only</option><option value="box truck">Box Truck</option><option value="sprinter van">Sprinter Van</option></select></label>
         <label data-lbv2-rate-filter><span>Min rate</span><input name="minRate" inputmode="decimal" placeholder="$0" /></label>
-        <label><span>Min RPM</span><input name="minRpm" inputmode="decimal" placeholder="$0.00" /></label>
-        <label><span>Max DH</span><input name="maxDeadhead" inputmode="numeric" placeholder="Any mi" /></label>
+        <label data-lbv2-rpm-filter><span>Min RPM</span><input name="minRpm" inputmode="decimal" placeholder="$0.00" /></label>
+        <label data-lbv2-deadhead-filter><span>Max DH</span><input name="maxDeadhead" inputmode="numeric" placeholder="Any mi" /></label>
         <label><span>Sort</span><select name="sort"><option value="best">Best match</option><option value="rate">Highest rate</option><option value="rpm">Highest RPM</option><option value="lane">Lane A–Z</option></select></label>
         <button class="lbv2-search-button" type="submit"><Search size={16} aria-hidden="true" /> Search</button>
       </form>
@@ -286,11 +286,15 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       if (capacityPanel) capacityPanel.hidden = tab === "mine";
       if (myPosts) myPosts.hidden = tab !== "mine";
       const rateFilter = host.querySelector<HTMLElement>("[data-lbv2-rate-filter]");
+      const rpmFilter = host.querySelector<HTMLElement>("[data-lbv2-rpm-filter]");
+      const deadheadFilter = host.querySelector<HTMLElement>("[data-lbv2-deadhead-filter]");
       const minRate = searchForm?.elements.namedItem("minRate");
+      const minRpm = searchForm?.elements.namedItem("minRpm");
+      const maxDeadhead = searchForm?.elements.namedItem("maxDeadhead");
       const sort = searchForm?.elements.namedItem("sort");
-      if (rateFilter) rateFilter.hidden = tab === "trucks";
+      for (const filter of [rateFilter, rpmFilter, deadheadFilter]) if (filter) filter.hidden = tab === "trucks";
       if (tab === "trucks") {
-        if (minRate instanceof HTMLInputElement) minRate.value = "";
+        for (const control of [minRate, minRpm, maxDeadhead]) if (control instanceof HTMLInputElement) control.value = "";
         if (sort instanceof HTMLSelectElement && ["rate", "rpm"].includes(sort.value)) sort.value = "best";
         ensurePublicTruckPreview();
       }
