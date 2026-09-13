@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import "./hermes-connect-private-auth-cache-contract.test.mjs";
 import "./repair-shop-feedback-contract.test.mjs";
 import { createHash, createHmac } from "node:crypto";
 import { hashPassword, verifyPassword } from "../src/legacy-prototype/auth.mjs";
