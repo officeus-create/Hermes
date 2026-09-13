@@ -138,6 +138,9 @@ for (const page of pages) {
 // synthetic-data isolation and demo/preview query propagation. Audit both owners so
 // future polish cannot silently move translations back into the demo data layer.
 const repairShopI18n = await readFile(join(root, "public/hermes-connect-repair-owner-secondary-i18n.js"), "utf8");
+const repairOwnerCurrent = await readFile(join(root, "public/hermes-connect-repair-owner-p0-current.js"), "utf8");
+const repairOwnerPolish = await readFile(join(root, "public/repair-owner-runtime-fixes.js"), "utf8");
+const repairOwnerNav = await readFile(join(root, "src/components/RepairShopOwnerNavEnhancer.astro"), "utf8");
 const repairShopDemo = await readFile(join(root, "public/repair-shop-local-demo.js"), "utf8");
 const repairShopLocales = ["en", "ru", "uk", "es", "it", "fr"];
 for (const locale of repairShopLocales) {
@@ -158,6 +161,21 @@ const repairShopI18nMarkers = [
 ];
 for (const marker of repairShopI18nMarkers) {
   if (!repairShopI18n.includes(marker)) errors.push(`Repair Shop i18n runtime: localization parity marker is missing: ${marker}`);
+}
+
+// The private CRM picker is owned by RepairShopOwnerNavEnhancer. Preservation/polish
+// runtimes may localize ordinary owner links, but must never rewrite a[lang] targets.
+if (!repairOwnerNav.includes('root.querySelectorAll(".repair-crm-language a[lang]")') || !repairOwnerNav.includes('next.searchParams.set("lang", target)')) {
+  errors.push("Repair Shop owner locale picker: canonical target-locale writer is missing");
+}
+if (!repairOwnerCurrent.includes(':not([lang])')) {
+  errors.push("Repair Shop P0 runtime: owner-link preservation must exclude language-target anchors");
+}
+if (!repairShopI18n.includes(':not([lang])')) {
+  errors.push("Repair Shop secondary i18n: generic link localization must exclude language-target anchors");
+}
+if (repairOwnerPolish.includes('.repair-crm-language a[lang]') || repairOwnerPolish.includes('setText(".repair-crm-language summary"')) {
+  errors.push("Repair Shop owner polish: legacy runtime must not own the canonical CRM language picker");
 }
 const repairShopDemoMarkers = [
   'url.searchParams.set("demo", "1")',

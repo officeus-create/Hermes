@@ -43,7 +43,7 @@
   const previewCopy={en:["LIVE PREVIEW · synthetic data","LOCAL DEMO · synthetic data"],ru:["ПРЕДПРОСМОТР · синтетические данные","ЛОКАЛЬНОЕ ДЕМО · синтетические данные"],uk:["ПЕРЕДПЕРЕГЛЯД · синтетичні дані","ЛОКАЛЬНЕ ДЕМО · синтетичні дані"],es:["VISTA PREVIA · datos sintéticos","DEMO LOCAL · datos sintéticos"],it:["ANTEPRIMA · dati sintetici","DEMO LOCALE · dati sintetici"],fr:["APERÇU · données synthétiques","DÉMO LOCALE · données synthétiques"]};
 
   const exactTranslate=(root,map,skip)=>{if(!root||!map)return;const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node=walker.nextNode();while(node){const raw=node.nodeValue||"";const normalized=raw.replace(/\s+/g," ").trim();const translated=(!skip||!skip(node))?map[normalized]:null;if(translated&&translated!==normalized)node.nodeValue=raw.replace(normalized,translated);node=walker.nextNode();}};
-  const localizeLinks=()=>{document.querySelectorAll(`a[href^="${ROOT}"]`).forEach((node)=>{if(!(node instanceof HTMLAnchorElement))return;const url=new URL(node.getAttribute("href")||ROOT,window.location.origin);if(locale==="en")url.searchParams.delete("lang");else url.searchParams.set("lang",locale);node.setAttribute("href",`${url.pathname}${url.search}${url.hash}`);});};
+  const localizeLinks=()=>{document.querySelectorAll(`a[href^="${ROOT}"]:not([lang])`).forEach((node)=>{if(!(node instanceof HTMLAnchorElement))return;const url=new URL(node.getAttribute("href")||ROOT,window.location.origin);if(locale==="en")url.searchParams.delete("lang");else url.searchParams.set("lang",locale);node.setAttribute("href",`${url.pathname}${url.search}${url.hash}`);});};
 
   function translateAuth(){
     if(path!==`${ROOT}/auth`||locale==="en")return;

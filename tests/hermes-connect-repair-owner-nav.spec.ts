@@ -62,3 +62,28 @@ test("Repair Shop CRM mobile navigation stays usable at 390px without page overf
   const pageOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(pageOverflow).toBe(false);
 });
+
+
+test("Repair Shop CRM language picker keeps target locales after legacy runtimes settle", async ({ page }) => {
+  await mockRepairOwner(page);
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/", { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(1200);
+
+  const picker = page.locator(".repair-crm-language");
+  const summary = picker.locator("summary");
+  await expect(summary).toBeVisible();
+  await summary.click();
+  await expect(picker).toHaveAttribute("open", "");
+
+  const expected: Record<string, string> = {
+    en: "/services/hermes-connect/repair-shops/dashboard/",
+    ru: "/services/hermes-connect/repair-shops/dashboard/?lang=ru",
+    uk: "/services/hermes-connect/repair-shops/dashboard/?lang=uk",
+    es: "/services/hermes-connect/repair-shops/dashboard/?lang=es",
+    it: "/services/hermes-connect/repair-shops/dashboard/?lang=it",
+    fr: "/services/hermes-connect/repair-shops/dashboard/?lang=fr",
+  };
+  for (const [lang, href] of Object.entries(expected)) {
+    await expect(picker.locator(`a[lang="${lang}"]`)).toHaveAttribute("href", href);
+  }
+});

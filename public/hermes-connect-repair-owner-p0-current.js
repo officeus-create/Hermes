@@ -50,7 +50,7 @@
   }
 
   function preserveOwnerLocale() {
-    for (const anchor of document.querySelectorAll(`a[href^="${ROOT}"]`)) {
+    for (const anchor of document.querySelectorAll(`a[href^="${ROOT}"]:not([lang])`)) {
       const current = anchor.getAttribute("href");
       const next = localizeRepairHref(current);
       if (next && next !== current) anchor.setAttribute("href", next);
