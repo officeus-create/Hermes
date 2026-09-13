@@ -14,7 +14,7 @@
     "SALES_DESTINATION": "officeus@hermeslogisticsus.com",
     "SALES_SENDER": "website@hermeslogisticsus.com",
     "CARRIER_CONTRACT_INTERNAL_RECIPIENTS": "officeus@hermeslogisticsus.com",
-    "LOADBOARD_EMAIL_RECIPIENT": "loads@hermeslogisticsus.com",
+    "LOADBOARD_EMAIL_RECIPIENT": "loads@loadboard.hermeslogisticsus.com",
     "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake"
   },
   "send_email": [
