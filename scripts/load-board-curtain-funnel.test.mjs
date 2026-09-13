@@ -33,7 +33,7 @@ assert.match(enhancer, /rateAmount: 2450/);
 assert.match(enhancer, /weightLbs: 42000/);
 assert.match(enhancer, /deadheadMiles: 24/);
 assert.match(enhancer, /data-rpm/);
-assert.match(enhancer, /Sanitized example/);
+assert.match(enhancer, /Market example/);
 assert.match(enhancer, /renderImmediatePreview\(\)/);
 assert.match(enhancer, /rows\.innerHTML = previewRows\(60\)/);
 assert.match(enhancer, /Chicago, IL/);
