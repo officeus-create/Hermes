@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import "./logistics-path-indexability.test.mjs";
+import "./sitemap-lastmod-contract.test.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const verifierFiles = [
