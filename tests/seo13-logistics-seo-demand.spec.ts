@@ -46,6 +46,6 @@ test('Logistics SEO sitemap freshness reflects the substantive SEO13 owner relea
     '<loc>https://hermeslogisticsus.com/services/seo-for-logistics-companies/</loc>\n    <lastmod>2026-08-13</lastmod>',
   );
   expect(sitemapIndexSource).toContain(
-    '<loc>https://hermeslogisticsus.com/sitemap-digital-services.xml</loc>\n    <lastmod>2026-08-29</lastmod>',
+    '<loc>https://hermeslogisticsus.com/sitemap-digital-services.xml</loc>\n    <lastmod>2026-09-13</lastmod>',
   );
 });
