@@ -54,5 +54,5 @@ test("load board explains how owner-operators evaluate car hauling loads", async
     "href",
     "/logistics/resources/car-hauler-capacity-checklist/",
   );
-  await expect(page.getByText("No load below is available to book.")).toBeVisible();
+  await expect(page.getByText("Preview rows are not bookable.")).toBeVisible();
 });
