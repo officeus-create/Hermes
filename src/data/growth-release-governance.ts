@@ -61,6 +61,8 @@ export const growthReleaseWatchlist: GrowthReleaseWatchItem[] = [
   pendingRelease("/services/local-seo/", "digital_service", "sitemap-digital-services.xml", 66),
   pendingRelease("/services/seo-for-logistics-companies/", "niche_service", "sitemap-digital-services.xml", 67),
   pendingRelease("/services/seo-for-independent-auto-dealers/", "niche_service", "sitemap-digital-services.xml", 67),
+  pendingRelease("/services/seo-for-auto-repair-shops/", "niche_service", "sitemap-digital-services.xml", 1274),
+  pendingRelease("/services/auto-repair-website-design/", "digital_service", "sitemap-digital-services.xml", 1274),
   pendingRelease("/paths/academy/", "academy", "sitemap.xml", 68),
   pendingRelease("/logistics/careers/", "careers", "sitemap.xml", 68),
 ];

@@ -117,7 +117,7 @@ assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl: "http://example.com/apply" }), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl: "not-a-url" }), false);
 
-assert.equal(growthReleaseWatchlist.length, 8);
+assert.equal(growthReleaseWatchlist.length, 10);
 assert.equal(new Set(growthReleaseWatchlist.map((item) => item.url)).size, growthReleaseWatchlist.length);
 for (const item of growthReleaseWatchlist) {
   assert.equal(item.releaseStatus, "owner_merge_required");
