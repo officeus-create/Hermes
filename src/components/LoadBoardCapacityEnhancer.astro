@@ -2,21 +2,35 @@
 const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
 const isHermesCatalog = Astro.url.pathname === "/businesses/";
 const accessPath = "/services/hermes-connect/load-board/access/";
-const initialPreviewLanes = [
-        ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
-        ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
-        ['Houston, TX','Dallas, TX','dry_van'], ['Atlanta, GA','Charlotte, NC','reefer'],
-        ['Phoenix, AZ','Las Vegas, NV','car_hauler'], ['Los Angeles, CA','Sacramento, CA','flatbed'],
-        ['Miami, FL','Orlando, FL','car_hauler'], ['Columbus, OH','Detroit, MI','dry_van'],
-        ['Newark, NJ','Boston, MA','reefer'], ['Kansas City, MO','Denver, CO','flatbed'],
-        ['Memphis, TN','Birmingham, AL','power_only'], ['San Antonio, TX','Oklahoma City, OK','hotshot'],
-        ['Seattle, WA','Portland, OR','car_hauler'], ['Savannah, GA','Jacksonville, FL','step_deck'],
-        ['St. Louis, MO','Louisville, KY','dry_van'], ['Tampa, FL','Atlanta, GA','car_hauler'],
-        ['Fremont, CA','Reno, NV','car_hauler'], ['Cleveland, OH','Pittsburgh, PA','box_truck'],
-        ['Minneapolis, MN','Omaha, NE','reefer'], ['Denver, CO','Salt Lake City, UT','flatbed'],
-        ['Charlotte, NC','Richmond, VA','power_only'], ['Indianapolis, IN','Chicago, IL','car_hauler'],
-      ];
-const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
+const previewDemoLoads = [
+  { origin: "Chicago, IL", destination: "Dallas, TX", equipment: "dry_van", pickup: "Demo day +1 · 2–6 PM", delivery: "Demo day +2 · 8 AM–12 PM", distanceMiles: 925, deadheadMiles: 24, weightLbs: 42000, lengthFeet: 53, rateAmount: 2450, commodity: "Consumer goods", loadType: "FTL" },
+  { origin: "Atlanta, GA", destination: "Charlotte, NC", equipment: "reefer", pickup: "Demo day +1 · 4 PM", delivery: "Demo day +1 · 11 PM", distanceMiles: 245, deadheadMiles: 18, weightLbs: 39000, lengthFeet: 53, rateAmount: 850, commodity: "Refrigerated food", loadType: "FTL" },
+  { origin: "Phoenix, AZ", destination: "Las Vegas, NV", equipment: "car_hauler", pickup: "Demo day +1 · 10 AM", delivery: "Demo day +1 · 6 PM", distanceMiles: 300, deadheadMiles: 31, weightLbs: 18500, lengthFeet: 75, rateAmount: 1650, commodity: "7 vehicles", loadType: "Full" },
+  { origin: "Kansas City, MO", destination: "Denver, CO", equipment: "flatbed", pickup: "Demo day +1 · Noon", delivery: "Demo day +2 · 7 AM", distanceMiles: 605, deadheadMiles: 42, weightLbs: 47000, lengthFeet: 48, rateAmount: 1950, commodity: "Steel coils", loadType: "FTL" },
+  { origin: "Newark, NJ", destination: "Boston, MA", equipment: "reefer", pickup: "Demo day +1 · 3–5 PM", delivery: "Demo day +2 · 2 AM", distanceMiles: 220, deadheadMiles: 14, weightLbs: 36000, lengthFeet: 53, rateAmount: 980, commodity: "Frozen food", loadType: "FTL" },
+  { origin: "Houston, TX", destination: "Dallas, TX", equipment: "dry_van", pickup: "Demo day +1 · 1 PM", delivery: "Demo day +1 · 7 PM", distanceMiles: 240, deadheadMiles: 15, weightLbs: 41000, lengthFeet: 53, rateAmount: 750, commodity: "Retail freight", loadType: "FTL" },
+  { origin: "Seattle, WA", destination: "Portland, OR", equipment: "car_hauler", pickup: "Demo day +1 · 9 AM", delivery: "Demo day +1 · 3 PM", distanceMiles: 174, deadheadMiles: 26, weightLbs: 14000, lengthFeet: 70, rateAmount: 1100, commodity: "5 vehicles", loadType: "Full" },
+  { origin: "Miami, FL", destination: "Orlando, FL", equipment: "hotshot", pickup: "Demo day +1 · 8–11 AM", delivery: "Demo day +1 · 5 PM", distanceMiles: 235, deadheadMiles: 18, weightLbs: 12000, lengthFeet: 40, rateAmount: 900, commodity: "Machinery", loadType: "Partial" },
+  { origin: "Columbus, OH", destination: "Detroit, MI", equipment: "dry_van", pickup: "Demo day +1 · 6 PM", delivery: "Demo day +2 · 1 AM", distanceMiles: 205, deadheadMiles: 33, weightLbs: 43500, lengthFeet: 53, rateAmount: 720, commodity: "Auto parts", loadType: "FTL" },
+  { origin: "Savannah, GA", destination: "Jacksonville, FL", equipment: "step_deck", pickup: "Demo day +1 · 7 AM", delivery: "Demo day +1 · 1 PM", distanceMiles: 140, deadheadMiles: 12, weightLbs: 28000, lengthFeet: 48, rateAmount: 675, commodity: "Construction equipment", loadType: "FTL" },
+  { origin: "Minneapolis, MN", destination: "Omaha, NE", equipment: "reefer", pickup: "Demo day +1 · 5 PM", delivery: "Demo day +2 · 5 AM", distanceMiles: 380, deadheadMiles: 44, weightLbs: 40500, lengthFeet: 53, rateAmount: 1325, commodity: "Temperature controlled", loadType: "FTL" },
+  { origin: "Denver, CO", destination: "Salt Lake City, UT", equipment: "flatbed", pickup: "Demo day +1 · 8 AM", delivery: "Demo day +2 · 6 AM", distanceMiles: 520, deadheadMiles: 29, weightLbs: 45500, lengthFeet: 48, rateAmount: 1725, commodity: "Building materials", loadType: "FTL" },
+  { origin: "Charlotte, NC", destination: "Richmond, VA", equipment: "power_only", pickup: "Demo day +1 · 2 PM", delivery: "Demo day +1 · 9 PM", distanceMiles: 295, deadheadMiles: 21, weightLbs: 0, lengthFeet: 53, rateAmount: 980, commodity: "Loaded trailer", loadType: "Power only" },
+  { origin: "Indianapolis, IN", destination: "Chicago, IL", equipment: "car_hauler", pickup: "Demo day +1 · Noon", delivery: "Demo day +1 · 7 PM", distanceMiles: 185, deadheadMiles: 38, weightLbs: 16000, lengthFeet: 72, rateAmount: 1050, commodity: "6 vehicles", loadType: "Full" },
+  { origin: "Los Angeles, CA", destination: "Sacramento, CA", equipment: "flatbed", pickup: "Demo day +1 · 9 AM", delivery: "Demo day +2 · 8 AM", distanceMiles: 385, deadheadMiles: 52, weightLbs: 44000, lengthFeet: 48, rateAmount: 1425, commodity: "Industrial material", loadType: "FTL" },
+  { origin: "Tampa, FL", destination: "Atlanta, GA", equipment: "car_hauler", pickup: "Demo day +1 · 1 PM", delivery: "Demo day +2 · Noon", distanceMiles: 455, deadheadMiles: 36, weightLbs: 17500, lengthFeet: 75, rateAmount: 2050, commodity: "7 vehicles", loadType: "Full" },
+  { origin: "Fremont, CA", destination: "Reno, NV", equipment: "car_hauler", pickup: "Demo day +1 · 10 AM", delivery: "Demo day +1 · 8 PM", distanceMiles: 215, deadheadMiles: 19, weightLbs: 12500, lengthFeet: 68, rateAmount: 1275, commodity: "4 vehicles", loadType: "Partial" },
+  { origin: "Cleveland, OH", destination: "Pittsburgh, PA", equipment: "box_truck", pickup: "Demo day +1 · 11 AM", delivery: "Demo day +1 · 5 PM", distanceMiles: 135, deadheadMiles: 11, weightLbs: 9000, lengthFeet: 26, rateAmount: 575, commodity: "LTL freight", loadType: "Partial" },
+  { origin: "Memphis, TN", destination: "Birmingham, AL", equipment: "power_only", pickup: "Demo day +1 · 5 PM", delivery: "Demo day +2 · 1 AM", distanceMiles: 240, deadheadMiles: 27, weightLbs: 0, lengthFeet: 53, rateAmount: 850, commodity: "Loaded trailer", loadType: "Power only" },
+  { origin: "San Antonio, TX", destination: "Oklahoma City, OK", equipment: "hotshot", pickup: "Demo day +1 · 7 AM", delivery: "Demo day +1 · 7 PM", distanceMiles: 470, deadheadMiles: 34, weightLbs: 14500, lengthFeet: 40, rateAmount: 1575, commodity: "Oilfield equipment", loadType: "Partial" },
+  { origin: "Green Bay, WI", destination: "Des Moines, IA", equipment: "car_hauler", pickup: "Demo day +1 · 8 AM", delivery: "Demo day +2 · 8 AM", distanceMiles: 420, deadheadMiles: 22, weightLbs: 15000, lengthFeet: 72, rateAmount: 1875, commodity: "6 vehicles", loadType: "Full" },
+  { origin: "Rockford, IL", destination: "Nashville, TN", equipment: "hotshot", pickup: "Demo day +1 · 6 AM", delivery: "Demo day +1 · 8 PM", distanceMiles: 485, deadheadMiles: 28, weightLbs: 11000, lengthFeet: 40, rateAmount: 1500, commodity: "Urgent parts", loadType: "Partial" },
+  { origin: "Madison, WI", destination: "Indianapolis, IN", equipment: "car_hauler", pickup: "Demo day +1 · 9 AM", delivery: "Demo day +1 · 9 PM", distanceMiles: 330, deadheadMiles: 17, weightLbs: 13500, lengthFeet: 70, rateAmount: 1525, commodity: "5 vehicles", loadType: "Full" },
+  { origin: "St. Louis, MO", destination: "Louisville, KY", equipment: "dry_van", pickup: "Demo day +1 · 3 PM", delivery: "Demo day +2 · 2 AM", distanceMiles: 260, deadheadMiles: 25, weightLbs: 42500, lengthFeet: 53, rateAmount: 875, commodity: "Packaged goods", loadType: "FTL" },
+];
+const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
+const previewMoney = (value: number) => `$${Math.round(value).toLocaleString("en-US")}`;
+const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (item.rateAmount / item.distanceMiles).toFixed(2);
 ---
 
 {isCanonicalLoadBoard && (
@@ -24,9 +38,9 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
     <div class="hlb-live-shell">
       <div class="hlb-live-head">
         <div>
-          <p class="hlb-live-eyebrow">Hermes Load Board · marketplace preview</p>
-          <h2 id="hlb-live-title">See the board before you create an account.</h2>
-          <p>Scroll the real interface, see the truthful current inventory count, then unlock carrier-access records with one Hermes Connect account and your company profile.</p>
+          <p class="hlb-live-eyebrow">Hermes Load Board · product workspace demo</p>
+          <h2 id="hlb-live-title">Scan the board like a dispatcher before you sign in.</h2>
+          <p>See the board before you create an account. Rates, RPM, weight, trip miles, deadhead, pickup and delivery timing are visible in the sanitized DEMO rows. LIVE counts above remain real and never include demo or historical email data.</p>
         </div>
         <div class="hlb-live-actions">
           <a class="hlb-live-primary" href={accessPath}>Create account &amp; unlock</a>
@@ -39,13 +53,14 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
       <div class="hlb-access-strip" data-hlb-access-strip>
         <span class="hlb-access-dot"></span>
         <strong data-hlb-access-label>Public curtain view</strong>
-        <span data-hlb-access-copy>Load count is real. Scroll 60 interface rows; preview lanes are clearly labeled and load details unlock after a Hermes account has a registered company.</span>
+        <span data-hlb-access-copy>LIVE count is real. Rich rows labeled PREVIEW · NOT LIVE are sanitized product-demo examples; company registration unlocks live source records and actions.</span>
       </div>
 
       <div class="hlb-live-stats" aria-label="Live Load Board status">
         <div class="hlb-stat-primary"><strong data-live-load-count>—</strong><span>loads available through Load Board access</span><small data-live-load-status>Checking active inventory…</small></div>
         <div><strong data-live-capacity-count>—</strong><span>available trucks</span><small data-live-capacity-status>Checking capacity…</small></div>
-        <div><strong>30s</strong><span>refresh cycle</span><small>Expired records disappear automatically</small></div>
+        <div><strong>30s</strong><span>refresh cycle</span><small>Expired or covered records disappear automatically</small></div>
+        <div><strong>60</strong><span>demo rows</span><small>Sanitized examples · never counted as LIVE</small></div>
       </div>
 
       <div class="hlb-live-grid">
@@ -54,20 +69,30 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
             <div><p class="hlb-live-eyebrow">Freight</p><h3 id="hlb-live-loads-title">Available loads</h3></div>
             <span class="hlb-live-badge" data-hlb-mode-badge>CURTAIN VIEW</span>
           </div>
-          <div class="hlb-table-head" aria-hidden="true"><span>Lane</span><span>Equipment / pickup</span><span>Economics</span></div>
+          <div class="hlb-table-head" aria-hidden="true"><span>Sample</span><span>Pickup / delivery</span><span>Lane</span><span>DH</span><span>Trip</span><span>Rate / RPM</span><span>Equipment</span><span>Weight / load</span><span>Status</span></div>
           <div class="hlb-live-rows hlb-live-rows--scroll" data-live-load-rows aria-live="polite">
             {Array.from({ length: 60 }, (_, index) => {
-              const [origin, destination, equipment] = initialPreviewLanes[index % initialPreviewLanes.length];
-              return <a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href={`${accessPath}?source=load-board-curtain`} aria-label={`Preview lane ${origin} to ${destination}. Register in Hermes Connect to unlock Load Board access`}>
-                <div class="hlb-live-route"><span>{origin}</span><b>→</b><span>{destination}</span></div>
-                <div class="hlb-live-meta"><span>{previewEquipmentLabel(equipment)}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div>
-                <div class="hlb-live-rate"><strong>Rate locked</strong><small>Register company to unlock</small></div>
+              const base = previewDemoLoads[index % previewDemoLoads.length];
+              const cycle = Math.floor(index / previewDemoLoads.length);
+              const rate = base.rateAmount + cycle * 25;
+              const deadhead = base.deadheadMiles + cycle * 3;
+              const rpm = (rate / base.distanceMiles).toFixed(2);
+              return <a class="hlb-live-row hlb-live-row--locked hlb-structural-preview hlb-demo-row" href={`${accessPath}?source=load-board-curtain`} data-rate={rate} data-rpm={rpm} data-deadhead={deadhead} data-weight={base.weightLbs} aria-label={`Sanitized demo lane ${base.origin} to ${base.destination}. Register in Hermes Connect to unlock live Load Board access`}>
+                <span class="hlb-col-sample">DEMO</span>
+                <div class="hlb-col-pickup"><strong>{base.pickup}</strong><small>{base.delivery}</small></div>
+                <div class="hlb-live-route hlb-col-lane"><span>{base.origin}</span><b>→</b><span>{base.destination}</span></div>
+                <span class="hlb-col-dh">{deadhead} mi</span>
+                <span class="hlb-col-trip">{base.distanceMiles.toLocaleString("en-US")} mi</span>
+                <div class="hlb-live-rate hlb-col-rate"><strong>{previewMoney(rate)}</strong><small>{rpm} RPM</small></div>
+                <div class="hlb-col-equip"><strong>{previewEquipmentLabel(base.equipment)}</strong><small>{base.loadType} · {base.lengthFeet} ft</small></div>
+                <div class="hlb-col-weight"><strong>{base.weightLbs ? `${base.weightLbs.toLocaleString("en-US")} lb` : "Weight n/a"}</strong><small>{base.commodity}</small></div>
+                <div class="hlb-col-status"><span class="hlb-demo-pill">PREVIEW · NOT LIVE</span><small>Sanitized example</small></div>
               </a>;
             })}
           </div>
           <div class="hlb-preview-note" data-hlb-preview-note>
             <strong>Interface preview rows are not inventory.</strong>
-            <span>Only the real count above represents active, unexpired records. Locked structural rows exist only to let you inspect the Load Board experience before registration.</span>
+            <span>Only the real count above represents active, unexpired records. Rates, RPM, weight and mileage below are sanitized example values so you can evaluate the product; DEMO rows never contribute to LIVE inventory.</span>
           </div>
         </section>
 
@@ -80,6 +105,7 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
             <li><b>3</b><span><strong>Join Hermes Catalog.</strong><small>Optional safe public card appears as self-submitted while verification is pending.</small></span></li>
             <li><b>4</b><span><strong>Return to this board.</strong><small>Carrier-access opportunities and dispatcher tools open.</small></span></li>
           </ol>
+          <div class="hlb-unlock-features"><span>LIVE source records</span><span>Saved search on device</span><span>Alerts · demo</span><span>Post load / truck</span><span>Request details</span><span>Backhaul swap</span></div>
           <a class="hlb-curtain-cta" href={accessPath}>Register company &amp; unlock Load Board →</a>
           <a class="hlb-curtain-catalog" href="/businesses/">See Hermes Catalog</a>
         </aside>
@@ -113,7 +139,7 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
 )}
 
 {(isCanonicalLoadBoard || isHermesCatalog) && (
-  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath }}>
+  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath, previewDemoLoads }}>
     (() => {
       const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
       const equipmentLabel = (value) => ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
@@ -207,23 +233,14 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
       const scanDistance = (record) => [scanMiles(record?.distanceMiles, "Loaded"), scanMiles(record?.deadheadMiles, "DH")].filter(Boolean).join(" · ") || "Mileage pending";
       const scanSize = (record) => [scanMeasure(record?.weightLbs, "lb"), scanMeasure(record?.lengthFeet, "ft")].filter(Boolean).join(" · ") || "Weight / length pending";
 
-      const previewLaneExamples = [
-        ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
-        ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
-        ['Houston, TX','Dallas, TX','dry_van'], ['Atlanta, GA','Charlotte, NC','reefer'],
-        ['Phoenix, AZ','Las Vegas, NV','car_hauler'], ['Los Angeles, CA','Sacramento, CA','flatbed'],
-        ['Miami, FL','Orlando, FL','car_hauler'], ['Columbus, OH','Detroit, MI','dry_van'],
-        ['Newark, NJ','Boston, MA','reefer'], ['Kansas City, MO','Denver, CO','flatbed'],
-        ['Memphis, TN','Birmingham, AL','power_only'], ['San Antonio, TX','Oklahoma City, OK','hotshot'],
-        ['Seattle, WA','Portland, OR','car_hauler'], ['Savannah, GA','Jacksonville, FL','step_deck'],
-        ['St. Louis, MO','Louisville, KY','dry_van'], ['Tampa, FL','Atlanta, GA','car_hauler'],
-        ['Fremont, CA','Reno, NV','car_hauler'], ['Cleveland, OH','Pittsburgh, PA','box_truck'],
-        ['Minneapolis, MN','Omaha, NE','reefer'], ['Denver, CO','Salt Lake City, UT','flatbed'],
-        ['Charlotte, NC','Richmond, VA','power_only'], ['Indianapolis, IN','Chicago, IL','car_hauler'],
-      ];
+      const formatNumber = (value) => Number(value || 0).toLocaleString("en-US");
       const previewRows = (count) => Array.from({ length: count }, (_, index) => {
-        const [origin, destination, equipment] = previewLaneExamples[index % previewLaneExamples.length];
-        return `<a class="hlb-live-row hlb-live-row--locked hlb-structural-preview" href="${escapeHtml(registrationHref(null))}" aria-label="Preview lane ${escapeHtml(origin)} to ${escapeHtml(destination)}. Register in Hermes Connect to unlock Load Board access"><div class="hlb-live-route"><span>${escapeHtml(origin)}</span><b>→</b><span>${escapeHtml(destination)}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(equipment))}</span><span>Pickup window locked</span><span>PREVIEW · NOT LIVE</span></div><div class="hlb-live-rate"><strong>🔒 Rate locked</strong><small>Register company to unlock</small></div></a>`;
+        const base = previewDemoLoads[index % previewDemoLoads.length];
+        const cycle = Math.floor(index / previewDemoLoads.length);
+        const rate = Number(base.rateAmount) + cycle * 25;
+        const deadhead = Number(base.deadheadMiles) + cycle * 3;
+        const rpm = (rate / Number(base.distanceMiles)).toFixed(2);
+        return `<a class="hlb-live-row hlb-live-row--locked hlb-structural-preview hlb-demo-row" href="${escapeHtml(registrationHref(null))}" data-rate="${rate}" data-rpm="${rpm}" data-deadhead="${deadhead}" data-weight="${Number(base.weightLbs || 0)}" aria-label="Sanitized demo lane ${escapeHtml(base.origin)} to ${escapeHtml(base.destination)}. Register in Hermes Connect to unlock live Load Board access"><span class="hlb-col-sample">DEMO</span><div class="hlb-col-pickup"><strong>${escapeHtml(base.pickup)}</strong><small>${escapeHtml(base.delivery)}</small></div><div class="hlb-live-route hlb-col-lane"><span>${escapeHtml(base.origin)}</span><b>→</b><span>${escapeHtml(base.destination)}</span></div><span class="hlb-col-dh">${deadhead} mi</span><span class="hlb-col-trip">${formatNumber(base.distanceMiles)} mi</span><div class="hlb-live-rate hlb-col-rate"><strong>$${formatNumber(rate)}</strong><small>${rpm} RPM</small></div><div class="hlb-col-equip"><strong>${escapeHtml(equipmentLabel(base.equipment))}</strong><small>${escapeHtml(base.loadType)} · ${escapeHtml(base.lengthFeet)} ft</small></div><div class="hlb-col-weight"><strong>${base.weightLbs ? `${formatNumber(base.weightLbs)} lb` : 'Weight n/a'}</strong><small>${escapeHtml(base.commodity)}</small></div><div class="hlb-col-status"><span class="hlb-demo-pill">PREVIEW · NOT LIVE</span><small>Sanitized example</small></div></a>`;
       }).join('');
       const renderImmediatePreview = () => {
         const rows = root.querySelector("[data-live-load-rows]");
@@ -246,7 +263,7 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
         if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? '' : 's'} · refreshed automatically` : "No approved active freight right now";
         if (badge) badge.textContent = accessGranted ? 'ACCESS OPEN' : 'CURTAIN VIEW';
         if (accessLabel) accessLabel.textContent = accessGranted ? 'Hermes company access active' : 'Public curtain view';
-        if (accessCopy) accessCopy.textContent = accessGranted ? 'Your company profile has unlocked carrier-access Load Board records.' : 'Load count is real. Scroll 60 interface rows; preview lanes are clearly labeled and load details unlock after a Hermes account has a registered company.';
+        if (accessCopy) accessCopy.textContent = accessGranted ? 'Your company profile has unlocked carrier-access Load Board records.' : 'LIVE count is real. Rich rows labeled PREVIEW · NOT LIVE are sanitized product-demo examples; company registration unlocks live source records and actions.';
         if (previewNote instanceof HTMLElement) previewNote.hidden = accessGranted;
         if (curtain instanceof HTMLElement) curtain.hidden = accessGranted;
 
@@ -256,12 +273,12 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
             rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active loads right now.</strong><span>Your access is open; new approved records will appear automatically.</span></div>';
             return;
           }
-          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span><strong>${escapeHtml(equipmentLabel(record.equipment))}</strong></span><span>${escapeHtml(scanTiming(record))}</span><span>${escapeHtml(scanDistance(record))}</span><span>${escapeHtml(scanSize(record))}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
+          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}" data-rate="${Number(record.rateAmount || 0)}" data-rpm="${Number(record.ratePerMile || 0)}" data-deadhead="${Number(record.deadheadMiles || 0)}" data-weight="${Number(record.weightLbs || 0)}"><span class="hlb-col-sample hlb-col-live">${escapeHtml(age(record.observedAt))}</span><div class="hlb-col-pickup"><strong>${escapeHtml(record.pickupWindow || 'Pickup pending')}</strong><small>${escapeHtml(record.deliveryWindow || 'Delivery pending')}</small></div><div class="hlb-live-route hlb-col-lane"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><span class="hlb-col-dh">${escapeHtml(scanMiles(record.deadheadMiles, '')) || '—'}</span><span class="hlb-col-trip">${escapeHtml(scanMiles(record.distanceMiles, '')) || '—'}</span><div class="hlb-live-rate hlb-col-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM` : 'RPM pending'}</small></div><div class="hlb-col-equip"><strong>${escapeHtml(equipmentLabel(record.equipment))}</strong><small>${record.lengthFeet ? `${escapeHtml(record.lengthFeet)} ft` : 'Size pending'}</small></div><div class="hlb-col-weight"><strong>${record.weightLbs ? `${Number(record.weightLbs).toLocaleString('en-US')} lb` : 'Weight pending'}</strong><small>${escapeHtml(record.paymentTerms || record.source || 'Approved source')}</small></div><div class="hlb-col-status"><span class="hlb-live-pill">LIVE</span><small>${escapeHtml(record.source || 'Approved source')}</small></div></article>`).join("");
           return;
         }
 
         root.classList.remove('is-unlocked');
-        const publicPreview = active.slice(0, 6).map((record) => `<a class="hlb-live-row hlb-live-row--locked" href="${escapeHtml(registrationHref(record))}" aria-label="Register in Hermes Connect to unlock load details"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || 'Destination locked')}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span class="hlb-mask">${escapeHtml(record.pickupWindow || 'Pickup window')}</span><span>Approved source</span></div><div class="hlb-live-rate"><strong>🔒 ${escapeHtml(money(record))}</strong><small>Open after company registration</small></div></a>`).join('');
+        const publicPreview = active.slice(0, 6).map((record) => `<a class="hlb-live-row hlb-live-row--locked hlb-live-row--real" href="${escapeHtml(registrationHref(record))}" aria-label="Register in Hermes Connect to unlock load details"><span class="hlb-col-sample hlb-col-live">LIVE</span><div class="hlb-col-pickup"><strong class="hlb-mask">${escapeHtml(record.pickupWindow || 'Pickup window')}</strong><small>Delivery after sign-in</small></div><div class="hlb-live-route hlb-col-lane"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || 'Destination locked')}</span></div><span class="hlb-col-dh">—</span><span class="hlb-col-trip">—</span><div class="hlb-live-rate hlb-col-rate"><strong>🔒 ${escapeHtml(money(record))}</strong><small>RPM after sign-in</small></div><div class="hlb-col-equip"><strong>${escapeHtml(equipmentLabel(record.equipment))}</strong><small>Approved source</small></div><div class="hlb-col-weight"><strong>Details locked</strong><small>Weight / commodity</small></div><div class="hlb-col-status"><span class="hlb-live-pill">LIVE</span><small>Company access</small></div></a>`).join('');
         const structuralCount = Math.max(54, 60 - Math.min(active.length, 6));
         rows.innerHTML = publicPreview + previewRows(structuralCount);
       };

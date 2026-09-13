@@ -98,6 +98,15 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(approvedLoad).toContainText("Miami, FL");
   await expect(live.getByText("Williamsburg, VA")).toBeVisible();
   await expect(live.locator(".hlb-structural-preview")).toHaveCount(59);
+  const demoRow = live.locator(".hlb-structural-preview").first();
+  await expect(demoRow).toContainText("$2,450");
+  await expect(demoRow).toContainText("2.65 RPM");
+  await expect(demoRow).toContainText("42,000 lb");
+  await expect(demoRow).toContainText("24 mi");
+  await expect(demoRow).toContainText("PREVIEW · NOT LIVE");
+  await expect(live.getByLabel("Min RPM")).toBeVisible();
+  await expect(live.getByLabel("Max DH")).toBeVisible();
+  await expect(live.getByRole("link", { name: "Alerts · demo" })).toHaveAttribute("href", /source=load-board-alert/);
   await expect(live.getByRole("link", { name: "Agreement & onboarding" })).toHaveAttribute("href", "/carrier/");
   await expect(live.getByText("Interface preview rows are not inventory.")).toBeVisible();
   await expect(live.locator(".hlb-live-row--locked").first()).toHaveAttribute("href", /\/services\/hermes-connect\/load-board\/access\//);
@@ -109,6 +118,28 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(refresh).toHaveText("Refresh now");
 });
 
+
+test("Trucks tab shows a sanitized email-feed demo when no approved live capacity exists", async ({ page }) => {
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [], load_board_access: false, audience: "public" }) }));
+  await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) }));
+  await page.goto("/load-board/");
+  await page.getByLabel("Min RPM").fill("3.50");
+  await page.getByLabel("Max DH").fill("25");
+  await page.locator('[data-lbv2-tab="trucks"]').click();
+  await expect(page.locator('[data-lbv2-rpm-filter]')).toBeHidden();
+  await expect(page.locator('[data-lbv2-deadhead-filter]')).toBeHidden();
+  await expect(page.getByLabel("Min RPM")).toHaveValue("");
+  await expect(page.getByLabel("Max DH")).toHaveValue("");
+  const live = page.locator("[data-hlb-live-marketplace]");
+  const truckPreview = live.locator(".lbv2-truck-preview").first();
+  await expect(truckPreview).toBeVisible();
+  await expect(truckPreview).toContainText("Email feed · sanitized");
+  await expect(truckPreview).toContainText("Truck capacity");
+  await expect(truckPreview).toContainText("PREVIEW · NOT LIVE");
+  await expect(truckPreview).toContainText("53 ft Dry Van");
+});
+
 test("authenticated company access removes the curtain and shows full load economics", async ({ page }) => {
   const now = new Date().toISOString();
   await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ load_board_access: true, audience: "carrier_candidate", records: [{ id: "private-1", equipment: "car_hauler", origin: "Dallas, TX", destination: "Phoenix, AZ", pickupWindow: "Tomorrow 8 AM", deliveryWindow: "Tomorrow 6 PM", distanceMiles: 885, deadheadMiles: 32, weightLbs: 42000, lengthFeet: 53, rateAmount: 1800, rateCurrency: "USD", ratePerMile: 2.7, source: "Approved source", observedAt: now }] }) }));
@@ -118,9 +149,12 @@ test("authenticated company access removes the curtain and shows full load econo
   const live = page.locator("[data-hlb-live-marketplace]");
   await expect(live).toHaveClass(/is-unlocked/);
   await expect(live.getByText("$1,800")).toBeVisible();
-  await expect(live.getByText(/PU Tomorrow 8 AM · DEL Tomorrow 6 PM/)).toBeVisible();
-  await expect(live.getByText(/Loaded 885 mi · DH 32 mi/)).toBeVisible();
-  await expect(live.getByText(/42,000 lb · 53 ft/)).toBeVisible();
+  await expect(live.getByText("Tomorrow 8 AM", { exact: true })).toBeVisible();
+  await expect(live.getByText("Tomorrow 6 PM", { exact: true })).toBeVisible();
+  await expect(live.getByText("885 mi", { exact: true })).toBeVisible();
+  await expect(live.getByText("32 mi", { exact: true })).toBeVisible();
+  await expect(live.getByText("42,000 lb", { exact: true })).toBeVisible();
+  await expect(live.getByText("53 ft", { exact: true })).toBeVisible();
   await expect(live.getByText(/2.7 RPM/)).toBeVisible();
   await expect(live.getByText("Hermes company access active")).toBeVisible();
   await expect(live.locator("[data-hlb-curtain-card]")).toBeHidden();
