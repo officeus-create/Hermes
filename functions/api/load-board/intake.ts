@@ -225,7 +225,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       : "internal_only";
     const visibility = clampVisibility(requestedVisibility, redistributionPermission);
     const status = new Date(expiresAt).getTime() > Date.now() ? "active" : "expired";
-    const id = await stableId("hlr", sourceId, sourceMessageId, fingerprint);
     const rawRate = record.rate_amount;
     const rateAmount = rawRate === null || rawRate === undefined || rawRate === ""
       ? null
@@ -265,6 +264,25 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       destination,
       pickup_window: record.pickup_window,
     });
+    let id = await stableId("hlr", sourceId, sourceMessageId, fingerprint);
+    const exactExisting = await env.DB.prepare(`
+      SELECT id
+      FROM hermes_load_records
+      WHERE source_id = ? AND source_message_id = ? AND fingerprint = ?
+      LIMIT 1
+    `).bind(sourceId, sourceMessageId, fingerprint).first();
+    if (exactExisting?.id) {
+      id = String(exactExisting.id);
+    } else if (status === "active" && dedupeKey) {
+      const existingCanonical = await env.DB.prepare(`
+        SELECT id
+        FROM hermes_load_records
+        WHERE source_id = ? AND dedupe_key = ?
+        ORDER BY CASE WHEN status = 'active' THEN 0 ELSE 1 END, observed_at DESC
+        LIMIT 1
+      `).bind(sourceId, dedupeKey).first();
+      if (existingCanonical?.id) id = String(existingCanonical.id);
+    }
 
     await env.DB.prepare(`
       INSERT INTO hermes_load_records (
@@ -278,7 +296,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         payment_terms, rate_per_mile, source_quality_score, dedupe_key, provider_url,
         created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(source_id, source_message_id, fingerprint) DO UPDATE SET
+      ON CONFLICT DO UPDATE SET
+        source_message_id = excluded.source_message_id,
+        fingerprint = excluded.fingerprint,
         record_type = excluded.record_type,
         source_name = excluded.source_name,
         equipment = excluded.equipment,
@@ -289,6 +309,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         team = excluded.team,
         rate_amount = excluded.rate_amount,
         rate_currency = excluded.rate_currency,
+        received_at = excluded.received_at,
         observed_at = excluded.observed_at,
         last_seen_at = excluded.last_seen_at,
         expires_at = excluded.expires_at,
@@ -355,6 +376,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       now,
       now,
     ).run();
+
+    if (status === "active" && dedupeKey) {
+      const canonical = await env.DB.prepare(`
+        SELECT id
+        FROM hermes_load_records
+        WHERE source_id = ? AND dedupe_key = ? AND status = 'active'
+        ORDER BY observed_at DESC, updated_at DESC
+        LIMIT 1
+      `).bind(sourceId, dedupeKey).first();
+      if (canonical?.id) {
+        await env.DB.prepare(`
+          UPDATE hermes_load_records
+          SET status = 'expired', updated_at = ?
+          WHERE source_id = ? AND dedupe_key = ? AND id <> ? AND status = 'active'
+        `).bind(now, sourceId, dedupeKey, String(canonical.id)).run();
+      }
+    }
     accepted += 1;
   }
 
