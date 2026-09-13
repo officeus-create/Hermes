@@ -228,6 +228,7 @@ assert.equal(capturedRequest.options.headers.Authorization, "Bearer test-runtime
 const payload = JSON.parse(capturedRequest.options.body);
 assert.equal(payload.source.id, "src_broker_example");
 assert.equal(payload.source.provider, "cloudflare_email_routing");
+assert.equal(payload.source.source_type, "email");
 assert.equal(payload.records.length, 1);
 assert.equal(payload.quarantine.length, 0);
 assert.equal(payload.records[0].origin, "Chicago, IL");
@@ -410,6 +411,7 @@ await handleLoadBoardInboundEmail({
   return new Response(JSON.stringify({ success: true, accepted: 2, quarantined: 0 }), { status: 202 });
 } });
 assert.equal(forwardedPayload.source.provider, "controlled_email_forwarding");
+assert.equal(forwardedPayload.source.source_type, "email");
 assert.equal(forwardedPayload.records.length, 2);
 assert.ok(forwardedPayload.records.every((item) => item.source_message_id === "gmail:capacity-original-001"));
 assert.ok(forwardedPayload.records.every((item) => item.visibility === "carrier_only"));
