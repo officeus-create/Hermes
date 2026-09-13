@@ -470,6 +470,7 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
 const buildSourcePayload = (source, recipient) => ({
   id: source.id,
   provider: source.forwardedSourceEmail ? "controlled_email_forwarding" : "cloudflare_email_routing",
+  source_type: "email",
   name: source.name,
   mailbox_email: normalizeEmail(recipient),
   credential_ref: `cloudflare_email_routing:${normalizeEmail(recipient)}`,
