@@ -118,6 +118,22 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(refresh).toHaveText("Refresh now");
 });
 
+
+test("Trucks tab shows a sanitized email-feed demo when no approved live capacity exists", async ({ page }) => {
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [], load_board_access: false, audience: "public" }) }));
+  await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) }));
+  await page.goto("/load-board/");
+  await page.locator('[data-lbv2-tab="trucks"]').click();
+  const live = page.locator("[data-hlb-live-marketplace]");
+  const truckPreview = live.locator(".lbv2-truck-preview").first();
+  await expect(truckPreview).toBeVisible();
+  await expect(truckPreview).toContainText("Email feed · sanitized");
+  await expect(truckPreview).toContainText("Truck capacity");
+  await expect(truckPreview).toContainText("PREVIEW · NOT LIVE");
+  await expect(truckPreview).toContainText("53 ft Dry Van");
+});
+
 test("authenticated company access removes the curtain and shows full load economics", async ({ page }) => {
   const now = new Date().toISOString();
   await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ load_board_access: true, audience: "carrier_candidate", records: [{ id: "private-1", equipment: "car_hauler", origin: "Dallas, TX", destination: "Phoenix, AZ", pickupWindow: "Tomorrow 8 AM", deliveryWindow: "Tomorrow 6 PM", distanceMiles: 885, deadheadMiles: 32, weightLbs: 42000, lengthFeet: 53, rateAmount: 1800, rateCurrency: "USD", ratePerMile: 2.7, source: "Approved source", observedAt: now }] }) }));

@@ -265,13 +265,13 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
     };
 
     const truckPreviewRows = () => [
-      ["Chicago, IL", "Open destination", "Car Hauler", "Ready today"],
-      ["Dallas, TX", "Southeast preferred", "Hotshot", "Ready now"],
-      ["Atlanta, GA", "Open destination", "Dry Van", "Tomorrow"],
-      ["Phoenix, AZ", "West Coast preferred", "Flatbed", "Today"],
-      ["Columbus, OH", "Midwest preferred", "Car Hauler", "Tomorrow"],
-      ["Newark, NJ", "Open destination", "Reefer", "Ready today"],
-    ].map(([origin, destination, equipment, ready]) => `<article class="hlb-live-row hlb-live-row--capacity lbv2-truck-preview"><div class="hlb-live-route"><span>${origin}</span><b>→</b><span>${destination}</span></div><div class="hlb-live-meta"><span>${equipment}</span><span>${ready}</span><span>PREVIEW · NOT LIVE</span></div><div class="hlb-live-rate"><strong>Capacity preview</strong><small>Post or register to use marketplace</small></div></article>`).join("");
+      ["Rockford, IL", "Open destination", "53 ft Dry Van", "Ready 10 AM", "Solo", "Email feed · sanitized"],
+      ["Fort Worth, TX", "Southeast preferred", "53 ft Dry Van", "Ready now", "TEAM", "Email feed · sanitized"],
+      ["Harrisburg, PA", "Chicago, IL", "53 ft Reefer", "Ready noon", "Solo", "Email feed · sanitized"],
+      ["Nashville, TN", "Midwest preferred", "53 ft Dry Van", "Ready 1 PM", "Solo", "Email feed · sanitized"],
+      ["Rogers, MN", "Open destination", "53 ft Dry Van", "Ready noon", "TEAM", "Email feed · sanitized"],
+      ["Salt Lake City, UT", "West preferred", "53 ft Reefer", "Appointment 3 PM", "Solo", "Email feed · sanitized"],
+    ].map(([origin, destination, equipment, ready, team, source]) => `<article class="hlb-live-row hlb-live-row--capacity lbv2-truck-preview"><div class="hlb-live-route"><span>${origin}</span><b>→</b><span>${destination}</span></div><div class="hlb-live-meta"><span><strong>${equipment}</strong></span><span>${ready} · ${team}</span><span>${source}</span></div><div class="hlb-live-rate"><strong>Truck capacity</strong><small>PREVIEW · NOT LIVE</small></div></article>`).join("");
 
     const ensurePublicTruckPreview = () => {
       if (!capacityRows || root.classList.contains("is-unlocked")) return;
