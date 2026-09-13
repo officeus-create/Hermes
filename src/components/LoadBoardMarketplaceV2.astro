@@ -67,6 +67,7 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
             <label data-lbv2-destination-field><span>Destination *</span><input name="destination" required placeholder="Dallas, TX" /></label>
             <label><span>Equipment *</span><select name="equipment" required><option value="car_hauler">Car Hauler</option><option value="dry_van">Dry Van</option><option value="reefer">Reefer</option><option value="flatbed">Flatbed</option><option value="step_deck">Step Deck</option><option value="hotshot">Hotshot</option><option value="power_only">Power Only</option><option value="box_truck">Box Truck</option><option value="sprinter_van">Sprinter Van</option></select></label>
             <label><span data-lbv2-pickup-label>Pickup / ready *</span><input name="pickup_window" required placeholder="Today · 2 PM–6 PM" /></label>
+            <label data-lbv2-load-only><span>Delivery window</span><input name="delivery_window" placeholder="Tomorrow · 8 AM–12 PM" /></label>
             <label data-lbv2-load-only><span>Load type</span><select name="load_type"><option value="full">Full</option><option value="partial">Partial</option><option value="both">Full or partial</option></select></label>
             <label data-lbv2-load-only><span>Rate offered</span><input name="rate_amount" type="number" min="0" step="1" placeholder="1800" /></label>
             <label><span>Distance, mi</span><input name="distance_miles" type="number" min="0" step="1" placeholder="750" /></label>

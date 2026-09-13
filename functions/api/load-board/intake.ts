@@ -239,8 +239,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const destinationCity = optionalText(record.destination_city || destinationParts.city, 100);
     const destinationState = stateCode(record.destination_state, destinationParts.state);
     const destinationZip = optionalText(record.destination_zip || destinationParts.zip, 10);
+    const deliveryWindow = optionalText(record.delivery_window, 160);
     const distanceMiles = finiteNumber(record.distance_miles, { min: 0, max: 100000 });
     const deadheadMiles = finiteNumber(record.deadhead_miles, { min: 0, max: 5000 });
+    const weightLbs = finiteNumber(record.weight_lbs, { min: 0, max: 500000 });
+    const lengthFeet = finiteNumber(record.length_feet, { min: 0, max: 200 });
     const vehicleCount = finiteInteger(record.vehicle_count, { min: 0, max: 100 });
     const ratePerMile = deriveRatePerMile(safeRate, distanceMiles, record.rate_per_mile);
     const providerRecordId = optionalText(record.provider_record_id, 220);
@@ -376,6 +379,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       now,
       now,
     ).run();
+
+    await env.DB.prepare(`
+      UPDATE hermes_load_records
+      SET delivery_window = ?, weight_lbs = ?, length_feet = ?, updated_at = ?
+      WHERE id = ?
+    `).bind(deliveryWindow, weightLbs, lengthFeet, now, id).run();
 
     if (status === "active" && dedupeKey) {
       const canonical = await env.DB.prepare(`

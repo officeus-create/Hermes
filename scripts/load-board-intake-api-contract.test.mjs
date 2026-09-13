@@ -27,8 +27,8 @@ assert.match(schema, /car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0/);
 assert.match(schema, /pending_review/);
 for (const column of [
   "provider_record_id", "origin_city", "origin_state", "origin_zip", "destination_city", "destination_state",
-  "destination_zip", "distance_miles", "deadhead_miles", "vehicle_count", "operable", "enclosed",
-  "payment_terms", "rate_per_mile", "source_quality_score", "dedupe_key", "provider_url",
+  "destination_zip", "delivery_window", "distance_miles", "deadhead_miles", "weight_lbs", "length_feet",
+  "vehicle_count", "operable", "enclosed", "payment_terms", "rate_per_mile", "source_quality_score", "dedupe_key", "provider_url",
 ]) assert.match(schema, new RegExp(`${column} `));
 assert.match(schema, /PRAGMA table_info/);
 assert.match(schema, /idx_load_records_lane/);
@@ -111,6 +111,9 @@ for (const equipment of ["dry_van", "reefer", "flatbed", "step_deck", "power_onl
 assert.match(active, /rateAmount/);
 assert.match(active, /ratePerMile/);
 assert.match(active, /deadheadMiles/);
+assert.match(active, /deliveryWindow/);
+assert.match(active, /weightLbs/);
+assert.match(active, /lengthFeet/);
 assert.match(active, /score/);
 assert.match(active, /contact_details_exposed: false/);
 assert.match(active, /X-Robots-Tag/);
