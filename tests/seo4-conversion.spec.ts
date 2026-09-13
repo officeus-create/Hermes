@@ -113,14 +113,14 @@ test("direct dispatch intake is noindex, qualified, privacy-safe, and separate f
   expect(writes).toEqual([]);
 });
 
-test("Load Board demo labels cannot display stale calendar dates or fake recent posting times", async ({ page }) => {
+test("Load Board preview labels cannot display stale calendar dates or fake recent posting times", async ({ page }) => {
   await page.goto("/load-board/?role=carrier#available-loads");
 
   const firstCard = page.locator("[data-demo-load-card]").first();
   await expect(firstCard).toHaveAttribute("data-demo-freshness-applied", "true");
-  await expect(firstCard).toContainText("Demo day +1 · 8 AM–2 PM");
+  await expect(firstCard).toContainText("8 AM–2 PM");
   await expect(firstCard).toContainText("Status");
-  await expect(firstCard).toContainText("Illustrative demo");
+  await expect(firstCard).toContainText("PREVIEW · NOT LIVE");
 
   const cards = page.locator("[data-demo-load-card]");
   const text = await cards.allTextContents();
