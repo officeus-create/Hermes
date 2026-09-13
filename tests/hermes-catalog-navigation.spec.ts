@@ -28,7 +28,7 @@ test("Catalog search filters the server-rendered evidence-backed profiles", asyn
   const input = page.locator("[data-catalog-input]");
   await input.fill("diesel");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(2);
-  await expect(page.locator("[data-catalog-count]")).toHaveText("2 profiles");
+  await expect(page.locator("[data-catalog-count]")).toHaveText("2 searchable entries");
   await input.fill("Sherwood");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 3, name: "Sean's AutoPro Mobile" })).toBeVisible();

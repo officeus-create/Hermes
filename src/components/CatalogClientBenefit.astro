@@ -1,0 +1,25 @@
+---
+interface Props { context?: "catalog" | "marketing" | "technology"; }
+const { context = "catalog" } = Astro.props;
+const isCatalog = context === "catalog";
+const requestHref = `mailto:officeus@hermeslogisticsus.com?${new URLSearchParams({ subject: "Hermes Catalog profile and local visibility", body: "I would like to discuss a Catalog business profile.\n\nInterest: bonus listing with an IT/Marketing project, or standalone profile optimization.\nBusiness name:\nCity and country:\nServices:\nWebsite, if any:\n" })}`;
+---
+<section class="catalog-benefit" id="catalog-client-benefit" data-catalog-benefit aria-labelledby="catalog-benefit-title">
+  <div class="catalog-benefit__shell">
+    <div class="catalog-benefit__intro">
+      <p class="catalog-benefit__eyebrow">{isCatalog ? "For business owners" : "Included with your Hermes project"}</p>
+      <h2 id="catalog-benefit-title">{isCatalog ? "Your business can start here. With or without a website." : "Your next IT or Marketing project comes with a Catalog profile."}</h2>
+      <p>When Hermes takes your company on as an IT or Marketing client, a business profile in Hermes Catalog is included as a bonus, with no additional listing or initial setup fee.</p>
+      <p>With your approval, we present your business, actual services, location or service area, public contacts and website. Customers get one clear place to learn about you and take the next step.</p>
+      <a class="catalog-benefit__link" href="/businesses/">Explore Hermes Catalog →</a>
+    </div>
+    <div class="catalog-benefit__options">
+      <article><span>01 / Included setup</span><h3>A search-ready business profile</h3><p>Initial SEO/GEO preparation organizes your approved business facts, service descriptions, location information and customer links into a useful public page. Publication follows your approval and a profile-quality review.</p></article>
+      <article><span>02 / Standalone option</span><h3>Not ready for a separate website?</h3><p>Start with the free listing, then request a paid, clearly scoped optimization service for that profile and its local visibility. A website purchase is not required.</p><a class="catalog-benefit__link" href={requestHref}>Discuss my Catalog profile →</a></article>
+      <p class="catalog-benefit__note">The bonus covers the listing and initial preparation, not unlimited ongoing SEO/GEO, advertising spend or a separate website. Search indexing, rankings, AI mentions and lead volume are not guaranteed. Registration or payment alone does not publish private business data.</p>
+    </div>
+  </div>
+</section>
+<style>
+.catalog-benefit{padding:2rem 1rem;background:#f5f7fa;color:#172033;scroll-margin-top:150px}.catalog-benefit__shell{box-sizing:border-box;width:min(1160px,100%);margin:auto;padding:clamp(22px,3vw,36px);display:grid;grid-template-columns:1fr 1fr;gap:2rem;border:1px solid #d4e1ee;border-radius:22px;background:linear-gradient(135deg,#fff,#eef6ff 62%,#f2effb)}.catalog-benefit__eyebrow,.catalog-benefit__options article>span{color:#215c8c;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.catalog-benefit h2{margin:.6rem 0 1rem;font-size:clamp(25px,3vw,38px);line-height:1.15;letter-spacing:-.03em}.catalog-benefit p{color:#4b5c70;line-height:1.65;font-size:15px}.catalog-benefit h3{margin:.5rem 0;font-size:21px}.catalog-benefit__options{display:grid;gap:1rem;min-width:0}.catalog-benefit__options article{padding:19px;background:#fff;border:1px solid #dce5ee;border-radius:15px}.catalog-benefit__link{display:inline-flex;align-items:center;min-height:44px;color:#165c9b;text-decoration:underline;text-underline-offset:4px;font-weight:750}.catalog-benefit .catalog-benefit__note{font-size:12px;margin:0}.catalog-benefit a:focus-visible{outline:2px solid #165c9b;outline-offset:4px}@media(max-width:760px){.catalog-benefit__shell{grid-template-columns:1fr;gap:1rem}.catalog-benefit{padding:1.5rem .5rem}.catalog-benefit__shell>*{min-width:0}.catalog-benefit h2{overflow-wrap:anywhere}}
+</style>

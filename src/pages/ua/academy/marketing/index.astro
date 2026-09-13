@@ -1,4 +1,5 @@
 ---
+import AcademyGlobalNetwork from "../../../../components/AcademyGlobalNetwork.astro";
 import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
 import { academyUkraineMarketing } from "../../../../data/academy-ukraine-marketing";
 import { academyUkraineUi } from "../../../../data/academy-ukraine";
@@ -16,7 +17,9 @@ const alternates = [
   alternates={alternates}
   ui={academyUkraineUi}
   academyHubHref="/ua/#academy"
-/>
+>
+  <AcademyGlobalNetwork slot="program-overview" locale="uk" />
+</AcademyPublicPage>
 
 <style is:global>
   @media (max-width: 560px) {

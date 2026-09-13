@@ -4,6 +4,9 @@ import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import HermesConnectLauncher from "../../components/HermesConnectLauncher.astro";
+import HermesPromoRail from "../../components/HermesPromoRail.astro";
+import CatalogClientBenefit from "../../components/CatalogClientBenefit.astro";
+import AcademyGlobalNetwork from "../../components/AcademyGlobalNetwork.astro";
 import LoadBoardProductSpotlight from "../../components/LoadBoardProductSpotlight.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
@@ -71,6 +74,9 @@ const schema = faqSchema
   <SiteHeader theme="light" />
   <DirectionProductNav direction={path.id as "logistics" | "marketing" | "technology" | "academy"} theme="light" />
   <PathDetailPage path={path} />
+  <HermesPromoRail context={path.id as "logistics" | "marketing" | "technology" | "academy"} />
+  {(path.id === "marketing" || path.id === "technology") && <CatalogClientBenefit context={path.id} />}
+  {path.id === "academy" && <AcademyGlobalNetwork />}
   {path.id === "logistics" && <LoadBoardProductSpotlight context="logistics" />}
   {path.id === "technology" && <LoadBoardProductSpotlight context="technology" />}
   <PathVerifiedAdvantages pathId={path.id} />
