@@ -209,8 +209,29 @@ const parseSourceConfig = (rawConfig) => {
       requestedVisibility: requested,
       ttlHours,
       requireAuthentication: item?.require_authentication !== false,
+      forwardedSourceEmail: normalizeEmail(item?.forwarded_source_email || ""),
     };
   }).filter((item) => isEmail(item.matchFrom) && item.id && item.name);
+};
+
+const parseControlledForwardMetadata = (body) => {
+  const text = String(body || "").replace(/\r/g, "");
+  if (!/^\s*HERMES_LOADBOARD_FORWARD\s*$/im.test(text)) return null;
+  const source = normalizeEmail(text.match(/^\s*Original-Source\s*:\s*([^\s]+@[^\s]+)\s*$/im)?.[1] || "");
+  const receivedAt = clean(text.match(/^\s*Original-Received-At\s*:\s*([^\n]+)\s*$/im)?.[1], 100);
+  const messageId = clean(text.match(/^\s*Original-Message-ID\s*:\s*([^\n]+)\s*$/im)?.[1], 220);
+  const timestamp = Date.parse(receivedAt);
+  if (!source || !messageId || !Number.isFinite(timestamp)) return null;
+  return { source, receivedAt: new Date(timestamp).toISOString(), messageId };
+};
+
+const forwardedBodyContainsSource = (body, expectedEmail) => {
+  const expected = normalizeEmail(expectedEmail);
+  if (!expected) return false;
+  return String(body || "").replace(/\r/g, "").split("\n").some((line) => {
+    if (!/^\s*From\s*:/i.test(line)) return false;
+    return normalizeEmail(line).includes(expected);
+  });
 };
 
 const sourceAuthenticationPassed = (headers) => {
@@ -256,7 +277,7 @@ const normalizeEquipment = (text) => {
   if (/\bhot[ -]?shot\b|\bhotshot\b/.test(value)) return "hotshot";
   if (/\bbox[ -]?truck\b/.test(value)) return "box_truck";
   if (/\bsprinter\b/.test(value)) return "sprinter_van";
-  if (/\bdry[ -]?van\b|\b53\s*(?:ft|foot|')?\s*van\b/.test(value)) return "dry_van";
+  if (/\bdry[ -]?vans?\b|\b53\s*(?:ft|foot|')?\s*vans?\b/.test(value)) return "dry_van";
   return "";
 };
 
@@ -286,6 +307,116 @@ const extractPickupWindow = (text) => {
 };
 
 const isCapacityMessage = (text) => /\b(?:truck|capacity)\s+available\b|\bavailable\s+(?:truck|capacity)\b|\bempty\s+(?:in|at)\b/i.test(text);
+
+const isCapacityListEmail = (subject, body) => {
+  const combined = `${clean(subject, 300)}\n${String(body || "").slice(0, 120_000)}`;
+  return /\btruck\s+list\b/i.test(subject)
+    || /\bempty\b[^\n]{0,80}\b(?:dry\s*van|reefer|flatbed|truck|trailer)s?\b[^\n]{0,80}\blist\b/i.test(combined);
+};
+
+const dayHeading = (line) => {
+  const match = clean(line, 80).match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:'s)?\s*:?$/i);
+  return match ? `${match[1][0].toUpperCase()}${match[1].slice(1).toLowerCase()}` : "";
+};
+
+const capacityListEquipment = (text, fallback = "") => {
+  const value = clean(text, 240);
+  return normalizeEquipment(value) || fallback;
+};
+
+const capacityListLocation = (line) => {
+  const value = clean(line, 240).replace(/^[•*-]+\s*/, "");
+  const prefixed = value.match(/^(?:(REEFER|DRY\s*VAN|FLATBED|STEP\s*DECK|POWER\s*ONLY|HOT\s*SHOT|BOX\s*TRUCK)\s+)?([A-Za-z][A-Za-z .'-]{1,70},\s*[A-Z]{2})(?:\s*[-–—]\s*(.*))?$/i);
+  if (!prefixed) return null;
+  return {
+    equipment: capacityListEquipment(prefixed[1] || ""),
+    origin: normalizeLocation(prefixed[2]),
+    availability: clean(prefixed[3], 160).replace(/^[-–—]\s*/, ""),
+  };
+};
+
+const isCapacityListNoise = (line) => {
+  const value = clean(line, 300);
+  if (!value) return true;
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return true;
+  if (/^(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}(?:\s*(?:ext\.?|x)\s*\d+)?$/i.test(value)) return true;
+  if (/^MC\s*[-#:]?\s*\d+/i.test(value)) return true;
+  if (/^(?:good\s+(?:morning|afternoon|evening)|if you have any freight|please contact dispatcher directly)\b/i.test(value)) return true;
+  return false;
+};
+
+const isCapacityListTerminator = (line) => /^(?:thank\s+you\.?|sales\s+team|this e-?mail\b|how did you like\b)/i.test(clean(line, 160));
+
+const parseCapacityListEmail = async ({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef }) => {
+  const combined = `${clean(subject, 300)}\n${String(body || "").slice(0, 120_000)}`;
+  const emailFingerprint = `sha256:${await sha256(combined.replace(/\s+/g, " ").trim().toLowerCase())}`;
+  const expiresAt = new Date(new Date(receivedAt).getTime() + source.ttlHours * 60 * 60 * 1000).toISOString();
+  if (new Date(expiresAt).getTime() <= new Date(observedAt).getTime()) {
+    return { records: [], quarantine: [{ source_message_id: sourceMessageId, fingerprint: emailFingerprint, reason: "stale_email", subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef }] };
+  }
+
+  const lines = String(body || "").replace(/\r/g, "").split("\n").map((line) => clean(line, 400));
+  let defaultEquipment = "";
+  let currentDay = "";
+  let listStarted = false;
+  const records = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (isCapacityListTerminator(line)) break;
+    const headingEquipment = /\bempty\b.*\blist\b/i.test(line) ? capacityListEquipment(line) : "";
+    if (headingEquipment) {
+      defaultEquipment = headingEquipment;
+      listStarted = true;
+      continue;
+    }
+    const day = dayHeading(line);
+    if (day) {
+      currentDay = day;
+      listStarted = true;
+      continue;
+    }
+    if (!listStarted || isCapacityListNoise(line)) continue;
+
+    const parsed = capacityListLocation(line);
+    if (!parsed?.origin) continue;
+    let availability = parsed.availability;
+    if (!availability) {
+      for (let offset = 1; offset <= 2 && index + offset < lines.length; offset += 1) {
+        const candidate = clean(lines[index + offset], 180).replace(/^[-–—]\s*/, "");
+        if (!candidate || isCapacityListNoise(candidate)) continue;
+        if (dayHeading(candidate) || capacityListLocation(candidate) || isCapacityListTerminator(candidate)) break;
+        availability = candidate;
+        index += offset;
+        break;
+      }
+    }
+    const equipment = parsed.equipment || defaultEquipment;
+    if (!equipment) continue;
+    const pickupWindow = clean([currentDay, availability].filter(Boolean).join(" "), 160);
+    const fingerprintInput = `${source.id}|${sourceMessageId}|capacity|${equipment}|${parsed.origin}|${pickupWindow}`.toLowerCase();
+    records.push({
+      source_message_id: sourceMessageId,
+      fingerprint: `sha256:${await sha256(fingerprintInput)}`,
+      record_type: "capacity",
+      equipment,
+      origin: parsed.origin,
+      ...(pickupWindow ? { pickup_window: pickupWindow, availability_text: pickupWindow } : {}),
+      team: /\bteam\b/i.test(availability),
+      received_at: receivedAt,
+      observed_at: observedAt,
+      expires_at: expiresAt,
+      visibility: source.requestedVisibility,
+      raw_evidence_ref: rawEvidenceRef,
+    });
+  }
+
+  if (records.length) return { records, quarantine: [] };
+  return {
+    records: [],
+    quarantine: [{ source_message_id: sourceMessageId, fingerprint: emailFingerprint, reason: "capacity_list_no_records", subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef }],
+  };
+};
 
 const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef }) => {
   const combined = `${clean(subject, 300)}\n${String(body || "").slice(0, 120_000)}`;
@@ -332,7 +463,7 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
 
 const buildSourcePayload = (source, recipient) => ({
   id: source.id,
-  provider: "cloudflare_email_routing",
+  provider: source.forwardedSourceEmail ? "controlled_email_forwarding" : "cloudflare_email_routing",
   name: source.name,
   mailbox_email: normalizeEmail(recipient),
   credential_ref: `cloudflare_email_routing:${normalizeEmail(recipient)}`,
@@ -408,32 +539,48 @@ const handleLoadBoardInboundEmail = async (message, env, _ctx, deps = {}) => {
   if (!sourceMessageId) {
     sourceMessageId = `email_${(await sha256(`${source.id}|${subject}|${raw.slice(0, 20_000)}`)).slice(0, 48)}`;
   }
-  const evidenceRef = `email:${source.id}:${sourceMessageId}`;
-  const sourcePayload = buildSourcePayload(source, recipient);
 
-  let item;
-  if (source.requestedVisibility === "public" && source.requireAuthentication && !authenticated) {
-    const fingerprint = `sha256:${await sha256(`${sourceMessageId}|source_authentication_unverified`)}`;
-    item = { quarantine: { source_message_id: sourceMessageId, fingerprint, reason: "source_authentication_unverified", subject, received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: evidenceRef } };
-  } else if (parseFailure) {
-    const fingerprint = `sha256:${await sha256(`${sourceMessageId}|${parseFailure}`)}`;
-    item = { quarantine: { source_message_id: sourceMessageId, fingerprint, reason: parseFailure, subject, received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: evidenceRef } };
-  } else {
-    item = await parseFreightEmail({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef: evidenceRef });
+  let effectiveReceivedAt = receivedAt;
+  let effectiveSourceMessageId = sourceMessageId;
+  let forwardFailure = "";
+  if (!parseFailure && source.forwardedSourceEmail) {
+    const forwarded = parseControlledForwardMetadata(body);
+    if (!forwarded || forwarded.source !== source.forwardedSourceEmail || !forwardedBodyContainsSource(body, source.forwardedSourceEmail)) {
+      forwardFailure = "forwarded_source_unverified";
+    } else {
+      effectiveReceivedAt = forwarded.receivedAt;
+      effectiveSourceMessageId = forwarded.messageId;
+    }
   }
 
-  const payload = {
-    source: sourcePayload,
-    records: item.record ? [item.record] : [],
-    quarantine: item.quarantine ? [item.quarantine] : [],
-  };
+  const evidenceRef = `email:${source.id}:${effectiveSourceMessageId}`;
+  const sourcePayload = buildSourcePayload(source, recipient);
+
+  let records = [];
+  let quarantine = [];
+  if (source.requireAuthentication && !authenticated) {
+    const fingerprint = `sha256:${await sha256(`${effectiveSourceMessageId}|source_authentication_unverified`)}`;
+    quarantine = [{ source_message_id: effectiveSourceMessageId, fingerprint, reason: "source_authentication_unverified", subject, received_at: effectiveReceivedAt, observed_at: observedAt, raw_evidence_ref: evidenceRef }];
+  } else if (parseFailure || forwardFailure) {
+    const reason = parseFailure || forwardFailure;
+    const fingerprint = `sha256:${await sha256(`${effectiveSourceMessageId}|${reason}`)}`;
+    quarantine = [{ source_message_id: effectiveSourceMessageId, fingerprint, reason, subject, received_at: effectiveReceivedAt, observed_at: observedAt, raw_evidence_ref: evidenceRef }];
+  } else if (isCapacityListEmail(subject, body)) {
+    ({ records, quarantine } = await parseCapacityListEmail({ subject, body, receivedAt: effectiveReceivedAt, observedAt, source, sourceMessageId: effectiveSourceMessageId, rawEvidenceRef: evidenceRef }));
+  } else {
+    const item = await parseFreightEmail({ subject, body, receivedAt: effectiveReceivedAt, observedAt, source, sourceMessageId: effectiveSourceMessageId, rawEvidenceRef: evidenceRef });
+    records = item.record ? [item.record] : [];
+    quarantine = item.quarantine ? [item.quarantine] : [];
+  }
+
+  const payload = { source: sourcePayload, records, quarantine };
 
   try {
     const response = await submitIntake(env, payload, deps.fetch || fetch);
     logEvent("loadboard_email_ingested", {
       source_id: source.id,
-      source_message_id: sourceMessageId,
-      outcome: item.record ? "record" : "quarantine",
+      source_message_id: effectiveSourceMessageId,
+      outcome: records.length ? `records:${records.length}` : `quarantine:${quarantine.length}`,
       intake_status: response.status,
     });
   } catch (error) {
@@ -455,6 +602,8 @@ export {
   extractMimeText,
   handleLoadBoardInboundEmail,
   mailboxFromHeader,
+  parseCapacityListEmail,
+  parseControlledForwardMetadata,
   parseFreightEmail,
   parseSourceConfig,
   readRawEmail,
