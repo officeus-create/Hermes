@@ -143,7 +143,7 @@ test("Trucks tab shows a sanitized historical email-feed preview when no approve
 
 test("authenticated company access removes the curtain and shows full load economics", async ({ page }) => {
   const now = new Date().toISOString();
-  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ load_board_access: true, audience: "carrier_candidate", records: [{ id: "private-1", equipment: "car_hauler", origin: "Dallas, TX", destination: "Phoenix, AZ", pickupWindow: "Tomorrow 8 AM", deliveryWindow: "Tomorrow 6 PM", distanceMiles: 885, deadheadMiles: 32, weightLbs: 42000, lengthFeet: 53, rateAmount: 1800, rateCurrency: "USD", ratePerMile: 2.7, source: "Approved source", observedAt: now }] }) }));
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ load_board_access: true, audience: "carrier_candidate", records: [{ id: "private-1", equipment: "car_hauler", origin: "Dallas, TX", destination: "Phoenix, AZ", pickupWindow: "Tomorrow 8 AM", deliveryWindow: "Tomorrow 6 PM", distanceMiles: 885, deadheadMiles: 32, weightLbs: 42000, lengthFeet: 53, rateAmount: 1800, rateCurrency: "USD", ratePerMile: 2.7, duplicateCount: 3, reviewFlags: ["rate_outlier_review"], source: "Approved source", observedAt: now }] }) }));
   await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
   await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 1, available_trucks: 0 }) }));
   await page.goto("/load-board/");
@@ -157,6 +157,7 @@ test("authenticated company access removes the curtain and shows full load econo
   await expect(live.getByText("42,000 lb", { exact: true })).toBeVisible();
   await expect(live.getByText("53 ft", { exact: true })).toBeVisible();
   await expect(live.getByText(/2.7 RPM/)).toBeVisible();
+  await expect(live.getByText(/3 matching posts · Review: rate outlier/)).toBeVisible();
   await expect(live.getByText("Hermes company access active")).toBeVisible();
   await expect(live.locator("[data-hlb-curtain-card]")).toBeHidden();
 });
