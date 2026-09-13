@@ -26,6 +26,9 @@ assert.match(posts, /'carrier_only'/);
 assert.match(posts, /contact_details_exposed: false/);
 assert.match(posts, /booking_created: false/);
 assert.match(posts, /provider_write_performed: false/);
+assert.match(posts, /delivery_window/);
+assert.match(posts, /weight_lbs/);
+assert.match(posts, /length_feet/);
 assert.doesNotMatch(posts, /send_enabled[^\n]*1/);
 
 assert.match(archive, /WHERE id = \? AND company_id = \?/);
@@ -39,6 +42,9 @@ assert.match(ui, /data-lbv2-tab="trucks"/);
 assert.match(ui, /data-lbv2-tab="mine"/);
 assert.match(ui, /hermes-load-board-saved-search/);
 assert.match(ui, /rights_attested/);
+assert.match(ui, /name="delivery_window"/);
+assert.match(ui, /name="weight_lbs"/);
+assert.match(ui, /name="length_feet"/);
 assert.match(ui, /Pearl|hermes-pearl|--hermes-pearl/);
 
 console.log("load-board-marketplace-posting-contract: company posting, rights gate, carrier-only visibility, archive ownership and marketplace controls verified");

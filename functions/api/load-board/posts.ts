@@ -47,11 +47,14 @@ function marketPostRow(row: any) {
     destination: row.destination || null,
     equipment: row.equipment,
     pickup_window: row.pickup_window || null,
+    delivery_window: row.delivery_window || null,
     availability: row.availability_text || null,
     rate_amount: row.rate_amount == null ? null : Number(row.rate_amount),
     rate_currency: row.rate_currency || "USD",
     distance_miles: row.distance_miles == null ? null : Number(row.distance_miles),
     deadhead_miles: row.deadhead_miles == null ? null : Number(row.deadhead_miles),
+    weight_lbs: row.weight_lbs == null ? null : Number(row.weight_lbs),
+    length_feet: row.length_feet == null ? null : Number(row.length_feet),
     rate_per_mile: row.rate_per_mile == null ? null : Number(row.rate_per_mile),
     vehicle_count: row.vehicle_count == null ? null : Number(row.vehicle_count),
     payment_terms: row.payment_terms || null,
@@ -88,8 +91,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     SELECT
       p.id AS post_id, p.record_id, p.post_type, p.status AS post_status,
       p.created_at AS post_created_at, p.updated_at AS post_updated_at,
-      r.origin, r.destination, r.equipment, r.pickup_window, r.availability_text,
-      r.rate_amount, r.rate_currency, r.distance_miles, r.deadhead_miles,
+      r.origin, r.destination, r.equipment, r.pickup_window, r.delivery_window, r.availability_text,
+      r.rate_amount, r.rate_currency, r.distance_miles, r.deadhead_miles, r.weight_lbs, r.length_feet,
       r.rate_per_mile, r.vehicle_count, r.payment_terms, r.visibility, r.expires_at
     FROM hermes_load_market_posts p
     JOIN hermes_load_records r ON r.id = p.record_id
@@ -149,6 +152,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const equipment = normalizeEquipment(body.equipment || "other");
   const pickupWindow = cleanMarketText(body.pickup_window || body.available_from, 160) || null;
+  const deliveryWindow = postType === "load" ? (cleanMarketText(body.delivery_window, 160) || null) : null;
   const offeredRate = finiteNumber(body.rate_amount, { min: 0, max: 1000000 });
   const distanceMiles = finiteNumber(body.distance_miles, { min: 0, max: 100000 });
   const deadheadMiles = finiteNumber(body.deadhead_miles, { min: 0, max: 5000 });
@@ -260,6 +264,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     paymentTerms, ratePerMile, scoring.score, dedupeKey,
     now, now,
   ).run();
+
+  await env.DB.prepare(`
+    UPDATE hermes_load_records
+    SET delivery_window = ?, weight_lbs = ?, length_feet = ?, updated_at = ?
+    WHERE id = ?
+  `).bind(deliveryWindow, weightLbs, lengthFeet, now, recordId).run();
 
   await env.DB.prepare(`
     INSERT INTO hermes_load_market_posts (

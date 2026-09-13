@@ -189,6 +189,23 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
         if (record?.id) url.searchParams.set('load', String(record.id).slice(0, 80));
         return url.pathname + url.search;
       };
+      const scanMiles = (value, label) => {
+        const amount = Number(value);
+        return Number.isFinite(amount) && amount >= 0 ? `${label} ${Math.round(amount).toLocaleString("en-US")} mi` : "";
+      };
+      const scanMeasure = (value, unit) => {
+        const amount = Number(value);
+        if (!Number.isFinite(amount) || amount <= 0) return "";
+        const formatted = unit === "lb" ? Math.round(amount).toLocaleString("en-US") : String(Math.round(amount * 10) / 10);
+        return `${formatted} ${unit}`;
+      };
+      const scanTiming = (record) => [
+        record?.pickupWindow ? `PU ${record.pickupWindow}` : "PU pending",
+        record?.deliveryWindow ? `DEL ${record.deliveryWindow}` : "DEL pending",
+      ].join(" · ");
+      const scanDistance = (record) => [scanMiles(record?.distanceMiles, "Loaded"), scanMiles(record?.deadheadMiles, "DH")].filter(Boolean).join(" · ") || "Mileage pending";
+      const scanSize = (record) => [scanMeasure(record?.weightLbs, "lb"), scanMeasure(record?.lengthFeet, "ft")].filter(Boolean).join(" · ") || "Weight / length pending";
+
       const previewLaneExamples = [
         ['Chicago, IL','Milwaukee, WI','car_hauler'], ['Madison, WI','Indianapolis, IN','car_hauler'],
         ['Rockford, IL','Nashville, TN','hotshot'], ['Green Bay, WI','Des Moines, IA','car_hauler'],
@@ -238,7 +255,7 @@ const previewEquipmentLabel = (value: string) => value.replaceAll("_", " ");
             rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active loads right now.</strong><span>Your access is open; new approved records will appear automatically.</span></div>';
             return;
           }
-          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
+          rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--open" data-load-id="${escapeHtml(record.id)}"><div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div><div class="hlb-live-meta"><span><strong>${escapeHtml(equipmentLabel(record.equipment))}</strong></span><span>${escapeHtml(scanTiming(record))}</span><span>${escapeHtml(scanDistance(record))}</span><span>${escapeHtml(scanSize(record))}</span><span>${escapeHtml(record.source || "Approved source")}</span></div><div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${record.ratePerMile ? `${escapeHtml(record.ratePerMile)} RPM · ` : ''}${escapeHtml(age(record.observedAt))}</small></div></article>`).join("");
           return;
         }
 
