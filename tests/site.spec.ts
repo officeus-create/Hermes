@@ -165,10 +165,10 @@ test("homepage hero combines office and handwritten typography with a restrained
   await expect(title.locator(".hero-letter-i > i")).not.toHaveCSS("animation-name", "none");
 });
 
-test("Load Board demo search reveals a fictional load for a presented city", async ({ page }) => {
+test("Load Board preview search reveals a non-bookable row for a presented city", async ({ page }) => {
   await page.goto("/load-board/");
   await page.getByRole("button", { name: "Rockford, IL" }).click();
-  await expect(page.getByRole("status")).toContainText("1 fictional demonstration load found");
+  await expect(page.getByRole("status")).toContainText("1 preview row found");
   await expect(page.locator("[data-demo-load-card]:visible")).toHaveCount(1);
   await expect(page.locator("[data-demo-load-card]:visible")).toContainText("Nashville, TN");
   await expect(page.getByRole("status")).toContainText("not available to book or dispatch");
@@ -414,7 +414,7 @@ test("Load Board approves a standard car-hauling preview with zero external deli
   expect(writes).toEqual([]);
 });
 
-test("Load Board routes each role to the right workspace and keeps demo loads non-operational", async ({ page }) => {
+test("Load Board routes each role to the right workspace and keeps preview rows non-operational", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
     if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
@@ -426,7 +426,7 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
   await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("heading", { name: "See the lane before you spend time on it." })).toBeVisible();
   await expect(page.locator(".available-load-card")).toHaveCount(4);
-  await expect(page.getByText("Demo data", { exact: false }).first()).toBeVisible();
+  await expect(page.getByText("Market preview", { exact: false }).first()).toBeVisible();
   await page.getByRole("button", { name: "Request dispatch" }).first().click();
   await expect(page.locator("[data-demo-load-title]")).toContainText("HLB-1042");
   await expect(page.locator("[data-demo-load-copy]")).toContainText("sales request");

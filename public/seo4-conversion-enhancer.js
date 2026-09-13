@@ -43,10 +43,10 @@
   const refreshLoadBoardDemoLabels = () => {
     if (window.location.pathname !== "/load-board/") return;
     const pickupLabels = [
-      "Demo day +1 · 8 AM–2 PM",
-      "Demo day +2",
-      "Demo day +3 · appointment",
-      "Demo day +4–5",
+      "8 AM–2 PM",
+      "Flexible pickup",
+      "Appointment required",
+      "2-day pickup window",
     ];
 
     document.querySelectorAll("[data-demo-load-card]").forEach((card, index) => {
@@ -55,11 +55,11 @@
         const value = term.nextElementSibling;
         if (!(value instanceof HTMLElement)) return;
         if (term.textContent?.trim() === "Pickup") {
-          value.textContent = pickupLabels[index] ?? `Demo day +${index + 1}`;
+          value.textContent = pickupLabels[index] ?? "Flexible pickup";
         }
         if (term.textContent?.trim() === "Posted") {
           term.textContent = "Status";
-          value.textContent = "Illustrative demo";
+          value.textContent = "PREVIEW · NOT LIVE";
         }
       });
     });

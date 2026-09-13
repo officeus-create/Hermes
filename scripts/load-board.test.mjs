@@ -155,7 +155,7 @@ assert.match(
   /<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/hermeslogisticsus\.com\/load-board\/["']/i,
   "Load Board must expose /load-board/ as the single canonical search owner",
 );
-assert.match(loadBoardHtml, /fictional demo/i, "Load Board must keep its demo boundary visible");
+assert.match(loadBoardHtml, /PREVIEW|preview rows/i, "Load Board must keep its preview truth boundary visible");
 assert.doesNotMatch(loadBoardHtml, /live freight available now/i, "Load Board must not imply live freight availability");
 
 console.log("Load Board unit and canonical search-owner checks passed.");

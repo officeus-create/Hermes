@@ -1,17 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-test("Load Board uses evergreen fictional timing labels", async ({ page }) => {
-  await page.goto("/load-board/#available-loads");
+test("Load Board keeps preview timing evergreen without demo language", async ({ page }) => {
+  await page.goto("/load-board/");
 
-  await expect(page.getByText("Demo day +1 · 8 AM–2 PM", { exact: true })).toBeVisible();
-  await expect(page.getByText("Demo day +2", { exact: true })).toBeVisible();
-  await expect(page.getByText("Demo day +3 · appointment", { exact: true })).toBeVisible();
-  await expect(page.getByText("Demo day +4–5", { exact: true })).toBeVisible();
+  const board = page.locator("[data-hlb-live-marketplace]");
+  await expect(board).toBeVisible();
+  await expect(board.getByText("PREVIEW · NOT LIVE", { exact: true }).first()).toBeVisible();
+  await expect(board.getByText("Market example", { exact: true }).first()).toBeVisible();
 
-  await expect(page.locator(".available-load-list dt", { hasText: "Status" })).toHaveCount(4);
-  await expect(page.getByText("Illustrative demo", { exact: true })).toHaveCount(4);
-
-  const demoText = await page.locator(".available-load-list").innerText();
-  expect(demoText).not.toMatch(/Jul\s+2[2-6]/i);
-  expect(demoText).not.toMatch(/\b\d+\s*(?:min|hr)s?\s+ago\b/i);
+  const bodyText = await page.locator("body").innerText();
+  expect(bodyText).not.toMatch(/\bdemo\b/i);
+  expect(bodyText).not.toMatch(/Jul\s+2[2-6]/i);
+  expect(bodyText).not.toMatch(/\b\d+\s*(?:min|hr)s?\s+ago\b/i);
 });

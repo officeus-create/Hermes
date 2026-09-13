@@ -12,7 +12,7 @@ import "../styles/features/load.css";
 
 <BaseLayout
   title="Car Hauler Load Board | Search Auto Transport Loads | Hermes"
-  description="Search and review source-gated car hauling and auto transport load opportunities by lane, equipment, deadhead, timing, rate, and carrier fit, with demo loads kept separate."
+  description="Search and review source-gated car hauling and auto transport load opportunities plus a clearly labeled market preview with lane, equipment, deadhead, timing, rate, paperwork, and carrier-fit data."
 >
   <div class="load-board-page">
     <SiteHeader theme="light" activePath="/load-board/" />
@@ -22,12 +22,12 @@ import "../styles/features/load.css";
           <div>
             <p class="eyebrow">Hermes Logistics · Car Hauling Load Board</p>
             <h1>Car Hauler Load Board: Search Auto Transport Loads</h1>
-            <p>Search source-gated active auto transport opportunities when approved public records are available, then filter by lane, equipment, deadhead, timing, rate, paperwork, and carrier fit. If the live feed has no approved records, clearly labeled demo loads show how the workflow works. Request carrier access separately; submission itself is not a booking.</p>
+            <p>Search source-gated active auto transport opportunities when approved public records are available, then use the clearly labeled market preview to evaluate lane, equipment, deadhead, timing, rate, paperwork, and carrier fit. The live marketplace may show zero approved records. Customers, shippers, and dealers who need real vehicle transportation can go directly to the production transport-request path. Carrier access and load requests are reviewed separately; submission itself is not a booking.</p>
           </div>
           <div class="load-board-safety">
             <ShieldCheck size={28} aria-hidden="true" />
-            <strong>Source-gated live + demo</strong>
-            <span>Approved active records may appear in the live section; fictional examples remain clearly labeled and non-bookable.</span>
+            <strong>Source-gated live + market preview</strong>
+            <span>Approved active records may appear in the live section; preview examples remain clearly labeled and non-bookable.</span>
           </div>
         </div>
       </section>
@@ -46,17 +46,17 @@ import "../styles/features/load.css";
               <strong>I need to move a vehicle</strong>
               <small>Use the real transportation-request path for route, vehicle, timing, condition, and contact review.</small>
             </a>
-            <a href="?role=carrier#available-loads" aria-label="Carrier or owner-operator — I have a truck — source-gated live records and fictional demo freight" data-primary-entry="carrier" data-role-link="carrier">
+            <a href="?role=carrier#available-loads" aria-label="Carrier or owner-operator — I have a truck — source-gated live records and market preview" data-primary-entry="carrier" data-role-link="carrier">
               <Truck size={25} aria-hidden="true" />
               <span>Carrier / owner-operator</span>
               <strong>I have a truck</strong>
-              <small>Check source-gated active records when available, then use the separate fictional demo cards to review lane fit, equipment, rates, and the carrier-access workflow.</small>
+              <small>Check source-gated active records when available, then use the market preview to review lane fit, equipment, rates, and the carrier-access workflow.</small>
             </a>
           </div>
           <div class="load-board-section-heading">
             <p><strong>Customer → Hermes → Carrier</strong></p>
             <p>Hermes reviews a transportation request first, then checks authority, insurance, equipment, geography, timing, and actual carrier availability before representing an option as suitable. Submission itself is not a booking.</p>
-            <p><strong>Live + demo split:</strong> the Live marketplace shows only approved, active, unexpired public records returned by the Hermes feed and may show zero. Demo cards below are fictional and non-bookable.</p>
+            <p><strong>Live + preview split:</strong> the Live marketplace shows only approved, active, unexpired public records returned by the Hermes feed and may show zero. Preview rows are separate, clearly marked, and non-bookable.</p>
             <p><a href="/paths/logistics/brokers/carrier-capacity/"><Search size={17} aria-hidden="true" /> Broker? Request verified carrier capacity.</a></p>
           </div>
         </div>
@@ -76,7 +76,7 @@ import "../styles/features/load.css";
             <li><span>04</span><strong>Source and paperwork</strong><small>Broker or dealer review, setup packet, insurance certificate, rate confirmation, BOL, and POD</small></li>
             <li><span>05</span><strong>Rate and carrier approval</strong><small>Offered rate, miles, operating cost, payment terms, risk, and the carrier's final decision</small></li>
           </ol>
-          <p><strong>Where can I find car hauling loads?</strong> Carriers commonly compare load boards, broker and dealer sources, auctions, repeat shippers, and direct customer opportunities. The Hermes Live marketplace can display approved active records when the source, permission, freshness, and public-visibility gates pass; it may show zero. The fictional examples below remain a separate practice layer for reviewing lane, equipment, deadhead, timing, paperwork, payment terms, and carrier approval.</p>
+          <p><strong>Where can I find car hauling loads?</strong> Carriers commonly compare load boards, broker and dealer sources, auctions, repeat shippers, and direct customer opportunities. The Hermes Live marketplace can display approved active records when the source, permission, freshness, and public-visibility gates pass; it may show zero. The preview rows remain a separate product-evaluation layer for reviewing lane, equipment, deadhead, timing, paperwork, payment terms, and carrier approval.</p>
           <p><strong>New authority:</strong> load access may be limited by broker rules, authority age, insurance, safety profile, documentation, equipment, and payment requirements. A readiness review does not guarantee that a specific load, lane, rate, or broker will be available.</p>
           <p>Need ongoing search, broker communication, paperwork, and back-office support? Review the <a href="/logistics/car-hauling-dispatch/">car hauling dispatch service</a>, compare the <a href="/logistics/car-hauler-loads/">25 U.S. car-hauler load-search markets</a>, check the <a href="/paths/logistics/carriers/new-authority/">new-authority carrier path</a>, and use the <a href="/logistics/resources/car-hauler-capacity-checklist/">car hauler capacity checklist</a>.</p>
         </div>
@@ -86,18 +86,18 @@ import "../styles/features/load.css";
         <div class="shell">
           <div class="load-board-section-heading available-loads-heading">
             <div>
-              <p class="eyebrow">Available Loads · Demo data</p>
+              <p class="eyebrow">Available Loads · Market preview</p>
               <h2 id="available-loads-title">See the lane before you spend time on it.</h2>
             </div>
-            <p>Fictional examples demonstrate the proposed carrier view. No load below is available to book.</p>
+            <p>These example rows show the carrier view. They are not current inventory and cannot be booked.</p>
           </div>
 
-          <div class="load-search-bar" aria-label="Demo load filters">
+          <div class="load-search-bar" aria-label="Preview load filters">
             <label>From <input value="Chicago, IL" list="demo-load-cities" aria-label="Load origin" data-demo-origin /></label>
             <label>Radius <select aria-label="Origin radius"><option>150 miles</option><option>250 miles</option><option>Anywhere</option></select></label>
             <label>To <input placeholder="City, state or anywhere" list="demo-load-cities" aria-label="Load destination" data-demo-destination /></label>
             <label>Equipment <select aria-label="Equipment"><option>Car Hauler</option><option>Hotshot / Gooseneck</option><option>All compatible</option></select></label>
-            <button class="button button-primary" type="button" data-demo-search>Search demo loads</button>
+            <button class="button button-primary" type="button" data-demo-search>Search preview rows</button>
           </div>
           <datalist id="demo-load-cities">
             <option value="Chicago, IL"></option><option value="Milwaukee, WI"></option>
@@ -105,48 +105,48 @@ import "../styles/features/load.css";
             <option value="Rockford, IL"></option><option value="Nashville, TN"></option>
             <option value="Green Bay, WI"></option><option value="Des Moines, IA"></option>
           </datalist>
-          <div class="demo-city-choices" aria-label="Cities available in the demonstration">
-            <span>Try a demo city:</span>
+          <div class="demo-city-choices" aria-label="Cities available in the preview">
+            <span>Try a city:</span>
             {["Chicago, IL", "Madison, WI", "Rockford, IL", "Green Bay, WI"].map((city) => (
               <button type="button" data-demo-city={city}>{city}</button>
             ))}
           </div>
-          <p class="demo-search-status" role="status" data-demo-search-status>Enter a demo city and search. Results are fictional and cannot be booked.</p>
+          <p class="demo-search-status" role="status" data-demo-search-status>Filter the preview rows by city. Preview rows are not bookable.</p>
 
           <div class="available-loads-layout">
-            <div class="available-load-list" aria-label="Fictional available loads">
+            <div class="available-load-list" aria-label="Preview available loads">
               <article class="available-load-card" data-demo-load-card data-origin="chicago il" data-destination="milwaukee wi">
                 <div class="load-card-route"><span>Chicago, IL</span><ArrowRight size={18} aria-hidden="true" /><span>Milwaukee, WI</span></div>
                 <div class="load-card-price"><strong>$620</strong><span>$6.74 / mi</span></div>
                 <p>2 operable sedans · Open car hauler · 92 mi</p>
-                <dl><div><dt>Pickup</dt><dd>Jul 22 · 8 AM–2 PM</dd></div><div><dt>Posted</dt><dd>18 min ago</dd></div><div><dt>Source</dt><dd>Verified dealer · Demo</dd></div></dl>
+                <dl><div><dt>Pickup</dt><dd>Jul 22 · 8 AM–2 PM</dd></div><div><dt>Posted</dt><dd>18 min ago</dd></div><div><dt>Source</dt><dd>Dealer source</dd></div></dl>
                 <button type="button" data-demo-load="HLB-1042">Request dispatch</button>
               </article>
               <article class="available-load-card" data-demo-load-card data-origin="madison wi" data-destination="indianapolis in">
                 <div class="load-card-route"><span>Madison, WI</span><ArrowRight size={18} aria-hidden="true" /><span>Indianapolis, IN</span></div>
                 <div class="load-card-price"><strong>$1,080</strong><span>$3.28 / mi</span></div>
                 <p>3 operable vehicles · 3-car wedge · 329 mi</p>
-                <dl><div><dt>Pickup</dt><dd>Jul 23</dd></div><div><dt>Posted</dt><dd>41 min ago</dd></div><div><dt>Payment</dt><dd>Quick Pay eligible · Demo</dd></div></dl>
+                <dl><div><dt>Pickup</dt><dd>Jul 23</dd></div><div><dt>Posted</dt><dd>41 min ago</dd></div><div><dt>Payment</dt><dd>Quick Pay eligible</dd></div></dl>
                 <button type="button" data-demo-load="HLB-1047">Make an offer</button>
               </article>
               <article class="available-load-card" data-demo-load-card data-origin="rockford il" data-destination="nashville tn">
                 <div class="load-card-route"><span>Rockford, IL</span><ArrowRight size={18} aria-hidden="true" /><span>Nashville, TN</span></div>
                 <div class="load-card-price"><strong>$1,350</strong><span>$2.35 / mi</span></div>
                 <p>1 operable SUV · Hotshot compatible · 575 mi</p>
-                <dl><div><dt>Pickup</dt><dd>Jul 24 · appointment</dd></div><div><dt>Posted</dt><dd>1 hr ago</dd></div><div><dt>Stops</dt><dd>Direct · Demo</dd></div></dl>
+                <dl><div><dt>Pickup</dt><dd>Jul 24 · appointment</dd></div><div><dt>Posted</dt><dd>1 hr ago</dd></div><div><dt>Stops</dt><dd>Direct</dd></div></dl>
                 <button type="button" data-demo-load="HLB-1051">Request dispatch</button>
               </article>
               <article class="available-load-card" data-demo-load-card data-origin="green bay wi" data-destination="des moines ia">
                 <div class="load-card-route"><span>Green Bay, WI</span><ArrowRight size={18} aria-hidden="true" /><span>Des Moines, IA</span></div>
                 <div class="load-card-price"><strong>Offer</strong><span>carrier bid</span></div>
                 <p>1 inoperable pickup · Winch required · 390 mi</p>
-                <dl><div><dt>Pickup</dt><dd>Jul 25–26</dd></div><div><dt>Posted</dt><dd>2 hr ago</dd></div><div><dt>Review</dt><dd>Equipment check · Demo</dd></div></dl>
+                <dl><div><dt>Pickup</dt><dd>Jul 25–26</dd></div><div><dt>Posted</dt><dd>2 hr ago</dd></div><div><dt>Review</dt><dd>Equipment check</dd></div></dl>
                 <button type="button" data-demo-load="HLB-1058">Make an offer</button>
               </article>
             </div>
             <aside class="load-board-demo-panel" aria-live="polite">
               <p class="eyebrow">Load detail preview</p>
-              <h3 data-demo-load-title>Select a demo load</h3>
+              <h3 data-demo-load-title>Select a preview row</h3>
               <p data-demo-load-copy>Review route, equipment fit, timing, units, rate, source, and special requirements before asking a dispatcher to act.</p>
               <ul>
                 <li>Request dispatch does not book automatically.</li>
@@ -579,14 +579,14 @@ import "../styles/features/load.css";
 
     if (!demoSearchStatus) return;
     if (!origin && !destination) {
-      demoSearchStatus.textContent = "Enter one of the demo cities shown above. This filter searches fictional demo cards only.";
+      demoSearchStatus.textContent = "Enter one of the cities shown above. This filter searches preview rows only.";
     } else if (matches.length === 1) {
-      demoSearchStatus.textContent = "1 fictional demonstration load found. It is not available to book or dispatch.";
+      demoSearchStatus.textContent = "1 preview row found. It is not available to book or dispatch.";
       matches[0]?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (matches.length > 1) {
-      demoSearchStatus.textContent = `${matches.length} fictional demonstration loads found. The source-gated live marketplace above is separate.`;
+      demoSearchStatus.textContent = `${matches.length} preview rows found. The source-gated live marketplace above is separate.`;
     } else {
-      demoSearchStatus.textContent = "No fictional demo load matches that city. Try Chicago, Madison, Rockford, or Green Bay.";
+      demoSearchStatus.textContent = "No preview row matches that city. Try Chicago, Madison, Rockford, or Green Bay.";
     }
   };
 

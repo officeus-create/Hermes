@@ -106,7 +106,7 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(demoRow).toContainText("PREVIEW · NOT LIVE");
   await expect(live.getByLabel("Min RPM")).toBeVisible();
   await expect(live.getByLabel("Max DH")).toBeVisible();
-  await expect(live.getByRole("link", { name: "Alerts · demo" })).toHaveAttribute("href", /source=load-board-alert/);
+  await expect(live.getByRole("link", { name: "Alerts · preview" })).toHaveAttribute("href", /source=load-board-alert/);
   await expect(live.getByRole("link", { name: "Agreement & onboarding" })).toHaveAttribute("href", "/carrier/");
   await expect(live.getByText("Interface preview rows are not inventory.")).toBeVisible();
   await expect(live.locator(".hlb-live-row--locked").first()).toHaveAttribute("href", /\/services\/hermes-connect\/load-board\/access\//);
@@ -119,7 +119,7 @@ test("canonical Load Board renders approved live loads and capacity from separat
 });
 
 
-test("Trucks tab shows a sanitized email-feed demo when no approved live capacity exists", async ({ page }) => {
+test("Trucks tab shows a sanitized historical email-feed preview when no approved live capacity exists", async ({ page }) => {
   await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [], load_board_access: false, audience: "public" }) }));
   await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
   await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) }));
@@ -134,7 +134,8 @@ test("Trucks tab shows a sanitized email-feed demo when no approved live capacit
   const live = page.locator("[data-hlb-live-marketplace]");
   const truckPreview = live.locator(".lbv2-truck-preview").first();
   await expect(truckPreview).toBeVisible();
-  await expect(truckPreview).toContainText("Email feed · sanitized");
+  await expect(truckPreview).toContainText("Historical capacity pattern · sanitized");
+  await expect(truckPreview).toContainText("Fulton, NY");
   await expect(truckPreview).toContainText("Truck capacity");
   await expect(truckPreview).toContainText("PREVIEW · NOT LIVE");
   await expect(truckPreview).toContainText("53 ft Dry Van");
