@@ -98,6 +98,9 @@ assert.match(intake, /INSERT INTO hermes_load_quarantine/);
 assert.match(intake, /quarantined/);
 assert.match(intake, /items_required/);
 assert.match(intake, /clampVisibility/);
+assert.match(intake, /record\.covered === true/);
+assert.match(intake, /\["covered", "booked", "unavailable", "cancelled", "canceled"\]/);
+assert.match(intake, /sourceCovered \? "covered"/);
 assert.match(intake, /outbound_enabled: false/);
 
 assert.match(active, /getAuthenticatedSpecialist/);

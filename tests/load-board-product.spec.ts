@@ -82,7 +82,9 @@ test("canonical Load Board renders approved live loads and capacity from separat
     });
   });
 
+  let summaryReads = 0;
   await page.route("**/api/load-board/summary", async (route) => {
+    summaryReads += 1;
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 37, available_trucks: 1, latest_observed_at: now }) });
   });
 
@@ -99,6 +101,12 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(live.getByRole("link", { name: "Agreement & onboarding" })).toHaveAttribute("href", "/carrier/");
   await expect(live.getByText("Interface preview rows are not inventory.")).toBeVisible();
   await expect(live.locator(".hlb-live-row--locked").first()).toHaveAttribute("href", /\/services\/hermes-connect\/load-board\/access\//);
+  const refresh = live.getByRole("button", { name: "Refresh Load Board inventory" });
+  await expect(refresh).toBeVisible();
+  const beforeRefreshReads = summaryReads;
+  await refresh.click();
+  await expect.poll(() => summaryReads).toBeGreaterThan(beforeRefreshReads);
+  await expect(refresh).toHaveText("Refresh now");
 });
 
 test("authenticated company access removes the curtain and shows full load economics", async ({ page }) => {
