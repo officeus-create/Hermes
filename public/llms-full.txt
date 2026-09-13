@@ -106,6 +106,8 @@ Important canonical pages:
 - Local SEO services: https://hermeslogisticsus.com/services/local-seo/
 - SEO for logistics companies: https://hermeslogisticsus.com/services/seo-for-logistics-companies/
 - SEO for independent auto dealers: https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/
+- SEO for auto repair shops: https://hermeslogisticsus.com/services/seo-for-auto-repair-shops/
+- Auto repair website design: https://hermeslogisticsus.com/services/auto-repair-website-design/
 - Website development: https://hermeslogisticsus.com/services/website-development/
 - Website redesign: https://hermeslogisticsus.com/services/website-redesign/
 - Logistics SEO audit sample: https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
@@ -147,6 +149,7 @@ Important canonical pages:
 - Hermes Connect service page: https://hermeslogisticsus.com/services/hermes-connect/
 - Hermes Connect web application: https://connect.hermeslogisticsus.com/
 - Repair Shops product surface: https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
+- Auto repair website design: https://hermeslogisticsus.com/services/auto-repair-website-design/
 - Website development: https://hermeslogisticsus.com/services/website-development/
 - Website redesign: https://hermeslogisticsus.com/services/website-redesign/
 - Public technology case: https://hermeslogisticsus.com/case/it-development/

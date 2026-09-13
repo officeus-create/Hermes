@@ -45,7 +45,7 @@ const childSitemapFiles = [
 // 204 controlled URLs before the Load Board provider/equipment acquisition cluster.
 // This branch adds exactly 15 unique canonical URLs: 7 provider integrations + 8 equipment pages.
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
-const expectedCurrentPageUrlCount = 219;
+const expectedCurrentPageUrlCount = 221;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());

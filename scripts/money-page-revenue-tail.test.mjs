@@ -20,8 +20,10 @@ const pages = [
   ["dist/services/local-seo/index.html", "Start local SEO review", "service=local_seo", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/seo-for-logistics-companies/index.html", "Start logistics SEO review", "service=logistics_seo", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/seo-for-independent-auto-dealers/index.html", "Start dealer SEO review", "service=auto_dealer_seo", "mailto:officeus@hermeslogisticsus.com"],
+  ["dist/services/seo-for-auto-repair-shops/index.html", "Start auto repair SEO review", "service=seo", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/website-development/index.html", "Start website brief", "project=website_development", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/website-redesign/index.html", "Start redesign brief", "project=website_redesign", "mailto:officeus@hermeslogisticsus.com"],
+  ["dist/services/auto-repair-website-design/index.html", "Start repair-shop website brief", "project=website_development", "mailto:officeus@hermeslogisticsus.com"],
 ];
 
 for (const [relativePath, label, primaryFragment, fallback] of pages) {

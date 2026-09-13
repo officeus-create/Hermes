@@ -6,6 +6,8 @@ import { readFile } from "node:fs/promises";
 const knownUpdates = [
   ["sitemap.xml", "company-information/", "2026-09-12", "url"],
   ["sitemap-digital-services.xml", "services/hermes-connect/repair-shops/", "2026-09-12", "url"],
+  ["sitemap-digital-services.xml", "services/seo-for-auto-repair-shops/", "2026-09-13", "url"],
+  ["sitemap-digital-services.xml", "services/auto-repair-website-design/", "2026-09-13", "url"],
   ["sitemapindex.xml", "sitemap.xml", "2026-09-13", "sitemap"],
   ["sitemapindex.xml", "sitemap-digital-services.xml", "2026-09-13", "sitemap"],
   // b5016ed0 published the existing Carrier GEO entries on September 8.
@@ -26,4 +28,4 @@ for (const [file, path, minimum, tag] of knownUpdates) {
   assert.equal(parsed.toISOString().slice(0, 10), lastmod, `${loc}: invalid calendar date`);
   assert.ok(lastmod >= minimum, `${loc}: lastmod predates verified update ${minimum}`);
 }
-console.log("Sitemap lastmod contract passed: five evidence-backed freshness boundaries.");
+console.log(`Sitemap lastmod contract passed: ${knownUpdates.length} evidence-backed freshness boundaries.`);
