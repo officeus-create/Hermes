@@ -8,7 +8,7 @@ const read = (file: string) => readFileSync(path.join(root, file), "utf8");
 test("car hauling dispatch owner stays separate from load-board search intent", () => {
   const source = read("src/pages/logistics/car-hauling-dispatch/index.astro");
 
-  expect(source).toContain("Car Hauling Dispatch Services for Owner-Operators");
+  expect(source).toContain("Car Hauler Dispatch Service for Owner-Operators");
   expect(source).toContain('/logistics/start-car-hauling-dispatch/');
   expect(source).toContain('/load-board/?role=carrier&equipment=car_hauler#available-loads');
   expect(source).not.toContain("Where can I find car hauling loads?");

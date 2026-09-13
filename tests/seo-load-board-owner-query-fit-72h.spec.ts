@@ -8,8 +8,8 @@ const liveEnhancer = readFileSync(path.join(root, "src/components/LoadBoardCapac
 const directNetwork = readFileSync(path.join(root, "src/pages/logistics/direct-vehicle-transport-network/index.astro"), "utf8");
 
 test("canonical load board owner matches load-board intent with one truthful mixed-mode owner", () => {
-  expect(source).toContain("Car Hauler Load Board | Review Auto Transport Loads | Hermes");
-  expect(source).toContain("Review Car Hauling Loads Before You Commit");
+  expect(source).toContain("Car Hauler Load Board | Search Auto Transport Loads | Hermes");
+  expect(source).toContain("Car Hauler Load Board: Search Auto Transport Loads");
   expect(source).toContain("Where can I find car hauling loads?");
   expect(source).toContain("Source-gated live + demo");
   expect(source).toContain("the Live marketplace shows only approved, active, unexpired public records");

@@ -42,7 +42,7 @@ const routes = [
     path: "load-board/index.html",
     required: [
       "Car Hauling Loads &amp; Load Board Preview",
-      "Review Car Hauling Loads Before You Commit",
+      "Car Hauler Load Board: Search Auto Transport Loads",
       "How to evaluate car hauling loads",
       "A load is useful only when the complete operating fit works.",
       "Lane and deadhead",
