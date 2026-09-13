@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import bridgeEntry from "../workers/lead-email/src/entry.mjs";
 import {
   containsCarHauling,
@@ -16,6 +17,8 @@ const now = "2026-09-04T14:00:00.000Z";
 
 assert.equal(typeof bridgeEntry.fetch, "function");
 assert.equal(typeof bridgeEntry.email, "function");
+const productionWorkerConfig = JSON.parse(fs.readFileSync(new URL("../workers/lead-email/wrangler.production.jsonc", import.meta.url), "utf8"));
+assert.equal(productionWorkerConfig.vars.LOADBOARD_EMAIL_RECIPIENT, "loads@loadboard.hermeslogisticsus.com");
 
 const sourceConfig = parseSourceConfig(JSON.stringify({
   "broker@example.com": {

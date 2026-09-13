@@ -8,13 +8,15 @@ Track the remaining production dependency after canonical `/load-board/` is wire
 
 `approved source -> inbound email/API adapter -> parser -> D1 intake -> /api/load-board/active -> /load-board/`
 
-The application code now supports this path. Production still needs actual source routing; existing Gmail history is not automatically backfilled by the Cloudflare inbound-email worker. Runtime readback on 2026-09-10 confirmed `LEAD_SERVICE_TOKEN` already exists on both the Hermes Pages project and `hermes-lead-email`, so the bridge may reuse that existing private service trust instead of requiring a second token.
+The application code supports this path. The dedicated Cloudflare subdomain route is configured, but only fresh/permissioned messages may become active inventory; existing Gmail history is never automatically treated as live. Runtime readback on 2026-09-10 confirmed `LEAD_SERVICE_TOKEN` already exists on both the Hermes Pages project and `hermes-lead-email`, so the bridge may reuse that existing private service trust instead of requiring a second token.
 
-Cloudflare Email Routing for the apex domain was also read back as disabled/unconfigured on 2026-09-10. Do **not** enable or change apex MX merely to activate Load Board ingestion while Google Workspace is the corporate mail authority. Prefer an authorized Gmail/API adapter or another route that does not replace the production mail MX.
+Cloudflare Email Routing for the apex domain remains disabled/unconfigured and the apex MX remains Google Workspace (`smtp.google.com`). Do **not** enable or replace apex MX for Load Board ingestion.
+
+On 2026-09-13 a dedicated Email Routing subdomain was onboarded instead: `loadboard.hermeslogisticsus.com`. Cloudflare reports the subdomain routing state as `ready`, while the apex Google Workspace MX is unchanged. The bounded routing rule sends only `loads@loadboard.hermeslogisticsus.com` to `hermes-lead-email`; catch-all remains disabled.
 
 ## Canonical inbound target
 
-- Hermes intake target: `loads@hermeslogisticsus.com`
+- Hermes intake target: `loads@loadboard.hermeslogisticsus.com`
 - Worker: `workers/lead-email`
 - Required runtime configuration:
   - `LOADBOARD_EMAIL_RECIPIENT`
