@@ -23,6 +23,8 @@
 
   if (!demo || (!local && !publicPreview)) return;
 
+  const russian = params.get("lang") === "ru";
+  const russianServices = ["Диагностика автомобиля", "Замена масла и фильтра", "Проверка тормозов", "Шиномонтаж", "Проверка кондиционера", "Предрейсовый осмотр / DOT"];
   const now = new Date();
   const iso = (offset) => { const day = new Date(now); day.setDate(day.getDate() + offset); return day.toISOString().slice(0, 10); };
   const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -31,7 +33,7 @@
     ["svc-diagnostics", "Vehicle diagnostics", 60], ["svc-oil", "Oil & filter service", 45],
     ["svc-brakes", "Brake inspection", 75], ["svc-tires", "Tire service", 60],
     ["svc-ac", "A/C inspection", 60], ["svc-dot", "DOT / pre-trip inspection", 90],
-  ].map(([id, name, duration_minutes]) => ({ id, name, duration_minutes, owner_specialist_id: "demo-owner" }));
+  ].map(([id, name, duration_minutes], index) => ({ id, name: russian ? russianServices[index] : name, duration_minutes, owner_specialist_id: "demo-owner" }));
   const names = ["Alex Morgan", "Jordan Lee", "Taylor Rivera", "Casey Bennett", "Morgan Patel", "Riley Chen", "Jamie Brooks", "Avery Stone", "Cameron Diaz", "Drew Parker", "Quinn Harper", "Skyler Reed"];
   const makes = [["Ford", "Transit"], ["Chevrolet", "Express"], ["Ram", "ProMaster"], ["Freightliner", "M2"], ["Toyota", "Tacoma"], ["Honda", "Civic"]];
   // Fictional records give the demo a small history and a complete month ahead.
@@ -50,6 +52,7 @@
   });
   const shop = { id:"demo-shop", name:"Northstar Fleet & Auto", slug:"northstar-demo", phone:"+1 (555) 010-0200", address_line1:"1450 Demo Avenue", city:"Milwaukee", state:"WI", postal_code:"53202", timezone:"America/Chicago" };
   const profile = { ...shop };
+  let capabilities = { vehicle_types:["passenger_light", "commercial_truck"], fleet_service:true, mobile_roadside:false, emergency_24_7:false, parallel_booking_capacity:3 };
   const availability = [1,2,3,4,5].map((day_of_week) => ({ day_of_week, is_open:true, start_time:"08:00", end_time:"18:00" })).concat([{ day_of_week:6,is_open:true,start_time:"09:00",end_time:"14:00" },{ day_of_week:0,is_open:false,start_time:null,end_time:null }]);
   let driverDiscount = { enabled:true, service_discount_percent:10, service_scope:"selected", service_ids:["svc-oil","svc-brakes","svc-dot"], materials_discount_percent:5, materials_scope:"selected", materials_items:["Engine oil","Filters","Brake pads"] };
   let feedback = [{ id:"feedback-demo-1", category:"booking", rating:5, message:"Demo record: booking reminders are clear and the service details are easy to find.", created_at:`${iso(-3)}T15:00:00.000Z`, retention_until:iso(177) }];
@@ -79,7 +82,14 @@
     if (path === "/api/auth/logout") return json({ success:true });
     if (path === "/api/repair-shop/profile") { if (method === "PUT") Object.assign(profile, await readBody(init)); return json({ success:true, shop:clone(profile) }); }
     if (path === "/api/services") { if (method === "POST") { const body = await readBody(init); const service = { id:`svc-local-${services.length+1}`, name:String(body.name || "New service"), duration_minutes:Number(body.duration_minutes || 30), owner_specialist_id:"demo-owner" }; services.push(service); return json({success:true,service}); } return json({ success:true, services:clone(services) }); }
-    if (path.startsWith("/api/services/") && method === "DELETE") return json({ success:false, error:"service_has_bookings" }, 409);
+    if (path.startsWith("/api/services/") && method === "DELETE") {
+      const id = decodeURIComponent(path.split("/").pop());
+      const index = services.findIndex((service) => service.id === id);
+      if (index < 0) return json({ success:false, error:"service_not_found" }, 404);
+      if (!id.startsWith("svc-local-")) return json({ success:false, error:"service_has_bookings" }, 409);
+      services.splice(index, 1);
+      return json({ success:true });
+    }
     if (path === "/api/repair-shop/availability") { if (method === "PUT") { const body = await readBody(init); availability.splice(0, availability.length, ...(Array.isArray(body.days) ? body.days : availability)); } return json({ success:true, days:clone(availability), timezone:profile.timezone }); }
     if (path === "/api/repair-shop/bookings") return json({ success:true, bookings:clone(bookings) });
     if (/^\/api\/repair-shop\/bookings\/[^/]+\/status$/.test(path) && method === "PATCH") { const body = await readBody(init); const id = path.split("/")[4]; const item = bookings.find((entry) => entry.id === id); if (item && body.status) { item.history.push({ id:`history-update-${Date.now()}`, booking_id:item.id, from_status:item.status, to_status:body.status, changed_at:new Date().toISOString() }); item.status = body.status; } return json({ success:true, booking:clone(item) }); }
@@ -87,7 +97,7 @@
     if (path === "/api/repair-shop/vehicles") return json({ success:true, vehicles:clone(vehicles()) });
     if (path === "/api/repair-shop/feedback") { if (method === "POST") { const body = await readBody(init); feedback.unshift({ id:`feedback-${Date.now()}`, category:body.category || "other", rating:Number(body.rating || 5), message:String(body.message || "Demo feedback"), created_at:new Date().toISOString(), retention_until:iso(180) }); } return json({success:true,feedback:clone(feedback)}); }
     if (path === "/api/repair-shop/driver-discount") { if (method === "PUT") driverDiscount = { ...driverDiscount, ...(await readBody(init)) }; return json({ success:true, discount:clone(driverDiscount) }); }
-    if (path === "/api/repair-shop/capabilities") return json({ success:true, capabilities:{ accepts_walk_ins:true, accepts_fleet:true, accepts_heavy_duty:true, after_hours_dropoff:true, waiting_area:true } });
+    if (path === "/api/repair-shop/capabilities") { if (method === "PUT") capabilities = { ...capabilities, ...(await readBody(init)) }; return json({ success:true, capabilities:clone(capabilities) }); }
     if (path === "/api/repair-shop/capacity") return json({ success:true, capacity:{ bays:6, technicians:3, daily_booking_limit:12 } });
     if (path === "/api/repair-shop/access") return json({ success:true, access:{ can_manage_shop:true } });
     if (path === "/api/public/repair-shop") return json({ success:true, shop:clone(profile), services:clone(services), driver_discount:{ ...clone(driverDiscount), service_names:services.filter((entry) => driverDiscount.service_ids.includes(entry.id)).map((entry) => entry.name) } });
