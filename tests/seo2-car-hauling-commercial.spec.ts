@@ -5,7 +5,7 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
 
   await expect(page.getByRole("heading", {
     level: 1,
-    name: "Car Hauling Dispatch Services for Owner-Operators and Small Fleets",
+    name: "Car Hauler Dispatch Service for Owner-Operators and Small Fleets",
   })).toBeVisible();
 
   await expect(page.getByRole("heading", { name: "Dispatch versus self-dispatch review" })).toBeVisible();
@@ -26,8 +26,8 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
 test("load board explains how owner-operators evaluate car hauling loads", async ({ page }) => {
   await page.goto("/load-board/");
 
-  await expect(page).toHaveTitle(/Car Hauler Load Board \| Review Auto Transport Loads/);
-  await expect(page.getByRole("heading", { level: 1, name: "Review Car Hauling Loads Before You Commit" })).toBeVisible();
+  await expect(page).toHaveTitle(/Car Hauler Load Board \| Search Auto Transport Loads/);
+  await expect(page.getByRole("heading", { level: 1, name: "Car Hauler Load Board: Search Auto Transport Loads" })).toBeVisible();
   await expect(page.getByRole("heading", {
     name: "A load is useful only when the complete operating fit works.",
   })).toBeVisible();

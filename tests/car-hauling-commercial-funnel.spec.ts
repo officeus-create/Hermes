@@ -3,9 +3,9 @@ import { expect, test } from "@playwright/test";
 test("car hauling dispatch page routes carriers into direct commercial intake with fallbacks", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
 
-  await expect(page).toHaveTitle("Car Hauling Dispatch Services for Owner-Operators | Hermes Logistics");
+  await expect(page).toHaveTitle("Car Hauler Dispatch Service for Owner-Operators | Hermes");
   await expect(
-    page.getByRole("heading", { name: "Car Hauling Dispatch Services for Owner-Operators and Small Fleets" }),
+    page.getByRole("heading", { name: "Car Hauler Dispatch Service for Owner-Operators and Small Fleets" }),
   ).toBeVisible();
 
   const actions = page.locator(".commercial-actions");
@@ -28,7 +28,7 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   expect(publicCopy).toContain("Does Hermes guarantee loads, rates, or revenue?");
   expect(publicCopy).toContain("Timing, responses, direct customers, lanes, rates, volume, and revenue are not guaranteed.");
   expect(publicCopy).toMatch(/carrier.*final decision/i);
-  expect(publicCopy).toContain("The public Load Board remains an illustrative product preview and is not the commercial intake path.");
+  expect(publicCopy).toContain("The public Load Board is a separate source-gated live + demo discovery product and is not the commercial dispatch intake path.");
   expect(publicCopy).toContain("Initial setup and candidate-load workflow");
   expect(publicCopy).toContain("not a guarantee of dispatcher assignment, response time, load availability, booking, rate, mileage, lane consistency, or revenue");
   expect(publicCopy).toContain("What happens after I complete the carrier intake?");
