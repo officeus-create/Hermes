@@ -224,7 +224,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       ? rawVisibility as Visibility
       : "internal_only";
     const visibility = clampVisibility(requestedVisibility, redistributionPermission);
-    const status = new Date(expiresAt).getTime() > Date.now() ? "active" : "expired";
+    const sourceStatus = String(record.status || "").trim().toLowerCase();
+    const sourceCovered = record.covered === true || ["covered", "booked", "unavailable", "cancelled", "canceled"].includes(sourceStatus);
+    const status = sourceCovered ? "covered" : (new Date(expiresAt).getTime() > Date.now() ? "active" : "expired");
     const rawRate = record.rate_amount;
     const rateAmount = rawRate === null || rawRate === undefined || rawRate === ""
       ? null
