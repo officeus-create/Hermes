@@ -10,7 +10,7 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
         <div>
           <p>Hermes Logistics · software workspace</p>
           <strong>Load Board</strong>
-          <span>LIVE inventory + sanitized product demo</span>
+          <span>LIVE inventory + market preview</span>
         </div>
         <div class="lbv2-product-actions">
           <button type="button" data-lbv2-post="load"><PackagePlus size={16} aria-hidden="true" /> Post load</button>
@@ -46,8 +46,8 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
         </div>
         <div class="lbv2-search-tools">
           <button type="button" data-lbv2-save><Bookmark size={15} aria-hidden="true" /> Save search</button>
-          <a class="lbv2-alert-link" href="/services/hermes-connect/load-board/access/?source=load-board-alert">Alerts · demo</a>
-          <span data-lbv2-result-copy>Showing sanitized product demo</span>
+          <a class="lbv2-alert-link" href="/services/hermes-connect/load-board/access/?source=load-board-alert">Alerts · preview</a>
+          <span data-lbv2-result-copy>Showing market preview</span>
         </div>
       </div>
     </section>
@@ -265,12 +265,12 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
     };
 
     const truckPreviewRows = () => [
-      ["Rockford, IL", "Open destination", "53 ft Dry Van", "Ready 10 AM", "Solo", "Email feed · sanitized"],
-      ["Fort Worth, TX", "Southeast preferred", "53 ft Dry Van", "Ready now", "TEAM", "Email feed · sanitized"],
-      ["Harrisburg, PA", "Chicago, IL", "53 ft Reefer", "Ready noon", "Solo", "Email feed · sanitized"],
-      ["Nashville, TN", "Midwest preferred", "53 ft Dry Van", "Ready 1 PM", "Solo", "Email feed · sanitized"],
-      ["Rogers, MN", "Open destination", "53 ft Dry Van", "Ready noon", "TEAM", "Email feed · sanitized"],
-      ["Salt Lake City, UT", "West preferred", "53 ft Reefer", "Appointment 3 PM", "Solo", "Email feed · sanitized"],
+      ["Fulton, NY", "Open destination", "53 ft Dry Van", "Appointment 10 AM", "Solo", "Historical capacity pattern · sanitized"],
+      ["Des Plaines, IL", "Open destination", "53 ft Dry Van", "Ready noon", "Solo", "Historical capacity pattern · sanitized"],
+      ["State College, PA", "Open destination", "53 ft Dry Van", "11 AM", "Solo", "Historical capacity pattern · sanitized"],
+      ["Mokena, IL", "Open destination", "53 ft Reefer", "1 PM", "Solo", "Historical capacity pattern · sanitized"],
+      ["Williamsburg, VA", "Open destination", "53 ft Dry Van", "Ready now", "TEAM", "Historical capacity pattern · sanitized"],
+      ["Joplin, MO", "Open destination", "53 ft Dry Van", "Ready 2 PM", "TEAM", "Historical capacity pattern · sanitized"],
     ].map(([origin, destination, equipment, ready, team, source]) => `<article class="hlb-live-row hlb-live-row--capacity lbv2-truck-preview"><div class="hlb-live-route"><span>${origin}</span><b>→</b><span>${destination}</span></div><div class="hlb-live-meta"><span><strong>${equipment}</strong></span><span>${ready} · ${team}</span><span>${source}</span></div><div class="hlb-live-rate"><strong>Truck capacity</strong><small>PREVIEW · NOT LIVE</small></div></article>`).join("");
 
     const ensurePublicTruckPreview = () => {
