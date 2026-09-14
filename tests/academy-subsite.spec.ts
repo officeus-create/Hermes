@@ -42,7 +42,11 @@ test("Academy program pages own distinct curriculum intent and structured data",
   await expect(page.getByRole("heading", { level: 1, name: /Connect content, distribution/ })).toBeVisible();
   await expect(page.getByText("Website-first content", { exact: true })).toBeVisible();
   await expect(page.getByText("Platform distribution", { exact: true })).toBeVisible();
-  await expect(page.locator('a[href^="/academy/apply/?program=marketing"]')).toHaveCount(2);
+  // Preserve the two original course CTAs and the owner-approved network recruitment entry.
+  await expect(page.locator('.resource-hero a[href^="/academy/apply/?program=marketing"]')).toHaveCount(1);
+  await expect(page.locator('#apply a[href^="/academy/apply/?program=marketing"]')).toHaveCount(1);
+  await expect(page.locator('[data-academy-network] a[href^="/academy/apply/?program=marketing"]')).toHaveCount(1);
+  await expect(page.locator('a[href^="/academy/apply/?program=marketing"]')).toHaveCount(3);
 
   schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
   expect(schemaText).toContain('"Course"');

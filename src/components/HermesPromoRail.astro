@@ -1,0 +1,89 @@
+---
+type Context = "catalog" | "logistics" | "marketing" | "technology" | "academy" | "general";
+interface Props { context?: Context; }
+const { context = "general" } = Astro.props;
+const bonus = { q: "Starting an IT or Marketing project?", title: "Your Catalog profile is included as a bonus.", body: "We prepare your approved business details, services and location for public discovery. Initial SEO/GEO setup is included; ongoing promotion is a separate scope.", href: "/businesses/#catalog-client-benefit", cta: "See your Catalog bonus" };
+const shared = [
+  { q: "No website yet?", title: "Start with a serious Catalog profile.", body: "Create a public page with your approved services, location and contact details. A dedicated website can come later.", href: "/businesses/#business-owners", cta: "Get listed" },
+  { q: "Customers cannot find you locally?", title: "Add SEO / GEO to the business profile.", body: "Request a scoped service to improve your approved profile for local and AI-search discovery. You do not need to buy a separate website.", href: "/services/local-seo/", cta: "Explore Local SEO" },
+  { q: "Need appointments and customer history?", title: "Move from discovery into Hermes Connect CRM.", body: "Catalog helps people find the business. Hermes Connect is the operating layer for supported live workflows.", href: "/services/hermes-connect/", cta: "Open CRM" },
+  { q: "Already have a website?", title: "Use Catalog as another verified discovery surface.", body: "Keep the Catalog passport, website and search facts consistent instead of creating conflicting business identities.", href: "/services/seo/", cta: "Improve visibility" },
+];
+const contextual = {
+  catalog: shared,
+  logistics: [shared[2], { q: "Looking for car-hauler demand?", title: "Open the Hermes Load Board and load-planning paths.", body: "Use the canonical logistics discovery surface; source coverage and carrier execution remain evidence-gated.", href: "/load-board/", cta: "Open Load Board" }, shared[0], shared[1]],
+  marketing: [bonus, shared[0], { q: "Need a stronger site?", title: "Build or redesign the website around measurable customer action.", body: "Website, SEO/GEO and Catalog should reinforce one business identity rather than compete with each other.", href: "/services/website-development/", cta: "Website development" }, shared[2]],
+  technology: [bonus, { q: "Need a custom workflow instead of another tool?", title: "Start with the real operating bottleneck.", body: "Hermes Technology connects web and workflow engineering to a verified business need.", href: "/paths/technology/", cta: "Explore IT" }, shared[0], shared[1]],
+  academy: [
+    { q: "Want to help businesses grow?", title: "Three-month online marketing training.", body: "Apply to build research, media-planning and negotiation skills. Our representative-recruitment roadmap targets 110 countries; future roles depend on assessment and available work.", href: "/academy/marketing/", cta: "Explore marketing training" },
+    { q: "Ready to develop as an operations leader?", title: "Help build the future Hermes network.", body: "Our goal is to select and train 50 operations directors across the network. This is a development target, not a guarantee of 50 current vacancies.", href: "/paths/academy/#academy-global-network", cta: "Explore the leadership pathway" },
+    { q: "Prefer negotiation and media planning?", title: "Explore the remote sales team pathway.", body: "Learn business research, discovery calls, proposals and delivery handoffs. Training and real-client access are separate steps.", href: "/paths/academy/#academy-global-network", cta: "Explore sales team development" },
+    shared[0],
+  ],
+  general: shared,
+} satisfies Record<Context, typeof shared>;
+const items = contextual[context];
+---
+<section class="hermes-promo-rail" data-promo-rail aria-label="Hermes service highlights" aria-roledescription="carousel">
+  <div class="hermes-promo-shell">
+    <div class="promo-controls"><span>From Hermes</span><button type="button" data-promo-toggle hidden>Pause promotions</button></div>
+    <span class="promo-question" aria-hidden="true">?</span>
+    <div class="promo-stage" data-promo-stage aria-live="off" aria-atomic="true">
+      {items.map((item, index) => (
+        <article class="promo-slide" data-promo-slide role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${items.length}`}>
+          <p>{item.q}</p><h2>{item.title}</h2><span>{item.body}</span><a href={item.href}>{item.cta} →</a>
+        </article>
+      ))}
+    </div>
+    <div class="promo-dots" role="group" aria-label="Choose promotion" data-promo-picker hidden>{items.map((_, index) => <button type="button" data-promo-dot={index} aria-label={`Show promotion ${index + 1}`} aria-current={index === 0 ? "true" : undefined}><span aria-hidden="true"></span></button>)}</div>
+  </div>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>("[data-promo-rail]").forEach((rail) => {
+    if (rail.dataset.promoReady) return;
+    const slides = [...rail.querySelectorAll<HTMLElement>("[data-promo-slide]")];
+    const dots = [...rail.querySelectorAll<HTMLButtonElement>("[data-promo-dot]")];
+    const toggle = rail.querySelector<HTMLButtonElement>("[data-promo-toggle]");
+    const picker = rail.querySelector<HTMLElement>("[data-promo-picker]");
+    const stage = rail.querySelector<HTMLElement>("[data-promo-stage]");
+    if (!toggle || !stage || slides.length < 2) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let active = 0;
+    let timer: number | undefined;
+    let userPaused = reducedMotion.matches;
+    let keyboardPaused = false;
+    let hovered = false;
+    let inView = !("IntersectionObserver" in window);
+    const show = (next: number) => {
+      active = (next + slides.length) % slides.length;
+      slides.forEach((slide, index) => { slide.hidden = index !== active; });
+      dots.forEach((dot, index) => { if (index === active) dot.setAttribute("aria-current", "true"); else dot.removeAttribute("aria-current"); });
+    };
+    const sync = () => {
+      if (timer !== undefined) { window.clearInterval(timer); timer = undefined; }
+      const running = !userPaused && !keyboardPaused && !hovered && inView && !document.hidden && !reducedMotion.matches;
+      if (running) timer = window.setInterval(() => show(active + 1), 8000);
+      rail.dataset.promoRotation = running ? "running" : "paused";
+      stage.setAttribute("aria-live", running ? "off" : "polite");
+      toggle.textContent = userPaused ? "Resume promotions" : "Pause promotions";
+      toggle.disabled = reducedMotion.matches;
+      if (reducedMotion.matches) toggle.textContent = "Automatic rotation off";
+    };
+    show(0);
+    rail.dataset.promoReady = "true";
+    toggle.hidden = false;
+    if (picker) picker.hidden = false;
+    toggle.addEventListener("click", () => { userPaused = !userPaused; if (!userPaused) keyboardPaused = false; sync(); });
+    dots.forEach((dot, index) => dot.addEventListener("click", () => { userPaused = true; show(index); sync(); }));
+    rail.addEventListener("mouseenter", () => { hovered = true; sync(); });
+    rail.addEventListener("mouseleave", () => { hovered = false; sync(); });
+    rail.addEventListener("focusin", () => { keyboardPaused = true; sync(); });
+    document.addEventListener("visibilitychange", sync);
+    reducedMotion.addEventListener("change", () => { if (reducedMotion.matches) userPaused = true; sync(); });
+    if ("IntersectionObserver" in window) new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync(); }, { threshold: 0.1 }).observe(rail);
+    sync();
+  });
+</script>
+<style>
+.hermes-promo-rail{padding:1rem;background:#f5f7fa}.hermes-promo-shell{box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:1rem;width:min(1160px,100%);margin:0 auto;padding:18px 22px;border:1px solid #dce4ed;border-radius:20px;background:linear-gradient(115deg,#111827 0%,#172554 44%,#312e81 80%,#115e59 115%);box-shadow:0 18px 50px rgba(25,40,70,.13);color:#fff}.promo-controls{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:1rem}.promo-controls>span{color:#c9d6ec;font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:750}.promo-controls button{min-height:44px;padding:8px 13px;background:transparent;border:1px solid #8eacd7;border-radius:8px;color:#fff;font:inherit;font-size:12px;cursor:pointer}.promo-controls button:disabled{cursor:default}.promo-question{display:grid;place-items:center;width:48px;height:48px;border:1px solid rgba(255,255,255,.4);border-radius:50%;background:rgba(255,255,255,.08);font-size:28px;font-weight:800}.promo-stage{min-width:0;min-height:190px;display:grid;align-items:center}.promo-slide[hidden]{display:none}.promo-slide p{margin:0 0 8px;color:#b8dfff;font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.promo-slide h2{margin:0 0 9px;font-size:clamp(21px,2.6vw,30px);line-height:1.2;letter-spacing:-.025em;color:#fff}.promo-slide>span{display:block;max-width:780px;color:#e0e7f2;font-size:14px;line-height:1.6}.promo-slide a{display:inline-flex;align-items:center;min-height:44px;margin-top:8px;color:#fff;text-decoration:underline;text-underline-offset:4px;font-size:14px;font-weight:800}.promo-dots{display:flex;flex-wrap:wrap;gap:2px;max-width:92px;justify-content:center}.promo-dots button{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:transparent;cursor:pointer}.promo-dots button span{width:8px;height:8px;border-radius:50%;background:#c4cde0}.promo-dots button[aria-current="true"] span{width:24px;border-radius:999px;background:#fff}.hermes-promo-rail button:focus-visible,.hermes-promo-rail a:focus-visible{outline:2px solid #fff;outline-offset:3px}.hermes-promo-rail [hidden]{display:none}.hermes-promo-rail:not([data-promo-ready]) .promo-slide+.promo-slide{padding-top:20px;margin-top:20px;border-top:1px solid #8eacd7}@media(max-width:720px){.hermes-promo-shell{grid-template-columns:1fr;padding:20px;gap:.5rem}.promo-question{display:none}.promo-stage{min-height:285px}.promo-dots{max-width:none;justify-content:flex-start}.promo-controls{flex-wrap:wrap}.promo-slide>span{font-size:14px}}
+</style>

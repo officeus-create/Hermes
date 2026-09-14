@@ -127,3 +127,14 @@ WORKING_APPROACH: Declare the existing source-setup route in a separate noindex 
 EVIDENCE: GitHub Actions run 34686669424, job 103534737278; the focused curtain contract and static suite passed locally before the additional scoped runtime fixes; final-head CI remains required.
 LESSON: A new private route still needs release inventory, not a sitemap entry.
 REUSE_RULE: Reconcile route, canonical, robots and manifest together; do not disable the manifest test.
+
+
+## 2026-09-14 — Catalog promotion draft accessibility
+
+PROBLEM: The unreleased promotional-rail draft auto-rotated with only hover/focus suspension and 8px dot targets.
+ROOT_CAUSE: A visually small carousel was treated as decoration rather than an interactive reading/navigation surface.
+FAILED_APPROACH: Resuming rotation on focus-out and using reduced-motion alone as the pause mechanism.
+WORKING_APPROACH: Provide explicit persistent pause, stop on keyboard focus until an explicit restart, use 44px controls, honor reduced motion and document/viewport visibility, and expose all messages without JavaScript.
+EVIDENCE: Focused Catalog/Academy/claim desktop-mobile run 38/38 PASS; separate controlled-clock check confirms the eight-second transition. Current full-suite/CI release checks remain required. No production incident is inferred from this pre-release draft finding.
+LESSON: New marketing motion needs usable controls and truthful next-step links before release, not only animation.
+REUSE_RULE: Reuse the shared HermesPromoRail behavior; preserve the owner-controlled pause and do not hide essential offers behind JavaScript-only rendering.
