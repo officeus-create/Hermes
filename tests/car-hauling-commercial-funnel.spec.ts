@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 test("car hauling dispatch page routes carriers into direct commercial intake with fallbacks", async ({ page }) => {
@@ -76,9 +77,19 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveCount(0);
   await expect(page.locator("[data-dispatch-mobile-intake]")).toHaveAttribute("href", "#dispatch-intake");
   await expect(page.locator("[data-dispatch-mobile-call]")).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator("[data-dispatch-intake] [data-vehicle-form]")).toHaveAttribute("data-lead-mode", "preview");
 });
 
 test("Load Board ignores unsupported equipment query values", async ({ page }) => {
   await page.goto("/load-board/?role=carrier&equipment=unknown_equipment#carrier-access");
   await expect(page.locator('select[name="equipment_class"]')).toHaveValue("");
+});
+
+
+test("canonical production carrier intake promotes only the main host to the approved same-origin receiver", () => {
+  const source = readFileSync(new URL("../src/components/CarrierDispatchIntakeEnhancer.astro", import.meta.url), "utf8");
+  expect(source).toContain('window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com"');
+  expect(source).toContain('form.dataset.leadMode = "live"');
+  expect(source).toContain('form.dataset.leadEndpoint = "/api/logistics-lead"');
+  expect(source).toContain('endpoint.origin !== window.location.origin');
 });
