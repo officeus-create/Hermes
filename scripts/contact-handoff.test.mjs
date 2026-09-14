@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   buildAttributedSourcePath,
   buildContactPayload,
@@ -8,6 +9,15 @@ import {
   isEmailOnlyRoute,
   sanitizeContactField,
 } from "../src/lib/contact.ts";
+
+const productionContactMode = await readFile(
+  new URL("../src/components/ProductionContactMode.astro", import.meta.url),
+  "utf8",
+);
+assert.match(productionContactMode, /const attributionKeys = \[/);
+assert.match(productionContactMode, /installAttributionBridge/);
+assert.doesNotMatch(productionContactMode, /params\.get\("utm_source"\) !== "london"/);
+assert.match(productionContactMode, /attribution\.utm_source !== "london"\) return/);
 
 const logisticsForm = new FormData();
 logisticsForm.set("name", "Test User");
@@ -56,6 +66,31 @@ assert.equal(
   "/academy/apply/?utm_source=london&utm_medium=organic&utm_campaign=london-academy&utm_content=carrier-sales-training&service=academy&track=carrier-sales-training&program=us-logistics-operations&language=ru",
 );
 assert.doesNotMatch(attributedPath, /private@example|ref=|secret/);
+
+const telegramAcademyForm = new FormData();
+telegramAcademyForm.set("name", "Telegram Applicant");
+telegramAcademyForm.set("email", "telegram-applicant@example.com");
+telegramAcademyForm.set("path", "Hermes Business Academy");
+telegramAcademyForm.set("message", "I want to learn U.S. logistics through Hermes Academy.");
+telegramAcademyForm.set("consent", "on");
+telegramAcademyForm.set("hermes_attribution_utm_source", "telegram");
+telegramAcademyForm.set("hermes_attribution_utm_medium", "organic_community");
+telegramAcademyForm.set("hermes_attribution_utm_campaign", "telegram-logistics-community");
+telegramAcademyForm.set("hermes_attribution_utm_content", "start-here");
+telegramAcademyForm.set("hermes_attribution_service", "academy");
+telegramAcademyForm.set("hermes_attribution_program", "us-logistics-operations");
+telegramAcademyForm.set("hermes_attribution_email", "must-not-pass@example.com");
+
+const telegramAcademyPayload = buildContactPayload(
+  telegramAcademyForm,
+  "/academy/apply/",
+  "telegram-academy-request-id",
+);
+assert.equal(
+  telegramAcademyPayload.source_path,
+  "/academy/apply/?utm_source=telegram&utm_medium=organic_community&utm_campaign=telegram-logistics-community&utm_content=start-here&service=academy&program=us-logistics-operations",
+);
+assert.doesNotMatch(telegramAcademyPayload.source_path, /email|must-not-pass/);
 
 const logisticsRoute = getContactHandoffRoute("Hermes Logistics");
 assert.ok(logisticsRoute);
