@@ -2,7 +2,7 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-09-10
+> Verification date: 2026-09-14
 
 Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
@@ -52,9 +52,26 @@ A public logistics page does not prove live capacity, a load, rate, lane, pickup
 - [Website development](https://hermeslogisticsus.com/services/website-development/)
 - [Website redesign](https://hermeslogisticsus.com/services/website-redesign/)
 
+#### Evidence-bounded local growth markets
+- [London growth hub](https://hermeslogisticsus.com/gb/london/)
+- [London SEO services + GEO/AI visibility](https://hermeslogisticsus.com/gb/london/seo-services/)
+- [London website development](https://hermeslogisticsus.com/gb/london/website-development/)
+- [London social media management](https://hermeslogisticsus.com/gb/london/social-media-management/)
+- [London Meta Ads](https://hermeslogisticsus.com/gb/london/meta-ads/)
+- [Padova digital growth hub](https://hermeslogisticsus.com/it/padova/)
+- [Realizzazione siti web Padova](https://hermeslogisticsus.com/it/padova/realizzazione-siti-web/)
+- [SEO + GEO/AI Padova](https://hermeslogisticsus.com/it/padova/seo/)
+- [Social media + Meta Ads Padova](https://hermeslogisticsus.com/it/padova/social-media/)
+- [Madrid digital growth hub](https://hermeslogisticsus.com/es/madrid/)
+- [Diseño web Madrid](https://hermeslogisticsus.com/es/madrid/diseno-web/)
+- [SEO + GEO/IA Madrid](https://hermeslogisticsus.com/es/madrid/seo/)
+- [Redes sociales + Meta Ads Madrid](https://hermeslogisticsus.com/es/madrid/redes-sociales/)
+
+London, Padova, and Madrid are service-market owners selected from observed commercial search intent. A market page is not proof of a physical office, storefront, staff location, local customer, Google Business Profile eligibility, ranking, lead, or sale. Physical-address claims are published only after separate ownership/eligibility verification.
+
 ProgressoPro may appear as a historical or operating marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
 
-Descriptions of SEO, Local SEO, content architecture, schema, internal linking, conversion paths, or measurement workflows are not guarantees of rankings, traffic, leads, customers, revenue, or ROI.
+Descriptions of SEO, Local SEO, GEO/AI visibility, content architecture, schema, internal linking, conversion paths, social media, Meta Ads, or measurement workflows are not guarantees of rankings, AI citations, traffic, leads, customers, revenue, or ROI.
 
 ### Hermes Academy
 - [Academy direction](https://hermeslogisticsus.com/paths/academy/)
@@ -109,7 +126,7 @@ Localized pages are language-specific public overviews; they are not proof that 
 - Repository tests prove implementation behavior, not Google/Bing rankings, production latency, or customer outcomes.
 - Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.
 - Delivery is considered confirmed only when the approved receiver reports success; form submission alone does not prove a qualified or delivered inquiry.
-- No public page guarantees loads, rates, lanes, mileage, traffic, rankings, revenue, profit, or employment.
+- No public page guarantees loads, rates, lanes, mileage, traffic, rankings, AI mentions/citations, revenue, profit, or employment.
 - Do not infer rankings, traffic, customers, revenue, capacity, availability, pricing, response time, uptime, fleet size, student count, reviews, or conversion statistics without a current approved source.
 - Do not expose or reconstruct private customer, carrier, shipment, lead, employee, candidate, MC/USDOT, VIN, rate, invoice, payment, document, credential, account, or live-position data.
 - Prototype = prototype. Demo = demo. Not configured = not configured.
