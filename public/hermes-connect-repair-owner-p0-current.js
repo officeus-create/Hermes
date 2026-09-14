@@ -145,13 +145,15 @@
       const status = bookingStatus(card);
       return status === "confirmed" || status === "in_progress";
     });
-    const upcoming = cards.find((card) => {
+    const upcoming = cards.filter((card) => {
       const status = bookingStatus(card);
-      return status === "confirmed" || status === "in_progress";
-    });
+      const date = (card.querySelector(".booking-when")?.textContent || "").trim().slice(0, 10);
+      return (status === "confirmed" || status === "in_progress") && date >= today;
+    }).sort((a, b) => (a.querySelector(".booking-when")?.textContent || "").localeCompare(b.querySelector(".booking-when")?.textContent || ""))[0];
     const nextText = (upcoming?.querySelector(".booking-when")?.textContent || "").trim() || copy.none;
     const serviceCount = (document.getElementById("service-count")?.textContent || "").match(/^\d+/)?.[0] || "—";
-    const profileReady = (document.getElementById("profile-state")?.textContent || "").trim().toLowerCase() === "saved";
+    const profileState = document.getElementById("profile-state");
+    const profileReady = profileState?.dataset.ready === "true" || (profileState?.textContent || "").trim().toLowerCase() === "saved";
 
     setText(section.querySelector("[data-hc-today-bookings]"), String(todayCards.length));
     setText(section.querySelector("[data-hc-active-bookings]"), String(activeCards.length));
