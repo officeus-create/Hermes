@@ -29,6 +29,16 @@ export const hermesCatalogOffers: HermesCatalogOffer[] = [
   { id: "academy", direction: "Academy", title: "Hermes Business Academy", summary: "The education layer across Logistics, Marketing, IT & AI, Sales and Operations, with enrollment facts published only when approved and current.", href: "/paths/academy/", tags: ["Academy", "IT & AI", "Sales", "Operations"], availability: "110-country target registry" },
 ];
 
+
+export const marketingGrowthPackages = [
+  { months: 3, label: "3 months", focus: "Foundation", summary: "Audit the current presence, correct the offer and conversion path, establish the content/search baseline and measure the first useful signals." },
+  { months: 6, label: "6 months", focus: "Build + learn", summary: "Run a longer organic/search cycle, improve content and conversion from measured evidence, and prepare the next paid or organic growth step." },
+  { months: 9, label: "9 months", focus: "Compound", summary: "Keep the winning channels consistent long enough to compare periods, expand useful content and strengthen the business discovery footprint." },
+  { months: 12, label: "12 months", focus: "Operating system", summary: "Treat marketing as a full-year operating rhythm with quarterly reviews, search/content maintenance and a roadmap tied to current business priorities." },
+] as const;
+
+export const marketingPackagePricingBoundary = "Current scope and fee are confirmed after the brief. Historical package prices are not published as current offers." as const;
+
 export const academyRecruitment = { marketingMonths: 3, countryTarget: 110, operationsDirectorsTarget: 50 } as const;
 
 export const academyExpansionCountries = ["United States", "Canada", "Mexico", "Guatemala", "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", "Tajikistan", "Dominican Republic", "Jamaica", "Trinidad and Tobago", "Colombia", "Venezuela", "Guyana", "Suriname", "Ecuador", "Peru", "Brazil", "Bolivia", "Paraguay", "Chile", "Argentina", "Uruguay", "United Kingdom", "Ireland", "France", "Spain", "Portugal", "Italy", "Germany", "Netherlands", "Belgium", "Luxembourg", "Switzerland", "Austria", "Denmark", "Sweden", "Norway", "Finland", "Iceland", "Poland", "Czechia", "Slovakia", "Hungary", "Romania", "Bulgaria", "Greece", "Croatia", "Slovenia", "Serbia", "Bosnia and Herzegovina", "Montenegro", "Albania", "North Macedonia", "Moldova", "Ukraine", "Lithuania", "Latvia", "Estonia", "Cyprus", "Malta", "Georgia", "Armenia", "Azerbaijan", "Kazakhstan", "Turkey", "United Arab Emirates", "Saudi Arabia", "Qatar", "Bahrain", "Kuwait", "Oman", "Israel", "Jordan", "Egypt", "Morocco", "Tunisia", "Algeria", "South Africa", "Nigeria", "Ghana", "Kenya", "Ethiopia", "Tanzania", "Uganda", "Rwanda", "Senegal", "Cote d’Ivoire", "Cameroon", "India", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Philippines", "Vietnam", "Thailand", "Malaysia", "Singapore", "Indonesia", "Japan", "South Korea", "China", "Mongolia", "Uzbekistan", "Australia", "New Zealand", "Mauritius"] as const;

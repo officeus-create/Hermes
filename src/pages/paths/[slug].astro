@@ -10,6 +10,7 @@ import AcademyGlobalNetwork from "../../components/AcademyGlobalNetwork.astro";
 import LoadBoardProductSpotlight from "../../components/LoadBoardProductSpotlight.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
+import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -83,6 +84,7 @@ const schema = faqSchema
   {path.id === "marketing" && (
     <>
       <MarketingEngagementModel />
+      <MarketingPackageSelector compact />
       <section class="section london-market-entry" aria-labelledby="london-marketing-entry-title"><div class="shell london-market-entry-card"><div><p class="eyebrow">United Kingdom · London</p><h2 id="london-marketing-entry-title">Explore the dedicated London growth market.</h2><p>Use the London hub for local website development, SEO, social media, Meta Ads, CRM and industry-specific acquisition paths.</p></div><a class="button button-primary" href="/gb/london/">Explore Hermes London</a></div></section>
     </>
   )}

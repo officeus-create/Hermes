@@ -1,0 +1,9 @@
+---
+import AcademyCountryPage from "../../../../components/AcademyCountryPage.astro";
+import { academyCountryRegistry } from "../../../../data/academy-country-registry";
+import { academyCountryPageCopy, englishAcademyCountryCopy } from "../../../../data/academy-country-pages";
+export function getStaticPaths(){return academyCountryRegistry.filter((p)=>p.indexability==="public_localized").map((profile)=>({params:{country:profile.slug},props:{profile}}));}
+const { profile }=Astro.props;
+const copy=englishAcademyCountryCopy(profile.country);
+---
+<AcademyCountryPage profile={profile} copy={copy} english={true} />

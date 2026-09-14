@@ -37,8 +37,8 @@ test("Catalog search filters the server-rendered evidence-backed profiles", asyn
 test("Catalog preserves evidence boundaries and free owner activation path", async ({ page }) => {
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   await expect(page.getByText(/expands only when useful source evidence exists/i)).toBeVisible();
-  await expect(page.getByRole("link", { name: "Add your business free" })).toHaveAttribute("href", /mailto:/);
-  await expect(page.getByRole("link", { name: "Connect your business" })).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(page.getByRole("link", { name: "Add your business free" })).toHaveAttribute("href", "/businesses/request/?type=add");
+  await expect(page.getByRole("link", { name: "Connect your business" })).toHaveAttribute("href", "/services/hermes-connect/?source=catalog");
   await expect(page.locator(".catalog-funnel")).toContainText("Free listing");
   await expect(page.locator(".catalog-funnel")).toContainText("Sponsored position");
   await page.goto("/businesses/arkansas/sherwood/seans-autopro-mobile/", { waitUntil: "domcontentloaded" });

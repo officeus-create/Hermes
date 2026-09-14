@@ -2,7 +2,7 @@
 interface Props { context?: "catalog" | "marketing" | "technology"; }
 const { context = "catalog" } = Astro.props;
 const isCatalog = context === "catalog";
-const requestHref = `mailto:officeus@hermeslogisticsus.com?${new URLSearchParams({ subject: "Hermes Catalog profile and local visibility", body: "I would like to discuss a Catalog business profile.\n\nInterest: bonus listing with an IT/Marketing project, or standalone profile optimization.\nBusiness name:\nCity and country:\nServices:\nWebsite, if any:\n" })}`;
+const requestHref = "/businesses/request/?type=catalog-growth";
 ---
 <section class="catalog-benefit" id="catalog-client-benefit" data-catalog-benefit aria-labelledby="catalog-benefit-title">
   <div class="catalog-benefit__shell">
