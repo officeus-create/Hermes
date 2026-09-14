@@ -35,6 +35,9 @@ assert.equal(getLoadBoardAdapter("central_dispatch").readiness, "owner_approval_
 assert.equal(getLoadBoardAdapter("super_dispatch").transports.includes("webhook"), true);
 assert.equal(getLoadBoardAdapter("truckstop").transports.includes("soap_api"), true);
 assert.equal(getLoadBoardAdapter("truckstop").readiness, "contract_required");
+assert.equal(getLoadBoardAdapter("dat").readiness, "contract_required");
+assert.equal(getLoadBoardAdapter("dat").requiresCertification, true);
+assert.equal(getLoadBoardAdapter("dat").capabilities.includes("search_trucks"), true);
 assert.equal(getLoadBoardAdapter("ship_cars").readiness, "owner_approval_required");
 assert.equal(getLoadBoardAdapter("ship_cars").capabilities.includes("search_loads"), true);
 assert.equal(getLoadBoardAdapter("direct_freight").capabilities.includes("search_loads"), true);
