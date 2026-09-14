@@ -11,3 +11,4 @@ Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-trust.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-london.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-business-directory.xml
+Sitemap: https://hermeslogisticsus.com/sitemap-connect-catalog.xml

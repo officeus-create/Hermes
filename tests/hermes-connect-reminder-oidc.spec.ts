@@ -23,6 +23,13 @@ const cabinetAuditClaims = {
   event_name: "issue_comment",
 };
 
+const catalogReportClaims = {
+  ...baseClaims,
+  aud: "hermes-catalog-monthly-seo-reports",
+  workflow_ref: "officeus-create/Hermes/.github/workflows/hermes-catalog-monthly-seo-reports.yml@refs/heads/main",
+  event_name: "schedule",
+};
+
 test("weekly reminder scheduler accepts only the expected GitHub Actions identity", async () => {
   expect(oidc.validateGitHubOidcClaims(baseClaims, now)).toBe(true);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
@@ -52,9 +59,31 @@ test("cabinet audit accepts only the exact main issue-comment workflow identity"
   expect(oidc.validateGitHubCabinetAuditOidcClaims({ ...cabinetAuditClaims, ref: "refs/heads/feature" }, now)).toBe(false);
 });
 
-test("reminder and cabinet audit OIDC identities cannot be substituted for each other", async () => {
+test("Catalog report scheduler accepts only its exact scheduled or manual workflow identity", async () => {
+  expect(oidc.validateGitHubCatalogReportOidcClaims(catalogReportClaims, now)).toBe(true);
+  expect(oidc.validateGitHubCatalogReportOidcClaims({ ...catalogReportClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
+  expect(oidc.validateGitHubCatalogReportOidcClaims({ ...catalogReportClaims, aud: baseClaims.aud }, now)).toBe(false);
+  expect(oidc.validateGitHubCatalogReportOidcClaims({ ...catalogReportClaims, workflow_ref: baseClaims.workflow_ref }, now)).toBe(false);
+  expect(oidc.validateGitHubCatalogReportOidcClaims({ ...catalogReportClaims, ref: "refs/heads/feature" }, now)).toBe(false);
+});
+
+test("reminder, cabinet audit and Catalog report OIDC identities cannot be substituted", async () => {
   expect(oidc.validateGitHubOidcClaims(cabinetAuditClaims, now)).toBe(false);
+  expect(oidc.validateGitHubOidcClaims(catalogReportClaims, now)).toBe(false);
   expect(oidc.validateGitHubCabinetAuditOidcClaims(baseClaims, now)).toBe(false);
+  expect(oidc.validateGitHubCabinetAuditOidcClaims(catalogReportClaims, now)).toBe(false);
+  expect(oidc.validateGitHubCatalogReportOidcClaims(baseClaims, now)).toBe(false);
+  expect(oidc.validateGitHubCatalogReportOidcClaims(cabinetAuditClaims, now)).toBe(false);
+});
+
+test("Catalog report workflow uses OIDC and the bounded internal report endpoint", async () => {
+  const workflow = await readFile(".github/workflows/hermes-catalog-monthly-seo-reports.yml", "utf8");
+  expect(workflow).toContain("id-token: write");
+  expect(workflow).toContain("OIDC_AUDIENCE: hermes-catalog-monthly-seo-reports");
+  expect(workflow).toContain("/api/internal/catalog/monthly-seo-reports");
+  expect(workflow).toContain("Authorization: Bearer ${OIDC_TOKEN}");
+  expect(workflow).not.toContain("Password:");
+  expect(workflow).not.toContain("session.cookies");
 });
 
 test("cabinet audit workflow no longer depends on password artifacts or login cookies", async () => {

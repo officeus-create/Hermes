@@ -15,6 +15,12 @@ const CABINET_AUDIT_IDENTITY = {
   allowedEvents: new Set(["issue_comment"]),
 };
 
+const CATALOG_REPORT_IDENTITY = {
+  audience: "hermes-catalog-monthly-seo-reports",
+  workflowRef: "officeus-create/Hermes/.github/workflows/hermes-catalog-monthly-seo-reports.yml@refs/heads/main",
+  allowedEvents: new Set(["schedule", "workflow_dispatch"]),
+};
+
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -52,6 +58,10 @@ export function validateGitHubOidcClaims(claims, now = new Date()) {
 
 export function validateGitHubCabinetAuditOidcClaims(claims, now = new Date()) {
   return validateClaimsForIdentity(claims, CABINET_AUDIT_IDENTITY, now);
+}
+
+export function validateGitHubCatalogReportOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, CATALOG_REPORT_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -98,6 +108,10 @@ export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
 
 export async function verifyGitHubCabinetAuditOidcToken(token, now = new Date()) {
   return verifyGitHubOidcToken(token, validateGitHubCabinetAuditOidcClaims, now);
+}
+
+export async function verifyGitHubCatalogReportOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubCatalogReportOidcClaims, now);
 }
 
 export function bearerToken(request) {

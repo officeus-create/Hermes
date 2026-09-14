@@ -145,17 +145,18 @@ const schema = [
   <SiteFooter />
 </BaseLayout>
 
+<script is:inline src="/catalog-connect-live.js" defer></script>
 <script>
   const form = document.querySelector<HTMLFormElement>("[data-catalog-search]");
   const input = document.querySelector<HTMLInputElement>("[data-catalog-input]");
-  const cards = [...document.querySelectorAll<HTMLElement>("[data-catalog-card]")];
+  const cards = () => [...document.querySelectorAll<HTMLElement>("[data-catalog-card]")];
   const count = document.querySelector<HTMLElement>("[data-catalog-count]");
   const empty = document.querySelector<HTMLElement>("[data-catalog-empty]");
   const normalize = (value: string) => value.trim().toLowerCase();
   const applySearch = (rawQuery: string) => {
     const query = normalize(rawQuery);
     let visible = 0;
-    cards.forEach((card) => {
+    cards().forEach((card) => {
       const matches = !query || (card.dataset.searchText ?? "").includes(query);
       card.hidden = !matches;
       if (matches) visible += 1;

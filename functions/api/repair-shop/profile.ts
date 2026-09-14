@@ -29,6 +29,8 @@ type ProfileInput = {
   country_code?: unknown;
   postal_code?: unknown;
   timezone?: unknown;
+  website?: unknown;
+  catalog_opt_in?: unknown;
 };
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
@@ -69,7 +71,7 @@ function isValidTimezone(value: string) {
 async function getProfile(db: any, ownerId: string) {
   return db
     .prepare(
-      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
+      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,catalog_opt_in,catalog_published_at,seo_geo_started_at,next_seo_report_at,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
     )
     .bind(ownerId)
     .first();
@@ -123,6 +125,18 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const legacyState = region || countryCode;
   const postalCode = clean(body.postal_code, 24);
   const timezone = clean(body.timezone, 64);
+  const websiteRaw = clean(body.website ?? existing?.website ?? "", 240);
+  let website = "";
+  if (websiteRaw) {
+    try {
+      const parsed = new URL(websiteRaw.startsWith("http") ? websiteRaw : `https://${websiteRaw}`);
+      if (!/^https?:$/.test(parsed.protocol)) throw new Error("protocol");
+      website = parsed.toString().slice(0, 240);
+    } catch {
+      return jsonResponse(400, { success: false, error: "invalid_website" });
+    }
+  }
+  const catalogOptIn = typeof body.catalog_opt_in === "boolean" ? body.catalog_opt_in : Boolean(existing?.catalog_opt_in);
 
   if (name.length < 2) return jsonResponse(400, { success: false, error: "invalid_shop_name" });
   if (city.length < 2) return jsonResponse(400, { success: false, error: "invalid_city" });
@@ -131,11 +145,20 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   if (phone && phone.length < 7) return jsonResponse(400, { success: false, error: "invalid_phone" });
 
   const now = new Date().toISOString();
+  const wasCatalogOptIn = Boolean(existing?.catalog_opt_in);
+  const nextReport = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const catalogPublishedAt = catalogOptIn ? clean(existing?.catalog_published_at, 64) || now : clean(existing?.catalog_published_at, 64) || null;
+  const seoGeoStartedAt = catalogOptIn
+    ? wasCatalogOptIn ? clean(existing?.seo_geo_started_at, 64) || now : now
+    : clean(existing?.seo_geo_started_at, 64) || null;
+  const nextSeoReportAt = catalogOptIn
+    ? wasCatalogOptIn ? clean(existing?.next_seo_report_at, 64) || nextReport : nextReport
+    : clean(existing?.next_seo_report_at, 64) || null;
 
   if (existing) {
     await env.DB
       .prepare(
-        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,updated_at=? WHERE owner_specialist_id=?",
+        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,website=?,catalog_opt_in=?,catalog_published_at=?,seo_geo_started_at=?,next_seo_report_at=?,updated_at=? WHERE owner_specialist_id=?",
       )
       .bind(
         name,
@@ -147,6 +170,11 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
         countryCode,
         postalCode || null,
         timezone,
+        website || null,
+        catalogOptIn ? 1 : 0,
+        catalogPublishedAt,
+        seoGeoStartedAt,
+        nextSeoReportAt,
         now,
         specialist.id,
       )
@@ -165,7 +193,7 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
     const slug = await makeUniqueSlug(env.DB, name);
     await env.DB
       .prepare(
-        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,catalog_opt_in,catalog_published_at,seo_geo_started_at,next_seo_report_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       )
       .bind(
         id,
@@ -180,6 +208,11 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
         countryCode,
         postalCode || null,
         timezone,
+        website || null,
+        catalogOptIn ? 1 : 0,
+        catalogPublishedAt,
+        seoGeoStartedAt,
+        nextSeoReportAt,
         now,
         now,
       )
@@ -193,5 +226,17 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
     if (typeof waitUntil === "function") waitUntil(alertPromise);
     else await alertPromise;
   }
-  return jsonResponse(200, { success: true, shop });
+  return jsonResponse(200, {
+    success: true,
+    shop,
+    catalog: {
+      listed: catalogOptIn,
+      status: catalogOptIn ? "owner_published" : "opted_out",
+      profile_url: catalogOptIn && shop?.slug ? `/businesses/connect/repair-shop/${encodeURIComponent(String(shop.slug))}/` : null,
+      reporting_cadence: catalogOptIn ? "monthly" : null,
+      next_report_at: catalogOptIn ? nextSeoReportAt : null,
+      organic_evaluation_horizon: catalogOptIn ? "6 months+" : null,
+      guarantee: false,
+    },
+  });
 }

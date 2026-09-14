@@ -52,7 +52,11 @@ const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].ma
 
 const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
 const sitemapIndexLocs = extractLocs(sitemapIndex);
-const expectedChildUrls = childSitemapFiles.map((file) => `https://${sitemapHost}/${file}`);
+const dynamicChildSitemapUrls = [`https://${sitemapHost}/sitemap-connect-catalog.xml`];
+const expectedChildUrls = [
+  ...childSitemapFiles.map((file) => `https://${sitemapHost}/${file}`),
+  ...dynamicChildSitemapUrls,
+];
 assert.deepEqual(
   new Set(sitemapIndexLocs),
   new Set(expectedChildUrls),
