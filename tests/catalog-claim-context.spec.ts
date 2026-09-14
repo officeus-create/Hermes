@@ -14,16 +14,21 @@ test("Hermes Catalog claim request preserves business identity and verification 
   const href = await claim.getAttribute("href");
   expect(href).toBeTruthy();
 
-  const decodedHref = decodeURIComponent(href ?? "");
-  expect(decodedHref).toContain("mailto:officeus@hermeslogisticsus.com");
-  expect(decodedHref).toContain("Claim Hermes Catalog profile: Sean's AutoPro Mobile");
-  expect(decodedHref).toContain(
-    "Catalog profile: https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/",
-  );
-  expect(decodedHref).toContain("Location: Sherwood, AR, US");
-  expect(decodedHref).toContain("Catalog identity: arkansas/sherwood/seans-autopro-mobile");
-  expect(decodedHref).toContain("Evidence reference: PUBLIC-WEB-SEANS-AUTOPRO-20260909");
-  expect(decodedHref).toContain(
-    "Hermes Connect CRM and public booking must remain inactive until ownership is verified.",
-  );
+  const structured = new URL(href ?? "", "https://hermeslogisticsus.com");
+  expect(structured.pathname).toBe("/businesses/request/");
+  expect(structured.searchParams.get("type")).toBe("claim");
+  expect(structured.searchParams.get("business")).toBe("Sean\'s AutoPro Mobile");
+  expect(structured.searchParams.get("profile")).toBe("/businesses/arkansas/sherwood/seans-autopro-mobile/");
+  expect(structured.searchParams.get("city")).toBe("Sherwood");
+  expect(structured.searchParams.get("state")).toBe("AR");
+  expect(structured.searchParams.get("country")).toBe("US");
+  expect(structured.searchParams.get("identity")).toBe("arkansas/sherwood/seans-autopro-mobile");
+  expect(structured.searchParams.get("evidence")).toBe("PUBLIC-WEB-SEANS-AUTOPRO-20260909");
+
+  await claim.click();
+  await expect(page).toHaveURL(/\/businesses\/request\/\?type=claim/);
+  await expect(page.locator("[data-context-business-value]")).toHaveText("Sean\'s AutoPro Mobile");
+  await expect(page.locator("[data-context-evidence-value]")).toHaveText("PUBLIC-WEB-SEANS-AUTOPRO-20260909");
+  await expect(page.locator('textarea[name="message"]')).toHaveValue(/Catalog identity: arkansas\/sherwood\/seans-autopro-mobile/);
+  await expect(page.locator('textarea[name="message"]')).toHaveValue(/Evidence reference: PUBLIC-WEB-SEANS-AUTOPRO-20260909/);
 });
