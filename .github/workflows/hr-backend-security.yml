@@ -4,10 +4,12 @@ on:
   pull_request:
     paths:
       - 'functions/api/_lib/hr.mjs'
+      - 'functions/api/_lib/hr-communication-state.mjs'
       - 'functions/api/hr/**'
       - 'functions/api/hermes-connect/account.ts'
       - 'scripts/hermes-connect-hr-api-integration.test.mjs'
       - 'scripts/hermes-connect-hr-backend-contract.test.mjs'
+      - 'scripts/hermes-connect-hr-communication-state.test.mjs'
       - '.github/workflows/hr-backend-security.yml'
   workflow_dispatch:
 
@@ -37,3 +39,6 @@ jobs:
 
       - name: Verify HR behavioral API integration
         run: node scripts/hermes-connect-hr-api-integration.test.mjs
+
+      - name: Verify HR communication state handoff
+        run: node scripts/hermes-connect-hr-communication-state.test.mjs

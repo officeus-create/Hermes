@@ -10,6 +10,10 @@ import {
   isHrReviewOutcome,
   sameOriginMutation,
 } from "../../_lib/hr.mjs";
+import {
+  ensureHrCommunicationSchema,
+  getHrCommunicationState,
+} from "../../_lib/hr-communication-state.mjs";
 
 type Env = { DB?: any };
 type Context = { request: Request; env: Env };
@@ -35,6 +39,7 @@ async function requireReviewer(request: Request, env: Env) {
 export async function onRequestGet({ request, env }: Context) {
   const auth = await requireReviewer(request, env);
   if (!auth.ok) return auth.response;
+  await ensureHrCommunicationSchema(env.DB);
 
   const candidateId = cleanHrText(new URL(request.url).searchParams.get("candidate_id"), 120);
   if (candidateId) {
@@ -43,10 +48,11 @@ export async function onRequestGet({ request, env }: Context) {
     }
     const snapshot = await getHrCandidateSnapshot(env.DB, candidateId);
     if (!snapshot) return jsonResponse(404, { success: false, error: "candidate_not_found" }, privateHeaders);
+    const communicationState = await getHrCommunicationState(env.DB, candidateId);
     return jsonResponse(200, {
       success: true,
       reviewer: { id: auth.specialist.id, name: auth.specialist.name, access_source: auth.access.source },
-      snapshot,
+      snapshot: { ...snapshot, communication_state: communicationState || null },
     }, privateHeaders);
   }
 
@@ -55,10 +61,14 @@ export async function onRequestGet({ request, env }: Context) {
       c.id,c.name,c.email,c.telegram_handle,c.country,c.language,c.source,c.track,c.status,
       c.specialist_id,c.created_at,c.updated_at,
       s.state AS interview_state,s.completed_at,s.practice_signals_json,s.recommendation_code,
+      cs.source_channel,cs.current_channel,cs.current_stage,cs.next_action,cs.next_action_owner,
+      cs.last_inbound_at,cs.last_outbound_at,cs.gmail_thread_ref,cs.gmail_message_ref,cs.telegram_handoff_ref,
+      cs.updated_at AS communication_updated_at,
       (SELECT r.outcome FROM hr_reviews r WHERE r.candidate_id=c.id ORDER BY r.created_at DESC LIMIT 1) AS latest_outcome,
       (SELECT r.created_at FROM hr_reviews r WHERE r.candidate_id=c.id ORDER BY r.created_at DESC LIMIT 1) AS latest_reviewed_at
     FROM hr_candidates c
     LEFT JOIN hr_interview_sessions s ON s.candidate_id=c.id
+    LEFT JOIN hr_candidate_communication_state cs ON cs.candidate_id=c.id
     WHERE c.status <> 'interviewing'
     ORDER BY CASE WHEN latest_outcome IS NULL THEN 0 ELSE 1 END, COALESCE(s.completed_at,c.created_at) ASC
     LIMIT 100
