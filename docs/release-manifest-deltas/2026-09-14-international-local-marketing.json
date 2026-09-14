@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-14-international-local-marketing",
+  "generated_at": "2026-09-14T12:00:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/it/padova/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/padova/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/it/padova/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/it/padova/realizzazione-siti-web/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/padova/realizzazione-siti-web/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/it/padova/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/it/padova/seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/padova/seo/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/it/padova/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/it/padova/social-media/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/padova/social-media/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/it/padova/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/es/madrid/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/madrid/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/es/madrid/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/es/madrid/diseno-web/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/madrid/diseno-web/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/es/madrid/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/es/madrid/seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/madrid/seo/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/es/madrid/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/es/madrid/redes-sociales/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/madrid/redes-sociales/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/es/madrid/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 8,
+    "indexable_route_count_added": 8,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
