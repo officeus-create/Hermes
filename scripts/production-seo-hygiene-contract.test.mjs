@@ -40,7 +40,6 @@ const childSitemapFiles = [
   "sitemap-cases.xml",
   "sitemap-trust.xml",
   "sitemap-london.xml",
-  "sitemap-international-marketing.xml",
   "sitemap-business-directory.xml",
 ];
 // Current main owns 233 controlled URLs before this bounded international marketing experiment.
@@ -75,11 +74,12 @@ assert.equal(
 );
 assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
 
-const internationalSitemap = await readFile(new URL("../public/sitemap-international-marketing.xml", import.meta.url), "utf8");
-const internationalUrls = extractLocs(internationalSitemap);
-assert.equal(internationalUrls.length, 8, "international marketing experiment must stay bounded to exactly 8 URLs");
-assert.equal(internationalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/it/padova/`)).length, 4, "Padova must own one hub plus three service pages");
-assert.equal(internationalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/es/madrid/`)).length, 4, "Madrid must own one hub plus three service pages");
+const digitalSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
+const digitalUrls = extractLocs(digitalSitemap);
+const padovaUrls = digitalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/it/padova/`));
+const madridUrls = digitalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/es/madrid/`));
+assert.equal(padovaUrls.length, 4, "Padova experiment must stay bounded to one hub plus three service pages");
+assert.equal(madridUrls.length, 4, "Madrid experiment must stay bounded to one hub plus three service pages");
 
 const serviceSitemap = await readFile(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const carrierGeoUrls = extractLocs(serviceSitemap).filter((url) => url.startsWith(carrierGeoRoot));
@@ -118,7 +118,6 @@ const verifier = await readFile(new URL("./check-production-custom-domain.mjs", 
 for (const required of [
   '"/sitemapindex.xml"',
   '"/sitemap-london.xml"',
-  '"/sitemap-international-marketing.xml"',
   '"/sitemap-business-directory.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
