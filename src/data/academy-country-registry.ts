@@ -14,10 +14,10 @@ export type AcademyCountryProfile = {
   primaryLanguage: string;
   secondaryLocales: readonly string[];
   tracks: readonly AcademyLaunchTrack[];
-  localizationState: "sample_ready" | "planned";
-  complianceState: "screening_required";
-  paymentState: "provider_check_required";
-  indexability: "registry_only";
+  localizationState: "launch_ready" | "planned";
+  complianceState: "application_review_required";
+  paymentState: "confirmed_before_enrollment";
+  indexability: "public_localized" | "registry_only";
   localizedHeadline?: string;
   localizedBody?: string;
 };
@@ -189,10 +189,10 @@ export const academyCountryRegistry: AcademyCountryProfile[] =
       primaryLanguage,
       secondaryLocales,
       tracks: academyLaunchTracks,
-      localizationState: sample ? "sample_ready" : "planned",
-      complianceState: "screening_required",
-      paymentState: "provider_check_required",
-      indexability: "registry_only",
+      localizationState: sample ? "launch_ready" : "planned",
+      complianceState: "application_review_required",
+      paymentState: "confirmed_before_enrollment",
+      indexability: sample ? "public_localized" : "registry_only",
       localizedHeadline: sample?.headline,
       localizedBody: sample?.body,
     };
