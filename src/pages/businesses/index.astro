@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import HermesPromoRail from "../../components/HermesPromoRail.astro";
 import CatalogClientBenefit from "../../components/CatalogClientBenefit.astro";
+import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../data/repair-shop-directory";
@@ -53,6 +54,7 @@ const schema = [
 
       <HermesPromoRail context="catalog" />
       <CatalogClientBenefit context="catalog" />
+      <MarketingPackageSelector />
 
       <section class="catalog-overview" aria-label="Hermes Catalog scope">
         <article><strong>{repairShopDirectory.length}</strong><span>evidence-backed external business profiles</span></article>
@@ -126,7 +128,7 @@ const schema = [
 
       <section class="owner-panel" id="business-owners" aria-labelledby="business-owner-title">
         <div><p class="eyebrow">Own a business?</p><h2 id="business-owner-title">Start free. Claim only what is yours.</h2><p>A public profile can exist before a business becomes a Hermes customer. An authorized owner can verify or correct the public facts and then independently decide whether to activate Hermes Connect or any paid growth service.</p></div>
-        <div class="owner-actions"><a class="primary" href="mailto:officeus@hermeslogisticsus.com?subject=Add%20my%20business%20to%20Hermes%20Catalog">Add your business free</a><a href="#catalog-search">Find and claim an existing profile</a><a href="/services/hermes-connect/">Connect your business</a></div>
+        <div class="owner-actions"><a class="primary" href="/businesses/request/?type=add">Add your business free</a><a href="#catalog-search">Find and claim an existing profile</a><a href="/businesses/request/?type=catalog-growth">Request Catalog SEO / GEO</a><a href="/services/hermes-connect/?source=catalog">Connect your business</a></div>
         <ol class="catalog-funnel" aria-label="Hermes Catalog business path"><li>Free listing</li><li>Claim profile</li><li>Hermes Connect</li><li>Enhanced Catalog</li><li>SEO / GEO</li><li>Website</li><li>Sponsored position</li></ol>
       </section>
 

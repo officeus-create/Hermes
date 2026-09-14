@@ -11,9 +11,7 @@ for (const path of ["/paths/technology/", "/paths/marketing/", "/businesses/"]) 
     await expect(benefit).toContainText("not unlimited ongoing SEO/GEO");
     await expect(benefit.getByRole("link", { name: "Explore Hermes Catalog" })).toHaveAttribute("href", "/businesses/");
     const handoff = await benefit.getByRole("link", { name: "Discuss my Catalog profile" }).getAttribute("href");
-    const url = new URL(handoff!);
-    expect(url.protocol).toBe("mailto:");
-    expect(url.searchParams.get("body")).toContain("standalone profile optimization");
+    expect(handoff).toBe("/businesses/request/?type=catalog-growth");
     expect(await page.locator('link[rel="canonical"]').getAttribute("href")).toBe(`https://hermeslogisticsus.com${path}`);
     expect((await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ")).not.toContain('"JobPosting"');
     if (path === "/paths/marketing/") {

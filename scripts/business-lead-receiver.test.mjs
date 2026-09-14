@@ -106,6 +106,33 @@ assert.equal(telegramOnly.status, 200);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
 assert.match(serviceCalls.at(-1).payload.text, /Telegram: @telegramonly/);
 
+const catalogPayload = {
+  ...validPayload,
+  request_id: "business_catalog_12345",
+  source_path: "/businesses/request/?type=claim",
+  interest: "Hermes Catalog",
+  company: "Sean's AutoPro Mobile",
+  city_country: "Sherwood, AR",
+  whatsapp: "+1 501 555 0199",
+  telegram: "",
+  website_or_social: "/businesses/arkansas/sherwood/seans-autopro-mobile/",
+  planning_budget: "Not sure yet",
+  planning_horizon: "Not sure yet",
+  preferred_language: "English",
+  preferred_contact_time: "10:00-13:00 Central Time",
+  services: ["Catalog claim / verification"],
+  message: "Please verify my authority before changing public business facts.",
+};
+const catalogAccepted = await onRequest({
+  request: makeRequest(catalogPayload, { "CF-Connecting-IP": "192.0.2.60" }),
+  env,
+});
+assert.equal(catalogAccepted.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [CATALOG]");
+assert.match(serviceCalls.at(-1).payload.text, /Direction: Hermes Catalog/);
+assert.match(serviceCalls.at(-1).payload.text, /Services: Catalog claim \/ verification/);
+assert.match(serviceCalls.at(-1).payload.text, /Company \/ project: Sean's AutoPro Mobile/);
+
 const backwardCompatiblePayload = {
   ...validPayload,
   request_id: "business_old_client_12345",

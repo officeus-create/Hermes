@@ -1,0 +1,13 @@
+---
+import { marketingGrowthPackages, marketingPackagePricingBoundary } from "../data/hermes-catalog-offers";
+interface Props { compact?: boolean; }
+const { compact=false }=Astro.props;
+---
+<section class:list={["marketing-packages",{"marketing-packages--compact":compact}]} id="marketing-packages" data-marketing-packages aria-labelledby="marketing-packages-title">
+ <div class="package-shell"><header><p>Planning horizons</p><h2 id="marketing-packages-title">Choose 3, 6, 9 or 12 months.</h2><span>The duration is the package framework; exact deliverables and the current fee are scoped after the business brief.</span></header><div class="package-grid">{marketingGrowthPackages.map((item)=><article data-package-months={item.months}><span>{item.focus}</span><strong>{item.label}</strong><p>{item.summary}</p><a href={`/businesses/request/?type=marketing-package&months=${item.months}`} data-package-cta={item.months}>Request this roadmap →</a></article>)}</div><p class="boundary">{marketingPackagePricingBoundary}</p></div>
+</section>
+<script>
+ import { trackEvent } from "../lib/analytics";
+ document.querySelectorAll<HTMLAnchorElement>("[data-package-cta]").forEach(a=>a.addEventListener("click",()=>trackEvent("catalog_marketing_package_cta",{months:Number(a.dataset.packageCta||0),destination:a.pathname})));
+</script>
+<style>.marketing-packages{padding:2rem 1rem;background:#f5f7fa;color:#172033;scroll-margin-top:150px}.package-shell{width:min(1160px,100%);margin:auto;padding:26px;border:1px solid #d8e2ec;border-radius:20px;background:#fff}.package-shell header>p{margin:0;color:#8d4c9d;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.package-shell h2{margin:.4rem 0 .6rem;font-size:clamp(28px,4vw,43px);letter-spacing:-.035em}.package-shell header>span,.boundary{color:#68778b;line-height:1.6;font-size:12px}.package-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:20px}.package-grid article{display:flex;flex-direction:column;padding:18px;border:1px solid #e0e6ed;border-radius:15px;background:linear-gradient(145deg,#fff,#faf8ff)}.package-grid article>span{color:#83509a;font-size:9px;font-weight:900;text-transform:uppercase}.package-grid strong{margin:9px 0 6px;font-size:24px}.package-grid p{color:#637287;line-height:1.55;font-size:12px}.package-grid a{margin-top:auto;color:#6f3e89;text-decoration:none;font-size:12px;font-weight:850}.boundary{margin:16px 0 0}.marketing-packages--compact{padding-top:0}@media(max-width:850px){.package-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.package-grid{grid-template-columns:1fr}}</style>
