@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import DirectionProductNav from "./DirectionProductNav.astro";
+import HermesPromoRail from "./HermesPromoRail.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import { academyLocalizationPipeline } from "../data/academy-localization-pipeline";
+import type { AcademyCountryProfile, AcademyLaunchTrack } from "../data/academy-country-registry";
+import type { AcademyCountryPageCopy } from "../data/academy-country-pages";
+
+interface Props { profile: AcademyCountryProfile; copy: AcademyCountryPageCopy | ReturnType<typeof import("../data/academy-country-pages").englishAcademyCountryCopy>; english?: boolean; }
+const { profile, copy, english = false } = Astro.props;
+const pageLang = english ? "en" : profile.primaryLocale;
+const localPath = `/academy/countries/${profile.slug}/`;
+const englishPath = `${localPath}en/`;
+const canonicalPath = english ? englishPath : localPath;
+const alternates=[{lang:profile.primaryLocale,href:localPath},{lang:"en",href:englishPath},{lang:"x-default",href:englishPath}];
+const programFor:Record<AcademyLaunchTrack,string>={logistics:"us-logistics-operations",marketing:"marketing",sales:"sales",operations:"operations"};
+const applyHref=(track:AcademyLaunchTrack)=>`/academy/apply/?${new URLSearchParams({program:programFor[track],country:profile.country,language:pageLang,source:"academy_country"})}`;
+const schema=[
+ {"@context":"https://schema.org","@type":"Course","name":copy.title,"description":copy.description,"url":new URL(canonicalPath,Astro.site).toString(),"provider":{"@id":"https://hermeslogisticsus.com/#organization"},"inLanguage":pageLang},
+ {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Hermes Academy","item":"https://hermeslogisticsus.com/paths/academy/"},{"@type":"ListItem","position":2,"name":profile.country,"item":new URL(canonicalPath,Astro.site).toString()}]},
+];
+---
+<BaseLayout title={copy.title} description={copy.description} htmlLang={pageLang} ogLocaleOverride={english ? "en_US" : (copy as any).ogLocale} alternates={alternates} schema={schema}>
+ <SiteHeader theme="light" />
+ <DirectionProductNav direction="academy" theme="light" />
+ <main class="country-page" data-academy-country={profile.slug} data-country-language={pageLang}>
+  <div class="shell">
+   <nav class="crumb"><a href="/paths/academy/">Hermes Academy</a><span>→</span><a href="/businesses/#global-markets">110-country registry</a><span>→</span><strong>{profile.country}</strong></nav>
+   <header class="country-hero">
+    <div><p class="eyebrow">{copy.eyebrow}</p><h1>{copy.title.split("|")[0].trim()}</h1><p>{copy.lead}</p><div class="hero-actions"><a class="primary" href={applyHref("logistics")} data-country-cta="apply">{copy.apply}</a><a href={english ? localPath : englishPath}>{english ? profile.primaryLanguage : "English"}</a></div></div>
+    <aside><strong>Public Academy entry</strong><span>Local language: {profile.primaryLanguage}</span><span>Commercial terms: confirmed after application review</span><span>No local-office claim</span></aside>
+   </header>
+   <HermesPromoRail context="academy" />
+   <section class="tracks"><p class="eyebrow">Hermes Academy</p><h2>{copy.tracksTitle}</h2><div>{profile.tracks.map((track)=><article><span>{track}</span><h3>{copy.tracks[track].title}</h3><p>{copy.tracks[track].body}</p><a href={applyHref(track)} data-country-track={track}>{copy.apply} →</a></article>)}</div></section>
+   <section class="journey"><article><p class="eyebrow">Process</p><h2>{copy.processTitle}</h2><p>{copy.process}</p></article><article><p class="eyebrow">Future pathway</p><h2>{copy.futureTitle}</h2><p>{copy.futureBody}</p></article></section>
+   <section class="gate"><div><p class="eyebrow">Country gate</p><h2>{copy.gateTitle}</h2><p>{copy.gateBody}</p><p class="fine">This page is an informational/recruitment entry, not evidence of a Hermes office, franchise, local legal entity, guaranteed cohort, guaranteed payment provider, employment or income.</p></div><ol>{academyLocalizationPipeline.map((stage)=><li><strong>{stage.label}</strong><span>{stage.detail}</span></li>)}</ol></section>
+   <section class="next"><h2>One Academy truth, localized for {profile.country}.</h2><p>Country localization changes language and examples, not the underlying evidence rules. Current pricing, dates, capacity, payment/refund terms and any real client access are confirmed separately before enrollment.</p><a href={applyHref("marketing")} data-country-cta="final">{copy.apply} →</a></section>
+  </div>
+ </main>
+ <SiteFooter />
+</BaseLayout>
+<script>
+ import { trackEvent } from "../lib/analytics";
+ const root=document.querySelector<HTMLElement>("[data-academy-country]");
+ if(root){trackEvent("academy_country_view",{country:root.dataset.academyCountry||"",language:root.dataset.countryLanguage||""});root.querySelectorAll<HTMLAnchorElement>("[data-country-track],[data-country-cta]").forEach(a=>a.addEventListener("click",()=>trackEvent("academy_country_cta",{country:root.dataset.academyCountry||"",track:a.dataset.countryTrack||a.dataset.countryCta||"general",destination:a.pathname})));}
+</script>
+<style>
+.country-page{min-height:70vh;background:#f5f7fa;color:#172033}.shell{width:min(1160px,calc(100% - 2rem));margin:auto;padding:112px 0 80px}.crumb{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;color:#6c7b8d;font-size:12px}.crumb a{color:#23679f;text-decoration:none}.country-hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:end;margin-top:26px}.eyebrow{margin:0 0 8px;color:#27679e;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:900}.country-hero h1{max-width:850px;margin:0;font-size:clamp(42px,6vw,72px);line-height:1;letter-spacing:-.045em}.country-hero p,.tracks p,.journey p,.gate p,.next p{color:#627186;line-height:1.65}.hero-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.hero-actions a,.tracks a,.next a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #ccd9e6;border-radius:11px;background:#fff;color:#1b659f;text-decoration:none;font-weight:850}.hero-actions .primary,.next a{border-color:#172033;background:#172033;color:#fff}.country-hero aside{display:grid;gap:9px;padding:19px;border:1px solid #d8e2ec;border-radius:17px;background:#fff}.country-hero aside span{color:#69798d;font-size:12px}.tracks,.journey,.gate,.next{margin-top:42px}.tracks>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.tracks article,.journey article{display:flex;flex-direction:column;padding:20px;border:1px solid #dce4ed;border-radius:16px;background:#fff}.tracks article>span{color:#7655bd;font-size:10px;font-weight:900;text-transform:uppercase}.tracks h2,.gate h2,.next h2{margin:0 0 12px;font-size:clamp(28px,4vw,42px)}.tracks h3{margin:10px 0 5px}.tracks a{margin-top:auto;align-self:flex-start}.journey{display:grid;grid-template-columns:1fr 1fr;gap:12px}.journey h2{margin:0}.gate{display:grid;grid-template-columns:.85fr 1.15fr;gap:20px;padding:24px;border:1px solid #d7e1eb;border-radius:20px;background:#eef5fb}.gate ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}.gate li{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:11px;border-radius:12px;background:#fff}.gate li span,.fine{font-size:11px}.next{padding:28px;border-radius:20px;background:#172033;color:#fff}.next p{color:#c6d2df}.next a{background:#fff;color:#172033}.next h2{max-width:800px}@media(max-width:900px){.country-hero,.gate{grid-template-columns:1fr}.tracks>div{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:650px){.shell{padding-top:96px}.tracks>div,.journey{grid-template-columns:1fr}.gate li{grid-template-columns:1fr}.country-hero h1{font-size:40px}}
+</style>

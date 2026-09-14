@@ -6,8 +6,9 @@
   const params = new URLSearchParams(window.location.search);
   const requestedProgram = params.get("program");
   const requestedLanguage = params.get("language");
+  const requestedCountry = params.get("country");
   const isUkrainian = requestedLanguage === "uk";
-  const allowedPrograms = new Set(["us-logistics-operations", "marketing"]);
+  const allowedPrograms = new Set(["us-logistics-operations", "marketing", "sales", "operations"]);
 
   const copy = isUkrainian
     ? {
@@ -166,10 +167,13 @@
       { value: "", label: copy.chooseProgram },
       { value: "us-logistics-operations", label: "U.S. Logistics Operations" },
       { value: "marketing", label: "Marketing" },
+      { value: "sales", label: "Sales / Negotiation interest" },
+      { value: "operations", label: "COO / Operations interest" },
     ]) as HTMLSelectElement;
     if (requestedProgram && allowedPrograms.has(requestedProgram)) program.value = requestedProgram;
 
-    addField(group, "input", "academy_country_city", copy.countryCity);
+    const countryCity = addField(group, "input", "academy_country_city", copy.countryCity) as HTMLInputElement;
+    if (requestedCountry) countryCity.value = requestedCountry.slice(0, 120);
     addField(group, "textarea", "academy_languages_levels", copy.languagesLevels);
     addField(group, "select", "academy_english_level", copy.englishLevel, [
       { value: "", label: copy.chooseEnglishLevel },

@@ -74,6 +74,9 @@ const allowedServices = new Set([
   "Video & content production",
   "Marketing / sales consulting",
   "Training / courses",
+  "Catalog claim / verification",
+  "Catalog business listing",
+  "Catalog SEO / GEO",
 ]);
 
 const allowedBudgets = new Set([
@@ -86,7 +89,7 @@ const allowedBudgets = new Set([
 ]);
 const allowedHorizons = new Set(["Not sure yet", "3 months", "6 months", "9 months", "12 months"]);
 const allowedLanguages = new Set(["Russian", "Ukrainian", "English"]);
-const allowedInterests = new Set(["ProgressoPro", "IT Development"]);
+const allowedInterests = new Set(["ProgressoPro", "IT Development", "Hermes Catalog"]);
 
 const responseHeaders = (origin: string) => ({
   "Access-Control-Allow-Origin": origin,
@@ -141,7 +144,9 @@ const getAttribution = (value: unknown) => {
 const subjectForInterest = (interest: string) =>
   interest === "IT Development"
     ? "[HERMES INQUIRY] [IT DEVELOPMENT]"
-    : "[HERMES INQUIRY] [MARKETING]";
+    : interest === "Hermes Catalog"
+      ? "[HERMES INQUIRY] [CATALOG]"
+      : "[HERMES INQUIRY] [MARKETING]";
 
 export async function onRequestOptions({ request, env }: Context) {
   const allowedOrigin = env.ALLOWED_ORIGIN || DEFAULT_ORIGIN;

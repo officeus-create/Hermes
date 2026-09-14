@@ -11,9 +11,9 @@ for (const path of ["/paths/technology/", "/paths/marketing/", "/businesses/"]) 
     await expect(benefit).toContainText("not unlimited ongoing SEO/GEO");
     await expect(benefit.getByRole("link", { name: "Explore Hermes Catalog" })).toHaveAttribute("href", "/businesses/");
     const handoff = await benefit.getByRole("link", { name: "Discuss my Catalog profile" }).getAttribute("href");
-    const url = new URL(handoff!);
-    expect(url.protocol).toBe("mailto:");
-    expect(url.searchParams.get("body")).toContain("standalone profile optimization");
+    const url = new URL(handoff!, "https://hermeslogisticsus.com");
+    expect(url.pathname).toBe("/businesses/request/");
+    expect(url.searchParams.get("type")).toBe("catalog-growth");
     expect(await page.locator('link[rel="canonical"]').getAttribute("href")).toBe(`https://hermeslogisticsus.com${path}`);
     expect((await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ")).not.toContain('"JobPosting"');
     if (path === "/paths/marketing/") {
@@ -29,7 +29,8 @@ for (const path of ["/paths/academy/", "/academy/marketing/", "/ua/academy/marke
     const network = page.locator("[data-academy-network]");
     await expect(network).toHaveCount(1);
     await expect(network.locator(".academy-network__metrics strong")).toHaveText(["110", "3", "50"]);
-    await expect(network.locator("[data-network-track]")).toHaveCount(3);
+    await expect(network.locator("[data-network-track]")).toHaveCount(4);
+    await expect(network.locator('[data-network-track="logistics"] a')).toHaveAttribute("href", /\/academy\/apply\/\?program=us-logistics-operations/);
     await expect(network.locator('[data-network-track="marketing"] a')).toHaveAttribute("href", /\/academy\/apply\/\?program=marketing/);
     await expect(network.locator('[data-network-track="operations"] a')).toHaveAttribute("href", /^mailto:/);
     await expect(network.locator('[data-network-track="sales"] a')).toHaveAttribute("href", /^mailto:/);
