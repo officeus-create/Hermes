@@ -216,6 +216,9 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
       if (target === "en") next.searchParams.delete("lang");
       else next.searchParams.set("lang", target);
       link.href = `${next.pathname}${next.search}${next.hash}`;
+      link.addEventListener("click", () => {
+        try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
+      });
       if (target === locale) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
