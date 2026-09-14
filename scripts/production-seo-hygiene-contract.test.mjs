@@ -40,12 +40,12 @@ const childSitemapFiles = [
   "sitemap-cases.xml",
   "sitemap-trust.xml",
   "sitemap-london.xml",
+  "sitemap-international-marketing.xml",
   "sitemap-business-directory.xml",
 ];
-// 204 controlled URLs before the Load Board provider/equipment acquisition cluster.
-// This branch adds exactly 15 unique canonical URLs: 7 provider integrations + 8 equipment pages.
-// Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
-const expectedCurrentPageUrlCount = 233;
+// Current main owns 233 controlled URLs before this bounded international marketing experiment.
+// This branch adds exactly 8 unique canonical URLs: Padova hub + 3 services, Madrid hub + 3 services.
+const expectedCurrentPageUrlCount = 241;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
@@ -74,6 +74,12 @@ assert.equal(
   `controlled sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
 );
 assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
+
+const internationalSitemap = await readFile(new URL("../public/sitemap-international-marketing.xml", import.meta.url), "utf8");
+const internationalUrls = extractLocs(internationalSitemap);
+assert.equal(internationalUrls.length, 8, "international marketing experiment must stay bounded to exactly 8 URLs");
+assert.equal(internationalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/it/padova/`)).length, 4, "Padova must own one hub plus three service pages");
+assert.equal(internationalUrls.filter((url) => url.startsWith(`https://${sitemapHost}/es/madrid/`)).length, 4, "Madrid must own one hub plus three service pages");
 
 const serviceSitemap = await readFile(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const carrierGeoUrls = extractLocs(serviceSitemap).filter((url) => url.startsWith(carrierGeoRoot));
@@ -112,6 +118,7 @@ const verifier = await readFile(new URL("./check-production-custom-domain.mjs", 
 for (const required of [
   '"/sitemapindex.xml"',
   '"/sitemap-london.xml"',
+  '"/sitemap-international-marketing.xml"',
   '"/sitemap-business-directory.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
