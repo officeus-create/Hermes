@@ -121,10 +121,28 @@ async function loginOwner(page) {
   await page.waitForURL((url) => url.pathname === DASHBOARD, { timeout: 20_000 });
 }
 
+async function openLanguageMenu(page, details, label) {
+  const summary = details.locator("summary");
+  await summary.waitFor({ state: "visible", timeout: 10_000 });
+  const bounds = await summary.boundingBox();
+  const viewport = page.viewportSize();
+  if (!bounds || bounds.width < 1 || bounds.height < 1) fail(`${label} language summary has no visible bounds`);
+  if (viewport && (bounds.x < -1 || bounds.y < -1 || bounds.x + bounds.width > viewport.width + 1 || bounds.y + bounds.height > viewport.height + 1)) {
+    fail(`${label} language summary is outside the viewport: ${JSON.stringify({ bounds, viewport })}`);
+  }
+  if (!(await details.evaluate((element) => element.hasAttribute("open")))) {
+    // The account slot hydrates asynchronously in production and can keep the topbar
+    // geometrically unstable long enough for Playwright's actionability click to time out.
+    // We separately prove visibility + on-screen bounds above, then exercise the native
+    // <details> click while bypassing only the stability heuristic.
+    await summary.click({ force: true });
+  }
+  if (!(await details.evaluate((element) => element.hasAttribute("open")))) fail(`${label} language menu did not open`);
+}
+
 async function switchLocale(page, locale, expectedContext) {
   const details = page.locator(".repair-crm-language");
-  const isOpen = await details.evaluate((element) => element.hasAttribute("open"));
-  if (!isOpen) await details.locator("summary").click();
+  await openLanguageMenu(page, details, `desktop/${locale}`);
   const link = details.locator(`a[lang="${locale}"]`);
   await link.waitFor({ state: "visible", timeout: 10_000 });
   await link.click();
@@ -161,7 +179,7 @@ async function verifyRuNavigation(page, context) {
 async function verifyMobileLanguageMenu(page) {
   await assertNoHorizontalOverflow(page, "mobile-390 dashboard");
   const details = page.locator(".repair-crm-language");
-  await details.locator("summary").click();
+  await openLanguageMenu(page, details, "mobile-390");
   const nav = details.locator("nav");
   await nav.waitFor({ state: "visible", timeout: 10_000 });
   const languages = await nav.locator("a[lang]").evaluateAll((links) => links.map((link) => (link.getAttribute("lang") || "").toLowerCase()));

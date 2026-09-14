@@ -11,6 +11,10 @@ test("locale/session production proof stays on the canonical bounded Repair Shop
   expect(script).toContain('.repair-crm-language');
   expect(script).toContain('a[lang="${locale}"]');
   expect(script).toContain('switchLocale(page, "ru"');
+  expect(script).toContain('summary.waitFor({ state: "visible"');
+  expect(script).toContain('summary.boundingBox()');
+  expect(script).toContain('summary.click({ force: true })');
+  expect(script).toContain('language menu did not open');
   expect(script).toContain('hermes-connect-language');
   expect(script).toContain('page.goBack');
   expect(script).toContain('/api/auth/logout');
