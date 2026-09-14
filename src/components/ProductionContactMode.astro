@@ -2,24 +2,24 @@
   import { trackEvent } from "../lib/analytics";
 
   const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
-  const londonAttributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "service", "track", "program", "language"] as const;
+  const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "service", "track", "program", "language"] as const;
 
   const safeAttribution = () => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("utm_source") !== "london") return null;
-
     const values: Record<string, string> = {};
-    for (const key of londonAttributionKeys) {
+
+    for (const key of attributionKeys) {
       const value = String(params.get(key) || "")
         .replace(/[\u0000-\u001f\u007f<>]/g, "")
         .trim()
         .slice(0, 80);
       if (value) values[key] = value;
     }
-    return values;
+
+    return Object.keys(values).length ? values : null;
   };
 
-  const installLondonIntakeBridge = (form: HTMLFormElement) => {
+  const installAttributionBridge = (form: HTMLFormElement) => {
     const attribution = safeAttribution();
     if (!attribution) return;
 
@@ -37,6 +37,12 @@
       }
       input.value = value;
     }
+
+    // London keeps its existing explicit conversion events. Other attributed
+    // sources (including Telegram) are preserved in the private intake source
+    // path and can rely on normal session/source analytics without adding raw
+    // user-controlled campaign values as custom public analytics parameters.
+    if (attribution.utm_source !== "london") return;
 
     let pendingConversion = false;
     form.addEventListener("submit", () => {
@@ -74,7 +80,7 @@
       const label = form.querySelector<HTMLElement>("[data-submit-label]");
       if (label) label.textContent = "Send request";
 
-      installLondonIntakeBridge(form);
+      installAttributionBridge(form);
     });
   };
 
