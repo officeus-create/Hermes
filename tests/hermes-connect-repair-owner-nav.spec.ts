@@ -87,3 +87,22 @@ test("Repair Shop CRM language picker keeps target locales after legacy runtimes
     await expect(picker.locator(`a[lang="${lang}"]`)).toHaveAttribute("href", href);
   }
 });
+
+
+test("Repair Shop CRM explicit English selection overrides a stale saved locale", async ({ page }) => {
+  await mockRepairOwner(page);
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=fr", { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(1200);
+
+  const picker = page.locator(".repair-crm-language");
+  await picker.locator("summary").evaluate((element) => (element as HTMLElement).click());
+  const english = picker.locator('a[lang="en"]');
+  await expect(english).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/");
+  await english.evaluate((element) => (element as HTMLElement).click());
+
+  await page.waitForURL((url) => url.pathname === "/services/hermes-connect/repair-shops/dashboard/" && !url.searchParams.has("lang"));
+  await page.waitForTimeout(250);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator(".repair-crm-context small")).toHaveText("Owner workspace");
+  expect(await page.evaluate(() => localStorage.getItem("hermes-connect-language"))).toBe("en");
+});
