@@ -1,0 +1,12 @@
+---
+import InternationalMarketingMarketPage from "../../../components/InternationalMarketingMarketPage.astro";
+import { padovaMarket } from "../../../data/international-marketing-markets";
+
+export function getStaticPaths() {
+  return padovaMarket.services.map((service) => ({ params: { slug: service.slug }, props: { service } }));
+}
+
+const { service } = Astro.props;
+---
+
+<InternationalMarketingMarketPage market={padovaMarket} service={service} />
