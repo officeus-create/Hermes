@@ -1,4 +1,5 @@
 import { jsonResponse } from "../../_lib/session.mjs";
+import { evaluateDatProviderReadiness } from "../../_lib/dat-provider-readiness.mjs";
 import { onRequestPost as ingestLoadBoardRecords } from "../intake";
 
 type Env = {
@@ -10,6 +11,14 @@ type Env = {
   HERMES_SHIP_CARS_COMMERCIAL_APPROVED?: string;
   HERMES_SHIP_CARS_DATA_RIGHTS_APPROVED?: string;
   HERMES_SHIP_CARS_PUBLIC_DISPLAY_APPROVED?: string;
+  HERMES_DAT_PARTNERSHIP_APPROVED?: string;
+  HERMES_DAT_DATA_RIGHTS_APPROVED?: string;
+  HERMES_DAT_CERTIFIED?: string;
+  HERMES_DAT_PUBLIC_DISPLAY_APPROVED?: string;
+  DAT_SERVICE_ACCOUNT_EMAIL?: string;
+  DAT_SERVICE_ACCOUNT_PASSWORD?: string;
+  DAT_USER_EMAIL?: string;
+  DAT_API_BASE_URL?: string;
   SHIP_CARS_ACCESS_TOKEN?: string;
   SHIP_CARS_CLIENT_ID?: string;
   SHIP_CARS_CLIENT_SECRET?: string;
@@ -172,6 +181,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   let body: any;
   try { body = await request.json(); } catch { body = {}; }
   const provider = text(body?.provider || "ship_cars", 80).toLowerCase();
+
+  if (provider === "dat") {
+    const datDecision = evaluateDatProviderReadiness(env, body?.environment);
+    return jsonResponse(datDecision.status, datDecision.body);
+  }
+
   if (provider !== "ship_cars") {
     return jsonResponse(400, {
       success: false,

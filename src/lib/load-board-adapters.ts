@@ -38,6 +38,7 @@ export type LoadBoardAdapterDefinition = Readonly<{
   requiresOwnerApproval: boolean;
   requiresCommercialReview: boolean;
   requiresDataRightsReview: boolean;
+  requiresCertification?: boolean;
   documentationUrl?: string;
   notes: string;
 }>;
@@ -109,14 +110,15 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
     id: "dat",
     label: "DAT",
     transports: transportList("rest_api", "partner_integration"),
-    capabilities: capabilityList("search_loads", "book_now", "tracking", "load_posting", "rates"),
-    readiness: "owner_approval_required",
+    capabilities: capabilityList("search_loads", "search_trucks", "book_now", "tracking", "load_posting", "rates"),
+    readiness: "contract_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
     requiresCommercialReview: true,
     requiresDataRightsReview: true,
+    requiresCertification: true,
     documentationUrl: "https://www.dat.com/api-integration",
-    notes: "DAT advertises APIs for Load Board, BookNow, Tracking and Freight Posting through its Developer Portal. Endpoint access, licensing, retention, aggregation and deletion rights require an approved portal/account review.",
+    notes: "DAT provides Load Board, BookNow, Tracking, Freight Posting and related APIs through its Developer Portal. Hermes must complete partnership/API access, applicable Connexion + product-seat setup, data-rights review, and DAT certification before production use. Current REST endpoint/auth details remain portal-controlled and must not be guessed.",
   }),
   ship_cars: Object.freeze({
     id: "ship_cars",
