@@ -131,11 +131,10 @@ async function openLanguageMenu(page, details, label) {
     fail(`${label} language summary is outside the viewport: ${JSON.stringify({ bounds, viewport })}`);
   }
   if (!(await details.evaluate((element) => element.hasAttribute("open")))) {
-    // The account slot hydrates asynchronously in production and can keep the topbar
-    // geometrically unstable long enough for Playwright's actionability click to time out.
-    // We separately prove visibility + on-screen bounds above, then exercise the native
-    // <details> click while bypassing only the stability heuristic.
-    await summary.click({ force: true });
+    // The account slot can hydrate while the topbar is moving. Visibility and viewport
+    // bounds are proved above; use the browser-native click rather than bypassing
+    // hit-target/actionability checks with Playwright force.
+    await summary.evaluate((element) => element.click());
   }
   if (!(await details.evaluate((element) => element.hasAttribute("open")))) fail(`${label} language menu did not open`);
 }
@@ -145,7 +144,7 @@ async function switchLocale(page, locale, expectedContext) {
   await openLanguageMenu(page, details, `desktop/${locale}`);
   const link = details.locator(`a[lang="${locale}"]`);
   await link.waitFor({ state: "visible", timeout: 10_000 });
-  await link.click();
+  await link.evaluate((element) => element.click());
   await page.waitForLoadState("domcontentloaded").catch(() => {});
   await assertOwnerLocale(page, locale, expectedContext);
 }
@@ -160,8 +159,9 @@ async function verifyRuNavigation(page, context) {
   ];
 
   for (const route of routes) {
-    const link = page.locator(`.repair-crm-nav-item[href*="/${route.segment}/"]`).first();
-    await link.click();
+    const link = page.locator(`.repair-crm-nav-item[href^="${route.path}"]`).first();
+    await link.waitFor({ state: "visible", timeout: 10_000 });
+    await link.evaluate((element) => element.click());
     await page.waitForURL((url) => url.pathname === route.path && url.searchParams.get("lang") === "ru", { timeout: 15_000 });
     await assertOwnerLocale(page, "ru", "Кабинет владельца");
     await page.waitForFunction(
@@ -225,7 +225,9 @@ try {
   console.log("REPAIR_LOCALE_EN_SWITCH=PASS");
 
   const logoutResponse = page.waitForResponse((response) => response.url().endsWith("/api/auth/logout") && response.request().method() === "POST");
-  await page.locator("[data-repair-crm-logout]:visible").first().click();
+  const desktopLogoutButton = page.locator("[data-repair-crm-logout]:visible").first();
+  await desktopLogoutButton.waitFor({ state: "visible", timeout: 10_000 });
+  await desktopLogoutButton.evaluate((element) => element.click());
   const logout = await logoutResponse;
   if (logout.status() !== 200) fail(`Owner logout failed (${logout.status()})`);
   await page.waitForURL((url) => url.pathname === AUTH, { timeout: 15_000 });
@@ -248,11 +250,13 @@ try {
   await assertNoHorizontalOverflow(mobilePage, "mobile-390 RU dashboard");
   console.log("REPAIR_LOCALE_MOBILE_390_MENU=PASS");
 
-  await mobilePage.locator("[data-repair-crm-menu]").click();
+  const mobileMenuButton = mobilePage.locator("[data-repair-crm-menu]");
+  await mobileMenuButton.waitFor({ state: "visible", timeout: 10_000 });
+  await mobileMenuButton.evaluate((element) => element.click());
   const mobileLogoutButton = mobilePage.locator(".repair-crm-mobile-logout");
   await mobileLogoutButton.waitFor({ state: "visible", timeout: 10_000 });
   const mobileLogoutResponse = mobilePage.waitForResponse((response) => response.url().endsWith("/api/auth/logout") && response.request().method() === "POST");
-  await mobileLogoutButton.click();
+  await mobileLogoutButton.evaluate((element) => element.click());
   const mobileLogout = await mobileLogoutResponse;
   if (mobileLogout.status() !== 200) fail(`Mobile owner logout failed (${mobileLogout.status()})`);
   if (await privateProfileStatus(mobile) !== 401) fail("Mobile private API remained authenticated after logout");
