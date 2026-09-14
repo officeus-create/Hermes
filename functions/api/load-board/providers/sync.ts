@@ -1,5 +1,11 @@
 import { jsonResponse } from "../../_lib/session.mjs";
 import { evaluateDatProviderReadiness } from "../../_lib/dat-provider-readiness.mjs";
+import {
+  DAT_SEARCH_LIMITS,
+  expireDatInventory,
+  normalizeDatSearchIntent,
+  shouldFailClosedDatInventory,
+} from "../../_lib/dat-certification-policy.mjs";
 import { onRequestPost as ingestLoadBoardRecords } from "../intake";
 
 type Env = {
@@ -184,7 +190,27 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   if (provider === "dat") {
     const datDecision = evaluateDatProviderReadiness(env, body?.environment);
-    return jsonResponse(datDecision.status, datDecision.body);
+    const searchContract = normalizeDatSearchIntent(body?.search || body?.filters || {});
+    let failClosedInventory = null;
+    if (shouldFailClosedDatInventory(datDecision.body?.error)) {
+      try {
+        failClosedInventory = await expireDatInventory(env.DB, datDecision.body.error);
+      } catch {
+        failClosedInventory = { sources_disabled: false, records_expired: false, error: "dat_fail_closed_inventory_update_failed" };
+      }
+    }
+    return jsonResponse(datDecision.status, {
+      ...datDecision.body,
+      search_contract: searchContract,
+      search_limits: DAT_SEARCH_LIMITS,
+      pagination_contract: {
+        cursor_passthrough: true,
+        provider_mapping_pending: true,
+        bulk_analytics_allowed: false,
+      },
+      mapped_record_contract: "Hermes canonical opportunity intermediate shape; raw DAT response mapping remains Developer Portal controlled.",
+      fail_closed_inventory: failClosedInventory,
+    });
   }
 
   if (provider !== "ship_cars") {
