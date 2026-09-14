@@ -10,6 +10,15 @@ test("Catalog exposes Hermes services and a truthful global market registry", as
   await details.locator("summary").click();
   await expect(details.locator(".country-cloud span")).toHaveCount(110);
   await expect(page.locator("#global-markets .city-cloud span")).toHaveCount(36);
+  await expect(details).toContainText("Vietnam · Tiếng Việt");
+  await expect(details).toContainText("Philippines · Filipino");
+  await expect(details).toContainText("Tajikistan · Тоҷикӣ");
+  await expect(details).toContainText("Morocco · العربية");
+  await expect(details).toContainText("Moldova · Română");
+  await expect(details).toContainText("Romania · Română");
+  await expect(page.locator("#global-markets [data-country-sample]")).toHaveCount(6);
+  await expect(page.locator("#global-markets")).toContainText("Compliance screening required");
+  await expect(page.locator("#global-markets")).toContainText("Local language first");
   await expect(page.getByText(/not office claims/i)).toBeVisible();
 });
 
