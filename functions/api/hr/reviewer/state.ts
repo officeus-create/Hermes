@@ -24,6 +24,7 @@ type Context = { request: Request; env: Env };
 
 const privateHeaders = { "Cache-Control": "no-store" };
 const IDP_RE = /^[A-Za-z0-9:_-]{12,120}$/;
+const OPAQUE_PROVIDER_REF_RE = /^[A-Za-z0-9_:./-]{3,240}$/;
 const FORBIDDEN_BODY_FIELDS = new Set([
   "name",
   "email",
@@ -63,9 +64,12 @@ function isoTime(value: unknown) {
   return text && !Number.isNaN(Date.parse(text)) ? text : "";
 }
 
-function refValue(value: unknown, max = 240) {
-  const text = cleanHrText(value, max);
-  return text || null;
+function opaqueRef(value: unknown) {
+  const text = cleanHrText(value, 240);
+  if (!text) return { value: null as string | null, invalid: false };
+  return OPAQUE_PROVIDER_REF_RE.test(text)
+    ? { value: text, invalid: false }
+    : { value: null as string | null, invalid: true };
 }
 
 function providerRefForStage(stage: string, gmailMessageRef: string | null, telegramHandoffRef: string | null) {
@@ -151,9 +155,16 @@ export async function onRequestPut({ request, env }: Context) {
   const occurredAt = isoTime(body.occurred_at) || new Date().toISOString();
   const lastInboundAt = isoTime(body.last_inbound_at) || null;
   const lastOutboundAt = isoTime(body.last_outbound_at) || null;
-  const gmailThreadRef = refValue(body.gmail_thread_ref);
-  const gmailMessageRef = refValue(body.gmail_message_ref);
-  const telegramHandoffRef = refValue(body.telegram_handoff_ref);
+  const gmailThread = opaqueRef(body.gmail_thread_ref);
+  const gmailMessage = opaqueRef(body.gmail_message_ref);
+  const telegramHandoff = opaqueRef(body.telegram_handoff_ref);
+
+  if (gmailThread.invalid || gmailMessage.invalid || telegramHandoff.invalid) {
+    return jsonResponse(400, { success: false, error: "provider_ref_invalid" }, privateHeaders);
+  }
+  const gmailThreadRef = gmailThread.value;
+  const gmailMessageRef = gmailMessage.value;
+  const telegramHandoffRef = telegramHandoff.value;
 
   if (!isHrCommunicationStage(toStage) || !isHrCommunicationChannel(currentChannel)) {
     return jsonResponse(400, { success: false, error: "communication_state_invalid" }, privateHeaders);
@@ -164,6 +175,10 @@ export async function onRequestPut({ request, env }: Context) {
   }
 
   const existing = await getHrCommunicationState(env.DB, candidateId);
+  if (!existing && isHrTerminalCommunicationStage(toStage)) {
+    return jsonResponse(409, { success: false, error: "communication_initial_stage_invalid" }, privateHeaders);
+  }
+
   const effectiveSourceChannel = existing?.source_channel || sourceChannel;
   if (!isHrCommunicationChannel(effectiveSourceChannel)) {
     return jsonResponse(400, { success: false, error: "source_channel_required" }, privateHeaders);
