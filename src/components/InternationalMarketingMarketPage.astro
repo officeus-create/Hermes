@@ -1,0 +1,185 @@
+---
+import { ArrowRight, Check, MapPin, Search, Sparkles } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import type { InternationalMarketingMarket, InternationalMarketService } from "../data/international-marketing-markets";
+
+interface Props {
+  market: InternationalMarketingMarket;
+  service?: InternationalMarketService;
+}
+
+const { market, service } = Astro.props;
+const basePath = `/${market.countryCode}/${market.citySlug}/`;
+const path = service ? `${basePath}${service.slug}/` : basePath;
+const url = `https://hermeslogisticsus.com${path}`;
+const serviceKey = service?.slug === "seo"
+  ? "seo"
+  : service?.slug === "social-media" || service?.slug === "redes-sociales"
+    ? "smm"
+    : service
+      ? "website-development"
+      : "marketing";
+const leadHref = `/business-growth/?utm_source=${market.citySlug}&utm_medium=organic&utm_campaign=international-local-marketing&utm_content=${service?.slug ?? "hub"}&service=${serviceKey}`;
+const nationalOwner = service?.slug === "seo"
+  ? "/services/seo/"
+  : service?.slug === "social-media" || service?.slug === "redes-sociales"
+    ? "/paths/marketing/"
+    : "/services/website-development/";
+const nationalLabel = market.language === "it"
+  ? service?.slug === "seo" ? "SEO nazionale" : service?.slug === "social-media" ? "Marketing Hermes" : "Sviluppo siti web"
+  : service?.slug === "seo" ? "SEO nacional" : service?.slug === "redes-sociales" ? "Marketing Hermes" : "Desarrollo web";
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: service
+    ? [
+        { "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/" },
+        { "@type": "ListItem", position: 2, name: market.city, item: `https://hermeslogisticsus.com${basePath}` },
+        { "@type": "ListItem", position: 3, name: service.h1, item: url },
+      ]
+    : [
+        { "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/" },
+        { "@type": "ListItem", position: 2, name: market.city, item: url },
+      ],
+};
+const schema = service
+  ? [
+      breadcrumb,
+      {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: service.h1,
+        description: service.description,
+        url,
+        provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+        areaServed: { "@type": "City", name: market.city, containedInPlace: { "@type": "Country", name: market.countryName } },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: service.faq.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      },
+    ]
+  : [
+      breadcrumb,
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: market.hubH1,
+        description: market.hubDescription,
+        url,
+        isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+        about: { "@id": "https://hermeslogisticsus.com/#organization" },
+      },
+    ];
+const pageTitle = service?.title ?? market.hubTitle;
+const pageDescription = service?.description ?? market.hubDescription;
+const eyebrow = service?.eyebrow ?? market.eyebrow;
+const h1 = service?.h1 ?? market.hubH1;
+const intro = service?.intro ?? market.hubIntro;
+const backLabel = market.language === "it" ? `Torna a ${market.city}` : `Volver a ${market.city}`;
+const evidenceTitle = market.language === "it" ? "Ricerche che giustificano questo esperimento" : "Búsquedas que justifican este experimento";
+const queryLabel = market.language === "it" ? "Query target" : "Consultas objetivo";
+const measurementLabel = market.language === "it" ? "Misurazione" : "Medición";
+const faqLabel = market.language === "it" ? "Domande frequenti" : "Preguntas frecuentes";
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} htmlLang={market.language} locale={market.language} schema={schema}>
+  <SiteHeader theme="dark" locale={market.language} />
+  <main id="main-content" class="international-market-page">
+    <section class="section market-hero">
+      <div class="shell market-hero-grid">
+        <div>
+          <p class="eyebrow">{eyebrow}</p>
+          <h1>{h1}</h1>
+          <p class="market-intro">{intro}</p>
+          <div class="market-actions">
+            <a class="button button-primary" href={leadHref}>{market.ctaButton} <ArrowRight size={18} aria-hidden="true" /></a>
+            {service
+              ? <><a class="button" href={basePath}>{backLabel}</a><a class="text-link" href={nationalOwner}>{nationalLabel}</a></>
+              : <a class="button" href="/paths/marketing/">Hermes Marketing</a>}
+          </div>
+        </div>
+        <aside class="market-truth-card" aria-label="Local market boundary">
+          <MapPin size={22} aria-hidden="true" />
+          <strong>{market.city}, {market.countryName}</strong>
+          <p>{market.boundary}</p>
+        </aside>
+      </div>
+    </section>
+
+    {!service && (
+      <>
+        <section class="section market-services" aria-labelledby="market-services-title">
+          <div class="shell">
+            <p class="eyebrow">{market.servicesLabel}</p>
+            <h2 id="market-services-title">{market.servicesHeading}</h2>
+            <div class="market-card-grid">
+              {market.services.map((item) => (
+                <a class="market-service-card" href={`${basePath}${item.slug}/`}>
+                  <span>{item.eyebrow}</span>
+                  <h3>{item.h1}</h3>
+                  <p>{item.description}</p>
+                  <strong>{market.language === "it" ? "Apri il servizio" : "Abrir servicio"} <ArrowRight size={16} aria-hidden="true" /></strong>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section evidence-section" aria-labelledby="market-evidence-title">
+          <div class="shell evidence-layout">
+            <div><Search size={22} aria-hidden="true" /><p class="eyebrow">{market.evidenceLabel}</p><h2 id="market-evidence-title">{evidenceTitle}</h2><p>{market.evidenceIntro}</p></div>
+            <ul>{market.evidence.map((item) => <li><Check size={17} aria-hidden="true" />{item}</li>)}</ul>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="market-process-title"><div class="shell">
+          <p class="eyebrow">{market.processLabel}</p><h2 id="market-process-title">{market.processHeading}</h2>
+          <div class="market-process-grid">{market.process.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+        </div></section>
+      </>
+    )}
+
+    {service && (
+      <>
+        <section class="section" aria-labelledby="market-scope-title"><div class="shell">
+          <p class="eyebrow">{market.language === "it" ? "Ambito" : "Alcance"}</p>
+          <h2 id="market-scope-title">{market.language === "it" ? "Tre parti del lavoro." : "Tres partes del trabajo."}</h2>
+          <div class="market-card-grid">{service.points.map((point) => <article class="market-scope-card"><h3>{point.title}</h3><p>{point.body}</p></article>)}</div>
+        </div></section>
+
+        <section class="section evidence-section" aria-labelledby="market-query-title"><div class="shell evidence-layout">
+          <div><Search size={22} aria-hidden="true" /><p class="eyebrow">{queryLabel}</p><h2 id="market-query-title">{market.language === "it" ? "Intento commerciale osservato." : "Intención comercial observada."}</h2><p>{market.language === "it" ? "Queste famiglie guidano la pagina; non creiamo una URL per ogni variazione." : "Estas familias guían la página; no creamos una URL por cada variación."}</p></div>
+          <ul>{service.targetQueries.map((query) => <li><Check size={17} aria-hidden="true" />{query}</li>)}</ul>
+        </div></section>
+
+        <section class="section measurement-section" aria-labelledby="market-measurement-title"><div class="shell measurement-card">
+          <Sparkles size={22} aria-hidden="true" /><p class="eyebrow">{measurementLabel}</p><h2 id="market-measurement-title">{market.language === "it" ? "Misurare il primo passaggio debole." : "Medir el primer paso débil."}</h2><p>{service.measurement}</p>
+        </div></section>
+
+        <section class="section" aria-labelledby="market-faq-title"><div class="shell faq-wrap">
+          <p class="eyebrow">{faqLabel}</p><h2 id="market-faq-title">{faqLabel}</h2>
+          {service.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+        </div></section>
+      </>
+    )}
+
+    <section class="section market-cta"><div class="shell market-cta-card">
+      <div><p class="eyebrow">{market.ctaLabel}</p><h2>{market.ctaHeading}</h2><p>{market.ctaBody}</p></div>
+      <a class="button button-primary" href={leadHref}>{market.ctaButton} <ArrowRight size={18} aria-hidden="true" /></a>
+    </div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .international-market-page{background:#f7f9ff;color:#10204e}.market-hero{padding:9rem 0 5rem;background:radial-gradient(circle at 84% 15%,#e8edff 0,transparent 34%),#fff}.market-hero-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.65fr);gap:2rem;align-items:end}.market-hero h1{max-width:18ch;font-size:clamp(2.55rem,6vw,5.5rem);line-height:.94;letter-spacing:-.055em;margin:.55rem 0 1.3rem}.market-intro{max-width:72ch;color:#56637f;font-size:1.08rem;line-height:1.75}.market-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;margin-top:1.6rem}.text-link{font-weight:800}.market-truth-card,.measurement-card{padding:1.4rem;border:1px solid #dce3f3;border-radius:16px;background:#fbfcff}.market-truth-card strong{display:block;margin:.65rem 0 .45rem}.market-truth-card p,.measurement-card p,.evidence-layout p{color:#64718f;line-height:1.65}.market-card-grid,.market-process-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1.4rem}.market-service-card,.market-scope-card,.market-process-grid article{display:block;padding:1.35rem;border:1px solid #dce3f3;border-radius:14px;background:#fff;text-decoration:none}.market-service-card span{font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:#667594}.market-service-card h3,.market-scope-card h3,.market-process-grid h3{margin:.55rem 0}.market-service-card p,.market-scope-card p,.market-process-grid p{color:#64718f;line-height:1.6}.market-service-card strong{display:flex;align-items:center;gap:.3rem;margin-top:1rem}.evidence-section{background:#eef2ff}.evidence-layout{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:2rem}.evidence-layout ul{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}.evidence-layout li{display:flex;align-items:flex-start;gap:.55rem;padding:.8rem 0;border-bottom:1px solid #d9e0f4}.measurement-card,.faq-wrap{max-width:880px}.faq-wrap details{padding:1rem 0;border-bottom:1px solid #dce3f3}.faq-wrap summary{font-weight:800;cursor:pointer}.faq-wrap p{color:#64718f;line-height:1.65}.market-cta{background:#10204e;color:#fff}.market-cta-card{display:flex;align-items:end;justify-content:space-between;gap:2rem}.market-cta-card h2{max-width:20ch;margin:.4rem 0 .7rem}.market-cta-card p{max-width:68ch;color:#cbd4ef;line-height:1.65}.eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:.75rem;font-weight:800}@media(max-width:850px){.market-hero-grid,.evidence-layout{grid-template-columns:1fr}.market-card-grid,.market-process-grid{grid-template-columns:1fr}.market-cta-card{display:grid}.market-hero{padding-top:7.5rem}}
+</style>
