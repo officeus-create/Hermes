@@ -28,7 +28,8 @@ function validIso(value) {
 
 export function normalizeDatSearchIntent(input = {}) {
   const resource = String(input.resource || input.type || "loads").trim().toLowerCase() === "trucks" ? "trucks" : "loads";
-  const requestedLimit = Math.trunc(finite(input.limit ?? input.requested_limit ?? 25, 1, 100) ?? 25);
+  const rawRequestedLimit = Number(input.limit ?? input.requested_limit ?? 25);
+  const requestedLimit = Math.max(1, Math.min(100, Math.trunc(Number.isFinite(rawRequestedLimit) ? rawRequestedLimit : 25)));
   const equipmentRaw = text(input.equipment, 40).toLowerCase().replaceAll("-", "_").replaceAll(" ", "_");
   const equipment = equipmentRaw && EQUIPMENT.has(equipmentRaw) ? equipmentRaw : null;
   const radiusMiles = finite(input.radius_miles ?? input.radiusMiles, 0, 1000);
