@@ -121,8 +121,9 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function fillProfile(shop: Shop | null) {
     const linkWrap = $("public-link-wrap");
-    if (!shop) { $("profile-state")!.textContent = "Not configured"; linkWrap?.classList.add("hidden"); return; }
+    if (!shop) { $("profile-state")!.textContent = "Not configured"; $("profile-state")!.dataset.ready = "false"; linkWrap?.classList.add("hidden"); return; }
     $("profile-state")!.textContent = "Saved";
+    $("profile-state")!.dataset.ready = "true";
     $<HTMLInputElement>("shop-name")!.value = shop.name || ""; $<HTMLInputElement>("shop-phone")!.value = shop.phone || ""; $<HTMLInputElement>("shop-address")!.value = shop.address_line1 || ""; $<HTMLInputElement>("shop-city")!.value = shop.city || ""; $<HTMLInputElement>("shop-state")!.value = shop.state || ""; $<HTMLInputElement>("shop-zip")!.value = shop.postal_code || ""; $<HTMLSelectElement>("shop-timezone")!.value = shop.timezone || "America/Chicago";
     publicBookingUrl = `${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
     $("public-link-text")!.textContent = publicBookingUrl; $<HTMLAnchorElement>("open-link-btn")!.href = publicBookingUrl; linkWrap?.classList.remove("hidden");
