@@ -1,0 +1,84 @@
+name: Validate and open Insights content PR
+
+on:
+  push:
+    branches:
+      - 'automation/insights-*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: insights-content-pr-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-and-open:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out content branch
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Fetch current main
+        run: git fetch origin main
+
+      - name: Enforce generated-content-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          allowed='^(src/data/insights\.generated\.json|public/sitemap-insights\.xml|docs/release-manifest-deltas/2026-09-14-hermes-insights-blog\.json)$'
+          changed="$(git diff --name-only origin/main...HEAD)"
+          test -n "$changed"
+          while IFS= read -r file; do
+            if ! [[ "$file" =~ $allowed ]]; then
+              echo "Blocked automation change outside generated Insights scope: $file"
+              exit 1
+            fi
+          done <<< "$changed"
+          echo "$changed"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and run project gates
+        run: npm run build
+
+      - name: Validate Insights release gates
+        run: |
+          node scripts/insights-pipeline.test.mjs
+          node scripts/release-manifest.test.mjs
+          node scripts/production-seo-hygiene-contract.test.mjs
+          node scripts/internal-link-audit.test.mjs
+
+      - name: Create or find PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr="$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$pr" ]; then
+            gh pr create --base main --head "$GITHUB_REF_NAME" \
+              --title "content(insights): publish reviewed Telegram news" \
+              --body "Generated Hermes Insights update. Scope is restricted to the Insights registry, sitemap, and release delta. This branch passed the full build and Insights release gates before PR creation."
+            pr="$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number')"
+          fi
+          echo "number=$pr" >> "$GITHUB_OUTPUT"
+
+      - name: Queue protected auto-merge when available
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch || \
+            echo "Auto-merge unavailable; validated PR remains open for the normal review/merge gate."
