@@ -26,6 +26,12 @@
     const storageDeadline = root?.querySelector<HTMLInputElement>('input[name="storage_deadline"]');
     if (!root || !form || !alert || !result || !decision || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
 
+    const canonicalProductionHost = window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com";
+    if (canonicalProductionHost) {
+      form.dataset.leadMode = "live";
+      if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    }
+
     const today = new Date();
     today.setUTCHours(12, 0, 0, 0);
     const todayValue = today.toISOString().slice(0, 10);
