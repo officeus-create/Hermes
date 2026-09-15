@@ -74,13 +74,13 @@ const faqSchema = {
   schema={[serviceSchema, breadcrumbSchema, faqSchema]}
 >
   <SiteHeader theme="light" locale="it" />
-  <main id="main-content" class:list={["it-commercial", `it-commercial--${content.id}`]}>
-    <section class="it-commercial-hero" id="top">
+  <main id="main-content" class:list={["it-commercial", `it-commercial--${content.id}`]} data-hermes-vertical={content.id}>
+    <section class="it-commercial-hero hermes-surface-obsidian" id="top">
       <div class="it-commercial-hero-media" aria-hidden="true"><img src={content.image} alt="" width="1600" height="1000" /></div>
       <div class="shell it-commercial-hero-grid">
         <div class="it-commercial-hero-copy">
           <p class="eyebrow">{content.eyebrow}</p>
-          <h1>{content.title}</h1>
+          <h1 class="hermes-display">{content.title}</h1>
           <p class="it-commercial-lead">{content.lead}</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#servizi">Scopri i servizi<ArrowRight size={18} aria-hidden="true" /></a>
@@ -99,7 +99,7 @@ const faqSchema = {
         </div>
         <div class="it-service-grid">
           {content.services.map((service, index) => (
-            <article class="it-service-card">
+            <article class="it-service-card hermes-card">
               <span class="it-service-index">{String(index + 1).padStart(2, "0")}</span>
               <h3>{service.title}</h3>
               <p>{service.body}</p>
@@ -110,7 +110,7 @@ const faqSchema = {
       </div>
     </section>
 
-    <section class="section it-commercial-process" aria-labelledby="it-process-title">
+    <section class="section it-commercial-process hermes-surface-obsidian" aria-labelledby="it-process-title">
       <div class="shell">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Metodo</p><h2 id="it-process-title">Prima la diagnosi. Poi il lavoro che conta.</h2></div>
@@ -129,7 +129,7 @@ const faqSchema = {
           <p>Separiamo ciò che è già pubblico e verificabile da ciò che deve essere progettato, testato o validato sul mercato.</p>
         </div>
         <div class="it-principle-grid">
-          {content.principles.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}
+          {content.principles.map((item) => <article class="hermes-card"><h3>{item.title}</h3><p>{item.body}</p></article>)}
         </div>
       </div>
     </section>
@@ -138,7 +138,7 @@ const faqSchema = {
       <div class="shell">
         <div class="section-heading"><p class="eyebrow">Ecosistema</p><h2 id="it-related-title">Collega il progetto al prossimo passaggio.</h2></div>
         <div class="it-related-grid">
-          {content.related.map((item) => <a href={item.href}><strong>{item.label}</strong><span>{item.description}</span><ArrowRight size={18} aria-hidden="true" /></a>)}
+          {content.related.map((item) => <a class="hermes-card" href={item.href}><strong>{item.label}</strong><span>{item.description}</span><ArrowRight size={18} aria-hidden="true" /></a>)}
         </div>
       </div>
     </section>
@@ -146,12 +146,12 @@ const faqSchema = {
     <section class="section it-commercial-faq" aria-labelledby="it-faq-title">
       <div class="shell">
         <div class="section-heading"><p class="eyebrow">FAQ</p><h2 id="it-faq-title">Domande frequenti.</h2></div>
-        <div class="it-faq-list">{content.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+        <div class="it-faq-list">{content.faq.map((item) => <details class="hermes-card"><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
       </div>
     </section>
 
     <section class="section it-commercial-contact" id="contact">
-      <div class="shell it-commercial-contact-card">
+      <div class="shell it-commercial-contact-card hermes-workspace-panel">
         <div><p class="eyebrow">Prossimo passo</p><h2>{content.ctaTitle}</h2><p>{content.ctaBody}</p></div>
         <a class="button button-primary" href={mailto}><Mail size={18} aria-hidden="true" />Invia il brief</a>
       </div>
@@ -161,5 +161,45 @@ const faqSchema = {
 </BaseLayout>
 
 <style>
-  .it-commercial{background:#f6f8fc;color:#101c47}.it-commercial-hero{position:relative;min-height:720px;display:grid;align-items:end;overflow:hidden;background:#07113d;color:#fff}.it-commercial-hero-media{position:absolute;inset:0}.it-commercial-hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,12,46,.94) 0%,rgba(5,12,46,.78) 45%,rgba(5,12,46,.2) 100%),linear-gradient(0deg,rgba(5,12,46,.55),transparent 55%)}.it-commercial-hero-media img{width:100%;height:100%;object-fit:cover}.it-commercial-hero-grid{position:relative;z-index:1;width:100%;padding-top:180px;padding-bottom:86px}.it-commercial-hero-copy{max-width:790px}.it-commercial-hero h1{max-width:16ch;margin:.65rem 0 1.1rem;font-size:clamp(3rem,6vw,6.4rem);line-height:.92;letter-spacing:-.055em}.it-commercial-lead{max-width:68ch;font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:1.7;color:#dbe3ff}.it-commercial-truth{display:flex;gap:.65rem;align-items:flex-start;max-width:720px;margin-top:1.2rem;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.07);backdrop-filter:blur(10px)}.it-commercial-truth p{margin:0;color:#e8ecff;line-height:1.55}.it-commercial .section{padding:88px 0}.it-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.it-service-card,.it-process-grid article,.it-principle-grid article{background:#fff;border:1px solid #dfe5f3;border-radius:22px;padding:1.45rem;box-shadow:0 16px 50px rgba(36,52,93,.06)}.it-service-index,.it-process-grid span{display:inline-flex;margin-bottom:1.7rem;font-size:.78rem;font-weight:800;letter-spacing:.15em;color:#6c58d9}.it-service-card h3,.it-process-grid h3,.it-principle-grid h3{margin:0 0 .65rem;font-size:1.22rem}.it-service-card p,.it-process-grid p,.it-principle-grid p{color:#63708d;line-height:1.65}.it-service-card ul{display:grid;gap:.6rem;margin:1rem 0 0;padding:0;list-style:none}.it-service-card li{display:flex;gap:.55rem;align-items:flex-start;color:#33405f;line-height:1.45}.it-service-card li svg{flex:0 0 auto;margin-top:.15rem;color:#6c58d9}.it-commercial-process{background:#0b1747;color:#fff}.it-commercial-process .section-heading>p,.it-commercial-process .it-process-grid p{color:#cbd5f3}.it-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-top:2rem}.it-process-grid article{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);box-shadow:none}.it-process-grid h3{color:#fff}.it-principle-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.it-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.it-related-grid a{display:grid;grid-template-columns:1fr auto;gap:.55rem 1rem;align-items:center;padding:1.25rem;border:1px solid #dfe5f3;border-radius:18px;background:#fff;color:#17234a;text-decoration:none}.it-related-grid a strong{font-size:1.05rem}.it-related-grid a span{grid-column:1;color:#67738e;line-height:1.5}.it-related-grid a svg{grid-column:2;grid-row:1/3}.it-commercial-faq{background:#eef2f9}.it-faq-list{display:grid;gap:.75rem;max-width:920px;margin-top:2rem}.it-faq-list details{background:#fff;border:1px solid #dfe5f3;border-radius:16px;padding:1rem 1.15rem}.it-faq-list summary{cursor:pointer;font-weight:800}.it-faq-list p{margin:.8rem 0 .1rem;color:#64718d;line-height:1.65}.it-commercial-contact{background:#f6f8fc}.it-commercial-contact-card{display:flex;align-items:end;justify-content:space-between;gap:2rem;padding:2rem;border-radius:24px;background:linear-gradient(135deg,#101c50,#261c65);color:#fff}.it-commercial-contact-card h2{max-width:18ch;margin:.45rem 0 .7rem;font-size:clamp(2rem,4vw,3.8rem);line-height:1}.it-commercial-contact-card p{max-width:64ch;color:#d5dcf5;line-height:1.65}@media(max-width:980px){.it-service-grid,.it-principle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.it-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.it-related-grid{grid-template-columns:1fr}}@media(max-width:680px){.it-commercial-hero{min-height:680px}.it-commercial-hero-grid{padding-top:150px;padding-bottom:60px}.it-commercial-hero h1{font-size:clamp(2.65rem,13vw,4.4rem)}.it-commercial .section{padding:64px 0}.it-service-grid,.it-process-grid,.it-principle-grid{grid-template-columns:1fr}.it-commercial-contact-card{display:grid;align-items:start}.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .button{justify-content:center}}
+  .it-commercial{background:var(--hermes-pearl);color:var(--hermes-ink)}
+  .it-commercial-hero{position:relative;min-height:720px;display:grid;align-items:end;overflow:hidden;color:#fff}
+  .it-commercial-hero-media{position:absolute;inset:0}
+  .it-commercial-hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,13,18,.96) 0%,rgba(11,13,18,.78) 46%,rgba(11,13,18,.18) 100%),linear-gradient(0deg,rgba(11,13,18,.5),transparent 55%)}
+  .it-commercial-hero-media img{width:100%;height:100%;object-fit:cover}
+  .it-commercial-hero-grid{position:relative;z-index:1;width:100%;padding-top:180px;padding-bottom:86px}
+  .it-commercial-hero-copy{max-width:790px}
+  .it-commercial-hero h1{max-width:16ch;margin:.65rem 0 1.1rem;font-size:clamp(3rem,6vw,6.4rem)}
+  .it-commercial-lead{max-width:68ch;font-size:clamp(1.05rem,1.5vw,1.3rem);line-height:var(--hermes-copy-leading);color:var(--hermes-muted-dark)}
+  .it-commercial-truth{display:flex;gap:.65rem;align-items:flex-start;max-width:720px;margin-top:1.2rem;padding:1rem 1.1rem;border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-control);background:var(--hermes-glass-dark);backdrop-filter:blur(10px)}
+  .it-commercial-truth p{margin:0;color:var(--hermes-muted-dark);line-height:1.55}
+  .it-commercial .section{padding:var(--hermes-section-space) 0}
+  .it-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
+  .it-service-card,.it-process-grid article,.it-principle-grid article{padding:1.45rem}
+  .it-service-index,.it-process-grid span{display:inline-flex;margin-bottom:1.7rem;font-size:.78rem;font-weight:800;letter-spacing:.15em;color:var(--hermes-vertical-accent)}
+  .it-service-card h3,.it-process-grid h3,.it-principle-grid h3{margin:0 0 .65rem;font-size:1.22rem}
+  .it-service-card p,.it-process-grid p,.it-principle-grid p{color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}
+  .it-service-card ul{display:grid;gap:.6rem;margin:1rem 0 0;padding:0;list-style:none}
+  .it-service-card li{display:flex;gap:.55rem;align-items:flex-start;color:var(--hermes-graphite);line-height:1.45}
+  .it-service-card li svg{flex:0 0 auto;margin-top:.15rem;color:var(--hermes-vertical-accent)}
+  .it-commercial-process .section-heading>p,.it-commercial-process .it-process-grid p{color:var(--hermes-muted-dark)}
+  .it-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-top:2rem}
+  .it-process-grid article{border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-card);background:var(--hermes-glass-dark);box-shadow:none}
+  .it-process-grid h3{color:#fff}
+  .it-principle-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
+  .it-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
+  .it-related-grid a{display:grid;grid-template-columns:1fr auto;gap:.55rem 1rem;align-items:center;padding:1.25rem;color:var(--hermes-graphite);text-decoration:none}
+  .it-related-grid a strong{font-size:1.05rem}
+  .it-related-grid a span{grid-column:1;color:var(--hermes-muted);line-height:1.5}
+  .it-related-grid a svg{grid-column:2;grid-row:1/3;color:var(--hermes-vertical-accent)}
+  .it-commercial-faq{background:color-mix(in srgb,var(--hermes-paper) 58%,var(--hermes-pearl))}
+  .it-faq-list{display:grid;gap:.75rem;max-width:920px;margin-top:2rem}
+  .it-faq-list details{padding:1rem 1.15rem}
+  .it-faq-list summary{cursor:pointer;font-weight:800}
+  .it-faq-list p{margin:.8rem 0 .1rem;color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}
+  .it-commercial-contact{background:var(--hermes-pearl)}
+  .it-commercial-contact-card{display:flex;align-items:end;justify-content:space-between;gap:2rem;padding:2rem}
+  .it-commercial-contact-card h2{max-width:18ch;margin:.45rem 0 .7rem;font-size:clamp(2rem,4vw,3.8rem);line-height:var(--hermes-display-leading);letter-spacing:var(--hermes-display-tracking)}
+  .it-commercial-contact-card p{max-width:64ch;color:var(--hermes-muted-dark);line-height:var(--hermes-copy-leading)}
+  @media(max-width:980px){.it-service-grid,.it-principle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.it-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.it-related-grid{grid-template-columns:1fr}}
+  @media(max-width:680px){.it-commercial-hero{min-height:680px}.it-commercial-hero-grid{padding-top:150px;padding-bottom:60px}.it-commercial-hero h1{font-size:clamp(2.65rem,13vw,4.4rem)}.it-service-grid,.it-process-grid,.it-principle-grid{grid-template-columns:1fr}.it-commercial-contact-card{display:grid;align-items:start}.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions .button{justify-content:center}}
 </style>
