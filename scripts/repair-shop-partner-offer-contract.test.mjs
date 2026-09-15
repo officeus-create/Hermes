@@ -32,7 +32,14 @@ assert.doesNotMatch(runtime, /salesperson[_ -]?code|commission|\?rep=/i);
 assert.match(runtime, /OFFER_SUBMITTED — awaiting human review/);
 assert.doesNotMatch(runtime, /setTimeout\([\s\S]{0,500}UNDER_REVIEW/);
 assert.match(runtime, /event:\s*"connect_offer_submitted"|safeAnalytics\("connect_offer_submitted"/);
-assert.doesNotMatch(runtime, /dataLayer\.push\([\s\S]{0,500}(contactName|contactEmail|contactPhone|cityState)/);
+const analyticsCalls = runtime.match(/safeAnalytics\([\s\S]*?\);/g) || [];
+assert.equal(analyticsCalls.length, 3, "Partner offer should emit only the three bounded lifecycle analytics calls.");
+for (const call of analyticsCalls) {
+  assert.doesNotMatch(call, /contactName|contactEmail|contactPhone|cityState/, "Partner offer analytics must not include contact/location PII variables.");
+}
+assert.match(runtime, /safeAnalytics\("connect_offer_draft_prepared", \{ shop_subtype:/);
+assert.match(runtime, /safeAnalytics\("connect_offer_submitted", \{ shop_subtype: offer\.shopSubtype, request_state:/);
+assert.match(runtime, /safeAnalytics\("connect_offer_delivery_failed", \{ failure_class:/);
 assert.match(leadReceiver, /\["Hermes Logistics",\s*"GENERAL CONTACT \/ LOGISTICS"\]/);
 assert.match(leadReceiver, /input\.consent !== true/);
 
