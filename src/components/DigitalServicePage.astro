@@ -113,8 +113,17 @@ const seoIntakeHref = seoContext
   : "";
 const parentLabel = seoContext ? "Marketing" : "IT Development";
 const parentHref = seoContext ? "/paths/marketing/" : "/paths/technology/";
-const proofHref = seoContext ? "/case/appleton-vehicle-transport-seo/" : "/case/it-development/";
-const proofLabel = seoContext ? "View the SEO case" : "View the website case";
+const isLogisticsSeoProof = content.slug === "/services/seo-for-logistics-companies/";
+const proofHref = websiteContext
+  ? "/case/it-development/"
+  : isLogisticsSeoProof
+    ? "/case/appleton-vehicle-transport-seo/"
+    : "/case/";
+const proofLabel = websiteContext
+  ? "View the website case"
+  : isLogisticsSeoProof
+    ? "View the logistics SEO case"
+    : "Review verified case studies";
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
