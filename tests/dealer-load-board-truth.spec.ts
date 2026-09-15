@@ -7,6 +7,10 @@ const dealerPage = readFileSync(
   path.join(root, "src/pages/logistics/dealer-vehicle-transportation/index.astro"),
   "utf8",
 );
+const dispatchPage = readFileSync(
+  path.join(root, "src/pages/logistics/car-hauling-dispatch/index.astro"),
+  "utf8",
+);
 
 test("dealer transport page describes the Load Board as source-gated live plus separate demo", () => {
   expect(dealerPage).toContain("approved source-gated live freight");
@@ -14,4 +18,10 @@ test("dealer transport page describes the Load Board as source-gated live plus s
   expect(dealerPage).toContain("Open the Car Hauling Load Board");
   expect(dealerPage).not.toContain("Load Board remains a fictional product preview");
   expect(dealerPage).not.toContain("Preview the Load Board Demo");
+});
+
+test("dispatch owner does not label the canonical Load Board as demo-only", () => {
+  expect(dispatchPage).toContain("source-gated live + demo discovery product");
+  expect(dispatchPage).toContain("Open the Car Hauling Load Board");
+  expect(dispatchPage).not.toContain("Preview the Load Board Demo");
 });
