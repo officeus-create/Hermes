@@ -61,8 +61,9 @@ for (const required of [
   'data-seo-owner-link',
   'data-service-group="logistics_seo"',
   "Review logistics SEO services",
-  "Measurement in progress",
-  "No public metric yet",
+  "First finalized GSC baseline recorded",
+  "Visibility confirmed; click outcome not yet proven",
+  "Evidence stage: impressions, not conversion",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
 
 assert.match(

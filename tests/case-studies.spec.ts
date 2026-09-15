@@ -11,7 +11,7 @@ test.describe("Case studies release", () => {
     await expect(page.locator('a[href="/case/appleton-vehicle-transport-seo/"]')).toBeVisible();
   });
 
-  test("Appleton SEO case separates delivered work from pending performance evidence", async ({ page }) => {
+  test("Appleton SEO case shows finalized GSC evidence without outcome claims", async ({ page }) => {
     const response = await page.goto("/case/appleton-vehicle-transport-seo/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveCount(1);
@@ -20,8 +20,9 @@ test.describe("Case studies release", () => {
       "href",
       "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
     );
-    await expect(page.getByText("Measurement in progress", { exact: true })).toBeVisible();
-    await expect(page.getByText("No public metric yet", { exact: true })).toBeVisible();
+    await expect(page.getByText("First finalized GSC baseline recorded", { exact: true })).toBeVisible();
+    await expect(page.getByText(/33 impressions, 0 clicks, and an average position of 45\.33/i)).toBeVisible();
+    await expect(page.getByText(/does not prove stable rankings, qualified traffic, inquiries, customers, or revenue/i)).toBeVisible();
     for (const href of [
       "/logistics/appleton-wi-vehicle-transport/",
       "/logistics/resources/auction-vehicle-pickup-checklist/",
