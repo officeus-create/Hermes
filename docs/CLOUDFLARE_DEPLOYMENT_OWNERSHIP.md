@@ -96,3 +96,21 @@ Then merge the harmless change and confirm that only the approved production pat
 - GitHub workflows may use `wrangler pages deploy`, but may not introduce a generic `wrangler deploy` path without an explicitly reviewed architecture change.
 
 This enforcement cannot disconnect a dashboard-side Git integration. That remaining authenticated action stays tracked in Issue #226.
+
+## Hermes Digital Interface Layer inheritance
+
+Cloudflare is a **delivery and production surface**, not an independent brand source of truth.
+
+All Hermes public surfaces delivered through Cloudflare Pages, Workers or related production routing must inherit the canonical visual implementation and tokens from the governed repository. The digital communication standard is defined in `docs/design/HERMES_DIGITAL_INTERFACE_LAYER.md`, under the parent `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md`.
+
+Rules:
+
+- do not create Cloudflare-only visual tokens, CSS themes or brand rules that diverge from the repository;
+- website, Hermes Connect and Command Center remain **Product-Native Mode**: they may share HDIL labels, state markers, pearl/ink hierarchy and compact interface grammar, but functional product UI takes priority over decorative terminal styling;
+- social/channel-specific Full Terminal or Adapted Interface treatments must not be globally imposed on production product UI merely because the assets are served through Cloudflare;
+- deployment verification should confirm the intended repository version is the version visible on the public Cloudflare-served surface;
+- any intentional visual-system exception requires a reviewed repository change first, not a dashboard-only override.
+
+This keeps the chain of authority explicit:
+
+`Hermes Unified Brand System → Hermes Digital Interface Layer → governed repository implementation → Cloudflare delivery`.
