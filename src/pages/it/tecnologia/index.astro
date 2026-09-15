@@ -1,9 +1,8 @@
 ---
 import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
-import type { ItalianCommercialPageContent } from "../../../components/ItalianCommercialPage.astro";
 
-const content: ItalianCommercialPageContent = {
-  id: "technology",
+const content = {
+  id: "technology" as const,
   metaTitle: "Sviluppo Web, Software, CRM e Automazione AI in Italia | Hermes",
   metaDescription: "Siti web, web app, software su misura, CRM, automazione dei processi, AI, integrazioni API e dashboard per aziende in Italia.",
   eyebrow: "Hermes Technology · Italia",
