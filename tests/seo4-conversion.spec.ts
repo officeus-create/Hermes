@@ -26,6 +26,8 @@ test("car-hauling dispatch routes commercial intent to the direct intake and rep
 
   const finalCta = page.locator("[data-commercial-final-cta]");
   await expect(finalCta).toBeVisible();
+  await expect(finalCta).toHaveAttribute("id", "contact");
+  await expect(page.locator(".site-header .header-cta")).toHaveAttribute("href", "#contact");
   await expect(finalCta.getByRole("link", { name: /Start car-hauling dispatch review/i })).toHaveAttribute(
     "href",
     "/logistics/start-car-hauling-dispatch/",
