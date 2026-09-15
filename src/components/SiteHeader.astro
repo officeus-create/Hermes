@@ -80,6 +80,7 @@ const navigation = activeLocale === "en"
   : orderedPaths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
+const contactHref = "/contacts/#contact";
 const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
 const languageLinks = siteLocales.map((language) => {
@@ -137,7 +138,7 @@ const languageLinks = siteLocales.map((language) => {
         ))}
       </nav>
     </details>
-    <a class="header-cta" href="#contact">
+    <a class="header-cta" href={contactHref} data-header-contact-link>
       {contactLabel}
       <ArrowUpRight size={17} aria-hidden="true" />
     </a>
@@ -158,7 +159,7 @@ const languageLinks = siteLocales.map((language) => {
     />
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe /></div>}
-    <a href="#contact">{contactLabel}</a>
+    <a href={contactHref} data-header-contact-link>{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
       <strong>{localeConfig[activeLocale].name}</strong>
       {languageLinks.map((item) => (
@@ -178,6 +179,10 @@ const languageLinks = siteLocales.map((language) => {
   const button = document.querySelector<HTMLElement>("[data-menu-button]");
   const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
   const header = document.querySelector<HTMLElement>("[data-header]");
+  const inlineContact = document.getElementById("contact");
+  if (inlineContact) {
+    document.querySelectorAll<HTMLAnchorElement>("[data-header-contact-link]").forEach((link) => link.setAttribute("href", "#contact"));
+  }
 
   const updateHeader = () => header?.classList.toggle("site-header-scrolled", window.scrollY > 28);
   updateHeader();
