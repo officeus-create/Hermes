@@ -1,9 +1,11 @@
 # HERMES DIGITAL INTERFACE LAYER (HDIL)
 
 **Status:** CANONICAL  
+**Owner directive:** 2026-09-15  
 **Scope:** Hermes digital communication surfaces  
 **Parent standard:** `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md`  
 **Owner:** Hermes Brand / Marketing / Product  
+**Drive governance mirror:** `HERMES DIGITAL INTERFACE LAYER — CHANNEL STANDARD — CURRENT` (`15P5X4Yh1Bzk1OW6j-BLBWMvT3fAC6GfL-ciigbnMF4M`)
 
 ## 1. Purpose
 
@@ -15,11 +17,12 @@ Hierarchy:
 
 `Hermes Unified Brand System → Hermes Digital Interface Layer → channel mode`
 
-HDIL has three channel modes:
+HDIL has four execution modes:
 
 1. **Full Terminal Mode** — text-first, fast-scanning channels.
 2. **Adapted Interface Mode** — image/video-first social channels.
-3. **Product-Native Mode** — website, Hermes Connect, Command Center and other functional interfaces.
+3. **Executive Interface Mode** — restrained B2B/professional presentation.
+4. **Product-Native Mode** — website, Hermes Connect, Command Center and other functional interfaces.
 
 ---
 
@@ -33,7 +36,7 @@ Use the canonical brand tokens from the parent brand system. HDIL adds the follo
 - Keep paragraphs, instructions and long-form copy in a highly readable sans-serif typeface.
 - Prefer thin rules, small state markers, compact labels, IDs, counters, progress indicators and modular interface-like cards.
 - Use restrained canonical accent colors as identifiers or active-state signals; do not turn business-unit colors into large decorative panels.
-- Design mobile-first. The primary meaning must be understood in approximately two seconds.
+- Design mobile-first. The primary meaning should be understood in approximately two seconds.
 - One visual = one dominant message.
 - Brand presence should come from structure and grammar, not from repeated large logos.
 - Preserve whitespace. Avoid decorative overload.
@@ -124,20 +127,35 @@ Use Adapted Interface Mode for:
 
 Do not make every human/community post look like a software console. Facebook should retain more native editorial and human content while inheriting Hermes structure where useful.
 
+#### TikTok / short-video surfaces
+Use native human/video presentation with an HDIL wrapper:
+
+- hook/title frame;
+- small system/status markers;
+- chapter labels;
+- proof/result cards;
+- CTA/end frame.
+
+Do not turn the entire video into terminal UI. Human speech, demonstrations and real environments should remain native.
+
+---
+
+### C. EXECUTIVE INTERFACE MODE
+
 #### LinkedIn
-Use a restrained **Executive Interface** variant of Adapted Mode:
+Use a restrained business variant:
 
 - pearl/ink base;
 - minimal mono labels;
 - clean data/status blocks;
 - business evidence;
-- restrained use of terminal/pixel styling.
+- restrained terminal/pixel styling.
 
 The result should feel enterprise and operational, not retro or playful.
 
 ---
 
-### C. PRODUCT-NATIVE MODE
+### D. PRODUCT-NATIVE MODE
 
 Applies to:
 
@@ -205,13 +223,25 @@ The example is a structural model, not a requirement to render every post as lit
 
 ---
 
-## 6. Governance and source of truth
+## 6. Cross-channel content flow
+
+One approved information unit may be transformed into multiple channel-native outputs without changing factual truth:
+
+`SOURCE FACT / DECISION / RESULT → Telegram operational card → X concise public proof/update → Threads conversational insight → Instagram adapted visual/carousel → Facebook adapted editorial card → LinkedIn executive evidence → Website/Connect native product state where applicable`
+
+The wording, crop, visual density and CTA may change by channel. The underlying factual claim and evidence may not.
+
+Do not interpret this as permission for blind mass cross-posting. Each output should be channel-native and must follow the applicable publishing/approval process.
+
+---
+
+## 7. Governance and source of truth
 
 ### GitHub
 This document is the canonical, version-controlled HDIL specification. Product and code changes should reference this file instead of inventing local visual rules.
 
 ### Google Drive
-Drive documentation and operating playbooks should mirror the decision and reference this GitHub standard. Drive is the readable operating/reference layer, not an independent competing brand specification.
+Drive documentation and operating playbooks mirror the owner decision and reference this GitHub standard. The canonical business-readable mirror is `HERMES DIGITAL INTERFACE LAYER — CHANNEL STANDARD — CURRENT`. Drive is an operating/reference layer, not an independent competing brand specification.
 
 ### ClickUp
 Implementation work should be tracked as tasks/checklists/evidence. ClickUp should point to the canonical standard and should not become a second copy of the design system.
@@ -219,28 +249,31 @@ Implementation work should be tracked as tasks/checklists/evidence. ClickUp shou
 ### Cloudflare
 Cloudflare is a delivery/production surface, not a separate brand source of truth. Pages and applications deployed through Cloudflare must inherit the implementation from the governed repository and canonical Hermes tokens. Do not maintain a divergent Cloudflare-only visual rule.
 
+Cloudflare-specific work remains delivery, routing, security, performance and runtime work; design truth remains in GitHub/One Brain.
+
 ### ChatGPT / Hermes AI workflows
-When generating or reviewing Telegram, X, Threads, Instagram, Facebook, LinkedIn, bot or social-system assets, apply this channel matrix by default unless an explicit campaign requirement overrides it.
+When generating or reviewing Telegram, X, Threads, Instagram, Facebook, LinkedIn, TikTok/short-video, bot or social-system assets, apply this channel matrix by default unless an explicit current campaign requirement overrides the treatment.
 
 ---
 
-## 7. Decision matrix
+## 8. Decision matrix
 
 | Surface | Mode | Default rule |
 |---|---|---|
 | Telegram | Full Terminal | Required/default |
 | X / Twitter | Full Terminal | Required/default for Hermes visual assets |
 | Threads | Full Terminal | Required/default for Hermes visual assets |
-| Instagram | Adapted Interface | Use selectively for covers, cards, educational/product/system content |
-| Facebook | Adapted Interface | Use selectively; preserve native/human content |
-| LinkedIn | Executive Interface | Restrained business variant |
+| Instagram | Adapted Interface | Covers, cards, educational/product/system/proof content; preserve native human content |
+| Facebook | Adapted Interface | System/product/case/link-preview assets; preserve native human/community content |
+| TikTok / short video | Native video + HDIL wrapper | HDIL hook/status/proof/CTA framing; native human footage |
+| LinkedIn | Executive Interface | Restrained B2B/business variant |
 | Website | Product Native | Shared grammar, functional UI first |
 | Hermes Connect | Product Native | Shared grammar, functional UI first |
 | Command Center | Product Native | Strong system language, functional UI first |
 
 ---
 
-## 8. Acceptance test
+## 9. Acceptance test
 
 A new Hermes digital asset passes HDIL when:
 
@@ -251,6 +284,21 @@ A new Hermes digital asset passes HDIL when:
 - terminal typography is restrained and functional;
 - one primary message dominates;
 - the platform mode in the matrix is respected;
+- factual claims remain evidence-bounded;
 - it does not look like generic cyberpunk or an unrelated template pack.
 
 If any of these fail, revise before publishing.
+
+---
+
+## 10. Operating rule
+
+Default to HDIL whenever generating or reviewing Hermes digital communication assets.
+
+- **Telegram + X + Threads:** Full Terminal is the default/required visual mode.
+- **Instagram + Facebook:** Adapted Interface is the default.
+- **LinkedIn:** Executive Interface.
+- **TikTok/short video:** native video with HDIL framing.
+- **Website / Hermes Connect / Command Center:** Product Native.
+
+An explicit current owner directive may override a channel treatment for a specific campaign, but should not silently create a competing design system.
