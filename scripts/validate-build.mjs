@@ -35,7 +35,7 @@ const routes = [
       "Milan · Berlin · Paris · Miami · California · New York · England",
       "https://t.me/SMMProgressoPro",
       "https://t.me/+GL3L-WkP55NmYzVi",
-      "Logistics school",
+      "Hermes Business Academy | U.S. Logistics",
     ],
   },
   {

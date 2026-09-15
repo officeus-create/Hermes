@@ -56,12 +56,12 @@ export const site = {
   ],
   telegramGroups: [
     {
-      label: "Marketing community",
+      label: "Hermes Marketing | ProgressoPro Growth",
       href: "https://t.me/SMMProgressoPro",
       tracks: ["marketing"],
     },
     {
-      label: "Logistics school",
+      label: "Hermes Business Academy | U.S. Logistics",
       href: "https://t.me/+GL3L-WkP55NmYzVi",
       tracks: ["logistics", "academy"],
     },
