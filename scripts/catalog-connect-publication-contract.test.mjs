@@ -10,6 +10,9 @@ const publicProfile = read("functions/businesses/connect/repair-shop/[slug].ts")
 const catalogPage = read("src/pages/businesses/index.astro");
 const loader = read("public/catalog-connect-live.js");
 const ownerPage = read("src/pages/services/hermes-connect/repair-shops/catalog.astro");
+const robots = read("public/robots.txt");
+const sitemapIndex = read("public/sitemapindex.xml");
+const connectCatalogSitemap = read("functions/sitemap-connect-catalog.xml.ts");
 
 assert.match(schema, /catalog_opt_in INTEGER NOT NULL DEFAULT 0/);
 assert.match(schema, /next_seo_report_at/);
@@ -30,4 +33,10 @@ assert.match(loader, /textContent = String\(company\.companyName/);
 assert.match(ownerPage, /robots="noindex,nofollow"/);
 assert.match(ownerPage, /6\+ months/);
 assert.match(ownerPage, /No ranking, traffic or lead result is guaranteed/);
+assert.match(robots, /Sitemap: https:\/\/hermeslogisticsus\.com\/sitemapindex\.xml/);
+assert.doesNotMatch(robots, /Sitemap: https:\/\/hermeslogisticsus\.com\/sitemap-connect-catalog\.xml/);
+assert.match(sitemapIndex, /https:\/\/hermeslogisticsus\.com\/sitemap-connect-catalog\.xml/);
+assert.match(connectCatalogSitemap, /WHERE catalog_opt_in=1/);
+assert.match(connectCatalogSitemap, /\/businesses\/connect\/repair-shop\/\$\{esc\(slug\)\}\//);
+assert.doesNotMatch(connectCatalogSitemap, /client_email|client_phone|appointment|customer/);
 console.log("Catalog Connect publication contract OK");
