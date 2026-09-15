@@ -1,9 +1,8 @@
 ---
 import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
-import type { ItalianCommercialPageContent } from "../../../components/ItalianCommercialPage.astro";
 
-const content: ItalianCommercialPageContent = {
-  id: "marketing",
+const content = {
+  id: "marketing" as const,
   metaTitle: "Marketing Digitale, SEO e GEO per Aziende in Italia | Hermes",
   metaDescription: "Strategia digitale, SEO, GEO/AEO, social media, advertising, siti orientati alla conversione, CRM e processi commerciali per aziende in Italia.",
   eyebrow: "Hermes Marketing · ProgressoPro · Italia",
