@@ -1,0 +1,80 @@
+---
+import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
+
+const content = {
+  id: "technology" as const,
+  metaTitle: "Sviluppo Web, Software, CRM e Automazione AI in Italia | Hermes",
+  metaDescription: "Siti web, web app, software su misura, CRM, automazione dei processi, AI, integrazioni API e dashboard per aziende in Italia.",
+  eyebrow: "Hermes Technology · Italia",
+  title: "Software, CRM e AI costruiti intorno al modo in cui lavora l'azienda.",
+  lead: "Progettiamo siti, portali, web app, CRM, automazioni, integrazioni e sistemi AI partendo dai processi reali: dove entrano i dati, chi prende una decisione, cosa oggi viene fatto manualmente e quale risultato deve essere visibile al management.",
+  image: "/images/path-technology-portal.jpg",
+  imageAlt: "Interfaccia digitale e sistemi connessi per processi aziendali",
+  serviceName: "Sviluppo web, software su misura, CRM e automazione AI per aziende in Italia",
+  scopeNote: "Sviluppo e coordinamento disponibili per aziende in Italia da remoto. Non dichiariamo uffici o team locali dove non esistono; la presenza in sede viene concordata solo quando il progetto la richiede e la rende possibile.",
+  services: [
+    {
+      title: "Siti web e landing page",
+      body: "Siti veloci e strutturati intorno a offerta, utenti, contenuti, conversione e misurazione, con architettura pronta per SEO e crescita futura.",
+      items: ["Corporate e service websites", "Landing page e lead capture", "Multilingua e performance"],
+    },
+    {
+      title: "Web app e portali",
+      body: "Applicazioni browser-based per clienti, partner e team interni con ruoli, workflow, dati e interfacce progettati sul processo aziendale.",
+      items: ["Customer e partner portal", "Dashboard operative", "Workflow e ruoli"],
+    },
+    {
+      title: "CRM e sistemi operativi",
+      body: "Centralizziamo lead, clienti, attività e stati quando fogli separati e software generici non rappresentano più il lavoro reale.",
+      items: ["CRM su misura", "Pipeline e task routing", "KPI e audit trail"],
+    },
+    {
+      title: "Automazione dei processi",
+      body: "Riduciamo passaggi manuali e duplicazioni collegando moduli, email, CRM, notifiche, approvazioni, database e servizi esterni.",
+      items: ["Workflow automation", "Webhook e integrazioni", "Riduzione del lavoro ripetitivo"],
+    },
+    {
+      title: "AI e assistenti",
+      body: "L'AI viene inserita dove può leggere contesto, classificare, preparare una risposta, aiutare una decisione o accelerare un processo con controllo umano quando necessario.",
+      items: ["AI assistant e copilots", "Classificazione e knowledge workflows", "Messaging e support automation"],
+    },
+    {
+      title: "API, dati e dashboard",
+      body: "Colleghiamo sistemi esistenti, definiamo una fonte dati affidabile e costruiamo dashboard orientate a decisioni operative, non a metriche decorative.",
+      items: ["API e middleware", "Data flows e sincronizzazione", "Dashboard KPI"],
+    },
+  ],
+  process: [
+    { number: "01", title: "Mappa del processo", body: "Definiamo utenti, passaggi, input, decisioni, eccezioni, dati e risultato atteso prima di scegliere la tecnologia." },
+    { number: "02", title: "Scope verificabile", body: "Separiamo ciò che deve essere live nella prima versione da ciò che può aspettare, con criteri di accettazione chiari." },
+    { number: "03", title: "Build e integrazione", body: "Sviluppiamo il prodotto, colleghiamo i sistemi necessari e proteggiamo i contratti tecnici essenziali con test." },
+    { number: "04", title: "Rilascio e iterazione", body: "Verifichiamo build, comportamento reale, analytics e feedback prima di ampliare il prodotto." },
+  ],
+  principles: [
+    { title: "Il processo viene prima dello stack", body: "Non imponiamo un CRM, framework o automazione solo perché è di moda. La scelta tecnica deve ridurre attrito e supportare il flusso reale." },
+    { title: "Demo non significa prodotto completo", body: "Distinguiamo prototipo, ambiente di test e funzione realmente disponibile. Le capacità non ancora live vengono descritte come tali." },
+    { title: "Marketing e IT condividono il lead journey", body: "Quando il progetto serve ad acquisire clienti, il software deve sapere da dove arriva il lead, cosa succede dopo e quale stato rappresenta un'opportunità reale." },
+  ],
+  faq: [
+    { question: "Sviluppate software completamente su misura?", answer: "Sì, quando il processo aziendale richiede una soluzione dedicata. Valutiamo prima se un prodotto esistente può risolvere il problema in modo più semplice ed economico." },
+    { question: "Potete integrare un CRM o ERP che usiamo già?", answer: "Sì, se il sistema espone API, webhook, export affidabili o un'altra modalità di integrazione autorizzata. Lo scope dipende dai limiti tecnici e dalle autorizzazioni disponibili." },
+    { question: "Lavorate anche su automazioni AI?", answer: "Sì. Progettiamo assistenti, classificazione, knowledge workflows, routing e automazioni AI quando esiste un compito definito, dati sufficienti e un controllo adeguato del rischio." },
+    { question: "Potete costruire anche il sito e poi occuparvi del marketing?", answer: "Sì. Technology e Marketing possono lavorare sullo stesso percorso: sito e sistemi da una parte, SEO/GEO, contenuti, acquisizione e follow-up dall'altra." },
+  ],
+  related: [
+    { label: "Hermes Marketing Italia", href: "/it/marketing/", description: "SEO, GEO, social, advertising e sistema commerciale collegati al prodotto digitale." },
+    { label: "Hermes Italia", href: "/it/", description: "Vista completa dell'ecosistema Hermes e delle quattro direzioni." },
+    { label: "Case study IT", href: "/case/it-development/", description: "Approccio pubblico a sviluppo, QA, verifiche di rilascio e controllo della qualità." },
+  ],
+  ctaTitle: "Partiamo dal processo che oggi costa più tempo, errori o opportunità perse.",
+  ctaBody: "Descrivi chi usa il sistema, quali strumenti avete già, cosa viene fatto manualmente e quale risultato dovrebbe essere visibile in 30–90 giorni. Costruiremo lo scope a partire da lì.",
+  emailSubject: "Hermes Italia · Technology / CRM / AI Automation",
+  alternates: [
+    { lang: "en", href: "/paths/technology/" },
+    { lang: "it", href: "/it/tecnologia/" },
+    { lang: "x-default", href: "/paths/technology/" },
+  ],
+};
+---
+
+<ItalianCommercialPage content={content} />

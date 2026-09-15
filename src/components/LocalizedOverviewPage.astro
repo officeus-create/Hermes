@@ -32,10 +32,12 @@ const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
-const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) =>
-  content.locale === "uk" && id === "academy"
-    ? "/ua/academy/us-logistics-operations/"
-    : directionMailto(brand);
+const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) => {
+  if (content.locale === "it" && id === "marketing") return "/it/marketing/";
+  if (content.locale === "it" && id === "technology") return "/it/tecnologia/";
+  if (content.locale === "uk" && id === "academy") return "/ua/academy/us-logistics-operations/";
+  return directionMailto(brand);
+};
 const directionOrder: Record<LocalizedOverview["directions"][number]["id"], number> = {
   logistics: 0,
   marketing: 1,
