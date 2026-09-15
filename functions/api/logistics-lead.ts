@@ -46,6 +46,10 @@ type GeneralContact = {
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
 const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
 const LEGACY_CONTACT_SUBJECT = "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]";
+const DIRECT_CAR_HAULING_PATH = "/logistics/start-car-hauling-dispatch/";
+const CARRIER_SALES_TAG = "LOAD BOARD ACCESS / CARRIER";
+const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
+const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
 const MAX_BODY_BYTES = 16_000;
 const MAX_EMAIL_BODY = 8_000;
 const RATE_LIMIT = 5;
@@ -78,8 +82,23 @@ const hash = async (value: string) => {
   return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 };
 
-const leadSubject = (leadType: string, salesTag: string) => {
-  if (leadType === "load_board_access" && salesTag === "LOAD BOARD ACCESS / CARRIER") {
+// The shared preview text contains "dry-run queue" even for real carriers, so never suppress commercial routing on that phrase alone.
+const isKnownCarHaulingQa = (emailBody: string) => {
+  const fingerprint = emailBody.toLowerCase();
+  return [
+    "carrier-production-smoke@hermesconnect.app",
+    "synthetic carrier qa",
+    "hermes synthetic carrier qa",
+    "production-smoke",
+    "production smoke",
+  ].some((marker) => fingerprint.includes(marker));
+};
+
+const leadSubject = (leadType: string, salesTag: string, pagePath: string, emailBody: string) => {
+  if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG && pagePath === DIRECT_CAR_HAULING_PATH) {
+    return isKnownCarHaulingQa(emailBody) ? CAR_HAULING_TEST_SUBJECT : CAR_HAULING_SALES_SUBJECT;
+  }
+  if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG) {
     return "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]";
   }
   const postedTags = new Set([
@@ -246,7 +265,7 @@ export async function onRequestPost({ request, env }: Context) {
   const emailBody = generalContact ? generalContact.emailBody : clean(input.email_body, MAX_EMAIL_BODY);
   const pagePath = generalContact ? generalContact.pagePath : clean(input.page_path, 160);
   const submittedAt = generalContact ? generalContact.submittedAt : clean(input.submitted_at, 40);
-  const subject = leadSubject(leadType, salesTag);
+  const subject = leadSubject(leadType, salesTag, pagePath, emailBody);
 
   if (!isRequestId(requestId) || requestId !== headerRequestId || !subject || emailBody.length < 80) {
     return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
@@ -276,6 +295,7 @@ export async function onRequestPost({ request, env }: Context) {
     "Delivery: securely received by the Hermes website endpoint.",
   );
   const messageText = [
+    ...(subject === CAR_HAULING_TEST_SUBJECT ? ["Lead classification: TEST/QA — exclude from Sales/CRM KPI.", ""] : []),
     deliveredBody,
     "",
     "Server delivery record",
