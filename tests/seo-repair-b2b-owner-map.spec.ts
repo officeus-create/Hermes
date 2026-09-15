@@ -26,8 +26,8 @@ test("auto repair website owner keeps one website brief path", async ({ page }, 
 
 test("Hermes Connect repair scheduling owner routes growth to specialized owners", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
-  await expect(page).toHaveTitle("Auto Repair Scheduling Software | Hermes Connect");
-  await expect(page.getByRole("heading", { level: 1, name: "Auto repair scheduling software for independent repair shops." })).toBeVisible();
+  await expect(page).toHaveTitle("Auto Repair Shop Software & Scheduling | Hermes Connect");
+  await expect(page.getByRole("heading", { level: 1, name: "Auto repair shop software for scheduling, bookings, and customer workflow." })).toBeVisible();
   await expect(page.locator('a[href="/services/hermes-connect/repair-shops/auth/"]').first()).toBeVisible();
   await expect(page.locator('a[href="/services/seo-for-auto-repair-shops/"]').first()).toBeVisible();
   await expect(page.locator('a[href="/services/auto-repair-website-design/"]').first()).toBeVisible();
