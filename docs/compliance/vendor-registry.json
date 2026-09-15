@@ -47,7 +47,7 @@
       "withdrawal_or_opt_out_behavior": "Hermes sends consentv2 denied/denied, clears controllable first-party Clarity cookies, reloads after withdrawal, and keeps the site functional without Clarity.",
       "privacy_notice_impact": "Privacy Notice, Data Security and Legal & Compliance analytics disclosures updated 2026-09-15.",
       "production_verification_owner": "Hermes website analytics release gate",
-      "production_verification_date": null,
+      "production_verification_date": "2026-09-15",
       "advertising_use": false,
       "private_form_fields_allowed": false,
       "production_verification_required": true
