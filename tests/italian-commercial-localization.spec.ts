@@ -23,8 +23,9 @@ for (const route of localizedRoutes) {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
     await expect(page.locator('link[rel="alternate"][hreflang="it"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
     await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", new RegExp(`${route.englishPath.replaceAll("/", "\\/")}$`));
-    await expect(page.locator('script[type="application/ld+json"]')).toContainText("Service");
-    await expect(page.locator('script[type="application/ld+json"]')).toContainText("FAQPage");
+    const schemaText = await page.locator('script[type="application/ld+json"]').textContent();
+    expect(schemaText).toContain('"@type":"Service"');
+    expect(schemaText).toContain('"@type":"FAQPage"');
   });
 
   test(`${route.englishPath} points back to its Italian owner`, async ({ page }) => {
