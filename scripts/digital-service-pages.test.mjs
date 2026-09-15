@@ -41,8 +41,8 @@ const routes = [
     title: "SEO Services for U.S. Businesses | Hermes",
     h1: "SEO Services Built on Technical Quality and Useful Content",
     reviewedAt: "July 31, 2026",
-    proofHref: "/case/appleton-vehicle-transport-seo/",
-    proofLabel: "View the SEO case",
+    proofHref: "/case/",
+    proofLabel: "Review verified case studies",
     required: ["Technical SEO review", "Search-intent architecture", "Can Hermes guarantee first-page rankings?"],
   },
   {
@@ -51,8 +51,8 @@ const routes = [
     title: "Local SEO Services for U.S. Businesses | Hermes",
     h1: "Local SEO for Real U.S. Service Areas and Customer Needs",
     reviewedAt: "July 31, 2026",
-    proofHref: "/case/appleton-vehicle-transport-seo/",
-    proofLabel: "View the SEO case",
+    proofHref: "/case/",
+    proofLabel: "Review verified case studies",
     required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?"],
   },
   {

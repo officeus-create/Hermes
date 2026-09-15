@@ -15,6 +15,8 @@ const pages = [
     file: "services/seo-for-logistics-companies/index.html",
     title: "SEO for Logistics Companies | Trucking SEO | Hermes",
     h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
+    proofHref: "/case/appleton-vehicle-transport-seo/",
+    proofLabel: "View the logistics SEO case",
     required: [
       "Commercial query-to-page ownership",
       "Trucking, transportation and warehousing content architecture",
@@ -41,6 +43,8 @@ const pages = [
     file: "services/seo-for-independent-auto-dealers/index.html",
     title: "Auto Dealer SEO Services | Used & Independent Dealerships | Hermes",
     h1: "SEO for Independent and Used Car Dealers",
+    proofHref: "/case/",
+    proofLabel: "Review verified case studies",
     required: [
       "Independent dealer search architecture",
       "Inventory-page SEO audit",
@@ -58,6 +62,8 @@ const pages = [
     file: "services/seo-for-auto-repair-shops/index.html",
     title: "SEO for Auto Repair Shops | Local Auto Repair SEO | Hermes",
     h1: "SEO for Auto Repair Shops",
+    proofHref: "/case/",
+    proofLabel: "Review verified case studies",
     required: [
       "Repair-service query ownership",
       "Local eligibility and Google visibility review",
@@ -102,8 +108,8 @@ for (const page of pages) {
   assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} approved email fallback missing`);
   assert.ok(!html.includes('href="tel:'), `${page.route} must remain email-only`);
   assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} breadcrumb missing`);
-  assert.ok(html.includes('href="/case/appleton-vehicle-transport-seo/"'), `${page.route} must link the SEO case in the hero`);
-  assert.ok(html.includes("View the SEO case"), `${page.route} must label the proof as an SEO case`);
+  assert.ok(html.includes(`href=\"${page.proofHref}\"`), `${page.route} proof link must match evidence fit`);
+  assert.ok(html.includes(page.proofLabel), `${page.route} proof label must match evidence fit`);
   assert.ok(!html.includes('href="/case/it-development/">View the website case'), `${page.route} must not use the IT case as its hero proof`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);
