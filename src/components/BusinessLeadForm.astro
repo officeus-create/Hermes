@@ -309,6 +309,7 @@ const t = copy[locale];
   const alert = form?.querySelector<HTMLElement>("[data-form-alert]");
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+  const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
 
   const setAlert = (message = "") => {
     if (!alert) return;
@@ -326,6 +327,11 @@ const t = copy[locale];
         ? form.dataset.sendLabel || "Send request"
         : form.dataset.previewLabel || "Preview request";
   };
+
+  if (form && window.location.protocol === "https:" && productionHosts.has(window.location.hostname)) {
+    form.dataset.contactMode = "live";
+    setSubmitting(false);
+  }
 
   const getAttribution = () => {
     const params = new URLSearchParams(window.location.search);
