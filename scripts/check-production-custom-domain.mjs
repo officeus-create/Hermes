@@ -32,6 +32,7 @@ const staticChildSitemapPaths = [
   "/sitemap-trust.xml",
   "/sitemap-london.xml",
   "/sitemap-business-directory.xml",
+  "/sitemap-insights.xml",
 ];
 const indexedChildSitemapPaths = [
   ...staticChildSitemapPaths,

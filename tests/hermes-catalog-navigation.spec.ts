@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("Hermes Catalog is separate in the primary header and precedes Hermes Connect", async ({ page }) => {
+test("Hermes Catalog stays separate in the primary header while Insights becomes a first-class content destination", async ({ page }) => {
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   const header = page.locator(".site-header");
-  const labels = await header.locator(".desktop-nav > a").allTextContents();
-  expect(labels.map((label) => label.trim())).toEqual(["Logistics", "IT", "Marketing", "Academy", "Catalog"]);
+  const desktopNav = header.locator(".desktop-nav");
+  const labels = await desktopNav.locator("> a").allTextContents();
+  expect(labels.map((label) => label.trim())).toEqual(["Logistics", "IT", "Marketing", "Academy", "Insights", "Catalog"]);
+  await expect(desktopNav.locator('> a[href="/insights/"]')).toHaveCount(1);
   await expect(header.locator('.catalog-nav-link[href="/businesses/"]')).toHaveAttribute("aria-current", "page");
   await expect(header.locator('[data-hermes-connect-launcher="header"][href="/services/hermes-connect/"]')).toHaveCount(1);
 });

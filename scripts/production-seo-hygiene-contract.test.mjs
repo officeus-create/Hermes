@@ -41,6 +41,7 @@ const staticChildSitemapFiles = [
   "sitemap-trust.xml",
   "sitemap-london.xml",
   "sitemap-business-directory.xml",
+  "sitemap-insights.xml",
 ];
 const indexedChildSitemapFiles = [
   ...staticChildSitemapFiles,
@@ -51,10 +52,12 @@ const indexedChildSitemapFiles = [
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
 // The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
 // verified as an indexed child, not counted as a build-time static page inventory.
-const expectedCurrentPageUrlCount = 233;
+const nonInsightsExpectedPageUrlCount = 233;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
+const insightSitemap = await readFile(new URL("../public/sitemap-insights.xml", import.meta.url), "utf8");
+const expectedCurrentPageUrlCount = nonInsightsExpectedPageUrlCount + extractLocs(insightSitemap).length;
 
 const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
 const sitemapIndexLocs = extractLocs(sitemapIndex);
@@ -119,6 +122,7 @@ for (const required of [
   '"/sitemapindex.xml"',
   '"/sitemap-london.xml"',
   '"/sitemap-business-directory.xml"',
+  '"/sitemap-insights.xml"',
   '"/sitemap-connect-catalog.xml"',
   '"/llms.txt"',
   '"/business-growth/"',

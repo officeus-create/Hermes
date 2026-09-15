@@ -10,6 +10,7 @@ const staticChildSitemaps = [
   "https://hermeslogisticsus.com/sitemap-trust.xml",
   "https://hermeslogisticsus.com/sitemap-london.xml",
   "https://hermeslogisticsus.com/sitemap-business-directory.xml",
+  "https://hermeslogisticsus.com/sitemap-insights.xml",
 ];
 const indexedChildSitemaps = [
   ...staticChildSitemaps,
