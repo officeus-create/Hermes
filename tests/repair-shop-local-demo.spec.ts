@@ -28,7 +28,12 @@ test.describe("Repair Shop synthetic demonstration mode", () => {
     await expect(page.locator("[data-hc-today-ready]")).toHaveText("Профиль готов");
     const nextText = (await page.locator("[data-hc-next-booking]").textContent()) || "";
     const nextDate = nextText.slice(0, 10);
-    const today = await page.evaluate(() => new Date().toISOString().slice(0, 10));
+    const today = await page.evaluate(() => {
+      const timeZone = (document.getElementById("shop-timezone") as HTMLSelectElement | null)?.value || undefined;
+      const parts = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+      const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+      return `${values.year}-${values.month}-${values.day}`;
+    });
     expect(nextDate >= today).toBeTruthy();
 
     const servicesText = (await page.locator("#services-list").textContent()) || "";
