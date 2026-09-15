@@ -64,6 +64,15 @@ const {
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
+const CLARITY_BLOCKED_PATH_PREFIXES = [
+  "/services/hermes-connect",
+  "/logistics/carrier-onboarding",
+  "/logistics/apply",
+  "/sign",
+  "/privacy-choices",
+];
+const clarityEligible = !robots.toLowerCase().includes("noindex")
+  && !CLARITY_BLOCKED_PATH_PREFIXES.some((prefix) => Astro.url.pathname.startsWith(prefix));
 const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
 const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);
 const socialImageType = useHermesConnectSocialCard ? "image/png" : "image/jpeg";
@@ -267,7 +276,7 @@ const safeSchema = schema
     <slot />
     <LoadBoardCapacityEnhancer />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
-    <TrackingConsent />
+    <TrackingConsent clarityEligible={clarityEligible} />
     <MoneyPageActionBar />
     <CarrierContractJourney />
     <CarrierContractSafetyEnhancer />

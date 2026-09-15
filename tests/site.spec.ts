@@ -1,10 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// GA4 (gtag.js) is the one approved external telemetry integration on this site (see
-// public/_headers connect-src / script-src). "Zero external delivery" checks below assert
-// that no form submission, CRM write, or operational request leaves the browser — they must
-// keep failing on any other outbound request, so only these known GA4 hosts are excluded.
-const APPROVED_ANALYTICS_HOSTS = [/^https:\/\/(www\.)?google-analytics\.com$/, /^https:\/\/www\.googletagmanager\.com$/, /^https:\/\/www\.google\.com$/];
+// Approved analytics are GA4 plus consent-gated Microsoft Clarity on eligible public pages.
+// "Zero external delivery" checks still fail on any other outbound form/CRM/operational request.
+const APPROVED_ANALYTICS_HOSTS = [
+  /^https:\/\/(www\.)?google-analytics\.com$/,
+  /^https:\/\/www\.googletagmanager\.com$/,
+  /^https:\/\/www\.google\.com$/,
+  /^https:\/\/(?:www\.|[a-z]\.)?clarity\.ms$/,
+  /^https:\/\/c\.bing\.com$/,
+];
 
 function isApprovedAnalyticsRequest(url: string): boolean {
   let parsed: URL;

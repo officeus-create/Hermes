@@ -1,7 +1,13 @@
 ---
 import RepairShopAnalytics from "./RepairShopAnalytics.astro";
 
+interface Props {
+  clarityEligible?: boolean;
+}
+
+const { clarityEligible = false } = Astro.props;
 const measurementId = "G-RY26321PVW";
+const clarityProjectId = "yiumce2dne";
 const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-connect");
 const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 ---
@@ -14,7 +20,9 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       <p class="tracking-consent-detail">
         {isRepairShopRoute
           ? "Hermes uses Google Analytics 4 and a privacy-limited PostHog product event stream to understand visits and whether core Repair Shop workflows work. Analytics stays off until you choose “Allow analytics.” No names, emails, phones, shop/customer identifiers, VINs, notes, calendar data, or payment identifiers are sent in Repair Shop product events. Advertising storage, ad personalization, and advertising user data remain disabled."
-          : "Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled."}
+          : clarityEligible
+            ? "Hermes uses Google Analytics 4 and Microsoft Clarity on eligible public pages to understand visits, clicks, scrolling, and usability. Both stay off until you choose “Allow analytics.” Clarity is not loaded on private Hermes Connect, signing, application, or other blocked sensitive routes; form inputs stay masked. Advertising storage, ad personalization, and advertising user data remain disabled."
+            : "Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled."}
       </p>
       <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>
     </div>
@@ -29,13 +37,17 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
 {isRepairShopRoute && <RepairShopAnalytics />}
 
-<script is:inline define:vars={{ measurementId }}>
+<script is:inline define:vars={{ measurementId, clarityProjectId, clarityEligible }}>
   (() => {
     const STORAGE_KEY = "hermes-analytics-consent";
     const PRODUCTION_ANALYTICS_HOSTS = new Set([
       "hermeslogisticsus.com",
       "www.hermeslogisticsus.com",
       "connect.hermeslogisticsus.com",
+    ]);
+    const CLARITY_PRODUCTION_HOSTS = new Set([
+      "hermeslogisticsus.com",
+      "www.hermeslogisticsus.com",
     ]);
     const root = document.querySelector("[data-tracking-consent]");
     const banner = root?.querySelector("[data-consent-banner]");
@@ -44,6 +56,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     const settings = root?.querySelector("[data-consent-settings]");
 
     const SYNTHETIC_ANALYTICS_OVERRIDE = "_hermes_ga4_smoke";
+    const SYNTHETIC_CLARITY_OVERRIDE = "_hermes_clarity_smoke";
     const analyticsDeliveryStatus = () => {
       if (!PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname)) return "disabled-non-production";
       const syntheticOverride = new URLSearchParams(window.location.search).get(SYNTHETIC_ANALYTICS_OVERRIDE) === "1";
@@ -51,6 +64,13 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       return "ga4";
     };
     const analyticsDeliveryAllowed = () => analyticsDeliveryStatus() === "ga4";
+    const clarityDeliveryStatus = () => {
+      if (!clarityEligible) return "disabled-route";
+      if (!CLARITY_PRODUCTION_HOSTS.has(window.location.hostname)) return "disabled-non-production";
+      const syntheticOverride = new URLSearchParams(window.location.search).get(SYNTHETIC_CLARITY_OVERRIDE) === "1";
+      if (navigator.webdriver === true && !syntheticOverride) return "disabled-automation";
+      return "clarity";
+    };
 
     const readChoice = () => {
       try {
@@ -91,7 +111,36 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       }
     };
 
+    const denyClarityConsent = () => {
+      if (typeof window.clarity === "function") {
+        window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
+      }
+      for (const name of ["_clck", "_clsk"]) {
+        for (const domain of [undefined, location.hostname, `.${location.hostname}`]) {
+          const domainPart = domain ? `; domain=${domain}` : "";
+          document.cookie = `${name}=; Max-Age=0; path=/${domainPart}; SameSite=Lax`;
+        }
+      }
+    };
+
+    const loadClarity = () => {
+      const deliveryStatus = clarityDeliveryStatus();
+      document.documentElement.dataset.clarityTransport = deliveryStatus;
+      if (deliveryStatus !== "clarity") return;
+
+      window.clarity = window.clarity || function(){ (window.clarity.q = window.clarity.q || []).push(arguments); };
+      window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "granted" });
+      if (document.querySelector('script[data-hermes-clarity]')) return;
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://www.clarity.ms/tag/${encodeURIComponent(clarityProjectId)}?ref=bwt`;
+      script.dataset.hermesClarity = "true";
+      document.head.appendChild(script);
+    };
+
     const loadAnalytics = () => {
+      loadClarity();
       if (document.querySelector('script[data-hermes-ga4]')) return;
 
       window.dataLayer = window.dataLayer || [];
@@ -150,6 +199,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     decline?.addEventListener("click", () => {
       const wasGranted = readChoice() === "granted";
       denyGoogleConsent();
+      denyClarityConsent();
       clearGaCookies();
       saveChoice("denied");
       if (banner) banner.hidden = true;

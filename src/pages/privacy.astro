@@ -20,8 +20,9 @@ const sections = [
   {
     title: "Website analytics, cookies, and tracking choices",
     body: [
-      "Google Analytics 4 is the general website analytics integration. Hermes Repair Shop pages can also use a narrowly scoped PostHog product-event stream to verify whether core product actions work. Both analytics paths are consent-gated: analytics delivery stays off until a visitor chooses “Allow analytics.” Hermes stores that choice in first-party browser storage so the site can remember the preference.",
+      "Google Analytics 4 is the general website analytics integration. Microsoft Clarity may also run on eligible public, indexable pages to provide usability analytics such as clicks, scrolling, heatmaps, and session recordings. Hermes Repair Shop pages can use a separate narrowly scoped PostHog product-event stream. All approved analytics paths are consent-gated: analytics delivery stays off until a visitor chooses “Allow analytics.” Hermes stores that choice in first-party browser storage so the site can remember the preference.",
       "The Repair Shop PostHog adapter uses an explicit event and property allowlist. It does not enable PostHog autocapture, automatic pageview capture, session recording, user identification, or person profiles. It uses a random session-scoped pseudonymous identifier and is configured to disable GeoIP enrichment. Repair Shop product events are limited to coarse workflow facts such as locale, viewport class, feature surface, authenticated/not-authenticated state, success/result class, and an explicit synthetic-test flag.",
+      "Microsoft Clarity is deliberately not loaded on private Hermes Connect surfaces, signing, application, privacy-choice, or other blocked sensitive routes. On eligible public pages, Clarity input and dropdown contents remain masked; Hermes does not intentionally send private form fields, customer records, candidate records, contract data, or authenticated workspace content to Clarity. When analytics consent is withdrawn, Hermes sends a denied consent signal and clears first-party Clarity cookies it can control.",
       "Advertising storage, advertising user data, and ad personalization remain disabled in the current implementation. The site does not currently deploy Meta Pixel or a parallel Google Tag Manager container. A business inquiry may include campaign parameters or Google click identifiers that were already present in the landing URL, but those values are attached to the lead only when the visitor submits the form; their inclusion does not by itself load analytics, advertising cookies, remarketing, or ad-personalization storage.",
       "Analytics events must not contain names, email addresses, phone numbers, WhatsApp or Telegram contacts, shop/customer identifiers, MC/USDOT numbers, VINs, license plates, exact private addresses, routes, budgets, calendar/OAuth data, payment or invoice identifiers, document contents, notes, or free-form messages. Visitors can reopen Privacy settings and change the analytics choice.",
       "If advertising, remarketing, additional cookies, a consent-management platform, or another tracking provider is introduced, this notice, the applicable regional requirements, and the technical consent controls must be reviewed before deployment.",
@@ -87,6 +88,6 @@ const sections = [
   eyebrow="Privacy notice"
   h1="Privacy Policy & Notice at Collection"
   intro="What the Hermes website collects, why it is used, how long it should be kept, and how to make a privacy request."
-  reviewedAt="2026-09-11"
+  reviewedAt="2026-09-15"
   {sections}
 />

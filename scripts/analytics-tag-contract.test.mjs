@@ -6,16 +6,23 @@ const layout = fs.readFileSync(path.join(root, "src/layouts/BaseLayout.astro"), 
 const consent = fs.readFileSync(path.join(root, "src/components/TrackingConsent.astro"), "utf8");
 const connectConsent = fs.readFileSync(path.join(root, "public/demos/hermes-connect/connect-analytics-consent.mjs"), "utf8");
 const analytics = fs.readFileSync(path.join(root, "src/lib/analytics.ts"), "utf8");
+const headers = fs.readFileSync(path.join(root, "public/_headers"), "utf8");
 const vendorRegistry = JSON.parse(fs.readFileSync(path.join(root, "docs/compliance/vendor-registry.json"), "utf8"));
 const vendorsById = new Map(vendorRegistry.vendors.map((vendor) => [vendor.id, vendor]));
 const measurementId = "G-RY26321PVW";
+const clarityProjectId = "yiumce2dne";
 const loaderPattern = new RegExp(`https://www\\.googletagmanager\\.com/gtag/js\\?id=`, "g");
 const ga4Vendor = vendorsById.get("google-analytics-4");
 assert.ok(ga4Vendor); assert.equal(ga4Vendor.status, "approved_analytics_only"); assert.equal(ga4Vendor.measurement_id, measurementId); assert.equal(ga4Vendor.default_state, "denied"); assert.equal(ga4Vendor.advertising_use, false); assert.equal(ga4Vendor.private_form_fields_allowed, false);
+const clarityVendor = vendorsById.get("microsoft-clarity-public-analytics");
+assert.ok(clarityVendor); assert.equal(clarityVendor.status, "approved_analytics_only"); assert.equal(clarityVendor.project_id, clarityProjectId); assert.equal(clarityVendor.default_state, "denied"); assert.equal(clarityVendor.advertising_use, false); assert.equal(clarityVendor.private_form_fields_allowed, false);
 for (const blockedId of ["meta-pixel", "google-ads", "google-tag-manager-advertising"]) { const vendor = vendorsById.get(blockedId); assert.ok(vendor); assert.equal(vendor.status, "blocked_pending_review"); assert.equal(vendor.default_state, "denied"); }
-assert.equal((layout.match(loaderPattern) ?? []).length, 0); assert.match(layout, /<TrackingConsent\s*\/>/); assert.equal((consent.match(loaderPattern) ?? []).length, 1); assert.equal((connectConsent.match(loaderPattern) ?? []).length, 1);
+assert.equal((layout.match(loaderPattern) ?? []).length, 0); assert.match(layout, /<TrackingConsent\s+clarityEligible=\{clarityEligible\}\s*\/>/); assert.equal((consent.match(loaderPattern) ?? []).length, 1); assert.equal((connectConsent.match(loaderPattern) ?? []).length, 1);
 for (const productionHost of ["hermeslogisticsus.com", "www.hermeslogisticsus.com", "connect.hermeslogisticsus.com"]) { assert.ok(consent.includes(`"${productionHost}"`)); assert.ok(connectConsent.includes(`"${productionHost}"`)); }
 assert.match(consent, /PRODUCTION_ANALYTICS_HOSTS/); assert.match(consent, /analyticsDeliveryAllowed/); assert.match(consent, /analyticsDeliveryStatus/); assert.match(consent, /disabled-non-production/); assert.match(consent, /disabled-automation/); assert.match(consent, /navigator\.webdriver\s*===\s*true/); assert.match(consent, /_hermes_ga4_smoke/); assert.match(consent, /if \(deliveryStatus !== "ga4"\)/);
+assert.match(layout, /CLARITY_BLOCKED_PATH_PREFIXES/); assert.match(layout, /\/services\/hermes-connect/); assert.match(layout, /\/logistics\/carrier-onboarding/); assert.match(layout, /\/logistics\/apply/); assert.match(layout, /\/sign/);
+assert.match(consent, /CLARITY_PRODUCTION_HOSTS/); assert.match(consent, /clarityDeliveryStatus/); assert.match(consent, /_hermes_clarity_smoke/); assert.match(consent, /clarityProjectId\s*=\s*"yiumce2dne"/); assert.match(consent, /dataset\.hermesClarity/); assert.match(consent, /consentv2/); assert.match(consent, /ad_Storage:\s*"denied"/); assert.match(consent, /analytics_Storage:\s*"granted"/); assert.match(consent, /analytics_Storage:\s*"denied"/);
+for (const clarityCspHost of ["https://*.clarity.ms", "https://c.bing.com"]) assert.ok(headers.includes(clarityCspHost));
 assert.match(connectConsent, /PRODUCTION_ANALYTICS_HOSTS/); assert.match(connectConsent, /analyticsDeliveryAllowed/); assert.match(connectConsent, /disabled-non-production/); assert.match(connectConsent, /if \(!canDeliver\)/);
 assert.match(connectConsent, /CONSENT_KEY\s*=\s*"hermes-analytics-consent"/); assert.match(connectConsent, /window\.dataLayer\s*=\s*createDiscardingLayer\(\)/); assert.match(connectConsent, /analytics_storage:\s*"denied"/); assert.match(connectConsent, /analytics_storage:\s*"granted"/); assert.match(connectConsent, /ad_storage:\s*"denied"/); assert.match(connectConsent, /allow_google_signals",\s*false/); assert.match(connectConsent, /allow_ad_personalization_signals",\s*false/); assert.doesNotMatch(connectConsent, /window\.location\.(?:href|search|hash)/);
 assert.match(analytics, /localStorage\.getItem\(ANALYTICS_CONSENT_KEY\)\s*===\s*"granted"/);
@@ -28,6 +35,7 @@ const files = ["public/demos/hermes-connect/app.mjs","public/demos/hermes-connec
 for (const f of files) { const source = fs.readFileSync(path.join(root,f),"utf8"); const payloads=[...source.matchAll(/window\.dataLayer\.push\(\{([\s\S]*?)\}\);/g)]; assert.ok(payloads.length>=1); for(const p of payloads){ const body=p[1]; const explicit=[...body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)].map(m=>m[1]); const keys=new Set([...explicit,...(/^\s*event\s*,/m.test(body)?["event"]:[])]); assert.ok(keys.has("event")); for(const k of keys) assert.ok(allowed.has(k),`${f}: ${k}`); }}
 let loaderCount=0,gtm=0,meta=0,ads=0; const sourceFiles=[]; const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const a=path.join(d,e.name);if(e.isDirectory())walk(a);else if(/\.(astro|ts|js|mjs)$/i.test(e.name))sourceFiles.push(a)}}; walk(path.join(root,"src")); walk(path.join(root,"public/demos/hermes-connect"));
 for(const f of sourceFiles){const c=fs.readFileSync(f,"utf8");loaderCount+=(c.match(loaderPattern)??[]).length;gtm+=(c.match(/GTM-[A-Z0-9]+/g)??[]).length;meta+=(c.match(/(?:connect\.facebook\.net|facebook\.com\/tr|\bfbq\s*\()/gi)??[]).length;ads+=(c.match(/(?:AW-[0-9]+|googleadservices\.com|doubleclick\.net)/gi)??[]).length;}
-assert.equal(loaderCount,2);assert.equal(gtm,0);assert.equal(meta,0);assert.equal(ads,0);
+const clarityLoaderCount = sourceFiles.reduce((count, file) => count + (fs.readFileSync(file, "utf8").match(/https:\/\/www\.clarity\.ms\/tag\//g) ?? []).length, 0);
+assert.equal(loaderCount,2);assert.equal(clarityLoaderCount,1);assert.equal(gtm,0);assert.equal(meta,0);assert.equal(ads,0);
 await import("./repair-shop-posthog-contract.test.mjs");
-console.log("Analytics/vendor consent contract passed: main + Connect GA4 are consent-gated, production-host gated, shared events keep a local QA path, Repair Shop PostHog events are privacy-gated, and advertising vendors remain blocked.");
+console.log("Analytics/vendor consent contract passed: GA4 + public-page Microsoft Clarity are affirmative-consent gated, Clarity excludes sensitive/private routes, Connect/Repair analytics remain bounded, and advertising vendors remain blocked.");
