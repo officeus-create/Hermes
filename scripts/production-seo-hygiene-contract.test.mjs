@@ -47,12 +47,13 @@ const indexedChildSitemapFiles = [
   ...staticChildSitemapFiles,
   "sitemap-connect-catalog.xml",
 ];
-// 204 controlled URLs before the Load Board provider/equipment acquisition cluster.
-// This branch adds exactly 15 unique canonical URLs: 7 provider integrations + 8 equipment pages.
+// Controlled non-insights inventory includes the established public owners plus exactly two
+// Italy-level commercial owners: /it/marketing/ and /it/tecnologia/. These are country-level
+// localized owners, not Padova/city templates and not authorization for a broader GEO page factory.
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
 // The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
 // verified as an indexed child, not counted as a build-time static page inventory.
-const nonInsightsExpectedPageUrlCount = 233;
+const nonInsightsExpectedPageUrlCount = 235;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
