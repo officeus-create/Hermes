@@ -6,6 +6,9 @@ const MAX_TOTAL_ATTACHMENT_BYTES = 3_500_000;
 const MAX_SEND_ATTEMPTS = 3;
 const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com"]);
 const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
+const DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS = ["dispatchtruck107@gmail.com", "volkogon.v@gmail.com"];
+const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
+const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -27,6 +30,8 @@ const isRequestId = (value) => /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,79}$/.test(value);
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const isAllowedSubject = (value) =>
   value === "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]" ||
+  value === CAR_HAULING_SALES_SUBJECT ||
+  value === CAR_HAULING_TEST_SUBJECT ||
   value === "[HERMES CONTRACT] [CARRIER ONBOARDING]" ||
   /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
   /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|GENERAL)\]$/.test(value);
@@ -134,6 +139,18 @@ const parseInternalRecipients = (env) => {
   ])].slice(0, 8);
 };
 
+const parseCarHaulingRecipients = (env) => {
+  const primary = cleanHeader(env.SALES_DESTINATION, 320).toLowerCase();
+  const configuredRecipients = parseRecipientList(env.CAR_HAULING_INTERNAL_RECIPIENTS);
+  return [...new Set([
+    primary,
+    ...DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS,
+    ...configuredRecipients,
+  ])]
+    .filter((item) => isEmail(item) && !RETIRED_INTERNAL_RECIPIENTS.has(item))
+    .slice(0, 8);
+};
+
 const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId }) => {
   const boundary = `hermes_${requestId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 48)}`;
   const headers = [
@@ -218,6 +235,45 @@ const sendSafely = async (env, message) => {
   }
 
   return { ok: false, attempts: lastAttempt, mapped: lastMapped };
+};
+
+const sendCarHaulingSalesTelegram = async (env, text, requestId) => {
+  const botToken = String(env.CAR_HAULING_TELEGRAM_BOT_TOKEN || "").trim();
+  const chatId = String(env.CAR_HAULING_TELEGRAM_SALES_CHAT_ID || "").trim();
+  if (!botToken || !chatId) return { ok: false, status: "not_configured" };
+
+  const sourcePage = clean(text.match(/^Page:\s*(.+)$/m)?.[1], 160) || "unknown";
+  const telegramText = [
+    CAR_HAULING_SALES_SUBJECT,
+    `Request ID: ${requestId}`,
+    `Source page: ${sourcePage}`,
+    "",
+    text,
+  ].join("\n").slice(0, 3_900);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5_000);
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: telegramText,
+        disable_web_page_preview: true,
+      }),
+      signal: controller.signal,
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok || !payload?.ok || !payload?.result?.message_id) {
+      return { ok: false, status: `http_${response.status}` };
+    }
+    return { ok: true, status: "delivered" };
+  } catch (error) {
+    return { ok: false, status: error instanceof DOMException && error.name === "AbortError" ? "timeout" : "network_error" };
+  } finally {
+    clearTimeout(timeout);
+  }
 };
 
 const worker = {
@@ -359,6 +415,52 @@ const worker = {
       });
     }
 
+    if (subject === CAR_HAULING_SALES_SUBJECT) {
+      const primary = cleanHeader(env.SALES_DESTINATION, 320).toLowerCase();
+      const recipients = parseCarHaulingRecipients(env);
+      if (!isEmail(primary) || !recipients.includes(primary)) {
+        return json(503, { ok: false, error: "service_not_configured" });
+      }
+
+      const sender = cleanHeader(env.SALES_SENDER, 320);
+      const primaryResult = await sendSafely(env, {
+        to: primary, from: sender, subject, text, replyTo, attachments: [], requestId,
+      });
+      if (!primaryResult.ok) {
+        console.error(JSON.stringify({ event: "car_hauling_primary_delivery_failed", category: primaryResult.mapped.error, attempts: primaryResult.attempts, request_id: requestId }));
+        return json(primaryResult.mapped.status, { ok: false, error: primaryResult.mapped.error });
+      }
+
+      let secondaryDelivered = 0;
+      let secondaryAttempts = 0;
+      const secondaryRecipients = recipients.filter((recipient) => recipient !== primary);
+      for (const recipient of secondaryRecipients) {
+        const result = await sendSafely(env, {
+          to: recipient, from: sender, subject, text, replyTo, attachments: [], requestId,
+        });
+        secondaryAttempts += result.attempts;
+        if (result.ok) secondaryDelivered += 1;
+        else console.error(JSON.stringify({ event: "car_hauling_secondary_delivery_pending", category: result.mapped.error, attempts: result.attempts, request_id: requestId }));
+      }
+
+      const telegram = await sendCarHaulingSalesTelegram(env, text, requestId);
+      if (!telegram.ok) {
+        console.error(JSON.stringify({ event: "car_hauling_sales_telegram_pending", category: telegram.status, request_id: requestId }));
+      }
+
+      return json(202, {
+        ok: true,
+        recipient_count: 1 + secondaryDelivered,
+        secondary_delivery: {
+          status: secondaryDelivered === secondaryRecipients.length ? "delivered" : "partial",
+          delivered: secondaryDelivered,
+          count: secondaryRecipients.length,
+          attempts: secondaryAttempts,
+        },
+        telegram: telegram.ok ? "delivered" : "pending",
+      });
+    }
+
     if (!env.SALES_DESTINATION || !isEmail(cleanHeader(env.SALES_DESTINATION, 320))) {
       return json(503, { ok: false, error: "service_not_configured" });
     }
@@ -382,5 +484,5 @@ const worker = {
   },
 };
 
-export { buildRawMime, classifyProviderError, constantTimeEqual, normalizeAttachments, parseInternalRecipients, sendMessage };
+export { buildRawMime, classifyProviderError, constantTimeEqual, normalizeAttachments, parseCarHaulingRecipients, parseInternalRecipients, sendCarHaulingSalesTelegram, sendMessage };
 export default worker;

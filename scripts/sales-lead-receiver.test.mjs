@@ -11,10 +11,23 @@ class MemoryKv {
 const serviceToken = "test-service-token-with-sufficient-length";
 const emailMessages = [];
 const serviceCalls = [];
+const telegramMessages = [];
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (input, init) => {
+  const url = String(input);
+  if (url.startsWith("https://api.telegram.org/bot")) {
+    telegramMessages.push(JSON.parse(String(init?.body || "{}")));
+    return Response.json({ ok: true, result: { message_id: 1296 } }, { status: 200 });
+  }
+  return originalFetch(input, init);
+};
+
 const workerEnv = {
   LEAD_SERVICE_TOKEN: serviceToken,
   SALES_DESTINATION: "officeus@hermeslogisticsus.com",
   SALES_SENDER: "website@hermeslogisticsus.com",
+  CAR_HAULING_TELEGRAM_BOT_TOKEN: "test-sales-bot-token",
+  CAR_HAULING_TELEGRAM_SALES_CHAT_ID: "-1001296000000",
   EMAIL: {
     async send(message) {
       emailMessages.push(message);
@@ -301,4 +314,94 @@ for (const key of limits.values.keys()) {
   assert.doesNotMatch(key, /192\.0\.2\.10|release_test_12345|lead@example\.com|contact_test_12345/);
 }
 
-console.log("Sales lead receiver, four-direction contact intake, legacy Worker compatibility, and private Email Worker checks passed.");
+const directCarrierBody = [
+  "Hermes Car Hauling Dispatch — Qualified Carrier Sales Lead Preview",
+  "Commercial source: DIRECT CAR HAULING DISPATCH INTAKE",
+  "Decision: dispatcher_review",
+  "Vehicle state: submitted_for_review",
+  "Role: Owner-operator",
+  "Contact: Real Carrier",
+  "Company: Real Carrier LLC",
+  "Authority number: MC123456",
+  "Authority status: Active",
+  "Insurance status: Active policy",
+  "Fleet size: 2–3 units",
+  "Current dispatch status: Needs dispatch service",
+  "Email: carrier@example.com",
+  "Phone: +1 (414) 555-0140",
+  "Equipment: Car Hauler / Auto Transport",
+  "Capacity / unit count: 3",
+  "Available from: 2026-09-15",
+  "Origin: Milwaukee, WI (250 mi radius)",
+  "Destination: Anywhere",
+  "Internal review routing: Carrier onboarding dry-run queue | Dispatcher vehicle review dry-run queue",
+  "Requested follow-up: Logistics Sales review of authority, insurance, equipment, dispatch needs, and access.",
+].join("\n");
+const directCarrierPayload = {
+  request_id: "carrier_real_1296_12345",
+  lead_type: "load_board_access",
+  sales_tag: "LOAD BOARD ACCESS / CARRIER",
+  email_body: directCarrierBody,
+  page_path: "/logistics/start-car-hauling-dispatch/",
+  submitted_at: "2026-09-15T01:30:00.000Z",
+};
+const carrierLimits = new MemoryKv();
+const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(workerEnv) };
+const emailsBeforeCarrier = emailMessages.length;
+const serviceCallsBeforeCarrier = serviceCalls.length;
+const telegramBeforeCarrier = telegramMessages.length;
+const realCarrier = await onRequest({
+  request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
+  env: carrierEnv,
+});
+assert.equal(realCarrier.status, 200);
+assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
+assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES SALES] [CAR HAULING] [CARRIER]");
+const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
+assert.deepEqual(
+  carrierEmails.map((message) => message.to).sort(),
+  ["dispatchtruck107@gmail.com", "officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
+);
+assert.ok(carrierEmails.every((message) => message.subject === "[HERMES SALES] [CAR HAULING] [CARRIER]"));
+assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
+assert.equal(telegramMessages.at(-1).chat_id, "-1001296000000");
+assert.match(telegramMessages.at(-1).text, /Real Carrier LLC/);
+assert.match(telegramMessages.at(-1).text, /Request ID: carrier_real_1296_12345/);
+assert.match(telegramMessages.at(-1).text, /Page: \/logistics\/start-car-hauling-dispatch\//);
+
+const duplicateCarrier = await onRequest({
+  request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
+  env: carrierEnv,
+});
+assert.equal(duplicateCarrier.status, 200);
+assert.equal((await duplicateCarrier.json()).duplicate, true);
+assert.equal(emailMessages.length, emailsBeforeCarrier + 3);
+assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
+assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
+
+const syntheticCarrierPayload = {
+  ...directCarrierPayload,
+  request_id: "carrier_qa_1296_12345",
+  email_body: directCarrierBody
+    .replace("Contact: Real Carrier", "Contact: Synthetic Carrier QA")
+    .replace("Company: Real Carrier LLC", "Company: Hermes Synthetic Carrier QA")
+    .replace("Email: carrier@example.com", "Email: carrier-production-smoke@hermesconnect.app"),
+};
+const emailsBeforeQa = emailMessages.length;
+const telegramBeforeQa = telegramMessages.length;
+const syntheticCarrier = await onRequest({
+  request: leadRequest(syntheticCarrierPayload, { "CF-Connecting-IP": "203.0.113.130" }),
+  env: carrierEnv,
+});
+assert.equal(syntheticCarrier.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
+const qaEmails = emailMessages.slice(emailsBeforeQa);
+assert.equal(qaEmails.length, 1);
+assert.equal(qaEmails[0].to, "officeus@hermeslogisticsus.com");
+assert.equal(qaEmails[0].subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
+assert.match(qaEmails[0].text, /exclude from Sales\/CRM KPI/);
+assert.equal(telegramMessages.length, telegramBeforeQa);
+
+globalThis.fetch = originalFetch;
+console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
