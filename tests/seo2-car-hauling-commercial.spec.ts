@@ -17,7 +17,7 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
   const directIntakeLinks = page.getByRole("link", { name: "Start car-hauling dispatch review" });
   await expect(directIntakeLinks.first()).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
   await expect(directIntakeLinks).toHaveCount(2);
-  await expect(page.getByRole("link", { name: "Preview the Load Board Demo" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Open the Car Hauling Load Board" })).toHaveAttribute(
     "href",
     "/load-board/?role=carrier&equipment=car_hauler#available-loads",
   );
