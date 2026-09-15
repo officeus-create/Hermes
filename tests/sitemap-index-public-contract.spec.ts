@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const childSitemaps = [
+const staticChildSitemaps = [
   "https://hermeslogisticsus.com/sitemap.xml",
   "https://hermeslogisticsus.com/sitemap-local.xml",
   "https://hermeslogisticsus.com/sitemap-services.xml",
@@ -10,6 +10,10 @@ const childSitemaps = [
   "https://hermeslogisticsus.com/sitemap-trust.xml",
   "https://hermeslogisticsus.com/sitemap-london.xml",
   "https://hermeslogisticsus.com/sitemap-business-directory.xml",
+];
+const indexedChildSitemaps = [
+  ...staticChildSitemaps,
+  "https://hermeslogisticsus.com/sitemap-connect-catalog.xml",
 ];
 
 test("sitemap index exposes each declared public child sitemap exactly once", async ({ page }) => {
@@ -21,21 +25,22 @@ test("sitemap index exposes each declared public child sitemap exactly once", as
   expect(body).toContain('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
   expect(body).not.toContain("<urlset");
 
-  for (const sitemap of childSitemaps) {
+  for (const sitemap of indexedChildSitemaps) {
     expect(body.split(`<loc>${sitemap}</loc>`)).toHaveLength(2);
   }
 
   const locCount = (body.match(/<loc>/g) ?? []).length;
-  expect(locCount).toBe(childSitemaps.length);
+  expect(locCount).toBe(indexedChildSitemaps.length);
 });
 
-test("robots advertises the sitemap index and current child sitemaps", async ({ page }) => {
+test("robots advertises the sitemap index and build-time static child sitemaps", async ({ page }) => {
   const response = await page.request.get("/robots.txt");
   expect(response.ok()).toBeTruthy();
   const body = await response.text();
 
   expect(body).toContain("Sitemap: https://hermeslogisticsus.com/sitemapindex.xml");
-  for (const sitemap of childSitemaps) {
+  for (const sitemap of staticChildSitemaps) {
     expect(body).toContain(`Sitemap: ${sitemap}`);
   }
+  expect(body).not.toContain("Sitemap: https://hermeslogisticsus.com/sitemap-connect-catalog.xml");
 });
