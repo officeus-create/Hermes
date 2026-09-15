@@ -19,7 +19,7 @@ const mailCopy = {
   ru: { subject: "Запрос в Hermes", body: "Компания:\nСтрана и город:\nНаправление:\nЧто нужно улучшить:\nТри желаемых проекта:\nПримеры, которые нравятся:\nОриентировочный бюджет или ежемесячный ритм:" },
   es: { subject: "Consulta para Hermes", body: "Empresa:\nPaís y ciudad:\nÁrea de interés:\nQué necesita mejorar:\nTres proyectos deseados:\nEjemplos que le gustan:\nPresupuesto estimado o inversión mensual:" },
   it: { subject: "Richiesta per Hermes", body: "Azienda:\nPaese e città:\nArea di interesse:\nCosa deve migliorare:\nTre progetti desiderati:\nEsempi che le piacciono:\nBudget stimato o investimento mensile:" },
-  fr: { subject: "Demande pour Hermes", body: "Entreprise :\nPays et ville :\nDomaine recherché :\nCe qui doit être amélioré :\nTrois projets souhaités :\nExemples appréciés :\nBudget estimé ou investissement mensuel :" },
+  fr: { subject: "Demande pour Hermes", body: "Entreprise :\nPays et ville :\nDomaine recherché :\nCe qui doit être amélioré :\nTrois projets souhaités :\nExemples appréciés :\nBudget estimé ou investimento mensile :" },
 }[content.locale];
 const partnershipLabels = {
   uk: ["Технології", "Маркетинг", "Академія", "Логістика"],
@@ -32,10 +32,12 @@ const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
-const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) =>
-  content.locale === "uk" && id === "academy"
-    ? "/ua/academy/us-logistics-operations/"
-    : directionMailto(brand);
+const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) => {
+  if (content.locale === "it" && id === "marketing") return "/it/marketing/";
+  if (content.locale === "it" && id === "technology") return "/it/tecnologia/";
+  if (content.locale === "uk" && id === "academy") return "/ua/academy/us-logistics-operations/";
+  return directionMailto(brand);
+};
 const directionOrder: Record<LocalizedOverview["directions"][number]["id"], number> = {
   logistics: 0,
   marketing: 1,
