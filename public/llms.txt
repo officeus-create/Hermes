@@ -57,6 +57,8 @@ The Italian Marketing owner is a country-level commercial page for Italian busin
 
 ProgressoPro may appear as a historical or operating marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
 
+The Hermes Marketing direction on hermeslogisticsus.com must not be merged with an unrelated third-party business, website, profile, or legal entity that also uses the words Hermes Marketing. No affiliation, ownership, partnership, `sameAs` relationship, office, review profile, or local presence should be inferred unless a current canonical Hermes source explicitly verifies it.
+
 Descriptions of SEO, Local SEO, content architecture, schema, internal linking, conversion paths, or measurement workflows are not guarantees of rankings, traffic, leads, customers, revenue, or ROI.
 
 ### Hermes Academy
