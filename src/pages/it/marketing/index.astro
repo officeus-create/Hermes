@@ -1,0 +1,81 @@
+---
+import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
+import type { ItalianCommercialPageContent } from "../../../components/ItalianCommercialPage.astro";
+
+const content: ItalianCommercialPageContent = {
+  id: "marketing",
+  metaTitle: "Marketing Digitale, SEO e GEO per Aziende in Italia | Hermes",
+  metaDescription: "Strategia digitale, SEO, GEO/AEO, social media, advertising, siti orientati alla conversione, CRM e processi commerciali per aziende in Italia.",
+  eyebrow: "Hermes Marketing · ProgressoPro · Italia",
+  title: "Marketing digitale costruito come un sistema di crescita.",
+  lead: "Colleghiamo sito, SEO, GEO e AI search, contenuti, social, advertising, CRM, follow-up e analisi in un unico percorso misurabile. L'obiettivo non è produrre più attività: è capire quali attività generano domanda, conversazioni e opportunità reali.",
+  image: "/images/path-marketing-system.jpg",
+  imageAlt: "Sistema digitale di marketing, contenuti, audience e analisi",
+  serviceName: "Marketing digitale, SEO, GEO e growth systems per aziende in Italia",
+  scopeNote: "Servizi disponibili per aziende in Italia con coordinamento remoto. Eventuali attività locali o incontri vengono concordati caso per caso; non pubblichiamo sedi, recensioni o risultati locali non verificati.",
+  services: [
+    {
+      title: "Sito web e conversione",
+      body: "Trasformiamo il sito da vetrina a percorso commerciale: proposta di valore, struttura delle pagine, CTA, form, landing page e misurazione.",
+      items: ["Architettura e customer journey", "Landing page e CRO", "Analytics e tracciamento essenziale"],
+    },
+    {
+      title: "SEO e Local SEO",
+      body: "Costruiamo owner chiari per gli intenti che contano, miglioriamo contenuti e struttura tecnica e lavoriamo sulla visibilità locale solo quando esiste utilità reale per il mercato.",
+      items: ["Ricerca intenti e keyword", "SEO tecnica e on-page", "Internal linking e local intent"],
+    },
+    {
+      title: "GEO, AEO e AI Search",
+      body: "Rendiamo il brand più comprensibile ai motori generativi attraverso entità chiare, risposte verificabili, dati strutturati, fonti e contenuti answer-first.",
+      items: ["GEO e AEO audit", "Schema e segnali di entità", "Monitoraggio delle citazioni AI"],
+    },
+    {
+      title: "Social media e contenuti",
+      body: "Progettiamo un sistema editoriale collegato all'offerta, con formati, script, distribuzione, community workflow e riuso dei contenuti tra canali.",
+      items: ["Instagram, Facebook e Threads", "Short-form e content system", "Calendario e workflow di produzione"],
+    },
+    {
+      title: "Advertising e lead generation",
+      body: "Le campagne vengono collegate a un'offerta, una landing page, una definizione di lead utile e un processo di follow-up, non a metriche isolate.",
+      items: ["Google e Meta Ads", "Audience e creative testing", "Lead quality e conversion path"],
+    },
+    {
+      title: "CRM e sales workflow",
+      body: "Marketing e IT definiscono insieme come il lead entra, viene qualificato, assegnato, ricontattato e trasformato in una decisione tracciabile.",
+      items: ["Lead routing", "CRM handoff", "Follow-up e reporting"],
+    },
+  ],
+  process: [
+    { number: "01", title: "Baseline", body: "Analizziamo offerta, sito, canali, query, competitor, percorso del lead e dati già disponibili." },
+    { number: "02", title: "Priorità", body: "Scegliamo il collo di bottiglia con il miglior rapporto tra valore, tempo, rischio e prova disponibile." },
+    { number: "03", title: "Esecuzione", body: "Costruiamo il minimo sistema completo: asset, distribuzione, CTA, ricezione del lead e misura." },
+    { number: "04", title: "Apprendimento", body: "Usiamo risultati reali per decidere cosa migliorare, espandere, mantenere o interrompere." },
+  ],
+  principles: [
+    { title: "Niente pagine locali in serie", body: "Una pagina città viene pubblicata solo se ha domanda, intent distinto, contenuto utile e una verità locale che non sia intercambiabile con cento altre città." },
+    { title: "Niente garanzie artificiali", body: "Non promettiamo una posizione Google, una quantità fissa di lead o citazioni AI. Definiamo baseline, lavoro e KPI controllabili." },
+    { title: "SEO e vendite devono incontrarsi", body: "Impression e traffico non bastano: ogni asset commerciale deve avere CTA, ricezione, qualificazione e un modo per capire se ha creato un'opportunità." },
+  ],
+  faq: [
+    { question: "Lavorate con aziende in tutta Italia?", answer: "Sì. Il coordinamento può essere svolto da remoto per aziende italiane. La presenza fisica o una sede locale non vengono dichiarate se non esistono e non sono state verificate." },
+    { question: "SEO e GEO sono due servizi separati?", answer: "Possono essere analizzati separatamente, ma la strategia migliore parte da una sola architettura di contenuti, entità, prove e intenti. La SEO lavora sulla ricerca classica; GEO e AEO aggiungono la visibilità nei motori generativi e nelle risposte AI." },
+    { question: "Potete gestire anche sito, social, advertising e CRM?", answer: "Sì. Il vantaggio del modello Hermes è collegare marketing e sviluppo IT quando il percorso richiede landing page, automazioni, CRM, integrazioni o strumenti interni." },
+    { question: "Quanto tempo serve per vedere risultati?", answer: "Dipende da mercato, autorità del dominio, offerta, stato del sito, concorrenza e canali. Prima di stimare tempi definiamo baseline e priorità misurabili." },
+  ],
+  related: [
+    { label: "Hermes Technology Italia", href: "/it/tecnologia/", description: "Siti, CRM, automazioni, AI e sistemi su misura collegati al percorso commerciale." },
+    { label: "Hermes Italia", href: "/it/", description: "Vista completa dell'ecosistema Hermes e delle quattro direzioni." },
+    { label: "Case study IT", href: "/case/it-development/", description: "Esempio pubblico del nostro approccio a sviluppo, QA e rilascio controllato." },
+  ],
+  ctaTitle: "Descrivi il risultato che vuoi ottenere, non il pacchetto che pensi di dover comprare.",
+  ctaBody: "Indica azienda, città, sito attuale, obiettivo, canali già utilizzati e cosa oggi blocca la crescita. Da lì possiamo definire il primo ciclo di lavoro utile.",
+  emailSubject: "Hermes Italia · Marketing / SEO / GEO",
+  alternates: [
+    { lang: "en", href: "/paths/marketing/" },
+    { lang: "it", href: "/it/marketing/" },
+    { lang: "x-default", href: "/paths/marketing/" },
+  ],
+};
+---
+
+<ItalianCommercialPage content={content} />
