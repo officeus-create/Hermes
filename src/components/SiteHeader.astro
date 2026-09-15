@@ -82,7 +82,19 @@ const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith(
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
-const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
+const localizedOwnerDirection = currentPath === "/it/marketing/"
+  ? "marketing"
+  : currentPath === "/it/tecnologia/"
+    ? "technology"
+    : undefined;
+const languageDirection = section ?? localizedOwnerDirection;
+const localizedHash = languageDirection
+  ? `#${languageDirection}`
+  : currentPath.includes("/case/")
+    ? "#technology"
+    : currentPath.includes("/contacts")
+      ? "#contact"
+      : "";
 const languageLinks = siteLocales.map((language) => {
   if (isHermesConnectRoute) {
     const params = new URLSearchParams(Astro.url.searchParams);
@@ -96,10 +108,29 @@ const languageLinks = siteLocales.map((language) => {
     };
   }
 
+  const ownerEquivalentHref = languageDirection === "marketing" && language === "it"
+    ? "/it/marketing/"
+    : languageDirection === "technology" && language === "it"
+      ? "/it/tecnologia/"
+      : languageDirection === "marketing" && language === "en"
+        ? "/paths/marketing/"
+        : languageDirection === "technology" && language === "en"
+          ? "/paths/technology/"
+          : undefined;
+
+  if (ownerEquivalentHref) {
+    return {
+      locale: language,
+      name: localeConfig[language].name,
+      href: ownerEquivalentHref,
+    };
+  }
+
+  const shouldPreserveSection = language !== "en" && (locale === "en" || Boolean(localizedOwnerDirection));
   return {
     locale: language,
     name: localeConfig[language].name,
-    href: `${localeConfig[language].path}${locale === "en" && language !== "en" ? localizedHash : ""}`,
+    href: `${localeConfig[language].path}${shouldPreserveSection ? localizedHash : ""}`,
   };
 });
 ---
