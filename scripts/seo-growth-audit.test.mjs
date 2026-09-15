@@ -244,9 +244,19 @@ for (const url of sitemapUrls) {
   if (canonical !== url) addError(route, `sitemap URL and rendered canonical differ: ${url} vs ${canonical || "missing"}`);
 }
 
+const isIntentionalAcademyLocaleSiblingH1 = (routes) => {
+  if (routes.length !== 2) return false;
+  const sorted = [...routes].sort((a, b) => a.length - b.length);
+  const [base, localized] = sorted;
+  if (!/^\/academy\/countries\/[^/]+\/$/.test(base)) return false;
+  return localized === `${base}en/`;
+};
+
 const addDuplicateWarnings = (map, label) => {
   for (const [value, routes] of map) {
-    if (routes.length > 1) addWarning(routes.join(", "), `duplicate ${label}: ${value}`);
+    if (routes.length <= 1) continue;
+    if (label === "H1" && isIntentionalAcademyLocaleSiblingH1(routes)) continue;
+    addWarning(routes.join(", "), `duplicate ${label}: ${value}`);
   }
 };
 addDuplicateWarnings(titleOwners, "title");
