@@ -31,38 +31,45 @@ Noindex pages must not appear in the primary sitemap.
 
 ## `/load-board/` decision
 
-**Decision: `/load-board/` should become `noindex,follow` while it remains a preview with fictional loads and dry-run workflows.**
+**Decision: `/load-board/` is an `index,follow,max-image-preview:large` canonical search owner while its visible experience maintains the approved source-gated live + preview truth boundary.**
 
 Reasons:
 
-1. The page currently presents fictional load examples that cannot be booked.
-2. Its primary purpose is product and workflow demonstration, not a live searchable inventory.
-3. Indexing could attract visitors expecting real available loads and reduce trust or create poor search engagement.
-4. Commercial search demand should be served by accurate carrier, shipper, dealer, broker, dispatch, onboarding, and vehicle-transport landing pages.
-5. `follow` allows search crawlers to continue discovering the approved commercial routes linked from the preview.
+1. The page now serves distinct real search intent for car-hauler and auto-transport load discovery plus reviewed carrier access.
+2. The Live marketplace may display only approved, active, unexpired, permission-safe records and may honestly show zero records.
+3. Fictional or preview rows remain clearly separated from live inventory and are non-bookable, so illustrative data cannot be mistaken for current freight.
+4. Customer, dealer, and shipper transport requests remain separate from carrier load-review workflows, and submission itself is not a booking or a guarantee of freight.
+5. Search ownership is consolidated on this canonical URL; role, equipment, and query-state variants do not become separate canonical owners.
 
 ### Implementation requirements
 
-- Set the page robots value to `noindex,follow`.
-- Remove `https://hermeslogisticsus.com/load-board/` from `sitemap.xml`.
-- Keep a self-referencing canonical while the route remains public.
-- Keep truthful `Preview`, `Dry-run`, and fictional-data language visible.
-- Do not place demo loads in structured data as real offers, products, or available freight.
-- Preserve direct carrier, shipper, dealer, and broker links to indexable commercial pages.
-- Inspect the URL in Search Console after deployment and confirm the noindex state is recognized.
+- Keep the page robots value `index,follow,max-image-preview:large` while the approved truth boundary remains intact.
+- Keep `https://hermeslogisticsus.com/load-board/` in the primary sitemap.
+- Keep a self-referencing canonical on the pathname owner; role or equipment query-state variants must resolve to the same canonical owner.
+- Keep the source-gated live + preview distinction visible to users.
+- Keep fictional or preview rows clearly labeled and non-bookable, and never expose them in structured data as real offers, products, or available freight.
+- Count or present a record as live only when source, permission, freshness, public-visibility, active-state, and expiry gates pass.
+- Remove or suppress expired, covered, unauthorized, internal-only, or otherwise non-public records from the public live state.
+- Do not promise `live loads available now`, guaranteed loads, a guaranteed rate, carrier match, or booking. The live marketplace may show zero approved records.
+- Keep customer transport requests, carrier access, and any booking/request actions truthful, functional, monitored, and attributable.
+- Monitor Search Console behavior and qualified-action/lead quality after material owner or product changes.
 
-### Conditions for future indexing
+### Conditions to keep indexing
 
-The Load Board may be reconsidered for indexing only when:
+The Load Board remains eligible for indexing only while:
 
-- public inventory is real, current, authorized, and safe to expose;
-- availability and timestamps are accurate;
-- sensitive broker, shipper, carrier, rate, and route details are protected;
-- expired or unavailable loads are removed or handled correctly;
-- booking/request actions are functional and monitored;
-- spam, abuse, duplicate content, and index bloat controls exist;
+- its canonical owner is stable and materially useful for load-board search intent;
+- public live records, when present, are current, authorized, permission-safe, and accurately labeled;
+- availability and timestamps are accurate enough for the public state being shown;
+- sensitive broker, shipper, carrier, rate, route, and contact details are protected according to their access rules;
+- expired, covered, unauthorized, or unavailable records are removed or handled correctly;
+- fictional preview data stays visibly separate from live inventory and cannot be booked;
+- request and access actions are functional and monitored;
+- spam, abuse, duplicate-content, and index-bloat controls remain active;
 - the page provides durable search value beyond a thin list of temporary loads;
-- legal, operations, privacy, and business-owner reviews are complete.
+- legal, operations, privacy, and business-owner boundaries remain satisfied.
+
+If the public owner regresses to demo-only or primarily fictional content, becomes misleading, loses its distinct search value, or its live/request controls become unsafe or broken, re-evaluate `noindex` status. Any such decision must update robots, sitemap membership, canonical ownership, internal links, release evidence, and Search Console follow-up together rather than changing one surface in isolation.
 
 ## Product demo routes
 
