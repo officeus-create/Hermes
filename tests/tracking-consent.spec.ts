@@ -27,13 +27,18 @@ const isHermesGaCollectRequest = (url: string) => {
   );
 };
 
+const isClarityRequest = (url: string) => {
+  const parsed = new URL(url);
+  return parsed.hostname === "www.clarity.ms" || parsed.hostname.endsWith(".clarity.ms") || parsed.hostname === "c.bing.com";
+};
+
 const rectanglesOverlap = (a: DOMRect, b: DOMRect) =>
   a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
 test("analytics stays off before choice and after decline", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
-    if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
+    if (isGoogleAnalyticsRequest(request.url()) || isClarityRequest(request.url())) analyticsRequests.push(request.url());
   });
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
@@ -53,14 +58,18 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
 });
 
 test("analytics consent uses host-appropriate transport and can be withdrawn", async ({ page }) => {
-  const analyticsRequests: string[] = [];
+  const googleRequests: string[] = [];
+  const clarityRequests: string[] = [];
   page.on("request", (request) => {
-    if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
+    const url = request.url();
+    if (isGoogleAnalyticsRequest(url)) googleRequests.push(url);
+    if (isClarityRequest(url)) clarityRequests.push(url);
   });
 
-  const analyticsPath = process.env.HERMES_PRODUCTION_URL ? "/?_hermes_ga4_smoke=1" : "/";
+  const analyticsPath = process.env.HERMES_PRODUCTION_URL ? "/?_hermes_ga4_smoke=1&_hermes_clarity_smoke=1" : "/";
   await page.goto(analyticsPath, { waitUntil: "domcontentloaded" });
-  expect(analyticsRequests).toEqual([]);
+  expect(googleRequests).toEqual([]);
+  expect(clarityRequests).toEqual([]);
 
   const expectedTransport = await page.evaluate(() => {
     const productionHosts = new Set([
@@ -71,14 +80,20 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
     return productionHosts.has(window.location.hostname) ? "ga4" : "disabled-non-production";
   });
 
+  const expectedClarityTransport = await page.evaluate(() => {
+    const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
+    return productionHosts.has(window.location.hostname) ? "clarity" : "disabled-non-production";
+  });
+
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
   await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe(expectedTransport);
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.clarityTransport)).toBe(expectedClarityTransport);
 
   if (expectedTransport === "ga4") {
     await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(1);
-    await expect.poll(() => analyticsRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
-    await expect.poll(() => analyticsRequests.some(isHermesGaCollectRequest)).toBe(true);
+    await expect.poll(() => googleRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
+    await expect.poll(() => googleRequests.some(isHermesGaCollectRequest)).toBe(true);
   } else {
     await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
     const localInstrumentation = await page.evaluate(() => ({
@@ -86,13 +101,21 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
       hasGtag: typeof (window as Window & { gtag?: unknown }).gtag === "function",
     }));
     expect(localInstrumentation).toEqual({ hasDataLayer: true, hasGtag: true });
-    await page.waitForTimeout(400);
-    expect(analyticsRequests).toEqual([]);
+    await page.waitForTimeout(300);
+    expect(googleRequests).toEqual([]);
+  }
+
+  if (expectedClarityTransport === "clarity") {
+    await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(1);
+    await expect.poll(() => clarityRequests.some((url) => url.includes("clarity.ms/tag/yiumce2dne"))).toBe(true);
+  } else {
+    await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
+    expect(clarityRequests).toEqual([]);
   }
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
-  const analyticsRequestCountBeforeWithdrawal = analyticsRequests.length;
+  const googleRequestCountBeforeWithdrawal = googleRequests.length;
 
   await Promise.all([
     page.waitForNavigation({ waitUntil: "domcontentloaded" }),
@@ -101,9 +124,18 @@ test("analytics consent uses host-appropriate transport and can be withdrawn", a
 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
+  await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
-  await page.waitForTimeout(400);
-  expect(analyticsRequests).toHaveLength(analyticsRequestCountBeforeWithdrawal);
+  await page.waitForTimeout(300);
+  expect(googleRequests).toHaveLength(googleRequestCountBeforeWithdrawal);
+  await expect.poll(() => page.evaluate(() => document.cookie.includes("_clck=") || document.cookie.includes("_clsk="))).toBe(false);
+});
+
+test("Microsoft Clarity stays disabled on private Hermes Connect routes even after analytics consent", async ({ page }) => {
+  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Allow analytics" }).click();
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.clarityTransport)).toBe("disabled-route");
+  await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
 });
 
 test("mobile consent stays compact, below the header and clear of every primary hero CTA", async ({ page }) => {

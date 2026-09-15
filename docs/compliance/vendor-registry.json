@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-09-11",
+  "reviewed_at": "2026-09-15",
   "principle": "No tracking, advertising, remarketing, or data-processing integration may be activated unless it has an explicit registry record and the required consent, disclosure, contract, transfer, retention, and production-verification review.",
   "vendors": [
     {
@@ -17,13 +17,59 @@
       "production_verification_required": true
     },
     {
+      "id": "microsoft-clarity-public-analytics",
+      "vendor": "Microsoft",
+      "product": "Microsoft Clarity",
+      "status": "approved_analytics_only",
+      "project_id": "yiumce2dne",
+      "purpose": "Consent-gated public-page usability analytics, heatmaps, click/scroll behavior, and session replay for eligible indexable Hermes website pages.",
+      "pages_or_workflows": [
+        "eligible public indexable hermeslogisticsus.com pages only"
+      ],
+      "data_categories": [
+        "page URL",
+        "referrer",
+        "DOM/layout playback",
+        "clicks",
+        "scrolls",
+        "pointer movement",
+        "viewport/performance diagnostics",
+        "masked form interactions"
+      ],
+      "storage_or_tracking_technology": "Clarity tag loads only after affirmative Hermes analytics consent on eligible public pages. consentv2 receives analytics_Storage=granted and ad_Storage=denied. First-party Clarity cookies are denied/cleared when consent is withdrawn.",
+      "identifier_or_form_data_access": "Private Hermes Connect, signing, application and other blocked sensitive routes are excluded. Input and dropdown contents remain masked. No customer/candidate/contract/authenticated workspace data is intentionally authorized for Clarity.",
+      "controller_or_processor_role": "Hermes determines the bounded usability-measurement purpose; Microsoft Clarity provides the analytics service.",
+      "contract_or_dpa_status": "Production use is limited to the owner-approved analytics purpose and remains subject to applicable Microsoft Clarity terms and privacy requirements.",
+      "hosting_or_transfer_geography": "Microsoft Clarity service infrastructure; international transfer/privacy requirements apply according to the visitor market and Microsoft service terms.",
+      "retention_controls": "Use Clarity project retention controls; do not use recordings as a customer/candidate system of record. Eligible-route and masking controls reduce data scope before collection.",
+      "consent_category": "analytics",
+      "default_state": "denied",
+      "withdrawal_or_opt_out_behavior": "Hermes sends consentv2 denied/denied, clears controllable first-party Clarity cookies, reloads after withdrawal, and keeps the site functional without Clarity.",
+      "privacy_notice_impact": "Privacy Notice, Data Security and Legal & Compliance analytics disclosures updated 2026-09-15.",
+      "production_verification_owner": "Hermes website analytics release gate",
+      "production_verification_date": null,
+      "advertising_use": false,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
       "id": "posthog-repair-shop-product-analytics",
       "vendor": "PostHog",
       "product": "PostHog product analytics — Hermes Connect Repair Shops",
       "status": "approved_analytics_only",
       "purpose": "Consent-gated, allowlisted product-event measurement for the canonical Hermes Connect Repair Shop workflow.",
-      "pages_or_workflows": ["/services/hermes-connect/repair-shops/"],
-      "data_categories": ["coarse locale", "viewport class", "feature surface", "authenticated boolean", "result class", "synthetic-test boolean", "session-scoped random pseudonymous identifier"],
+      "pages_or_workflows": [
+        "/services/hermes-connect/repair-shops/"
+      ],
+      "data_categories": [
+        "coarse locale",
+        "viewport class",
+        "feature surface",
+        "authenticated boolean",
+        "result class",
+        "synthetic-test boolean",
+        "session-scoped random pseudonymous identifier"
+      ],
       "storage_or_tracking_technology": "Direct event capture only after affirmative analytics consent; random session-scoped identifier in sessionStorage; no PostHog SDK cookies, autocapture, automatic pageviews, session recording, identify, or person profiles.",
       "identifier_or_form_data_access": "No names, emails, phones, shop/customer identifiers, addresses, VINs, plates, free text, calendar/OAuth data, payment/invoice identifiers, or request payloads may enter the event transport.",
       "controller_or_processor_role": "Hermes determines the bounded product measurement purpose; PostHog acts as the analytics service provider for configured event delivery.",
