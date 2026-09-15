@@ -25,6 +25,12 @@ export async function ensureRepairShopProfileSchema(db) {
   `).run();
   await ensureOptionalColumn(db, "region", "region TEXT");
   await ensureOptionalColumn(db, "country_code", "country_code TEXT");
+  await ensureOptionalColumn(db, "website", "website TEXT");
+  await ensureOptionalColumn(db, "catalog_opt_in", "catalog_opt_in INTEGER NOT NULL DEFAULT 0");
+  await ensureOptionalColumn(db, "catalog_opt_in_at", "catalog_opt_in_at TEXT");
+  await ensureOptionalColumn(db, "catalog_published_at", "catalog_published_at TEXT");
+  await ensureOptionalColumn(db, "seo_geo_started_at", "seo_geo_started_at TEXT");
+  await ensureOptionalColumn(db, "next_seo_report_at", "next_seo_report_at TEXT");
   await db.prepare(
     "UPDATE repair_shops SET region = state WHERE (region IS NULL OR TRIM(region) = '') AND state IS NOT NULL AND TRIM(state) <> ''",
   ).run();
@@ -33,4 +39,5 @@ export async function ensureRepairShopProfileSchema(db) {
   ).run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_owner ON repair_shops(owner_specialist_id)").run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_slug ON repair_shops(slug)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_repair_shops_catalog ON repair_shops(catalog_opt_in, updated_at)").run();
 }

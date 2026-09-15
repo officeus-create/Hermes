@@ -22,7 +22,7 @@ const noindexPages = [
   "/business-growth/",
 ];
 
-const childSitemapPaths = [
+const staticChildSitemapPaths = [
   "/sitemap.xml",
   "/sitemap-local.xml",
   "/sitemap-services.xml",
@@ -33,8 +33,13 @@ const childSitemapPaths = [
   "/sitemap-london.xml",
   "/sitemap-business-directory.xml",
 ];
+const indexedChildSitemapPaths = [
+  ...staticChildSitemapPaths,
+  "/sitemap-connect-catalog.xml",
+];
 const sitemapIndexPath = "/sitemapindex.xml";
-const sitemapPaths = [sitemapIndexPath, ...childSitemapPaths];
+const robotsSitemapPaths = [sitemapIndexPath, ...staticChildSitemapPaths];
+const sitemapPaths = [sitemapIndexPath, ...indexedChildSitemapPaths];
 
 const expectedCurrentMarkers = [
   "Website inquiries are delivered securely by email",
@@ -171,10 +176,10 @@ const robotsResult = {
   status: robotsFetch.status,
   finalUrl: robotsFetch.finalUrl,
   finalUrlMatches: robotsFetch.finalUrl === new URL("/robots.txt", baseUrl).toString(),
-  includesAllSitemaps: sitemapPaths.every((pathname) =>
+  includesAllSitemaps: robotsSitemapPaths.every((pathname) =>
     robotsFetch.body.includes(new URL(pathname, baseUrl).toString()),
   ),
-  sitemapDeclarations: sitemapPaths.map((pathname) => ({
+  sitemapDeclarations: robotsSitemapPaths.map((pathname) => ({
     url: new URL(pathname, baseUrl).toString(),
     declared: robotsFetch.body.includes(new URL(pathname, baseUrl).toString()),
   })),
@@ -200,7 +205,7 @@ for (const pathname of sitemapPaths) {
   });
 }
 
-const expectedChildSitemapUrls = childSitemapPaths.map((pathname) => new URL(pathname, baseUrl).toString());
+const expectedChildSitemapUrls = indexedChildSitemapPaths.map((pathname) => new URL(pathname, baseUrl).toString());
 const sitemapIndexMissingChildren = expectedChildSitemapUrls.filter((url) => !sitemapIndexLocs.includes(url));
 const sitemapIndexUnexpectedChildren = sitemapIndexLocs.filter((url) => !expectedChildSitemapUrls.includes(url));
 const sitemapIndexResult = {
@@ -363,7 +368,7 @@ const markdown = [
   "## Discovery files",
   "",
   `- robots.txt status: ${robotsResult.status ?? "—"}`,
-  `- robots.txt declares sitemap index + all ${childSitemapPaths.length} controlled child sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
+  `- robots.txt declares sitemap index + all ${staticChildSitemapPaths.length} build-time static child sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
   ...sitemapResults.map((item) => `- ${item.path}: status ${item.status ?? "—"}; final URL ${item.finalUrlMatches ? "matches" : "drifted"}; sitemap XML ${item.looksLikeSitemap ? "recognized" : "not recognized"}`),
   `- sitemap index controlled children: ${sitemapIndexResult.discoveredChildren}/${sitemapIndexResult.expectedChildren}; exact set ${sitemapIndexResult.exactControlledChildren ? "yes" : "no"}`,
   `- llms.txt: status ${llmsResult.status ?? "—"}; H1 ${llmsResult.hasMarkdownH1 ? "yes" : "no"}; Markdown links ${llmsResult.markdownLinkCount}`,

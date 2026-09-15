@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAccountSwitcher.astro";
+import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../../data/hermes-connect-repair-shop-launch";
+
+const launchEnd = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Chicago" }).format(new Date(REPAIR_SHOP_FREE_REGISTRATION_END_ISO));
+---
+<BaseLayout
+  title="Catalog Listing | Hermes Connect Repair Shop"
+  description="Publish owner-approved Repair Shop business facts from Hermes Connect into Hermes Catalog."
+  robots="noindex,nofollow"
+>
+  <div class="site-header account-source" aria-hidden="true"><HermesConnectAccountSwitcher current="repair" mode="menu" /></div>
+  <main class="catalog-setup"><div class="shell">
+    <a class="back" href="/businesses/">← Hermes Catalog</a>
+    <header><p class="eyebrow">Hermes Connect → Hermes Catalog</p><h1>One company profile. One owner-controlled source.</h1><p>Keep your business operations in Hermes Connect and choose whether approved public facts are published in Hermes Catalog. Private CRM data never becomes part of the listing.</p></header>
+
+    <section class="flow" aria-label="Catalog publication flow">
+      <article><strong>1 · Complete your company</strong><p>Save the real business name and location in Repair Shop CRM. Add services as you configure the workspace.</p></article>
+      <article><strong>2 · Approve publication</strong><p>Turn Catalog publication on here. The listing is marked self-submitted until independently verified.</p></article>
+      <article><strong>3 · Search-ready profile</strong><p>Hermes creates one crawlable Catalog profile and structured business facts without publishing customers, appointments, private contacts or authentication data.</p></article>
+      <article><strong>4 · Measure over time</strong><p>Initial SEO/GEO preparation starts with publication. Reporting is scheduled monthly; organic, local and AI-search performance should be evaluated over 6+ months. No ranking, traffic or lead result is guaranteed.</p></article>
+    </section>
+
+    <section class="panel" aria-live="polite">
+      <div><p class="eyebrow">Current Repair Shop pilot</p><h2>Catalog publication</h2><p class="muted">Free Repair Shop registration is currently available through {launchEnd} Central Time. Catalog listing itself has no listing fee; paid website, SEO/GEO, social media and advertising work is scoped separately.</p></div>
+      <div id="catalog-loading" class="status">Loading your company…</div>
+      <div id="catalog-missing" class="state hidden"><p>Complete the Repair Shop company profile before publishing.</p><a class="button" href="/services/hermes-connect/repair-shops/settings/">Open Company settings</a></div>
+      <div id="catalog-ready" class="state hidden">
+        <dl><div><dt>Company</dt><dd id="catalog-company"></dd></div><div><dt>Location</dt><dd id="catalog-location"></dd></div><div><dt>Status</dt><dd id="catalog-status"></dd></div><div><dt>Next reporting checkpoint</dt><dd id="catalog-report"></dd></div></dl>
+        <div class="actions"><button id="catalog-toggle" type="button"></button><a id="catalog-profile" class="button secondary hidden" href="#" target="_blank" rel="noopener">Open public profile</a><a class="button secondary" href="/businesses/request/?type=catalog-growth">Request growth review</a></div>
+        <p id="catalog-note" class="muted"></p>
+      </div>
+      <p id="catalog-error" class="error hidden"></p>
+    </section>
+  </div></main>
+</BaseLayout>
+
+<script>
+  const loading=document.querySelector<HTMLElement>("#catalog-loading");
+  const missing=document.querySelector<HTMLElement>("#catalog-missing");
+  const ready=document.querySelector<HTMLElement>("#catalog-ready");
+  const error=document.querySelector<HTMLElement>("#catalog-error");
+  const toggle=document.querySelector<HTMLButtonElement>("#catalog-toggle");
+  const profile=document.querySelector<HTMLAnchorElement>("#catalog-profile");
+  const show=(node:Element|null,visible:boolean)=>node?.classList.toggle("hidden",!visible);
+  const render=(next:any)=>{show(loading,false);show(error,false);if(!next){show(missing,true);show(ready,false);return;}show(missing,false);show(ready,true);const company=document.querySelector<HTMLElement>("#catalog-company");const location=document.querySelector<HTMLElement>("#catalog-location");const status=document.querySelector<HTMLElement>("#catalog-status");const report=document.querySelector<HTMLElement>("#catalog-report");const note=document.querySelector<HTMLElement>("#catalog-note");if(company)company.textContent=next.company_name||"—";if(location)location.textContent=[next.city,next.region,next.country_code].filter(Boolean).join(", ");if(status)status.textContent=next.listed?"Published · self-submitted · verification pending":"Not published";if(report)report.textContent=next.listed&&next.next_report_at?String(next.next_report_at).slice(0,10):"—";if(toggle){toggle.textContent=next.listed?"Remove from Catalog":"Publish in Catalog";toggle.dataset.next=next.listed?"off":"on";}if(profile){if(next.listed&&next.profile_url){profile.href=next.profile_url;show(profile,true);}else show(profile,false);}if(note)note.textContent=next.listed?"Your approved company facts are now eligible for Catalog discovery. Search engines control crawling and indexing timing; results are not guaranteed.":"Publishing is owner-controlled. Turning it off removes the Repair Shop CRM profile from the dynamic Catalog feed and sitemap.";};
+  const load=async()=>{try{const response=await fetch("/api/repair-shop/catalog",{credentials:"same-origin",headers:{Accept:"application/json"}});if(response.status===401){location.assign(`/services/hermes-connect/repair-shops/auth/?return_to=${encodeURIComponent(location.pathname)}`);return;}const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"load_failed");render(data.catalog);}catch(e){show(loading,false);show(error,true);if(error)error.textContent="Catalog settings could not be loaded. Please try again.";}};
+  toggle?.addEventListener("click",async()=>{toggle.disabled=true;show(error,false);try{const response=await fetch("/api/repair-shop/catalog",{method:"PUT",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({catalog_opt_in:toggle.dataset.next==="on"})});const data=await response.json();if(!response.ok||!data.success)throw new Error(data.error||"save_failed");render(data.catalog);}catch(e){show(error,true);if(error)error.textContent="Catalog publication could not be updated. Please try again.";}finally{toggle.disabled=false;}});
+  void load();
+</script>
+
+<style>
+:global(body){background:#f4f7fb;color:#172033}.catalog-setup{min-height:80vh;padding:72px 16px 90px}.shell{width:min(980px,100%);margin:auto}.back{color:#1c669f;text-decoration:none;font-weight:800}.eyebrow{margin:0 0 8px;color:#266899;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}header{padding:28px 0}h1{max-width:780px;margin:0;font-size:clamp(38px,7vw,68px);line-height:1;letter-spacing:-.045em}header>p:last-child{max-width:760px;color:#607186;line-height:1.65}.flow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.flow article,.panel{padding:20px;border:1px solid #d9e4ee;border-radius:18px;background:#fff}.flow p,.muted{color:#637287;line-height:1.6}.panel{margin-top:18px;padding:26px}.panel h2{margin:.2rem 0}.status,.state{margin-top:18px}.state dl{display:grid;gap:8px}.state dl div{display:grid;grid-template-columns:190px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid #edf1f5}.state dt{color:#7a8798}.state dd{margin:0;font-weight:750}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.button,button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border:0;border-radius:11px;background:#172033;color:#fff;text-decoration:none;font:inherit;font-weight:850;cursor:pointer}.button.secondary{border:1px solid #cbd9e6;background:#fff;color:#245f91}button:disabled{opacity:.55}.error{padding:12px;border-radius:10px;background:#fff0f0;color:#963b3b}.hidden{display:none!important}@media(max-width:680px){.flow{grid-template-columns:1fr}.catalog-setup{padding-top:48px}.state dl div{grid-template-columns:1fr;gap:2px}}
+</style>

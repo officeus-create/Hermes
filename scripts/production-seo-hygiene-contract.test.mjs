@@ -31,7 +31,7 @@ assert.ok(!layout.includes("/images/hermes-ecosystem-hero.jpg"), "BaseLayout mus
 assert.ok(!homepage.includes("/images/hermes-ecosystem-hero.jpg"), "Homepage schema must not revive the retired public hero duplicate.");
 
 const sitemapHost = "hermeslogisticsus.com";
-const childSitemapFiles = [
+const staticChildSitemapFiles = [
   "sitemap.xml",
   "sitemap-local.xml",
   "sitemap-services.xml",
@@ -42,9 +42,15 @@ const childSitemapFiles = [
   "sitemap-london.xml",
   "sitemap-business-directory.xml",
 ];
+const indexedChildSitemapFiles = [
+  ...staticChildSitemapFiles,
+  "sitemap-connect-catalog.xml",
+];
 // 204 controlled URLs before the Load Board provider/equipment acquisition cluster.
 // This branch adds exactly 15 unique canonical URLs: 7 provider integrations + 8 equipment pages.
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
+// The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
+// verified as an indexed child, not counted as a build-time static page inventory.
 const expectedCurrentPageUrlCount = 233;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const expectedCarrierGeoCityCount = 25;
@@ -52,16 +58,16 @@ const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].ma
 
 const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
 const sitemapIndexLocs = extractLocs(sitemapIndex);
-const expectedChildUrls = childSitemapFiles.map((file) => `https://${sitemapHost}/${file}`);
+const expectedChildUrls = indexedChildSitemapFiles.map((file) => `https://${sitemapHost}/${file}`);
 assert.deepEqual(
   new Set(sitemapIndexLocs),
   new Set(expectedChildUrls),
-  `sitemapindex.xml must reference exactly ${childSitemapFiles.length} controlled child sitemaps`,
+  `sitemapindex.xml must reference exactly ${indexedChildSitemapFiles.length} controlled child sitemaps`,
 );
 assert.equal(sitemapIndexLocs.length, expectedChildUrls.length, "sitemapindex.xml must not duplicate child sitemap references");
 
 const sitemapPageUrls = [];
-for (const file of childSitemapFiles) {
+for (const file of staticChildSitemapFiles) {
   const xml = await readFile(new URL(`../public/${file}`, import.meta.url), "utf8");
   const locs = extractLocs(xml);
   assert.ok(locs.length > 0, `${file} must contain at least one page URL`);
@@ -71,9 +77,9 @@ for (const file of childSitemapFiles) {
 assert.equal(
   sitemapPageUrls.length,
   expectedCurrentPageUrlCount,
-  `controlled sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
+  `controlled static sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
 );
-assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
+assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled static child sitemaps must not contain duplicate page URLs");
 
 const serviceSitemap = await readFile(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const carrierGeoUrls = extractLocs(serviceSitemap).filter((url) => url.startsWith(carrierGeoRoot));
@@ -113,6 +119,7 @@ for (const required of [
   '"/sitemapindex.xml"',
   '"/sitemap-london.xml"',
   '"/sitemap-business-directory.xml"',
+  '"/sitemap-connect-catalog.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
   '"/logistics/auction-vehicle-pickup/"',
@@ -138,4 +145,4 @@ assert.ok(workflow.includes("github.event.comment.body == '/verify-production-se
 assert.ok(workflow.includes("node scripts/check-production-seo-hygiene.mjs"), "workflow must use the bounded SEO hygiene wrapper");
 assert.ok(workflow.includes("no real lead") === false, "workflow should not imply that a lead is created");
 
-console.log(`Production SEO hygiene contract passed: ${sitemapPageUrls.length} unique canonical page URLs across ${childSitemapFiles.length} child sitemaps.`);
+console.log(`Production SEO hygiene contract passed: ${sitemapPageUrls.length} unique canonical static page URLs across ${staticChildSitemapFiles.length} static child sitemaps; ${indexedChildSitemapFiles.length} controlled children in sitemapindex.xml.`);

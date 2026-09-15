@@ -148,14 +148,14 @@ const schema = [
 <script>
   const form = document.querySelector<HTMLFormElement>("[data-catalog-search]");
   const input = document.querySelector<HTMLInputElement>("[data-catalog-input]");
-  const cards = [...document.querySelectorAll<HTMLElement>("[data-catalog-card]")];
+  const cards = () => [...document.querySelectorAll<HTMLElement>("[data-catalog-card]")];
   const count = document.querySelector<HTMLElement>("[data-catalog-count]");
   const empty = document.querySelector<HTMLElement>("[data-catalog-empty]");
   const normalize = (value: string) => value.trim().toLowerCase();
   const applySearch = (rawQuery: string) => {
     const query = normalize(rawQuery);
     let visible = 0;
-    cards.forEach((card) => {
+    cards().forEach((card) => {
       const matches = !query || (card.dataset.searchText ?? "").includes(query);
       card.hidden = !matches;
       if (matches) visible += 1;
@@ -171,6 +171,7 @@ const schema = [
     applySearch(query);
     document.querySelector("#catalog-search")?.scrollIntoView({ behavior: "smooth", block: "center" });
   }));
+  document.addEventListener("hermes:catalog-profiles-loaded", () => applySearch(input?.value ?? ""));
 </script>
 
 <style>
