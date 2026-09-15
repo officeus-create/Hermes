@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const read = (path) => readFileSync(path, "utf8");
+const schema = read("functions/api/_lib/repair-shop-schema.mjs");
+const profile = read("functions/api/repair-shop/profile.ts");
+const catalogOwnerApi = read("functions/api/repair-shop/catalog.ts");
+const publicCatalogApi = read("functions/api/catalog/companies.ts");
+const publicProfile = read("functions/businesses/connect/repair-shop/[slug].ts");
+const catalogPage = read("src/pages/businesses/index.astro");
+const loader = read("public/catalog-connect-live.js");
+const ownerPage = read("src/pages/services/hermes-connect/repair-shops/catalog.astro");
+
+assert.match(schema, /catalog_opt_in INTEGER NOT NULL DEFAULT 0/);
+assert.match(schema, /next_seo_report_at/);
+assert.match(profile, /typeof body\.catalog_opt_in === "boolean"/);
+assert.doesNotMatch(profile, /hermes_company_profiles|load_board_access/);
+assert.match(catalogOwnerApi, /sameOrigin\(request\)/);
+assert.match(catalogOwnerApi, /catalog_opt_in=0,next_seo_report_at=NULL/);
+assert.doesNotMatch(catalogOwnerApi, /load_board_access|hermes_company_profiles/);
+assert.match(publicCatalogApi, /vertical_key='repair_shop'/);
+assert.match(publicCatalogApi, /profileUrl: `\/businesses\/connect\/repair-shop\//);
+assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointment/);
+assert.match(publicProfile, /Customer records, appointments, private contacts and authentication data are never published/);
+assert.doesNotMatch(publicProfile, /phone|client_email|client_phone/);
+assert.match(catalogPage, /const cards = \(\) =>/);
+assert.match(catalogPage, /hermes:catalog-profiles-loaded/);
+assert.doesNotMatch(loader, /addEventListener\('input'|addEventListener\('submit'/);
+assert.match(loader, /textContent = String\(company\.companyName/);
+assert.match(ownerPage, /robots="noindex,nofollow"/);
+assert.match(ownerPage, /6\+ months/);
+assert.match(ownerPage, /No ranking, traffic or lead result is guaranteed/);
+console.log("Catalog Connect publication contract OK");

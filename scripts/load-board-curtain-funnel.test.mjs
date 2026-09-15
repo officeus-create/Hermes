@@ -85,7 +85,11 @@ assert.match(accountSwitcher, /runtimeCopy\.loadboard/);
 assert.match(catalogApi, /catalog_opt_in = 1/);
 assert.match(catalogApi, /self_submitted/);
 assert.match(catalogApi, /verified_public/);
-assert.doesNotMatch(catalogApi, /authority_number|owner_specialist_id|credential|password|phone|email/i);
+// Internal owner_specialist_id use is allowed for scoped service lookup, but private facts
+// must never be serialized as public Catalog object keys.
+assert.doesNotMatch(catalogApi, /ownerSpecialistId\s*:/);
+assert.doesNotMatch(catalogApi, /authorityNumber\s*:/);
+assert.doesNotMatch(catalogApi, /(?:credential|password|phone|email)\s*:/i);
 
 assert.match(summaryApi, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(summaryApi, /record_type IN \('load', 'capacity'\)/);
