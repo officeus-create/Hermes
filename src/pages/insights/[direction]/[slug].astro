@@ -1,0 +1,43 @@
+---
+import ContentInsightPage from "../../../components/ContentInsightPage.astro";
+import { getInsightPath, insightDirectionMeta, insights, type InsightPost } from "../../../data/insights";
+
+export function getStaticPaths() {
+  return insights
+    .filter((post) => post.contentTier === "standalone")
+    .map((post) => ({ params: { direction: post.direction, slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: InsightPost };
+const meta = insightDirectionMeta[post.direction];
+---
+
+<ContentInsightPage
+  title={post.title}
+  description={post.description}
+  eyebrow={post.eyebrow}
+  h1={post.h1}
+  conciseAnswer={post.conciseAnswer}
+  explanation={post.explanation}
+  takeaways={post.takeaways}
+  faq={post.faq}
+  related={post.related}
+  primaryAction={post.primaryAction}
+  secondaryAction={post.secondaryAction}
+  canonicalPath={getInsightPath(post)}
+  sourceLabel={post.sourceLabel}
+  sourceUrl={post.sourceUrl}
+  sourcePublishedAt={post.sourcePublishedAt}
+  datePublished={post.datePublished}
+  dateModified={post.dateModified}
+  directionName={meta.label}
+  directionOwnerUrl={meta.ownerUrl}
+  authorName={post.authorName}
+  schemaType="BlogPosting"
+  articleSection={meta.label}
+  keywords={post.keywords}
+  hubLabel="Hermes Insights"
+  hubUrl="/insights/"
+  showServiceSchema={false}
+  feedUrl="/insights/rss.xml"
+/>

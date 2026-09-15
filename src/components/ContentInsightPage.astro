@@ -44,6 +44,13 @@ interface Props {
   video?: InsightVideo | null;
   reviewMode?: boolean;
   robots?: string;
+  schemaType?: "Article" | "BlogPosting" | "NewsArticle";
+  articleSection?: string;
+  keywords?: string[];
+  hubLabel?: string;
+  hubUrl?: string;
+  showServiceSchema?: boolean;
+  feedUrl?: string;
 }
 
 const {
@@ -70,6 +77,13 @@ const {
   video = null,
   reviewMode = false,
   robots = reviewMode ? "noindex,nofollow,noarchive" : "index,follow,max-image-preview:large",
+  schemaType = "Article",
+  articleSection,
+  keywords = [],
+  hubLabel,
+  hubUrl,
+  showServiceSchema = true,
+  feedUrl,
 } = Astro.props;
 
 const canonicalUrl = new URL(canonicalPath, Astro.site).toString();
@@ -85,7 +99,7 @@ const hasVideoSchema = Boolean(
 );
 const articleSchema = {
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": schemaType,
   headline: h1,
   description,
   datePublished,
@@ -94,6 +108,8 @@ const articleSchema = {
   author: { "@type": "Organization", name: authorName },
   publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
   about: { "@type": "Thing", name: directionName, url: directionUrl },
+  articleSection: articleSection || directionName,
+  keywords: keywords.length ? keywords.join(", ") : undefined,
   isBasedOn: sourceUrl && !sourceIsSynthetic ? sourceUrl : undefined,
 };
 const serviceSchema = {
@@ -114,14 +130,18 @@ const faqSchema = {
     acceptedAnswer: { "@type": "Answer", text: item.answer },
   })),
 };
+const breadcrumbItems = [
+  { name: "Home", item: "https://hermeslogisticsus.com/" },
+  ...(hubLabel && hubUrl ? [{ name: hubLabel, item: new URL(hubUrl, Astro.site).toString() }] : []),
+  { name: directionName, item: directionUrl },
+  { name: h1, item: canonicalUrl },
+];
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-    { "@type": "ListItem", position: 2, name: directionName, item: directionUrl },
-    { "@type": "ListItem", position: 3, name: h1, item: canonicalUrl },
-  ],
+  itemListElement: breadcrumbItems.map((item, index) => ({
+    "@type": "ListItem", position: index + 1, name: item.name, item: item.item,
+  })),
 };
 const videoSchema = hasVideoSchema && video
   ? {
@@ -136,12 +156,25 @@ const videoSchema = hasVideoSchema && video
       duration: video.duration,
     }
   : null;
-const schema = videoSchema
-  ? [articleSchema, serviceSchema, videoSchema, faqSchema, breadcrumbSchema]
-  : [articleSchema, serviceSchema, faqSchema, breadcrumbSchema];
+const schema = [
+  articleSchema,
+  ...(showServiceSchema ? [serviceSchema] : []),
+  ...(videoSchema ? [videoSchema] : []),
+  faqSchema,
+  breadcrumbSchema,
+];
 ---
 
-<BaseLayout title={title} description={description} schema={schema} robots={robots}>
+<BaseLayout
+  title={title}
+  description={description}
+  schema={schema}
+  robots={robots}
+  ogType="article"
+  feedUrl={feedUrl}
+  articlePublishedTime={`${datePublished}T12:00:00Z`}
+  articleModifiedTime={`${dateModified}T12:00:00Z`}
+>
   <div class="logistics-resource-page content-insight-page">
     <SiteHeader theme="dark" />
     <main id="main-content">
@@ -150,6 +183,7 @@ const schema = videoSchema
           <div class="shell">
             <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
               <a href="/">Home</a><span aria-hidden="true">/</span>
+              {hubLabel && hubUrl && <><a href={hubUrl}>{hubLabel}</a><span aria-hidden="true">/</span></>}
               <a href={directionOwnerUrl}>{directionName}</a><span aria-hidden="true">/</span>
               <span aria-current="page">Insight</span>
             </nav>
@@ -157,6 +191,7 @@ const schema = videoSchema
             <div class="resource-hero-grid">
               <div>
                 <p class="eyebrow">{eyebrow}</p>
+                <p class="insight-publish-meta"><time datetime={datePublished}>Published {datePublished}</time><span aria-hidden="true"> · </span><time datetime={dateModified}>Updated {dateModified}</time></p>
                 <h1>{h1}</h1>
                 <p>{conciseAnswer}</p>
                 <div class="logistics-audience-actions">
@@ -231,7 +266,7 @@ const schema = videoSchema
               <article><strong>Source</strong><p>{sourceLabel}</p></article>
               <article><strong>Original date</strong><p>{sourcePublishedAt ?? "Not yet verified"}</p></article>
               <article><strong>Website review</strong><p>Published {datePublished}; last modified {dateModified}.</p></article>
-              <article><strong>External source link</strong><p>{sourceUrl && !sourceIsSynthetic ? sourceUrl : "Held until a stable approved source URL is verified."}</p></article>
+              <article><strong>External source link</strong><p>{sourceUrl && !sourceIsSynthetic ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Open the original source ↗</a> : "Held until a stable approved source URL is verified."}</p></article>
             </div>
           </div>
         </section>
@@ -260,3 +295,7 @@ const schema = videoSchema
     <SiteFooter />
   </div>
 </BaseLayout>
+
+<style>
+  .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}
+</style>

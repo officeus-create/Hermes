@@ -79,6 +79,7 @@ const navigation = activeLocale === "en"
     })
   : orderedPaths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
+const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
@@ -111,6 +112,7 @@ const languageLinks = siteLocales.map((language) => {
 
   <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
+    <a href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
     <a class="catalog-nav-link" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
   </nav>
 
@@ -149,6 +151,7 @@ const languageLinks = siteLocales.map((language) => {
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
+    <a href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
     <a class="mobile-catalog-link" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
     <HermesConnectLauncher
       variant="mobile"

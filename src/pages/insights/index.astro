@@ -1,0 +1,108 @@
+---
+import { ArrowRight, Rss } from "@lucide/astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getInsightPath, insightDirectionMeta, insights, type InsightDirection } from "../../data/insights";
+import "../../styles/hermes-insights.css";
+
+const directions = Object.keys(insightDirectionMeta) as InsightDirection[];
+const itemList = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Hermes Insights",
+  itemListElement: insights.map((post, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: new URL(getInsightPath(post), Astro.site).toString(),
+    name: post.h1,
+  })),
+};
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: new URL("/", Astro.site).toString() },
+    { "@type": "ListItem", position: 2, name: "Hermes Insights", item: new URL("/insights/", Astro.site).toString() },
+  ],
+};
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Hermes Insights",
+  description: "Reviewed market updates, operating analysis, marketing research, Academy notes, and technology insights from Hermes.",
+  url: new URL("/insights/", Astro.site).toString(),
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+};
+---
+
+<BaseLayout
+  title="Hermes Insights | Logistics, Marketing, Academy & Technology"
+  description="Reviewed Hermes insights covering freight markets, carrier operations, SEO and marketing, practical Academy updates, AI, CRM, automation, and technology."
+  schema={[collectionSchema, itemList, breadcrumbSchema]}
+  feedUrl="/insights/rss.xml"
+>
+  <div class="insights-page">
+    <SiteHeader theme="dark" />
+    <main id="main-content">
+      <header class="insights-hero" id="top">
+        <div class="shell insights-hero-grid">
+          <div>
+            <p class="eyebrow">Hermes Insights · Reviewed sources, original analysis</p>
+            <h1>News becomes useful when it changes a decision.</h1>
+            <p>Telegram carries the short update. Hermes Insights keeps the durable version: dated evidence, practical interpretation, operating boundaries, internal links, and a clear next step.</p>
+            <div class="insights-filter" aria-label="Insight categories">
+              {directions.map((direction) => <a href={`#${direction}`}>{insightDirectionMeta[direction].label}</a>)}
+            </div>
+            <a class="insights-rss" href="/insights/rss.xml"><Rss size={17} aria-hidden="true" /> RSS feed</a>
+          </div>
+          <aside>
+            <strong>Publication rule</strong>
+            <span>External news is never copied into a Hermes page. Standalone posts require a stable source, dated evidence, original analysis, a distinct search purpose, and a safe internal owner page.</span>
+          </aside>
+        </div>
+      </header>
+
+      <section class="insights-section">
+        <div class="shell">
+          <div class="insights-heading">
+            <div><p class="eyebrow">Current library</p><h2>Four directions, one evidence standard.</h2></div>
+            <p>High-value news can become a standalone article. Smaller updates should be grouped into a digest or kept as a hub brief instead of creating thin pages that compete with stronger Hermes pages.</p>
+          </div>
+
+          {directions.map((direction) => {
+            const posts = insights.filter((post) => post.direction === direction);
+            const meta = insightDirectionMeta[direction];
+            return (
+              <section class="insights-direction-block" id={direction}>
+                <div class="insights-heading">
+                  <div><p class="eyebrow">{meta.label}</p><h2>{direction === "logistics" ? "Market and operating intelligence" : direction === "marketing" ? "Growth and measurement intelligence" : direction === "academy" ? "Learning and program intelligence" : "Systems and automation intelligence"}</h2></div>
+                  <p>{meta.description}</p>
+                </div>
+                {posts.length ? (
+                  <div class="insights-grid">
+                    {posts.map((post) => (
+                      <article class="insight-card">
+                        <div class="insight-card-meta"><span>{post.datePublished}</span><span>·</span><span>{post.contentTier}</span></div>
+                        <h3>{post.h1}</h3>
+                        <p>{post.description}</p>
+                        {post.contentTier === "standalone" ? (
+                          <a href={getInsightPath(post)}>Read Hermes analysis <ArrowRight size={17} aria-hidden="true" /></a>
+                        ) : (
+                          <a href={post.primaryAction.href}>Open related Hermes page <ArrowRight size={17} aria-hidden="true" /></a>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                ) : <div class="insights-empty">No standalone insight is published in this direction yet. Smaller updates can still appear in Telegram or a future digest without creating a thin page.</div>}
+              </section>
+            );
+          })}
+
+          <p class="insights-boundary"><strong>Editorial boundary:</strong> a source being public does not make its wording, images, charts, screenshots, or media reusable. Hermes publishes original analysis and links to the original source for the underlying facts.</p>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

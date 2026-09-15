@@ -12,6 +12,8 @@ const knownUpdates = [
   ["sitemapindex.xml", "sitemap-digital-services.xml", "2026-09-13", "sitemap"],
   // b5016ed0 published the existing Carrier GEO entries on September 8.
   ["sitemapindex.xml", "sitemap-services.xml", "2026-09-08", "sitemap"],
+  ["sitemap-insights.xml", "insights/logistics/dry-van-spot-rates-september-2026/", "2026-09-14", "url"],
+  ["sitemapindex.xml", "sitemap-insights.xml", "2026-09-14", "sitemap"],
 ];
 for (const [file, path, minimum, tag] of knownUpdates) {
   const xml = await readFile(new URL(`../public/${file}`, import.meta.url), "utf8");
