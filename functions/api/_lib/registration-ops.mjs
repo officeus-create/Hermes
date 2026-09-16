@@ -55,6 +55,16 @@ export async function syncSyntheticFlagForAccount({ db, env, specialistId, email
   return Boolean(synthetic);
 }
 
+export async function getRegistrationSyntheticFlag(db, specialistId) {
+  if (!db || !specialistId) return false;
+  await ensureRegistrationOpsSchema(db);
+  const row = await db
+    .prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id = ? LIMIT 1")
+    .bind(String(specialistId))
+    .first();
+  return Number(row?.synthetic || 0) === 1;
+}
+
 export async function enqueueRegistrationAlert({ db, specialistId, kind, createdAt }) {
   if (!db || !specialistId || !ALERT_KINDS.has(kind)) return false;
   await ensureRegistrationOpsSchema(db);

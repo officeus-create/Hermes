@@ -12,6 +12,7 @@ import {
 } from "../_lib/repair-shop-driver-discount-schema.mjs";
 import { listServicesForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
+import { getRegistrationSyntheticFlag } from "../_lib/registration-ops.mjs";
 
 type Env = { DB?: any };
 
@@ -41,6 +42,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .first();
 
   if (!shop) return jsonResponse(404, { success: false, error: "shop_not_found" });
+
+  const synthetic = await getRegistrationSyntheticFlag(env.DB, String(shop.owner_specialist_id));
 
   const repairServiceScope = await resolveDefaultRepairShopServiceContext(
     env.DB,
@@ -109,6 +112,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const { owner_specialist_id: _owner, ...publicShop } = shop;
   return jsonResponse(200, {
     success: true,
+    synthetic,
     shop: publicShop,
     services,
     availability,
