@@ -46,7 +46,7 @@ test("top-level direction promo rails lead with the current commercial priority"
     ["/paths/logistics/", "current load opportunities", "/load-board/"],
     ["/paths/marketing/", "focused growth review", "#contact"],
     ["/paths/technology/", "Map one expensive workflow first", "/paths/technology/#project-brief"],
-    ["/paths/academy/", "Car Hauling Dispatcher opening is currently verified", "/careers/car-hauling-dispatcher/"],
+    ["/paths/academy/", "Start with U.S. Logistics Operations training", "/academy/us-logistics-operations/"],
   ] as const;
 
   for (const [path, copy, href] of priorities) {
