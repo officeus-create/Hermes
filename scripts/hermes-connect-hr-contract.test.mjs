@@ -178,7 +178,7 @@ assert.match(accountApi, /hr_review:\s*Boolean\(hrReviewerAccess\)/);
 assert.match(accountApi, /reviewer_access:\s*true/);
 assert.match(accountSwitcher, /data-workspace-hr data-hc-workspace-link="hr" hidden/);
 assert.match(accountSwitcher, /item\?\.key === "hr"/);
-assert.match(accountSwitcher, /if \(hrWorkspace && hr\) hr\.hidden = false/);
+assert.match(accountSwitcher, /if \(hrWorkspace && hr\) \{[\s\S]*if \(hrWorkspace\.href\) hr\.href = withLocale\(hrWorkspace\.href\);[\s\S]*hr\.hidden = false;[\s\S]*\}/);
 assert.match(accountSwitcher, /hr:\s*"\/demos\/hermes-connect\/hr-admin\.html"/);
 assert.doesNotMatch(accountSwitcher, /\|\|\s*current\s*===\s*"hr"/);
 
