@@ -11,13 +11,28 @@ const shared = [
 ];
 const contextual = {
   catalog: shared,
-  logistics: [shared[2], { q: "Looking for car-hauler demand?", title: "Open the Hermes Load Board and load-planning paths.", body: "Use the canonical logistics discovery surface; source coverage and carrier execution remain evidence-gated.", href: "/load-board/", cta: "Open Load Board" }, shared[0], shared[1]],
-  marketing: [bonus, shared[0], { q: "Need a stronger site?", title: "Build or redesign the website around measurable customer action.", body: "Website, SEO/GEO and Catalog should reinforce one business identity rather than compete with each other.", href: "/services/website-development/", cta: "Website development" }, shared[2]],
-  technology: [bonus, { q: "Need a custom workflow instead of another tool?", title: "Start with the real operating bottleneck.", body: "Hermes Technology connects web and workflow engineering to a verified business need.", href: "/paths/technology/", cta: "Explore IT" }, shared[0], shared[1]],
+  logistics: [
+    { q: "Have available car-hauling capacity?", title: "Start with current load opportunities and carrier fit.", body: "Open the Hermes Load Board to review current opportunities, then use the carrier path when you need dispatch support or a longer-term operating relationship. Load availability, rate and fit remain route-specific.", href: "/load-board/", cta: "View current load opportunities" },
+    { q: "Need a carrier relationship beyond one load?", title: "Review the Hermes carrier path and operating support.", body: "Use the carrier page for plans, packet and agreement context. Acceptance and freight access depend on the verified operating profile and current business fit.", href: "/carrier/", cta: "Review carrier path" },
+    shared[2],
+    shared[1],
+  ],
+  marketing: [
+    { q: "Need qualified demand, not disconnected activity?", title: "Start with a focused growth review.", body: "Show us the current website, social presence, offer and target result. We will map the smallest useful combination of website, SEO/GEO, content, advertising or CRM before proposing a larger scope.", href: "#contact", cta: "Request a growth review" },
+    bonus,
+    { q: "Need a stronger site?", title: "Build or redesign the website around measurable customer action.", body: "Website, SEO/GEO and Catalog should reinforce one business identity rather than compete with each other.", href: "/services/website-development/", cta: "Website development" },
+    shared[2],
+  ],
+  technology: [
+    { q: "Where does work leak between website, inbox, CRM and people?", title: "Map one expensive workflow first.", body: "Describe the process that costs time, creates errors or loses opportunities. Hermes Technology can scope the smallest useful connected system before expanding into automation, integrations or AI.", href: "/paths/technology/#project-brief", cta: "Build the project brief" },
+    bonus,
+    shared[0],
+    shared[1],
+  ],
   academy: [
-    { q: "Want to help businesses grow?", title: "Three-month online marketing training.", body: "Apply to build research, media-planning and negotiation skills. Our representative-recruitment roadmap targets 110 countries; future roles depend on assessment and available work.", href: "/academy/marketing/", cta: "Explore marketing training" },
-    { q: "Ready to develop as an operations leader?", title: "Help build the future Hermes network.", body: "Our goal is to select and train 50 operations directors across the network. This is a development target, not a guarantee of 50 current vacancies.", href: "/paths/academy/#academy-global-network", cta: "Explore the leadership pathway" },
-    { q: "Prefer negotiation and media planning?", title: "Explore the remote sales team pathway.", body: "Learn business research, discovery calls, proposals and delivery handoffs. Training and real-client access are separate steps.", href: "/paths/academy/#academy-global-network", cta: "Explore sales team development" },
+    { q: "Building toward U.S. logistics or dispatch work?", title: "Start with U.S. Logistics Operations training.", body: "Review dispatch, load-planning, carrier, sales and operating foundations, then move through practice and human assessment. Training does not guarantee employment, client access or income.", href: "/academy/us-logistics-operations/", cta: "Explore logistics & dispatch training" },
+    { q: "Want to help businesses grow?", title: "Three-month online marketing training.", body: "Apply to build research, media-planning and negotiation skills. Future roles depend on assessment and available work.", href: "/academy/marketing/", cta: "Explore marketing training" },
+    { q: "Ready to develop as an operations leader?", title: "Help build the future Hermes network.", body: "Our goal is to select and train operations leaders across the network. This is a development target, not a guarantee of current vacancies.", href: "/paths/academy/#academy-global-network", cta: "Explore the leadership pathway" },
     shared[0],
   ],
   general: shared,
