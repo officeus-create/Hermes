@@ -8,6 +8,7 @@ import {
   parseCapacityListEmail,
   parseControlledForwardMetadata,
   parseFreightEmail,
+  parseFreightEmailRecords,
   parseSourceConfig,
   sourceAuthenticationPassed,
 } from "../workers/lead-email/src/load-board-inbound.mjs";
@@ -73,6 +74,202 @@ assert.equal(parsed.record.visibility, "internal_only");
 assert.equal(parsed.record.expires_at, "2026-09-05T02:00:00.000Z");
 assert.match(parsed.record.fingerprint, /^sha256:[a-f0-9]{64}$/);
 
+const multiFreight = await parseFreightEmailRecords({
+  subject: "Two loads available",
+  body: [
+    "Load 1",
+    "Origin: Chicago, IL",
+    "Destination: Atlanta, GA",
+    "Equipment: Dry Van",
+    "Rate: $2,100",
+    "",
+    "Load 2",
+    "Origin: Milwaukee, WI",
+    "Destination: Dallas, TX",
+    "Equipment: Reefer",
+    "Rate: $2,850",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "multi-load-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:multi-load-001@example.com",
+});
+assert.equal(multiFreight.quarantine.length, 0);
+assert.equal(multiFreight.records.length, 2);
+assert.deepEqual(multiFreight.records.map((item) => [item.origin, item.destination, item.equipment, item.rate_amount]), [
+  ["Chicago, IL", "Atlanta, GA", "dry_van", 2100],
+  ["Milwaukee, WI", "Dallas, TX", "reefer", 2850],
+]);
+assert.ok(multiFreight.records.every((item) => item.source_message_id === "multi-load-001@example.com"));
+assert.notEqual(multiFreight.records[0].fingerprint, multiFreight.records[1].fingerprint);
+
+const loadCountAndLaneRate = await parseFreightEmailRecords({
+  subject: "AVAILABLE LOADS",
+  body: [
+    "5 Available > Bremen, IN to Harper Woods, MI - $971",
+    "Equipment: Flatbed",
+    "Load tomorrow 09/17",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "available-count-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:available-count-001@example.com",
+});
+assert.equal(loadCountAndLaneRate.quarantine.length, 0);
+assert.equal(loadCountAndLaneRate.records.length, 1);
+assert.equal(loadCountAndLaneRate.records[0].rate_amount, 971);
+assert.equal(loadCountAndLaneRate.records[0].availability_text, "5 loads available");
+assert.equal(loadCountAndLaneRate.records[0].origin, "Bremen, IN");
+assert.equal(loadCountAndLaneRate.records[0].destination, "Harper Woods, MI");
+
+const beemacStyleFreight = await parseFreightEmailRecords({
+  subject: "2 LOADS AVAILABLE TODAY",
+  body: [
+    "DETROIT, MI 48212",
+    "TO CATOOSA, OK 74015",
+    "",
+    "(2 LOADS AVAILABLE)",
+    "",
+    "FLATBED",
+    "",
+    "48KLB ALUMINUM",
+    "",
+    "PU TODAY /DEL ASAP 8-3",
+    "",
+    "TARP NEEDED",
+    "",
+    "RATE $2692",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "beemac-style-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:beemac-style-001@example.com",
+});
+assert.equal(beemacStyleFreight.quarantine.length, 0);
+assert.equal(beemacStyleFreight.records.length, 1);
+assert.equal(beemacStyleFreight.records[0].origin, "DETROIT, MI");
+assert.equal(beemacStyleFreight.records[0].destination, "CATOOSA, OK");
+assert.equal(beemacStyleFreight.records[0].equipment, "flatbed");
+assert.equal(beemacStyleFreight.records[0].rate_amount, 2692);
+assert.equal(beemacStyleFreight.records[0].availability_text, "2 loads available");
+
+const beemacAlternativeEquipment = await parseFreightEmailRecords({
+  subject: "AVAILABLE LOADS",
+  body: [
+    "Bremen, IN to Harper Woods, MI - $971",
+    "48 OR 53 FT FLATBED OR STEPDECK ONLY - NO HOT SHOT AND NO CONESTOGA.",
+    "8,000 lbs insulation - strap and go.",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "beemac-alternative-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:beemac-alternative-001@example.com",
+});
+assert.equal(beemacAlternativeEquipment.records.length, 0);
+assert.equal(beemacAlternativeEquipment.quarantine.length, 1);
+assert.equal(beemacAlternativeEquipment.quarantine[0].reason, "ambiguous_equipment");
+
+const redClassicStyleFreight = await parseFreightEmailRecords({
+  subject: "Pickup to delivery load",
+  body: [
+    "Hello,",
+    "Please see available load for pickup tomorrow",
+    "Pickup",
+    "Delivery",
+    "Location",
+    "Texarkana,AR",
+    "Saint Paul,MN",
+    "Date",
+    "12-Jul",
+    "14-Jul",
+    "Appt Time",
+    "12pm",
+    "1pm",
+    "Commodity",
+    "paper products",
+    "Loaded Miles",
+    "905",
+    "Weight(lbs)",
+    "43,900",
+    "Equipment",
+    "Dry Van 2013 or newer",
+    "Rate",
+    "$2,600",
+  ].join("\n\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "red-classic-style-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:red-classic-style-001@example.com",
+});
+assert.equal(redClassicStyleFreight.quarantine.length, 0);
+assert.equal(redClassicStyleFreight.records.length, 1);
+assert.equal(redClassicStyleFreight.records[0].origin, "Texarkana, AR");
+assert.equal(redClassicStyleFreight.records[0].destination, "Saint Paul, MN");
+assert.equal(redClassicStyleFreight.records[0].equipment, "dry_van");
+assert.equal(redClassicStyleFreight.records[0].rate_amount, 2600);
+assert.equal(redClassicStyleFreight.records[0].pickup_window, "12-Jul 12pm");
+assert.equal(redClassicStyleFreight.records[0].delivery_window, "14-Jul 1pm");
+assert.equal(redClassicStyleFreight.records[0].weight_lbs, 43900);
+
+const routeListFreight = await parseFreightEmailRecords({
+  subject: "Old subject lane Boston, MA to Miami, FL",
+  body: [
+    "Chicago, IL to Atlanta, GA",
+    "Equipment: Dry Van",
+    "Rate: $2,100",
+    "Milwaukee, WI to Dallas, TX",
+    "Equipment: Reefer",
+    "Rate: $2,850",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "route-list-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:route-list-001@example.com",
+});
+assert.equal(routeListFreight.quarantine.length, 0);
+assert.equal(routeListFreight.records.length, 2);
+assert.deepEqual(routeListFreight.records.map((item) => item.equipment), ["dry_van", "reefer"]);
+
+const rtcTableFreight = await parseFreightEmailRecords({
+  subject: "Available Loads",
+  body: [
+    "Ship Delv Our Eqp",
+    "Date From City St To City St by No. Type",
+    "09/16 Philadelphia PA Warren MI 09/17 435870 V",
+    "09/16 Dayton NJ Lansing MI 09/18 435871 R",
+  ].join("\n"),
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "table-load-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:table-load-001@example.com",
+});
+assert.equal(rtcTableFreight.quarantine.length, 0);
+assert.equal(rtcTableFreight.records.length, 2);
+assert.deepEqual(rtcTableFreight.records.map((item) => [item.origin, item.destination, item.equipment, item.provider_record_id]), [
+  ["Philadelphia, PA", "Warren, MI", "dry_van", "435870"],
+  ["Dayton, NJ", "Lansing, MI", "reefer", "435871"],
+]);
+assert.deepEqual(rtcTableFreight.records.map((item) => [item.pickup_window, item.delivery_window]), [["09/16", "09/17"], ["09/16", "09/18"]]);
+
+const rtcAmbiguousEquipment = await parseFreightEmailRecords({
+  subject: "Available Loads",
+  body: "09/16 Philadelphia PA Warren MI 09/17 435870 V/R",
+  receivedAt: now,
+  observedAt: now,
+  source: sourceConfig[0],
+  sourceMessageId: "table-ambiguous-001@example.com",
+  rawEvidenceRef: "email:src_broker_example:table-ambiguous-001@example.com",
+});
+assert.equal(rtcAmbiguousEquipment.records.length, 0);
+assert.equal(rtcAmbiguousEquipment.quarantine.length, 1);
+assert.equal(rtcAmbiguousEquipment.quarantine[0].reason, "ambiguous_equipment");
 
 const multiCapacity = await parseCapacityListEmail({
   subject: "Truck list",
@@ -237,6 +434,56 @@ assert.equal(payload.records[0].equipment, "dry_van");
 assert.equal(payload.records[0].raw_evidence_ref, "email:src_broker_example:load-bridge-001@example.com");
 assert.doesNotMatch(capturedRequest.options.body, /LOAD OFFER/);
 assert.doesNotMatch(capturedRequest.options.body, /test-runtime-token/);
+
+let multiFreightPayload = null;
+const multiFreightBridgeDate = new Date().toUTCString();
+const multiFreightRawEmail = [
+  "From: Broker Example <broker@example.com>",
+  "To: loads@hermeslogisticsus.com",
+  "Subject: Two loads available",
+  "Message-ID: <multi-load-bridge-001@example.com>",
+  `Date: ${multiFreightBridgeDate}`,
+  "Content-Type: text/plain; charset=utf-8",
+  "",
+  "Chicago, IL to Atlanta, GA",
+  "Equipment: Dry Van",
+  "Rate: $2,100",
+  "Milwaukee, WI to Dallas, TX",
+  "Equipment: Reefer",
+  "Rate: $2,850",
+].join("\r\n");
+await handleLoadBoardInboundEmail({
+  to: "loads@hermeslogisticsus.com",
+  from: "broker@example.com",
+  headers: new Headers({
+    From: "Broker Example <broker@example.com>",
+    Subject: "Two loads available",
+    "Message-ID": "<multi-load-bridge-001@example.com>",
+    Date: multiFreightBridgeDate,
+  }),
+  raw: stream(multiFreightRawEmail),
+}, {
+  LOADBOARD_EMAIL_RECIPIENT: "loads@hermeslogisticsus.com",
+  LOADBOARD_INGEST_URL: "https://hermeslogisticsus.com/api/load-board/intake",
+  LOADBOARD_INGEST_TOKEN: "test-runtime-token",
+  LOADBOARD_EMAIL_SOURCE_CONFIG: JSON.stringify({
+    "broker@example.com": {
+      id: "src_broker_example",
+      name: "Broker Example",
+      redistribution_permission: "internal_only",
+      requested_visibility: "internal_only",
+      require_authentication: false,
+    },
+  }),
+}, null, { fetch: async (_url, options) => {
+  multiFreightPayload = JSON.parse(options.body);
+  return new Response(JSON.stringify({ success: true, accepted: 2, quarantined: 0 }), { status: 202 });
+} });
+assert.equal(multiFreightPayload.records.length, 2);
+assert.equal(multiFreightPayload.quarantine.length, 0);
+assert.deepEqual(multiFreightPayload.records.map((item) => item.origin), ["Chicago, IL", "Milwaukee, WI"]);
+assert.ok(multiFreightPayload.records.every((item) => item.source_message_id === "multi-load-bridge-001@example.com"));
+assert.notEqual(multiFreightPayload.records[0].fingerprint, multiFreightPayload.records[1].fingerprint);
 
 let sharedTokenRequest = null;
 await handleLoadBoardInboundEmail({
@@ -522,4 +769,4 @@ assert.equal(unknownSourcePayload.quarantine[0].reason, "source_not_approved");
 assert.equal(unknownSourcePayload.quarantine[0].subject, "");
 assert.doesNotMatch(JSON.stringify(unknownSourcePayload), /Unknown <unknown@example.com>/);
 
-console.log("load-board-email-bridge-contract: approved source, MIME parse, multi-record capacity, Car Hauling ingestion, authentication gate, TTL and no-raw-body handoff verified");
+console.log("load-board-email-bridge-contract: approved source, MIME parse, multi-record freight/capacity, table fail-closed parsing, Car Hauling ingestion, authentication gate, TTL and no-raw-body handoff verified");
