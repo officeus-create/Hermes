@@ -1,5 +1,6 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
+import "./multilingual-seo-contract.test.mjs";
 
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
