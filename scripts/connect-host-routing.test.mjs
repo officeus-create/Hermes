@@ -23,6 +23,26 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
 }
 
 {
+  const { context, observed } = contextFor("https://hermeslogisticsus.com/?agent=1", {
+    body: "# Hermes\n",
+    contentType: "text/plain; charset=utf-8",
+    headers: { Accept: "text/markdown" },
+  });
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "text/markdown; charset=utf-8");
+  assert.equal(response.headers.get("content-signal"), "search=yes, ai-input=yes");
+  assert.equal(response.headers.get("content-location"), "/llms.txt");
+  assert.equal(response.headers.get("x-robots-tag"), null);
+  assert.match(response.headers.get("vary") || "", /Accept/i);
+  assert.equal(await response.text(), "# Hermes\n");
+  assert.equal(observed.nextCalls, 0);
+  assert.equal(observed.assetRequests.length, 1);
+  assert.equal(observed.assetRequests[0].pathname, "/llms.txt");
+  assert.equal(observed.assetRequests[0].search, "");
+}
+
+{
   const { context, observed } = contextFor("https://hermes-eu4.pages.dev/services/hermes-connect/?utm_source=pages-dev");
   const response = await routeMiddleware(context);
   assert.equal(response.status, 308);

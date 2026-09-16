@@ -18,7 +18,7 @@ assert.equal(
   false,
   "the origin robots.txt must not copy Cloudflare's edge-managed block",
 );
-assert.equal(robots.includes("Content-Signal:"), false, "the origin robots.txt must not duplicate edge-managed Content-Signal directives");
+assert.match(robots, /^Content-Signal: search=yes, ai-input=yes$/m, "origin robots.txt must explicitly allow search and real-time AI input while leaving training unspecified");
 assert.match(robots, /^User-agent: \*$/m);
 assert.match(robots, /^Allow: \/$/m);
 assert.match(robots, /^Sitemap: https:\/\/hermeslogisticsus\.com\/sitemapindex\.xml$/m);
