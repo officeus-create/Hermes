@@ -42,6 +42,7 @@ assert.match(candidateApi, /candidate_token_invalid/);
 assert.match(candidateApi, /candidate_role_not_accepting_applications/);
 assert.match(candidateApi, /candidate_role_classification_invalid/);
 assert.match(candidateApi, /candidate_role_conflict/);
+assert.match(candidateApi, /SELECT id,access_token_hash,name,email,telegram_handle,country,language,source,track,\s*attribution_json,specialist_id,status,created_at,updated_at/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 // Reviewer actions require authenticated specialist + persisted capability.

@@ -111,7 +111,7 @@ async function readJson(request: Request, origin: string) {
 async function candidateById(db: any, candidateId: string) {
   return db.prepare(`
     SELECT id,access_token_hash,name,email,telegram_handle,country,language,source,track,
-           specialist_id,status,created_at,updated_at
+           attribution_json,specialist_id,status,created_at,updated_at
     FROM hr_candidates
     WHERE id = ?
     LIMIT 1

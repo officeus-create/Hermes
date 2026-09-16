@@ -43,6 +43,22 @@ class MemoryD1 {
 
   normalized(sql) { return String(sql).replace(/\s+/g, ' ').trim().toLowerCase(); }
 
+  projectRow(row, q, tableMarker) {
+    if (!row) return null;
+    const markerIndex = q.indexOf(tableMarker);
+    assert.ok(q.startsWith('select ') && markerIndex > 7, `projection fixture cannot parse query: ${q}`);
+    const columns = q.slice(7, markerIndex).split(',').map((column) => column.trim());
+    const projected = {};
+    for (const column of columns) {
+      const match = column.match(/^(?:[a-z0-9_]+\.)?([a-z0-9_]+)(?: as ([a-z0-9_]+))?$/);
+      assert.ok(match, `projection fixture cannot parse column: ${column}`);
+      const source = match[1];
+      const target = match[2] || source;
+      projected[target] = row[source];
+    }
+    return projected;
+  }
+
   async execute(sql, args, mode) {
     const q = this.normalized(sql);
     if (q.startsWith('create table') || q.startsWith('create index')) return mode === 'all' ? { results: [] } : { success: true };
@@ -80,7 +96,7 @@ class MemoryD1 {
       return { success: true };
     }
     if (q.includes('from hr_candidates') && (q.includes('where id = ?') || q.includes('where id=?')) && !q.includes('specialist_id=? and id<>?')) {
-      return this.hrCandidates.get(args[0]) || null;
+      return this.projectRow(this.hrCandidates.get(args[0]) || null, q, ' from hr_candidates');
     }
     if (q.includes('select id from hr_candidates') && q.includes('where specialist_id=? and id<>?')) {
       for (const row of this.hrCandidates.values()) {
