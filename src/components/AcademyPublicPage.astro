@@ -92,7 +92,7 @@ const mainSchema = content.schemaType === "Course"
       inLanguage: locale,
       provider: academyEntity,
       teaches: content.teaches,
-      availableLanguage: ["English", "Russian", "Ukrainian"],
+      availableLanguage: ["English", "Ukrainian", "Russian", "Spanish", "Italian", "French"],
     }
   : {
       "@context": "https://schema.org",
@@ -116,7 +116,7 @@ const serviceSchema = {
     : content.slug === "resources"
       ? "Public learning resources"
       : "Academy learning guidance",
-  availableLanguage: ["English", "Russian", "Ukrainian"],
+  availableLanguage: ["English", "Ukrainian", "Russian", "Spanish", "Italian", "French"],
 };
 const faqSchema = {
   "@context": "https://schema.org",

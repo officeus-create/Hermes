@@ -1,0 +1,19 @@
+---
+import LocalizedDirectionOwnerPage from "../../../components/LocalizedDirectionOwnerPage.astro";
+import { directionOwnerRoutes, type DirectionId, type LocalizedSiteLocale } from "../../../data/localized-direction-owners";
+
+export function getStaticPaths() {
+  const locales: LocalizedSiteLocale[] = ["uk", "ru", "es", "it", "fr"];
+  const directions: DirectionId[] = ["logistics", "marketing", "academy", "technology"];
+  return locales.flatMap((siteLocale) => directions.flatMap((directionId) => {
+    if (siteLocale === "it" && (directionId === "marketing" || directionId === "technology")) return [];
+    const route = directionOwnerRoutes[siteLocale][directionId];
+    const [locale, direction] = route.split("/").filter(Boolean);
+    return [{ params: { locale, direction }, props: { siteLocale, directionId } }];
+  }));
+}
+
+const { siteLocale, directionId } = Astro.props as { siteLocale: LocalizedSiteLocale; directionId: DirectionId };
+---
+
+<LocalizedDirectionOwnerPage locale={siteLocale} directionId={directionId} />

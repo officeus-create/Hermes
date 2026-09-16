@@ -8,6 +8,7 @@ import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { LocalizedOverview } from "../data/localized-overviews";
 import { languageAlternates } from "../data/locales";
+import { directionOwnerRoutes } from "../data/localized-direction-owners";
 
 interface Props {
   content: LocalizedOverview;
@@ -31,13 +32,7 @@ const partnershipLabels = {
 const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
-const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
-const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) => {
-  if (content.locale === "it" && id === "marketing") return "/it/marketing/";
-  if (content.locale === "it" && id === "technology") return "/it/tecnologia/";
-  if (content.locale === "uk" && id === "academy") return "/ua/academy/us-logistics-operations/";
-  return directionMailto(brand);
-};
+const directionHref = (id: LocalizedOverview["directions"][number]["id"]) => directionOwnerRoutes[content.locale][id];
 const directionOrder: Record<LocalizedOverview["directions"][number]["id"], number> = {
   logistics: 0,
   marketing: 1,
@@ -107,7 +102,7 @@ import "../styles/features/localized.css";
               <h2>{direction.title}</h2>
               <p>{direction.body}</p>
               <ul>{direction.points.map((point) => <li><Check size={17} aria-hidden="true" />{point}</li>)}</ul>
-              <a href={directionHref(direction.id, direction.brand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
+              <a href={directionHref(direction.id)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </div>
         </section>

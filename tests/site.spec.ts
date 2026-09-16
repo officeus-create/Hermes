@@ -334,10 +334,9 @@ test("language menu preserves technology intent across localized destinations", 
     "Italiano",
     "Русский",
   ]);
-  for (const path of ["es", "fr", "ua", "ru"]) {
-    await expect(languageMenu.locator(`a[href="/${path}/#technology"]`)).toHaveCount(1);
+  for (const href of ["/es/tecnologia/", "/fr/technologie/", "/ua/technology/", "/ru/technology/", "/it/tecnologia/"]) {
+    await expect(languageMenu.locator(`a[href="${href}"]`)).toHaveCount(1);
   }
-  await expect(languageMenu.locator('a[href="/it/tecnologia/"]')).toHaveCount(1);
 
   await page.goto("/ua/");
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");

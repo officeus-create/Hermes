@@ -2,6 +2,7 @@
 import { ArrowUp, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
+import { directionOwnerRoutes } from "../data/localized-direction-owners";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 
@@ -57,8 +58,8 @@ const localized = {
   uk: {
     statement: "Логістика, розвиток, освіта й технології за одним практичним стандартом.",
     nav: [
-      { label: "Логістика", href: "/ua/#logistics" }, { label: "Маркетинг", href: "/ua/#marketing" },
-      { label: "IT-розробка", href: "/ua/#technology" }, { label: "Академія", href: "/ua/#academy" },
+      { label: "Логістика", href: "/ua/logistics/" }, { label: "Маркетинг", href: "/ua/marketing/" },
+      { label: "IT-розробка", href: "/ua/technology/" }, { label: "Академія", href: "/ua/academy/" },
     ],
     privacy: "Конфіденційність",
     contact: "Контакт",
@@ -71,8 +72,8 @@ const localized = {
   ru: {
     statement: "Логистика, развитие, образование и технологии по единому практическому стандарту.",
     nav: [
-      { label: "Логистика", href: "/ru/#logistics" }, { label: "Маркетинг", href: "/ru/#marketing" },
-      { label: "IT-разработка", href: "/ru/#technology" }, { label: "Академия", href: "/ru/#academy" },
+      { label: "Логистика", href: "/ru/logistics/" }, { label: "Маркетинг", href: "/ru/marketing/" },
+      { label: "IT-разработка", href: "/ru/technology/" }, { label: "Академия", href: "/ru/academy/" },
     ],
     privacy: "Конфиденциальность",
     contact: "Контакт",
@@ -85,8 +86,8 @@ const localized = {
   es: {
     statement: "Logística, crecimiento, formación y tecnología con un mismo estándar práctico.",
     nav: [
-      { label: "Logística", href: "/es/#logistics" }, { label: "Marketing", href: "/es/#marketing" },
-      { label: "Desarrollo IT", href: "/es/#technology" }, { label: "Academia", href: "/es/#academy" },
+      { label: "Logística", href: "/es/logistica/" }, { label: "Marketing", href: "/es/marketing/" },
+      { label: "Desarrollo IT", href: "/es/tecnologia/" }, { label: "Academia", href: "/es/academia/" },
     ],
     privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
@@ -94,8 +95,8 @@ const localized = {
   it: {
     statement: "Logistica, crescita, formazione e tecnologia con un unico standard pratico.",
     nav: [
-      { label: "Logistica", href: "/it/#logistics" }, { label: "Marketing", href: "/it/#marketing" },
-      { label: "Sviluppo IT", href: "/it/#technology" }, { label: "Academy", href: "/it/#academy" },
+      { label: "Logistica", href: "/it/logistica/" }, { label: "Marketing", href: "/it/marketing/" },
+      { label: "Sviluppo IT", href: "/it/tecnologia/" }, { label: "Academy", href: "/it/academy/" },
     ],
     privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
@@ -103,8 +104,8 @@ const localized = {
   fr: {
     statement: "Logistique, croissance, formation et technologie selon un même standard pratique.",
     nav: [
-      { label: "Logistique", href: "/fr/#logistics" }, { label: "Marketing", href: "/fr/#marketing" },
-      { label: "Développement IT", href: "/fr/#technology" }, { label: "Académie", href: "/fr/#academy" },
+      { label: "Logistique", href: "/fr/logistique/" }, { label: "Marketing", href: "/fr/marketing/" },
+      { label: "Développement IT", href: "/fr/technologie/" }, { label: "Académie", href: "/fr/academie/" },
     ],
     privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
@@ -207,7 +208,7 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
   </div>
   <div class="shell footer-meta">
     <span>
-      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `${localePath}#technology`}>Hermes IT Development</a> · {localized.method}
+      {localized.designed} <a href={directionOwnerRoutes[locale].technology}>Hermes IT Development</a> · {localized.method}
     </span>
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
