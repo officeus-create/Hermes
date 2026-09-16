@@ -1,0 +1,25 @@
+---
+import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
+import { localizedAcademyLogistics, localizedAcademyLogisticsUi, type AcademyLogisticsLocale } from "../../../../data/academy-logistics-localized";
+import { academyLogisticsAlternates, academyLogisticsOwnerRoutes } from "../../../../data/localized-direction-owners";
+
+export function getStaticPaths() {
+  const locales: AcademyLogisticsLocale[] = ["ru", "es", "it", "fr"];
+  return locales.map((siteLocale) => ({
+    params: { locale: academyLogisticsOwnerRoutes[siteLocale].split("/").filter(Boolean)[0] },
+    props: { siteLocale },
+  }));
+}
+
+const { siteLocale } = Astro.props as { siteLocale: AcademyLogisticsLocale };
+const content = localizedAcademyLogistics[siteLocale];
+const ui = localizedAcademyLogisticsUi[siteLocale];
+---
+
+<AcademyPublicPage
+  content={content}
+  locale={siteLocale}
+  alternates={academyLogisticsAlternates}
+  ui={ui}
+  academyHubHref={siteLocale === "es" ? "/es/academia/" : siteLocale === "fr" ? "/fr/academie/" : `/${siteLocale}/academy/`}
+/>

@@ -47,16 +47,18 @@ const indexedChildSitemapFiles = [
   ...staticChildSitemapFiles,
   "sitemap-connect-catalog.xml",
 ];
-// Controlled non-insights inventory includes the established public owners plus exactly two
-// Italy-level commercial owners: /it/marketing/ and /it/tecnologia/. These are country-level
-// localized owners, not Padova/city templates and not authorization for a broader GEO page factory.
+// Controlled non-insights inventory includes the established public owners plus a bounded
+// language-owner parity layer for the six canonical site languages. The 2026-09-16 delta adds
+// 18 missing top-level direction owners (the existing EN + IT Marketing/Technology owners remain)
+// plus four missing localized U.S. Logistics Operations course owners. This is intent/language
+// ownership, not Padova/city templates and not authorization for a broader GEO or page factory.
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
 // The bounded carrier-lifecycle pilot adds exactly one distinct early-intent resource that routes
 // employment searches away from B2B carrier intake while preserving existing commercial owners.
 // The removed Work.ua vacancy is paused and intentionally absent from the public sitemap inventory.
 // The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
 // verified as an indexed child, not counted as a build-time static page inventory.
-const nonInsightsExpectedPageUrlCount = 235;
+const nonInsightsExpectedPageUrlCount = 257;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

@@ -10,7 +10,6 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/" />
   </url>
-  <url><loc>https://hermeslogisticsus.com/paths/logistics/</loc><lastmod>2026-08-02</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/paths/logistics/find-your-path/</loc><lastmod>2026-07-29</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/</loc><lastmod>2026-07-29</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/</loc><lastmod>2026-07-29</lastmod></url>
@@ -50,19 +49,6 @@
   <url><loc>https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/</loc><lastmod>2026-07-29</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/</loc><lastmod>2026-07-29</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/</loc><lastmod>2026-07-29</lastmod></url>
-  <url>
-    <loc>https://hermeslogisticsus.com/paths/marketing/</loc><lastmod>2026-09-15</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
-  </url>
-  <url><loc>https://hermeslogisticsus.com/paths/academy/</loc><lastmod>2026-07-13</lastmod></url>
-  <url>
-    <loc>https://hermeslogisticsus.com/paths/technology/</loc><lastmod>2026-09-15</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
-  </url>
   <url><loc>https://hermeslogisticsus.com/case/it-development/</loc><lastmod>2026-07-18</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/privacy/</loc><lastmod>2026-08-10</lastmod></url>
   <url><loc>https://hermeslogisticsus.com/privacy-choices/</loc><lastmod>2026-08-10</lastmod></url>
@@ -110,18 +96,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/" />
   </url>
   <url>
-    <loc>https://hermeslogisticsus.com/it/marketing/</loc><lastmod>2026-09-15</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
-  </url>
-  <url>
-    <loc>https://hermeslogisticsus.com/it/tecnologia/</loc><lastmod>2026-09-15</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
-    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
-  </url>
-  <url>
     <loc>https://hermeslogisticsus.com/fr/</loc><lastmod>2026-07-30</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/" />
     <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/" />
@@ -130,5 +104,246 @@
     <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/" />
+  </url>
+
+  <url>
+    <loc>https://hermeslogisticsus.com/paths/logistics/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ua/logistics/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ru/logistics/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/es/logistica/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/it/logistica/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/fr/logistique/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/logistics/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/logistics/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/logistics/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/logistica/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/logistica/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/logistique/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/logistics/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/paths/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ua/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ru/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/es/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/it/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/fr/marketing/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/marketing/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/marketing/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/marketing/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/marketing/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/marketing/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/marketing/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/marketing/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/paths/academy/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ua/academy/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ru/academy/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/es/academia/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/it/academy/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/fr/academie/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/academy/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/academy/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/paths/technology/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ua/technology/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ru/technology/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/es/tecnologia/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/it/tecnologia/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/fr/technologie/</loc><lastmod>2026-09-16</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/paths/technology/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/technology/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/technology/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/tecnologia/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/technologie/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/paths/technology/" />
   </url>
 </urlset>

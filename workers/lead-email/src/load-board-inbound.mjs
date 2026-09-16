@@ -281,6 +281,11 @@ const normalizeEquipment = (text) => {
   return "";
 };
 
+const hasExplicitEquipmentAlternatives = (text) => {
+  const pattern = /\b(dry[ -]?van|reefer|flatbed|step[ -]?deck|power[ -]?only|hot[ -]?shot|box[ -]?truck|sprinter(?:[ -]?van)?|car[ -]?hauler)\b\s*(?:\/|\bor\b)\s*\b(dry[ -]?van|reefer|flatbed|step[ -]?deck|power[ -]?only|hot[ -]?shot|box[ -]?truck|sprinter(?:[ -]?van)?|car[ -]?hauler)\b/i;
+  return pattern.test(String(text || ""));
+};
+
 const extractEquipment = (text) => {
   const labeled = String(text || "").match(/(?:^|\n)\s*(?:equipment|trailer(?: type)?|truck(?: type)?)\s*[:\-]\s*([^\n]{2,120})/im);
   const fromLabel = normalizeEquipment(labeled?.[1] || "");
@@ -299,6 +304,26 @@ const extractRate = (text) => {
     if (Number.isFinite(amount) && amount >= 0 && amount <= 1_000_000) return amount;
   }
   return null;
+};
+
+const extractLaneRate = (text) => {
+  for (const line of String(text || "").replace(/\r/g, "").split("\n")) {
+    const [origin, destination] = extractLane(line);
+    if (!origin || !destination) continue;
+    const match = line.match(/\$\s*([\d,]+(?:\.\d{1,2})?)/);
+    if (!match?.[1]) continue;
+    const amount = Number(match[1].replace(/,/g, ""));
+    if (Number.isFinite(amount) && amount >= 0 && amount <= 1_000_000) return amount;
+  }
+  return null;
+};
+
+const extractLoadCount = (text) => {
+  const value = String(text || "");
+  const direct = value.match(/\b(\d{1,3})\s+loads?\s+available\b/i);
+  const shorthand = /\bavailable\s+loads?\b/i.test(value) ? value.match(/\b(\d{1,3})\s+available\b/i) : null;
+  const count = Number(direct?.[1] || shorthand?.[1] || 0);
+  return Number.isInteger(count) && count > 1 && count <= 100 ? count : null;
 };
 
 const extractPickupWindow = (text) => {
@@ -431,23 +456,28 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
   const [laneOrigin, laneDestination] = extractLane(combined);
   const origin = extractLabeledLocation(combined, ["origin", "from", "pickup(?: location)?", "pu"]) || laneOrigin;
   const destination = extractLabeledLocation(combined, ["destination", "to", "delivery(?: location)?", "drop(?: off)?"]) || laneDestination;
-  const equipment = extractEquipment(combined);
+  const equipmentAmbiguous = hasExplicitEquipmentAlternatives(combined);
+  const equipment = equipmentAmbiguous ? "" : extractEquipment(combined);
   const recordType = isCapacityMessage(combined) ? "capacity" : "load";
   const missing = [];
   if (!origin) missing.push("origin");
-  if (!equipment) missing.push("equipment");
+  if (!equipment && !equipmentAmbiguous) missing.push("equipment");
   if (recordType === "load" && !destination) missing.push("destination");
 
   const expiresAt = new Date(new Date(receivedAt).getTime() + source.ttlHours * 60 * 60 * 1000).toISOString();
   if (new Date(expiresAt).getTime() <= new Date(observedAt).getTime()) {
     return { quarantine: { source_message_id: sourceMessageId, fingerprint, reason: "stale_email", subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef } };
   }
-  if (missing.length) {
-    return { quarantine: { source_message_id: sourceMessageId, fingerprint, reason: `missing_${missing.join("_")}`, subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef } };
+  if (equipmentAmbiguous || missing.length) {
+    const reason = equipmentAmbiguous
+      ? `ambiguous_equipment${missing.length ? `_missing_${missing.join("_")}` : ""}`
+      : `missing_${missing.join("_")}`;
+    return { quarantine: { source_message_id: sourceMessageId, fingerprint, reason, subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef } };
   }
 
-  const rateAmount = extractRate(combined);
+  const rateAmount = extractRate(combined) ?? extractLaneRate(combined);
   const pickupWindow = extractPickupWindow(combined);
+  const loadCount = recordType === "load" ? extractLoadCount(combined) : null;
   return {
     record: {
       source_message_id: sourceMessageId,
@@ -457,6 +487,7 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
       origin,
       ...(destination ? { destination } : {}),
       ...(pickupWindow ? { pickup_window: pickupWindow } : {}),
+      ...(loadCount ? { availability_text: `${loadCount} loads available` } : {}),
       ...(rateAmount !== null ? { rate_amount: rateAmount, rate_currency: "USD" } : {}),
       received_at: receivedAt,
       observed_at: observedAt,
@@ -464,6 +495,213 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
       visibility: source.requestedVisibility,
       raw_evidence_ref: rawEvidenceRef,
     },
+  };
+};
+
+const US_STATE_CODES = new Set("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC".split(" "));
+const FREIGHT_ROW_DATE = /^\d{1,2}\/\d{1,2}(?:\/\d{2,4})?$/;
+
+const normalizeTableEquipmentCode = (value) => {
+  const code = clean(value, 40).toUpperCase().replace(/\s+/g, "");
+  if (!code) return { equipment: "", ambiguous: false };
+  if (["V", "DV", "VAN", "DRYVAN"].includes(code)) return { equipment: "dry_van", ambiguous: false };
+  if (["R", "RF", "REEFER"].includes(code)) return { equipment: "reefer", ambiguous: false };
+  if (["F", "FB", "FLATBED"].includes(code)) return { equipment: "flatbed", ambiguous: false };
+  if (["SD", "STEPDECK"].includes(code)) return { equipment: "step_deck", ambiguous: false };
+  if (["PO", "POWERONLY"].includes(code)) return { equipment: "power_only", ambiguous: false };
+  if (code.includes("/") || code.includes("OR")) return { equipment: "", ambiguous: true };
+  return { equipment: normalizeEquipment(code), ambiguous: false };
+};
+
+const parseTabularFreightRow = (line) => {
+  const value = clean(line, 500);
+  if (!value) return null;
+  const tokens = value.split(/\s+/).filter(Boolean);
+  if (tokens.length < 7 || !FREIGHT_ROW_DATE.test(tokens[0])) return null;
+  const stateIndexes = [];
+  for (let index = 1; index < tokens.length; index += 1) {
+    if (US_STATE_CODES.has(tokens[index])) stateIndexes.push(index);
+  }
+  if (stateIndexes.length < 2) return null;
+  const originStateIndex = stateIndexes[0];
+  const destinationStateIndex = stateIndexes[1];
+  const originCity = clean(tokens.slice(1, originStateIndex).join(" "), 120);
+  const destinationCity = clean(tokens.slice(originStateIndex + 1, destinationStateIndex).join(" "), 120);
+  if (!originCity || !destinationCity) return null;
+  const tail = tokens.slice(destinationStateIndex + 1);
+  const deliveryWindow = FREIGHT_ROW_DATE.test(tail[0] || "") ? tail[0] : "";
+  const providerRecordId = tail.find((token) => /^\d{4,}$/.test(token)) || "";
+  const equipmentToken = tail.length ? tail[tail.length - 1] : "";
+  const equipmentState = normalizeTableEquipmentCode(equipmentToken);
+  return {
+    origin: `${originCity}, ${tokens[originStateIndex]}`,
+    destination: `${destinationCity}, ${tokens[destinationStateIndex]}`,
+    pickupWindow: tokens[0],
+    deliveryWindow,
+    providerRecordId,
+    equipmentToken,
+    equipment: equipmentState.equipment,
+    ambiguousEquipment: equipmentState.ambiguous,
+  };
+};
+
+const normalizeStandaloneLocation = (value) => {
+  const match = clean(value, 180).match(/^([A-Za-z][A-Za-z .'-]{1,70},\s*[A-Z]{2})(?:\s+\d{5}(?:-\d{4})?)?$/);
+  return match?.[1] ? normalizeLocation(match[1]).replace(/,\s*/g, ", ") : "";
+};
+
+const valueAfterLabel = (lines, pattern) => {
+  const index = lines.findIndex((line) => pattern.test(line));
+  return index >= 0 ? clean(lines[index + 1], 180) : "";
+};
+
+const pairAfterLabel = (lines, pattern) => {
+  const index = lines.findIndex((line) => pattern.test(line));
+  if (index < 0) return ["", ""];
+  return [clean(lines[index + 1], 180), clean(lines[index + 2], 180)];
+};
+
+const parsePairedColumnFreightEmail = async ({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef }) => {
+  const lines = String(body || "").replace(/\r/g, "").split("\n").map((line) => clean(line, 500)).filter(Boolean);
+  const locationIndex = lines.findIndex((line) => /^location$/i.test(line));
+  if (locationIndex < 0) return null;
+  const origin = normalizeStandaloneLocation(lines[locationIndex + 1] || "");
+  const destination = normalizeStandaloneLocation(lines[locationIndex + 2] || "");
+  if (!origin || !destination) return null;
+
+  const equipmentText = valueAfterLabel(lines, /^equipment$/i);
+  const rateText = valueAfterLabel(lines, /^rate$/i);
+  const [pickupDate, deliveryDate] = pairAfterLabel(lines, /^date$/i);
+  const [pickupTime, deliveryTime] = pairAfterLabel(lines, /^(?:appt|appointment)\s*time$/i);
+  const pickupWindow = clean([pickupDate, pickupTime].filter(Boolean).join(" "), 160);
+  const deliveryWindow = clean([deliveryDate, deliveryTime].filter(Boolean).join(" "), 160);
+  const weightText = valueAfterLabel(lines, /^weight\s*\(\s*lbs?\s*\)$/i);
+  const weight = Number(weightText.replace(/,/g, ""));
+
+  const reconstructed = [
+    `Origin: ${origin}`,
+    `Destination: ${destination}`,
+    ...(equipmentText ? [`Equipment: ${equipmentText}`] : []),
+    ...(rateText ? [`Rate: ${rateText}`] : []),
+    ...(pickupWindow ? [`Pickup: ${pickupWindow}`] : []),
+  ].join("\n");
+  const item = await parseFreightEmail({ subject, body: reconstructed, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef });
+  if (!item.record) return { records: [], quarantine: item.quarantine ? [item.quarantine] : [] };
+  return {
+    records: [{
+      ...item.record,
+      ...(deliveryWindow ? { delivery_window: deliveryWindow } : {}),
+      ...(Number.isFinite(weight) && weight > 0 && weight <= 500_000 ? { weight_lbs: weight } : {}),
+    }],
+    quarantine: [],
+  };
+};
+
+const extractExplicitFreightBlocks = (body) => {
+  const lines = String(body || "").replace(/\r/g, "").split("\n");
+  const blocks = [];
+  let current = null;
+  for (const rawLine of lines) {
+    const line = clean(rawLine, 500);
+    const marker = line.match(/^\s*(?:load|shipment)\s*#?\s*\d+\s*[:.)-]?\s*(.*)$/i);
+    if (marker) {
+      if (current?.length) blocks.push(current.join("\n"));
+      current = [];
+      if (marker[1]) current.push(marker[1]);
+      continue;
+    }
+    if (current) current.push(rawLine);
+  }
+  if (current?.length) blocks.push(current.join("\n"));
+  return blocks.filter((block) => block.trim());
+};
+
+const extractRouteFreightBlocks = (body) => {
+  const lines = String(body || "").replace(/\r/g, "").split("\n");
+  const starts = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const [origin, destination] = extractLane(lines[index]);
+    if (origin && destination) starts.push(index);
+  }
+  if (starts.length < 2) return [];
+  return starts.map((start, itemIndex) => {
+    const end = itemIndex + 1 < starts.length ? starts[itemIndex + 1] : lines.length;
+    return lines.slice(start, end).join("\n").trim();
+  }).filter(Boolean);
+};
+
+const parseFreightEmailRecords = async ({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef }) => {
+  const combined = `${clean(subject, 300)}\n${String(body || "").slice(0, 120_000)}`;
+  const emailFingerprint = `sha256:${await sha256(combined.replace(/\s+/g, " ").trim().toLowerCase())}`;
+  const expiresAt = new Date(new Date(receivedAt).getTime() + source.ttlHours * 60 * 60 * 1000).toISOString();
+  if (new Date(expiresAt).getTime() <= new Date(observedAt).getTime()) {
+    return {
+      records: [],
+      quarantine: [{ source_message_id: sourceMessageId, fingerprint: emailFingerprint, reason: "stale_email", subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef }],
+    };
+  }
+
+  const pairedColumn = await parsePairedColumnFreightEmail({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef });
+  if (pairedColumn) return pairedColumn;
+
+  const tableRows = String(body || "").replace(/\r/g, "").split("\n").map(parseTabularFreightRow).filter(Boolean);
+  if (tableRows.length) {
+    const records = [];
+    const quarantine = [];
+    for (const row of tableRows) {
+      const fingerprintInput = `${source.id}|${sourceMessageId}|load|${row.providerRecordId}|${row.origin}|${row.destination}|${row.pickupWindow}|${row.equipmentToken}`.toLowerCase();
+      const fingerprint = `sha256:${await sha256(fingerprintInput)}`;
+      if (row.ambiguousEquipment || !row.equipment) {
+        quarantine.push({
+          source_message_id: sourceMessageId,
+          fingerprint,
+          reason: row.ambiguousEquipment ? "ambiguous_equipment" : "missing_equipment",
+          subject: clean(subject, 200),
+          received_at: receivedAt,
+          observed_at: observedAt,
+          raw_evidence_ref: rawEvidenceRef,
+        });
+        continue;
+      }
+      records.push({
+        source_message_id: sourceMessageId,
+        fingerprint,
+        record_type: "load",
+        equipment: row.equipment,
+        origin: row.origin,
+        destination: row.destination,
+        ...(row.pickupWindow ? { pickup_window: row.pickupWindow } : {}),
+        ...(row.deliveryWindow ? { delivery_window: row.deliveryWindow } : {}),
+        ...(row.providerRecordId ? { provider_record_id: row.providerRecordId } : {}),
+        received_at: receivedAt,
+        observed_at: observedAt,
+        expires_at: expiresAt,
+        visibility: source.requestedVisibility,
+        raw_evidence_ref: rawEvidenceRef,
+      });
+    }
+    return { records, quarantine };
+  }
+
+  const explicitBlocks = extractExplicitFreightBlocks(body);
+  const routeBlocks = explicitBlocks.length >= 2 ? [] : extractRouteFreightBlocks(body);
+  const useRouteBlocks = explicitBlocks.length < 2 && routeBlocks.length >= 2;
+  const candidateBlocks = explicitBlocks.length >= 2 ? explicitBlocks : routeBlocks;
+  if (candidateBlocks.length >= 2) {
+    const records = [];
+    const quarantine = [];
+    for (const block of candidateBlocks) {
+      const item = await parseFreightEmail({ subject: useRouteBlocks ? "Freight load" : subject, body: block, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef });
+      if (item.record) records.push(item.record);
+      if (item.quarantine) quarantine.push(item.quarantine);
+    }
+    return { records, quarantine };
+  }
+
+  const item = await parseFreightEmail({ subject, body, receivedAt, observedAt, source, sourceMessageId, rawEvidenceRef });
+  return {
+    records: item.record ? [item.record] : [],
+    quarantine: item.quarantine ? [item.quarantine] : [],
   };
 };
 
@@ -593,9 +831,7 @@ const handleLoadBoardInboundEmail = async (message, env, _ctx, deps = {}) => {
   } else if (isCapacityListEmail(subject, body)) {
     ({ records, quarantine } = await parseCapacityListEmail({ subject, body, receivedAt: effectiveReceivedAt, observedAt, source, sourceMessageId: effectiveSourceMessageId, rawEvidenceRef: evidenceRef }));
   } else {
-    const item = await parseFreightEmail({ subject, body, receivedAt: effectiveReceivedAt, observedAt, source, sourceMessageId: effectiveSourceMessageId, rawEvidenceRef: evidenceRef });
-    records = item.record ? [item.record] : [];
-    quarantine = item.quarantine ? [item.quarantine] : [];
+    ({ records, quarantine } = await parseFreightEmailRecords({ subject, body, receivedAt: effectiveReceivedAt, observedAt, source, sourceMessageId: effectiveSourceMessageId, rawEvidenceRef: evidenceRef }));
   }
 
   const payload = { source: sourcePayload, records, quarantine };
@@ -630,6 +866,7 @@ export {
   parseCapacityListEmail,
   parseControlledForwardMetadata,
   parseFreightEmail,
+  parseFreightEmailRecords,
   parseSourceConfig,
   readRawEmail,
   sourceAuthenticationPassed,

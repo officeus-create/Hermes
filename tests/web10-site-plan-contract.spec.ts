@@ -20,14 +20,14 @@ test("WEB 10 keeps the primary header simple and Russian direction discovery on 
   const motion = await source("src/components/MotionLayer.astro");
   const integrity = await source("src/components/RussianLocaleIntegrity.astro");
 
-  expect(header).toContain('url: `${localeBase}#${path.id}`');
+  expect(header).toContain("directionOwnerRoutes[activeLocale]");
   expect(header).toMatch(/<nav class="desktop-nav(?: [^"]*)?"/);
   expect(motion).not.toContain("DepartmentMenuEnhancer");
   expect(motion).not.toContain("DepartmentMenuLocalization");
   expect(motion).not.toContain("/department-menu.js");
   expect(motion).not.toContain("/department-menu.css");
 
-  for (const href of ["/ru/#logistics", "/ru/#marketing", "/ru/#technology", "/ru/#academy"]) {
+  for (const href of ["/ru/logistics/", "/ru/marketing/", "/ru/technology/", "/ru/academy/"]) {
     expect(integrity).toContain(href);
   }
 });
