@@ -1044,3 +1044,36 @@ Owner: current Load Board workstream; bounded closeout authorized by the owner.
 - Failure/lesson: default local Playwright reused a stale server from another branch and produced false 404/old-copy failures. For parallel Hermes branches use a unique `HERMES_E2E_PORT`; treat release-manifest/static-inventory failures as governance gates to reconcile, never bypass.
 - Final promotion gate: rerun `npm run build`, `npm test`, and isolated-port `npm run test:e2e` on the committed head; open review-only PR if green. Owner confirmation remains required for merge/deploy, then production 200/canonical/sitemap/AI-surface readback and search measurement follow.
 - Compounding: distinct early-intent discovery → existing carrier tools/commercial owners; reusable lifecycle/intent-router pattern; privacy-safe and evidence-bounded; zero unverified location expansion.
+
+## 2026-09-16 — Codex — Insights ItemList route parity
+
+```yaml
+ai_name: Codex
+model: not exposed in this runtime
+chat_or_thread: Site Hermes / Insights ItemList route parity
+role: bounded implementation owner
+department: Website / Insights
+date: 2026-09-16
+contribution_type: Implementation Report
+confidence: 95
+task_id: ERR-INS-001
+source_of_truth: Insights-to-Site handoff and origin/main 1596c32b
+authority_scope: Branch write; review-only PR; no merge or deploy
+write_scope:
+  - src/pages/insights/index.astro
+  - tests/insights-publication.spec.ts
+  - docs/ERROR_REGISTER.md
+  - docs/AI_HANDOFF.md
+specialization: Astro route and browser contract verification
+not_specialized_in: authenticated search indexing or revenue outcomes
+reviewed: current main, Insights registry, static route, sitemap, RSS, browser output, relevant tests
+not_reviewed: production deployment or authenticated GSC indexing
+handoff_to: Site reviewer and authorized release owner
+```
+
+- PROBLEM: `/insights/` ItemList declared a brief URL that has no generated article route. ROOT_CAUSE: schema mapped every registry entry, while static paths, sitemap and RSS intentionally select only `contentTier=standalone`.
+- FAILED_APPROACH: Treating a reviewed hub brief as an article URL would create a thin, conflicting route; no such route was added. WORKING_APPROACH: filter the ItemList to standalone entries before assigning sequential positions, and test JSON-LD, sitemap and RSS against every registry tier on desktop and mobile.
+- EVIDENCE: baseline `origin/main` `1596c32b`; current registry has one standalone article and one brief. Local `npm run build` PASS (311 pages, zero errors), `npm test` PASS, focused Playwright 2/2 PASS. Initial full `npm run test:e2e`: 1603 passed, 12 skipped, one unrelated desktop Load Board test timed out with a transient empty broker href; isolated retry of that exact test PASS. Second full run on the same final source with four workers: 1604 passed, 12 skipped, zero failures. Exact PR-head CI remains a release gate; no production readback or indexing result is claimed.
+- LESSON: hub visibility and standalone route publication are separate contracts. REUSE_RULE: any schema, sitemap or feed URL for an Insight must follow the same standalone predicate as `getStaticPaths()`; brief/digest cards may link to an existing related Hermes owner, never to an absent article.
+- Compounding scorecard: primary outcome = prevent a false structured-data article URL; SEO = route/schema parity only, no ranking claim; conversion = unchanged; knowledge = this reusable publication rule; internal linking = existing brief card destination preserved; scale = tier-based release predicate protected; AI/product = not applicable; data/privacy = no new fields, telemetry or PII; content reuse = unchanged; architecture = existing registry and route contract reused; deferred = shared publication helper is unnecessary for this one-line repair; verification = build/static/desktop/mobile as above, no UI screenshot needed because visible UI is unchanged.
+- Rollback: revert this bounded branch commit. Remaining: exact PR-head CI, review-only PR and separate authorized merge/deploy followed by production JSON-LD/route readback. Next owner: Site reviewer; no parallel edit to the existing Insights pipeline worktree.

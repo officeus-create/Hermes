@@ -11,7 +11,7 @@ const itemList = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "Hermes Insights",
-  itemListElement: insights.map((post, index) => ({
+  itemListElement: insights.filter((post) => post.contentTier === "standalone").map((post, index) => ({
     "@type": "ListItem",
     position: index + 1,
     url: new URL(getInsightPath(post), Astro.site).toString(),
