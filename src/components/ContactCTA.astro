@@ -444,7 +444,7 @@ const visibleRoutes = selectedContactInterest
     }
 
     try {
-      if (new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+      if (new URL(endpoint, window.location.href).protocol !== "https:") throw new Error("invalid_endpoint");
     } catch {
       clearHandoff();
       setAlert("Contact delivery is temporarily unavailable. Please try again later.");
