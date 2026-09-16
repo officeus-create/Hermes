@@ -26,6 +26,37 @@ assert.doesNotMatch(api, /onRequestPost|onRequestDelete/, "Company profile must 
 assert.match(schema, /ensureOptionalColumn\(db, "region", "region TEXT"\)/);
 assert.match(schema, /ensureOptionalColumn\(db, "country_code", "country_code TEXT"\)/);
 assert.match(schema, /SET country_code = 'US'/, "Legacy US rows need a deterministic country backfill");
+assert.match(schema, /repairShopColumnPromises = new WeakMap\(\)/, "Repair Shop schema should cache table metadata per D1 binding");
+assert.match(schema, /repairShopSchemaPromises = new WeakMap\(\)/, "Repair Shop schema bootstrap should run once per D1 binding/runtime");
+
+const { ensureRepairShopProfileSchema } = await import("../functions/api/_lib/repair-shop-schema.mjs");
+const preparedSql = [];
+const existingColumns = [
+  "id", "owner_specialist_id", "name", "slug", "phone", "address_line1", "city", "state",
+  "region", "country_code", "postal_code", "timezone", "website", "catalog_opt_in", "catalog_opt_in_at",
+  "catalog_published_at", "seo_geo_started_at", "next_seo_report_at", "created_at", "updated_at",
+];
+const fakeDb = {
+  prepare(sql) {
+    preparedSql.push(String(sql).trim());
+    return {
+      async all() { return { results: existingColumns.map((name) => ({ name })) }; },
+      async run() { return { success: true }; },
+    };
+  },
+};
+await Promise.all([ensureRepairShopProfileSchema(fakeDb), ensureRepairShopProfileSchema(fakeDb)]);
+await ensureRepairShopProfileSchema(fakeDb);
+assert.equal(
+  preparedSql.filter((sql) => sql === "PRAGMA table_info(repair_shops)").length,
+  1,
+  "Repeated schema guards in the same runtime must share one repair_shops metadata read",
+);
+assert.equal(
+  preparedSql.filter((sql) => sql.startsWith("CREATE TABLE IF NOT EXISTS repair_shops")).length,
+  1,
+  "Repeated schema guards in the same runtime must share one bootstrap",
+);
 assert.match(publicApi, /city,state,region,country_code,postal_code,timezone/);
 
 for (const method of ["onRequestGet", "onRequestPost", "onRequestPut", "onRequestDelete"]) {
