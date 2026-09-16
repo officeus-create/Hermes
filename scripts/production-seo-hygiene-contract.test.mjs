@@ -53,9 +53,10 @@ const indexedChildSitemapFiles = [
 // Existing car-hauler GEO pages remain owned by sitemap-services.xml and are not duplicated here.
 // The bounded carrier-lifecycle pilot adds exactly one distinct early-intent resource that routes
 // employment searches away from B2B carrier intake while preserving existing commercial owners.
+// The removed Work.ua vacancy is paused and intentionally absent from the public sitemap inventory.
 // The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
 // verified as an indexed child, not counted as a build-time static page inventory.
-const nonInsightsExpectedPageUrlCount = 236;
+const nonInsightsExpectedPageUrlCount = 235;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

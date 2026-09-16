@@ -49,14 +49,14 @@ assert.ok(academyService, "Academy Service schema is required");
 assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing"]);
 
 assert.equal(publicVacancyRegistry.length, 1);
-assert.equal(verifiedOpenVacancies.length, 1);
-assert.equal(verifiedOpenVacancies[0]?.slug, "car-hauling-dispatcher");
-assert.equal(verifiedOpenVacancies[0]?.submissionUrl, "https://www.work.ua/jobs/7362244/");
-assert.ok(careers.includes("Verified public vacancies are open."));
-assert.ok(careers.includes("1</strong>"));
-assert.ok(careers.includes("Car Hauling Dispatcher — Remote / U.S. Market"));
-assert.ok(careers.includes('href="/careers/car-hauling-dispatcher/"'));
-assert.ok(careers.includes('href="/logistics/apply/?for=career"'));
+assert.equal(verifiedOpenVacancies.length, 0);
+assert.equal(publicVacancyRegistry[0]?.slug, "car-hauling-dispatcher");
+assert.equal(publicVacancyRegistry[0]?.status, "paused");
+assert.equal(publicVacancyRegistry[0]?.ownerApprovedForPublication, false);
+assert.ok(careers.includes("No verified public vacancy is listed today."));
+assert.ok(careers.includes("0</strong>"));
+assert.ok(!careers.includes('href="/careers/car-hauling-dispatcher/"'));
+assert.ok(!careers.includes('href="/logistics/apply/?for=career"'));
 assert.ok(careers.includes("does not guarantee review timing, interview, training access, team placement, employment"));
 assert.ok(!careers.includes('"@type":"JobPosting"'));
 assert.ok(!careers.includes('"@type": "JobPosting"'));
@@ -69,24 +69,16 @@ const jobSchemas = [...carHaulingDispatcher.matchAll(/<script[^>]+type=["']appli
     return Array.isArray(parsed) ? parsed : [parsed];
   });
 const jobPostings = jobSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
-assert.equal(jobPostings.length, 1);
-assert.equal(jobPostings[0].title, "Car Hauling Dispatcher");
-assert.equal(jobPostings[0].employmentType, "FULL_TIME");
-assert.equal(jobPostings[0].jobLocationType, "TELECOMMUTE");
-assert.deepEqual(jobPostings[0].applicantLocationRequirements, [
-  { "@type": "Country", name: "United States" },
-  { "@type": "Country", name: "Ukraine" },
-]);
-assert.equal(jobPostings[0].directApply, false);
-assert.match(jobPostings[0].description, /Support car-hauling dispatch work for U.S.-market carrier operations/);
-assert.match(jobPostings[0].description, /Ability to work the applicable U.S. Central Time schedule/);
-assert.equal(jobPostings[0].datePosted, "2026-02-26");
-assert.equal(jobPostings[0].validThrough, "2026-09-14T23:59:59Z");
+assert.equal(jobPostings.length, 0);
 assert.ok(carHaulingDispatcher.includes("Remote worldwide"));
 assert.ok(carHaulingDispatcher.includes("U.S. Central Time schedule"));
-assert.ok(carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
-assert.ok(carHaulingDispatcher.includes("Prepare Hermes application preview"));
-assert.ok(carHaulingDispatcher.includes("source=hermes_careers"));
+assert.ok(carHaulingDispatcher.includes("Recruitment paused"));
+assert.ok(carHaulingDispatcher.includes("No public application route is approved for this role"));
+assert.ok(carHaulingDispatcher.includes("Do not submit through an unrelated Hermes form"));
+assert.ok(carHaulingDispatcher.includes('name="robots" content="noindex,follow"'));
+assert.ok(!carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
+assert.ok(!carHaulingDispatcher.includes("Prepare Hermes application preview"));
+assert.ok(!carHaulingDispatcher.includes("source=hermes_careers"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 
@@ -142,4 +134,4 @@ assert.ok(finalGrowthReadinessChecklist.some((item) => /Academy exposes only U.S
 assert.ok(finalGrowthReadinessChecklist.some((item) => /JobPosting is absent when none are verified open/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.some((item) => /Owner separately approves merge and production deployment/i.test(item)));
 
-console.log("academy/careers growth governance passed: two programs, verified vacancy registry, real JobPosting submission gate, privacy-safe recruiting preview, watchlist, scorecards, and owner release approval.");
+console.log("academy/careers growth governance passed: five learning tracks, paused removed vacancy, fail-closed role intake, privacy-safe recruiting workflow, watchlist, scorecards, and owner release approval.");

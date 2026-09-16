@@ -213,16 +213,39 @@ const intake = {
   language: 'en',
   source: 'threads',
   track: 'logistics',
+  role_id: 'general-logistics-interest',
+  intake_classification: 'general_interest',
   consent: true,
   submitted_at: submittedAt,
   attribution: { utm_source: 'threads', vacancy: 'carrier-acquisition-pilot', creative: 'reel-03' },
 };
+
+const pausedRole = await candidatePost({
+  request: candidateRequest({
+    ...intake,
+    role_id: 'car-hauling-dispatcher',
+    intake_classification: 'approved_role',
+  }),
+  env,
+});
+assert.equal(pausedRole.status, 409);
+assert.equal((await pausedRole.json()).error, 'candidate_role_not_accepting_applications');
+assert.equal(db.hrCandidates.size, 0, 'paused public role must fail before persistence');
 
 const created = await candidatePost({ request: candidateRequest(intake), env });
 assert.equal(created.status, 201);
 const createdBody = await created.json();
 assert.equal(createdBody.success, true);
 assert.equal(createdBody.candidate_id, candidateId);
+assert.equal(createdBody.role_id, 'general-logistics-interest');
+assert.equal(createdBody.intake_classification, 'general_interest');
+assert.deepEqual(JSON.parse(db.hrCandidates.get(candidateId).attribution_json), {
+  utm_source: 'threads',
+  vacancy: 'general-interest',
+  role_id: 'general-logistics-interest',
+  intake_classification: 'general_interest',
+  creative: 'reel-03',
+});
 assert.equal(db.hrCandidates.get(candidateId).status, 'interviewing');
 assert.equal(db.hrSessions.get(candidateId).state, 'in_progress');
 
@@ -230,6 +253,17 @@ const duplicate = await candidatePost({ request: candidateRequest(intake), env }
 assert.equal(duplicate.status, 200);
 assert.equal((await duplicate.json()).duplicate, true);
 assert.equal(db.hrCandidates.size, 1, 'idempotent intake must not duplicate candidate');
+
+const roleConflict = await candidatePost({
+  request: candidateRequest({
+    ...intake,
+    role_id: 'hr-pilot-logistics',
+    intake_classification: 'internal_hr_pilot',
+  }),
+  env,
+});
+assert.equal(roleConflict.status, 409);
+assert.equal((await roleConflict.json()).error, 'candidate_role_conflict');
 
 const updateBody = {
   candidate_id: candidateId,

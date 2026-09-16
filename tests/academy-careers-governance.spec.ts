@@ -34,49 +34,41 @@ test.describe("Academy and careers governance", () => {
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   });
 
-  test("Careers lists the verified Car Hauling Dispatcher vacancy without duplicating JobPosting schema on the hub", async ({ page }) => {
+  test("Careers lists no verified public vacancy while the removed external role is paused", async ({ page }) => {
     const response = await page.goto("/logistics/careers/");
     expect(response?.ok()).toBeTruthy();
-    await expect(page.getByRole("heading", { name: /Verified public vacancies are open/ })).toBeVisible();
-    await expect(page.getByText("1", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
+    await expect(page.getByText("0", { exact: true })).toBeVisible();
     await expect(page.getByText("verified public vacancies", { exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Car Hauling Dispatcher/ })).toBeVisible();
-    await expect(page.locator('a[href="/careers/car-hauling-dispatcher/"]')).toBeVisible();
-    await expect(page.getByRole("link", { name: "Prepare a general careers inquiry" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Car Hauling Dispatcher/ })).toHaveCount(0);
+    await expect(page.locator('a[href="/careers/car-hauling-dispatcher/"]')).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Prepare a general careers inquiry" })).toHaveCount(0);
     await expect(page.getByText("does not guarantee review timing", { exact: false })).toBeVisible();
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(jsonLd.join(" ")).not.toContain('"JobPosting"');
   });
 
-  test("Canonical Car Hauling Dispatcher page carries one truthful JobPosting and a real interim application route", async ({ page }) => {
+  test("Canonical Car Hauling Dispatcher page fails closed without JobPosting or application CTA", async ({ page }) => {
     const response = await page.goto("/careers/car-hauling-dispatcher/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Car Hauling Dispatcher — Remote / U.S. Market");
     await expect(page.getByText("Remote worldwide", { exact: true })).toBeVisible();
     await expect(page.getByText("U.S. Central Time schedule", { exact: true })).toBeVisible();
 
-    const previewLinks = page.locator('a[href^="/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers"]');
-    await expect(previewLinks).toHaveCount(1);
-    await expect(page.getByRole("link", { name: "Prepare Hermes application preview" })).toBeVisible();
+    await expect(page.getByText("Recruitment paused", { exact: false }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "No public application route is approved for this role." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Do not submit through an unrelated Hermes form." })).toBeVisible();
 
     const workUaLinks = page.locator('a[href="https://www.work.ua/jobs/7362244/"][data-external-job-apply]');
-    await expect(workUaLinks).toHaveCount(2);
-    await expect(workUaLinks.first()).toHaveText(/Apply on Work\.ua/);
-    await expect(page.getByText("does not yet send or store an application", { exact: false })).toBeVisible();
+    await expect(workUaLinks).toHaveCount(0);
+    await expect(page.locator('a[href^="/logistics/apply/"]')).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     const combined = jsonLd.join(" ");
-    expect(combined.match(/\"@type\":\"JobPosting\"/g)?.length ?? 0).toBe(1);
-    expect(combined).toContain('"title":"Car Hauling Dispatcher"');
-    expect(combined).toContain('"employmentType":"FULL_TIME"');
-    expect(combined).toContain('"jobLocationType":"TELECOMMUTE"');
-    expect(combined).toContain('"applicantLocationRequirements":[{"@type":"Country","name":"United States"},{"@type":"Country","name":"Ukraine"}]');
-    expect(combined).toContain('"directApply":false');
-    expect(combined).toContain("Support car-hauling dispatch work for U.S.-market carrier operations.");
-    expect(combined).toContain("Ability to work the applicable U.S. Central Time schedule.");
-    expect(combined).toContain('"datePosted":"2026-02-26"');
-    expect(combined).toContain('"validThrough":"2026-09-18T23:59:59Z"');
+    expect(combined).not.toContain('"@type":"JobPosting"');
+    expect(combined).toContain('"@type":"BreadcrumbList"');
     expect(combined).not.toContain("@ProgressoPro");
   });
 });

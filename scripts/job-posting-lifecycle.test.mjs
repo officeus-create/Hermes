@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import "./external-job-lifecycle.test.mjs";
 import { publicVacancyRegistry } from "../src/data/careers-governance.ts";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -22,7 +23,6 @@ function assertChronology(record) {
 }
 
 const active = publicVacancyRegistry.filter((record) => record.status === "verified_open" && record.ownerApprovedForPublication);
-assert.ok(active.length > 0, "At least one verified-open owner-approved vacancy is expected while JobPosting pages are published");
 
 for (const record of active) {
   assertChronology(record);
@@ -34,6 +34,12 @@ for (const record of active) {
   }
 }
 
+const dispatcher = publicVacancyRegistry.find((record) => record.slug === "car-hauling-dispatcher");
+assert.ok(dispatcher, "Car Hauling Dispatcher governance record must remain traceable while paused");
+assert.equal(dispatcher.status, "paused");
+assert.equal(dispatcher.ownerApprovedForPublication, false);
+assert.equal(active.length, 0, "No vacancy may remain verified-open after its external application route is removed or hidden");
+
 const synthetic = {
   id: "fixture-role",
   datePosted: "2026-08-01",
@@ -44,4 +50,4 @@ assert.doesNotThrow(() => assertChronology(synthetic));
 assert.throws(() => assertChronology({ ...synthetic, datePosted: "2026-08-11" }), /datePosted must not be after reviewedAt/);
 assert.throws(() => assertChronology({ ...synthetic, reviewedAt: "2026-09-02" }), /reviewedAt must not be after expiresAt/);
 
-console.log(`JobPosting lifecycle gate passed for ${active.length} verified-open role(s) at reference date ${referenceDate}.`);
+console.log(`JobPosting lifecycle gate passed for ${active.length} verified-open role(s); removed external routes remain paused at reference date ${referenceDate}.`);

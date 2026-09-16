@@ -147,6 +147,9 @@ assert.match(candidateApi, /INSERT OR IGNORE INTO hr_interview_answers/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_events/);
 assert.match(candidateApi, /CASE WHEN status='interviewing' THEN 'completed' ELSE status END/);
 assert.match(candidateApi, /candidate_token_invalid/);
+assert.match(candidateApi, /candidate_role_not_accepting_applications/);
+assert.match(candidateApi, /candidate_role_classification_invalid/);
+assert.match(candidateApi, /candidate_role_conflict/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 assert.match(reviewerApi, /getAuthenticatedSpecialist/);

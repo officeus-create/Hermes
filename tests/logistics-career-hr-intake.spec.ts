@@ -39,18 +39,19 @@ test.describe('Logistics career → private HR intake', () => {
       });
     });
 
-    await page.goto('/logistics/apply/?for=career&role=car-hauling-dispatcher&source=linkedin&utm_campaign=career-test');
+    await page.goto('/logistics/apply/?for=career&source=linkedin&utm_campaign=career-test');
     await page.locator('[name="name"]').fill('Synthetic Candidate');
     await page.locator('[name="email"]').fill('synthetic.candidate@example.com');
     await page.locator('[name="location"]').fill('Kyiv, Ukraine');
     await page.locator('[name="languages"]').fill('EN, UA');
+    await page.locator('[name="interest"]').fill('General logistics professional interest');
     await page.locator('[name="experience"]').fill('Built a small outbound workflow and improved follow-up consistency with measurable call notes.');
     await page.locator('[name="availability"]').fill('Monday through Friday, 9 AM to 5 PM Central Time.');
     await page.locator('[name="consent"]').check();
 
     await page.locator('[data-application-submit]').click();
-    await expect(page.locator('[data-application-result-title]')).toHaveText('Application received for human review');
-    await expect(page.locator('[data-application-preview]')).toContainText('Status: completed intake · human review required');
+    await expect(page.locator('[data-application-result-title]')).toHaveText('Application stored in the private HR queue');
+    await expect(page.locator('[data-application-preview]')).toContainText('Status: stored · reviewer ownership and response time not confirmed');
 
     expect(calls).toHaveLength(2);
     const start = calls[0];
@@ -67,10 +68,11 @@ test.describe('Logistics career → private HR intake', () => {
       language: 'en',
       source: 'linkedin',
       track: 'logistics',
+      role_id: 'general-logistics-interest',
+      intake_classification: 'general_interest',
       consent: true,
     });
     expect(start.body.attribution).toMatchObject({
-      vacancy: 'car-hauling-dispatcher',
       utm_campaign: 'career-test',
       landing_path: '/logistics/apply/',
     });
@@ -93,12 +95,35 @@ test.describe('Logistics career → private HR intake', () => {
       type: 'public_logistics_application_submitted',
       payload: {
         application_type: 'career',
-        vacancy: 'car-hauling-dispatcher',
+        role_id: 'general-logistics-interest',
+        intake_classification: 'general_interest',
         source: 'linkedin',
         landing_path: '/logistics/apply/',
       },
     });
     expect(JSON.stringify(evidence.body.events[0].payload)).not.toContain('synthetic.candidate@example.com');
+  });
+
+  test('paused role ID fails closed before candidate data reaches HR', async ({ page }) => {
+    let apiCalls = 0;
+    await page.route('**/api/hr/candidate', async (route) => {
+      apiCalls += 1;
+      await route.abort();
+    });
+
+    await page.goto('/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers');
+    await page.locator('[name="name"]').fill('Synthetic Paused Role');
+    await page.locator('[name="email"]').fill('paused.role@example.com');
+    await page.locator('[name="location"]').fill('Kyiv, Ukraine');
+    await page.locator('[name="languages"]').fill('EN, UA');
+    await page.locator('[name="experience"]').fill('Documented logistics coordination experience with measurable follow-up records.');
+    await page.locator('[name="availability"]').fill('Weekdays during U.S. Central Time business hours.');
+    await page.locator('[name="consent"]').check();
+
+    await page.locator('[data-application-submit]').click();
+    await expect(page.locator('[data-application-result-title]')).toHaveText('Role-specific application not accepted');
+    await expect(page.locator('[data-application-preview]')).toContainText('Reason: role_not_accepting_applications');
+    expect(apiCalls).toBe(0);
   });
 
   test('agency inquiry remains local preview and does not enter HR', async ({ page }) => {

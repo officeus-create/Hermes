@@ -106,6 +106,8 @@ async function startServerCandidate(state, token) {
       language: state.context?.language,
       source: state.context?.source,
       track: state.context?.track,
+      role_id: `hr-pilot-${state.context?.track}`,
+      intake_classification: 'internal_hr_pilot',
       attribution: state.context?.attribution || {},
       consent: contact.consent === true,
       submitted_at: state.created_at

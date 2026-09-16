@@ -115,7 +115,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { question: "What should I include in my application?", answer: "Your location and time zone, languages, relevant experience and measurable results, availability, and the role you want to explore." },
       { question: "Is training available if I do not have direct experience?", answer: "Some candidates may be invited to a relevant Academy path or practice opportunity, but participation, employment, and future paid work are not guaranteed." },
     ],
-    primary: { label: "Start job application", href: "/logistics/apply/?for=career" },
+    primary: { label: "Send a general careers inquiry", href: "/logistics/apply/?for=career" },
     secondary: { label: "Explore training first", href: "/paths/academy/" },
   },
 ];

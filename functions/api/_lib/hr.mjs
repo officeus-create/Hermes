@@ -12,7 +12,7 @@ export const HR_CANDIDATE_STATUSES = Object.freeze([
 ]);
 export const HR_ATTRIBUTION_KEYS = Object.freeze([
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
-  "vacancy", "creative", "market", "placement", "landing_path", "referrer_host",
+  "vacancy", "role_id", "intake_classification", "creative", "market", "placement", "landing_path", "referrer_host",
 ]);
 
 const HR_LANGUAGES = new Set(["en", "ru", "uk"]);

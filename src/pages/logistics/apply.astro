@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
+import { hrIntakeRolePolicy } from "../../data/hr-intake-policy";
 
 const canonicalUrl = "https://hermeslogisticsus.com/logistics/apply/";
 const schema = {
@@ -15,6 +16,9 @@ const schema = {
     { "@type": "ListItem", position: 3, name: "Application", item: canonicalUrl },
   ],
 };
+const publicIntakePolicy = Object.fromEntries(
+  Object.entries(hrIntakeRolePolicy).filter(([, policy]) => policy.classification !== "internal_hr_pilot"),
+);
 import "../../styles/features/load.css";
 ---
 
@@ -33,11 +37,12 @@ import "../../styles/features/load.css";
           />
           <p class="eyebrow">Hermes Logistics · Candidate intake</p>
           <h1>Prepare a reviewable logistics application.</h1>
-          <p>Career applications can be persisted to the private Hermes HR review queue when the HR endpoint is available. Remote-agency interest remains a local preview until its separate business-intake path is approved.</p>
-          <p>Use the form to organize the facts a recruiter or business reviewer needs. A preview is not an employment offer, agency approval, or a promise of follow-up.</p>
+          <p>Accepted career submissions are sent to and stored in the private Hermes HR review queue only after the server returns a receipt. A receipt confirms storage, not that a reviewer has read the submission or will respond within a particular time. Remote-agency interest remains a local preview and is not sent.</p>
+          <p>No public vacancy is currently verified open. A role-specific submission is accepted only when its approved role ID is active; a general professional inquiry is classified separately and is not an application to a paused role.</p>
           <p data-application-context hidden></p>
         </div>
       </section>
+      <template data-hr-intake-policy={JSON.stringify(publicIntakePolicy)}></template>
       <section class="section">
         <div class="shell logistics-application-grid">
           <form class="load-board-form" data-logistics-application novalidate>
@@ -101,11 +106,19 @@ import "../../styles/features/load.css";
   const sanitize = (value: FormDataEntryValue | string | null, max = 1800) => String(value ?? "").replace(/[<>\u0000-\u001f\u007f]/g, "").trim().slice(0, max);
   const params = new URLSearchParams(window.location.search);
   const requestedType = params.get("for");
-  const roleMap: Record<string, string> = {
-    "car-hauling-dispatcher": "Car Hauling Dispatcher — Remote / U.S. Market",
+  type RolePolicy = {
+    label: string;
+    track: "logistics" | "sales" | "marketing";
+    classification: "general_interest" | "approved_role";
+    acceptsApplications: boolean;
+    publicVacancy: boolean;
   };
+  const policyNode = document.querySelector<HTMLTemplateElement>("[data-hr-intake-policy]");
+  const rolePolicy = JSON.parse(policyNode?.dataset.hrIntakePolicy ?? "{}") as Record<string, RolePolicy>;
   const allowedSources = new Set(["hermes_careers", "workua", "staffam", "linkedin", "indeed", "google", "referral"]);
   const requestedRole = params.get("role") ?? "";
+  const requestedRolePolicy = requestedRole ? rolePolicy[requestedRole] ?? null : null;
+  const defaultRoleId = "general-logistics-interest";
   const source = allowedSources.has(params.get("source") ?? "") ? params.get("source")! : "direct";
   const uiLanguage = document.documentElement.lang.toLowerCase().startsWith("ru")
     ? "ru"
@@ -125,11 +138,11 @@ import "../../styles/features/load.css";
     memoryPending = value;
     try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(value)); } catch { /* in-memory retry remains available */ }
   };
-  const getOrCreatePending = (email: string) => {
+  const getOrCreatePending = (email: string, roleId: string) => {
     const existing = readPending();
     const evidenceIds = existing?.evidence_ids as Record<string, unknown> | undefined;
     if (
-      existing?.email === email &&
+      existing?.email === email && existing?.role_id === roleId &&
       /^hr_[a-zA-Z0-9][a-zA-Z0-9_-]{20,100}$/.test(String(existing.candidate_id || "")) &&
       String(existing.token || "").length >= 48 &&
       evidenceIds?.languages && evidenceIds?.experience && evidenceIds?.availability && existing?.event_id && existing?.submitted_at
@@ -137,6 +150,7 @@ import "../../styles/features/load.css";
 
     const created = {
       email,
+      role_id: roleId,
       candidate_id: newCandidateId(),
       token: newCandidateToken(),
       evidence_ids: {
@@ -157,7 +171,6 @@ import "../../styles/features/load.css";
       const value = sanitize(params.get(key), 240);
       if (value) attribution[key] = value;
     }
-    attribution.vacancy = roleMap[requestedRole] ? requestedRole : "logistics-career";
     return attribution;
   };
 
@@ -181,10 +194,12 @@ import "../../styles/features/load.css";
   };
 
   if (type && ["career", "agency"].includes(requestedType ?? "")) type.value = requestedType ?? "";
-  if (interest && roleMap[requestedRole]) interest.value = roleMap[requestedRole];
-  if (context && roleMap[requestedRole]) {
+  if (interest && requestedRolePolicy) interest.value = requestedRolePolicy.label;
+  if (context && requestedRolePolicy) {
     context.hidden = false;
-    context.textContent = `Application context: ${roleMap[requestedRole]} · source ${source}. No personal information is stored in this URL.`;
+    context.textContent = requestedRolePolicy.acceptsApplications
+      ? `Application context: ${requestedRolePolicy.label} · source ${source}. No personal information is stored in this URL.`
+      : `${requestedRolePolicy.label} is paused and is not accepting applications. This page will not send a role-specific submission.`;
   }
   updateSubmitLabel();
   type?.addEventListener("change", updateSubmitLabel);
@@ -218,14 +233,30 @@ import "../../styles/features/load.css";
       return;
     }
 
+    if (requestedRole && (!requestedRolePolicy || !requestedRolePolicy.acceptsApplications)) {
+      setResult(
+        "Hermes HR",
+        "Role-specific application not accepted",
+        "This role is paused or is not on the approved role-ID allowlist. No candidate data was sent to the HR endpoint.",
+        `Hermes HR submission: not sent\nRole ID: ${requestedRole}\nReason: role_not_accepting_applications`,
+      );
+      return;
+    }
+
+    const roleId = requestedRole || defaultRoleId;
+    const activeRolePolicy = rolePolicy[roleId];
+    if (!activeRolePolicy?.acceptsApplications) {
+      setResult("Hermes HR", "Application not accepted", "No approved HR intake classification is available.", "Hermes HR submission: not sent");
+      return;
+    }
+
     const name = sanitize(data.get("name"), 100);
     const email = sanitize(data.get("email"), 160).toLowerCase();
     const location = sanitize(data.get("location"), 160);
     const languages = sanitize(data.get("languages"), 160);
     const experience = sanitize(data.get("experience"), 1800);
     const availability = sanitize(data.get("availability"), 800);
-    const vacancy = roleMap[requestedRole] ? requestedRole : "logistics-career";
-    const pending = getOrCreatePending(email);
+    const pending = getOrCreatePending(email, roleId);
     const candidateId = String(pending.candidate_id || "");
     const token = String(pending.token || "");
     const submittedAt = String(pending.submitted_at || new Date().toISOString());
@@ -250,7 +281,9 @@ import "../../styles/features/load.css";
           country: location,
           language: uiLanguage,
           source,
-          track: "logistics",
+          track: activeRolePolicy.track,
+          role_id: roleId,
+          intake_classification: activeRolePolicy.classification,
           attribution: buildAttribution(),
           consent: data.get("consent") === "on",
           submitted_at: submittedAt,
@@ -287,7 +320,13 @@ import "../../styles/features/load.css";
               event_id: eventId,
               type: "public_logistics_application_submitted",
               occurred_at: submittedAt,
-              payload: { application_type: "career", vacancy, source, landing_path: window.location.pathname },
+              payload: {
+                application_type: "career",
+                role_id: roleId,
+                intake_classification: activeRolePolicy.classification,
+                source,
+                landing_path: window.location.pathname,
+              },
             },
           ],
           completed_at: submittedAt,
@@ -307,15 +346,16 @@ import "../../styles/features/load.css";
       writePending({ ...pending, completed: true });
       setResult(
         "Hermes HR",
-        "Application received for human review",
-        "Your career application and intake evidence are stored privately under this receipt. An authorized reviewer decides the next step. An Academy path, if appropriate, is created only after human review.",
+        "Application stored in the private HR queue",
+        "This receipt confirms private storage of the application and intake evidence. It does not confirm reviewer assignment, human readback, or response time. Any next step requires an authorized human decision.",
         [
           "Hermes HR application receipt",
           `Candidate ID: ${candidateId}`,
           "Track: Logistics",
-          `Vacancy: ${vacancy}`,
+          `Role ID: ${roleId}`,
+          `Classification: ${activeRolePolicy.classification}`,
           `Source: ${source}`,
-          "Status: completed intake · human review required",
+          "Status: stored · reviewer ownership and response time not confirmed",
         ].join("\n"),
       );
     } catch {

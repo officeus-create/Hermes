@@ -13,6 +13,7 @@ import {
   normalizeHrEmail,
   sha256Hex,
 } from "../_lib/hr.mjs";
+import { getHrIntakeRolePolicy } from "../../../src/data/hr-intake-policy.ts";
 
 type KvNamespace = {
   get(key: string): Promise<string | null>;
@@ -158,17 +159,30 @@ export async function onRequestPost({ request, env }: Context) {
   const language = cleanHrText(input.language, 8);
   const source = cleanHrText(input.source, 80);
   const track = cleanHrText(input.track, 40);
+  const roleId = cleanHrText(input.role_id, 120);
+  const intakeClassification = cleanHrText(input.intake_classification, 80);
+  const rolePolicy = getHrIntakeRolePolicy(roleId);
   const consent = input.consent === true;
-  const attribution = cleanHrAttribution(input.attribution);
+  const attribution = cleanHrAttribution(input.attribution) as Record<string, string>;
   const submittedAt = isIsoTime(input.submitted_at) || new Date().toISOString();
 
   if (!isHrCandidateId(candidateId) || candidateId !== headerId) {
     return json(origin, 400, { success: false, error: "candidate_id_invalid" });
   }
   if (!token) return json(origin, 401, { success: false, error: "candidate_token_required" });
+  if (!rolePolicy || !rolePolicy.acceptsApplications) {
+    return json(origin, 409, { success: false, error: "candidate_role_not_accepting_applications" });
+  }
+  if (track !== rolePolicy.track || intakeClassification !== rolePolicy.classification) {
+    return json(origin, 400, { success: false, error: "candidate_role_classification_invalid" });
+  }
   if (name.length < 2 || !isHrEmail(email) || !country || !source || !isHrLanguage(language) || !isHrTrack(track) || !consent) {
     return json(origin, 400, { success: false, error: "candidate_intake_invalid" });
   }
+
+  attribution.role_id = roleId;
+  attribution.intake_classification = rolePolicy.classification;
+  attribution.vacancy = rolePolicy.publicVacancy ? roleId : "general-interest";
 
   await ensureHrSchema(env.DB);
   const tokenHash = await sha256Hex(token);
@@ -176,6 +190,14 @@ export async function onRequestPost({ request, env }: Context) {
   if (existing) {
     if (existing.access_token_hash !== tokenHash || existing.email !== email) {
       return json(origin, 409, { success: false, error: "candidate_id_conflict" });
+    }
+    let existingAttribution: Record<string, unknown> = {};
+    try { existingAttribution = JSON.parse(existing.attribution_json || "{}"); } catch { /* fail closed below */ }
+    if (
+      existingAttribution.role_id !== roleId
+      || existingAttribution.intake_classification !== rolePolicy.classification
+    ) {
+      return json(origin, 409, { success: false, error: "candidate_role_conflict" });
     }
     return json(origin, 200, { success: true, duplicate: true, candidate_id: candidateId, status: existing.status });
   }
@@ -207,7 +229,15 @@ export async function onRequestPost({ request, env }: Context) {
   ]);
   await rateLimits.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS });
 
-  return json(origin, 201, { success: true, duplicate: false, candidate_id: candidateId, session_id: sessionId, status: "interviewing" });
+  return json(origin, 201, {
+    success: true,
+    duplicate: false,
+    candidate_id: candidateId,
+    session_id: sessionId,
+    status: "interviewing",
+    role_id: roleId,
+    intake_classification: rolePolicy.classification,
+  });
 }
 
 export async function onRequestPut({ request, env }: Context) {

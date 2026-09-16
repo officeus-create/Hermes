@@ -33,7 +33,7 @@ const screening = [
   <div class="shell career-status-layout">
     <div>
       <p class="eyebrow">Current vacancy status</p>
-      <h2 id="career-status-title">{verifiedOpenVacancies.length > 0 ? "Verified public vacancies are open." : "General careers inquiries are open. No verified public vacancy is listed today."}</h2>
+      <h2 id="career-status-title">{verifiedOpenVacancies.length > 0 ? "Verified public vacancies are open." : "No verified public vacancy is listed today."}</h2>
       <p>Hermes publishes a specific vacancy only after the role, location, employment type, scope, application route, review date, and status are verified and owner-approved. General professional interest remains separate from a specific role application.</p>
       <div class="career-status-count" aria-label="Verified public vacancies">
         <BriefcaseBusiness size={22} aria-hidden="true" />
@@ -52,7 +52,7 @@ const screening = [
           ))}
         </div>
       )}
-      <a class="button" href="/logistics/apply/?for=career">Prepare a general careers inquiry</a>
+      {verifiedOpenVacancies.length > 0 && <a class="button" href="/logistics/apply/?for=career">Prepare a general careers inquiry</a>}
     </div>
     <ul>
       {careerPublicBoundaries.map((item) => <li><ShieldCheck size={18} aria-hidden="true" />{item}</li>)}

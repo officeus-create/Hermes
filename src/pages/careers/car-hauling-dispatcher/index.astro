@@ -1,18 +1,16 @@
 ---
-import { ArrowRight, Check, Clock3, Globe2, ShieldCheck } from "@lucide/astro";
+import { Check, Clock3, Globe2, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
-import { verifiedOpenVacancies } from "../../../data/careers-governance";
+import { publicVacancyRegistry } from "../../../data/careers-governance";
 
-const vacancy = verifiedOpenVacancies.find((item) => item.slug === "car-hauling-dispatcher");
-if (!vacancy) throw new Error("Verified Car Hauling Dispatcher vacancy is missing from careers governance.");
+const vacancy = publicVacancyRegistry.find((item) => item.slug === "car-hauling-dispatcher");
+if (!vacancy) throw new Error("Car Hauling Dispatcher record is missing from careers governance.");
 
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
-const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
-const metaDescription = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
-const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
-const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
+const title = "Car Hauling Dispatcher — Recruitment Paused | Hermes Logistics";
+const metaDescription = "Recruitment for the Hermes Car Hauling Dispatcher role is paused. No public application route is currently available for this role.";
 
 const responsibilities = [
   "Support car-hauling dispatch work for U.S.-market carrier operations.",
@@ -29,50 +27,18 @@ const screening = [
   "For entry-level candidates: current starting level, relevant skills, availability, and readiness for structured training or a practical test.",
 ];
 
-const jobDescription = [
-  "A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.",
-  "Work arrangement: remote worldwide. Working schedule: U.S. Central Time.",
-  `Responsibilities: ${responsibilities.join(" ")}`,
-  `Screening information to prepare: ${screening.join(" ")}`,
-  "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
-].join("\n\n");
-
-const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    title: "Car Hauling Dispatcher",
-    description: jobDescription,
-    datePosted: vacancy.datePosted,
-    validThrough: `${vacancy.expiresAt}T23:59:59Z`,
-    employmentType: vacancy.employmentType,
-    jobLocationType: "TELECOMMUTE",
-    applicantLocationRequirements: [
-      { "@type": "Country", name: "United States" },
-      { "@type": "Country", name: "Ukraine" },
-    ],
-    directApply: false,
-    url: canonicalUrl,
-    hiringOrganization: {
-      "@type": "Organization",
-      "@id": "https://hermeslogisticsus.com/#organization",
-      name: "Hermes Logistics LLC",
-      sameAs: "https://hermeslogisticsus.com/",
-    },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Careers", item: "https://hermeslogisticsus.com/logistics/careers/" },
-      { "@type": "ListItem", position: 3, name: "Car Hauling Dispatcher", item: canonicalUrl },
-    ],
-  },
-];
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Careers", item: "https://hermeslogisticsus.com/logistics/careers/" },
+    { "@type": "ListItem", position: 3, name: "Car Hauling Dispatcher", item: canonicalUrl },
+  ],
+};
 ---
 
-<BaseLayout title={title} description={metaDescription} schema={schema}>
+<BaseLayout title={title} description={metaDescription} schema={schema} robots="noindex,follow">
   <div class="career-job-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
@@ -84,24 +50,22 @@ const schema = [
               <a href="/logistics/careers/">Careers</a><span aria-hidden="true">/</span>
               <span aria-current="page">Car Hauling Dispatcher</span>
             </nav>
-            <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
+            <p class="eyebrow">Recruitment paused · reviewed {vacancy.reviewedAt}</p>
             <h1>Car Hauling Dispatcher — Remote / U.S. Market</h1>
-            <p class="career-job-lede">A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.</p>
+            <p class="career-job-lede">This role is not accepting public applications. The previous Work.ua listing was removed or hidden, so Hermes no longer presents it as an active vacancy.</p>
             <div class="career-job-meta" aria-label="Vacancy facts">
               <span><Globe2 size={18} aria-hidden="true" />Remote worldwide</span>
               <span><Clock3 size={18} aria-hidden="true" />U.S. Central Time schedule</span>
-              <span><ShieldCheck size={18} aria-hidden="true" />Human-reviewed hiring process</span>
+              <span><ShieldCheck size={18} aria-hidden="true" />No active application route</span>
             </div>
             <div class="career-job-actions">
-              <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
-              <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
               <a class="button" href="/logistics/careers/">View careers hub</a>
             </div>
           </div>
           <aside class="career-job-status-card">
-            <p class="eyebrow">Current application route</p>
-            <h2>Use the live Work.ua application while the Hermes form remains a preview.</h2>
-            <p>The Work.ua listing is the current public submission route for this opening. The Hermes application page can help prepare the information recruiting asks for, but it does not yet send or store an application. A direct Hermes candidate intake will replace this interim handoff only after its submission and persistence path is independently verified live.</p>
+            <p class="eyebrow">Current status</p>
+            <h2>No public application route is approved for this role.</h2>
+            <p>The Hermes career form can persist accepted submissions to a private HR queue and returns a server receipt; it is not being offered as a replacement route for this paused role. Reopening requires a verified live vacancy, an approved role ID, and a confirmed human review process.</p>
           </aside>
         </div>
       </header>
@@ -115,7 +79,7 @@ const schema = [
           </article>
           <article>
             <p class="eyebrow">Screening</p>
-            <h2>What to prepare before applying</h2>
+            <h2>What the last reviewed role asked candidates to prepare</h2>
             <ul>{screening.map((item) => <li><Check size={19} aria-hidden="true" />{item}</li>)}</ul>
           </article>
         </div>
@@ -124,9 +88,9 @@ const schema = [
       <section class="section career-job-process" aria-labelledby="career-process-title">
         <div class="shell">
           <p class="eyebrow">Hiring flow</p>
-          <h2 id="career-process-title">Application → human review → evidence → interview</h2>
+          <h2 id="career-process-title">Required flow after a future approved reopening</h2>
           <div class="career-job-process-grid">
-            <article><span>01</span><h3>Application</h3><p>Submit through the current Work.ua vacancy. If useful, prepare the same factual location, language, experience, role-interest, and availability details in the Hermes preview first.</p></article>
+            <article><span>01</span><h3>Verified route</h3><p>Hermes must first verify a real active vacancy and an approved application destination. A removed, hidden, redirected, or unreachable external listing fails closed.</p></article>
             <article><span>02</span><h3>Human review</h3><p>Recruiting checks fit with the current role, schedule, experience level, and evidence. AI may assist organization but does not make the final hiring decision.</p></article>
             <article><span>03</span><h3>Practical evidence</h3><p>When useful, the next step may be a short scenario, call sample, practical task, or training path appropriate to the candidate's starting level.</p></article>
             <article><span>04</span><h3>Interview</h3><p>An interview is scheduled only when the earlier screening gives enough reason to continue. No step guarantees employment or compensation.</p></article>
@@ -137,15 +101,13 @@ const schema = [
       <section class="section career-job-final">
         <div class="shell career-job-final-card">
           <div>
-            <p class="eyebrow">Ready to apply?</p>
-            <h2>Use the current live vacancy to submit your application.</h2>
-            <p>The Hermes preview does not transmit candidate data yet. Until direct Hermes intake is verified, Work.ua remains the public submission route for this role.</p>
+            <p class="eyebrow">Recruitment paused</p>
+            <h2>Do not submit through an unrelated Hermes form.</h2>
+            <p>Academy enrollment, customer leads, paid activation, signing, and general contact routes are not job applications. Check the careers hub for a future verified opening.</p>
           </div>
-          <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-primary" href="/logistics/careers/">View careers hub</a>
         </div>
       </section>
-
-      <template data-application-url={applicationUrl}></template>
     </main>
     <SiteFooter />
   </div>

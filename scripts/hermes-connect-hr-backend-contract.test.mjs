@@ -39,6 +39,9 @@ assert.match(candidateApi, /Idempotency-Key/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_interview_answers/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_events/);
 assert.match(candidateApi, /candidate_token_invalid/);
+assert.match(candidateApi, /candidate_role_not_accepting_applications/);
+assert.match(candidateApi, /candidate_role_classification_invalid/);
+assert.match(candidateApi, /candidate_role_conflict/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 // Reviewer actions require authenticated specialist + persisted capability.

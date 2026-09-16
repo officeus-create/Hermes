@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fetchExternalJobLifecycle } from "./lib/external-job-lifecycle.mjs";
 
 const baseUrl = "https://hermeslogisticsus.com";
 const jobPath = "/careers/car-hauling-dispatcher/";
@@ -29,20 +30,18 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
     const response = await fetch(`${expectedUrl}${expectedUrl.includes("?") ? "&" : "?"}seo-job-smoke=${Date.now()}`, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesJobPostingProductionVerifier/1.2 (+public read-only SEO check)",
+        "user-agent": "HermesJobPostingProductionVerifier/2.0 (+public read-only SEO check)",
         accept,
         "cache-control": "no-cache",
         pragma: "no-cache",
       },
       signal: AbortSignal.timeout(20_000),
     });
-    const body = await response.text();
     return {
       expectedUrl,
       status: response.status,
       finalUrl: response.url.replace(/[?&]seo-job-smoke=\d+$/, ""),
-      contentType: response.headers.get("content-type"),
-      body,
+      body: await response.text(),
       error: null,
     };
   } catch (error) {
@@ -50,153 +49,147 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
       expectedUrl,
       status: null,
       finalUrl: null,
-      contentType: null,
       body: "",
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
-function extractJsonLd(html) {
-  return [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
-    .map((match) => match[1].trim())
-    .filter(Boolean);
-}
-
 function parseJsonLdEntities(html) {
-  return extractJsonLd(html).flatMap((block) => {
-    try {
-      const parsed = JSON.parse(block);
-      return Array.isArray(parsed) ? parsed : [parsed];
-    } catch {
-      return [];
-    }
-  });
+  return [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
+    .flatMap((match) => {
+      try {
+        const parsed = JSON.parse(match[1].trim());
+        return Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        return [];
+      }
+    });
 }
 
 await fs.mkdir(outputDir, { recursive: true });
 
 const checkedAt = new Date();
-const job = await fetchPublic(jobPath);
-const careers = await fetchPublic(careersPath);
-const sitemap = await fetchPublic(sitemapPath, "application/xml,text/xml,text/plain;q=0.9,*/*;q=0.8");
+const [job, careers, sitemap, externalSubmission] = await Promise.all([
+  fetchPublic(jobPath),
+  fetchPublic(careersPath),
+  fetchPublic(sitemapPath, "application/xml,text/xml,text/plain;q=0.9,*/*;q=0.8"),
+  fetchExternalJobLifecycle(workUaSubmissionUrl),
+]);
 
 const jobUrl = new URL(jobPath, baseUrl).toString();
 const careersUrl = new URL(careersPath, baseUrl).toString();
 const canonical = extractAttribute(job.body, "link", "rel", "canonical", "href");
 const robots = extractAttribute(job.body, "meta", "name", "robots", "content");
-const jobEntities = parseJsonLdEntities(job.body);
-const jobPostings = jobEntities.filter((entity) => entity?.["@type"] === "JobPosting");
+const jobPostings = parseJsonLdEntities(job.body).filter((entity) => entity?.["@type"] === "JobPosting");
 const jobPosting = jobPostings[0] ?? null;
-const applicantCountries = Array.isArray(jobPosting?.applicantLocationRequirements)
-  ? jobPosting.applicantLocationRequirements
-      .filter((item) => item?.["@type"] === "Country" && typeof item.name === "string")
-      .map((item) => item.name)
-  : [];
-const description = typeof jobPosting?.description === "string" ? jobPosting.description : "";
 const validThrough = typeof jobPosting?.validThrough === "string" ? jobPosting.validThrough : "";
 const validThroughMs = Date.parse(validThrough);
+const workUaLinkPresent = job.body.includes(`href="${workUaSubmissionUrl}"`) || job.body.includes(`href='${workUaSubmissionUrl}'`);
+const sitemapContainsJob = sitemap.body.includes(`<loc>${jobUrl}</loc>`) || sitemap.body.includes(jobUrl);
+const pausedCopyPresent = job.body.includes("Recruitment paused")
+  && job.body.includes("No public application route is approved for this role")
+  && job.body.includes("Do not submit through an unrelated Hermes form");
+const activeCopyPresent = job.body.includes("Verified open") && workUaLinkPresent;
+const publicMode = pausedCopyPresent ? "paused" : activeCopyPresent ? "active" : "unknown";
 
-const checks = {
+const sharedChecks = {
   jobStatus200: job.status === 200,
   jobFinalUrlMatches: job.finalUrl === jobUrl,
   jobCanonicalMatches: canonical === jobUrl,
-  jobIndexableByMeta: !robots?.toLowerCase().includes("noindex"),
+  careersStatus200: careers.status === 200,
+  careersFinalUrlMatches: careers.finalUrl === careersUrl,
+  careersDoesNotDuplicateJobPosting: !parseJsonLdEntities(careers.body).some((entity) => entity?.["@type"] === "JobPosting"),
+  sitemapStatus200: sitemap.status === 200,
+};
+
+const activeChecks = {
   exactlyOneJobPosting: jobPostings.length === 1,
   jobPostingUrlMatches: jobPosting?.url === jobUrl,
   jobPostingTitleClean: jobPosting?.title === "Car Hauling Dispatcher",
-  jobPostingEmploymentTypePresent: jobPosting?.employmentType === "FULL_TIME",
-  jobPostingTelecommutePresent: jobPosting?.jobLocationType === "TELECOMMUTE",
-  jobPostingApplicantCountriesPresent: applicantCountries.includes("United States") && applicantCountries.includes("Ukraine"),
-  jobPostingDirectApplyTruthful: jobPosting?.directApply === false,
-  jobPostingDatePostedPresent: /^\d{4}-\d{2}-\d{2}$/.test(String(jobPosting?.datePosted ?? "")),
-  jobPostingValidThroughPresent: /^\d{4}-\d{2}-\d{2}T/.test(validThrough),
   jobPostingValidThroughActive: Number.isFinite(validThroughMs) && validThroughMs >= checkedAt.getTime(),
-  jobPostingDescriptionComplete: description.includes("Support car-hauling dispatch work for U.S.-market carrier operations.")
-    && description.includes("Ability to work the applicable U.S. Central Time schedule.")
-    && description.includes("The Hermes application page is a preparation preview only"),
-  visibleWorkUaSubmissionLinkPresent: job.body.includes(`href="${workUaSubmissionUrl}"`) || job.body.includes(`href='${workUaSubmissionUrl}'`),
-  visibleHermesPreviewBoundaryPresent: job.body.includes("does not yet send or store an application")
-    && job.body.includes("Prepare Hermes application preview"),
-  careersStatus200: careers.status === 200,
-  careersFinalUrlMatches: careers.finalUrl === careersUrl,
+  workUaSubmissionLinkPresent: workUaLinkPresent,
+  externalSubmissionVerifiedOpen: externalSubmission.classification === "verified_open",
   careersLinksToJob: careers.body.includes(`href="${jobPath}"`) || careers.body.includes(`href='${jobPath}'`),
-  careersDoesNotDuplicateJobPosting: !parseJsonLdEntities(careers.body).some((entity) => entity?.["@type"] === "JobPosting"),
-  sitemapStatus200: sitemap.status === 200,
-  sitemapContainsJob: sitemap.body.includes(`<loc>${jobUrl}</loc>`) || sitemap.body.includes(jobUrl),
+  sitemapContainsJob,
 };
 
+const pausedChecks = {
+  pausedStatusCopyPresent: pausedCopyPresent,
+  jobPageNoindex: Boolean(robots?.toLowerCase().includes("noindex")),
+  noJobPostingSchema: jobPostings.length === 0,
+  noWorkUaSubmissionLink: !workUaLinkPresent,
+  externalSubmissionReviewRequired: externalSubmission.classification === "review_required",
+  careersDoesNotLinkPausedJob: !careers.body.includes(`href="${jobPath}"`) && !careers.body.includes(`href='${jobPath}'`),
+  sitemapDoesNotContainPausedJob: !sitemapContainsJob,
+};
+
+const modeChecks = publicMode === "active" ? activeChecks : publicMode === "paused" ? pausedChecks : { recognizedPublicMode: false };
+const checks = { ...sharedChecks, ...modeChecks };
 const passed = Object.values(checks).every(Boolean) && !job.error && !careers.error && !sitemap.error;
-const classification = passed ? "PRODUCTION_JOB_POSTING_PASS" : "PRODUCTION_JOB_POSTING_REVIEW_REQUIRED";
+const classification = passed
+  ? publicMode === "paused" ? "PRODUCTION_JOB_POSTING_PAUSE_PASS" : "PRODUCTION_JOB_POSTING_ACTIVE_PASS"
+  : "PRODUCTION_JOB_POSTING_REVIEW_REQUIRED";
 
 const result = {
   checkedAt: checkedAt.toISOString(),
   classification,
+  publicMode,
   boundaries: {
     publicReadOnly: true,
     noFormsSubmitted: true,
     noCredentialsUsed: true,
     noCandidateDataCollected: true,
-    note: "This verifies public production route/schema/application/lifecycle/discovery contracts only. Google/Bing indexing, rich-result eligibility and ranking remain separate authenticated/platform evidence.",
+    note: "External redirects, removed markers, non-2xx responses, and request failures classify the vacancy as review_required. A paused local page may pass only when JobPosting, CTA, hub link, and sitemap discovery are removed.",
   },
   job: {
     path: jobPath,
     status: job.status,
-    finalUrlMatches: checks.jobFinalUrlMatches,
     canonical,
-    canonicalMatches: checks.jobCanonicalMatches,
     robots,
-    indexableByMeta: checks.jobIndexableByMeta,
     jobPostingCount: jobPostings.length,
-    title: jobPosting?.title ?? null,
-    directApply: jobPosting?.directApply ?? null,
-    applicantCountries,
     validThrough: validThrough || null,
-    validThroughActive: checks.jobPostingValidThroughActive,
-    workUaSubmissionLinkPresent: checks.visibleWorkUaSubmissionLinkPresent,
-    hermesPreviewBoundaryPresent: checks.visibleHermesPreviewBoundaryPresent,
+    workUaSubmissionLinkPresent: workUaLinkPresent,
+    pausedCopyPresent,
     error: job.error,
+  },
+  externalSubmission: {
+    expectedUrl: externalSubmission.expectedUrl,
+    status: externalSubmission.status,
+    finalUrl: externalSubmission.finalUrl,
+    classification: externalSubmission.classification,
+    reason: externalSubmission.reason,
+    error: externalSubmission.error,
   },
   careers: {
     path: careersPath,
     status: careers.status,
-    finalUrlMatches: checks.careersFinalUrlMatches,
-    linksToJob: checks.careersLinksToJob,
-    duplicatesJobPosting: !checks.careersDoesNotDuplicateJobPosting,
+    linksToJob: !pausedChecks.careersDoesNotLinkPausedJob,
     error: careers.error,
   },
   sitemap: {
     path: sitemapPath,
     status: sitemap.status,
-    containsJob: checks.sitemapContainsJob,
+    containsJob: sitemapContainsJob,
     error: sitemap.error,
   },
   checks,
 };
 
 const markdown = [
-  "# Production JobPosting SEO check",
+  "# Production JobPosting lifecycle check",
   "",
   `- Checked: ${result.checkedAt}`,
   `- Result: **${classification}**`,
-  `- Job route: \`${jobPath}\``,
-  `- Job HTTP 200: **${checks.jobStatus200 ? "yes" : "no"}**`,
-  `- Final URL matches: **${checks.jobFinalUrlMatches ? "yes" : "no"}**`,
-  `- Canonical matches: **${checks.jobCanonicalMatches ? "yes" : "no"}**`,
-  `- Indexable by meta: **${checks.jobIndexableByMeta ? "yes" : "no"}**`,
-  `- Exactly one JobPosting: **${checks.exactlyOneJobPosting ? "yes" : "no"}**`,
-  `- Clean schema title: **${checks.jobPostingTitleClean ? "yes" : "no"}**`,
-  `- Remote/full-time/applicant-country fields: **${checks.jobPostingTelecommutePresent && checks.jobPostingEmploymentTypePresent && checks.jobPostingApplicantCountriesPresent ? "yes" : "no"}**`,
-  `- directApply matches current flow: **${checks.jobPostingDirectApplyTruthful ? "yes" : "no"}**`,
-  `- validThrough is still active: **${checks.jobPostingValidThroughActive ? "yes" : "no"}** (${validThrough || "missing"})`,
-  `- Complete visible-details description: **${checks.jobPostingDescriptionComplete ? "yes" : "no"}**`,
-  `- Real Work.ua submission link visible: **${checks.visibleWorkUaSubmissionLinkPresent ? "yes" : "no"}**`,
-  `- Hermes preview boundary visible: **${checks.visibleHermesPreviewBoundaryPresent ? "yes" : "no"}**`,
-  `- Careers hub links to job: **${checks.careersLinksToJob ? "yes" : "no"}**`,
-  `- Careers hub duplicates JobPosting: **${checks.careersDoesNotDuplicateJobPosting ? "no" : "yes"}**`,
-  `- Primary sitemap contains job URL: **${checks.sitemapContainsJob ? "yes" : "no"}**`,
+  `- Public mode: **${publicMode}**`,
+  `- Job HTTP 200: **${sharedChecks.jobStatus200 ? "yes" : "no"}**`,
+  `- JobPosting count: **${jobPostings.length}**`,
+  `- Work.ua CTA present: **${workUaLinkPresent ? "yes" : "no"}**`,
+  `- External lifecycle: **${externalSubmission.classification}** (${externalSubmission.reason})`,
+  `- Careers hub links to role: **${pausedChecks.careersDoesNotLinkPausedJob ? "no" : "yes"}**`,
+  `- Primary sitemap contains role: **${sitemapContainsJob ? "yes" : "no"}**`,
   "",
-  "Boundary: this is public production SEO evidence only. Search-engine indexing, rich-result selection, impressions, clicks and ranking remain separate Google/Bing evidence.",
+  "Boundary: public read-only verification only. This does not submit candidate data or prove reviewer SLA, retention, deletion, hiring, indexing, traffic, or revenue.",
   "",
 ].join("\n");
 
