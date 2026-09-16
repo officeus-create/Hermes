@@ -133,7 +133,7 @@ export async function runProductionMultilingualSeoCheck() {
     checkedAt: new Date().toISOString(),
     baseUrl,
     passed: errors.length === 0,
-    expectedLocalizedUrls,
+    expectedLocalizedUrls: expectedUrls,
     checkedPageCount: cache.size,
     pages: [...cache.values()].map(({ html, alternates, ...page }) => ({ ...page, alternates: Object.fromEntries(alternates) })),
     errors,
