@@ -47,16 +47,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const config = safeJson(connection.config_json);
   const source = await getSource(env.DB, connection.id, normalized.message.chat_id);
   if (!source || Number(source.ingestion_enabled) !== 1 || !shouldIngestLiveMessage(normalized, config, source)) {
-    return jsonResponse(200, { success: true, accepted: false, reason: "source_not_approved" }, privateHeaders);
+    return jsonResponse(200, { success: true, accepted: false, reason: "source_not_approved_or_not_owner_direct" }, privateHeaders);
   }
 
   const result = await ingestTelegramNormalizedEvent(env.DB, connection, normalized, {
     source,
-    rawPayload: update,
+    rawPayload: update as any,
     retainRawPayload: config.retain_raw_events === true,
   });
 
-  // Unknown or disabled sources deliberately return HTTP 200 so Telegram does not retry them.
-  // Source approval is an authenticated Hermes Connect action, not an implicit webhook side effect.
+  // Rejected ambient updates deliberately return HTTP 200 so Telegram does not retry them.
   return jsonResponse(200, { success: true, ...result }, privateHeaders);
 }
