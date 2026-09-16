@@ -41,6 +41,34 @@ If an external dependency needs credentials, another department, legal or owner 
 
 GEO strategy and research belong to the dedicated ChatGPT GEO workstream. Repository agents implement only bounded GEO technical changes with an exact owner, source, implementation request, and done condition.
 
+### ChatGPT Project recovery loop
+
+ChatGPT Projects are project-specific knowledge sources. Their chats, files, decisions, errors, handoffs, and unfinished work may be newer than GitHub, Drive, or the Mac. Do not assume any one of those systems contains the complete history.
+
+Query a ChatGPT Project only when current context is missing, a source conflict exists, or an active dependency requires that Project's state. Do not run a mass audit of every Project. Do not query a Project again until a material change, new conflict, or new dependency appears.
+
+When Project context is required, produce one targeted `PROJECT_CONTEXT_REQUEST` for that Project with:
+
+```text
+TARGET_PROJECT
+WHY_NEEDED
+WHAT_CODEX_ALREADY_KNOWS
+EXACT_MISSING_INFORMATION
+RELATED_TASK_IDS
+RELATED_GITHUB
+RELATED_DRIVE
+WHAT_CODEX_NEEDS_BACK
+PRIORITY
+```
+
+The copy/paste request must ask the Project to distinguish `CURRENT` from `HISTORICAL` and return only surviving work. For each surviving task require: source, latest source, status, business goal, planned and completed work, evidence, remaining work, blocker, dependencies, primary owner, other department, Codex action, Project action, owner action, file/data locations, GitHub/Drive/Mac references, business impact, done condition, and next action. Also require the sections `DONE_VERIFIED`, `ACTIVE`, `BLOCKED`, `WAITING_FOR_OTHER_PROJECT`, `OTHER_PROJECT_SHOULD_KNOW`, `CONFLICTS`, `SUPERSEDED`, `MISSING_FROM_CENTRAL_BRAIN`, and `CODEX_HANDOFF`.
+
+Treat a returned Project report as source material, not as a new backlog. Compare it with current production, `origin/main`, GitHub, the canonical Master Board, Source Manifest, and Drive; remove duplicates and superseded work; resolve conflicts using the source precedence above; add only surviving work to the existing execution view; assign one primary owner; and immediately execute Codex-owned ready tasks.
+
+Route work between Projects with a bounded `CROSS_PROJECT_HANDOFF` containing `FROM_PROJECT`, `TO_PROJECT`, `TASK`, `WHY`, `SOURCE`, `DEPENDENCY`, `EXPECTED_RESULT`, and `DONE_CONDITION`. Do not solve Project B's work inside Project A.
+
+Project responses are asynchronous dependencies only for the tasks that need them. Continue independent ready work, tests, CI, fixes, previews, smoke checks, verification, and canonical writeback while waiting. After reconciliation, record `PROJECT_CONTEXT_LAST_SYNC` with date, Project, source, and result in the existing canonical control artifact; do not create a separate sync registry.
+
 Use `INDEX -> CURRENT STATE -> TARGETED SOURCE -> EXECUTION`. Do not reread the entire history, repeat an unchanged audit, or produce a new large backlog when current evidence is sufficient to act.
 
 A technical change is not `DONE_VERIFIED` merely because code, a PR, a page, a test, or a document exists. Use the evidence chain appropriate to the work:
