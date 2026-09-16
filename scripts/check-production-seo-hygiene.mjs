@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { runProductionMultilingualSeoCheck } from "./check-production-multilingual-seo.mjs";
 
 const outputDir = path.resolve("artifacts");
 const sourceJsonPath = path.join(outputDir, "production-custom-domain-check.json");
@@ -80,6 +81,7 @@ const result = JSON.parse(await fs.readFile(sourceJsonPath, "utf8"));
 const sourceMarkdown = await fs.readFile(sourceMarkdownPath, "utf8");
 const calculators = [];
 for (const pathname of calculatorPaths) calculators.push(await inspectProductionCalculator(pathname));
+const multilingual = await runProductionMultilingualSeoCheck();
 
 const calculatorRoutesHealthy = calculators.every((item) =>
   item.status === 200 &&
@@ -92,7 +94,8 @@ const calculatorRoutesHealthy = calculators.every((item) =>
 const passed =
   result.classification === "LIVE_CURRENT" &&
   result.routeContractHealthy === true &&
-  calculatorRoutesHealthy;
+  calculatorRoutesHealthy &&
+  multilingual.passed;
 
 const seoResult = {
   checkedAt: result.checkedAt,
@@ -101,6 +104,13 @@ const seoResult = {
   sourceClassification: result.classification,
   routeContractHealthy: result.routeContractHealthy,
   calculatorRoutesHealthy,
+  multilingualSeoHealthy: multilingual.passed,
+  multilingual: {
+    checkedAt: multilingual.checkedAt,
+    expectedLocalizedUrls: multilingual.expectedLocalizedUrls,
+    checkedPageCount: multilingual.checkedPageCount,
+    errors: multilingual.errors,
+  },
   calculators,
   canonicalPages: result.canonicalPages,
   noindexPages: result.noindexPages,
@@ -123,12 +133,20 @@ const markdown = [
   "",
   `- Calculator route contract healthy: **${calculatorRoutesHealthy ? "yes" : "no"}**`,
   "",
+  "## Multilingual production SEO",
+  "",
+  `- Result: **${multilingual.passed ? "PASS" : "REVIEW REQUIRED"}**`,
+  `- Localized sitemap/root URLs expected: **${multilingual.expectedLocalizedUrls.length}**`,
+  `- Pages fetched including hreflang targets: **${multilingual.checkedPageCount}**`,
+  ...(multilingual.errors.length ? multilingual.errors.map((error) => `- ${error}`) : ["- No multilingual production SEO violations found."]),
+  "",
   "## SEO 11 production-hygiene decision",
   "",
   `- Result: **${seoResult.classification}**`,
   `- Source classification: **${result.classification}**`,
   `- Route/index-hygiene contract healthy: **${result.routeContractHealthy ? "yes" : "no"}**`,
   `- Calculator route contract healthy: **${calculatorRoutesHealthy ? "yes" : "no"}**`,
+  `- Multilingual SEO contract healthy: **${multilingual.passed ? "yes" : "no"}**`,
   "- Authenticated GSC/Bing index reasons remain tracked separately in Issue #206.",
   "",
 ].join("\n");
