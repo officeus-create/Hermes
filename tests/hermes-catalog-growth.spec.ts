@@ -41,6 +41,22 @@ test("self-promo rail appears in Catalog and every top-level direction", async (
   }
 });
 
+test("top-level direction promo rails lead with the current commercial priority", async ({ page }) => {
+  const priorities = [
+    ["/paths/logistics/", "current load opportunities", "/load-board/"],
+    ["/paths/marketing/", "focused growth review", "#contact"],
+    ["/paths/technology/", "Map one expensive workflow first", "/paths/technology/#project-brief"],
+    ["/paths/academy/", "Car Hauling Dispatcher opening is currently verified", "/careers/car-hauling-dispatcher/"],
+  ] as const;
+
+  for (const [path, copy, href] of priorities) {
+    await page.goto(path, { waitUntil: "domcontentloaded" });
+    const active = page.locator("[data-promo-slide]:not([hidden])");
+    await expect(active).toContainText(copy);
+    await expect(active.locator("a")).toHaveAttribute("href", href);
+  }
+});
+
 test("Hermes Connect preserves desktop CRM treatment and the mobile product entry", async ({ page, isMobile }) => {
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   if (isMobile) {
