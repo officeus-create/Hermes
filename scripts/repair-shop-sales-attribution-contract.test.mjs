@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { onRequestGet as captureReferral } from "../functions/api/repair-shop/referral.ts";
 import { onRequestPost as register } from "../functions/api/auth/register.ts";
+import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../src/data/hermes-connect-repair-shop-launch.ts";
 
 class AttributionMockDb {
   constructor({ failAttribution = false } = {}) {
@@ -54,6 +55,16 @@ const privateSalespersonCode = "REP_17";
 const envConfig = JSON.stringify({
   [opaqueToken]: { salesperson_code: privateSalespersonCode, source: "repair-shop-outbound" },
 });
+
+async function withOpenRegistrationWindow(callback) {
+  const originalDateNow = Date.now;
+  Date.now = () => Date.parse(REPAIR_SHOP_FREE_REGISTRATION_END_ISO) - 1_000;
+  try {
+    return await callback();
+  } finally {
+    Date.now = originalDateNow;
+  }
+}
 
 const captureResponse = await captureReferral({
   request: new Request(`https://hermeslogisticsus.com/api/repair-shop/referral?ref=${opaqueToken}`),
@@ -108,10 +119,10 @@ const registrationRequest = new Request("https://hermeslogisticsus.com/api/auth/
   }),
 });
 
-const registrationResponse = await register({
+const registrationResponse = await withOpenRegistrationWindow(() => register({
   request: registrationRequest,
   env: { DB: db, REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
-});
+}));
 
 assert.equal(registrationResponse.status, 201);
 const registrationData = await registrationResponse.json();
@@ -138,7 +149,7 @@ const originalConsoleError = console.error;
 const loggedErrors = [];
 console.error = (...args) => loggedErrors.push(args);
 try {
-  const failOpenResponse = await register({
+  const failOpenResponse = await withOpenRegistrationWindow(() => register({
     request: new Request("https://hermeslogisticsus.com/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json", Cookie: browserCookie },
@@ -152,7 +163,7 @@ try {
       }),
     }),
     env: { DB: failingDb, REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
-  });
+  }));
   assert.equal(failOpenResponse.status, 201);
   const failOpenData = await failOpenResponse.json();
   assert.equal(failOpenData.success, true);
