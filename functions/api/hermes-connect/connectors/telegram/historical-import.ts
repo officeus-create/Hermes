@@ -67,8 +67,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const config = safeJson(connection.config_json);
-  if (config.ingestion_policy === "owner_authored_only" && !config.owner_telegram_user_id) {
-    return jsonResponse(409, { success: false, error: "owner_telegram_user_id_required_for_policy" }, privateHeaders);
+  if (config.ingestion_policy !== "owner_authored_only" || !config.owner_telegram_user_id) {
+    return jsonResponse(409, { success: false, error: "owner_authored_policy_required" }, privateHeaders);
   }
 
   let accepted = 0;
@@ -86,7 +86,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }
     const result = await ingestTelegramNormalizedEvent(env.DB, connection, normalized, {
       source,
-      rawPayload: rawMessage,
+      rawPayload: rawMessage as any,
       retainRawPayload: config.retain_raw_events === true,
     });
     if (result.accepted) accepted += 1;
@@ -108,6 +108,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     accepted,
     ignored,
     invalid,
-    policy: config.ingestion_policy || "owner_authored_only",
+    policy: "owner_authored_only",
   }, privateHeaders);
 }
