@@ -138,7 +138,7 @@ test("Microsoft Clarity stays disabled on private Hermes Connect routes even aft
   await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
 });
 
-test("mobile consent stays compact, below the header and clear of every primary hero CTA", async ({ page }) => {
+test("mobile consent stays compact in a bottom dock and clear of every primary hero CTA", async ({ page }) => {
   const routes = [
     { path: "/paths/logistics/", cta: ".detail-page-logistics .detail-hero .button-primary" },
     { path: "/paths/marketing/", cta: ".detail-page-marketing .detail-hero .button-primary" },
@@ -175,6 +175,7 @@ test("mobile consent stays compact, below the header and clear of every primary 
         bannerHeight: bannerRect.height,
         bannerTop: bannerRect.top,
         bannerBottom: bannerRect.bottom,
+        viewportHeight: window.innerHeight,
         ctaTop: ctaRect.top,
         ctaBottom: ctaRect.bottom,
         overlap,
@@ -185,7 +186,8 @@ test("mobile consent stays compact, below the header and clear of every primary 
 
     expect(geometry, route.path).not.toBeNull();
     expect(geometry!.bannerHeight, route.path).toBeLessThanOrEqual(120);
-    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(64);
+    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(geometry!.viewportHeight - 140);
+    expect(geometry!.bannerBottom, route.path).toBeLessThanOrEqual(geometry!.viewportHeight);
     expect(geometry!.overlap, route.path).toBe(false);
     expect(geometry!.acceptHeight, route.path).toBeGreaterThanOrEqual(44);
     expect(geometry!.declineHeight, route.path).toBeGreaterThanOrEqual(44);
