@@ -10,7 +10,7 @@ async function mockDashboard(page: any) {
   let services = [{ id: "svc-existing", name: "Tire rotation", duration_minutes: 30, owner_specialist_id: "owner-1" }];
   await page.route("**/api/auth/me", (route: any) => route.fulfill(ok(owner)));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill(ok({ success: true, shop })));
-  await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success: true, access: { state: "trialing", plan_id: "repair_shop_founding", plan_name: "Founding Shop Plan", current_period_end: null, next_action: "choose_plan" } })));
+  await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success: true, access: { state: "trialing", plan_id: "repair_shop_founding", plan_name: "Repair Shop Launch Promotion", current_period_end: null, next_action: "choose_plan" } })));
   await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success: true, timezone: "America/Chicago", days: emptyAvailability })));
   await page.route("**/api/services", async (route: any) => {
     if (route.request().method() === "POST") {
@@ -41,7 +41,7 @@ test("owner dashboard exposes access, quick start, share, QR, customer contact a
   await mockDashboard(page);
   await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator("[data-web-v1-access]")).toContainText("Бесплатный стартовый доступ");
+  await expect(page.locator("[data-web-v1-access]")).toContainText("Доступ по стартовой акции");
   await expect(page.locator("[data-web-v1-service-presets]")).toBeVisible();
   await expect(page.getByRole("button", { name: /Замена масла/ })).toBeVisible();
   await page.getByRole("button", { name: /Замена масла/ }).click();
