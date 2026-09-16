@@ -69,6 +69,8 @@ Route work between Projects with a bounded `CROSS_PROJECT_HANDOFF` containing `F
 
 Project responses are asynchronous dependencies only for the tasks that need them. Continue independent ready work, tests, CI, fixes, previews, smoke checks, verification, and canonical writeback while waiting. After reconciliation, record `PROJECT_CONTEXT_LAST_SYNC` with date, Project, source, and result in the existing canonical control artifact; do not create a separate sync registry.
 
+End every material handoff with `Quickest revenue — easiest to hardest`. Include only surviving work and rank it by time to first payment, probability of payment, existing readiness, launch cost, and risk. For each item state the next action, primary owner, main blocker, and measurable payment evidence. Never present forecast revenue as received revenue.
+
 Use `INDEX -> CURRENT STATE -> TARGETED SOURCE -> EXECUTION`. Do not reread the entire history, repeat an unchanged audit, or produce a new large backlog when current evidence is sufficient to act.
 
 A technical change is not `DONE_VERIFIED` merely because code, a PR, a page, a test, or a document exists. Use the evidence chain appropriate to the work:
