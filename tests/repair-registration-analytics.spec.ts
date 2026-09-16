@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { freezeRepairRegistrationOpen } from "./repair-registration-clock";
 
 const authPath = "/services/hermes-connect/repair-shops/auth/?mode=register";
 const owner = {
@@ -32,6 +33,10 @@ const installAnalyticsCapture = async (page: any, payloads: AnalyticsPayload[]) 
 
 const eventPayloads = (payloads: AnalyticsPayload[], name: string) =>
   payloads.filter((entry) => entry?.event === name);
+
+test.beforeEach(async ({ page }) => {
+  await freezeRepairRegistrationOpen(page);
+});
 
 test("successful Repair registration emits one privacy-safe completion event", async ({ page }) => {
   let registered = false;
