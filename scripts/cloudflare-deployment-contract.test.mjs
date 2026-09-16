@@ -45,6 +45,9 @@ assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
 assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outbound lead-email implementation must remain present.");
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
+for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
+  assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
+}
 assert.match(
   productionWorkflow,
   /pages deploy dist --project-name=hermes --branch=main/,
