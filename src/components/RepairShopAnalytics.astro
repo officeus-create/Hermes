@@ -43,10 +43,13 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
   const analyticsRoot = document.querySelector<HTMLElement>("[data-repair-shop-analytics]");
   const currentPath = window.location.pathname;
   const isRepairRoute = currentPath.startsWith(REPAIR_ROOT);
+  const isPublicBookingRoute = currentPath.endsWith("/booking/");
   const transportFetch = window.fetch.bind(window);
   let ownerAuthenticatedObserved = false;
   let ownerOpenedDelivered = false;
   let publicBookingOpenedDelivered = false;
+  let publicBookingContextReady = !isPublicBookingRoute;
+  let publicBookingSynthetic = false;
 
   const consentGranted = () => {
     try { return window.localStorage.getItem(CONSENT_KEY) === "granted"; }
@@ -61,7 +64,10 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
   };
 
   const viewportClass = () => window.innerWidth <= 700 ? "mobile" : window.innerWidth <= 1024 ? "tablet" : "desktop";
-  const synthetic = () => new URLSearchParams(window.location.search).get("analytics_smoke") === "synthetic";
+  const synthetic = () => (
+    new URLSearchParams(window.location.search).get("analytics_smoke") === "synthetic"
+    || publicBookingSynthetic
+  );
   const surfaceForPath = () => {
     if (currentPath.endsWith("/dashboard/")) return "owner_dashboard";
     if (currentPath.endsWith("/settings/")) return "company_settings";
@@ -151,7 +157,7 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
     };
 
     const emitObservedOpenEvents = () => {
-      if (currentPath.endsWith("/booking/") && !publicBookingOpenedDelivered) {
+      if (isPublicBookingRoute && publicBookingContextReady && !publicBookingOpenedDelivered) {
         publicBookingOpenedDelivered = true;
         emit("hc_repair_public_booking_opened", false, "opened");
       }
@@ -177,7 +183,16 @@ const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "";
       if (!url || url.origin !== window.location.origin || !response.ok) return response;
       const path = url.pathname;
 
-      if (currentPath.endsWith("/dashboard/") && method === "GET" && path === "/api/auth/me") {
+      if (isPublicBookingRoute && method === "GET" && path === "/api/public/repair-shop") {
+        try {
+          const payload = await response.clone().json() as { success?: boolean; shop?: unknown; synthetic?: boolean };
+          publicBookingSynthetic = payload.synthetic === true;
+          publicBookingContextReady = payload.success === true && Boolean(payload.shop);
+        } catch {
+          publicBookingContextReady = false;
+        }
+        queueMicrotask(emitObservedOpenEvents);
+      } else if (currentPath.endsWith("/dashboard/") && method === "GET" && path === "/api/auth/me") {
         ownerAuthenticatedObserved = true;
         queueMicrotask(emitObservedOpenEvents);
       } else if (method === "PUT" && path === "/api/repair-shop/profile") {

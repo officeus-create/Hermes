@@ -4,6 +4,9 @@ import { readFileSync } from "node:fs";
 const adapter = readFileSync("src/components/RepairShopAnalytics.astro", "utf8");
 const consent = readFileSync("src/components/TrackingConsent.astro", "utf8");
 const privacy = readFileSync("src/pages/privacy.astro", "utf8");
+const analytics = readFileSync("src/lib/analytics.ts", "utf8");
+const publicShopApi = readFileSync("functions/api/public/repair-shop.ts", "utf8");
+const registrationOps = readFileSync("functions/api/_lib/registration-ops.mjs", "utf8");
 
 const requiredEvents = [
   "hc_repair_owner_opened",
@@ -34,6 +37,12 @@ assert.match(adapter, /\.catch\(\(\) => undefined\)/);
 assert.match(adapter, /window\.addEventListener\("hermes:analytics"/);
 assert.match(adapter, /trackEvent\(/);
 assert.match(adapter, /\/capture\//);
+assert.match(adapter, /publicBookingContextReady/);
+assert.match(adapter, /payload\.synthetic === true/);
+assert.match(analytics, /if \(payload\.synthetic === true\) return;/);
+assert.match(registrationOps, /export async function getRegistrationSyntheticFlag/);
+assert.match(publicShopApi, /getRegistrationSyntheticFlag/);
+assert.match(publicShopApi, /synthetic,/);
 
 for (const forbidden of [
   "email",

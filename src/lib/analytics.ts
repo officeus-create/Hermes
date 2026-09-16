@@ -90,6 +90,9 @@ function emit(name: string, payload: AnalyticsPayload = {}): void {
   const detail = { name, ...payload, ts: Date.now() };
   window.dispatchEvent(new CustomEvent("hermes:analytics", { detail }));
 
+  // Synthetic QA remains observable to local product adapters, but never enters GA4 business KPIs.
+  if (payload.synthetic === true) return;
+
   if (analyticsConsentGranted() && Array.isArray(window.dataLayer)) {
     const parameters = normalizePayload(payload);
     (window as AnalyticsWindow).gtag?.("event", name, parameters);
