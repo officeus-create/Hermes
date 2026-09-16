@@ -23,7 +23,7 @@ test("car-hauler jobs guide separates employment from operating-carrier intent",
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
-
+});
 
 test("car-hauler jobs guide keeps compensation and availability boundaries explicit", async ({ page }) => {
   await page.goto(guidePath);
