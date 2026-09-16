@@ -30,9 +30,12 @@ test("car-hauler jobs guide keeps compensation and availability boundaries expli
 
   const main = await page.locator("main").innerText();
   expect(main).toContain("Do not compare salary with carrier gross revenue.");
-  expect(main).toContain("The carrier intake is a business-to-business review and is not an employment application.");
-  expect(main).toContain("does not guarantee acceptance, loads, rates, mileage, utilization, profit, or revenue");
+  expect(main).toContain("Current Hermes employee openings, when available, belong on the careers pages—not in the carrier intake.");
+  expect(main).toContain("does not guarantee acceptance, freight, rates, miles, utilization, profit, or revenue");
   expect(main).not.toMatch(/guaranteed loads|guaranteed revenue|guaranteed salary/i);
+
+  await page.getByText("Is this page a list of current car hauler job openings?", { exact: true }).click();
+  await expect(page.getByText(/The carrier intake is a business-to-business review and is not an employment application/i)).toBeVisible();
 
   await expect(page.getByRole("link", { name: /Owner-operator dispatch support/i })).toHaveAttribute(
     "href",
