@@ -23,6 +23,23 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
 }
 
 {
+  const { context, observed } = contextFor("https://hermes-eu4.pages.dev/services/hermes-connect/?utm_source=pages-dev");
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/?utm_source=pages-dev");
+  assert.equal(observed.nextCalls, 0);
+  assert.equal(observed.assetRequests.length, 0);
+}
+
+{
+  const { context, observed } = contextFor("https://655e4425.hermes-eu4.pages.dev/release-proof?sha=test");
+  const response = await routeMiddleware(context);
+  assert.equal(await response.text(), "next");
+  assert.equal(observed.nextCalls, 1);
+  assert.equal(observed.assetRequests.length, 0);
+}
+
+{
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/");
   const response = await routeMiddleware(context);
   assert.equal(response.status, 308);
