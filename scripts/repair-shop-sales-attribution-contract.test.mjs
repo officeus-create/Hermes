@@ -108,10 +108,17 @@ const registrationRequest = new Request("https://hermeslogisticsus.com/api/auth/
   }),
 });
 
-const registrationResponse = await register({
-  request: registrationRequest,
-  env: { DB: db, REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
-});
+const realDateNow = Date.now;
+Date.now = () => Date.parse("2026-09-15T12:00:00.000Z");
+let registrationResponse;
+try {
+  registrationResponse = await register({
+    request: registrationRequest,
+    env: { DB: db, REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
+  });
+} finally {
+  Date.now = realDateNow;
+}
 
 assert.equal(registrationResponse.status, 201);
 const registrationData = await registrationResponse.json();
@@ -135,6 +142,8 @@ assert.match(registrationCookies, /Max-Age=0/);
 
 const failingDb = new AttributionMockDb({ failAttribution: true });
 const originalConsoleError = console.error;
+const failOpenRealDateNow = Date.now;
+Date.now = () => Date.parse("2026-09-15T12:00:00.000Z");
 const loggedErrors = [];
 console.error = (...args) => loggedErrors.push(args);
 try {
@@ -165,6 +174,7 @@ try {
   assert.equal(loggedErrors.length, 1);
   assert.equal(loggedErrors[0][0], "repair_shop_sales_attribution_failed");
 } finally {
+  Date.now = failOpenRealDateNow;
   console.error = originalConsoleError;
 }
 
