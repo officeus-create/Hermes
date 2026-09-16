@@ -1,0 +1,150 @@
+---
+import { ArrowLeft, ArrowRight, Check, Mail, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import { localizedOverviews } from "../data/localized-overviews";
+import { localeConfig } from "../data/locales";
+import { directionOwnerRoutes, getDirectionAlternates, type DirectionId, type LocalizedSiteLocale } from "../data/localized-direction-owners";
+import { localizedDirectionCopy, localizedDirectionUi } from "../data/localized-direction-copy";
+
+interface Props {
+  locale: LocalizedSiteLocale;
+  directionId: DirectionId;
+}
+
+const { locale, directionId } = Astro.props;
+const overview = localizedOverviews[locale];
+const direction = overview.directions.find((item) => item.id === directionId);
+if (!direction) throw new Error(`Missing localized direction ${locale}:${directionId}`);
+const copy = localizedDirectionCopy[locale][directionId];
+const ui = localizedDirectionUi[locale];
+const homeHref = localeConfig[locale].path;
+const canonicalPath = directionOwnerRoutes[locale][directionId];
+const canonicalUrl = new URL(canonicalPath, Astro.site).toString();
+const alternates = getDirectionAlternates(directionId);
+const mailBody = `${ui.contactBody}\n\nCompany / business:\nCountry / market:\nCurrent problem:\nDesired result:\nHermes direction: ${direction.brand}\n`;
+const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${ui.emailSubject} · ${direction.brand}`)}&body=${encodeURIComponent(mailBody)}`;
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: copy.h1,
+  description: copy.metaDescription,
+  url: canonicalUrl,
+  inLanguage: locale,
+  provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  serviceType: direction.points,
+};
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: ui.home, item: new URL(homeHref, Astro.site).toString() },
+    { "@type": "ListItem", position: 2, name: direction.brand, item: canonicalUrl },
+  ],
+};
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: ui.faq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title={copy.metaTitle}
+  description={copy.metaDescription}
+  image={direction.image}
+  locale={locale}
+  alternates={alternates}
+  schema={[serviceSchema, breadcrumbSchema, faqSchema]}
+>
+  <SiteHeader theme="dark" locale={locale} activePath={canonicalPath} />
+  <main id="main-content" class:list={["localized-owner", `localized-owner--${directionId}`]} data-localized-owner={`${locale}:${directionId}`}>
+    <section class="localized-owner-hero" id="top">
+      <div class="localized-owner-hero-media" aria-hidden="true"><img src={direction.image} alt="" width="1600" height="1050" loading="eager" fetchpriority="high" decoding="async" /></div>
+      <div class="shell localized-owner-hero-grid">
+        <div>
+          <nav class="localized-owner-breadcrumb" aria-label="Breadcrumb">
+            <a href={homeHref}>{ui.home}</a><span aria-hidden="true">/</span><span aria-current="page">{direction.brand}</span>
+          </nav>
+          <a class="localized-owner-back" href={`${homeHref}#${directionId}`}><ArrowLeft size={17} aria-hidden="true" />{ui.directionHub}</a>
+          <p class="eyebrow">{direction.brand}</p>
+          <h1>{copy.h1}</h1>
+          <p class="localized-owner-lead">{direction.body}</p>
+          <p class="localized-owner-detail">{copy.detail}</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#scope">{ui.scopeEyebrow}<ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href={mailto}>{ui.contactButton}<Mail size={18} aria-hidden="true" /></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-scope" id="scope" aria-labelledby="localized-owner-scope-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">{ui.scopeEyebrow}</p><h2 id="localized-owner-scope-title">{ui.scopeTitle}</h2></div>
+          <p>{ui.scopeIntro}</p>
+        </div>
+        <div class="localized-owner-scope-grid">
+          {direction.points.map((point, index) => (
+            <article><span>{String(index + 1).padStart(2, "0")}</span><Check size={20} aria-hidden="true" /><h3>{point}</h3></article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-process" aria-labelledby="localized-owner-process-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">{ui.processEyebrow}</p><h2 id="localized-owner-process-title">{ui.processTitle}</h2></div>
+          <p>{ui.processIntro}</p>
+        </div>
+        <div class="localized-owner-process-grid">
+          {ui.process.map((step) => <article><h3>{step.title}</h3><p>{step.body}</p></article>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-boundary" aria-labelledby="localized-owner-boundary-title">
+      <div class="shell localized-owner-boundary-card">
+        <ShieldCheck size={30} aria-hidden="true" />
+        <div><p class="eyebrow">{ui.boundaryEyebrow}</p><h2 id="localized-owner-boundary-title">{ui.boundaryTitle}</h2><p>{copy.boundary}</p></div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-related" aria-labelledby="localized-owner-related-title">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">{ui.relatedEyebrow}</p><h2 id="localized-owner-related-title">{ui.relatedTitle}</h2></div>
+        <div class="localized-owner-related-grid">
+          {copy.related.map((item) => (
+            <a href={item.href}><div><strong>{item.label}</strong><p>{item.body}</p></div><ArrowRight size={19} aria-hidden="true" /></a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-faq" aria-labelledby="localized-owner-faq-title">
+      <div class="shell digital-faq-layout">
+        <div><p class="eyebrow">{ui.faqEyebrow}</p><h2 id="localized-owner-faq-title">{ui.faqTitle}</h2></div>
+        <div class="digital-faq-list">{ui.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="section localized-owner-contact" id="contact">
+      <div class="shell localized-owner-contact-card">
+        <div><p class="eyebrow">{ui.contactEyebrow}</p><h2>{ui.contactTitle}</h2><p>{ui.contactBody}</p></div>
+        <a class="button button-primary" href={mailto}><Mail size={18} aria-hidden="true" />{ui.contactButton}</a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter locale={locale} />
+</BaseLayout>
+
+<style>
+  .localized-owner{background:#f7f8fb;color:#141827}.localized-owner-hero{position:relative;min-height:720px;display:grid;align-items:end;overflow:hidden;color:#fff;background:#0a0d16}.localized-owner-hero-media{position:absolute;inset:0}.localized-owner-hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,10,18,.96),rgba(7,10,18,.78) 52%,rgba(7,10,18,.28)),linear-gradient(0deg,rgba(7,10,18,.56),transparent 52%)}.localized-owner-hero-media img{width:100%;height:100%;object-fit:cover}.localized-owner-hero-grid{position:relative;z-index:1;width:100%;padding-top:180px;padding-bottom:76px}.localized-owner-hero-grid>div{max-width:860px}.localized-owner-breadcrumb{display:flex;gap:.5rem;align-items:center;margin-bottom:1rem;font-size:.82rem;color:rgba(255,255,255,.72)}.localized-owner-breadcrumb a{color:inherit}.localized-owner-back{display:inline-flex;gap:.4rem;align-items:center;margin-bottom:1.5rem;color:#fff;text-decoration:none}.localized-owner h1{max-width:17ch;margin:.55rem 0 1rem;font-size:clamp(2.8rem,6vw,5.7rem);line-height:.98;letter-spacing:-.045em}.localized-owner-lead,.localized-owner-detail{max-width:72ch;line-height:1.7;color:rgba(255,255,255,.82)}.localized-owner-detail{margin-top:.65rem;color:rgba(255,255,255,.68)}.localized-owner .section{padding:clamp(4.5rem,8vw,7rem) 0}.localized-owner-scope-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-scope-grid article{display:grid;grid-template-columns:auto 1fr;gap:.8rem;padding:1.3rem;border:1px solid #dce2ec;border-radius:16px;background:#fff}.localized-owner-scope-grid article span{grid-column:1/-1;font-size:.76rem;font-weight:800;letter-spacing:.13em;color:#6b7388}.localized-owner-scope-grid article svg{color:#5d27d7}.localized-owner-scope-grid article h3{margin:0;font-size:1.05rem}.localized-owner-process{background:#101521;color:#fff}.localized-owner-process .section-heading>p{color:rgba(255,255,255,.7)}.localized-owner-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-process-grid article{padding:1.3rem;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045)}.localized-owner-process-grid h3{margin:0 0 .65rem;font-size:1.05rem}.localized-owner-process-grid p{margin:0;color:rgba(255,255,255,.7);line-height:1.62}.localized-owner-boundary-card{display:grid;grid-template-columns:auto 1fr;gap:1rem;max-width:1000px;padding:1.7rem;border:1px solid #d7ddea;border-radius:18px;background:#fff}.localized-owner-boundary-card svg{color:#4f35c8}.localized-owner-boundary-card h2{margin:.3rem 0 .7rem}.localized-owner-boundary-card p:last-child{margin:0;color:#59657b;line-height:1.7}.localized-owner-related{background:#fff}.localized-owner-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-related-grid a{display:grid;grid-template-columns:1fr auto;gap:1rem;padding:1.25rem;border:1px solid #dce2ec;border-radius:16px;color:#171b28;text-decoration:none}.localized-owner-related-grid strong{font-size:1.05rem}.localized-owner-related-grid p{margin:.55rem 0 0;color:#657087;line-height:1.55}.localized-owner-related-grid svg{color:#5d27d7}.localized-owner-faq{background:#f1f3f8}.localized-owner-contact-card{display:flex;align-items:end;justify-content:space-between;gap:2rem;padding:2rem;border:1px solid #dce2ec;border-radius:18px;background:#fff}.localized-owner-contact-card h2{max-width:20ch;margin:.35rem 0 .7rem;font-size:clamp(2rem,4vw,3.5rem)}.localized-owner-contact-card p{max-width:68ch;color:#657087;line-height:1.65}@media(max-width:900px){.localized-owner-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.localized-owner-related-grid{grid-template-columns:1fr}.localized-owner-contact-card{display:grid}}@media(max-width:680px){.localized-owner-hero{min-height:680px}.localized-owner-hero-grid{padding-top:150px;padding-bottom:56px}.localized-owner h1{font-size:clamp(2.55rem,13vw,4.2rem)}.localized-owner-scope-grid,.localized-owner-process-grid{grid-template-columns:1fr}.localized-owner-boundary-card{grid-template-columns:1fr}.hero-actions{display:grid}.hero-actions .button{justify-content:center}}
+</style>

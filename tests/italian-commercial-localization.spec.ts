@@ -38,8 +38,8 @@ for (const route of localizedRoutes) {
 
 test("Italian overview routes Marketing and Technology into the localized commercial layer", async ({ page }) => {
   await page.goto("/it/");
-  await expect(page.locator('a[href="/it/marketing/"]')).toBeVisible();
-  await expect(page.locator('a[href="/it/tecnologia/"]')).toBeVisible();
+  await expect(page.locator('.localized-direction-marketing .localized-direction-copy a[href="/it/marketing/"]')).toBeVisible();
+  await expect(page.locator('.localized-direction-technology .localized-direction-copy a[href="/it/tecnologia/"]')).toBeVisible();
 });
 
 test("primary sitemap contains the two Italian commercial owners", async ({ request }) => {

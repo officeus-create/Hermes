@@ -16,6 +16,7 @@ import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astr
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import { publicPaths } from "../../data/public-paths";
+import { getDirectionAlternates, type DirectionId } from "../../data/localized-direction-owners";
 import { site } from "../../data/site";
 import "../../styles/hermes-public-path-shell.css";
 import "../../styles/hermes-connect-division-context.css";
@@ -28,19 +29,7 @@ export function getStaticPaths() {
 const { path } = Astro.props;
 const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
 const contactInterestCategory = site.paths.find((item) => item.id === path.id)?.category ?? path.category;
-const alternates = path.id === "marketing"
-  ? [
-      { lang: "en", href: "/paths/marketing/" },
-      { lang: "it", href: "/it/marketing/" },
-      { lang: "x-default", href: "/paths/marketing/" },
-    ]
-  : path.id === "technology"
-    ? [
-        { lang: "en", href: "/paths/technology/" },
-        { lang: "it", href: "/it/tecnologia/" },
-        { lang: "x-default", href: "/paths/technology/" },
-      ]
-    : [];
+const alternates = getDirectionAlternates(path.id as DirectionId);
 const areaServed = path.id === "logistics"
   ? [{ "@type": "Country", name: "United States" }]
   : [
