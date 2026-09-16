@@ -9,7 +9,7 @@ const pages = [
   ["broker", "Do you guarantee capacity for every opportunity?", 3],
   ["carrier", "Do I have to accept every load Hermes presents?", 3],
   ["agency", "Does applying guarantee an agency will open?", 3],
-  ["careers", "Does submitting an application guarantee an interview or a job?", 3],
+  ["careers", "Can I submit a general job application when no vacancy is verified open?", 3],
 ];
 
 const decodeHtml = (value = "") => value
