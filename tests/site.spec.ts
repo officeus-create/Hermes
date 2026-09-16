@@ -313,10 +313,11 @@ test("IT case presents verified delivery evidence and a working inquiry route", 
 
 test("direction navigation identifies the current business", async ({ page }) => {
   await page.goto("/paths/marketing/");
-  await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
+  await expect(page.locator('.desktop-nav > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
+  await expect(page.locator('#mobile-menu > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
 });
 
-test("language menu opens all localized overview pages", async ({ page, isMobile }) => {
+test("language menu preserves technology intent across localized destinations", async ({ page, isMobile }) => {
   await page.goto("/paths/technology/");
   const languageMenu = isMobile ? page.locator(".mobile-language-switcher") : page.locator("[data-language-menu]");
   if (isMobile) {
@@ -333,9 +334,10 @@ test("language menu opens all localized overview pages", async ({ page, isMobile
     "Italiano",
     "Русский",
   ]);
-  for (const path of ["es", "fr", "ua", "it", "ru"]) {
+  for (const path of ["es", "fr", "ua", "ru"]) {
     await expect(languageMenu.locator(`a[href="/${path}/#technology"]`)).toHaveCount(1);
   }
+  await expect(languageMenu.locator('a[href="/it/tecnologia/"]')).toHaveCount(1);
 
   await page.goto("/ua/");
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
