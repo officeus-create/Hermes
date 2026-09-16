@@ -68,7 +68,7 @@ const routes = [
   { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Call Logistics Sales", "tel:+12623023626"] },
   { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call Logistics Sales", "tel:+12623023626"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
-  { path: "logistics/careers/index.html", required: ["Work with us", "Send a general careers inquiry", "Explore training first"] },
+  { path: "logistics/careers/index.html", required: ["Work with us", "View current vacancy status", "Explore training separately", "No verified public vacancy is listed today."] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "data-application-result-copy"] },
   {
     path: "logistics/appleton-wi-vehicle-transport/index.html",
