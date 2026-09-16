@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { freezeRepairRegistrationOpen } from "./repair-registration-clock";
+
+test.beforeEach(async ({ page }) => {
+  await freezeRepairRegistrationOpen(page);
+});
 
 test("repair shop manager link opens registration mode directly", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register");
