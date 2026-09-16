@@ -111,7 +111,7 @@ export const finalGrowthReadinessChecklist = [
   "Current main, open PR stack, and latest handoff are reconciled.",
   "No private operational data, credentials, live positions, real shipment rows, or OFFICE 374 content is present.",
   "Public claims have approved evidence, maturity labels, dates, and privacy review.",
-  "Academy exposes only U.S. Logistics Operations and Marketing as public programs.",
+  "Academy exposes five public learning tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations; visibility does not imply an open paid cohort or vacancy.",
   "Paid cohort and free practice models are separate; no unapproved price or result guarantee is published.",
   "Careers lists only verified owner-approved vacancies; JobPosting is absent when none are verified open.",
   "Every new indexable page has unique metadata, canonical, H1, visible breadcrumb, supported schema, sitemap, internal links, and a useful contact path.",

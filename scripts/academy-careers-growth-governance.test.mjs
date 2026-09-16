@@ -23,12 +23,12 @@ const carHaulingDispatcher = await readFile(join(dist, "careers/car-hauling-disp
 
 assert.ok(academy.includes("U.S. Logistics Operations"));
 assert.ok(academy.includes("Marketing"));
-assert.ok(academy.includes("Two public programs"));
+assert.ok(academy.includes("five public learning tracks"));
 assert.ok(academy.includes("Paid cohort"));
 assert.ok(academy.includes("Free practice opportunity"));
 assert.ok(academy.includes("No fixed price is published"));
 assert.ok(academy.includes("employment, income, clients, certification, promotion"));
-assert.ok(academy.includes("optional exercise inside the Marketing program, not a third Academy program"));
+assert.ok(academy.includes("optional exercise inside the Marketing learning track, not a separate learning track or enrollment offer"));
 assert.ok(!academy.includes("COO / Multi-business leadership"));
 assert.ok(!academy.includes("3 tracks"));
 for (const prohibitedPrice of ["$999", "$400/month", "$600/month"]) {
@@ -46,7 +46,7 @@ const academySchemas = [...academy.matchAll(/<script[^>]+type=["']application\/l
   });
 const academyService = academySchemas.find((entity) => entity?.["@type"] === "Service");
 assert.ok(academyService, "Academy Service schema is required");
-assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing"]);
+assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]);
 
 assert.equal(publicVacancyRegistry.length, 1);
 assert.equal(verifiedOpenVacancies.length, 0);
@@ -130,7 +130,7 @@ assert.equal(monthlyGrowthScorecard.cadence, "monthly");
 assert.ok(weeklyGrowthScorecard.decisionRules.some((item) => /Do not populate Search Console or inquiry values/i.test(item)));
 assert.ok(monthlyGrowthScorecard.decisionRules.some((item) => /Do not delete, redirect, merge, deploy/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.length >= 12);
-assert.ok(finalGrowthReadinessChecklist.some((item) => /Academy exposes only U.S. Logistics Operations and Marketing/i.test(item)));
+assert.ok(finalGrowthReadinessChecklist.some((item) => /Academy exposes five public learning tracks/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.some((item) => /JobPosting is absent when none are verified open/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.some((item) => /Owner separately approves merge and production deployment/i.test(item)));
 
