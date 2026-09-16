@@ -1,8 +1,15 @@
 ---
+import { verifiedOpenVacancies } from "../data/careers-governance";
+
 type Context = "catalog" | "logistics" | "marketing" | "technology" | "academy" | "general";
 interface Props { context?: Context; }
 const { context = "general" } = Astro.props;
 const bonus = { q: "Starting an IT or Marketing project?", title: "Your Catalog profile is included as a bonus.", body: "We prepare your approved business details, services and location for public discovery. Initial SEO/GEO setup is included; ongoing promotion is a separate scope.", href: "/businesses/#catalog-client-benefit", cta: "See your Catalog bonus" };
+const dispatcherVacancy = verifiedOpenVacancies.find((item) => item.slug === "car-hauling-dispatcher");
+const academyDispatcherPriority = dispatcherVacancy
+  ? { q: "Looking for a remote U.S.-market logistics role?", title: "Car Hauling Dispatcher opening is currently verified.", body: "Hermes Logistics is currently reviewing candidates for a full-time remote Car Hauling Dispatcher role. Review the current requirements, U.S. Central Time schedule and application route. Application does not guarantee interview or employment.", href: `/careers/${dispatcherVacancy.slug}/`, cta: "Review dispatcher opening" }
+  : { q: "Building toward U.S. logistics or dispatch work?", title: "Start with U.S. Logistics Operations training.", body: "Review dispatch, load-planning, carrier, sales and operating foundations, then move through practice and human assessment. Training does not guarantee employment, client access or income.", href: "/academy/us-logistics-operations/", cta: "Explore logistics & dispatch training" };
+
 const shared = [
   { q: "No website yet?", title: "Start with a serious Catalog profile.", body: "Create a public page with your approved services, location and contact details. A dedicated website can come later.", href: "/businesses/#business-owners", cta: "Get listed" },
   { q: "Customers cannot find you locally?", title: "Add SEO / GEO to the business profile.", body: "Request a scoped service to improve your approved profile for local and AI-search discovery. You do not need to buy a separate website.", href: "/services/local-seo/", cta: "Explore Local SEO" },
@@ -30,7 +37,7 @@ const contextual = {
     shared[1],
   ],
   academy: [
-    { q: "Building toward U.S. logistics or dispatch work?", title: "Start with U.S. Logistics Operations training.", body: "Review dispatch, load-planning, carrier, sales and operating foundations, then move through practice and human assessment. Training does not guarantee employment, client access or income.", href: "/academy/us-logistics-operations/", cta: "Explore logistics & dispatch training" },
+    academyDispatcherPriority,
     { q: "Want to help businesses grow?", title: "Three-month online marketing training.", body: "Apply to build research, media-planning and negotiation skills. Future roles depend on assessment and available work.", href: "/academy/marketing/", cta: "Explore marketing training" },
     { q: "Ready to develop as an operations leader?", title: "Help build the future Hermes network.", body: "Our goal is to select and train operations leaders across the network. This is a development target, not a guarantee of current vacancies.", href: "/paths/academy/#academy-global-network", cta: "Explore the leadership pathway" },
     shared[0],
