@@ -9,6 +9,7 @@ const description =
   "Compare car hauler jobs, owner-operator work, lease-on or contracted carrier paths, and running under your own authority. See what changes in control, equipment, paperwork, dispatch, and next steps.";
 const canonicalUrl = new URL("/logistics/resources/car-hauler-jobs-owner-operator-guide/", Astro.site).toString();
 const carrierIntake = "/logistics/start-car-hauling-dispatch/";
+const measurementServiceGroup = "carrier_lifecycle_guide";
 
 const paths = [
   {
@@ -154,7 +155,7 @@ const schema = [
                   operating under your own authority, or an established carrier looking for dispatch and back-office support. Start by identifying the path before comparing pay, equipment, loads, or services.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href={carrierIntake}>Open carrier fit review <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier fit review <ArrowRight size={18} aria-hidden="true" /></a>
                   <a class="button" href="/logistics/careers/">Looking for employment?</a>
                 </div>
               </div>
@@ -191,7 +192,11 @@ const schema = [
                   <Truck size={23} aria-hidden="true" />
                   <h3>{path.title}</h3>
                   <p>{path.body}</p>
-                  <a href={path.href}>{path.action} <ArrowRight size={16} aria-hidden="true" /></a>
+                  <a
+                    href={path.href}
+                    data-commercial-primary-cta={path.href === carrierIntake ? "" : undefined}
+                    data-service-group={path.href === carrierIntake ? measurementServiceGroup : undefined}
+                  >{path.action} <ArrowRight size={16} aria-hidden="true" /></a>
                 </article>
               ))}
             </div>
@@ -260,7 +265,7 @@ const schema = [
               <h2>Move from a generic job search to an operating-profile review.</h2>
               <p>Share authority status, equipment, capacity, home area, preferred markets, availability, current dispatch workflow, and contact information. The review does not guarantee acceptance, freight, rates, miles, utilization, profit, or revenue.</p>
             </div>
-            <a class="button button-primary" href={carrierIntake}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
