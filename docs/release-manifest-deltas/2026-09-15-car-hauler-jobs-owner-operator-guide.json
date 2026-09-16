@@ -7,7 +7,7 @@
   "additions": [
     {
       "route": "/logistics/resources/car-hauler-jobs-owner-operator-guide/",
-      "source_state": "feature_branch",
+      "source_state": "current_main",
       "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
       "canonical": "https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/",
