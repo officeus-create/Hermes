@@ -17,7 +17,10 @@ const rootCluster = new Map([
 const decode = (value = "") => value.replaceAll("&amp;", "&").replaceAll("&quot;", '"').replaceAll("&#39;", "'").trim();
 const tags = (html, name) => [...html.matchAll(new RegExp(`<${name}\\b[^>]*>`, "gi"))].map((match) => match[0]);
 const attr = (tag, name) => decode(tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"))?.slice(1).find(Boolean) ?? "");
-const canonicalOf = (html) => tags(html, "link").find((tag) => attr(tag, "rel").toLowerCase().split(/\s+/).includes("canonical")) ? attr(tags(html, "link").find((tag) => attr(tag, "rel").toLowerCase().split(/\s+/).includes("canonical")), "href") : "";
+const canonicalOf = (html) => {
+  const tag = tags(html, "link").find((item) => attr(item, "rel").toLowerCase().split(/\s+/).includes("canonical"));
+  return tag ? attr(tag, "href") : "";
+};
 const alternatesOf = (html) => new Map(tags(html, "link").filter((tag) => attr(tag, "rel").toLowerCase().split(/\s+/).includes("alternate") && attr(tag, "hreflang")).map((tag) => [attr(tag, "hreflang").toLowerCase(), attr(tag, "href")]));
 const robotsOf = (html) => tags(html, "meta").filter((tag) => attr(tag, "name").toLowerCase() === "robots").map((tag) => attr(tag, "content").toLowerCase()).join(",");
 const descriptionOf = (html) => attr(tags(html, "meta").find((tag) => attr(tag, "name").toLowerCase() === "description") ?? "", "content");
@@ -107,8 +110,12 @@ export async function runProductionMultilingualSeoCheck() {
       const target = await fetchPage(targetUrl);
       if (target.status !== 200) errors.push(`${parsed.pathname}: hreflang ${language} target is not HTTP 200: ${targetUrl}`);
       if (target.canonical !== targetUrl) errors.push(`${parsed.pathname}: hreflang ${language} target is not self-canonical: ${targetUrl}`);
-      if (locale && target.alternates.get(locale) && absolute(target.alternates.get(locale)) !== url) errors.push(`${parsed.pathname}: hreflang ${language} target does not reciprocate ${locale}: ${targetUrl}`);
-      if (locale && target.alternates.size > 0 && !target.alternates.get(locale)) errors.push(`${parsed.pathname}: hreflang ${language} target omits reciprocal ${locale}: ${targetUrl}`);
+      if (target.robots.includes("noindex")) errors.push(`${parsed.pathname}: hreflang ${language} target is noindex: ${targetUrl}`);
+      if (locale) {
+        const reciprocal = target.alternates.get(locale);
+        if (!reciprocal) errors.push(`${parsed.pathname}: hreflang ${language} target omits reciprocal ${locale}: ${targetUrl}`);
+        else if (absolute(reciprocal) !== url) errors.push(`${parsed.pathname}: hreflang ${language} target does not reciprocate ${locale}: ${targetUrl}`);
+      }
     }
   }
 
