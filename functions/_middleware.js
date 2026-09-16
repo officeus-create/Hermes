@@ -168,10 +168,13 @@ function connectAssetPath(pathname) {
   return `${CONNECT_ASSET_ROOT}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 }
 
-function markdownResponse(response) {
+function markdownResponse(response, { noindex = true, contentSignal = null, contentLocation = null } = {}) {
   const headers = new Headers(response.headers);
   headers.set("content-type", "text/markdown; charset=utf-8");
-  headers.set("x-robots-tag", "noindex, nofollow");
+  if (noindex) headers.set("x-robots-tag", "noindex, nofollow");
+  else headers.delete("x-robots-tag");
+  if (contentSignal) headers.set("content-signal", contentSignal);
+  if (contentLocation) headers.set("content-location", contentLocation);
 
   const vary = headers.get("vary");
   if (!vary) {
@@ -293,6 +296,20 @@ async function sanitizeMainDomainCopy(context) {
   const incomingUrl = new URL(context.request.url);
   const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
   if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
+
+  if ((incomingUrl.pathname === "/" || incomingUrl.pathname === "/index.html") && acceptsMarkdown(context.request)) {
+    const markdownUrl = new URL(incomingUrl);
+    markdownUrl.pathname = "/llms.txt";
+    markdownUrl.search = "";
+    const markdownAsset = await context.env.ASSETS.fetch(new Request(markdownUrl, context.request));
+    if (markdownAsset.ok) {
+      return markdownResponse(markdownAsset, {
+        noindex: false,
+        contentSignal: "search=yes, ai-input=yes",
+        contentLocation: "/llms.txt",
+      });
+    }
+  }
 
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
