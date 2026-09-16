@@ -1,10 +1,30 @@
-async function ensureOptionalColumn(db, column, definition) {
-  const result = await db.prepare("PRAGMA table_info(repair_shops)").all();
-  const names = new Set((result?.results ?? []).map((row) => String(row.name || "")));
-  if (!names.has(column)) await db.prepare(`ALTER TABLE repair_shops ADD COLUMN ${definition}`).run();
+const repairShopColumnPromises = new WeakMap();
+const repairShopSchemaPromises = new WeakMap();
+
+async function repairShopColumns(db) {
+  let promise = repairShopColumnPromises.get(db);
+  if (!promise) {
+    promise = db
+      .prepare("PRAGMA table_info(repair_shops)")
+      .all()
+      .then((result) => new Set((result?.results ?? []).map((row) => String(row.name || ""))))
+      .catch((error) => {
+        repairShopColumnPromises.delete(db);
+        throw error;
+      });
+    repairShopColumnPromises.set(db, promise);
+  }
+  return promise;
 }
 
-export async function ensureRepairShopProfileSchema(db) {
+async function ensureOptionalColumn(db, column, definition) {
+  const names = await repairShopColumns(db);
+  if (names.has(column)) return;
+  await db.prepare(`ALTER TABLE repair_shops ADD COLUMN ${definition}`).run();
+  names.add(column);
+}
+
+async function applyRepairShopProfileSchema(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS repair_shops (
       id TEXT PRIMARY KEY,
@@ -40,4 +60,17 @@ export async function ensureRepairShopProfileSchema(db) {
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_owner ON repair_shops(owner_specialist_id)").run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_slug ON repair_shops(slug)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_repair_shops_catalog ON repair_shops(catalog_opt_in, updated_at)").run();
+}
+
+export async function ensureRepairShopProfileSchema(db) {
+  let promise = repairShopSchemaPromises.get(db);
+  if (!promise) {
+    promise = applyRepairShopProfileSchema(db).catch((error) => {
+      repairShopSchemaPromises.delete(db);
+      repairShopColumnPromises.delete(db);
+      throw error;
+    });
+    repairShopSchemaPromises.set(db, promise);
+  }
+  return promise;
 }
