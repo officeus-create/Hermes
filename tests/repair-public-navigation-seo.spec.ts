@@ -44,9 +44,10 @@ test("Repair public navigation remains usable at 390px", async ({ page }) => {
     "#repair-capabilities-title",
   ]) {
     const link = page.locator(`a[href="${href}"]`).first();
+    await link.scrollIntoViewIfNeeded();
     await expect(link).toBeVisible();
     const box = await link.boundingBox();
     expect(box).not.toBeNull();
-    if (box) expect(box.height).toBeGreaterThanOrEqual(44);
+    if (box) expect(box.height, `${href} should expose a 44px touch target`).toBeGreaterThanOrEqual(44);
   }
 });

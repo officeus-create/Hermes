@@ -2,6 +2,26 @@ import { expect, test } from "@playwright/test";
 
 const guidePath = "/logistics/resources/car-hauler-jobs-owner-operator-guide/";
 
+async function commercialEvents(page: import("@playwright/test").Page) {
+  return page.evaluate(() => {
+    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+    return analyticsWindow.dataLayer?.filter((item) => item.event === "commercial_cta_click") ?? [];
+  });
+}
+
+async function preventCommercialNavigation(page: import("@playwright/test").Page) {
+  await page.evaluate(() => {
+    document.addEventListener(
+      "click",
+      (event) => {
+        const source = event.target;
+        if (source instanceof Element && source.closest("a[data-commercial-primary-cta]")) event.preventDefault();
+      },
+      { capture: true },
+    );
+  });
+}
+
 test("car-hauler jobs guide separates employment from operating-carrier intent", async ({ page }) => {
   await page.goto(guidePath);
 
@@ -55,4 +75,28 @@ test("owner-operator commercial owner links back to the early-intent guide", asy
   await page.goto("/logistics/owner-operator-dispatch-support/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Owner-Operator Dispatch Support");
   await expect(page.getByRole("link", { name: "Car Hauler Jobs vs Owner-Operator Paths" })).toHaveAttribute("href", guidePath);
+});
+
+test("car-hauler jobs guide attributes carrier-intake clicks to the pilot owner", async ({ page }) => {
+  await page.goto(guidePath);
+  await page.evaluate(() => {
+    window.dataLayer = [];
+  });
+  await preventCommercialNavigation(page);
+
+  const intakeCtas = page.locator('a[href="/logistics/start-car-hauling-dispatch/"][data-commercial-primary-cta]');
+  await expect(intakeCtas).toHaveCount(3);
+  await expect(intakeCtas.first()).toHaveAttribute("data-service-group", "carrier_lifecycle_guide");
+  await intakeCtas.first().click();
+
+  await expect.poll(async () => (await commercialEvents(page)).length).toBe(1);
+  expect((await commercialEvents(page))[0]).toMatchObject({
+    event: "commercial_cta_click",
+    cta_type: "carrier_intake",
+    audience_type: "carrier",
+    page_group: "logistics_service",
+    service_group: "carrier_lifecycle_guide",
+    page_path: guidePath,
+    destination_path: "/logistics/start-car-hauling-dispatch/",
+  });
 });

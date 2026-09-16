@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { freezeRepairRegistrationOpen } from "./repair-registration-clock";
 
 test("Repair registration deep link opens the Register New Shop tab", async ({ page }) => {
+  await freezeRepairRegistrationOpen(page);
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register");
 
   const registerTab = page.locator('[data-tab="register"]');
