@@ -229,7 +229,7 @@ export async function ingestTelegramNormalizedEvent(db, connection, normalized, 
   };
 }
 
-export async function searchTelegramMessages(db, connectionId, { query = "", limit = 50, before = null } = {}) {
+export async function searchTelegramMessages(db, connectionId, { query = "", limit = 50, before = "" } = {}) {
   const boundedLimit = Math.min(Math.max(Number(limit) || 50, 1), 100);
   const clauses = ["connection_id = ?"];
   const binds = [connectionId];
