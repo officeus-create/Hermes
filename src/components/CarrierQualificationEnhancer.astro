@@ -208,9 +208,11 @@
         });
       }
 
-      const endpoint = form.dataset.leadEndpoint || "";
+      const endpointValue = form.dataset.leadEndpoint || "";
+      let endpoint: URL;
       try {
-        if (!endpoint || new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+        endpoint = new URL(endpointValue, window.location.origin);
+        if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
       } catch {
         deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option or call Logistics Sales.";
         return;
