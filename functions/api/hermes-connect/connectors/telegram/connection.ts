@@ -7,12 +7,13 @@ import {
   safeJson,
   setConnectionVerifier,
 } from "../../../_lib/connector-runtime.mjs";
+import { purgeTelegramConnectionData } from "../../../_lib/telegram-connector-purge.mjs";
 
 type Env = { DB?: any };
 
 type ConnectionPayload = {
   label?: string;
-  ingestion_policy?: "owner_authored_only" | "approved_sources";
+  ingestion_policy?: "owner_authored_only";
   owner_telegram_user_id?: string | number;
   retain_raw_events?: boolean;
   webhook_secret?: string;
@@ -39,10 +40,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const policy = payload.ingestion_policy || "owner_authored_only";
-  if (!new Set(["owner_authored_only", "approved_sources"]).has(policy)) {
-    return jsonResponse(400, { success: false, error: "invalid_ingestion_policy" }, privateHeaders);
+  if (policy !== "owner_authored_only") {
+    return jsonResponse(400, { success: false, error: "telegram_v0_1_owner_authored_only" }, privateHeaders);
   }
-  if (policy === "owner_authored_only" && !String(payload.owner_telegram_user_id || "").trim()) {
+  if (!String(payload.owner_telegram_user_id || "").trim()) {
     return jsonResponse(400, { success: false, error: "owner_telegram_user_id_required" }, privateHeaders);
   }
 
@@ -61,8 +62,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     mode: "read_only",
     state: "draft",
     config: {
-      ingestion_policy: policy,
-      owner_telegram_user_id: payload.owner_telegram_user_id == null ? null : String(payload.owner_telegram_user_id),
+      ingestion_policy: "owner_authored_only",
+      owner_telegram_user_id: String(payload.owner_telegram_user_id),
       retain_raw_events: payload.retain_raw_events === true,
       outbound_actions_enabled: false,
     },
@@ -74,7 +75,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     actorSpecialistId: specialist.id,
     action: "telegram_connection_create",
     outcome: "success",
-    details: { policy, verifier_configured: hasVerifier, mode: "read_only" },
+    details: { policy: "owner_authored_only", verifier_configured: hasVerifier, mode: "read_only" },
   });
 
   return jsonResponse(201, {
@@ -100,16 +101,21 @@ export async function onRequestDelete({ request, env }: { request: Request; env:
     return jsonResponse(404, { success: false, error: "connection_not_found" }, privateHeaders);
   }
 
+  await purgeTelegramConnectionData(env.DB, connection.id);
   const now = new Date().toISOString();
   await env.DB.prepare(`
-    UPDATE hc_connections SET state = 'revoked', revoked_at = ?, updated_at = ? WHERE id = ?
+    UPDATE hc_connections
+    SET state = 'revoked', label = 'Revoked Telegram connection', config_json = '{}',
+        last_error_code = NULL, revoked_at = ?, updated_at = ?
+    WHERE id = ?
   `).bind(now, now, connection.id).run();
   await recordAudit(env.DB, {
     connectionId: connection.id,
     actorSpecialistId: specialist.id,
-    action: "telegram_connection_revoke",
+    action: "telegram_connection_revoke_and_purge",
     outcome: "success",
+    details: { content_purged: true },
   });
 
-  return jsonResponse(200, { success: true, state: "revoked" }, privateHeaders);
+  return jsonResponse(200, { success: true, state: "revoked", content_purged: true }, privateHeaders);
 }

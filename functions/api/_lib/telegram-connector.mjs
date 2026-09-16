@@ -1,6 +1,5 @@
 import {
   CONNECTOR_CONTRACT_VERSION,
-  CONSENT_SCOPES,
   getSource,
   safeJson,
   sha256Hex,
@@ -16,18 +15,19 @@ export const TELEGRAM_CONNECTOR_MANIFEST = Object.freeze({
   default_mode: "read_only",
   auth_modes: ["bot_webhook", "desktop_export"],
   capabilities: [
-    "source_approval",
-    "live_webhook_ingest",
-    "historical_chat_import",
+    "owner_source_approval",
+    "owner_direct_message_ingest",
+    "owner_authored_historical_import",
     "idempotent_message_upsert",
     "private_message_search",
     "provenance_preservation",
+    "content_purge_on_revoke",
   ],
   write_policy: "disabled_until_explicit_confirmation_wall",
-  privacy_default: "deny_unknown_sources",
+  privacy_default: "owner_authored_only",
 });
 
-export const TELEGRAM_ALLOWED_CONSENT_SCOPES = CONSENT_SCOPES;
+export const TELEGRAM_ALLOWED_CONSENT_SCOPES = new Set(["owner_content"]);
 
 export function flattenTelegramText(value) {
   if (typeof value === "string") return value;
@@ -79,10 +79,6 @@ export function normalizeTelegramUpdate(update) {
 
   const author = message.from || message.sender_chat || {};
   const authorId = author.id == null ? null : String(author.id);
-  const text = String(message.text ?? message.caption ?? "");
-  const sentAt = message.date ? new Date(Number(message.date) * 1000).toISOString() : null;
-  const editedAt = message.edit_date ? new Date(Number(message.edit_date) * 1000).toISOString() : null;
-
   return {
     event_id: `update:${String(update.update_id ?? `${chatId}:${messageId}:${eventType}`)}`,
     event_type: eventType,
@@ -92,9 +88,9 @@ export function normalizeTelegramUpdate(update) {
       message_id: messageId,
       author_id: authorId,
       author_name: telegramAuthorName(author),
-      text,
-      sent_at: sentAt,
-      edited_at: editedAt,
+      text: String(message.text ?? message.caption ?? ""),
+      sent_at: message.date ? new Date(Number(message.date) * 1000).toISOString() : null,
+      edited_at: message.edit_date ? new Date(Number(message.edit_date) * 1000).toISOString() : null,
       metadata: {
         chat_type: message.chat?.type || null,
         chat_title: message.chat?.title || null,
@@ -142,39 +138,25 @@ export function isOwnerAuthoredExportMessage(normalized, ownerTelegramUserId) {
   return actual === expected;
 }
 
+// Telegram v0.1 is deliberately narrower than a generic chat importer. Historical
+// data is accepted only when the individual message is authored by the configured owner.
 export function shouldIngestExportMessage(normalized, connectionConfig = {}, source = {}) {
-  const policy = String(connectionConfig.ingestion_policy || "owner_authored_only");
-  const consentScope = String(source.consent_scope || "");
-  if (policy === "owner_authored_only") {
-    return isOwnerAuthoredExportMessage(normalized, connectionConfig.owner_telegram_user_id);
-  }
-  if (policy !== "approved_sources") return false;
-  if (consentScope === "explicit_opt_in") return true;
-  if (consentScope === "owner_content") {
-    if (String(source.source_type || "") === "channel") return true;
-    return isOwnerAuthoredExportMessage(normalized, connectionConfig.owner_telegram_user_id);
-  }
-  return false;
+  if (String(source.consent_scope || "") !== "owner_content") return false;
+  return isOwnerAuthoredExportMessage(normalized, connectionConfig.owner_telegram_user_id);
 }
 
+// Live Bot API ingestion is limited to a direct private chat between the configured
+// owner and the bot. Ambient group/channel collection is intentionally disabled.
 export function shouldIngestLiveMessage(normalized, connectionConfig = {}, source = {}) {
-  if (!normalized?.message) return false;
-  const consentScope = String(source.consent_scope || "");
-  if (consentScope === "explicit_opt_in") return true;
-  if (consentScope !== "owner_content") return false;
-  const sourceType = String(source.source_type || normalized.message.metadata?.chat_type || "");
-  if (sourceType === "channel") return true;
+  if (!normalized?.message || String(source.consent_scope || "") !== "owner_content") return false;
+  if (String(normalized.message.metadata?.chat_type || "") !== "private") return false;
   const expected = String(connectionConfig.owner_telegram_user_id || "").replace(/^user/i, "");
   const actual = String(normalized.message.author_id || "").replace(/^user/i, "");
   return Boolean(expected && actual && expected === actual);
 }
 
 function minimizedPayload(normalized) {
-  return {
-    event_id: normalized.event_id,
-    event_type: normalized.event_type,
-    message: normalized.message,
-  };
+  return { event_id: normalized.event_id, event_type: normalized.event_type, message: normalized.message };
 }
 
 export async function ingestTelegramNormalizedEvent(db, connection, normalized, {
@@ -205,17 +187,8 @@ export async function ingestTelegramNormalizedEvent(db, connection, normalized, 
       id,connection_id,provider_event_id,source_id,event_type,payload_json,payload_sha256,
       external_created_at,received_at,processing_status
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'accepted')
-  `).bind(
-    rawEventId,
-    connection.id,
-    normalized.event_id,
-    resolvedSource.id,
-    normalized.event_type,
-    payloadJson,
-    payloadHash,
-    externalCreatedAt,
-    receivedAt,
-  ).run();
+  `).bind(rawEventId, connection.id, normalized.event_id, resolvedSource.id, normalized.event_type,
+    payloadJson, payloadHash, externalCreatedAt, receivedAt).run();
 
   const existingRaw = await db.prepare(`
     SELECT id FROM hc_raw_events WHERE connection_id = ? AND provider_event_id = ? LIMIT 1
@@ -237,25 +210,14 @@ export async function ingestTelegramNormalizedEvent(db, connection, normalized, 
       raw_event_id = excluded.raw_event_id,
       metadata_json = excluded.metadata_json,
       updated_at = excluded.updated_at
-  `).bind(
-    messageId,
-    connection.id,
-    resolvedSource.id,
-    normalized.message.chat_id,
-    normalized.message.message_id,
-    normalized.message.author_id,
-    normalized.message.author_name,
-    normalized.message.text,
-    normalized.message.sent_at,
-    normalized.message.edited_at,
-    stableRawEventId,
-    JSON.stringify(normalized.message.metadata || {}),
-    now,
-    now,
-  ).run();
+  `).bind(messageId, connection.id, resolvedSource.id, normalized.message.chat_id,
+    normalized.message.message_id, normalized.message.author_id, normalized.message.author_name,
+    normalized.message.text, normalized.message.sent_at, normalized.message.edited_at,
+    stableRawEventId, JSON.stringify(normalized.message.metadata || {}), now, now).run();
 
   await db.prepare(`
-    UPDATE hc_connections SET state = CASE WHEN state = 'revoked' THEN state ELSE 'active' END, last_sync_at = ?, last_error_code = NULL, updated_at = ? WHERE id = ?
+    UPDATE hc_connections SET state = CASE WHEN state = 'revoked' THEN state ELSE 'active' END,
+      last_sync_at = ?, last_error_code = NULL, updated_at = ? WHERE id = ?
   `).bind(receivedAt, now, connection.id).run();
 
   return {

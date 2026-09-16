@@ -14,7 +14,7 @@ type SourcePayload = {
   chat_id?: string | number;
   source_type?: "private" | "group" | "supergroup" | "channel" | "saved_messages" | "chat";
   title?: string;
-  consent_scope?: "owner_content" | "explicit_opt_in";
+  consent_scope?: "owner_content";
   ingestion_enabled?: boolean;
 };
 
@@ -35,7 +35,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureConnectorRuntimeSchema(env.DB);
   const connection = await requireTelegramConnection(env.DB, connectionId, specialist.id);
   if (!connection) return jsonResponse(404, { success: false, error: "connection_not_found" }, privateHeaders);
-
   return jsonResponse(200, { success: true, sources: await listSources(env.DB, connection.id) }, privateHeaders);
 }
 
@@ -53,38 +52,32 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const connectionId = String(payload.connection_id || "").trim();
   const chatId = String(payload.chat_id ?? "").trim();
-  const consentScope = String(payload.consent_scope || "").trim() as SourcePayload["consent_scope"];
-  if (!connectionId || !chatId || !consentScope) {
-    return jsonResponse(400, { success: false, error: "connection_chat_and_consent_required" }, privateHeaders);
+  if (!connectionId || !chatId) {
+    return jsonResponse(400, { success: false, error: "connection_and_chat_required" }, privateHeaders);
+  }
+  if (payload.consent_scope && payload.consent_scope !== "owner_content") {
+    return jsonResponse(400, { success: false, error: "telegram_v0_1_owner_content_only" }, privateHeaders);
   }
 
   await ensureConnectorRuntimeSchema(env.DB);
   const connection = await requireTelegramConnection(env.DB, connectionId, specialist.id);
   if (!connection) return jsonResponse(404, { success: false, error: "connection_not_found" }, privateHeaders);
 
-  try {
-    const source = await upsertSource(env.DB, {
-      connectionId: connection.id,
-      externalSourceId: chatId,
-      sourceType: payload.source_type || "chat",
-      title: payload.title || "",
-      consentScope,
-      ingestionEnabled: payload.ingestion_enabled === true,
-      metadata: { approval_source: "authenticated_owner_configuration" },
-    });
-    await recordAudit(env.DB, {
-      connectionId: connection.id,
-      actorSpecialistId: specialist.id,
-      action: "telegram_source_configure",
-      outcome: "success",
-      details: {
-        external_source_id: chatId,
-        consent_scope: consentScope,
-        ingestion_enabled: payload.ingestion_enabled === true,
-      },
-    });
-    return jsonResponse(200, { success: true, source }, privateHeaders);
-  } catch (error: any) {
-    return jsonResponse(400, { success: false, error: String(error?.message || "source_configuration_failed") }, privateHeaders);
-  }
+  const source = await upsertSource(env.DB, {
+    connectionId: connection.id,
+    externalSourceId: chatId,
+    sourceType: payload.source_type || "chat",
+    title: payload.title || "",
+    consentScope: "owner_content",
+    ingestionEnabled: payload.ingestion_enabled === true,
+    metadata: { approval_source: "authenticated_owner_configuration", owner_authored_only: true },
+  });
+  await recordAudit(env.DB, {
+    connectionId: connection.id,
+    actorSpecialistId: specialist.id,
+    action: "telegram_source_configure",
+    outcome: "success",
+    details: { external_source_id: chatId, consent_scope: "owner_content", ingestion_enabled: payload.ingestion_enabled === true },
+  });
+  return jsonResponse(200, { success: true, source }, privateHeaders);
 }
