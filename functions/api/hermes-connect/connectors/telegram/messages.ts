@@ -25,7 +25,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const messages = await searchTelegramMessages(env.DB, connection.id, {
     query: url.searchParams.get("q") || "",
     limit: Number(url.searchParams.get("limit") || 50),
-    before: url.searchParams.get("before"),
+    before: url.searchParams.get("before") || undefined,
   });
 
   return jsonResponse(200, {
