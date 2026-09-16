@@ -313,7 +313,8 @@ test("IT case presents verified delivery evidence and a working inquiry route", 
 
 test("direction navigation identifies the current business", async ({ page }) => {
   await page.goto("/paths/marketing/");
-  await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
+  await expect(page.locator('.desktop-nav > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
+  await expect(page.locator('#mobile-menu > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
 });
 
 test("language menu preserves technology intent across localized destinations", async ({ page, isMobile }) => {
