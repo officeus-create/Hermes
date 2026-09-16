@@ -1,22 +1,14 @@
-export const REPAIR_SHOP_FREE_REGISTRATION_END_ISO = "2026-09-16T05:00:00.000Z";
-export const REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE = "America/Chicago";
-export const REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE = "2026-09-15";
-export const REPAIR_SHOP_FREE_REGISTRATION_DISPLAY_DATE = "September 15, 2026";
-
-// Online card billing is still not presented as live. After the free-registration
-// window closes, new Repair Shop owners are routed to the current human-confirmation
-// Founding Shop Plan rather than to a fake checkout.
+// The owner has not set an end date. Keep this explicit rather than fabricating one.
+// Registration remains available so a shop can configure the product before it asks
+// Hermes for the human-confirmed, invoice-based paid activation.
 export const REPAIR_SHOP_ONLINE_BILLING_ENABLED = false;
 
-export const REPAIR_SHOP_FREE_REGISTRATION_POLICY = {
-  id: "repair_shop_free_registration_sep15_2026",
-  deadlineIso: REPAIR_SHOP_FREE_REGISTRATION_END_ISO,
-  timezone: REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE,
-  freeThroughLocalDate: REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE,
-  displayDate: REPAIR_SHOP_FREE_REGISTRATION_DISPLAY_DATE,
+export const REPAIR_SHOP_LAUNCH_PROMOTION = {
+  id: "repair_shop_launch_promotion_active",
+  active: true,
+  priceMonthlyUsd: 3,
+  billingUnit: "per repair shop location",
   onlineBillingEnabled: REPAIR_SHOP_ONLINE_BILLING_ENABLED,
-  countLimited: false,
   cardRequired: false,
-  afterDeadlineWithoutBilling: "current_plan_required",
-  afterDeadline: "current_plan_required",
+  purchaseFlow: "human-confirmation-and-invoice",
 } as const;

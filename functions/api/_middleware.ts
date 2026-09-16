@@ -52,9 +52,9 @@ const normalizeRepairShopPlanLead = async (context: PagesContext, url: URL) => {
     direction_fields: {
       direction: "IT Development",
       fields: {
-        system_or_workflow_needed: "Hermes Connect Repair Shops — Founding Shop Plan paid activation",
+        system_or_workflow_needed: "Hermes Connect Repair Shops — Launch Promotion paid activation",
         number_of_users: "One repair shop location",
-        budget_range: "$99/month Founding Shop Plan",
+        budget_range: "$3/month Repair Shop Launch Promotion",
       },
     },
   };

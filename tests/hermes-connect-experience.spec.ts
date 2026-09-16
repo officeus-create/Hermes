@@ -101,7 +101,7 @@ test("Repair Shop dashboard guides a configured owner to share the booking link"
   await expect(activation.getByRole("heading", { name: "Prepara tu taller para recibir clientes" })).toBeVisible();
   await expect(activation).toContainText("3/6 completo");
   await expect(activation.getByRole("link", { name: "Abrir enlace" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/booking/?shop=apex-auto&lang=es");
-  await expect(activation.getByRole("link", { name: "Plan Founding — $99" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=es");
+  await expect(activation.getByRole("link", { name: "Promoción de lanzamiento — $3" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=es");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
 });

@@ -10,8 +10,8 @@
   const copy = {
     en: {
       accessTitle: "Your Hermes Connect access", accessLoading: "Checking access…",
-      states: { trialing: "Free launch access", founding: "Founding Shop", active: "Active", past_due: "Payment due", cancelled: "Cancelled", comped: "Complimentary" },
-      plan: "View Founding Plan", billing: "Contact billing", renew: "Continue access",
+      states: { trialing: "Launch promotion access", founding: "Launch promotion", active: "Active", past_due: "Payment due", cancelled: "Cancelled", comped: "Complimentary" },
+      plan: "View launch promotion", billing: "Contact billing", renew: "Continue access",
       quickTitle: "Quick start", quickBody: "Add common services with one tap. You can edit or delete them later.",
       oil: "Oil change", diagnostics: "Diagnostics", brakes: "Brake inspection", added: "Added",
       share: "Share", shareTitle: "Book my repair shop", shareGuide: "Use this same booking link on your website, Google Business Profile, SMS/WhatsApp, social profiles, or printed materials.",
@@ -22,8 +22,8 @@
     },
     ru: {
       accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Проверяем доступ…",
-      states: { trialing: "Бесплатный стартовый доступ", founding: "Founding Shop", active: "Активен", past_due: "Нужна оплата", cancelled: "Отменён", comped: "Бесплатный доступ" },
-      plan: "Посмотреть Founding Plan", billing: "Связаться по оплате", renew: "Продолжить доступ",
+      states: { trialing: "Доступ по стартовой акции", founding: "Стартовая акция", active: "Активен", past_due: "Нужна оплата", cancelled: "Отменён", comped: "Бесплатный доступ" },
+      plan: "Посмотреть стартовую акцию", billing: "Связаться по оплате", renew: "Продолжить доступ",
       quickTitle: "Быстрый старт", quickBody: "Добавьте частые услуги одним нажатием. Потом их можно изменить или удалить.",
       oil: "Замена масла", diagnostics: "Диагностика", brakes: "Проверка тормозов", added: "Добавлено",
       share: "Поделиться", shareTitle: "Запись в моё СТО", shareGuide: "Используйте эту же ссылку на сайте, в Google Business Profile, SMS/WhatsApp, соцсетях и печатных материалах.",
@@ -34,8 +34,8 @@
     },
     uk: {
       accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Перевіряємо доступ…",
-      states: { trialing: "Безкоштовний стартовий доступ", founding: "Founding Shop", active: "Активний", past_due: "Потрібна оплата", cancelled: "Скасований", comped: "Безкоштовний доступ" },
-      plan: "Переглянути Founding Plan", billing: "Зв’язатися щодо оплати", renew: "Продовжити доступ",
+      states: { trialing: "Доступ за стартовою акцією", founding: "Стартова акція", active: "Активний", past_due: "Потрібна оплата", cancelled: "Скасований", comped: "Безкоштовний доступ" },
+      plan: "Переглянути стартову акцію", billing: "Зв’язатися щодо оплати", renew: "Продовжити доступ",
       quickTitle: "Швидкий старт", quickBody: "Додайте популярні послуги одним натисканням. Потім їх можна змінити або видалити.",
       oil: "Заміна оливи", diagnostics: "Діагностика", brakes: "Перевірка гальм", added: "Додано",
       share: "Поділитися", shareTitle: "Запис до мого СТО", shareGuide: "Використовуйте це саме посилання на сайті, у Google Business Profile, SMS/WhatsApp, соцмережах і друкованих матеріалах.",
@@ -46,8 +46,8 @@
     },
     es: {
       accessTitle: "Tu acceso a Hermes Connect", accessLoading: "Comprobando acceso…",
-      states: { trialing: "Acceso gratuito de lanzamiento", founding: "Founding Shop", active: "Activo", past_due: "Pago pendiente", cancelled: "Cancelado", comped: "Cortesía" },
-      plan: "Ver Founding Plan", billing: "Contactar facturación", renew: "Continuar acceso",
+      states: { trialing: "Acceso de promoción de lanzamiento", founding: "Promoción de lanzamiento", active: "Activo", past_due: "Pago pendiente", cancelled: "Cancelado", comped: "Cortesía" },
+      plan: "Ver promoción de lanzamiento", billing: "Contactar facturación", renew: "Continuar acceso",
       quickTitle: "Inicio rápido", quickBody: "Añade servicios comunes con un toque. Podrás editarlos o eliminarlos después.",
       oil: "Cambio de aceite", diagnostics: "Diagnóstico", brakes: "Inspección de frenos", added: "Añadido",
       share: "Compartir", shareTitle: "Reserva en mi taller", shareGuide: "Usa el mismo enlace en tu web, Google Business Profile, SMS/WhatsApp, redes sociales o material impreso.",
@@ -58,8 +58,8 @@
     },
     it: {
       accessTitle: "Il tuo accesso Hermes Connect", accessLoading: "Verifica accesso…",
-      states: { trialing: "Accesso gratuito di lancio", founding: "Founding Shop", active: "Attivo", past_due: "Pagamento dovuto", cancelled: "Annullato", comped: "Omaggio" },
-      plan: "Vedi Founding Plan", billing: "Contatta fatturazione", renew: "Continua accesso",
+      states: { trialing: "Accesso alla promozione di lancio", founding: "Promozione di lancio", active: "Attivo", past_due: "Pagamento dovuto", cancelled: "Annullato", comped: "Omaggio" },
+      plan: "Vedi promozione di lancio", billing: "Contatta fatturazione", renew: "Continua accesso",
       quickTitle: "Avvio rapido", quickBody: "Aggiungi i servizi comuni con un tocco. Potrai modificarli o eliminarli in seguito.",
       oil: "Cambio olio", diagnostics: "Diagnostica", brakes: "Controllo freni", added: "Aggiunto",
       share: "Condividi", shareTitle: "Prenota nella mia officina", shareGuide: "Usa lo stesso link sul sito, Google Business Profile, SMS/WhatsApp, social o materiali stampati.",
@@ -70,8 +70,8 @@
     },
     fr: {
       accessTitle: "Votre accès Hermes Connect", accessLoading: "Vérification de l’accès…",
-      states: { trialing: "Accès de lancement gratuit", founding: "Founding Shop", active: "Actif", past_due: "Paiement dû", cancelled: "Annulé", comped: "Offert" },
-      plan: "Voir Founding Plan", billing: "Contacter la facturation", renew: "Continuer l’accès",
+      states: { trialing: "Accès à la promotion de lancement", founding: "Promotion de lancement", active: "Actif", past_due: "Paiement dû", cancelled: "Annulé", comped: "Offert" },
+      plan: "Voir la promotion de lancement", billing: "Contacter la facturation", renew: "Continuer l’accès",
       quickTitle: "Démarrage rapide", quickBody: "Ajoutez les services courants en un geste. Vous pourrez les modifier ou les supprimer ensuite.",
       oil: "Vidange", diagnostics: "Diagnostic", brakes: "Contrôle des freins", added: "Ajouté",
       share: "Partager", shareTitle: "Réserver dans mon atelier", shareGuide: "Utilisez le même lien sur votre site, Google Business Profile, SMS/WhatsApp, réseaux sociaux ou supports imprimés.",
@@ -115,7 +115,7 @@
         const stateNode = accessCard.querySelector("[data-web-v1-access-state]");
         const copyNode = accessCard.querySelector("[data-web-v1-access-copy]");
         if (stateNode) stateNode.textContent = copy.states[state] || state;
-        if (copyNode) copyNode.textContent = data.access.current_period_end ? `${data.access.plan_name || "Founding Shop Plan"} · through ${data.access.current_period_end}` : (data.access.plan_name || "Founding Shop Plan");
+        if (copyNode) copyNode.textContent = data.access.current_period_end ? `${data.access.plan_name || "Repair Shop Launch Promotion"} · through ${data.access.current_period_end}` : (data.access.plan_name || "Repair Shop Launch Promotion");
         if (["trialing", "past_due", "cancelled"].includes(state)) {
           const action = document.createElement("a");
           action.className = "primary-btn hc-web-v1-access-cta";

@@ -1,4 +1,3 @@
-import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../src/data/hermes-connect-repair-shop-launch.ts";
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import {
@@ -34,7 +33,6 @@ type ProfileInput = {
 };
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
-const REPAIR_SHOP_FREE_REGISTRATION_END_MS = Date.parse(REPAIR_SHOP_FREE_REGISTRATION_END_ISO);
 const REPORT_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
 
 function slugify(value: string) {
@@ -200,14 +198,6 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
       )
       .run();
   } else {
-    if (Date.now() >= REPAIR_SHOP_FREE_REGISTRATION_END_MS) {
-      return jsonResponse(403, {
-        success: false,
-        error: "repair_shop_free_registration_ended",
-        registration_deadline: REPAIR_SHOP_FREE_REGISTRATION_END_ISO,
-        next_url: "/services/hermes-connect/repair-shops/plan/",
-      });
-    }
 
     const id = `shop-${crypto.randomUUID()}`;
     const slug = await makeUniqueSlug(env.DB, name);

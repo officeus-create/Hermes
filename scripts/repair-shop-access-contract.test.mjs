@@ -17,7 +17,7 @@ assert.deepEqual(REPAIR_SHOP_ACCESS_STATES, [
   "comped",
 ]);
 assert.equal(REPAIR_SHOP_PLAN_ID, "repair_shop_founding");
-assert.equal(REPAIR_SHOP_PLAN_NAME, "Founding Shop Plan");
+assert.equal(REPAIR_SHOP_PLAN_NAME, "Repair Shop Launch Promotion");
 
 for (const state of REPAIR_SHOP_ACCESS_STATES) assert.equal(isRepairShopAccessState(state), true);
 for (const invalid of ["", "paid", "pending", "free", "expired", null, undefined]) {

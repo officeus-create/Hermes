@@ -24,9 +24,9 @@
       nextProfile: "Next: save your shop profile.", nextServices: "Next: add at least three services customers can book.",
       nextAvailability: "Next: set the hours customers can book.", nextShared: "Your booking link is ready. Open or share it with a customer.",
       nextBooking: "The link is ready. Use it for a test or real customer booking.", nextCompleted: "Your first booking arrived. Move it through the workflow to Completed.",
-      nextReady: "Your first-value loop is complete. Decide whether to keep Hermes Connect active with the Founding Shop Plan.",
+      nextReady: "Your first-value loop is complete. Decide whether to keep Hermes Connect active with the $3/month launch promotion.",
       completeProfile: "Complete profile", addServices: "Add services", setHours: "Set booking hours", shareLink: "Open booking link", checkBookings: "View booking link", completeBooking: "Open booking inbox",
-      requestActivation: "Request paid activation", viewPlan: "View $99 Founding Plan", ready: "complete",
+      requestActivation: "Request paid activation", viewPlan: "View $3 launch promotion", ready: "complete",
       customerLinkTitle: "Customer booking link", customerLinkCopy: "Send this link to customers so they can choose an available service time.", copyLink: "Copy link", shareNow: "Share", openBooking: "Open booking page", finishProfileLink: "Finish the shop profile to unlock the customer booking link"
     },
     ru: {
@@ -44,9 +44,9 @@
       nextProfile: "Далее: сохраните профиль СТО.", nextServices: "Далее: добавьте минимум три услуги для записи.",
       nextAvailability: "Далее: укажите часы, доступные клиентам для записи.", nextShared: "Ссылка готова. Откройте её или отправьте клиенту.",
       nextBooking: "Ссылка готова. Создайте тестовую или реальную запись клиента.", nextCompleted: "Первая запись получена. Проведите её по процессу до статуса «Завершено».",
-      nextReady: "Первый полный цикл завершён. Решите, хотите ли вы продолжать пользоваться Hermes Connect по Founding Shop Plan.",
+      nextReady: "Первый полный цикл завершён. Решите, хотите ли вы продолжать пользоваться Hermes Connect по стартовой акции за $3 в месяц.",
       completeProfile: "Заполнить профиль", addServices: "Добавить услуги", setHours: "Настроить часы", shareLink: "Открыть ссылку записи", checkBookings: "Открыть запись", completeBooking: "Открыть входящие записи",
-      requestActivation: "Запросить платную активацию", viewPlan: "Тариф Founding — $99", ready: "готово",
+      requestActivation: "Запросить платную активацию", viewPlan: "Стартовая акция — $3", ready: "готово",
       customerLinkTitle: "Ссылка для записи клиентов", customerLinkCopy: "Отправьте эту ссылку клиентам, чтобы они могли выбрать свободное время и услугу.", copyLink: "Скопировать ссылку", shareNow: "Поделиться", openBooking: "Открыть запись", finishProfileLink: "Заполните профиль СТО, чтобы получить ссылку для клиентов"
     },
     uk: {
@@ -64,9 +64,9 @@
       nextProfile: "Далі: збережіть профіль СТО.", nextServices: "Далі: додайте щонайменше три послуги для запису.",
       nextAvailability: "Далі: вкажіть години, доступні клієнтам для запису.", nextShared: "Посилання готове. Відкрийте його або надішліть клієнту.",
       nextBooking: "Посилання готове. Створіть тестовий або реальний запис клієнта.", nextCompleted: "Перший запис отримано. Проведіть його до статусу «Завершено».",
-      nextReady: "Перший повний цикл завершено. Вирішіть, чи хочете продовжувати користуватися Hermes Connect за Founding Shop Plan.",
+      nextReady: "Перший повний цикл завершено. Вирішіть, чи хочете продовжувати користуватися Hermes Connect за стартовою акцією $3 на місяць.",
       completeProfile: "Заповнити профіль", addServices: "Додати послуги", setHours: "Налаштувати години", shareLink: "Відкрити запис", checkBookings: "Відкрити запис", completeBooking: "Відкрити вхідні записи",
-      requestActivation: "Запросити платну активацію", viewPlan: "Тариф Founding — $99", ready: "готово",
+      requestActivation: "Запросити платну активацію", viewPlan: "Стартова акція — $3", ready: "готово",
       customerLinkTitle: "Посилання для запису клієнтів", customerLinkCopy: "Надішліть це посилання клієнтам, щоб вони могли вибрати вільний час і послугу.", copyLink: "Скопіювати посилання", shareNow: "Поділитися", openBooking: "Відкрити запис", finishProfileLink: "Заповніть профіль СТО, щоб отримати посилання для клієнтів"
     },
     es: {
@@ -84,9 +84,9 @@
       nextProfile: "Siguiente: guarda el perfil del taller.", nextServices: "Siguiente: añade al menos tres servicios reservables.",
       nextAvailability: "Siguiente: define las horas que los clientes pueden reservar.", nextShared: "El enlace está listo. Ábrelo o compártelo con un cliente.",
       nextBooking: "El enlace está listo. Crea una reserva de prueba o de un cliente real.", nextCompleted: "Llegó la primera reserva. Llévala por el flujo hasta Completada.",
-      nextReady: "El primer ciclo de valor está completo. Decide si quieres mantener Hermes Connect con el Founding Shop Plan.",
+      nextReady: "El primer ciclo de valor está completo. Decide si quieres mantener Hermes Connect con la promoción de lanzamiento de $3 al mes.",
       completeProfile: "Completar perfil", addServices: "Añadir servicios", setHours: "Definir horarios", shareLink: "Abrir enlace", checkBookings: "Abrir reserva", completeBooking: "Abrir reservas",
-      requestActivation: "Solicitar activación de pago", viewPlan: "Plan Founding — $99", ready: "completo",
+      requestActivation: "Solicitar activación de pago", viewPlan: "Promoción de lanzamiento — $3", ready: "completo",
       customerLinkTitle: "Enlace de reservas para clientes", customerLinkCopy: "Envía este enlace a tus clientes para que elijan un servicio y una hora disponible.", copyLink: "Copiar enlace", shareNow: "Compartir", openBooking: "Abrir reservas", finishProfileLink: "Completa el perfil del taller para activar el enlace de reservas"
     },
     it: {
@@ -104,9 +104,9 @@
       nextProfile: "Prossimo passo: salva il profilo dell’officina.", nextServices: "Prossimo passo: aggiungi almeno tre servizi prenotabili.",
       nextAvailability: "Prossimo passo: imposta gli orari prenotabili.", nextShared: "Il link è pronto. Aprilo o condividilo con un cliente.",
       nextBooking: "Il link è pronto. Crea una prenotazione di prova o reale.", nextCompleted: "È arrivata la prima prenotazione. Portala fino allo stato Completata.",
-      nextReady: "Il primo ciclo di valore è completo. Decidi se mantenere Hermes Connect con il Founding Shop Plan.",
+      nextReady: "Il primo ciclo di valore è completo. Decidi se mantenere Hermes Connect con la promozione di lancio da $3 al mese.",
       completeProfile: "Completa profilo", addServices: "Aggiungi servizi", setHours: "Imposta orari", shareLink: "Apri link", checkBookings: "Apri prenotazione", completeBooking: "Apri prenotazioni",
-      requestActivation: "Richiedi attivazione a pagamento", viewPlan: "Piano Founding — $99", ready: "completo",
+      requestActivation: "Richiedi attivazione a pagamento", viewPlan: "Promozione di lancio — $3", ready: "completo",
       customerLinkTitle: "Link prenotazioni clienti", customerLinkCopy: "Invia questo link ai clienti così possono scegliere un servizio e un orario disponibile.", copyLink: "Copia link", shareNow: "Condividi", openBooking: "Apri prenotazioni", finishProfileLink: "Completa il profilo dell’officina per attivare il link clienti"
     },
     fr: {
@@ -124,9 +124,9 @@
       nextProfile: "Ensuite : enregistrez le profil de l’atelier.", nextServices: "Ensuite : ajoutez au moins trois services réservables.",
       nextAvailability: "Ensuite : définissez les heures réservables.", nextShared: "Le lien est prêt. Ouvrez-le ou partagez-le avec un client.",
       nextBooking: "Le lien est prêt. Créez une réservation test ou réelle.", nextCompleted: "La première réservation est arrivée. Faites-la passer jusqu’au statut Terminée.",
-      nextReady: "Le premier cycle de valeur est terminé. Décidez si vous souhaitez conserver Hermes Connect avec le Founding Shop Plan.",
+      nextReady: "Le premier cycle de valeur est terminé. Décidez si vous souhaitez conserver Hermes Connect avec la promotion de lancement à 3 $ par mois.",
       completeProfile: "Compléter le profil", addServices: "Ajouter des services", setHours: "Définir les horaires", shareLink: "Ouvrir le lien", checkBookings: "Ouvrir la réservation", completeBooking: "Ouvrir les réservations",
-      requestActivation: "Demander l’activation payante", viewPlan: "Plan Founding — $99", ready: "terminé",
+      requestActivation: "Demander l’activation payante", viewPlan: "Promotion de lancement — $3", ready: "terminé",
       customerLinkTitle: "Lien de réservation client", customerLinkCopy: "Envoyez ce lien aux clients afin qu’ils choisissent un service et un créneau disponible.", copyLink: "Copier le lien", shareNow: "Partager", openBooking: "Ouvrir la réservation", finishProfileLink: "Complétez le profil de l’atelier pour activer le lien client"
     }
   };

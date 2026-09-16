@@ -128,7 +128,7 @@ try {
         state.lang === "ru" &&
         state.englishOnlyCount === 0 &&
         state.heading === "Активируйте Hermes Connect для своего СТО." &&
-        state.activationTitle === "Запросить тариф Founding Shop за $99 в месяц." &&
+        state.activationTitle === "Запросить активную стартовую акцию за $3 в месяц." &&
         state.formText.includes("Название СТО") &&
         !state.formText.includes("Repair shop name"),
     };
@@ -217,7 +217,7 @@ const markdown = [
   "",
   `- ${mark(result.landing)} Mobile Repair Shops landing: Russian hero, description, product family, language truth; no English-only notice`,
   `- ${mark(result.auth)} Owner authentication: Russian heading, tabs and password label`,
-  `- ${mark(result.plan)} Founding Shop plan: Russian activation copy and form labels`,
+  `- ${mark(result.plan)} Repair Shop launch promotion: Russian activation copy and form labels`,
   `- ${mark(result.booking)} Public booking: Russian booking label and missing-shop state`,
   `- ${mark(result.hub)} Hermes Connect Hub: Russian content truth and Academy link preserves ?lang=ru`,
   "",

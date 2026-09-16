@@ -11,12 +11,12 @@ test("existing Repair Shop owner sees a prominent sign-in action on the first sc
 
   await page.goto(root);
 
-  const login = page.getByRole("link", { name: "Sign in to my shop" });
+  const login = page.locator('[data-repair-owner-signin-link="true"]');
   await expect(login).toBeVisible();
   await expect(login).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?mode=login");
-  await expect(page.getByRole("link", { name: "View current plan", exact: true })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Register my shop", exact: true })).toHaveAttribute(
     "href",
-    "/services/hermes-connect/repair-shops/plan/",
+    "/services/hermes-connect/repair-shops/auth/?mode=register",
   );
 });
 

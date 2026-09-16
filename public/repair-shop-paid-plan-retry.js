@@ -10,7 +10,7 @@
 
   const makeRequestId = () => `repair_paid_${Date.now().toString(36)}_${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`;
   const isPaidActivation = (payload) => typeof payload?.message === "string"
-    && payload.message.startsWith("PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan");
+    && payload.message.startsWith("PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Launch Promotion");
 
   const fingerprintPayload = (payload) => JSON.stringify({
     source_path: payload.source_path ?? "",

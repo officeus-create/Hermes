@@ -98,13 +98,13 @@ const repairPlanPayload = {
   email: "owner@example.com",
   interest: "Hermes Logistics",
   consent: true,
-  message: "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan\nLaunch price: $99/month per repair shop location\nShop: Test Shop\nCity / state: Milwaukee, WI\nPhone: +1 414 555 0100\nPurchase reason / desired value: fewer scheduling calls",
+  message: "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Launch Promotion\nLaunch promotion active: $3/month per repair shop location\nShop: Test Shop\nCity / state: Milwaukee, WI\nPhone: +1 414 555 0100\nPurchase reason / desired value: fewer scheduling calls",
   direction_fields: {
     direction: "Hermes Logistics",
     fields: {
       phone: "+1 414 555 0100",
       preferred_lanes: "Milwaukee, WI",
-      service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
+      service_needed: "Hermes Connect Repair Shops — Launch Promotion",
     },
   },
 };
@@ -131,9 +131,9 @@ assert.ok(forwardedRepairPlanRequest instanceof Request, "Repair Shop paid activ
 const normalizedRepairPlanPayload = await forwardedRepairPlanRequest.json();
 assert.equal(normalizedRepairPlanPayload.interest, "IT Development");
 assert.equal(normalizedRepairPlanPayload.direction_fields.direction, "IT Development");
-assert.equal(normalizedRepairPlanPayload.direction_fields.fields.system_or_workflow_needed, "Hermes Connect Repair Shops — Founding Shop Plan paid activation");
+assert.equal(normalizedRepairPlanPayload.direction_fields.fields.system_or_workflow_needed, "Hermes Connect Repair Shops — Launch Promotion paid activation");
 assert.equal(normalizedRepairPlanPayload.direction_fields.fields.number_of_users, "One repair shop location");
-assert.equal(normalizedRepairPlanPayload.direction_fields.fields.budget_range, "$99/month Founding Shop Plan");
+assert.equal(normalizedRepairPlanPayload.direction_fields.fields.budget_range, "$3/month Repair Shop Launch Promotion");
 assert.equal(forwardedRepairPlanRequest.headers.get("Idempotency-Key"), repairPlanPayload.request_id, "Attribution normalization must preserve the original idempotency key.");
 assert.match(normalizedRepairPlanPayload.message, /PAID ACTIVATION REQUEST — Hermes Connect Repair Shops/);
 

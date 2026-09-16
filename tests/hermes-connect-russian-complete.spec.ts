@@ -85,13 +85,13 @@ test("Russian locale reaches the repair-shop authentication flow", async ({ page
   await expect(page.locator('label[for="login-password"]')).toHaveText("Пароль");
 });
 
-test("Russian locale translates the Founding Shop plan surface", async ({ page }) => {
+test("Russian locale translates the active Repair Shop launch promotion surface", async ({ page }) => {
   await page.goto(`${repairRoot}plan/?lang=ru`);
 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
   await expect(page.locator(".plan-page .hero h1")).toHaveText("Активируйте Hermes Connect для своего СТО.");
-  await expect(page.locator("#activate-title")).toHaveText("Запросить тариф Founding Shop за $99 в месяц.");
+  await expect(page.locator("#activate-title")).toHaveText("Запросить активную стартовую акцию за $3 в месяц.");
   await expect(page.locator("#paid-plan-form")).toContainText("Название СТО");
   await expect(page.locator("#paid-plan-form")).not.toContainText("Repair shop name");
 });

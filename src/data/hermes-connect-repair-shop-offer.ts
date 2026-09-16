@@ -20,8 +20,10 @@ export interface RepairShopOffer {
 
 export const REPAIR_SHOP_FOUNDING_OFFER: RepairShopOffer = {
   id: "repair_shop_founding",
-  name: "Founding Shop Plan",
-  priceMonthlyUsd: 99,
+  // Keep the stable id for existing access rows. The public name and price are
+  // deliberately separate so a live promotion never requires a data migration.
+  name: "Repair Shop Launch Promotion",
+  priceMonthlyUsd: 3,
   billingUnit: "per repair shop location",
   purchaseFlow: "human-confirmation-and-invoice",
   trialAvailable: true,
@@ -31,7 +33,7 @@ export const REPAIR_SHOP_FOUNDING_OFFER: RepairShopOffer = {
     "Weekly availability and shareable booking link",
     "Booking inbox with appointment status history",
     "Customer and vehicle context connected to bookings",
-    "Private product feedback with founding-customer priority review",
+    "Private product feedback with launch-promotion priority review",
   ],
 };
 

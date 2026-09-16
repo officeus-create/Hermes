@@ -8,7 +8,8 @@ export const REPAIR_SHOP_ACCESS_STATES = [
 ];
 
 export const REPAIR_SHOP_PLAN_ID = "repair_shop_founding";
-export const REPAIR_SHOP_PLAN_NAME = "Founding Shop Plan";
+// Stable persisted id; public name reflects the current active promotion.
+export const REPAIR_SHOP_PLAN_NAME = "Repair Shop Launch Promotion";
 
 export function isRepairShopAccessState(value) {
   return REPAIR_SHOP_ACCESS_STATES.includes(String(value || ""));

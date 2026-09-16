@@ -89,7 +89,7 @@ task("Marketing owner links to SEO service owner", () => assert.ok(marketing.inc
 task("Academy owner exposes U.S. Logistics Operations", () => assert.ok(academy.includes('U.S. Logistics Operations')));
 task("Academy owner exposes Marketing", () => assert.ok(academy.includes('Marketing')));
 task("Technology owner links to Hermes Connect", () => assert.ok(technology.includes('/services/hermes-connect/')));
-task("Repair Shops owner keeps Founding Shop Plan price", () => assert.ok(visibleText(repair).includes('$99')));
+task("Repair Shops owner keeps active launch promotion price", () => assert.ok(visibleText(repair).includes('$3')));
 task("Ukrainian Academy route declares html lang uk", () => assert.match(uaLogisticsHtml, /<html\b[^>]*lang=["']uk["']/i));
 task("Ukrainian Academy route exposes English hreflang", () => assert.match(uaLogisticsHtml, /hreflang=["']en["']/i));
 task("Ukrainian Academy route exposes Ukrainian hreflang", () => assert.match(uaLogisticsHtml, /hreflang=["']uk["']/i));

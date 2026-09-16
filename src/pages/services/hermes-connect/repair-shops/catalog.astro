@@ -1,9 +1,6 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAccountSwitcher.astro";
-import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../../data/hermes-connect-repair-shop-launch";
-
-const launchEnd = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Chicago" }).format(new Date(REPAIR_SHOP_FREE_REGISTRATION_END_ISO));
 ---
 <BaseLayout
   title="Catalog Listing | Hermes Connect Repair Shop"
@@ -23,7 +20,7 @@ const launchEnd = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone
     </section>
 
     <section class="panel" aria-live="polite">
-      <div><p class="eyebrow">Current Repair Shop pilot</p><h2>Catalog publication</h2><p class="muted">Free Repair Shop registration is currently available through {launchEnd} Central Time. Catalog listing itself has no listing fee; paid website, SEO/GEO, social media and advertising work is scoped separately.</p></div>
+      <div><p class="eyebrow">Current Repair Shop pilot</p><h2>Catalog publication</h2><p class="muted">The $3/month Repair Shop Launch Promotion is active. Catalog listing itself has no listing fee; paid website, SEO/GEO, social media and advertising work is scoped separately.</p></div>
       <div id="catalog-loading" class="status">Loading your company…</div>
       <div id="catalog-missing" class="state hidden"><p>Complete the Repair Shop company profile before publishing.</p><a class="button" href="/services/hermes-connect/repair-shops/settings/">Open Company settings</a></div>
       <div id="catalog-ready" class="state hidden">

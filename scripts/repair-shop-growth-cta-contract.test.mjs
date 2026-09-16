@@ -49,20 +49,20 @@ assert.doesNotMatch(customerActions, /client-name|client-email|client-phone|\/ap
 // through the existing private lead receiver without introducing website payment tech.
 assert.match(repairLanding, /Auto repair shop software for scheduling, bookings, and customer workflow\./);
 assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
-assert.match(repairLanding, /Founding Shop Plan: \$99\/month per location/);
+assert.match(repairLanding, /Launch promotion active: \$3\/month per location/);
 assert.doesNotMatch(repairLanding, /Current live pilot/);
 
 assert.match(offerContract, /REPAIR_SHOP_OFFER_STATUS\s*=\s*"current-public-offer"/);
 assert.match(offerContract, /id:\s*"repair_shop_founding"/);
-assert.match(offerContract, /priceMonthlyUsd:\s*99/);
+assert.match(offerContract, /priceMonthlyUsd:\s*3/);
 assert.match(offerContract, /purchaseFlow:\s*"human-confirmation-and-invoice"/);
 for (const state of ["trialing", "founding", "active", "past_due", "cancelled", "comped"]) {
   assert.match(offerContract, new RegExp(`"${state}"`));
 }
 const publicPrice = offerContract.match(/priceMonthlyUsd:\s*(\d+)/)?.[1];
-assert.equal(publicPrice, "99");
+assert.equal(publicPrice, "3");
 assert.match(paidPlan, new RegExp(`\\$${publicPrice}\\/month`));
-assert.match(paidPlan, /Founding Shop Plan/);
+assert.match(paidPlan, /Launch Promotion/);
 assert.match(paidPlan, /per repair shop location/);
 assert.match(paidPlan, /Try the workspace first/);
 assert.match(paidPlan, /id="plan-consent" type="checkbox" required/);
@@ -79,33 +79,18 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
-// CEO promotion decision: Repair Shop owner registration is free through the full
-// Central-Time day of September 15, 2026, then new free Repair Shop creation closes
-// and routes to the existing human-confirmation Founding Shop Plan.
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO\s*=\s*"2026-09-16T05:00:00\.000Z"/);
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE\s*=\s*"America\/Chicago"/);
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE\s*=\s*"2026-09-15"/);
-assert.match(launchPolicy, /id:\s*"repair_shop_free_registration_sep15_2026"/);
-assert.match(launchPolicy, /afterDeadlineWithoutBilling:\s*"current_plan_required"/);
+// Current promotion is active with no fabricated end date or fake online billing.
+assert.match(launchPolicy, /id:\s*"repair_shop_launch_promotion_active"/);
+assert.match(launchPolicy, /active:\s*true/);
+assert.match(launchPolicy, /priceMonthlyUsd:\s*3/);
 assert.match(launchPolicy, /cardRequired:\s*false/);
-assert.match(freeLaunch, /Free repair shop registration through September 15/);
-assert.match(freeLaunch, /Бесплатная регистрация СТО до 15 сентября включительно/);
-assert.match(freeLaunch, /free_registration_through_2026_09_15/);
-assert.match(freeLaunch, /closeFreeRegistrationUi/);
-assert.match(freeLaunch, /cta\.href = localizeHref\(`\$\{repairRoot\}\/plan\/`\)/);
-assert.doesNotMatch(freeLaunch, /14_day_free_registration|14-day launch offer|14-дневная стартовая акция/);
+assert.match(freeLaunch, /Repair Shop Launch Promotion: \$3\/month/);
+assert.match(freeLaunch, /No card is collected on this website/);
+assert.doesNotMatch(freeLaunch, /September 15|countdown|paypal\.com\/sdk/i);
 
-// Public Shop Owner account creation is closed after the deadline, and the actual
-// first Repair Shop record has the same gate so another generic Hermes role cannot
-// bypass the promotion. Existing shop records remain editable because the profile
-// gate is only in the no-existing-shop branch.
-assert.match(registerApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
-assert.match(registerApi, /role === "Shop Owner" && Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
-assert.match(registerApi, /repair_shop_free_registration_ended/);
-assert.match(registerApi, /\/services\/hermes-connect\/repair-shops\/plan\//);
-assert.match(repairProfileApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
-assert.match(repairProfileApi, /if \(existing\)[\s\S]*?UPDATE repair_shops[\s\S]*?else \{[\s\S]*?Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
-assert.match(repairProfileApi, /repair_shop_free_registration_ended/);
+// Shop creation remains open while the active promotion has no owner-supplied end date.
+assert.doesNotMatch(registerApi, /repair_shop_free_registration_ended|REPAIR_SHOP_FREE_REGISTRATION_END/);
+assert.doesNotMatch(repairProfileApi, /repair_shop_free_registration_ended|REPAIR_SHOP_FREE_REGISTRATION_END/);
 assert.match(repairProfileApi, /INSERT INTO repair_shops/);
 
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step

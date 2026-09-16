@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, CalendarDays, Check, Clock3, DollarSign, UsersRo
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
+import { REPAIR_SHOP_FOUNDING_OFFER } from "../../../../data/hermes-connect-repair-shop-offer";
 
 const pageUrl = "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/plan/";
 
@@ -12,7 +13,7 @@ const included = [
   "Weekly availability and shareable booking link",
   "Booking inbox with appointment status history",
   "Customer and vehicle context connected to bookings",
-  "Private product feedback with founding-customer priority review",
+  "Private product feedback with launch-promotion priority review",
 ];
 
 const faqs = [
@@ -25,8 +26,8 @@ const faqs = [
     answer: "No. The website does not collect a card on this step. Hermes confirms the paid activation and invoice with the shop directly.",
   },
   {
-    question: "What is included for $99/month?",
-    answer: "The current Founding Shop Plan covers one repair shop location and the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, and private product feedback described on this page.",
+    question: "What is included in the $3/month launch promotion?",
+    answer: "The active Repair Shop Launch Promotion covers one repair shop location and the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, and private product feedback described on this page.",
   },
   {
     question: "Does Hermes Connect guarantee more customers or revenue?",
@@ -38,7 +39,7 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Hermes Connect Repair Shops Founding Shop Plan",
+    name: "Hermes Connect Repair Shop Launch Promotion",
     serviceType: "Repair shop booking and customer operations software",
     url: pageUrl,
     description: "A browser-based repair shop workspace for services, weekly availability, public booking, booking operations, customers, vehicle context, and product feedback.",
@@ -49,10 +50,10 @@ const schema = [
     },
     offers: {
       "@type": "Offer",
-      price: "99",
+      price: String(REPAIR_SHOP_FOUNDING_OFFER.priceMonthlyUsd),
       priceCurrency: "USD",
       url: pageUrl,
-      description: "Founding Shop Plan for one repair shop location, billed monthly after human confirmation and invoicing.",
+      description: "Active Repair Shop Launch Promotion for one repair shop location, billed monthly after human confirmation and invoicing.",
     },
   },
   {
@@ -62,7 +63,7 @@ const schema = [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
       { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
       { "@type": "ListItem", position: 3, name: "Repair Shops", item: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/" },
-      { "@type": "ListItem", position: 4, name: "Founding Shop Plan", item: pageUrl },
+      { "@type": "ListItem", position: 4, name: "Repair Shop Launch Promotion", item: pageUrl },
     ],
   },
   {
@@ -78,8 +79,8 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Repair Shop Founding Plan — $99/month | Hermes Connect"
-  description="Activate Hermes Connect Repair Shops for $99/month per location: booking, availability, customers, vehicle context, and owner operations in one workspace."
+  title="Repair Shop Launch Promotion — $3/month | Hermes Connect"
+  description="Active $3/month Repair Shop Launch Promotion per location: booking, availability, customers, vehicle context, and owner operations in one workspace."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -90,9 +91,9 @@ const schema = [
 
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Hermes Connect · Founding Shop Plan</p>
+          <p class="eyebrow">Hermes Connect · Launch Promotion active</p>
           <h1>Activate Hermes Connect for your repair shop.</h1>
-          <p class="lead">Keep the booking workflow your shop can already try — services, hours, appointment requests, customers, and vehicle context — for <strong>$99/month per repair shop location</strong>.</p>
+          <p class="lead">Keep the booking workflow your shop can already try — services, hours, appointment requests, customers, and vehicle context — through the active <strong>$3/month launch promotion per repair shop location</strong>.</p>
           <div class="hero-actions">
             <a class="primary" href="#activate">Request paid activation <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="secondary" href="/services/hermes-connect/repair-shops/auth/">Try the workspace first</a>
@@ -100,9 +101,9 @@ const schema = [
           <p class="microcopy">No card is collected on this website. A paid activation request starts a human confirmation and invoice process.</p>
         </div>
 
-        <aside class="price-card" aria-label="Founding Shop Plan pricing">
-          <p class="price-label">Launch price</p>
-          <div class="price"><span>$</span><strong>99</strong><small>/month</small></div>
+        <aside class="price-card" aria-label="Repair Shop Launch Promotion pricing">
+          <p class="price-label">Launch promotion active</p>
+          <div class="price"><span>$</span><strong>3</strong><small>/month</small></div>
           <p class="price-note">per repair shop location</p>
           <ul>
             {included.map((item) => <li><Check size={17} aria-hidden="true" /><span>{item}</span></li>)}
@@ -127,7 +128,7 @@ const schema = [
       <section id="activate" class="activate" aria-labelledby="activate-title">
         <div class="activate-copy">
           <p class="eyebrow">Paid activation</p>
-          <h2 id="activate-title">Request the $99/month Founding Shop Plan.</h2>
+          <h2 id="activate-title">Request the active $3/month launch promotion.</h2>
           <p>Send your shop details. Hermes will confirm the current plan scope, billing contact, and invoice before paid activation. Submitting this form does not charge you.</p>
           <div class="signal"><DollarSign size={20} aria-hidden="true" /><span>This is a purchase-intent request for shops ready to keep using Hermes Connect — not a generic demo form.</span></div>
         </div>
@@ -144,7 +145,7 @@ const schema = [
           <label class="consent"><input id="plan-consent" type="checkbox" required /><span>I agree that Hermes may contact me about this paid activation request and billing setup.</span></label>
           <button id="paid-plan-submit" class="primary full" type="submit">Request paid activation <ArrowRight size={18} aria-hidden="true" /></button>
           <p id="paid-plan-status" class="form-status" role="status" aria-live="polite"></p>
-          <p class="form-note">No payment is taken here. The $99/month price is the current Founding Shop Plan launch offer; final activation details are confirmed before invoicing.</p>
+          <p class="form-note">No payment is taken here. The $3/month launch promotion is active; final activation details are confirmed before invoicing.</p>
         </form>
       </section>
 
@@ -204,14 +205,14 @@ const schema = [
       setIfBlank("plan-city-state", [shop.city, shop.state].filter(Boolean).join(", "));
 
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: "connect_paid_plan_prefilled", product: "repair_shop_founding_plan", linked_shop: true });
+      window.dataLayer.push({ event: "connect_paid_plan_prefilled", product: "repair_shop_launch_promotion", linked_shop: true });
     } catch {
       // Guest/manual activation stays available if account lookup is unavailable.
     }
   }
 
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: "connect_paid_plan_view", product: "repair_shop_founding_plan", price_usd: 99 });
+  window.dataLayer.push({ event: "connect_paid_plan_view", product: "repair_shop_launch_promotion", price_usd: 3, promotion_active: true });
   void prefillAuthenticatedShop();
 
   form?.addEventListener("submit", async (event) => {
@@ -238,8 +239,8 @@ const schema = [
       interest: "Hermes Logistics",
       consent: true,
       message: [
-        "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
-        "Launch price: $99/month per repair shop location",
+        "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Launch Promotion",
+        "Launch promotion active: $3/month per repair shop location",
         `Shop: ${shopName}`,
         accountLinkage,
         `City / state: ${cityState}`,
@@ -253,8 +254,8 @@ const schema = [
         fields: {
           phone,
           preferred_lanes: cityState,
-          service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
-          primary_goal: "Paid activation request — $99/month",
+          service_needed: "Hermes Connect Repair Shops — Launch Promotion",
+          primary_goal: "Paid activation request — $3/month launch promotion active",
           equipment_type: [],
         },
       },
@@ -274,7 +275,7 @@ const schema = [
 
       setStatus("Request received. Hermes will contact you to confirm the plan and invoice before activation.", "success");
       submit.textContent = "Paid activation requested";
-      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received", linked_shop: Boolean(linkedShop) });
+      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_launch_promotion", price_usd: 3, promotion_active: true, request_state: "received", linked_shop: Boolean(linkedShop) });
     } catch {
       submit.disabled = false;
       setStatus("We could not deliver the request. Nothing was charged. Please try again.", "error");
