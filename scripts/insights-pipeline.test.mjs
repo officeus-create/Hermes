@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import "./insights-source-registry.test.mjs";
 
 const registry = JSON.parse(await readFile(new URL("../src/data/insights.generated.json", import.meta.url), "utf8"));
+const sourceRegistry = JSON.parse(await readFile(new URL("../src/data/insights-source-registry.json", import.meta.url), "utf8"));
+const registeredSourceIds = new Set(sourceRegistry.map((source) => source.id));
+const evidenceKinds = new Set(["public_external", "first_party_historical", "first_party_current", "internal_signal"]);
+const evidenceUses = new Set(["primary", "context_only", "private_signal"]);
+const publicationRecommendations = new Set(["hold", "telegram", "digest", "standalone", "standalone_historical"]);
+
 assert.ok(registry.length >= 1, "insights registry must contain at least one approved record");
 const routeKeys = new Set();
 const sourceUrls = new Set();
@@ -21,6 +28,44 @@ for (const post of registry) {
   assert.ok(!sourceUrls.has(post.sourceUrl), `${post.id}: duplicate source should merge or expand instead of creating a competing article`);
   sourceUrls.add(post.sourceUrl);
   if (post.currentMarketClaim) assert.ok(post.sourcePublishedAt, `${post.id}: current claims require source date`);
+
+  if (post.evidence !== undefined) {
+    assert.ok(Array.isArray(post.evidence) && post.evidence.length > 0, `${post.id}: evidence must be a non-empty array`);
+    for (const item of post.evidence) {
+      assert.ok(registeredSourceIds.has(item.sourceId), `${post.id}: unregistered evidence source ${item.sourceId}`);
+      assert.ok(evidenceKinds.has(item.kind), `${post.id}: invalid evidence kind`);
+      assert.ok(evidenceUses.has(item.use), `${post.id}: invalid evidence use`);
+      assert.ok(typeof item.label === "string" && item.label.trim(), `${post.id}: evidence label required`);
+      assert.ok(!(item.kind === "internal_signal" && item.use === "primary"), `${post.id}: internal signal cannot be primary public evidence`);
+      if (item.url) assert.match(item.url, /^https:\/\//, `${post.id}: evidence URL must use https`);
+    }
+  }
+
+  const hasHistoricalPrivateEvidence = Array.isArray(post.evidence) && post.evidence.some((item) =>
+    item.kind === "first_party_historical" || item.kind === "internal_signal"
+  );
+  if (hasHistoricalPrivateEvidence || post.historicalComparison) {
+    assert.equal(post.privacyReview?.piiRemoved, true, `${post.id}: PII removal review required`);
+    assert.equal(post.privacyReview?.privateFiguresRemoved, true, `${post.id}: private-figure removal review required`);
+    assert.equal(post.privacyReview?.historicalClaimsRevalidated, true, `${post.id}: historical claim revalidation required`);
+  }
+
+  if (post.historicalComparison !== undefined) {
+    assert.ok(post.historicalComparison.thenPeriod && post.historicalComparison.nowPeriod && post.historicalComparison.summary, `${post.id}: historical comparison fields required`);
+    assert.ok(Array.isArray(post.historicalComparison.evidenceSourceIds) && post.historicalComparison.evidenceSourceIds.length > 0, `${post.id}: historical comparison source IDs required`);
+    for (const sourceId of post.historicalComparison.evidenceSourceIds) {
+      assert.ok(registeredSourceIds.has(sourceId), `${post.id}: unregistered historical source ${sourceId}`);
+    }
+    if (post.historicalComparison.currentVerificationUrl) assert.match(post.historicalComparison.currentVerificationUrl, /^https:\/\//);
+  }
+
+  if (post.publicationScore !== undefined) {
+    assert.ok(Number.isFinite(post.publicationScore.score) && post.publicationScore.score >= 0 && post.publicationScore.score <= 100, `${post.id}: publication score must be 0-100`);
+    assert.ok(publicationRecommendations.has(post.publicationScore.recommendation), `${post.id}: invalid publication recommendation`);
+    assert.ok(Array.isArray(post.publicationScore.reasons) && post.publicationScore.reasons.length > 0, `${post.id}: publication score reasons required`);
+    if (post.contentTier === "standalone") assert.ok(post.publicationScore.score >= 75, `${post.id}: scored standalone insight must be >=75`);
+    if (post.publicationScore.recommendation === "standalone_historical") assert.ok(post.historicalComparison, `${post.id}: standalone_historical requires comparison`);
+  }
 }
 const sitemap = await readFile(new URL("../public/sitemap-insights.xml", import.meta.url), "utf8");
 assert.match(sitemap, /https:\/\/hermeslogisticsus\.com\/insights\//);
