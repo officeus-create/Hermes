@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { classifyUrl, extractUrls, readLocalSitemapUrls } from "./gsc-indexing-triage.mjs";
+
+const redirects = await readFile(new URL("../public/_redirects", import.meta.url), "utf8");
+assert.match(redirects, /^\/academy\/ \/paths\/academy\/ 301$/m, "retired /academy/ hub must redirect to canonical Academy direction");
 
 const sitemaps = await readLocalSitemapUrls();
 assert.ok(sitemaps.has("https://hermeslogisticsus.com/es/"), "Spanish public owner must be in current sitemaps");
@@ -18,6 +22,8 @@ assert.equal(dashboard.category, "EXPECTED_EXCLUSION_PRIVATE");
 
 const legacy = classifyUrl("https://hermeslogisticsus.com/uk/london/", sitemaps);
 assert.equal(legacy.category, "REDIRECT_OR_REMOVE_LEGACY");
+const academyLegacyHub = classifyUrl("https://hermeslogisticsus.com/academy/", sitemaps);
+assert.equal(academyLegacyHub.category, "REDIRECT_OR_REMOVE_LEGACY");
 const slashVariant = classifyUrl("https://hermeslogisticsus.com/es", sitemaps);
 assert.equal(slashVariant.category, "EXPECTED_EXCLUSION_CANONICAL_VARIANT");
 assert.equal(slashVariant.normalized, "https://hermeslogisticsus.com/es/");

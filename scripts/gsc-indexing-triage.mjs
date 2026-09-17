@@ -11,7 +11,7 @@ const PRIVATE_PATHS = [
   /^\/services\/hermes-connect\/academy\/(auth|dashboard|lesson|program|progression|reviewer|submissions|support)(\/|$)/,
   /^\/services\/hermes-connect\/internal\//,
 ];
-const LEGACY_PATHS = [/^\/uk\/london(\/|$)/];
+const LEGACY_PATHS = [/^\/uk\/london(\/|$)/, /^\/academy\/$/];
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
