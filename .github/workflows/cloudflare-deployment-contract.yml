@@ -7,9 +7,11 @@ on:
       - wrangler.toml
       - wrangler.jsonc.example
       - wrangler.toml.example
+      - config/cloudflare-pages-runtime-baseline.json
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
       - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/cloudflare-pages-runtime-baseline.test.mjs
       - scripts/check-connect-subdomain.mjs
       - scripts/connect-subdomain-verifier.mjs
       - scripts/connect-subdomain-verifier.test.mjs
@@ -23,9 +25,11 @@ on:
       - wrangler.toml
       - wrangler.jsonc.example
       - wrangler.toml.example
+      - config/cloudflare-pages-runtime-baseline.json
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
       - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/cloudflare-pages-runtime-baseline.test.mjs
       - scripts/check-connect-subdomain.mjs
       - scripts/connect-subdomain-verifier.mjs
       - scripts/connect-subdomain-verifier.test.mjs
@@ -60,6 +64,9 @@ jobs:
 
       - name: Verify production hardening boundary
         run: node scripts/cloudflare-production-hardening-contract.test.mjs
+
+      - name: Verify Pages runtime baseline
+        run: node scripts/cloudflare-pages-runtime-baseline.test.mjs
 
       - name: Verify Connect production-readback quorum
         run: node scripts/connect-subdomain-verifier.test.mjs
