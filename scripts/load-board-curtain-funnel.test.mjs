@@ -3,7 +3,11 @@ import fs from "node:fs";
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const enhancer = read("src/components/LoadBoardCapacityEnhancer.astro");
+const marketplaceV2 = read("src/components/LoadBoardMarketplaceV2.astro");
+const seo4Enhancer = read("src/components/Seo4ConversionEnhancer.astro");
 const baseLayout = read("src/layouts/BaseLayout.astro");
+const loadBoardPage = read("src/pages/load-board.astro");
+const catalogPage = read("src/pages/businesses/index.astro");
 const accessPage = read("src/pages/services/hermes-connect/load-board/access/index.astro");
 const accountApi = read("functions/api/hermes-connect/account.ts");
 const accountSwitcher = read("src/components/HermesConnectAccountSwitcher.astro");
@@ -25,8 +29,26 @@ assert.match(enhancer, /\/services\/hermes-connect\/load-board\/access\//);
 assert.match(enhancer, /Register company &amp; unlock Load Board/);
 assert.match(enhancer, /\/api\/catalog\/companies/);
 assert.match(enhancer, /Self-submitted · verification pending/);
-assert.match(baseLayout, /LoadBoardCapacityEnhancer/);
-assert.match(baseLayout, /<LoadBoardCapacityEnhancer \/>/);
+assert.doesNotMatch(baseLayout, /LoadBoardCapacityEnhancer/, "Route-specific Load Board runtime must not render after the global BaseLayout slot.");
+assert.match(loadBoardPage, /import LoadBoardCapacityEnhancer from "\.\.\/components\/LoadBoardCapacityEnhancer\.astro"/);
+assert.match(loadBoardPage, /<LoadBoardCapacityEnhancer \/>/);
+assert.ok(
+  loadBoardPage.indexOf('<LoadBoardCapacityEnhancer />') > loadBoardPage.indexOf('<section class="load-board-hero">') &&
+    loadBoardPage.indexOf('<LoadBoardCapacityEnhancer />') < loadBoardPage.indexOf('<section class="load-board-role-router"'),
+  "Load Board marketplace must be server-rendered immediately after the hero before the role router.",
+);
+assert.match(catalogPage, /import LoadBoardCapacityEnhancer from "\.\.\/\.\.\/components\/LoadBoardCapacityEnhancer\.astro"/);
+assert.match(catalogPage, /<LoadBoardCapacityEnhancer \/>/);
+assert.doesNotMatch(enhancer, /moveIntoCanonicalPosition|insertAdjacentElement\('afterend', root\)/, "Never relocate #live-marketplace after first paint; field RUM CLS is tied to this mutation.");
+assert.match(enhancer, /import LoadBoardMarketplaceV2 from "\.\/LoadBoardMarketplaceV2\.astro"/);
+assert.match(enhancer, /<LoadBoardMarketplaceV2 \/>/);
+assert.ok(
+  enhancer.indexOf('<LoadBoardMarketplaceV2 />') > enhancer.indexOf('<div class="hlb-live-head">') &&
+    enhancer.indexOf('<LoadBoardMarketplaceV2 />') < enhancer.indexOf('<div class="hlb-access-strip"'),
+  "Load Board V2 controls must be server-rendered directly after the marketplace head before access/status content.",
+);
+assert.doesNotMatch(marketplaceV2, /insertAdjacentElement\("afterend", host\)/, "Marketplace V2 controls must never relocate after first paint.");
+assert.doesNotMatch(seo4Enhancer, /LoadBoardMarketplaceV2/, "Global post-slot enhancer must not own route-specific Load Board V2 markup.");
 assert.match(enhancer, /const structuralCount = Math\.max\(54, 60 - Math\.min\(active\.length, 6\)\)/);
 assert.match(enhancer, /PREVIEW · NOT LIVE/);
 assert.match(enhancer, /rateAmount: 2450/);

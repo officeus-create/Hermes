@@ -6,6 +6,7 @@ import CatalogClientBenefit from "../../components/CatalogClientBenefit.astro";
 import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
+import LoadBoardCapacityEnhancer from "../../components/LoadBoardCapacityEnhancer.astro";
 import { directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../data/repair-shop-directory";
 import { hermesCatalogOffers, priorityGrowthCities } from "../../data/hermes-catalog-offers";
 import { academyCountryRegistry, academyLaunchTracks } from "../../data/academy-country-registry";
@@ -142,6 +143,7 @@ const schema = [
       <section class="how"><p class="eyebrow">How profiles work</p><h2>Discovery first. Owner verification before activation.</h2><p>Hermes separates public business discovery from customer activation. A profile may start from bounded public sources with its claim state and evidence notes visible. An authorized owner can later claim the profile, verify or correct the business details, and decide whether to activate Hermes Connect. Appointment booking, customer records, team scheduling, and other private business tools stay off until that verified activation happens.</p></section>
     </div>
   </main>
+  <LoadBoardCapacityEnhancer />
   <SiteFooter />
 </BaseLayout>
 

@@ -97,10 +97,6 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
   const host = document.querySelector<HTMLElement>("[data-lbv2-control-host]");
 
   if (root && host) {
-    const shell = root.querySelector<HTMLElement>(".hlb-live-shell");
-    const head = root.querySelector<HTMLElement>(".hlb-live-head");
-    if (shell && head) head.insertAdjacentElement("afterend", host);
-
     const headTitle = root.querySelector<HTMLElement>(".hlb-live-head h2");
     const headCopy = root.querySelector<HTMLElement>(".hlb-live-head h2 + p");
     if (headTitle) headTitle.textContent = "Find freight. Post loads. Post trucks.";

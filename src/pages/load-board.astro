@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import HermesConnectLauncher from "../components/HermesConnectLauncher.astro";
+import LoadBoardCapacityEnhancer from "../components/LoadBoardCapacityEnhancer.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
@@ -31,6 +32,8 @@ import "../styles/features/load.css";
           </div>
         </div>
       </section>
+
+      <LoadBoardCapacityEnhancer />
 
       <section class="load-board-role-router" aria-labelledby="load-board-role-title">
         <div class="shell">

@@ -1,4 +1,5 @@
 ---
+import LoadBoardMarketplaceV2 from "./LoadBoardMarketplaceV2.astro";
 const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
 const isHermesCatalog = Astro.url.pathname === "/businesses/";
 const accessPath = "/services/hermes-connect/load-board/access/";
@@ -49,6 +50,8 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
           <button type="button" data-live-refresh aria-label="Refresh Load Board inventory">Refresh now</button>
         </div>
       </div>
+
+      <LoadBoardMarketplaceV2 />
 
       <div class="hlb-access-strip" data-hlb-access-strip>
         <span class="hlb-access-dot"></span>
@@ -204,12 +207,6 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
       const root = document.querySelector("[data-hlb-live-marketplace]");
       if (!(root instanceof HTMLElement)) return;
 
-      const moveIntoCanonicalPosition = () => {
-        const hero = document.querySelector('.load-board-hero');
-        if (hero?.parentElement) { hero.insertAdjacentElement('afterend', root); return; }
-        const demo = document.querySelector(".available-loads-preview");
-        if (demo?.parentElement) demo.parentElement.insertBefore(root, demo);
-      };
       const registrationHref = (record) => {
         const url = new URL(accessPath, window.location.origin);
         url.searchParams.set('source', 'load-board-curtain');
@@ -351,7 +348,6 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
 
       refreshButton?.addEventListener('click', () => { void refresh(); });
 
-      moveIntoCanonicalPosition();
       renderImmediatePreview();
       void refresh();
       window.setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 30_000);
