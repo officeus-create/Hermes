@@ -30,7 +30,7 @@ assert.ok(worker.includes("AI_MODEL_FALLBACK"), "A bounded fallback model must b
 
 assert.ok(wrangler.includes('"binding": "AI"'), "Wrangler example must configure the AI binding");
 assert.ok(wrangler.includes('"AI_GATEWAY_ID": "hermes-ai-control-plane"'));
-assert.ok(!wrangler.includes("HERMES_AI_CONTROL_TOKEN\":"), "Secrets must not be committed as Wrangler vars");
+assert.ok(!wrangler.includes('"HERMES_AI_CONTROL_TOKEN":'), "Secrets must not be committed as Wrangler vars");
 
 for (const secretPattern of ["sk-", "ghp_", "AIza", "Bearer eyJ"]) {
   assert.ok(!worker.includes(secretPattern) && !wrangler.includes(secretPattern), `No secret-like value may be committed: ${secretPattern}`);
