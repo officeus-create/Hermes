@@ -50,6 +50,13 @@ No token or provider credential is committed to GitHub.
 
 The model names are environment configuration, not permanent application constants. The example Wrangler file contains current deployment candidates only and must be rechecked against the live Cloudflare catalog before production activation.
 
+Current free-first candidate defaults are:
+
+- economy / conversation: `@cf/zai-org/glm-4.7-flash`
+- reasoning / fallback: `@cf/google/gemma-4-26b-a4b-it`
+
+Cloudflare currently marks `@cf/zai-org/glm-5.2` as paid access required, so it was deliberately removed from the default pilot configuration. It can only be considered later after explicit plan/spend approval and measured quality benefit.
+
 ## Cost and cache rule
 
 Private/person-specific tasks default to `skipCache: true`.
@@ -99,4 +106,4 @@ Do not migrate all AI workloads at once.
 
 ## Free-first constraint
 
-Cloudflare documents AI Gateway core features such as analytics, caching, and rate limiting as available without a separate Gateway fee, while inference/model usage and some platform features may be billable. No paid tier, credit purchase, provider billing, or model spend is authorized by this repository change. Verify the current account plan and live pricing before activation.
+Cloudflare documents AI Gateway core features such as analytics, caching, and rate limiting as available without a separate Gateway fee, while inference/model usage and some platform features may be billable. No paid tier, credit purchase, provider billing, or model spend is authorized by this repository change. Verify the current account plan, free allocation/eligibility, live quota and pricing before activation.
