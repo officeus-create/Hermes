@@ -1,0 +1,113 @@
+[Reading 109 lines from start (total: 109 lines, 0 remaining)]
+
+name: Cloudflare five-surface synthetic
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 */6 * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: cloudflare-five-surface-synthetic
+  cancel-in-progress: true
+
+jobs:
+  verify-public-surfaces:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out synthetic contract
+        uses: actions/checkout@v6
+
+      - name: Verify five public surfaces
+        id: synthetic
+        continue-on-error: true
+        shell: bash
+        run: |
+          node <<'NODE'
+          const targets = [
+            { name: "home", url: "https://hermeslogisticsus.com/", status: 200, markers: ["Hermes Connect"] },
+            { name: "repair-shops", url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/", status: 200, markers: ["Founding Shop Plan"] },
+            { name: "load-board", url: "https://hermeslogisticsus.com/load-board/", status: 200, markers: ["Car Hauler Load Board"] },
+            { name: "connect", url: "https://connect.hermeslogisticsus.com/", status: 308, location: "https://hermeslogisticsus.com/services/hermes-connect/" },
+            { name: "app", url: "https://app.hermeslogisticsus.com/", status: 200, markers: ["Hermes Connect"] },
+          ];
+
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          let failed = false;
+
+          for (const target of targets) {
+            let passed = false;
+            let last = null;
+
+            for (let attempt = 1; attempt <= 3; attempt += 1) {
+              try {
+                const url = new URL(target.url);
+                url.searchParams.set("synthetic", `${Date.now()}-${attempt}`);
+                const response = await fetch(url, {
+                  redirect: "manual",
+                  headers: {
+                    "cache-control": "no-cache",
+                    pragma: "no-cache",
+                    "user-agent": "HermesCloudflareSynthetic/1.0",
+                  },
+                  signal: AbortSignal.timeout(20_000),
+                });
+
+                const body = target.markers ? await response.text() : "";
+                const missing = (target.markers || []).filter((marker) => !body.includes(marker));
+                const location = response.headers.get("location");
+                last = { status: response.status, missing, location };
+
+                if (
+                  response.status === target.status &&
+                  missing.length === 0 &&
+                  (!target.location || location === target.location)
+                ) {
+                  passed = true;
+                  console.log(`PASS ${target.name} ${response.status}`);
+                  break;
+                }
+              } catch (error) {
+                last = { error: error instanceof Error ? error.message : String(error) };
+              }
+
+              if (attempt < 3) await sleep(5_000);
+            }
+
+            if (!passed) {
+              failed = true;
+              console.error(`FAIL ${target.name}: ${JSON.stringify(last)}`);
+            }
+          }
+
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Report failure to canonical Cloudflare tracker
+        if: steps.synthetic.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh issue comment 1349 --repo "$GITHUB_REPOSITORY" --body "## Cloudflare five-surface synthetic — FAIL
+
+          One or more public availability checks failed in scheduled run `${GITHUB_RUN_ID}`.
+
+          Checked only these public surfaces: homepage, Repair Shops, Load Board, Connect, and app. No customer payload, production mutation, Cloudflare credential, or private identifier was used.
+
+          Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+      - name: Enforce synthetic result
+        if: always()
+        shell: bash
+        run: |
+          if [[ "${{ steps.synthetic.outcome }}" != "success" ]]; then
+            exit 1
+          fi
+
+[executed on device: MacBook-Pro-Vladimir.local (f76b2e6c-bcf8-4a7b-a530-81692b32f920)]
