@@ -60,4 +60,11 @@ for (const kpi of ["own_domain_citation_rate", "entity_conflict_count", "google_
   assert.ok(registry.kpis.includes(kpi), `Missing KPI ${kpi}`);
 }
 
+
+const scorecardPage = readFileSync(new URL("../src/pages/demos/ai-visibility-scorecard/index.astro", import.meta.url), "utf8");
+assert.ok(scorecardPage.includes("AI Entity Monitor · first owner-evidenced observation"), "Scorecard must expose the entity-monitor evidence layer");
+assert.ok(scorecardPage.includes("discover → verify → correct → measure"), "Scorecard must expose the four-stage entity loop");
+assert.ok(scorecardPage.includes("Missing Search Console generative-AI metrics remain UNKNOWN, never zero."), "Scorecard must preserve the unknown-not-zero evidence rule");
+assert.ok(scorecardPage.includes("Canonical identity owners stay `/company-information/` and `/about/`"), "Scorecard must preserve canonical entity ownership");
+
 console.log("AI entity monitor baseline contract passed");

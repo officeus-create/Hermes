@@ -10,7 +10,10 @@ import {
   calculateAiVisibilityMetrics,
   syntheticAiVisibilityObservations,
 } from "../../../data/ai-visibility-scorecard";
+import entityMonitor from "../../../data/seo/ai-entity-monitor-2026-09-17.json";
 
+const entityObservation = entityMonitor.observations[0];
+const entitySourceAction = entityMonitor.external_source_actions[0];
 const metrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
 const formatRate = (value: number | null) => value === null ? "Not measured" : `${value}%`;
@@ -68,6 +71,57 @@ const intents = ["all", "commercial", "comparison", "educational", "problem_solv
             <article><strong data-metric="descriptionAccuracyRate">{formatRate(metrics.descriptionAccuracyRate)}</strong><p>Correct description rate</p></article>
             <article><strong data-metric="factualErrorRate">{formatRate(metrics.factualErrorRate)}</strong><p>Factual-error rate</p></article>
             <article><strong>{aiVisibilityPrompts.length}</strong><p>Registered prompts</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" id="entity-monitor" aria-labelledby="entity-monitor-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">AI Entity Monitor · first owner-evidenced observation</p>
+              <h2 id="entity-monitor-title">How AI sees Hermes: discover → verify → correct → measure.</h2>
+            </div>
+            <p>One dated Google AI Overview screenshot is recorded as one observation only. It does not become a universal ranking, traffic, or recommendation claim.</p>
+          </div>
+          <div class="capacity-boundary-grid">
+            <article><strong>{entityObservation.brand_recognized ? "YES" : "NO"}</strong><p>Hermes entity recognized</p></article>
+            <article><strong>{entityObservation.own_domain_present ? "YES" : "NO"}</strong><p>Own domain present</p></article>
+            <article><strong>{entityObservation.entity_accuracy.replace("_", " ")}</strong><p>Entity accuracy</p></article>
+            <article><strong>{entityObservation.third_party_sources_visible.join(", ") || "None observed"}</strong><p>Visible third-party source</p></article>
+          </div>
+          <div class="capacity-pillar-grid">
+            <article>
+              <span>01</span><Search size={23} aria-hidden="true" />
+              <h3>DISCOVER</h3>
+              <p><strong>Query:</strong> {entityObservation.query}</p>
+              <p><strong>Interface:</strong> Google AI Overview · {entityObservation.language.toUpperCase()}</p>
+            </article>
+            <article>
+              <span>02</span><ClipboardCheck size={23} aria-hidden="true" />
+              <h3>VERIFY</h3>
+              <p>Compare the generated description with <a href="/company-information/">Company Information</a> and <a href="/about/">About Hermes</a>, not with memory or an old directory profile.</p>
+            </article>
+            <article>
+              <span>03</span><FileWarning size={23} aria-hidden="true" />
+              <h3>CORRECT</h3>
+              <p><strong>{entitySourceAction.source}</strong>: {entitySourceAction.status}. Authenticated owner access is required before changing the third-party profile.</p>
+            </article>
+            <article>
+              <span>04</span><BarChart3 size={23} aria-hidden="true" />
+              <h3>MEASURE</h3>
+              <p>Track AI Overview, AI Mode, ChatGPT, Gemini, Copilot, and Perplexity separately. Missing Search Console generative-AI metrics remain UNKNOWN, never zero.</p>
+            </article>
+          </div>
+          <div class="resource-lead">
+            <ShieldCheck size={32} aria-hidden="true" />
+            <div>
+              <h3>Current conflicts to resolve</h3>
+              <ul>
+                {entityObservation.issue_codes.map((issue) => <li>{issue.replaceAll("_", " ")}</li>)}
+              </ul>
+              <p>Canonical identity owners stay `/company-information/` and `/about/`. The correction loop strengthens one entity instead of generating duplicate identity pages.</p>
+            </div>
           </div>
         </div>
       </section>
