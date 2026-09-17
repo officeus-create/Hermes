@@ -9,6 +9,7 @@ on:
       - wrangler.toml.example
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
+      - scripts/cloudflare-production-hardening-contract.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   push:
@@ -21,6 +22,7 @@ on:
       - wrangler.toml.example
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
+      - scripts/cloudflare-production-hardening-contract.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   workflow_dispatch:
@@ -49,6 +51,9 @@ jobs:
 
       - name: Verify deployment ownership boundary
         run: node scripts/cloudflare-deployment-contract.test.mjs
+
+      - name: Verify production hardening boundary
+        run: node scripts/cloudflare-production-hardening-contract.test.mjs
 
       - name: Dry-run composed hermes-lead-email Worker
         run: npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-pr-dry-run
