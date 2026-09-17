@@ -75,3 +75,11 @@ Historical Cold Flare indexing tail reconciled against current production:
 Current 404 examples are `/academy/`, `/cdn-cgi/l/email-protection`, `/api/auth/forgot-password`, `/month`, `/месяц`, `/dashboard/`, plus one malformed replacement-character path. Only `/academy/` has a proven current public successor. The remaining samples are private/API/malformed/obsolete crawl artifacts and are not candidates for new indexable pages without separate product evidence.
 
 Do not measure success by forcing `227` toward zero. Success is: intended public canonical owners are crawlable/indexable and internally connected; intended private/variant/legacy URLs remain excluded; stale public owners redirect to the current canonical destination; GSC indexed coverage increases as the new 260-owner sitemap is processed.
+
+### Current technical closure receipts
+
+- Production sweep: **260/260 HTML sitemap owners** return `200`, stay on the requested canonical URL, expose the matching self-canonical, and do not carry `noindex`.
+- Built-site link graph: **0 orphan sitemap owners**. The nine Catalog state/city/profile owners visible in the current GSC `Discovered` sample are linked through the Catalog hub and state/city hierarchy; no Catalog implementation change is justified from the indexing queue alone.
+- Sitemap discovery: `robots.txt` points to `sitemapindex.xml`; the production sitemap index references **11/11 controlled children**, and every child returns `200` with XML content.
+- Parent/child sitemap freshness drift was found on SEO-owned static children and corrected: `sitemap.xml` index lastmod → `2026-09-16`, `sitemap-services.xml` → `2026-09-15`, `sitemap-academy.xml` → `2026-09-16`. The regression contract now asserts that an SEO-owned parent sitemap-index date cannot lag the newest dated URL inside its child sitemap.
+- `sitemap-business-directory.xml` also has a one-day parent/child timestamp drift (`2026-09-09` parent vs `2026-09-10` newest child). It remains a bounded Catalog-owner handoff because Catalog implementation is write-locked to its active owner lane; this SEO fix does not cross that ownership boundary.
