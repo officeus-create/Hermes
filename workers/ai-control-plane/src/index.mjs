@@ -1,14 +1,14 @@
 const TASK_ROUTES = Object.freeze({
-  telegram_classification: { tier: "economy", cacheable: false },
-  translation: { tier: "economy", cacheable: false },
-  carrier_field_extraction: { tier: "economy", cacheable: false },
-  call_summary: { tier: "economy", cacheable: false },
-  negotiation_analysis: { tier: "reasoning", cacheable: false },
-  sales_coach: { tier: "reasoning", cacheable: false },
-  academy_tutor: { tier: "conversational", cacheable: false },
-  seo_geo_analysis: { tier: "reasoning", cacheable: true },
-  ai_entity_analysis: { tier: "reasoning", cacheable: true },
-  hermes_connect_assistant: { tier: "conversational", cacheable: false },
+  telegram_classification: { tier: "economy", cacheable: false, loggable: false },
+  translation: { tier: "economy", cacheable: false, loggable: false },
+  carrier_field_extraction: { tier: "economy", cacheable: false, loggable: false },
+  call_summary: { tier: "economy", cacheable: false, loggable: false },
+  negotiation_analysis: { tier: "reasoning", cacheable: false, loggable: false },
+  sales_coach: { tier: "reasoning", cacheable: false, loggable: false },
+  academy_tutor: { tier: "conversational", cacheable: false, loggable: false },
+  seo_geo_analysis: { tier: "reasoning", cacheable: true, loggable: true },
+  ai_entity_analysis: { tier: "reasoning", cacheable: true, loggable: true },
+  hermes_connect_assistant: { tier: "conversational", cacheable: false, loggable: false },
 });
 
 const MAX_PROMPT_LENGTH = 16000;
@@ -48,14 +48,14 @@ function routeModel(env, tier) {
   return "";
 }
 
-async function runModel(env, model, messages, gateway, metadata, cacheOptions) {
+async function runModel(env, model, messages, gateway, metadata, cacheOptions, collectLog) {
   return env.AI.run(
     model,
     { messages },
     {
       gateway: {
         id: gateway,
-        collectLog: true,
+        collectLog,
         metadata,
         ...cacheOptions,
       },
@@ -99,6 +99,7 @@ export default {
     if (!primaryModel) return json(503, { success: false, error: `model_not_configured:${route.tier}` });
 
     const publicSafe = body?.public_safe === true;
+    const collectLog = route.loggable === true && publicSafe;
     const canCache = route.cacheable && publicSafe;
     const cacheOptions = canCache ? { skipCache: false, cacheTtl: 300 } : { skipCache: true };
     const messages = [
@@ -115,7 +116,7 @@ export default {
     let modelUsed = primaryModel;
     let fallbackUsed = false;
     try {
-      response = await runModel(env, primaryModel, messages, gateway, metadata, cacheOptions);
+      response = await runModel(env, primaryModel, messages, gateway, metadata, cacheOptions, collectLog);
     } catch (primaryError) {
       if (!fallbackModel || fallbackModel === primaryModel) {
         return json(502, { success: false, error: "primary_model_failed" });
@@ -128,6 +129,7 @@ export default {
           gateway,
           { ...metadata, fallback: "true" },
           { skipCache: true },
+          collectLog,
         );
         modelUsed = fallbackModel;
         fallbackUsed = true;
@@ -142,7 +144,7 @@ export default {
       tier: route.tier,
       model: modelUsed,
       fallback_used: fallbackUsed,
-      gateway_log_id: env.AI.aiGatewayLogId || null,
+      gateway_log_id: collectLog ? env.AI.aiGatewayLogId || null : null,
       result: response,
     });
   },

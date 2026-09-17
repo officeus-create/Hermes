@@ -80,7 +80,9 @@ Every successful request returns the authorized caller:
 - AI Gateway log ID
 - model result
 
-AI Gateway is expected to provide request, token, latency, error, and cost observability. Application code should attach only non-PII metadata such as task type and tier.
+AI Gateway is expected to provide request, token, latency, error, and cost observability for public-safe/synthetic pilot traffic. Application code should attach only non-PII metadata such as task type and tier.
+
+Privacy rule: AI Gateway stores request/response payloads by default when logs are collected. The Workers AI binding does not currently expose the separate `cf-aig-collect-log-payload: false` control. Therefore this pilot sets `collectLog=false` for every private/high-risk route. Logging requires BOTH an allowlisted public-analysis route (`seo_geo_analysis` or `ai_entity_analysis`) AND `public_safe=true`; a caller flag cannot make Telegram, calls, coaching, carrier, learner or customer workflow prompts loggable. Those private prompts are not persisted to Gateway logs. Metadata-only observability for private workloads is a later gate that requires a supported no-payload logging path; do not weaken this rule to obtain dashboards.
 
 ## Security
 

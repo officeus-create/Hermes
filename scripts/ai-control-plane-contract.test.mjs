@@ -22,8 +22,12 @@ for (const taskType of [
 assert.ok(worker.includes("HERMES_AI_CONTROL_TOKEN"), "Worker must require a private control token");
 assert.ok(worker.includes("AI_GATEWAY_ID"), "Worker must require an explicit AI Gateway ID");
 assert.ok(worker.includes("env.AI.run"), "Worker must use the Workers AI binding through AI Gateway");
-assert.ok(worker.includes("collectLog: true"), "Gateway logging must remain enabled");
-assert.ok(worker.includes("gateway_log_id"), "Responses must expose the gateway log id to authorized callers");
+assert.ok(worker.includes("const collectLog = route.loggable === true && publicSafe"), "Gateway payload logging must require both an allowlisted route and an explicit public-safe signal");
+assert.ok(worker.includes('telegram_classification: { tier: "economy", cacheable: false, loggable: false }'), "Telegram content must never become loggable by caller flag alone");
+assert.ok(worker.includes('ai_entity_analysis: { tier: "reasoning", cacheable: true, loggable: true }'), "Public-safe entity analysis may opt into observability");
+assert.ok(worker.includes("collectLog,"), "Gateway log collection must be controlled per request");
+assert.ok(!worker.includes("collectLog: true"), "Private prompts must never be unconditionally persisted in AI Gateway logs");
+assert.ok(worker.includes("gateway_log_id: collectLog ?"), "Responses must expose a gateway log id only when logging was explicitly allowed");
 assert.ok(worker.includes("public_safe"), "Caching must be gated by an explicit public-safe signal");
 assert.ok(worker.includes("skipCache: true"), "Private/sensitive tasks must bypass AI Gateway cache by default");
 assert.ok(worker.includes("AI_MODEL_FALLBACK"), "A bounded fallback model must be configurable");
