@@ -20,9 +20,13 @@ assert.equal(baseline.policy.active_root_wrangler_config_committed, false);
 assert.equal(baseline.policy.preview_must_not_gain_production_d1, true);
 assert.equal(baseline.policy.preview_must_not_gain_lead_email_service, true);
 assert.equal(baseline.policy.secret_values_must_not_be_versioned, true);
-assert.equal(example.compatibility_date, baseline.production.target_compatibility_date);
+assert.equal(example.compatibility_date, baseline.preview.target_compatibility_date);
 assert.equal(example.name, baseline.project);
 assert.equal(example.pages_build_output_dir, "dist");
+assert.deepEqual(example.vars, baseline.preview.text_vars, "The public root example must model fail-closed Preview vars, not Production delivery mode.");
+assert.deepEqual((example.kv_namespaces ?? []).map((entry) => entry.binding), Object.keys(baseline.preview.bindings.kv));
+assert.equal("d1_databases" in example, false, "The public root example must not bind Production D1 into generic Preview.");
+assert.equal("services" in example, false, "The public root example must not bind LEAD_EMAIL_SERVICE into generic Preview.");
 
 for (const environment of [baseline.production, baseline.preview]) {
   for (const secretName of environment.secret_names) {

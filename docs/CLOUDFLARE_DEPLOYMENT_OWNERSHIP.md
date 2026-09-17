@@ -121,7 +121,7 @@ Authenticated Production settings currently show:
 - private email Worker compatibility date: `2026-08-04`;
 - Pages binding controls report that bindings are being managed through Wrangler configuration.
 
-Current repository truth now includes `config/cloudflare-pages-runtime-baseline.json`, added through #1353. It records the authenticated Production/Preview runtime **shape** (variable names, secret-name presence, binding roles and compatibility-date intent) without storing secret values. `scripts/cloudflare-pages-runtime-baseline-contract.test.mjs` enforces Preview isolation and production binding ownership in CI.
+Current repository truth now includes `config/cloudflare-pages-runtime-baseline.json`, added through #1353. It records the authenticated Production/Preview runtime **shape** (variable names, secret-name presence, binding roles and compatibility-date intent) without storing secret values. `scripts/cloudflare-pages-runtime-baseline.test.mjs` enforces Preview isolation and production binding ownership in the main `npm test` chain.
 
 This baseline is evidence and an anti-regression contract, not an active Pages deploy configuration. The root still intentionally has no committed active `wrangler.jsonc` / `wrangler.toml`, so this must **not** be treated as a one-click compatibility-date change.
 

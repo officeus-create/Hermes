@@ -7,7 +7,9 @@
     "state_class": "current_governance_release_reconciliation_snapshot",
     "historical_handoff_is_not_current_state": true,
     "refresh_reason": "Main advanced through London conversion evidence, Connect verifier reconciliation, Cloudflare release wiring, owner registration operations, and Repair Shop auth source-truth convergence; open lanes and external blockers were re-read on exact current main.",
-    "refresh_policy": "Re-fetch current main and every moving specialist PR before any material decision. PR head values in this snapshot are observations at review time, not durable current-state assertions."
+    "refresh_policy": "Re-fetch current main and every moving specialist PR before any material decision. PR head values in this snapshot are observations at review time, not durable current-state assertions.",
+    "cloudflare_refresh_at": "2026-09-17",
+    "cloudflare_refresh_source": "GitHub #1349 + authenticated Wrangler Pages readback; generic Pages release token is not the current production blocker."
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
@@ -121,10 +123,10 @@
       "runtime_changed": false
     },
     "cloudflare_release_wiring_pr_1063": {
-      "state": "MERGED_CODE_VERIFIED_DEPLOY_STILL_BLOCKED",
+      "state": "MERGED_CODE_VERIFIED_PAGES_RELEASE_WORKING",
       "merge_sha": "6cf41ffd23c6cd977e7a3ec52547fc775788d44f",
       "resolved_blocker": "CLOUDFLARE_ACCOUNT_ID_DERIVED_FROM_CANONICAL_WRANGLER_CONFIG",
-      "remaining_blocker": "CLOUDFLARE_API_TOKEN_MISSING_FROM_AUTHORIZED_PRODUCTION_OR_REPOSITORY_SECRET_SCOPE"
+      "remaining_blocker": "NONE_FOR_PAGES_RELEASE__SEPARATE_SCOPED_PROOF_ACCESS_ONLY_FOR_961"
     },
     "owner_registration_ops_pr_1062": {
       "state": "MERGED_CODE_SIDE_NOT_LIVE_VERIFIED",
@@ -145,8 +147,8 @@
     }
   },
   "platform_and_owner_gates": {
-    "cloudflare_production_parity_961": "BLOCKED_ONLY_SCOPED_CLOUDFLARE_API_TOKEN_THEN_BUILD_DEPLOY_AND_PUBLIC_READBACK",
-    "password_reset_email_611": "BLOCKED_SCOPED_CLOUDFLARE_DEPLOY_TOKEN_PLUS_REAL_EMAIL_RESET_ONCE_SESSION_INVALIDATION_AND_CLEANUP_PROOF",
+    "cloudflare_production_parity_961": "OPEN_ONLY_BOUNDED_REPAIR_SHOP_ACCESS_PRODUCTION_D1_OPERATOR_PROOF_WITH_DEDICATED_PAGES_READ_PLUS_D1_PROOF_ACCESS",
+    "password_reset_email_611": "BLOCKED_ARBITRARY_RECIPIENT_OUTBOUND_TRANSACTIONAL_EMAIL_CAPABILITY_NOT_WORKER_DEPLOYMENT",
     "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION_NO_PROTECTION_NO_RULESETS",
     "drive_acl_431": "FIX_REQUIRED_LEGACY_AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_OWNER_PRESERVED",
     "telegram_historical_credential_932": "BLOCKED_PROVIDER_SIDE_ROTATION_OR_REVOCATION_NOT_PROVEN",
@@ -224,7 +226,7 @@
     "product_files_modified": false
   },
   "execution_priorities": [
-    "Unblock #961 only through a privately configured least-privilege CLOUDFLARE_API_TOKEN; do not create a second deployment stack.",
+    "Close #961 only through bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
     "After a successful exact-main deploy, require production readback before calling current code live.",
     "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
     "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",
