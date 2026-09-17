@@ -1,0 +1,275 @@
+---
+import { ArrowLeft, ArrowRight, ClipboardList, Route, ShieldCheck, Truck, Users } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Car Hauler Jobs & Owner-Operator Paths | Hermes Logistics";
+const description =
+  "Compare car hauler jobs, owner-operator work, lease-on or contracted carrier paths, and running under your own authority. See what changes in control, equipment, paperwork, dispatch, and next steps.";
+const canonicalUrl = new URL("/logistics/resources/car-hauler-jobs-owner-operator-guide/", Astro.site).toString();
+const carrierIntake = "/logistics/start-car-hauling-dispatch/";
+const measurementServiceGroup = "carrier_lifecycle_guide";
+
+const paths = [
+  {
+    title: "Employee or company-driver job",
+    body: "You work for an employer or motor carrier under that company's equipment, operating rules, pay structure, schedule, and employment terms. Current Hermes employee openings, when available, belong on the careers pages—not in the carrier intake.",
+    action: "Review Hermes logistics careers",
+    href: "/logistics/careers/",
+  },
+  {
+    title: "Owner-operator working with another carrier",
+    body: "The truck, trailer, insurance, authority relationship, dispatch rules, settlement structure, and operating control depend on the specific carrier agreement. Do not treat a general car-hauling search result as proof that a lease-on or contracted opportunity is currently available.",
+    action: "Review the owner-operator path",
+    href: "/paths/logistics/carriers/owner-operators/",
+  },
+  {
+    title: "Independent carrier under your own authority",
+    body: "You operate the motor-carrier business and need an operating system for authority, insurance, equipment, customer and broker setup, load-source access, route economics, documents, billing, and carrier-controlled load approval.",
+    action: "Review new-authority support",
+    href: "/logistics/new-authority-car-hauler-support/",
+  },
+  {
+    title: "Established owner-operator or small fleet seeking support",
+    body: "If the business is already operating, Hermes can review dispatch and back-office fit around equipment, capacity, home area, preferred markets, authority readiness, current workflow, and the carrier's final approval rules.",
+    action: "Open carrier intake",
+    href: carrierIntake,
+  },
+];
+
+const comparison = [
+  {
+    label: "Who controls the motor-carrier business?",
+    employee: "The employer or motor carrier controls the business and operating framework.",
+    ownerOperator: "The answer depends on whether you are leased or contracted to another carrier or operating under your own authority.",
+  },
+  {
+    label: "Who provides the truck and trailer?",
+    employee: "Company-driver roles often use employer-provided equipment, but every posting is different.",
+    ownerOperator: "Owner-operators commonly bring some or all equipment and must verify the exact agreement and insurance structure.",
+  },
+  {
+    label: "What does compensation mean?",
+    employee: "Wages, salary, mileage, percentage, bonus, or another employer-defined pay method may apply.",
+    ownerOperator: "Gross carrier revenue, settlement, operating cost, debt service, fuel, insurance, maintenance, taxes, deadhead, and other costs determine business economics. Gross is not salary.",
+  },
+  {
+    label: "Who manages load search and paperwork?",
+    employee: "The carrier may provide dispatch and back-office systems as part of the job.",
+    ownerOperator: "The owner may self-dispatch, use an approved dispatch service, or use a hybrid workflow while retaining the required carrier control.",
+  },
+];
+
+const checks = [
+  "Are you looking for employment, or are you already operating a carrier business?",
+  "Do you own or finance the truck and trailer, and what equipment class and capacity do you actually operate?",
+  "Do you operate under your own MC/USDOT authority, under another carrier's authority, or are you still deciding?",
+  "What insurance, documentation, safety, and broker or customer requirements apply to your exact operation?",
+  "Who will handle load search, route economics, broker calls, setup packets, documents, invoicing, and payment follow-up?",
+  "How will you measure loaded miles, deadhead, gross revenue, operating cost, reserves, and estimated net before tax?",
+];
+
+const faq = [
+  {
+    question: "Is this page a list of current car hauler job openings?",
+    answer: "No. This guide explains the main paths people usually mean when they search for car hauler jobs or owner-operator work. Current Hermes employee openings, when available, are published on the careers pages. The carrier intake is a business-to-business review and is not an employment application.",
+  },
+  {
+    question: "Can an owner-operator apply to work with Hermes?",
+    answer: "An operating carrier can submit the carrier intake for a fit review covering authority, insurance, equipment, capacity, operating area, availability, dispatch workflow, and support scope. Submission does not guarantee acceptance, loads, rates, mileage, utilization, profit, or revenue.",
+  },
+  {
+    question: "Do I need a CDL to haul cars?",
+    answer: "CDL and other licensing or operating requirements depend on the specific vehicle combination, weight ratings, operation, jurisdiction, and other facts. Verify the requirements that apply to your operation with current official federal and state sources before operating.",
+  },
+  {
+    question: "Is owner-operator gross revenue the same as salary?",
+    answer: "No. Employee compensation and carrier-business gross revenue are different concepts. A carrier must account for fuel, insurance, truck and trailer costs, maintenance, deadhead, permits, taxes, dispatch or other service fees, reserves, and additional operating costs before estimating business net income.",
+  },
+  {
+    question: "Should I self-dispatch or use dispatch support?",
+    answer: "It depends on your time, source access, route knowledge, broker communication, paperwork discipline, equipment, authority readiness, and desired control. The motor carrier should keep final responsibility for the truck, driver, safety, compliance, and load approval.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Car Hauler Jobs vs Owner-Operator Carrier Work: Which Path Fits?",
+    description,
+    datePublished: "2026-09-15",
+    dateModified: "2026-09-15",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Carrier Knowledge Hub", item: "https://hermeslogisticsus.com/logistics/resources/" },
+      { "@type": "ListItem", position: 4, name: "Car Hauler Jobs and Owner-Operator Paths", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/resources/">Carrier Knowledge Hub</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Car hauler jobs and owner-operator paths</span>
+            </nav>
+            <a class="detail-back" href="/logistics/resources/"><ArrowLeft size={18} aria-hidden="true" />Carrier Knowledge Hub</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Career-to-Carrier Decision</p>
+                <h1>Car Hauler Jobs vs Owner-Operator Carrier Work: Which Path Fits?</h1>
+                <p>
+                  A search for “car hauler jobs” can mean very different things: an employee driving role, owner-operator work with another carrier,
+                  operating under your own authority, or an established carrier looking for dispatch and back-office support. Start by identifying the path before comparing pay, equipment, loads, or services.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier fit review <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href="/logistics/careers/">Looking for employment?</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Job, contract, and carrier business are not the same thing.</h2>
+                <p>Separate employee compensation from carrier gross revenue, and verify the actual authority, equipment, insurance, agreement, and operating responsibilities before choosing a path.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro" aria-labelledby="intent-router-title">
+          <div class="shell resource-lead">
+            <Users size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Intent router</p>
+              <h2 id="intent-router-title">First answer one question: are you seeking a job or building a carrier business?</h2>
+              <p>That answer changes which pages, agreements, economics, paperwork, and operating tools are relevant. It also prevents a common mistake: comparing an employee salary with an owner-operator's gross business revenue.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="paths-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Four common paths</p><h2 id="paths-title">Choose the operating model before choosing the next load.</h2></div>
+              <p>This page is general operational information, not legal, employment, tax, insurance, safety, regulatory, or financial advice.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {paths.map((path, index) => (
+                <article>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Truck size={23} aria-hidden="true" />
+                  <h3>{path.title}</h3>
+                  <p>{path.body}</p>
+                  <a
+                    href={path.href}
+                    data-commercial-primary-cta={path.href === carrierIntake ? "" : undefined}
+                    data-service-group={path.href === carrierIntake ? measurementServiceGroup : undefined}
+                  >{path.action} <ArrowRight size={16} aria-hidden="true" /></a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="comp-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Job vs owner-operator economics</p>
+              <h2 id="comp-title">Do not compare salary with carrier gross revenue.</h2>
+              <p>Search results often mix employee jobs, independent-contractor offers, leased owner-operator arrangements, and carriers operating under their own authority. Those models have different costs and responsibilities.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {comparison.map((row, index) => (
+                <article>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Route size={23} aria-hidden="true" />
+                  <h3>{row.label}</h3>
+                  <p><strong>Employee/job:</strong> {row.employee}</p>
+                  <p><strong>Owner-operator/carrier:</strong> {row.ownerOperator}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="checks-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Before you apply or onboard</p>
+              <h2 id="checks-title">Six questions that clarify the real next step.</h2>
+              <p>Write down the answers before comparing a job posting, carrier agreement, dispatch service, or load board.</p>
+            </div>
+            <dl>
+              {checks.map((item, index) => <div><dt>{index + 1}. Check</dt><dd>{item}</dd></div>)}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="next-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Continue from the right stage</p><h2 id="next-title">Use the next Hermes resource that matches your operating status.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/owner-operator-dispatch-support/"><Truck size={22} aria-hidden="true" /><h3>Owner-operator dispatch support</h3><p>Review load search, broker communication, documents, invoicing, and carrier-controlled approval.</p><strong>Review support <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"><ClipboardList size={22} aria-hidden="true" /><h3>New-authority readiness</h3><p>Review authority, insurance, equipment, operating area, broker setup, and first-load boundaries.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/rpm-calculator/"><Route size={22} aria-hidden="true" /><h3>RPM & profitability calculator</h3><p>Separate loaded miles, deadhead, fuel, operating assumptions, reserves, and estimated trip economics.</p><strong>Open calculator <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/load-board/?role=carrier&equipment=car_hauler#available-loads"><Truck size={22} aria-hidden="true" /><h3>Car Hauling Load Board</h3><p>Review the public carrier workflow and available load-board state without treating the page as a freight guarantee.</p><strong>Open Load Board <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="faq-title">Questions behind “car hauler jobs” searches.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="carrier-review">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Already operating a carrier business?</p>
+              <h2>Move from a generic job search to an operating-profile review.</h2>
+              <p>Share authority status, equipment, capacity, home area, preferred markets, availability, current dispatch workflow, and contact information. The review does not guarantee acceptance, freight, rates, miles, utilization, profit, or revenue.</p>
+            </div>
+            <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

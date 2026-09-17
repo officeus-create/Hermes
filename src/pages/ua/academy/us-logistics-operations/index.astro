@@ -1,12 +1,9 @@
 ---
 import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
 import { academyUkraineLogistics, academyUkraineUi } from "../../../../data/academy-ukraine";
+import { academyLogisticsAlternates } from "../../../../data/localized-direction-owners";
 
-const alternates = [
-  { lang: "en", href: "/academy/us-logistics-operations/" },
-  { lang: "uk", href: "/ua/academy/us-logistics-operations/" },
-  { lang: "x-default", href: "/academy/us-logistics-operations/" },
-];
+const alternates = academyLogisticsAlternates;
 
 const content = {
   ...academyUkraineLogistics,
@@ -60,5 +57,5 @@ const content = {
   locale="uk"
   alternates={alternates}
   ui={academyUkraineUi}
-  academyHubHref="/ua/#academy"
+  academyHubHref="/ua/academy/"
 />

@@ -2,6 +2,7 @@
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
+import { academyLogisticsOwnerRoutes, directionForOwnerPath, directionOwnerRoutes, isAcademyLogisticsOwnerPath, type DirectionId } from "../data/localized-direction-owners";
 import "../styles/hermes-connect-safe-polish.css";
 import "../styles/hermes-repair-public-shell.css";
 import BeautyOwnerWorkspaceControls from "./BeautyOwnerWorkspaceControls.astro";
@@ -55,7 +56,6 @@ const requestedLocale = Astro.url.searchParams.get("lang");
 const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
   ? requestedLocale as SiteLocale
   : locale;
-const localeBase = localeConfig[activeLocale].path;
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
@@ -77,12 +77,18 @@ const navigation = activeLocale === "en"
       const label = item.href === "paths/technology/" ? "IT" : item.label;
       return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
-  : orderedPaths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
+  : orderedPaths.map((path) => ({
+      label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk],
+      url: directionOwnerRoutes[activeLocale][path.id as keyof typeof directionOwnerRoutes.en],
+      active: currentPath === directionOwnerRoutes[activeLocale][path.id as keyof typeof directionOwnerRoutes.en],
+    }));
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
-const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
-const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
+const section = (["logistics", "marketing", "technology", "academy"] as DirectionId[]).find((slug) => currentPath.includes(`/paths/${slug}`));
+const localizedOwnerDirection = directionForOwnerPath(currentPath);
+const languageDirection = section ?? localizedOwnerDirection;
+const academyLogisticsOwner = isAcademyLogisticsOwnerPath(currentPath);
 const languageLinks = siteLocales.map((language) => {
   if (isHermesConnectRoute) {
     const params = new URLSearchParams(Astro.url.searchParams);
@@ -96,16 +102,32 @@ const languageLinks = siteLocales.map((language) => {
     };
   }
 
+  if (academyLogisticsOwner) {
+    return {
+      locale: language,
+      name: localeConfig[language].name,
+      href: academyLogisticsOwnerRoutes[language],
+    };
+  }
+
+  if (languageDirection) {
+    return {
+      locale: language,
+      name: localeConfig[language].name,
+      href: directionOwnerRoutes[language][languageDirection],
+    };
+  }
+
   return {
     locale: language,
     name: localeConfig[language].name,
-    href: `${localeConfig[language].path}${locale === "en" && language !== "en" ? localizedHash : ""}`,
+    href: localeConfig[language].path,
   };
 });
 ---
 
 <header class={`site-header site-header-${theme}`} data-header>
-  <a class="wordmark" href="/#top" aria-label="Hermes home">
+  <a class="wordmark" href={activeLocale === "en" ? "/#top" : `${localeConfig[activeLocale].path}#top`} aria-label="Hermes home">
     <span class="wordmark-mark">H</span>
     <span>{site.brand}</span>
   </a>

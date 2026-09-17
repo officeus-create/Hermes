@@ -1,5 +1,6 @@
 ---
 import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
+import { getDirectionAlternates } from "../../../data/localized-direction-owners";
 
 const content = {
   id: "marketing" as const,
@@ -69,11 +70,7 @@ const content = {
   ctaTitle: "Descrivi il risultato che vuoi ottenere, non il pacchetto che pensi di dover comprare.",
   ctaBody: "Indica azienda, città, sito attuale, obiettivo, canali già utilizzati e cosa oggi blocca la crescita. Da lì possiamo definire il primo ciclo di lavoro utile.",
   emailSubject: "Hermes Italia · Marketing / SEO / GEO",
-  alternates: [
-    { lang: "en", href: "/paths/marketing/" },
-    { lang: "it", href: "/it/marketing/" },
-    { lang: "x-default", href: "/paths/marketing/" },
-  ],
+  alternates: getDirectionAlternates("marketing"),
 };
 ---
 

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hermes-ai-control-plane",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-09-17",
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "AI_GATEWAY_ID": "hermes-ai-control-plane",
+    "AI_MODEL_ECONOMY": "@cf/zai-org/glm-4.7-flash",
+    "AI_MODEL_REASONING": "@cf/google/gemma-4-26b-a4b-it",
+    "AI_MODEL_CONVERSATIONAL": "@cf/zai-org/glm-4.7-flash",
+    "AI_MODEL_FALLBACK": "@cf/google/gemma-4-26b-a4b-it"
+  }
+}
+
+// Do not commit HERMES_AI_CONTROL_TOKEN.
+// Configure it only as a Cloudflare Worker secret before a controlled canary:
+//   wrangler secret put HERMES_AI_CONTROL_TOKEN
+// Default candidates deliberately avoid models explicitly marked as paid-only.
+// Model IDs are deployment defaults, not permanent product truth. Recheck the live
+// Cloudflare catalog, Free/Paid eligibility, quota and pricing before activation.

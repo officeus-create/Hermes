@@ -1,0 +1,74 @@
+{
+  "version": "2026-09-17",
+  "status": "OWNER_EVIDENCE_BASELINE",
+  "workflow": ["DISCOVER", "VERIFY", "CORRECT", "MEASURE"],
+  "canonical_entity": {
+    "legal_name": "Hermes Logistics LLC",
+    "canonical_site": "https://hermeslogisticsus.com/",
+    "company_information": "https://hermeslogisticsus.com/company-information/",
+    "about": "https://hermeslogisticsus.com/about/",
+    "entity_role": "U.S. logistics business identified on hermeslogisticsus.com for logistics-related services and communications",
+    "boundary": "Marketing, academy, and technology directions shown on the same website do not automatically mean every service is contracted through Hermes Logistics LLC.",
+    "disambiguation": "Do not infer that unrelated businesses, directory records, carriers, brokers, websites, or legal entities using Hermes or Hermes Logistics are the same organization."
+  },
+  "interfaces": [
+    "google_ai_overview",
+    "google_ai_mode",
+    "chatgpt",
+    "gemini",
+    "copilot",
+    "perplexity"
+  ],
+  "observations": [
+    {
+      "id": "ENTITY-OBS-2026-09-16-001",
+      "interface": "google_ai_overview",
+      "query": "гермес лоджистикс ллс",
+      "language": "ru",
+      "observed_at": "2026-09-16",
+      "evidence_reference": "Owner-provided Google Search screenshot; screenshot remains outside the public repository.",
+      "brand_recognized": true,
+      "own_domain_present": true,
+      "own_domain": "hermeslogisticsus.com",
+      "third_party_sources_visible": ["staff.am"],
+      "entity_accuracy": "partially_accurate",
+      "description_accuracy": "partially_accurate",
+      "issue_codes": [
+        "STALE_THIRD_PARTY_RECRUITMENT_CONTEXT",
+        "ENTITY_AMBIGUITY_WITH_SIMILAR_UKRAINE_NAMES"
+      ],
+      "summary": "Google identifies Hermes Logistics LLC as a U.S. logistics company and links the official site, but the visible AI summary is materially influenced by a Staff.am recruitment profile and the result page also surfaces similarly named Ukraine legal entities.",
+      "corrective_actions": [
+        "Correct or reconcile claimable Staff.am company-profile wording using authenticated owner access and current approved company facts.",
+        "Keep /company-information/ and /about/ as canonical identity owners and strengthen consistent external-profile facts rather than creating duplicate identity pages.",
+        "Track AI Overview and AI Mode separately so a search-summary citation is not collapsed into a generic AI-visibility score."
+      ]
+    }
+  ],
+  "external_source_actions": [
+    {
+      "source": "staff.am",
+      "scope": "Hermes Logistics LLC company profile",
+      "status": "CORRECT_OWNED_PROFILE",
+      "action_gate": "Authenticated owner access required",
+      "rule": "Correct unsupported or stale company wording only; do not treat the profile as earned editorial authority."
+    }
+  ],
+  "kpis": [
+    "brand_query_entity_accuracy",
+    "own_domain_presence_rate",
+    "own_domain_citation_rate",
+    "third_party_stale_source_count",
+    "entity_conflict_count",
+    "service_understanding_accuracy",
+    "geography_accuracy",
+    "language_consistency",
+    "google_generative_ai_impressions"
+  ],
+  "measurement_notes": [
+    "One owner screenshot is evidence for one observation, not proof of a stable ranking or universal AI behavior.",
+    "Unknown remains UNKNOWN; do not convert missing observations into zero.",
+    "Google AI Overview and Google AI Mode are distinct measurement surfaces.",
+    "No private prompts, account identifiers, cookies, tokens, emails, phone numbers, or full conversations belong in this registry."
+  ]
+}

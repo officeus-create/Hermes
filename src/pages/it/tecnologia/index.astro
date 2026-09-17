@@ -1,5 +1,6 @@
 ---
 import ItalianCommercialPage from "../../../components/ItalianCommercialPage.astro";
+import { getDirectionAlternates } from "../../../data/localized-direction-owners";
 
 const content = {
   id: "technology" as const,
@@ -69,11 +70,7 @@ const content = {
   ctaTitle: "Partiamo dal processo che oggi costa più tempo, errori o opportunità perse.",
   ctaBody: "Descrivi chi usa il sistema, quali strumenti avete già, cosa viene fatto manualmente e quale risultato dovrebbe essere visibile in 30–90 giorni. Costruiremo lo scope a partire da lì.",
   emailSubject: "Hermes Italia · Technology / CRM / AI Automation",
-  alternates: [
-    { lang: "en", href: "/paths/technology/" },
-    { lang: "it", href: "/it/tecnologia/" },
-    { lang: "x-default", href: "/paths/technology/" },
-  ],
+  alternates: getDirectionAlternates("technology"),
 };
 ---
 

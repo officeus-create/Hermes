@@ -313,10 +313,11 @@ test("IT case presents verified delivery evidence and a working inquiry route", 
 
 test("direction navigation identifies the current business", async ({ page }) => {
   await page.goto("/paths/marketing/");
-  await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
+  await expect(page.locator('.desktop-nav > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
+  await expect(page.locator('#mobile-menu > a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(1);
 });
 
-test("language menu opens all localized overview pages", async ({ page, isMobile }) => {
+test("language menu preserves technology intent across localized destinations", async ({ page, isMobile }) => {
   await page.goto("/paths/technology/");
   const languageMenu = isMobile ? page.locator(".mobile-language-switcher") : page.locator("[data-language-menu]");
   if (isMobile) {
@@ -333,8 +334,8 @@ test("language menu opens all localized overview pages", async ({ page, isMobile
     "Italiano",
     "Русский",
   ]);
-  for (const path of ["es", "fr", "ua", "it", "ru"]) {
-    await expect(languageMenu.locator(`a[href="/${path}/#technology"]`)).toHaveCount(1);
+  for (const href of ["/es/tecnologia/", "/fr/technologie/", "/ua/technology/", "/ru/technology/", "/it/tecnologia/"]) {
+    await expect(languageMenu.locator(`a[href="${href}"]`)).toHaveCount(1);
   }
 
   await page.goto("/ua/");
@@ -653,6 +654,8 @@ test("public logistics contacts use the approved department routing", async ({ p
   await expect(contacts.getByText("Logistics Sales Department", { exact: true })).toBeVisible();
   await expect(contacts.getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(contacts.getByText("Email-only international coordination", { exact: true })).toBeVisible();
+  await expect(page.locator(".contacts-hero")).toContainText("You can also send a structured request below; Hermes routes it to the direction you select.");
+  await expect(page.locator(".contacts-hero")).not.toContainText("The structured form below remains a safe preview.");
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
   expect(telephoneTargets).toEqual(["tel:+12623023626"]);

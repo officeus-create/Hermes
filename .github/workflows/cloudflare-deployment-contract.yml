@@ -7,8 +7,14 @@ on:
       - wrangler.toml
       - wrangler.jsonc.example
       - wrangler.toml.example
+      - config/cloudflare-pages-runtime-baseline.json
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
+      - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/cloudflare-pages-runtime-baseline.test.mjs
+      - scripts/check-connect-subdomain.mjs
+      - scripts/connect-subdomain-verifier.mjs
+      - scripts/connect-subdomain-verifier.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   push:
@@ -19,8 +25,14 @@ on:
       - wrangler.toml
       - wrangler.jsonc.example
       - wrangler.toml.example
+      - config/cloudflare-pages-runtime-baseline.json
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
+      - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/cloudflare-pages-runtime-baseline.test.mjs
+      - scripts/check-connect-subdomain.mjs
+      - scripts/connect-subdomain-verifier.mjs
+      - scripts/connect-subdomain-verifier.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   workflow_dispatch:
@@ -49,6 +61,15 @@ jobs:
 
       - name: Verify deployment ownership boundary
         run: node scripts/cloudflare-deployment-contract.test.mjs
+
+      - name: Verify production hardening boundary
+        run: node scripts/cloudflare-production-hardening-contract.test.mjs
+
+      - name: Verify Pages runtime baseline
+        run: node scripts/cloudflare-pages-runtime-baseline.test.mjs
+
+      - name: Verify Connect production-readback quorum
+        run: node scripts/connect-subdomain-verifier.test.mjs
 
       - name: Dry-run composed hermes-lead-email Worker
         run: npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-pr-dry-run

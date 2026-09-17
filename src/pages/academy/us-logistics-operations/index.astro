@@ -1,6 +1,7 @@
 ---
 import AcademyPublicPage from "../../../components/AcademyPublicPage.astro";
 import { academySubsitePages } from "../../../data/academy-subsite";
+import { academyLogisticsAlternates } from "../../../data/localized-direction-owners";
 
 const baseContent = academySubsitePages.logistics;
 const content = {
@@ -20,11 +21,7 @@ const content = {
     `${baseContent.boundary} Participation is also subject to applicable sanctions, export-control, payment, and legal-compliance requirements; nationality alone is not an automatic exclusion criterion.`,
 };
 
-const alternates = [
-  { lang: "en", href: "/academy/us-logistics-operations/" },
-  { lang: "uk", href: "/ua/academy/us-logistics-operations/" },
-  { lang: "x-default", href: "/academy/us-logistics-operations/" },
-];
+const alternates = academyLogisticsAlternates;
 ---
 
 <AcademyPublicPage content={content} alternates={alternates} />

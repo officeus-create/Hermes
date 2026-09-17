@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { freezeRepairRegistrationOpen } from "./repair-registration-clock";
 
 const localeCases = [
   ["en", "/services/hermes-connect/repair-shops/"],
@@ -50,6 +51,7 @@ test("Hermes Connect language switching stays on the equivalent product route", 
 });
 
 test("Repair Shop owner registration is localized without creating duplicate auth pages", async ({ page }) => {
+  await freezeRepairRegistrationOpen(page);
   for (const [locale, heading, registerTab, createAccount] of ownerLocaleCases) {
     await page.goto(`/services/hermes-connect/repair-shops/auth/?mode=register&lang=${locale}`);
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
@@ -190,6 +192,7 @@ test("Hermes Connect family navigation remains usable on mobile without horizont
 });
 
 test("multilingual Repair Shop registration remains usable on mobile", async ({ page }) => {
+  await freezeRepairRegistrationOpen(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register&lang=es");
 

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://hermeslogisticsus.com/academy/us-logistics-operations/</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://hermeslogisticsus.com/ua/academy/us-logistics-operations/</loc><lastmod>2026-08-19</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url><loc>https://hermeslogisticsus.com/academy/marketing/</loc><lastmod>2026-08-19</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://hermeslogisticsus.com/ua/academy/marketing/</loc><lastmod>2026-08-19</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://hermeslogisticsus.com/academy/how-training-works/</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -20,4 +18,65 @@
   <url><loc>https://hermeslogisticsus.com/academy/countries/moldova/en/</loc><lastmod>2026-09-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://hermeslogisticsus.com/academy/countries/romania/</loc><lastmod>2026-09-14</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://hermeslogisticsus.com/academy/countries/romania/en/</loc><lastmod>2026-09-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url>
+    <loc>https://hermeslogisticsus.com/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ua/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/ru/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/es/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/it/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
+  <url>
+    <loc>https://hermeslogisticsus.com/fr/academy/us-logistics-operations/</loc><lastmod>2026-09-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="uk" href="https://hermeslogisticsus.com/ua/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://hermeslogisticsus.com/ru/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://hermeslogisticsus.com/es/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://hermeslogisticsus.com/it/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://hermeslogisticsus.com/fr/academy/us-logistics-operations/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hermeslogisticsus.com/academy/us-logistics-operations/" />
+  </url>
 </urlset>

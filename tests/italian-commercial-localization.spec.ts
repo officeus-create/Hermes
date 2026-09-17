@@ -23,6 +23,7 @@ for (const route of localizedRoutes) {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
     await expect(page.locator('link[rel="alternate"][hreflang="it"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
     await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", new RegExp(`${route.englishPath.replaceAll("/", "\\/")}$`));
+    await expect(page.locator(`a[lang="en"][href="${route.englishPath}"]`)).toHaveCount(2);
     const schemaText = await page.locator('script[type="application/ld+json"]').textContent();
     expect(schemaText).toContain('"@type":"Service"');
     expect(schemaText).toContain('"@type":"FAQPage"');
@@ -31,13 +32,14 @@ for (const route of localizedRoutes) {
   test(`${route.englishPath} points back to its Italian owner`, async ({ page }) => {
     await page.goto(route.englishPath);
     await expect(page.locator('link[rel="alternate"][hreflang="it"]')).toHaveAttribute("href", new RegExp(`${route.path.replaceAll("/", "\\/")}$`));
+    await expect(page.locator(`a[lang="it"][href="${route.path}"]`)).toHaveCount(2);
   });
 }
 
 test("Italian overview routes Marketing and Technology into the localized commercial layer", async ({ page }) => {
   await page.goto("/it/");
-  await expect(page.locator('a[href="/it/marketing/"]')).toBeVisible();
-  await expect(page.locator('a[href="/it/tecnologia/"]')).toBeVisible();
+  await expect(page.locator('.localized-direction-marketing .localized-direction-copy a[href="/it/marketing/"]')).toBeVisible();
+  await expect(page.locator('.localized-direction-technology .localized-direction-copy a[href="/it/tecnologia/"]')).toBeVisible();
 });
 
 test("primary sitemap contains the two Italian commercial owners", async ({ request }) => {

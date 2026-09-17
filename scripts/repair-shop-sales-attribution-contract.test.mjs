@@ -3,6 +3,12 @@ import { createHash } from "node:crypto";
 import { onRequestGet as captureReferral } from "../functions/api/repair-shop/referral.ts";
 import { onRequestPost as register } from "../functions/api/auth/register.ts";
 
+// This contract verifies the referral-attribution registration flow, not the
+// time-based commercial launch gate. Keep it inside the documented free pilot
+// window so the test remains deterministic after the real deadline passes.
+const originalDateNow = Date.now;
+Date.now = () => Date.parse("2026-09-14T12:00:00Z");
+
 class AttributionMockDb {
   constructor({ failAttribution = false } = {}) {
     this.specialists = [];
@@ -176,5 +182,7 @@ assert.equal(invalidCapture.status, 302);
 assert.match(invalidCapture.headers.get("Location") || "", /lang=fr/);
 assert.match(invalidCapture.headers.get("Location") || "", /referral=invalid/);
 assert.equal(invalidCapture.headers.get("Set-Cookie"), null);
+
+Date.now = originalDateNow;
 
 console.log("Repair Shop private referral capture, locale preservation, resilient owner signup, and private attribution contract passed.");

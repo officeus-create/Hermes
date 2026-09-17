@@ -21,6 +21,7 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Logistics direction](https://hermeslogisticsus.com/paths/logistics/)
 - [Car-hauling dispatch](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/)
 - [Car-hauler load search by U.S. market](https://hermeslogisticsus.com/logistics/car-hauler-loads/)
+- [Car hauler jobs and owner-operator path guide](https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/)
 - [Owner-operator dispatch support](https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/)
 - [New-authority car-hauler support](https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/)
 - [Load Board](https://hermeslogisticsus.com/load-board/)
@@ -31,7 +32,9 @@ Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferr
 - [Logistics resources](https://hermeslogisticsus.com/logistics/resources/)
 - [RPM calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/)
 
-For a carrier, the public discovery journey is: use the Car Hauler Load Search hub and market pages to understand relevant U.S. search markets; use Car-Hauling Dispatch, Owner-Operator Dispatch Support, or New-Authority Car-Hauler Support to evaluate fit; and use the canonical Load Board page to understand the public Load Board workflow. Qualification, agreements, and onboarding continue through the appropriate site workflow after fit is established; private or noindex workflow URLs are intentionally not listed as public AI-search owners. Audience, equipment, origin, area, and section state may be represented in client-side URL fragments; those fragments do not create separate canonical content owners.
+For a carrier, the public discovery journey is: use the Car Hauler Jobs and Owner-Operator Path Guide to distinguish employment from an operating carrier business; use the Car Hauler Load Search hub and market pages to understand relevant U.S. search markets; use Car-Hauling Dispatch, Owner-Operator Dispatch Support, or New-Authority Car-Hauler Support to evaluate fit; and use the canonical Load Board page to understand the public Load Board workflow. Qualification, agreements, and onboarding continue through the appropriate site workflow after fit is established; private or noindex workflow URLs are intentionally not listed as public AI-search owners. Audience, equipment, origin, area, and section state may be represented in client-side URL fragments; those fragments do not create separate canonical content owners.
+
+The Car Hauler Jobs and Owner-Operator Path Guide is an informational intent router, not a current-job inventory. It separates employee/company-driver searches from owner-operator, own-authority, and operating-carrier paths. Current Hermes employee openings, when available, belong on the careers pages; carrier intake is a business-to-business review and not an employment application.
 
 The Car Hauler Load Search market pages are carrier-acquisition and dispatch-support pages. They do not publish live freight, private shipment history, or office-location claims. A city page identifies a search market and local operating context; actual freight, access, rates, timing, and carrier fit require review.
 

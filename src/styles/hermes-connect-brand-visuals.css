@@ -1,6 +1,7 @@
 /*
  * Hermes Connect brand visual application.
- * Approved Connect family: Hermes Blue #00A8FF · Iris Violet #7C5CFF · Electric Cyan #22D3EE · Deep Navy #0A0F1C.
+ * Connect identity stays Hermes Blue #00A8FF · Iris Violet #7C5CFF · Electric Cyan #22D3EE.
+ * The public Product Hub may use a deep emerald environmental field; operational workspaces keep their own governed surface tokens.
  * This is a visual layer only. It does not alter product truth, auth, data or routing.
  */
 
@@ -11,15 +12,19 @@
   --hc-violet: #7c5cff;
   --hc-cyan: #22d3ee;
   --hc-deep: #0a0f1c;
+  --hc-emerald-deep: #00271f;
+  --hc-emerald-mid: #063f32;
+  --hc-emerald-glow: #18c48f;
 }
 
 /* Make the public Connect hero feel like the approved premium platform, not a generic Pearl page. */
 .hc-brand-page .hc-hero {
   color: #fff !important;
   background:
-    radial-gradient(circle at 78% 14%,rgba(0,168,255,.30),transparent 23rem),
-    radial-gradient(circle at 54% 88%,rgba(124,92,255,.25),transparent 30rem),
-    linear-gradient(128deg,#08101f 0%,#0a0f1c 48%,#11102a 100%) !important;
+    radial-gradient(circle at 78% 14%,rgba(34,211,238,.18),transparent 23rem),
+    radial-gradient(circle at 54% 88%,rgba(124,92,255,.16),transparent 30rem),
+    radial-gradient(circle at 14% 24%,rgba(24,196,143,.14),transparent 22rem),
+    linear-gradient(128deg,var(--hc-emerald-deep) 0%,var(--hc-emerald-mid) 48%,#071815 100%) !important;
 }
 
 .hc-brand-page .hc-hero::before {
@@ -31,7 +36,7 @@
   pointer-events: none;
   opacity: .82;
   background:
-    linear-gradient(105deg,transparent 4%,rgba(34,211,238,.08) 24%,rgba(0,168,255,.45) 43%,rgba(124,92,255,.36) 58%,transparent 82%);
+    linear-gradient(105deg,transparent 4%,rgba(24,196,143,.10) 24%,rgba(34,211,238,.30) 43%,rgba(124,92,255,.23) 58%,transparent 82%);
   border-radius: 50%;
   filter: blur(24px);
 }
@@ -42,8 +47,13 @@
   z-index: 1;
 }
 
+/* The shared animated AI mark duplicates “with AI.” on this product hero and reads like stray text on mobile. */
+.hc-brand-page .hermes-ai-motion-mark {
+  display: none !important;
+}
+
 .hc-brand-page .hc-eyebrow {
-  color: #7de8ff !important;
+  color: #74f1c2 !important;
 }
 
 .hc-brand-page .hc-copy h1 {
@@ -59,7 +69,7 @@
 }
 
 .hc-brand-page .hc-lead {
-  color: rgba(235,243,255,.76) !important;
+  color: rgba(235,248,243,.80) !important;
 }
 
 .hc-brand-page .hc-primary {
@@ -76,16 +86,16 @@
 }
 
 .hc-brand-page .hc-secondary {
-  border-color: rgba(255,255,255,.16) !important;
-  color: #eef6ff !important;
-  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  color: #f1fbf7 !important;
+  background: rgba(255,255,255,.06) !important;
   backdrop-filter: blur(12px);
 }
 
 .hc-brand-page .hc-secondary:hover,
 .hc-brand-page .hc-secondary:focus-visible {
-  border-color: rgba(34,211,238,.46) !important;
-  background: rgba(0,168,255,.10) !important;
+  border-color: rgba(116,241,194,.50) !important;
+  background: rgba(24,196,143,.11) !important;
 }
 
 .hc-brand-page .hc-truth span {
@@ -97,9 +107,10 @@
 .hc-brand-page .hc-product-stage {
   border: 1px solid rgba(125,232,255,.18) !important;
   background:
-    radial-gradient(circle at 82% 8%,rgba(0,168,255,.16),transparent 22rem),
-    radial-gradient(circle at 18% 82%,rgba(124,92,255,.15),transparent 24rem),
-    rgba(7,12,23,.78) !important;
+    radial-gradient(circle at 82% 8%,rgba(34,211,238,.14),transparent 22rem),
+    radial-gradient(circle at 18% 82%,rgba(24,196,143,.12),transparent 24rem),
+    radial-gradient(circle at 70% 72%,rgba(124,92,255,.10),transparent 22rem),
+    rgba(5,17,17,.82) !important;
   box-shadow:
     0 38px 110px rgba(0,0,0,.34),
     0 0 80px rgba(0,168,255,.10) !important;
@@ -175,9 +186,9 @@
 
 .hc-brand-page .hc-obsidian-band {
   background:
-    radial-gradient(circle at 18% 25%,rgba(124,92,255,.22),transparent 25rem),
-    radial-gradient(circle at 88% 72%,rgba(0,168,255,.18),transparent 30rem),
-    var(--hc-deep) !important;
+    radial-gradient(circle at 18% 25%,rgba(24,196,143,.18),transparent 25rem),
+    radial-gradient(circle at 88% 72%,rgba(34,211,238,.12),transparent 30rem),
+    linear-gradient(132deg,#031a15 0%,#071514 52%,var(--hc-deep) 100%) !important;
 }
 
 @media (max-width: 720px) {
