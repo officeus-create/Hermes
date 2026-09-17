@@ -64,6 +64,7 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   const response = await routeMiddleware(context);
   assert.equal(response.status, 308);
   assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
   assert.equal(observed.assetRequests.length, 0);
 }
 
@@ -76,6 +77,7 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   const response = await routeMiddleware(context);
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("content-type"), "text/markdown; charset=utf-8");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
   assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow");
   assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/index.md");
 }
@@ -164,6 +166,7 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/api/connect-lead");
   const response = await routeMiddleware(context);
   assert.equal(await response.text(), "next");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
   assert.equal(observed.nextCalls, 1);
 }
 

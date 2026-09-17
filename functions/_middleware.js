@@ -10,6 +10,7 @@ const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
 const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
 const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
+const HSTS_HEADER_VALUE = "max-age=31536000";
 const STALE_PUBLIC_COPY = [
   "Your information was not sent or stored.",
   "Contact delivery is not connected",
@@ -74,6 +75,16 @@ function requestHost(request) {
 
 function isConnectHost(request) {
   return requestHost(request) === CONNECT_HOST;
+}
+
+function withTransportSecurity(response) {
+  const headers = new Headers(response.headers);
+  headers.set("Strict-Transport-Security", HSTS_HEADER_VALUE);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 function acceptsMarkdown(request) {
@@ -250,21 +261,21 @@ async function routeConnectHost(context) {
   const incomingUrl = new URL(context.request.url);
 
   if (incomingUrl.pathname.startsWith("/api/")) {
-    return context.next();
+    return withTransportSecurity(await context.next());
   }
 
   const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
-  if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
+  if (oldBrandTarget) return withTransportSecurity(Response.redirect(oldBrandTarget.toString(), 308));
 
   if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
     const markdownUrl = new URL(incomingUrl);
     markdownUrl.pathname = `${CONNECT_ASSET_ROOT}/index.md`;
     const response = await context.env.ASSETS.fetch(new Request(markdownUrl, context.request));
-    if (response.ok) return markdownResponse(response);
+    if (response.ok) return withTransportSecurity(markdownResponse(response));
   }
 
   const compatibilityResponse = canonicalConnectCompatibilityRedirect(incomingUrl);
-  if (compatibilityResponse) return compatibilityResponse;
+  if (compatibilityResponse) return withTransportSecurity(compatibilityResponse);
 
   const assetUrl = new URL(incomingUrl);
   const assetPath = connectAssetPath(incomingUrl.pathname);
@@ -273,7 +284,7 @@ async function routeConnectHost(context) {
   const assetResponse = await context.env.ASSETS.fetch(new Request(assetUrl, context.request));
   const relativeAssetPath = assetPath.slice(CONNECT_ASSET_ROOT.length);
   const legacy = !NATIVE_CONNECT_DOCUMENTS.has(relativeAssetPath) && incomingUrl.pathname !== CONNECT_BRAND_SHELL;
-  return connectHtmlResponse(assetResponse, { legacy });
+  return withTransportSecurity(await connectHtmlResponse(assetResponse, { legacy }));
 }
 
 function canonicalPagesProductionRedirect(request) {
