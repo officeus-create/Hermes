@@ -17,24 +17,28 @@ const paths = [
     body: "You work for an employer or motor carrier under that company's equipment, operating rules, pay structure, schedule, and employment terms. Current Hermes employee openings, when available, belong on the careers pages—not in the carrier intake.",
     action: "Review Hermes logistics careers",
     href: "/logistics/careers/",
+    intent: "employment",
   },
   {
     title: "Owner-operator working with another carrier",
     body: "The truck, trailer, insurance, authority relationship, dispatch rules, settlement structure, and operating control depend on the specific carrier agreement. Do not treat a general car-hauling search result as proof that a lease-on or contracted opportunity is currently available.",
     action: "Review the owner-operator path",
     href: "/paths/logistics/carriers/owner-operators/",
+    intent: "owner_operator",
   },
   {
     title: "Independent carrier under your own authority",
     body: "You operate the motor-carrier business and need an operating system for authority, insurance, equipment, customer and broker setup, load-source access, route economics, documents, billing, and carrier-controlled load approval.",
     action: "Review new-authority support",
     href: "/logistics/new-authority-car-hauler-support/",
+    intent: "new_authority",
   },
   {
     title: "Established owner-operator or small fleet seeking support",
     body: "If the business is already operating, Hermes can review dispatch and back-office fit around equipment, capacity, home area, preferred markets, authority readiness, current workflow, and the carrier's final approval rules.",
     action: "Open carrier intake",
     href: carrierIntake,
+    intent: "carrier_intake",
   },
 ];
 
@@ -155,8 +159,8 @@ const schema = [
                   operating under your own authority, or an established carrier looking for dispatch and back-office support. Start by identifying the path before comparing pay, equipment, loads, or services.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier fit review <ArrowRight size={18} aria-hidden="true" /></a>
-                  <a class="button" href="/logistics/careers/">Looking for employment?</a>
+                  <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup} data-carrier-lifecycle-path="carrier_intake" data-carrier-lifecycle-position="hero">Open carrier fit review <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href="/logistics/careers/" data-carrier-lifecycle-path="employment" data-carrier-lifecycle-position="hero">Looking for employment?</a>
                 </div>
               </div>
               <aside class="resource-safety-card">
@@ -196,6 +200,8 @@ const schema = [
                     href={path.href}
                     data-commercial-primary-cta={path.href === carrierIntake ? "" : undefined}
                     data-service-group={path.href === carrierIntake ? measurementServiceGroup : undefined}
+                    data-carrier-lifecycle-path={path.intent}
+                    data-carrier-lifecycle-position="intent_router"
                   >{path.action} <ArrowRight size={16} aria-hidden="true" /></a>
                 </article>
               ))}
@@ -241,10 +247,10 @@ const schema = [
           <div class="shell">
             <div class="section-heading"><p class="eyebrow">Continue from the right stage</p><h2 id="next-title">Use the next Hermes resource that matches your operating status.</h2></div>
             <div class="resource-related-grid">
-              <a href="/logistics/owner-operator-dispatch-support/"><Truck size={22} aria-hidden="true" /><h3>Owner-operator dispatch support</h3><p>Review load search, broker communication, documents, invoicing, and carrier-controlled approval.</p><strong>Review support <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"><ClipboardList size={22} aria-hidden="true" /><h3>New-authority readiness</h3><p>Review authority, insurance, equipment, operating area, broker setup, and first-load boundaries.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/logistics/resources/rpm-calculator/"><Route size={22} aria-hidden="true" /><h3>RPM & profitability calculator</h3><p>Separate loaded miles, deadhead, fuel, operating assumptions, reserves, and estimated trip economics.</p><strong>Open calculator <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/load-board/?role=carrier&equipment=car_hauler#available-loads"><Truck size={22} aria-hidden="true" /><h3>Car Hauling Load Board</h3><p>Review the public carrier workflow and available load-board state without treating the page as a freight guarantee.</p><strong>Open Load Board <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/owner-operator-dispatch-support/" data-carrier-lifecycle-path="dispatch_support" data-carrier-lifecycle-position="related_resources"><Truck size={22} aria-hidden="true" /><h3>Owner-operator dispatch support</h3><p>Review load search, broker communication, documents, invoicing, and carrier-controlled approval.</p><strong>Review support <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/" data-carrier-lifecycle-path="new_authority_checklist" data-carrier-lifecycle-position="related_resources"><ClipboardList size={22} aria-hidden="true" /><h3>New-authority readiness</h3><p>Review authority, insurance, equipment, operating area, broker setup, and first-load boundaries.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/rpm-calculator/" data-carrier-lifecycle-path="rpm_calculator" data-carrier-lifecycle-position="related_resources"><Route size={22} aria-hidden="true" /><h3>RPM & profitability calculator</h3><p>Separate loaded miles, deadhead, fuel, operating assumptions, reserves, and estimated trip economics.</p><strong>Open calculator <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/load-board/?role=carrier&equipment=car_hauler#available-loads" data-carrier-lifecycle-path="load_board" data-carrier-lifecycle-position="related_resources"><Truck size={22} aria-hidden="true" /><h3>Car Hauling Load Board</h3><p>Review the public carrier workflow and available load-board state without treating the page as a freight guarantee.</p><strong>Open Load Board <ArrowRight size={16} aria-hidden="true" /></strong></a>
             </div>
           </div>
         </section>
@@ -265,11 +271,38 @@ const schema = [
               <h2>Move from a generic job search to an operating-profile review.</h2>
               <p>Share authority status, equipment, capacity, home area, preferred markets, availability, current dispatch workflow, and contact information. The review does not guarantee acceptance, freight, rates, miles, utilization, profit, or revenue.</p>
             </div>
-            <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={carrierIntake} data-commercial-primary-cta data-service-group={measurementServiceGroup} data-carrier-lifecycle-path="carrier_intake" data-carrier-lifecycle-position="final_cta">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
     </main>
     <SiteFooter />
   </div>
+
+  <script>
+    import { trackEvent } from "../../../../lib/analytics";
+
+    document.addEventListener("click", (event) => {
+      const source = event.target;
+      if (!(source instanceof Element)) return;
+      const link = source.closest<HTMLAnchorElement>("a[data-carrier-lifecycle-path]");
+      if (!link) return;
+
+      const href = link.getAttribute("href") || "";
+      let destinationPath = href;
+      try {
+        const target = new URL(href, window.location.origin);
+        destinationPath = target.origin === window.location.origin ? target.pathname : target.href;
+      } catch {
+        // Keep the literal href as a privacy-safe fallback for malformed local links.
+      }
+
+      trackEvent("carrier_lifecycle_path_click", {
+        path_choice: link.dataset.carrierLifecyclePath || "unknown",
+        path_position: link.dataset.carrierLifecyclePosition || "unknown",
+        page_path: window.location.pathname,
+        destination_path: destinationPath,
+      });
+    });
+  </script>
 </BaseLayout>
