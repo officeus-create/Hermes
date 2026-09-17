@@ -121,20 +121,20 @@ Authenticated Production settings currently show:
 - private email Worker compatibility date: `2026-08-04`;
 - Pages binding controls report that bindings are being managed through Wrangler configuration.
 
-Current public repository truth, however, contains only reviewed root Pages example configs (`wrangler.jsonc.example` / `wrangler.toml.example`), not an active production Pages Wrangler configuration.
+Current repository truth now includes `config/cloudflare-pages-runtime-baseline.json`, added through #1353. It records the authenticated Production/Preview runtime **shape** (variable names, secret-name presence, binding roles and compatibility-date intent) without storing secret values. `scripts/cloudflare-pages-runtime-baseline-contract.test.mjs` enforces Preview isolation and production binding ownership in CI.
 
-Therefore this must **not** be treated as a one-click compatibility-date change.
+This baseline is evidence and an anti-regression contract, not an active Pages deploy configuration. The root still intentionally has no committed active `wrangler.jsonc` / `wrangler.toml`, so this must **not** be treated as a one-click compatibility-date change.
 
 Before changing Production runtime configuration:
 
-1. download/read the authenticated current Pages config through an approved Cloudflare admin/OAuth path;
-2. compare every production variable, binding and **secret name presence** against authenticated Dashboard state;
-3. identify where the exact canonical config may live without committing secret values or inappropriate account resource identifiers into the public repository;
-4. document the single source of truth and rollback procedure;
-5. only then align Production compatibility date to the reviewed `2026-08-04` baseline;
-6. perform exact-main deployment/readback and product/API smoke after the change.
+1. re-read authenticated Production and Preview settings immediately before mutation and compare them to `config/cloudflare-pages-runtime-baseline.json`;
+2. require exact variable/binding/secret-name parity with the versioned baseline;
+3. preserve the existing single Pages release owner and rollback path rather than introducing a second editable control plane;
+4. only then align Production compatibility date to the reviewed `2026-08-04` baseline;
+5. perform exact-main deployment/readback plus product/API smoke after the change;
+6. update the runtime baseline only if authenticated post-change truth intentionally differs.
 
-Do not deploy a partial downloaded config just to change the date. Do not keep two independently editable configuration authorities.
+Do not deploy a partial downloaded config just to change the date. Do not commit secret values. Do not keep two independently editable configuration authorities.
 
 ## Credential ownership boundary
 
