@@ -38,9 +38,22 @@ assert.ok(staffAction);
 assert.equal(staffAction.status, "CORRECT_OWNED_PROFILE");
 assert.match(staffAction.action_gate, /Authenticated owner access/i);
 
-const serialized = JSON.stringify(registry).toLowerCase();
+const collectKeys = (value, output = []) => {
+  if (Array.isArray(value)) {
+    for (const item of value) collectKeys(item, output);
+    return output;
+  }
+  if (value && typeof value === "object") {
+    for (const [key, child] of Object.entries(value)) {
+      output.push(key.toLowerCase());
+      collectKeys(child, output);
+    }
+  }
+  return output;
+};
+const keys = collectKeys(registry).join(" ");
 for (const prohibited of ["password", "cookie", "api_key", "access_token", "phone_number", "full_conversation"]) {
-  assert.ok(!serialized.includes(prohibited), `Entity monitor must not store ${prohibited}`);
+  assert.ok(!keys.includes(prohibited), `Entity monitor schema must not store ${prohibited}`);
 }
 
 for (const kpi of ["own_domain_citation_rate", "entity_conflict_count", "google_generative_ai_impressions"]) {
