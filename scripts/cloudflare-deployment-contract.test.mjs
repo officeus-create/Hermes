@@ -1,3 +1,5 @@
+[Reading 198 lines from start (total: 198 lines, 0 remaining)]
+
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -141,6 +143,20 @@ assert.match(paidIntentSmokeWorkflow, /steps\.scope\.outputs\.full == 'true'/, "
 assert.match(paidIntentSmokeWorkflow, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
 assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "A lightweight production readback must remain on every successful deployment.");
 
+const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
+assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
+for (const surface of [
+  "https://hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+  "https://hermeslogisticsus.com/load-board/",
+  "https://connect.hermeslogisticsus.com/",
+  "https://app.hermeslogisticsus.com/",
+]) {
+  assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
+}
+assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic failures must report to the sole canonical Cloudflare tracker.");
+assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
+
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
@@ -182,3 +198,5 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
 console.log("Cloudflare deployment ownership contract passed: Pages has exact-SHA Wrangler/native-Git release verification plus one composed hermes-lead-email Worker owner.");
 
 await import("./production-contact-smoke-contract.test.mjs");
+
+[executed on device: MacBook-Pro-Vladimir.local (f76b2e6c-bcf8-4a7b-a530-81692b32f920)]
