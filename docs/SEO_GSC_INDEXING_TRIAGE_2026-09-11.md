@@ -45,3 +45,33 @@ node scripts/gsc-indexing-triage.mjs /path/to/gsc-export.csv --json
 The classifier performs no Search Console writes and sends no URL to Google. It only compares the export against the repository's current sitemap ownership and conservative exclusion rules.
 
 After classification, only `CURRENT_CANONICAL_REVIEW` URLs move to live HTTP/canonical/noindex/internal-link verification. Request indexing remains a separate, evidence-gated action.
+
+## Live follow-up — 2026-09-17
+
+Current authenticated Search Console domain-property readback (report last updated 2026-09-13):
+
+- Indexed: **121**.
+- Not indexed: **227**.
+- `Discovered - currently not indexed`: **98**.
+- `Crawled - currently not indexed`: **1**.
+- Alternate page with proper canonical: **61** — expected canonical/query variants; current samples include `?service=`, `?lang=` and Academy UTM/application variants.
+- Excluded by `noindex`: **55** — expected until a current public owner is proven otherwise.
+- Redirected: **4**.
+- Blocked/403: **1**.
+- Not found/404: **7**.
+
+The growth of the discovered queue is not, by itself, evidence of a sitewide indexing regression. Current main exposes **260** canonical sitemap owners versus **204** at the 2026-09-11 triage snapshot. **67** sitemap URLs carry `lastmod` dates from 2026-09-11 through 2026-09-16, including new Load Board families, Academy country/localized pages, insights and localized direction owners.
+
+Authenticated `Discovered` examples start with all nine current Hermes Catalog business/location owners plus `/es/`. Those nine Catalog URLs are current sitemap owners and production readback returns `200`, self-canonical and `index,follow`; they must not be rewritten or bulk-resubmitted merely because crawling is pending. Catalog remains under its active owner lane/write lock.
+
+Historical Cold Flare indexing tail reconciled against current production:
+
+- `/logistics/resources/broker-setup-packet-checklist/` — current sitemap owner; `200`, self-canonical, `index,follow`.
+- `/logistics/resources/new-authority-car-hauler-readiness-checklist/` — current sitemap owner; `200`, self-canonical, `index,follow`.
+- `/es/` — current sitemap owner; `200`, self-canonical, `index,follow`.
+- `/resources/rpm-calculator/`, `/tools/load-analyzer/`, `/ai-command-center/`, `/unified-inbox/` — no longer current sitemap owners and currently return the deliberate noindex 404 surface; do not resurrect them from historical GSC state alone.
+- `/academy/` — stale former hub returning 404 while `/paths/academy/` is the live indexable Academy direction. Current fix: permanent redirect `/academy/ -> /paths/academy/` plus classifier regression coverage.
+
+Current 404 examples are `/academy/`, `/cdn-cgi/l/email-protection`, `/api/auth/forgot-password`, `/month`, `/месяц`, `/dashboard/`, plus one malformed replacement-character path. Only `/academy/` has a proven current public successor. The remaining samples are private/API/malformed/obsolete crawl artifacts and are not candidates for new indexable pages without separate product evidence.
+
+Do not measure success by forcing `227` toward zero. Success is: intended public canonical owners are crawlable/indexable and internally connected; intended private/variant/legacy URLs remain excluded; stale public owners redirect to the current canonical destination; GSC indexed coverage increases as the new 260-owner sitemap is processed.
