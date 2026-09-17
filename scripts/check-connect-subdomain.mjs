@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { classifyConnectObservations } from "./connect-subdomain-verifier.mjs";
 
 const targetUrl = "https://connect.hermeslogisticsus.com/";
 const outputDir = path.resolve("artifacts");
@@ -44,7 +45,7 @@ async function fetchPublic() {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectReleaseVerifier/1.2 (+public read-only deployment check)",
+        "user-agent": "HermesConnectReleaseVerifier/1.3 (+public read-only deployment check)",
       },
       signal: AbortSignal.timeout(20_000),
     });
@@ -95,25 +96,15 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
   if (attempt < attempts) await sleep(delayMs);
 }
 
-const anyWebAppVisible = observations.some((observation) =>
-  Object.values(observation.webAppMarkers).some(Boolean),
-);
-const anyPreviousVisible = observations.some((observation) =>
-  Object.values(observation.previousMarkers).some(Boolean),
-);
-const allRequestsHealthy = observations.every((observation) => observation.status === 200 && !observation.error);
-
-let classification = "LIVE_UNKNOWN_CONTENT";
-if (!allRequestsHealthy) classification = "UNRESOLVED_NETWORK_ACCESS";
-else if (anyWebAppVisible && expectation === "isolation") classification = "LIVE_PR_HEAD_EXPOSED";
-else if (anyWebAppVisible) classification = "LIVE_APPROVED_WEB_APP";
-else if (anyPreviousVisible) classification = "LIVE_PREVIOUS_CONNECT";
+const verification = classifyConnectObservations(observations, expectation);
+const { classification } = verification;
 
 const result = {
   checkedAt: new Date().toISOString(),
   targetUrl,
   expectation,
   classification,
+  verification,
   observations,
   boundaries: {
     publicGetOnly: true,
@@ -132,19 +123,24 @@ await fs.writeFile(
 );
 
 const last = observations.at(-1);
+const networkNote = verification.networkFailureCount > 0
+  ? ` ${verification.networkFailureCount} transient fetch failure(s) were tolerated because ${verification.healthyCount}/${verification.totalCount} observations were healthy and consistent (required: ${verification.requiredHealthyCount}).`
+  : "";
 const interpretation = classification === "LIVE_APPROVED_WEB_APP"
-  ? "- The custom subdomain serves the approved canonical Hermes Connect workspace."
+  ? `- The custom subdomain serves the approved canonical Hermes Connect workspace.${networkNote}`
   : classification === "LIVE_PR_HEAD_EXPOSED"
     ? "- The custom subdomain exposed at least one marker that this isolation run treats as unapproved preview content. Correct Cloudflare branch/domain isolation before release."
-    : classification === "LIVE_PREVIOUS_CONNECT"
-      ? expectation === "approved_web_app"
-        ? "- The approved release has not reached the custom subdomain; the previous Hermes Connect experience is still live."
-        : expectation === "release_pending"
-          ? "- The previous Hermes Connect experience is still live while the approved release is pending. This PR check remains read-only; the post-merge main check will require the Web App."
-          : "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
-      : classification === "UNRESOLVED_NETWORK_ACCESS"
-        ? "- At least one required public request failed; no deployment conclusion is safe."
-        : "- The subdomain returned healthy but unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.";
+    : classification === "LIVE_MIXED_CONNECT_STATE"
+      ? "- Healthy observations showed both approved Web App and previous Connect markers. Treat this as inconsistent production state and investigate routing/deployment parity."
+      : classification === "LIVE_PREVIOUS_CONNECT"
+        ? expectation === "approved_web_app"
+          ? "- The approved release has not reached the custom subdomain; the previous Hermes Connect experience is still live."
+          : expectation === "release_pending"
+            ? "- The previous Hermes Connect experience is still live while the approved release is pending. This PR check remains read-only; the post-merge main check will require the Web App."
+            : "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
+        : classification === "UNRESOLVED_NETWORK_ACCESS"
+          ? `- Only ${verification.healthyCount}/${verification.totalCount} requests were healthy; at least ${verification.requiredHealthyCount} healthy observations are required before a deployment conclusion is safe.`
+          : "- The subdomain returned enough healthy responses, but at least one healthy response contained unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.";
 
 const markdown = [
   "# Hermes Connect custom-domain verification",
@@ -153,6 +149,8 @@ const markdown = [
   `- Target: ${targetUrl}`,
   `- Expected state: **${expectation}**`,
   `- Classification: **${classification}**`,
+  `- Healthy observations: **${verification.healthyCount}/${verification.totalCount}** (required: ${verification.requiredHealthyCount})`,
+  `- Transient network failures: **${verification.networkFailureCount}**`,
   `- HTTP status: ${last?.status ?? "unavailable"}`,
   `- Final URL: ${last?.finalUrl ?? "unavailable"}`,
   `- Last observed title: ${last?.title ?? "unavailable"}`,
@@ -177,5 +175,6 @@ console.log(markdown);
 
 if (classification === "UNRESOLVED_NETWORK_ACCESS") process.exitCode = 3;
 if (classification === "LIVE_UNKNOWN_CONTENT") process.exitCode = 5;
+if (classification === "LIVE_MIXED_CONNECT_STATE") process.exitCode = 6;
 if (expectation === "isolation" && classification === "LIVE_PR_HEAD_EXPOSED") process.exitCode = 2;
 if (expectation === "approved_web_app" && classification !== "LIVE_APPROVED_WEB_APP") process.exitCode = 4;

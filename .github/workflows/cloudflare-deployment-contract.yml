@@ -10,6 +10,9 @@ on:
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
       - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/check-connect-subdomain.mjs
+      - scripts/connect-subdomain-verifier.mjs
+      - scripts/connect-subdomain-verifier.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   push:
@@ -23,6 +26,9 @@ on:
       - workers/lead-email/**
       - scripts/cloudflare-deployment-contract.test.mjs
       - scripts/cloudflare-production-hardening-contract.test.mjs
+      - scripts/check-connect-subdomain.mjs
+      - scripts/connect-subdomain-verifier.mjs
+      - scripts/connect-subdomain-verifier.test.mjs
       - .github/workflows/**
       - docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md
   workflow_dispatch:
@@ -54,6 +60,9 @@ jobs:
 
       - name: Verify production hardening boundary
         run: node scripts/cloudflare-production-hardening-contract.test.mjs
+
+      - name: Verify Connect production-readback quorum
+        run: node scripts/connect-subdomain-verifier.test.mjs
 
       - name: Dry-run composed hermes-lead-email Worker
         run: npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-pr-dry-run
