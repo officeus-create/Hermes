@@ -157,25 +157,76 @@
     const panel = document.createElement("section");
     panel.className = "panel hc-capabilities-panel";
     panel.dataset.repairCapabilities = "true";
-    panel.innerHTML = `
-      <div class="panel-heading"><div><p class="eyebrow">Capabilities</p><h2>${copy.title}</h2><p class="muted">${copy.body}</p></div></div>
-      <form class="hc-capability-form" data-capability-form>
-        <div class="hc-capability-group"><p class="hc-capability-group-title">${copy.vehicles}</p><div class="hc-capability-grid" data-capability-vehicles></div></div>
-        <div class="hc-capability-flags">
-          <label class="hc-capability-option"><input type="checkbox" data-capability-flag="fleet_service"><span>${copy.fleet}</span></label>
-          <label class="hc-capability-option"><input type="checkbox" data-capability-flag="mobile_roadside"><span>${copy.roadside}</span></label>
-          <label class="hc-capability-option"><input type="checkbox" data-capability-flag="emergency_24_7"><span>${copy.emergency}</span></label>
-        </div>
-        <p class="hc-capability-status" data-capability-status role="status" aria-live="polite"></p>
-        <button class="primary-btn" type="submit">${copy.save}</button>
-      </form>`;
+    const heading = document.createElement("div");
+    heading.className = "panel-heading";
+    const headingCopy = document.createElement("div");
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = "Capabilities";
+    const title = document.createElement("h2");
+    title.textContent = copy.title;
+    const body = document.createElement("p");
+    body.className = "muted";
+    body.textContent = copy.body;
+    headingCopy.append(eyebrow, title, body);
+    heading.append(headingCopy);
+
+    const capabilityForm = document.createElement("form");
+    capabilityForm.className = "hc-capability-form";
+    capabilityForm.dataset.capabilityForm = "true";
+    const vehicleGroup = document.createElement("div");
+    vehicleGroup.className = "hc-capability-group";
+    const vehicleTitle = document.createElement("p");
+    vehicleTitle.className = "hc-capability-group-title";
+    vehicleTitle.textContent = copy.vehicles;
+    const vehicleGrid = document.createElement("div");
+    vehicleGrid.className = "hc-capability-grid";
+    vehicleGrid.dataset.capabilityVehicles = "true";
+    vehicleGroup.append(vehicleTitle, vehicleGrid);
+
+    const flags = document.createElement("div");
+    flags.className = "hc-capability-flags";
+    const makeFlag = (key, labelText) => {
+      const label = document.createElement("label");
+      label.className = "hc-capability-option";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.dataset.capabilityFlag = key;
+      const text = document.createElement("span");
+      text.textContent = labelText;
+      label.append(input, text);
+      return label;
+    };
+    flags.append(
+      makeFlag("fleet_service", copy.fleet),
+      makeFlag("mobile_roadside", copy.roadside),
+      makeFlag("emergency_24_7", copy.emergency),
+    );
+
+    const capabilityStatus = document.createElement("p");
+    capabilityStatus.className = "hc-capability-status";
+    capabilityStatus.dataset.capabilityStatus = "true";
+    capabilityStatus.setAttribute("role", "status");
+    capabilityStatus.setAttribute("aria-live", "polite");
+    const saveButton = document.createElement("button");
+    saveButton.className = "primary-btn";
+    saveButton.type = "submit";
+    saveButton.textContent = copy.save;
+    capabilityForm.append(vehicleGroup, flags, capabilityStatus, saveButton);
+    panel.append(heading, capabilityForm);
     profilePanel.insertAdjacentElement("afterend", panel);
 
     const vehicleWrap = panel.querySelector("[data-capability-vehicles]");
     for (const code of vehicleCodes) {
       const label = document.createElement("label");
       label.className = "hc-capability-option";
-      label.innerHTML = `<input type="checkbox" value="${code}" data-capability-vehicle><span>${copy[code]}</span>`;
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = code;
+      input.dataset.capabilityVehicle = "true";
+      const text = document.createElement("span");
+      text.textContent = copy[code];
+      label.append(input, text);
       vehicleWrap?.append(label);
     }
 
