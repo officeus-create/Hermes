@@ -24,6 +24,12 @@ assert.equal(exists("wrangler.toml"), false, "Active root wrangler.toml must not
 const pagesExample = JSON.parse(read("wrangler.jsonc.example"));
 assert.equal(pagesExample.name, "hermes");
 assert.equal(pagesExample.pages_build_output_dir, "dist");
+assert.equal(pagesExample.compatibility_date, "2026-08-04", "Preview/default Pages compatibility baseline must stay on the reviewed date.");
+assert.equal(pagesExample.vars?.LEAD_DELIVERY_MODE, "off", "Preview/default lead delivery must remain fail-closed.");
+assert.deepEqual(Object.keys(pagesExample.vars ?? {}).sort(), ["ALLOWED_ORIGIN", "LEAD_DELIVERY_MODE"]);
+assert.deepEqual((pagesExample.kv_namespaces ?? []).map((entry) => entry.binding), ["LEAD_LIMITS"]);
+assert.equal("d1_databases" in pagesExample, false, "Preview/default Pages config must not bind Production D1.");
+assert.equal("services" in pagesExample, false, "Preview/default Pages config must not bind the private production email service.");
 assert.equal("main" in pagesExample, false, "The root example must remain Pages-oriented, not a Worker entrypoint.");
 
 const emailWorkerExample = JSON.parse(read("workers/lead-email/wrangler.jsonc.example"));
@@ -43,6 +49,25 @@ assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\
 assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
 assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
 assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outbound lead-email implementation must remain present.");
+
+const aiProjectState = JSON.parse(read("docs/ai-project-state.json"));
+const cloudflareReleaseState = aiProjectState.recent_promotions?.cloudflare_release_wiring_pr_1063;
+assert.equal(cloudflareReleaseState?.state, "MERGED_CODE_VERIFIED_PAGES_RELEASE_WORKING");
+assert.doesNotMatch(
+  JSON.stringify(aiProjectState),
+  /CLOUDFLARE_API_TOKEN_MISSING_FROM_AUTHORIZED_PRODUCTION_OR_REPOSITORY_SECRET_SCOPE|BLOCKED_ONLY_SCOPED_CLOUDFLARE_API_TOKEN_THEN_BUILD_DEPLOY_AND_PUBLIC_READBACK|BLOCKED_SCOPED_CLOUDFLARE_DEPLOY_TOKEN_PLUS_REAL_EMAIL_RESET/,
+  "Current project state must not revive superseded generic Cloudflare token blockers for Pages, #961, or #611.",
+);
+assert.match(
+  aiProjectState.platform_and_owner_gates?.cloudflare_production_parity_961 ?? "",
+  /BOUNDED_REPAIR_SHOP_ACCESS_PRODUCTION_D1_OPERATOR_PROOF/,
+  "#961 must stay narrowed to the bounded production D1/operator proof.",
+);
+assert.match(
+  aiProjectState.platform_and_owner_gates?.password_reset_email_611 ?? "",
+  /ARBITRARY_RECIPIENT_OUTBOUND_TRANSACTIONAL_EMAIL_CAPABILITY/,
+  "#611 must remain an outbound transactional-recipient capability gate, not a Worker deployment gate.",
+);
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
@@ -115,6 +140,20 @@ assert.match(paidIntentSmokeWorkflow, /Decide whether full receiver smoke is req
 assert.match(paidIntentSmokeWorkflow, /steps\.scope\.outputs\.full == 'true'/, "Real receiver sends must be gated to relevant changes or the scheduled/manual proof.");
 assert.match(paidIntentSmokeWorkflow, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
 assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "A lightweight production readback must remain on every successful deployment.");
+
+const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
+assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
+for (const surface of [
+  "https://hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+  "https://hermeslogisticsus.com/load-board/",
+  "https://connect.hermeslogisticsus.com/",
+  "https://app.hermeslogisticsus.com/",
+]) {
+  assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
+}
+assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic failures must report to the sole canonical Cloudflare tracker.");
+assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);

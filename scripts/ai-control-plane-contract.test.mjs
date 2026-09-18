@@ -32,6 +32,8 @@ assert.ok(worker.includes("public_safe"), "Caching must be gated by an explicit 
 assert.ok(worker.includes("skipCache: true"), "Private/sensitive tasks must bypass AI Gateway cache by default");
 assert.ok(worker.includes("AI_MODEL_FALLBACK"), "A bounded fallback model must be configurable");
 
+assert.ok(wrangler.includes('"workers_dev": false'), "AI control plane must not expose a public workers.dev route by default");
+assert.ok(wrangler.includes('"preview_urls": false'), "AI control plane must keep Worker preview URLs disabled by default");
 assert.ok(wrangler.includes('"binding": "AI"'), "Wrangler example must configure the AI binding");
 assert.ok(wrangler.includes('"AI_GATEWAY_ID": "hermes-ai-control-plane"'));
 assert.ok(!wrangler.includes('"HERMES_AI_CONTROL_TOKEN":'), "Secrets must not be committed as Wrangler vars");
