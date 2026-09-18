@@ -50,6 +50,11 @@ test "$(jq -r '.success // false' "${TMP}/capacity-pre-clean.json")" = true
 REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Capacity Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production capacity verification account."}')"
 RC="$(curl -sS -o "${TMP}/capacity-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 echo "CAPACITY_REGISTER_HTTP=$RC"; cat "${TMP}/capacity-register.json"; echo
+if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/capacity-register.json")" = "repair_shop_free_registration_ended" ]]; then
+  test "$(jq -r '.next_url // ""' "${TMP}/capacity-register.json")" = "/services/hermes-connect/repair-shops/plan/"
+  echo "REPAIR_CAPACITY_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+  exit 0
+fi
 test "$RC" = 201
 
 PROFILE='{"name":"Hermes Capacity Smoke Shop","phone":"+1 414 555 0196","address_line1":"103 Capacity Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'

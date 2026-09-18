@@ -72,6 +72,13 @@ jobs:
           REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Access Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production access-state verification account."}')"
           RC="$(curl -sS -o "${RUNNER_TEMP}/access-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
           echo "ACCESS_REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/access-register.json"; echo
+          if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${RUNNER_TEMP}/access-register.json")" = "repair_shop_free_registration_ended" ]]; then
+            test "$(jq -r '.next_url // ""' "${RUNNER_TEMP}/access-register.json")" = "/services/hermes-connect/repair-shops/plan/"
+            echo "REPAIR_ACCESS_STATE_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+            cleanup
+            trap - EXIT
+            exit 0
+          fi
           test "$RC" = 201
 
           PROFILE='{"name":"Hermes Access Smoke Shop","phone":"+1 414 555 0197","address_line1":"102 Access Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'

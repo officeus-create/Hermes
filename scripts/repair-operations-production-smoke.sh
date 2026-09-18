@@ -37,7 +37,13 @@ test "$(jq -r '.success // false' "${TMP}/ops-preclean.json")" = true
 
 REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Operations Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production operating-status verification account."}')"
 CODE="$(curl -sS -o "${TMP}/ops-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
-echo "OPS_REGISTER_HTTP=$CODE"; test "$CODE" = 201
+echo "OPS_REGISTER_HTTP=$CODE"; cat "${TMP}/ops-register.json"; echo
+if [[ "$CODE" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/ops-register.json")" = "repair_shop_free_registration_ended" ]]; then
+  test "$(jq -r '.next_url // ""' "${TMP}/ops-register.json")" = "/services/hermes-connect/repair-shops/plan/"
+  echo "REPAIR_OPERATIONS_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+  exit 0
+fi
+test "$CODE" = 201
 
 PROFILE='{"name":"Hermes Operations Smoke Shop","phone":"+1 414 555 0195","address_line1":"104 Operations Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
 CODE="$(curl -sS -o "${TMP}/ops-profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"

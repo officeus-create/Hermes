@@ -108,6 +108,23 @@ assert.match(repairProfileApi, /if \(existing\)[\s\S]*?UPDATE repair_shops[\s\S]
 assert.match(repairProfileApi, /repair_shop_free_registration_ended/);
 assert.match(repairProfileApi, /INSERT INTO repair_shops/);
 
+const closedWindowSmokePaths = [
+  "repair-booking-production-smoke.sh",
+  "repair-customer-crm-production-smoke.sh",
+  "repair-capacity-production-smoke.sh",
+  "repair-operations-production-smoke.sh",
+  "repair-booking-concurrency-production-smoke.sh",
+];
+for (const smokeName of closedWindowSmokePaths) {
+  const smoke = await readFile(new URL("./" + smokeName, import.meta.url), "utf8");
+  assert.match(smoke, /repair_shop_free_registration_ended/, smokeName + " must honor the closed registration window");
+  assert.match(smoke, /SKIPPED_CLOSED_REGISTRATION_WINDOW/, smokeName + " must classify closed-window production writes without bypassing policy");
+  assert.match(smoke, /\/services\/hermes-connect\/repair-shops\/plan\//, smokeName + " must verify the current plan handoff");
+}
+const bookingProductionWorkflow = await readFile(new URL("../.github/workflows/repair-booking-production-smoke.yml", import.meta.url), "utf8");
+assert.match(bookingProductionWorkflow, /REPAIR_ACCESS_STATE_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/);
+assert.match(bookingProductionWorkflow, /repair_shop_free_registration_ended/);
+
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step
 // first-value loop through the first completed booking and paid-plan decision.
 assert.match(layout, /RepairShopActivationEnhancer/);
