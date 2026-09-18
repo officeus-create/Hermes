@@ -390,20 +390,66 @@
     const panel = document.createElement("section");
     panel.className = "repair-activation-panel";
     panel.dataset.repairActivation = "true";
-    panel.innerHTML = `
-      <div class="repair-activation-head">
-        <div><p class="repair-activation-eyebrow">${t.eyebrow}</p><h2>${t.title}</h2><p class="repair-activation-copy">${t.intro}</p></div>
-        <div class="repair-activation-progress">${completedCount}/6 ${t.ready}</div>
-      </div>
-      <div class="repair-activation-track" aria-hidden="true"><div class="repair-activation-fill" style="width:${percent}%"></div></div>
-      <ol class="repair-activation-steps">
-        ${labels.map((label, index) => `<li class="repair-activation-step" data-complete="${states[index]}" data-needs-attention="${!states[index] && states.slice(0,index).every(Boolean)}"><strong>${states[index] ? "✓" : index + 1}</strong><span>${label}</span></li>`).join("")}
-      </ol>
-      <div class="repair-activation-actions">
-        <a class="repair-activation-primary" data-repair-next data-repair-attention="${states.every(Boolean) ? "false" : "true"}"${shareAction ? " data-repair-share" : ""} href="${localizedNextHref}">${nextLabel}</a>
-        <a class="repair-activation-secondary" data-repair-plan href="${localizedPlanHref}">${t.viewPlan}</a>
-        <p class="repair-activation-next">${nextCopy}</p>
-      </div>`;
+    const head = document.createElement("div");
+    head.className = "repair-activation-head";
+    const copy = document.createElement("div");
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "repair-activation-eyebrow";
+    eyebrow.textContent = t.eyebrow;
+    const title = document.createElement("h2");
+    title.textContent = t.title;
+    const intro = document.createElement("p");
+    intro.className = "repair-activation-copy";
+    intro.textContent = t.intro;
+    copy.append(eyebrow, title, intro);
+    const progress = document.createElement("div");
+    progress.className = "repair-activation-progress";
+    progress.textContent = `${completedCount}/6 ${t.ready}`;
+    head.append(copy, progress);
+
+    const track = document.createElement("div");
+    track.className = "repair-activation-track";
+    track.setAttribute("aria-hidden", "true");
+    const fill = document.createElement("div");
+    fill.className = "repair-activation-fill";
+    fill.style.width = `${percent}%`;
+    track.append(fill);
+
+    const steps = document.createElement("ol");
+    steps.className = "repair-activation-steps";
+    labels.forEach((label, index) => {
+      const step = document.createElement("li");
+      step.className = "repair-activation-step";
+      step.dataset.complete = String(states[index]);
+      step.dataset.needsAttention = String(!states[index] && states.slice(0, index).every(Boolean));
+      const marker = document.createElement("strong");
+      marker.textContent = states[index] ? "✓" : String(index + 1);
+      const stepLabel = document.createElement("span");
+      stepLabel.textContent = label;
+      step.append(marker, stepLabel);
+      steps.append(step);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "repair-activation-actions";
+    const primary = document.createElement("a");
+    primary.className = "repair-activation-primary";
+    primary.dataset.repairNext = "true";
+    primary.dataset.repairAttention = states.every(Boolean) ? "false" : "true";
+    if (shareAction) primary.dataset.repairShare = "true";
+    primary.href = localizedNextHref;
+    primary.textContent = nextLabel;
+    const secondary = document.createElement("a");
+    secondary.className = "repair-activation-secondary";
+    secondary.dataset.repairPlan = "true";
+    secondary.href = localizedPlanHref;
+    secondary.textContent = t.viewPlan;
+    const nextCopyNode = document.createElement("p");
+    nextCopyNode.className = "repair-activation-next";
+    nextCopyNode.textContent = nextCopy;
+    actions.append(primary, secondary, nextCopyNode);
+
+    panel.append(head, track, steps, actions);
     header.insertAdjacentElement("afterend", panel);
 
     const next = $("[data-repair-next]", panel);
