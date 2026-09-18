@@ -7,7 +7,7 @@ Static Astro website and controlled Cloudflare edge workflows for `hermeslogisti
 - The production domain is live on Cloudflare Pages. Do not assume every `main` commit is deployed until the production snapshot or immutable deployment is reconciled.
 - The 2026-08-03 release-manifest baseline contains **104 generated HTML routes**, **95 indexable routes**, and **7 sitemap files**. See `docs/RELEASE_MANIFEST_2026-08-01.md` rather than maintaining a manual route count here.
 - Public language entry points currently cover English, Spanish, French, Ukrainian, Italian, and Russian.
-- Hermes Business Academy exposes exactly two public programs: **U.S. Logistics Operations** and **Marketing**.
+- Hermes Academy publicly presents **five learning tracks**: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. The two current full public program pages are **U.S. Logistics Operations** and **Marketing**; a visible learning track does not by itself mean an enrollment or paid cohort is open.
 - Local and non-production contact workflows remain preview-first unless explicitly configured. The approved production custom-domain build routes Logistics, Marketing, Academy, IT Development, and general inquiries through the protected same-origin receiver, and it must not display success unless the receiver confirms delivery.
 - Production inquiry delivery was verified end to end on 2026-08-04: the fixed destination received approved synthetic preview and production requests, foreign-origin rejection and duplicate suppression were proven, and the emergency rollback remains `LEAD_DELIVERY_MODE=off`.
 - Google route estimates remain default-off and preview-only until separately approved Google Cloud and Cloudflare configuration is proven.
