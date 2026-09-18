@@ -12,7 +12,7 @@ import { findServiceForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 import { readGoogleBusyIntervalsForDate } from "../_lib/repair-shop-google-calendar.mjs";
 
-type Env = { DB?: any };
+type Env = { DB?: any; LEAD_LIMITS?: any };
 type BookingInput = {
   shop_slug?: unknown;
   service_id?: unknown;
@@ -41,6 +41,14 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_RE = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{11,17}$/i;
+const BOOKING_RATE_LIMIT = 20;
+const BOOKING_RATE_WINDOW_SECONDS = 60 * 60;
+
+async function sha256Hex(value: string) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 
 const asText = (value: unknown) => String(value ?? "").trim();
 const toMinutes = (value: string) => {
@@ -296,6 +304,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
+  if (!env.LEAD_LIMITS) return jsonResponse(503, { success: false, error: "rate_limit_not_configured" });
+  const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
+  const rateKey = `repair-booking:rate:${await sha256Hex(clientAddress)}`;
+  const currentRate = Number((await env.LEAD_LIMITS.get(rateKey)) || "0");
+  if (Number.isFinite(currentRate) && currentRate >= BOOKING_RATE_LIMIT) {
+    return jsonResponse(429, { success: false, error: "rate_limit_exceeded" });
+  }
+  await env.LEAD_LIMITS.put(
+    rateKey,
+    String((Number.isFinite(currentRate) ? currentRate : 0) + 1),
+    { expirationTtl: BOOKING_RATE_WINDOW_SECONDS },
+  );
+
 
   let body: BookingInput;
   try {
