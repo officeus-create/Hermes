@@ -22,6 +22,7 @@ assert.match(page, /fetch\("\/api\/repair-shop\/vehicles"/);
 assert.match(page, /fetch\("\/api\/auth\/me"/);
 assert.doesNotMatch(page, /customer=\$\{/i, "customer PII must not be put in navigation URLs");
 assert.doesNotMatch(page, /vin=\$\{/i, "VIN must not be put in navigation URLs");
+assert.doesNotMatch(page, /\\.innerHTML\\s*=/, "Repair Shop Vehicles runtime must not use innerHTML sinks");
 assert.match(page, /vehiclesTitle:"Vehicles"/);
 assert.match(page, /vehiclesTitle:"Автомобили"/);
 
