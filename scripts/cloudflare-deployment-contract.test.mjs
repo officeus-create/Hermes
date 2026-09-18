@@ -6,6 +6,7 @@ const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), "utf8");
 const exists = (relativePath) => fs.existsSync(path.join(root, relativePath));
 const LEAD_EMAIL_DEPLOY_WORKFLOW = path.join(".github", "workflows", "lead-email-worker-production.yml");
+const ACCESS_STATE_PROOF_WORKFLOW = path.join(".github", "workflows", "repair-access-state-production-proof.yml");
 
 function listFiles(directory) {
   const absolute = path.join(root, directory);
@@ -170,6 +171,43 @@ assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic f
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
+const accessStateProofWorkflow = read(ACCESS_STATE_PROOF_WORKFLOW);
+assert.match(
+  leadEmailWorkflow,
+  /CLOUDFLARE_WORKERS_DEPLOY_TOKEN/,
+  "Lead-email deploy must use its dedicated least-privilege Worker deploy credential.",
+);
+assert.doesNotMatch(
+  leadEmailWorkflow,
+  /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/,
+  "Lead-email deploy must not fall back to generic or broad Cloudflare API-token aliases.",
+);
+assert.match(
+  leadEmailWorkflow,
+  /apiToken:\s*\$\{\{ env\.CLOUDFLARE_WORKERS_DEPLOY_TOKEN \}\}/,
+  "Wrangler must receive only the dedicated Worker deploy token.",
+);
+assert.match(
+  accessStateProofWorkflow,
+  /secrets\.CLOUDFLARE_PAGES_READ_TOKEN/,
+  "Production access-state proof must use the dedicated Pages-read token.",
+);
+assert.match(
+  accessStateProofWorkflow,
+  /secrets\.CLOUDFLARE_D1_API_TOKEN/,
+  "Production access-state proof must use the dedicated D1 token.",
+);
+assert.match(
+  accessStateProofWorkflow,
+  /vars\.CLOUDFLARE_ACCOUNT_ID\s*\|\|\s*secrets\.CLOUDFLARE_ACCOUNT_ID/,
+  "Production access-state proof must use the canonical account-context name only.",
+);
+assert.doesNotMatch(
+  accessStateProofWorkflow,
+  /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN|CF_ACCOUNT_ID)|vars\.CF_ACCOUNT_ID/,
+  "Production access-state proof must not reuse generic or broad Cloudflare token/account aliases.",
+);
+
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
 assert.match(leadEmailWorkflow, /node scripts\/load-board-intake-api-contract\.test\.mjs/);
