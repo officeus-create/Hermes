@@ -61,5 +61,6 @@ assert.match(clientSource, /parallel_booking_capacity/);
 assert.match(clientSource, /Array\.from\(\{ length: 10 \}/);
 for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) assert.match(clientSource, new RegExp(`\\b${locale}: \\{`));
 assert.doesNotMatch(clientSource, /client_email|client_phone|vin|dataLayer|gtag/i);
+assert.doesNotMatch(clientSource, /\.innerHTML\s*=/, "Repair Shop capacity runtime must not use innerHTML sinks");
 
 console.log("Repair Shop capacity-aware booking contract passed.");
