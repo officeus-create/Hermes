@@ -107,5 +107,3 @@ jobs:
           if [[ "${{ steps.synthetic.outcome }}" != "success" ]]; then
             exit 1
           fi
-
-[executed on device: MacBook-Pro-Vladimir.local (f76b2e6c-bcf8-4a7b-a530-81692b32f920)]
