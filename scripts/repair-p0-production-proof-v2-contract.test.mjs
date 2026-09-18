@@ -20,7 +20,10 @@ assert.match(proof, /viewport: \{ width: 390, height: 844 \}/, "proof must exerc
 assert.match(proof, /\/api\/repair-shop\/feedback/, "proof must submit and read back private feedback");
 assert.match(proof, /cleanup-booking-smoke/, "proof must use the bounded synthetic cleanup path");
 assert.match(proof, /finally \{[\s\S]*await cleanup\(\)/, "proof must clean synthetic state even after a failure");
-assert.doesNotMatch(proof, /Authorization\s*:/, "proof must not require a GitHub authorization header");
-assert.doesNotMatch(proof, /GITHUB_TOKEN|CLOUDFLARE_[A-Z_]*TOKEN/, "proof must remain credential-free");
+assert.match(proof, /ACTIONS_ID_TOKEN_REQUEST_URL/, "proof must mint the bounded GitHub Actions OIDC booking proof from the runner endpoint");
+assert.match(proof, /ACTIONS_ID_TOKEN_REQUEST_TOKEN/, "proof must use the short-lived GitHub Actions OIDC request token");
+assert.match(proof, /Authorization:\\s*`bearer \\${requestToken}`/, "proof may authorize only the GitHub Actions OIDC mint request");
+assert.equal((proof.match(/Authorization\\s*:/g) || []).length, 1, "proof must contain exactly one Authorization header: the OIDC runtime mint");
+assert.doesNotMatch(proof, /GITHUB_TOKEN|CLOUDFLARE_[A-Z_]*TOKEN/, "proof must not require repository or Cloudflare API tokens");
 
 console.log("REPAIR_P0_PRODUCTION_PROOF_V2_CONTRACT=PASS");
