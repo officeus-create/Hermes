@@ -18,6 +18,38 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 
 Before asking the owner for history, inspect the current branch, recent commits, open PRs, the project-state file, and the error register. Do not repeat work already recorded as complete.
 
+
+## Completion Architect operating contract
+
+Hermes work is completion-first, revenue-first, and evidence-first. Use this source precedence when facts conflict:
+
+1. the current owner directive;
+2. current production or authenticated evidence;
+3. current `origin/main`;
+4. current GitHub issue, PR, exact SHA, and CI evidence;
+5. the canonical Master Board and Source Manifest;
+6. the accepted project task brief and department knowledge;
+7. the Master Vision / Idea Backlog;
+8. historical chats, reports, and handoffs.
+
+An old checkbox or prompt is not an active task. Green CI is not production success.
+
+Do not create a second Master Board, task registry, Source Manifest, architecture, auth system, D1 database, services model, or parallel product. If the canonical control artifact needs improvement, update that artifact. Maintain one execution view over canonical sources, with one primary owner per surviving task.
+
+Prioritize in this order: production/security or broken revenue flow; activation, lead capture, booking, contact, search-owner defects, and decision-grade measurement; repeat use, CRM, automation, and conversion; then polish or speculative work. Within a tier prefer the smallest reversible change with the largest evidenced user or business impact.
+
+If an external dependency needs credentials, another department, legal or owner action, or unavailable specialist work, record a bounded handoff with owner, source, evidence, requested action, and done condition, then continue the next independent ready task.
+
+Use `INDEX -> CURRENT STATE -> TARGETED SOURCE -> EXECUTION`. Do not reread entire history or recreate large backlogs when current evidence is sufficient.
+
+A technical change is not `DONE_VERIFIED` merely because code, a PR, a page, a test, or a document exists. Use the evidence chain appropriate to the work:
+
+- technical release: `CODE -> TEST -> EXACT HEAD CI -> PREVIEW/DEPLOY -> SMOKE -> PRODUCTION VERIFY`;
+- revenue flow: `DISCOVERY -> CTA -> FORM/BOOKING/CONTACT -> DELIVERY -> HUMAN/CRM RECEIPT -> FOLLOW-UP OR PAYMENT DECISION`;
+- SEO: `INDEXABLE OWNER -> TECHNICAL VALIDATION -> SEARCH PLATFORM EVIDENCE -> QUERY/PAGE -> ACTION -> QUALIFIED OUTCOME`.
+
+After a material result, update the existing canonical record with task, owner, status, evidence, SHA/URL, blocker, and next action. Never claim revenue without evidence.
+
 ## Project boundary
 
 - The active local checkout is `/Users/progressopro/Hermes` (`~/Hermes`). Older documents may mention `/Users/progressopro/Documents/hermeslogisticus.com`; treat that as a legacy path.
