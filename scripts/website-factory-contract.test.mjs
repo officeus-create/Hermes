@@ -11,6 +11,7 @@ const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
 const page = read("src/pages/services/hermes-connect/website-factory/index.astro");
 const client = read("public/scripts/website-factory-client.mjs");
+const localeRuntime = read("public/scripts/website-factory-locale.mjs");
 const switcher = read("src/components/HermesConnectAccountSwitcher.astro");
 const helper = read("functions/api/_lib/website-factory.mjs");
 const drafts = read("functions/api/website-factory/drafts.ts");
@@ -42,6 +43,7 @@ assert.match(client, /\/api\/website-factory\/drafts/, "Factory client must pers
 assert.match(client, /method:\s*"PUT"/, "Factory client must autosave through the draft API");
 assert.match(client, /method:\s*"DELETE"/, "Factory client must support real draft deletion before submission");
 assert.match(client, /action:\s*"submit"/, "Factory client must submit through the server readiness gate");
+assert.doesNotMatch(localeRuntime, /\.innerHTML\s*=/, "Website Factory locale runtime must not use innerHTML sinks");
 
 assert.match(switcher, /"neutral"/, "shared account switcher must explicitly support neutral mode");
 assert.match(switcher, /current === "neutral" \? undefined : current/, "neutral mode must omit current-workspace state rather than faking one");
