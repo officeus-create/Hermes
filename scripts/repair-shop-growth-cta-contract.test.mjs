@@ -156,6 +156,7 @@ assert.match(activationRuntime, /(?:\/repair-shops\/plan\/|\$\{ROOT\}\/plan\/)/)
 assert.match(activationRuntime, /CURRENT PRODUCT/);
 assert.match(activationRuntime, /Customer booking times are generated from these hours/);
 assert.match(activationRuntime, /Repair pricing is set by the shop/);
+assert.doesNotMatch(activationRuntime, /bar\\.innerHTML\\s*=/, "Repair booking share bar must not use innerHTML");
 assert.doesNotMatch(
   activationRuntime,
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
