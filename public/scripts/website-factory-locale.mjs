@@ -316,7 +316,7 @@ function normalizeRussianRuntime() {
 
   const handoffCopy = document.querySelector('[data-step="9"] > p:not(.factory-kicker)');
   if (handoffCopy && handoffCopy.textContent?.replace(/\s+/g, " ").trim() !== handoffRussianText) {
-    handoffCopy.innerHTML = "Передача фиксирует эту версию как snapshot для проверки. Она <strong>не</strong> утверждает, что production-процесс создания сайта уже запущен.";
+    const emphasis = document.createElement("strong");\n    emphasis.textContent = "не";\n    handoffCopy.replaceChildren(\n      document.createTextNode("Передача фиксирует эту версию как snapshot для проверки. Она "),\n      emphasis,\n      document.createTextNode(" утверждает, что production-процесс создания сайта уже запущен."),\n    );
   }
 
   document.querySelectorAll("[data-draft-list] .draft-card span").forEach((node) => {
