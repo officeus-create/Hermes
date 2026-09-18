@@ -11,8 +11,13 @@ import { normalizeRepairShopCapacity, saturatedRepairShopIntervals } from "../_l
 import { findServiceForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 import { readGoogleBusyIntervalsForDate } from "../_lib/repair-shop-google-calendar.mjs";
+import { validateTurnstileToken } from "../_lib/turnstile.mjs";
 
-type Env = { DB?: any };
+type Env = {
+  DB?: any;
+  TURNSTILE_REPAIR_BOOKING_MODE?: string;
+  TURNSTILE_REPAIR_BOOKING_SECRET?: string;
+};
 type BookingInput = {
   shop_slug?: unknown;
   service_id?: unknown;
@@ -26,6 +31,7 @@ type BookingInput = {
   vehicle_model?: unknown;
   mileage?: unknown;
   vin?: unknown;
+  turnstile_token?: unknown;
 };
 type ScheduledStaff = {
   id: string;
@@ -316,6 +322,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const vehicleModel = asText(body.vehicle_model);
   const mileageText = asText(body.mileage);
   const vin = asText(body.vin).toUpperCase();
+  const turnstileToken = asText(body.turnstile_token);
   const hasVehicleInput = Boolean(vehicleYearText || vehicleMake || vehicleModel || mileageText || vin);
   const vehicleYear = vehicleYearText ? Number(vehicleYearText) : null;
   const mileage = mileageText ? Number(mileageText) : null;
@@ -332,6 +339,28 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (vehicleModel.length < 1 || vehicleModel.length > 80) return jsonResponse(400, { success: false, error: "invalid_vehicle_model" });
     if (mileage !== null && (!Number.isInteger(mileage) || mileage < 0 || mileage > 2000000)) return jsonResponse(400, { success: false, error: "invalid_mileage" });
     if (vin && !VIN_RE.test(vin)) return jsonResponse(400, { success: false, error: "invalid_vin" });
+  }
+
+  const turnstileMode = asText(env.TURNSTILE_REPAIR_BOOKING_MODE).toLowerCase() || "off";
+  if (!["off", "enforce"].includes(turnstileMode)) {
+    return jsonResponse(503, { success: false, error: "turnstile_not_configured" });
+  }
+  if (turnstileMode === "enforce") {
+    const verification = await validateTurnstileToken({
+      token: turnstileToken,
+      secret: env.TURNSTILE_REPAIR_BOOKING_SECRET,
+      remoteIp: request.headers.get("CF-Connecting-IP"),
+      expectedHostname: new URL(request.url).hostname,
+      expectedAction: "repair_booking",
+      timeoutMs: 5000,
+    });
+    if (!verification.ok) {
+      const unavailable = verification.reason === "not_configured" || verification.reason === "unavailable";
+      return jsonResponse(unavailable ? 503 : 403, {
+        success: false,
+        error: unavailable ? "verification_unavailable" : "verification_failed",
+      });
+    }
   }
 
   const shop = await getPublicShop(env.DB, slug);
