@@ -1,0 +1,149 @@
+[
+  {
+    "id": "TG-001",
+    "label": "HL 40 Branch / Hermes Logistik Yerevan historical Telegram export",
+    "sourceType": "telegram_export_html",
+    "location": {
+      "provider": "google_drive",
+      "fileIds": [
+        "16wHbHuRPuDhCVSFhoiQ6MsrLNVEPDFmt",
+        "1zlfW0audBQEWq4Dryue4o_3KdI_v3IU7"
+      ]
+    },
+    "coverage": {
+      "from": "2024-06-01",
+      "to": "2025-01-31",
+      "complete": false
+    },
+    "directions": ["logistics", "academy"],
+    "topics": [
+      "car hauling",
+      "carrier sales",
+      "dispatch training",
+      "load planning",
+      "broker negotiation",
+      "deadhead reduction"
+    ],
+    "privacyClass": "strict_private",
+    "currentTruth": false,
+    "publicUse": "anonymized_patterns_only",
+    "status": "partial_thematic_extraction",
+    "notes": "Historical operating evidence. Revalidate any commercial terms, earnings claims, tool usage, or production-capability claims before public use."
+  },
+  {
+    "id": "TG-002",
+    "label": "Telegram Business consolidated historical corpus",
+    "sourceType": "telegram_export_jsonl",
+    "location": {
+      "provider": "google_drive",
+      "fileId": "1JcLXZabprqT_-1WxscIjm2SteuXk2OK-",
+      "fileName": "Telegram_Business_Export_2026-07-17.jsonl"
+    },
+    "coverage": {
+      "from": "2021-09-13",
+      "to": "2026-04-29",
+      "complete": false,
+      "messages": 6104,
+      "chats": 17
+    },
+    "priorityChats": [
+      "HL 40 Branch",
+      "HL Dispatch K.",
+      "HL Dealers Shippers",
+      "HL Dispatch Assist (D)",
+      "Hermes Logistics Academy",
+      "HL 40 Branch Sales Team",
+      "HL Carrier agreement",
+      "HL Shippers"
+    ],
+    "directions": ["logistics", "academy", "marketing"],
+    "topics": [
+      "car hauling",
+      "carrier operations",
+      "carrier agreements",
+      "shippers and dealers",
+      "load boards",
+      "rate negotiation",
+      "dispatch training",
+      "sales objections"
+    ],
+    "privacyClass": "strict_private",
+    "currentTruth": false,
+    "publicUse": "anonymized_patterns_only",
+    "status": "machine_parsed_selective_extraction_active",
+    "notes": "Use for then-vs-now comparisons and first-party operating patterns. Never republish names, phone numbers, email addresses, MC/company identifiers, recordings, private figures, or one-to-one conversation content."
+  },
+  {
+    "id": "GMAIL-HERMES-OPS",
+    "label": "Hermes business Gmail operational signals",
+    "sourceType": "gmail_internal_signal",
+    "location": {
+      "provider": "gmail",
+      "account": "officeus@hermeslogisticsus.com"
+    },
+    "coverage": {
+      "from": null,
+      "to": null,
+      "complete": false
+    },
+    "directions": ["logistics", "marketing", "academy", "technology"],
+    "topics": [
+      "industry partnerships",
+      "search visibility",
+      "product milestones",
+      "platform notifications",
+      "operations"
+    ],
+    "privacyClass": "strict_private",
+    "currentTruth": false,
+    "publicUse": "signal_then_verify",
+    "status": "available_on_demand",
+    "notes": "Email can nominate a story, but private correspondence is not automatically a public source. Verify externally or obtain explicit public/first-party approval before publication."
+  },
+  {
+    "id": "GMAIL-HERMES-SHIPPERS",
+    "label": "Hermes shipper/broker Gmail operational signals",
+    "sourceType": "gmail_internal_signal",
+    "location": {
+      "provider": "gmail",
+      "account": "tina.bloom.truckload@gmail.com"
+    },
+    "coverage": {
+      "from": null,
+      "to": null,
+      "complete": false
+    },
+    "directions": ["logistics"],
+    "topics": [
+      "shipper demand",
+      "broker communication",
+      "load opportunities",
+      "dealer and shipper workflows"
+    ],
+    "privacyClass": "strict_private",
+    "currentTruth": false,
+    "publicUse": "aggregate_patterns_only",
+    "status": "available_on_demand",
+    "notes": "Use only aggregated, anonymized operational patterns. Never publish customer, broker, carrier, load, rate, contact, or private commercial details from email."
+  },
+  {
+    "id": "PUBLIC-WEB-CURRENT",
+    "label": "Current public authoritative web sources",
+    "sourceType": "public_web",
+    "location": {
+      "provider": "web"
+    },
+    "coverage": {
+      "from": null,
+      "to": null,
+      "complete": false
+    },
+    "directions": ["logistics", "marketing", "academy", "technology"],
+    "topics": ["current market", "regulation", "platform changes", "technology", "search", "social media"],
+    "privacyClass": "public",
+    "currentTruth": true,
+    "publicUse": "dated_cited_claims",
+    "status": "active",
+    "notes": "Prefer primary regulators, platform documentation, company announcements, and other authoritative dated sources."
+  }
+]

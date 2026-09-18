@@ -2,11 +2,46 @@ import generatedInsights from "./insights.generated.json";
 
 export type InsightDirection = "logistics" | "marketing" | "academy" | "technology";
 export type InsightContentTier = "standalone" | "digest" | "brief";
+export type InsightEvidenceKind = "public_external" | "first_party_historical" | "first_party_current" | "internal_signal";
+export type InsightEvidenceUse = "primary" | "context_only" | "private_signal";
+export type InsightPublicationRecommendation = "hold" | "telegram" | "digest" | "standalone" | "standalone_historical";
 
 export interface InsightLink {
   title: string;
   body: string;
   href: string;
+}
+
+export interface InsightEvidence {
+  sourceId: string;
+  kind: InsightEvidenceKind;
+  label: string;
+  use: InsightEvidenceUse;
+  url?: string;
+  observedAt?: string;
+  eventDate?: string;
+  notes?: string;
+}
+
+export interface InsightHistoricalComparison {
+  thenPeriod: string;
+  nowPeriod: string;
+  summary: string;
+  evidenceSourceIds: string[];
+  currentVerificationUrl?: string;
+}
+
+export interface InsightPublicationScore {
+  score: number;
+  recommendation: InsightPublicationRecommendation;
+  reasons: string[];
+}
+
+export interface InsightPrivacyReview {
+  piiRemoved: boolean;
+  privateFiguresRemoved: boolean;
+  historicalClaimsRevalidated: boolean;
+  reviewer?: string;
 }
 
 export interface InsightPost {
@@ -34,6 +69,10 @@ export interface InsightPost {
   contentTier: InsightContentTier;
   currentMarketClaim: boolean;
   telegram?: { group: string; messageId: number | null };
+  evidence?: InsightEvidence[];
+  historicalComparison?: InsightHistoricalComparison;
+  publicationScore?: InsightPublicationScore;
+  privacyReview?: InsightPrivacyReview;
 }
 
 export const insightDirectionMeta: Record<InsightDirection, { label: string; ownerUrl: string; description: string }> = {
