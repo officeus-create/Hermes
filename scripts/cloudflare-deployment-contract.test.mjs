@@ -148,6 +148,47 @@ assert.ok(
   "Failure release comments must keep newlines escaped inside the YAML run block.",
 );
 
+const accessStateProofWorkflow = read(".github/workflows/repair-access-state-production-proof.yml");
+assert.match(
+  accessStateProofWorkflow,
+  /CLOUDFLARE_PAGES_API_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_PAGES_READ_TOKEN\s*\}\}/,
+  "#961 proof must use the dedicated Pages-read credential only.",
+);
+assert.match(
+  accessStateProofWorkflow,
+  /CLOUDFLARE_D1_API_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_D1_API_TOKEN\s*\}\}/,
+  "#961 proof must keep a distinct dedicated D1 proof credential.",
+);
+assert.doesNotMatch(
+  accessStateProofWorkflow,
+  /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/,
+  "#961 proof must not fall back to a broad generic Cloudflare token.",
+);
+
+const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
+assert.match(
+  deploymentRecord,
+  /Release owner:\s*Cloudflare Git integration/,
+  "Current deployment record must name the native Cloudflare Git integration as the Pages release owner.",
+);
+assert.doesNotMatch(
+  deploymentRecord,
+  /CUSTOM_DOMAIN_DEPLOYMENT_STALE|create a scoped API token|CLOUDFLARE_API_TOKEN/,
+  "Current deployment record must not revive superseded generic Pages-token or stale-domain blockers.",
+);
+
+const claudeGuide = read("CLAUDE.md");
+assert.doesNotMatch(
+  claudeGuide,
+  /real \(untracked\) `wrangler\.toml`|sole piece of server code/,
+  "Agent guidance must not recreate an untracked root Wrangler authority or deny current Pages Function surfaces.",
+);
+assert.match(
+  claudeGuide,
+  /no active root Wrangler configuration/i,
+  "Agent guidance must preserve the no-active-root-Wrangler ownership rule.",
+);
+
 const paidIntentSmokeWorkflow = read(".github/workflows/repair-paid-intent-production-smoke.yml");
 assert.match(paidIntentSmokeWorkflow, /schedule:\s*\n\s*- cron:/, "Paid-intent E2E needs a bounded recurring proof even without receiver code changes.");
 assert.match(paidIntentSmokeWorkflow, /Decide whether full receiver smoke is required/, "Every deploy should classify whether a real synthetic email is justified.");
