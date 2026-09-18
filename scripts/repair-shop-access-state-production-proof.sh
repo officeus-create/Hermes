@@ -4,7 +4,7 @@ set -euo pipefail
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-access-production-smoke@hermesconnect.app"
 TEST_ID="${GITHUB_RUN_ID:-manual}-access-$(date +%s)"
-PASSWORD="HermesAccess-${TEST_ID}-A9!"
+PASSWORD="$(node -e 'const { randomBytes } = require("node:crypto"); process.stdout.write(randomBytes(24).toString("base64url") + "!Aa9")')"
 COOKIE="${RUNNER_TEMP:-/tmp}/repair-access-owner.cookies"
 TMP="${RUNNER_TEMP:-/tmp}"
 TARGET_SHA="$(git rev-parse HEAD)"
