@@ -31,10 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 30
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
-
     steps:
       - name: Check out exact approved revision
         uses: actions/checkout@v6
@@ -47,41 +43,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Resolve and mask optional Wrangler deployment credentials
-        id: credentials
-        run: |
-          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && [ -f workers/lead-email/wrangler.production.jsonc ]; then
-            pinned_account_id="$(node -e 'const fs=require("node:fs"); const raw=fs.readFileSync("workers/lead-email/wrangler.production.jsonc", "utf8"); const match=raw.match(/"account_id"\s*:\s*"([^"]+)"/); if (match) process.stdout.write(match[1]);')"
-            if [ -n "$pinned_account_id" ]; then
-              CLOUDFLARE_ACCOUNT_ID="$pinned_account_id"
-              echo "CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_ENV"
-            fi
-          fi
-
-          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-          fi
-          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
-          fi
-
-          missing=""
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            missing="scoped Cloudflare API token"
-          fi
-          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            if [ -n "$missing" ]; then missing="$missing, "; fi
-            missing="${missing}Cloudflare account identifier"
-          fi
-
-          if [ -n "$missing" ]; then
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "missing=$missing" >> "$GITHUB_OUTPUT"
-            echo "Wrangler credentials unavailable ($missing); exact-SHA Cloudflare Git deployment will be used as the production release owner."
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Install dependencies
         run: npm ci
 
@@ -91,19 +52,7 @@ jobs:
       - name: Validate static release contracts
         run: npm test
 
-      - name: Deploy dist to Cloudflare Pages project hermes
-        if: steps.credentials.outputs.available == 'true'
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4"
-          command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Verify exact-SHA Cloudflare Git deployment
-        if: steps.credentials.outputs.available != 'true'
         id: native_pages
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -254,34 +203,23 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WRANGLER_DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
           NATIVE_DEPLOYMENT_DETAILS: ${{ steps.native_pages.outputs.details_url }}
-          WRANGLER_AVAILABLE: ${{ steps.credentials.outputs.available }}
         run: |
-          if [ "$WRANGLER_AVAILABLE" = "true" ]; then
-            deployment_path="controlled Wrangler Pages deploy"
-            deployment_evidence="${WRANGLER_DEPLOYMENT_URL:-not returned}"
-          else
-            deployment_path="Cloudflare Git integration exact-SHA deploy"
-            deployment_evidence="${NATIVE_DEPLOYMENT_DETAILS:-check verified}"
-          fi
+          deployment_path="Cloudflare Git integration exact-SHA deploy"
+          deployment_evidence="${NATIVE_DEPLOYMENT_DETAILS:-check verified}"
           gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built and tested. Production was released through the ${deployment_path}, then the five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.\n\nDeployment evidence: ${deployment_evidence}."
 
       - name: Report deployment or verification failure
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nThe release workflow could not prove an exact-SHA Pages deployment or one of the build, static-contract, production read-back, Academy WEB10, or Connect-subdomain checks failed. Wrangler credential status: ${MISSING:-available or not required}. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nThe release workflow could not prove the native Cloudflare exact-SHA Pages deployment or one of the build, static-contract, production read-back, Academy WEB10, or Connect-subdomain checks failed. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
 
       - name: Publish sanitized summary
         if: always()
         env:
-          WRANGLER_DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
-          WRANGLER_DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
           NATIVE_DEPLOYMENT_DETAILS: ${{ steps.native_pages.outputs.details_url }}
-          WRANGLER_AVAILABLE: ${{ steps.credentials.outputs.available }}
         run: |
           {
             echo "# Cloudflare Pages approved-main production parity"
@@ -291,14 +229,8 @@ jobs:
             echo "- Project: \`hermes\`"
             echo "- Branch: \`main\`"
             echo "- Build output: \`dist\`"
-            if [ "$WRANGLER_AVAILABLE" = "true" ]; then
-              echo "- Release owner: controlled Wrangler Pages deploy"
-              echo "- Deployment URL: ${WRANGLER_DEPLOYMENT_URL:-not returned}"
-              echo "- Alias URL: ${WRANGLER_DEPLOYMENT_ALIAS:-not returned}"
-            else
-              echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
-              echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
-            fi
+            echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
+            echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
             echo "- WEB10 Academy production contract: five public learning tracks required; retired two-program copy forbidden"
             echo
             echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."
