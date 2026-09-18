@@ -106,7 +106,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   function renderDays() {
     const list = $("availability-list");
     if (!list) return;
-    list.innerHTML = "";
+    list.replaceChildren();
 
     for (const dayNumber of displayOrder) {
       const day = days.find((item) => item.day_of_week === dayNumber) ?? {
