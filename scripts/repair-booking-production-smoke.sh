@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
 CLIENT_EMAIL="repair-booking-customer-smoke@hermesconnect.app"
@@ -10,6 +12,9 @@ COOKIE="${RUNNER_TEMP:-/tmp}/owner.cookies"
 TMP="${RUNNER_TEMP:-/tmp}"
 
 echo "::add-mask::$PASSWORD"
+
+BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
 # Production is the source of truth. Never start product writes until the
 # Cloudflare Pages check for this exact main SHA has completed successfully.
@@ -85,7 +90,7 @@ test "$BUSY0" = 200
 test "$(jq '.busy | length' "${TMP}/busy0.json")" = 0
 
 BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Booking Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188",vehicle_year:2021,vehicle_make:"Ford",vehicle_model:"F-150",mileage:84500,vin:"1FTFW1E50MFA12345"}')"
-BC="$(curl -sS -o "${TMP}/booking.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+BC="$(curl -sS -o "${TMP}/booking.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOKING")"
 echo "PUBLIC_BOOKING_HTTP=$BC"; cat "${TMP}/booking.json"; echo
 test "$BC" = 201
 test "$(jq -r '.success' "${TMP}/booking.json")" = true
@@ -140,7 +145,7 @@ echo "TERMINAL_TRANSITION_HTTP=$TERMINAL"; cat "${TMP}/terminal.json"; echo
 test "$TERMINAL" = 409
 test "$(jq -r '.error' "${TMP}/terminal.json")" = invalid_status_transition
 
-DUP="$(curl -sS -o "${TMP}/duplicate.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+DUP="$(curl -sS -o "${TMP}/duplicate.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOKING")"
 echo "DUPLICATE_BOOKING_HTTP=$DUP"; cat "${TMP}/duplicate.json"; echo
 test "$DUP" = 409
 test "$(jq -r '.error' "${TMP}/duplicate.json")" = slot_unavailable

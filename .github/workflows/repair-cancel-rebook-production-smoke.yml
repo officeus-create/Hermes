@@ -5,11 +5,16 @@ on:
     branches: [main]
     paths:
       - functions/api/_lib/repair-shop-bookings-schema.mjs
+      - functions/api/_lib/github-actions-oidc.mjs
+      - functions/api/_lib/turnstile.mjs
+      - functions/api/public/repair-booking.ts
       - functions/api/repair-shop/cleanup-cancel-rebook-smoke.ts
+      - scripts/lib/github-actions-oidc.sh
       - .github/workflows/repair-cancel-rebook-production-smoke.yml
 
 permissions:
   contents: read
+  id-token: write
   checks: read
 
 jobs:
@@ -18,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+
       - name: Wait for exact Pages deploy and exercise cancellation release
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -31,6 +39,10 @@ jobs:
           PASSWORD="HermesRebook-${TEST_ID}-A9!"
           COOKIE="${RUNNER_TEMP}/owner.cookies"
           echo "::add-mask::$PASSWORD"
+
+          source scripts/lib/github-actions-oidc.sh
+          BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+          echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
           PAGES_READY=false
           for attempt in $(seq 1 60); do
@@ -83,7 +95,7 @@ jobs:
           APPOINTMENT_DATE="$(TZ=America/Chicago date -d 'tomorrow' +%F)"
           BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Rebook Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188"}')"
 
-          B1="$(curl -sS -o "${RUNNER_TEMP}/booking1.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          B1="$(curl -sS -o "${RUNNER_TEMP}/booking1.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOKING")"
           echo "FIRST_BOOKING_HTTP=$B1"; cat "${RUNNER_TEMP}/booking1.json"; echo
           test "$B1" = 201
           BOOKING1_ID="$(jq -r '.booking.id' "${RUNNER_TEMP}/booking1.json")"
@@ -105,7 +117,7 @@ jobs:
           test "$BUSY2" = 200
           test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${RUNNER_TEMP}/busy2.json")" = 0
 
-          B2="$(curl -sS -o "${RUNNER_TEMP}/booking2.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          B2="$(curl -sS -o "${RUNNER_TEMP}/booking2.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOKING")"
           echo "REBOOK_SAME_SLOT_HTTP=$B2"; cat "${RUNNER_TEMP}/booking2.json"; echo
           test "$B2" = 201
           BOOKING2_ID="$(jq -r '.booking.id' "${RUNNER_TEMP}/booking2.json")"
@@ -120,7 +132,7 @@ jobs:
           test "$(jq -r --arg id "$BOOKING1_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.to_status=="cancelled")] | length' "${RUNNER_TEMP}/owner.json")" = 1
           test "$(jq -r --arg id "$BOOKING2_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.from_status==null and .to_status=="confirmed")] | length' "${RUNNER_TEMP}/owner.json")" = 1
 
-          B3="$(curl -sS -o "${RUNNER_TEMP}/booking3.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          B3="$(curl -sS -o "${RUNNER_TEMP}/booking3.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOKING")"
           echo "THIRD_ACTIVE_DUPLICATE_HTTP=$B3"; cat "${RUNNER_TEMP}/booking3.json"; echo
           test "$B3" = 409
           test "$(jq -r '.error' "${RUNNER_TEMP}/booking3.json")" = slot_unavailable

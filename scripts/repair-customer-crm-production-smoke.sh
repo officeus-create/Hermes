@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+
 BASE="https://hermeslogisticsus.com"
 OWNER_EMAIL="repair-customer-crm-production-smoke@hermesconnect.app"
 CLIENT_EMAIL="repair-customer-crm-client@hermesconnect.app"
@@ -10,6 +12,9 @@ COOKIE="${RUNNER_TEMP:-/tmp}/crm-owner.cookies"
 TMP="${RUNNER_TEMP:-/tmp}"
 
 echo "::add-mask::$PASSWORD"
+
+BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
 if [[ -n "${GITHUB_SHA:-}" && -n "${GITHUB_REPOSITORY:-}" && -n "${GITHUB_TOKEN:-}" ]]; then
   PAGES_READY=false
@@ -70,7 +75,7 @@ DATE2="$(TZ=America/Chicago date -d '+2 days' +%F)"
 VIN="1FTFW1E50MFA54321"
 
 BOOK1="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$DATE1" --arg email "$CLIENT_EMAIL" --arg vin "$VIN" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"CRM Repeat Customer",client_email:$email,client_phone:"+1 414 555 0185",vehicle_year:2021,vehicle_make:"Ford",vehicle_model:"F-150",mileage:84500,vin:$vin}')"
-B1="$(curl -sS -o "${TMP}/crm-book1.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOK1")"
+B1="$(curl -sS -o "${TMP}/crm-book1.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOK1")"
 test "$B1" = 201
 ID1="$(jq -r '.booking.id' "${TMP}/crm-book1.json")"
 
@@ -78,7 +83,7 @@ STATUS="$(curl -sS -o "${TMP}/crm-status.json" -w '%{http_code}' -b "$COOKIE" -X
 test "$STATUS" = 200
 
 BOOK2="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$DATE2" --arg email "$CLIENT_EMAIL" --arg vin "$VIN" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"11:30",client_name:"CRM Repeat Customer",client_email:$email,client_phone:"+1 414 555 0185",vehicle_year:2021,vehicle_make:"Ford",vehicle_model:"F-150",mileage:90250,vin:$vin}')"
-B2="$(curl -sS -o "${TMP}/crm-book2.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOK2")"
+B2="$(curl -sS -o "${TMP}/crm-book2.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$BOOK2")"
 test "$B2" = 201
 ID2="$(jq -r '.booking.id' "${TMP}/crm-book2.json")"
 

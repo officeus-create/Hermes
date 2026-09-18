@@ -9,6 +9,9 @@ on:
       - functions/api/_lib/repair-shop-booking-vehicle-schema.mjs
       - functions/api/_lib/repair-shop-access.mjs
       - functions/api/public/repair-booking.ts
+      - functions/api/_lib/github-actions-oidc.mjs
+      - functions/api/_lib/turnstile.mjs
+      - scripts/lib/github-actions-oidc.sh
       - functions/api/repair-shop/access.ts
       - functions/api/repair-shop/bookings.ts
       - functions/api/repair-shop/bookings/[id]/status.ts
@@ -27,6 +30,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   checks: read
   issues: write
 
