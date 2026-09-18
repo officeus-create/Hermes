@@ -6,6 +6,9 @@ on:
     paths:
       - functions/api/repair-shop/customers.ts
       - functions/api/repair-shop/cleanup-customer-crm-smoke.ts
+      - functions/api/_lib/github-actions-oidc.mjs
+      - functions/api/_lib/turnstile.mjs
+      - scripts/lib/github-actions-oidc.sh
       - src/pages/services/hermes-connect/repair-shops/customers.astro
       - src/components/RepairShopActivationEnhancer.astro
       - public/repair-shop-web-v1.js
@@ -16,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   checks: read
 
 jobs:
