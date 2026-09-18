@@ -45,7 +45,40 @@
     const panel = document.createElement("section");
     panel.className = "repair-qr-panel hidden";
     panel.dataset.repairQrPanel = "true";
-    panel.innerHTML = `<div class="repair-qr-copy"><strong>${copy.title}</strong><p>${copy.body}</p></div><div class="repair-qr-media"><img data-repair-qr-image width="210" height="210" alt="${copy.alt.replaceAll('"','&quot;')}" loading="lazy" /><div class="repair-qr-actions"><button type="button" class="secondary-btn" data-repair-qr-download>${copy.download}</button><button type="button" class="secondary-btn" data-repair-qr-print>${copy.print}</button></div></div>`;
+    const qrCopy = document.createElement("div");
+    qrCopy.className = "repair-qr-copy";
+    const qrTitle = document.createElement("strong");
+    qrTitle.textContent = copy.title;
+    const qrBody = document.createElement("p");
+    qrBody.textContent = copy.body;
+    qrCopy.append(qrTitle, qrBody);
+
+    const qrMedia = document.createElement("div");
+    qrMedia.className = "repair-qr-media";
+    const qrImage = document.createElement("img");
+    qrImage.dataset.repairQrImage = "true";
+    qrImage.width = 210;
+    qrImage.height = 210;
+    qrImage.alt = copy.alt;
+    qrImage.loading = "lazy";
+    const qrActions = document.createElement("div");
+    qrActions.className = "repair-qr-actions";
+
+    const downloadButton = document.createElement("button");
+    downloadButton.type = "button";
+    downloadButton.className = "secondary-btn";
+    downloadButton.dataset.repairQrDownload = "true";
+    downloadButton.textContent = copy.download;
+
+    const printButton = document.createElement("button");
+    printButton.type = "button";
+    printButton.className = "secondary-btn";
+    printButton.dataset.repairQrPrint = "true";
+    printButton.textContent = copy.print;
+
+    qrActions.append(downloadButton, printButton);
+    qrMedia.append(qrImage, qrActions);
+    panel.append(qrCopy, qrMedia);
     linkWrap.insertAdjacentElement("afterend", panel);
 
     const getBookingUrl = () => document.getElementById("public-link-text")?.textContent?.trim() || "";
@@ -99,9 +132,23 @@
       const printWindow = window.open("", "_blank", "width=640,height=760");
       if (!printWindow) return;
       try { printWindow.opener = null; } catch {}
-      const safeBookingUrl = bookingUrl.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-      printWindow.document.write(`<!doctype html><html><head><title>${copy.title}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:32px;color:#111}img{width:360px;height:360px;max-width:90vw}.url{font-size:12px;overflow-wrap:anywhere;margin-top:18px}</style></head><body><h1>${copy.title}</h1><img src="${qrUrl}" alt="${copy.alt.replaceAll('"','&quot;')}" onload="window.print()"><p class="url">${safeBookingUrl}</p></body></html>`);
-      printWindow.document.close();
+      const printDocument = printWindow.document;
+      printDocument.title = copy.title;
+
+      const printStyle = printDocument.createElement("style");
+      printStyle.textContent = "body{font-family:Arial,sans-serif;text-align:center;padding:32px;color:#111}img{width:360px;height:360px;max-width:90vw}.url{font-size:12px;overflow-wrap:anywhere;margin-top:18px}";
+      printDocument.head.append(printStyle);
+
+      const heading = printDocument.createElement("h1");
+      heading.textContent = copy.title;
+      const printImage = printDocument.createElement("img");
+      printImage.src = qrUrl;
+      printImage.alt = copy.alt;
+      printImage.addEventListener("load", () => printWindow.print(), { once: true });
+      const bookingText = printDocument.createElement("p");
+      bookingText.className = "url";
+      bookingText.textContent = bookingUrl;
+      printDocument.body.append(heading, printImage, bookingText);
     });
     return true;
   }
