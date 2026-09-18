@@ -87,7 +87,6 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       const form = document.querySelector('[data-source-form]');
       const message = document.querySelector('[data-source-message]');
       const list = document.querySelector('[data-source-requests]');
-      const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
       const setMessage = (text, error = false) => {
         if (!(message instanceof HTMLElement)) return;
         message.textContent = text || '';
@@ -111,11 +110,31 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         if (form instanceof HTMLElement) form.hidden = !payload.eligible_to_propose_source;
         const requests = Array.isArray(payload.requests) ? payload.requests : [];
         if (!(list instanceof HTMLElement)) return;
+        list.replaceChildren();
         if (!requests.length) {
-          list.innerHTML = '<p>No source requests yet.</p>';
+          const empty = document.createElement('p');
+          empty.textContent = 'No source requests yet.';
+          list.append(empty);
           return;
         }
-        list.innerHTML = requests.map((item) => `<article class="lbs-request"><div><strong>${esc(item.source_name)}</strong><span>${esc(item.source_type)}${item.provider_name ? ` · ${esc(item.provider_name)}` : ''}</span></div><div><b>${esc(item.status)}</b><small>Visibility request: ${esc(item.requested_redistribution_permission)} · Contact: ${esc(item.requested_contact_reveal_permission)}</small></div></article>`).join('');
+        for (const item of requests) {
+          const article = document.createElement('article');
+          article.className = 'lbs-request';
+          const identity = document.createElement('div');
+          const name = document.createElement('strong');
+          name.textContent = String(item.source_name || '');
+          const source = document.createElement('span');
+          source.textContent = `${String(item.source_type || '')}${item.provider_name ? ` · ${String(item.provider_name)}` : ''}`;
+          identity.append(name, source);
+          const review = document.createElement('div');
+          const status = document.createElement('b');
+          status.textContent = String(item.status || '');
+          const permissions = document.createElement('small');
+          permissions.textContent = `Visibility request: ${String(item.requested_redistribution_permission || '')} · Contact: ${String(item.requested_contact_reveal_permission || '')}`;
+          review.append(status, permissions);
+          article.append(identity, review);
+          list.append(article);
+        }
       };
       const refresh = async () => {
         try { render(await api({ method: 'GET' })); }
