@@ -157,6 +157,7 @@ assert.match(activationRuntime, /CURRENT PRODUCT/);
 assert.match(activationRuntime, /Customer booking times are generated from these hours/);
 assert.match(activationRuntime, /Repair pricing is set by the shop/);
 assert.doesNotMatch(activationRuntime, /bar\\.innerHTML\\s*=/, "Repair booking share bar must not use innerHTML");
+assert.doesNotMatch(activationRuntime, /\\.innerHTML\\s*=/, "Repair activation runtime must not use innerHTML sinks");
 assert.doesNotMatch(
   activationRuntime,
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
