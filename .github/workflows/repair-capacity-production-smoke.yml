@@ -8,6 +8,9 @@ on:
       - functions/api/_lib/repair-shop-capabilities-schema.mjs
       - functions/api/_lib/repair-shop-capacity.mjs
       - functions/api/public/repair-booking.ts
+      - functions/api/_lib/github-actions-oidc.mjs
+      - functions/api/_lib/turnstile.mjs
+      - scripts/lib/github-actions-oidc.sh
       - functions/api/repair-shop/capabilities.ts
       - functions/api/repair-shop/capacity.ts
       - functions/api/repair-shop/cleanup-booking-smoke.ts
@@ -18,6 +21,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   actions: read
   checks: read
 
