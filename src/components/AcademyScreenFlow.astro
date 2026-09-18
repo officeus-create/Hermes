@@ -207,7 +207,17 @@ import "../styles/features/academy.css";
       if (eyebrow) eyebrow.textContent = selectedTrack.label;
       if (title) title.textContent = selectedTrack.title;
       if (body) body.textContent = selectedTrack.body;
-      if (list) list.innerHTML = selectedTrack.practice.map((item) => `<li><span aria-hidden="true">✓</span>${item}</li>`).join("");
+      if (list) {
+        const items = selectedTrack.practice.map((item) => {
+          const entry = document.createElement("li");
+          const check = document.createElement("span");
+          check.setAttribute("aria-hidden", "true");
+          check.textContent = "✓";
+          entry.append(check, document.createTextNode(item));
+          return entry;
+        });
+        list.replaceChildren(...items);
+      }
     };
 
     trackButtons.forEach((button) => {
