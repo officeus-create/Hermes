@@ -79,12 +79,13 @@ assert.equal(analytics.next, undefined);
 assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT), ["us-logistics-operations", "marketing"]);
 
 const root = new URL("../", import.meta.url);
-const [contentSource, api, lessonPage, programPage, submissionsPage] = await Promise.all([
+const [contentSource, api, lessonPage, programPage, submissionsPage, screenFlow] = await Promise.all([
   readFile(new URL("functions/api/_lib/academy-content.mjs", root), "utf8"),
   readFile(new URL("functions/api/academy/lesson.ts", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/lesson/index.astro", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/program/[program].astro", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/submissions/index.astro", root), "utf8"),
+  readFile(new URL("src/components/AcademyScreenFlow.astro", root), "utf8"),
 ]);
 
 assert.doesNotMatch(contentSource, /\$\d|salary|commission|guaranteed income|guaranteed employment/i);
@@ -126,6 +127,8 @@ for (const lessonId of marketingLessonIds) {
   assert.match(programPage, new RegExp(`marketing:${lessonId}`));
 }
 assert.match(programPage, /Full lesson content requires an existing Enrolled state/);
+assert.doesNotMatch(screenFlow, /\.innerHTML\s*=/, "Academy public screen flow must not use innerHTML rendering");
+assert.match(screenFlow, /list\.replaceChildren\(\.\.\.items\)/);
 
 assert.match(submissionsPage, /requestedProgram/);
 assert.match(submissionsPage, /requestedLesson/);
