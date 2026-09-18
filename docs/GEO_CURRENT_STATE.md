@@ -1,10 +1,10 @@
 # Hermes GEO — Current State
 
-Updated: 2026-09-04
+Updated: 2026-09-18
 
 This file is the single current repository handoff for GEO/public-AI visibility work. Historical GEO stacks remain provenance only and must not be replayed wholesale.
 
-Current engineering checkpoint is the active revenue-first SEO/GEO release lane in #1059, reconciled to current main before exact-head promotion.
+Current engineering checkpoint starts from current `main`. Historical release lane #1059 merged on 2026-09-04 and is no longer an active gate. #1352 (AI Entity Monitor / AI control-plane contracts) merged on 2026-09-17, and #1354 (current GSC indexing-tail closure) merged on 2026-09-17. Open replay PR #1368 is the current governed Insights intelligence-engine candidate and remains unpromoted until exact-head CI and merge.
 
 ## Boundary
 
@@ -28,6 +28,9 @@ Until CEO/One Brain finishes selecting priority business directions, query famil
 - #832 — bounded reciprocal authority links from the canonical Car Hauling Dispatch owner to existing carrier-readiness resources.
 - #836 — external-evidence acquisition contract for GSC, Bing, GA4, private aggregate outcomes and structured manual AI review.
 - #838 — governed 48 × 5 AI observation protocol and 240-slot unobserved ledger, preserved without synthetic provider evidence.
+- #1059 — revenue-first SEO/GEO execution gate merged on 2026-09-04; historical handoff only, not a current branch to replay.
+- #1352 — AI Entity Monitor and Cloudflare AI control-plane contracts merged on 2026-09-17; engineering instrumentation exists, but real provider observations remain a separate evidence class.
+- #1354 — current GSC indexing-tail closure merged on 2026-09-17: 260/260 current HTML sitemap owners were production-200, self-canonical and indexable; built-site graph had 0 orphan sitemap owners; controlled sitemap discovery was 11/11. The authenticated GSC report still showed 121 indexed / 227 excluded, including 98 `Discovered - currently not indexed`; that queue is observation work, not permission for bulk rewrites or mass resubmission.
 - #1006 — current-main reconciliation of AI visibility measurement truth plus Wave 01 entity context:
   - empty/unobserved rates remain `Not measured`, never synthetic `0%`;
   - exactly five governed providers form the 48 × 5 = 240 observation universe;
@@ -79,7 +82,7 @@ No clean-provider wave has been executed from repository engineering. Therefore:
 
 `0 completed observations` is a work-count only; it is never evidence of 0% visibility.
 
-## Fresh authenticated search/analytics checkpoint — 2026-09-04
+## Fresh authenticated search/analytics checkpoints — 2026-09-04 + indexing readback 2026-09-17
 
 Connected Search Console evidence for `https://hermeslogisticsus.com/`, settled through 2026-09-01, now supersedes the older 18-day handoff as the current safe baseline:
 
@@ -99,6 +102,12 @@ Connected GA4 evidence is usable for instrumentation checks but **not yet a clea
 - therefore `SEARCH_OR_AI_TO_QUALIFIED_LEAD` remains `NOT_PROVEN`, not `0%`.
 
 This checkpoint authorizes ranking/authority/conversion-measurement work on existing owners. It does not authorize a broad Logistics copy rewrite, mass page expansion, or a claim that AI referrals produced customers.
+
+### 2026-09-17 indexing-tail readback
+
+Authenticated Search Console coverage reported **121 indexed / 227 excluded**, with **98 Discovered - currently not indexed**, **1 Crawled - currently not indexed**, **61 canonical variants**, **55 intentional noindex**, **4 redirects**, **1 historical 403 row**, and **7 404 rows**. The repository/production sweep then proved **260/260 current HTML sitemap owners** return 200, self-canonical and indexable, with **0 orphan sitemap owners** and **11/11 controlled sitemap children** discoverable. The discovered queue expanded partly because the current sitemap owner set itself expanded; do not treat the raw 227 excluded count as a target that must be forced to zero.
+
+Public search-engine sampling may confirm that specific priority pages are discoverable, but it remains `PUBLIC_SAMPLE_ONLY`; it must not be promoted to authenticated Google/Bing index evidence. Further comparable query/page windows, URL Inspection, Bing state and clean GA4 receipts remain external evidence gates.
 
 ## External evidence still required
 
@@ -122,13 +131,15 @@ Repository changes do not count as proof that those third-party profiles were co
 
 ## Current execution order
 
-1. Land #1059 only after exact-head build/static/browser checks are green on current main.
-2. Keep public entity-registry publication holds intact until owner/external evidence resolves them.
-3. Use the fresh Search Console baseline to improve existing canonical owners and supporting authority rather than expand page count.
-4. Clean analytics attribution so automated/internal traffic cannot masquerade as customer traffic or conversion.
-5. Execute the governed clean-session AI observation wave and classify citation/entity/canonical/factual outcomes.
-6. Import only privacy-safe aggregate receiver/qualification/outcome evidence.
-7. Choose subsequent content/schema/authority/internal-link actions only from the verified priority query set plus verified evidence.
+1. Treat #1059 as merged historical provenance; never replay that old lane wholesale.
+2. Preserve #1354's technical indexing closure and monitor authenticated coverage/query windows rather than bulk-resubmitting the 98 discovered URLs.
+3. Promote #1368 only from its exact current-main replay head after all required CI is green; then verify any published Insight routes through the normal production/search contracts.
+4. Keep public entity-registry publication holds intact until owner/external evidence resolves them.
+5. Use the authenticated Search Console baselines to improve existing canonical owners and supporting authority rather than expand page count.
+6. Clean analytics attribution so automated/internal traffic cannot masquerade as customer traffic or conversion.
+7. Execute the governed clean-session AI observation wave and classify citation/entity/canonical/factual outcomes.
+8. Import only privacy-safe aggregate receiver/qualification/outcome evidence.
+9. Choose subsequent content/schema/authority/internal-link actions only from the verified priority query set plus verified evidence.
 
 ## Engineering completion boundary
 
