@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
 TEST_ID="${GITHUB_RUN_ID:-manual}-capacity-$(date +%s)"
@@ -9,6 +11,9 @@ COOKIE="${RUNNER_TEMP:-/tmp}/capacity-owner.cookies"
 TMP="${RUNNER_TEMP:-/tmp}"
 
 echo "::add-mask::$PASSWORD"
+
+BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
 if [[ -z "${GITHUB_SHA:-}" || -z "${GITHUB_REPOSITORY:-}" || -z "${GITHUB_TOKEN:-}" ]]; then
   echo "GitHub deployment metadata unavailable; refusing an ungated production capacity smoke."
@@ -91,7 +96,7 @@ make_payload() {
 for i in 1 2 3; do
   PAYLOAD="$(make_payload "$i")"
   (
-    CODE="$(curl -sS -o "${TMP}/capacity-booking-${i}.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$PAYLOAD")"
+    CODE="$(curl -sS -o "${TMP}/capacity-booking-${i}.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$PAYLOAD")"
     printf '%s' "$CODE" > "${TMP}/capacity-booking-${i}.code"
   ) &
 done
@@ -137,12 +142,12 @@ test "$RELEASED" = 200
 test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${TMP}/capacity-released.json")" = 0
 
 REPLACEMENT_PAYLOAD="$(make_payload replacement)"
-REPLACEMENT="$(curl -sS -o "${TMP}/capacity-replacement.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$REPLACEMENT_PAYLOAD")"
+REPLACEMENT="$(curl -sS -o "${TMP}/capacity-replacement.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$REPLACEMENT_PAYLOAD")"
 echo "CAPACITY_REPLACEMENT_HTTP=$REPLACEMENT"; cat "${TMP}/capacity-replacement.json"; echo
 test "$REPLACEMENT" = 201
 
 EXCESS_PAYLOAD="$(make_payload excess)"
-EXCESS="$(curl -sS -o "${TMP}/capacity-excess.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$EXCESS_PAYLOAD")"
+EXCESS="$(curl -sS -o "${TMP}/capacity-excess.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$EXCESS_PAYLOAD")"
 echo "CAPACITY_EXCESS_HTTP=$EXCESS"; cat "${TMP}/capacity-excess.json"; echo
 test "$EXCESS" = 409
 test "$(jq -r '.error' "${TMP}/capacity-excess.json")" = slot_unavailable

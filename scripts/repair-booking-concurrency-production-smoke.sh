@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
 CLIENT_A="repair-concurrency-a@hermesconnect.app"
@@ -12,6 +14,9 @@ TMP="${RUNNER_TEMP:-/tmp}"
 TARGET_SHA="$(git rev-parse HEAD)"
 
 echo "::add-mask::$PASSWORD"
+
+BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
 cleanup() {
   curl -sS -o "${TMP}/concurrency-cleanup-trap.json" -X POST "$BASE/api/repair-shop/cleanup-booking-smoke" >/dev/null || true
@@ -82,9 +87,9 @@ PAYLOAD_B="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$
 
 # Launch both writes before waiting for either response. HTTP 409 is a successful
 # curl transport result, so wait only detects transport failures here.
-curl -sS -o "${TMP}/concurrency-a.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$PAYLOAD_A" > "${TMP}/concurrency-a.code" &
+curl -sS -o "${TMP}/concurrency-a.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$PAYLOAD_A" > "${TMP}/concurrency-a.code" &
 PID_A=$!
-curl -sS -o "${TMP}/concurrency-b.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$PAYLOAD_B" > "${TMP}/concurrency-b.code" &
+curl -sS -o "${TMP}/concurrency-b.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$PAYLOAD_B" > "${TMP}/concurrency-b.code" &
 PID_B=$!
 wait "$PID_A"
 wait "$PID_B"

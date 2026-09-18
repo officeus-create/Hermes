@@ -6,6 +6,9 @@ on:
     paths:
       - functions/api/_lib/repair-shop-followups-schema.mjs
       - functions/api/public/repair-booking.ts
+      - functions/api/_lib/github-actions-oidc.mjs
+      - functions/api/_lib/turnstile.mjs
+      - scripts/lib/github-actions-oidc.sh
       - functions/api/repair-shop/bookings/**
       - functions/api/repair-shop/followups.ts
       - functions/api/repair-shop/cleanup-booking-smoke.ts
@@ -15,6 +18,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   actions: read
   checks: read
 

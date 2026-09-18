@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
 TEST_ID="${GITHUB_RUN_ID:-manual}-ops-$(date +%s)"
@@ -9,6 +11,9 @@ COOKIE="${RUNNER_TEMP:-/tmp}/ops-owner.cookies"
 TMP="${RUNNER_TEMP:-/tmp}"
 
 echo "::add-mask::$PASSWORD"
+
+BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
+echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
 if [[ -z "${GITHUB_SHA:-}" || -z "${GITHUB_REPOSITORY:-}" || -z "${GITHUB_TOKEN:-}" ]]; then
   echo "GitHub deployment metadata unavailable; refusing an ungated operations smoke."
@@ -59,11 +64,11 @@ make_payload() {
 }
 
 PAYLOAD="$(make_payload first)"
-CODE="$(curl -sS -o "${TMP}/ops-first.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$PAYLOAD")"
+CODE="$(curl -sS -o "${TMP}/ops-first.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$PAYLOAD")"
 echo "OPS_FIRST_BOOKING_HTTP=$CODE"; test "$CODE" = 201
 BOOKING_ID="$(jq -r '.booking.id' "${TMP}/ops-first.json")"
 
-CODE="$(curl -sS -o "${TMP}/ops-blocked.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$(make_payload blocked)")"
+CODE="$(curl -sS -o "${TMP}/ops-blocked.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$(make_payload blocked)")"
 echo "OPS_PRE_NOSHOW_CONFLICT_HTTP=$CODE"; test "$CODE" = 409
 
 CODE="$(curl -sS -o "${TMP}/ops-noshow.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"no_show"}')"
@@ -75,7 +80,7 @@ CODE="$(curl -sS -o "${TMP}/ops-released.json" -w '%{http_code}' "$BASE/api/publ
 test "$CODE" = 200
 test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${TMP}/ops-released.json")" = 0
 
-CODE="$(curl -sS -o "${TMP}/ops-replacement.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$(make_payload replacement)")"
+CODE="$(curl -sS -o "${TMP}/ops-replacement.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' -H "X-Hermes-GitHub-OIDC: $BOOKING_OIDC_TOKEN" --data-binary "$(make_payload replacement)")"
 echo "OPS_REPLACEMENT_HTTP=$CODE"; test "$CODE" = 201
 REPLACEMENT_ID="$(jq -r '.booking.id' "${TMP}/ops-replacement.json")"
 

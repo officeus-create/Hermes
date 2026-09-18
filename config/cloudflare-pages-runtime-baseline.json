@@ -1,6 +1,6 @@
 {
   "project": "hermes",
-  "verified_at": "2026-09-17",
+  "verified_at": "2026-09-18",
   "production": {
     "observed_compatibility_date": "2026-07-12",
     "target_compatibility_date": "2026-08-04",
@@ -12,7 +12,8 @@
     "secret_names": [
       "HERMES_INTERNAL_AI_RUNNER_TOKEN",
       "HERMES_SYNTHETIC_ACCOUNT_EMAILS",
-      "LEAD_SERVICE_TOKEN"
+      "LEAD_SERVICE_TOKEN",
+      "TURNSTILE_REPAIR_BOOKING_SECRET"
     ],
     "bindings": {
       "kv": { "LEAD_LIMITS": "HERMES_LEAD_LIMITS_PRODUCTION" },
