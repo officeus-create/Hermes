@@ -22,6 +22,16 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   assert.equal(observed.nextCalls, 1);
 }
 
+for (const legacyPath of ["/academy", "/academy/"]) {
+  const { context, observed } = contextFor(`https://hermeslogisticsus.com${legacyPath}?utm_source=gsc`);
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/paths/academy/?utm_source=gsc");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
+  assert.equal(observed.nextCalls, 0);
+  assert.equal(observed.assetRequests.length, 0);
+}
+
 {
   const { context, observed } = contextFor("https://hermeslogisticsus.com/?agent=1", {
     body: "# Hermes\n",

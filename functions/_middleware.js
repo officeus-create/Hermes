@@ -17,6 +17,11 @@ const STALE_PUBLIC_COPY = [
   "contact delivery is not connected",
 ];
 
+const MAIN_LEGACY_REDIRECTS = new Map([
+  ["/academy", "/paths/academy/"],
+  ["/academy/", "/paths/academy/"],
+]);
+
 const ACCESS_DOCUMENTS = new Map([
   ["/request-access", "/index.html"],
   ["/request-access/", "/index.html"],
@@ -296,6 +301,15 @@ function canonicalPagesProductionRedirect(request) {
   return Response.redirect(target.toString(), 308);
 }
 
+function canonicalMainLegacyRedirect(incomingUrl) {
+  const targetPath = MAIN_LEGACY_REDIRECTS.get(incomingUrl.pathname);
+  if (!targetPath) return null;
+
+  const target = new URL(`https://${MAIN_HOST}${targetPath}`);
+  target.search = incomingUrl.search;
+  return Response.redirect(target.toString(), 301);
+}
+
 async function sanitizeMainDomainCopy(context) {
   const pagesRedirect = canonicalPagesProductionRedirect(context.request);
   if (pagesRedirect) return pagesRedirect;
@@ -305,6 +319,9 @@ async function sanitizeMainDomainCopy(context) {
   }
 
   const incomingUrl = new URL(context.request.url);
+  const legacyRedirect = canonicalMainLegacyRedirect(incomingUrl);
+  if (legacyRedirect) return withTransportSecurity(legacyRedirect);
+
   const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
   if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
 
