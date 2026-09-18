@@ -136,7 +136,10 @@
     const wrapper = document.createElement("span");
     wrapper.className = "hermes-bouncing-i";
     wrapper.setAttribute("aria-hidden", "true");
-    wrapper.innerHTML = "<span>ı</span><i></i>";
+    const stem = document.createElement("span");
+    stem.textContent = "ı";
+    const dot = document.createElement("i");
+    wrapper.append(stem, dot);
     return wrapper;
   };
 

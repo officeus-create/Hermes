@@ -104,7 +104,17 @@
       core.className = "hc-intelligence-core";
       core.setAttribute("data-hc-intelligence-core", "true");
       core.setAttribute("aria-hidden", "true");
-      core.innerHTML = '<span class="hc-intelligence-core__halo"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-a"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-b"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-c"></span><span class="hc-intelligence-core__dot"></span>';
+      const halo = document.createElement("span");
+      halo.className = "hc-intelligence-core__halo";
+      const ringA = document.createElement("span");
+      ringA.className = "hc-intelligence-core__ring hc-intelligence-core__ring-a";
+      const ringB = document.createElement("span");
+      ringB.className = "hc-intelligence-core__ring hc-intelligence-core__ring-b";
+      const ringC = document.createElement("span");
+      ringC.className = "hc-intelligence-core__ring hc-intelligence-core__ring-c";
+      const dot = document.createElement("span");
+      dot.className = "hc-intelligence-core__dot";
+      core.append(halo, ringA, ringB, ringC, dot);
       document.body.append(core);
     }
 
