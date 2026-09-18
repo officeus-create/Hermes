@@ -23,7 +23,7 @@ jobs:
     environment: production
     timeout-minutes: 15
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_WORKERS_DEPLOY_TOKEN: ${{ secrets.CLOUDFLARE_WORKERS_DEPLOY_TOKEN }}
 
     steps:
       - name: Check out approved main
@@ -51,16 +51,16 @@ jobs:
 
       - name: Validate Cloudflare credentials
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "Cloudflare API token required for hermes-lead-email deployment." >&2
+          if [ -z "$CLOUDFLARE_WORKERS_DEPLOY_TOKEN" ]; then
+            echo "Dedicated CLOUDFLARE_WORKERS_DEPLOY_TOKEN is required for hermes-lead-email deployment." >&2
             exit 1
           fi
-          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_WORKERS_DEPLOY_TOKEN"
 
       - name: Deploy only hermes-lead-email
         uses: cloudflare/wrangler-action@v4
         with:
-          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          apiToken: ${{ env.CLOUDFLARE_WORKERS_DEPLOY_TOKEN }}
           wranglerVersion: "4"
           command: deploy --config workers/lead-email/wrangler.production.jsonc --keep-vars
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
