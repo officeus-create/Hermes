@@ -124,6 +124,10 @@ for (const smokeName of closedWindowSmokePaths) {
 const bookingProductionWorkflow = await readFile(new URL("../.github/workflows/repair-booking-production-smoke.yml", import.meta.url), "utf8");
 assert.match(bookingProductionWorkflow, /REPAIR_ACCESS_STATE_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/);
 assert.match(bookingProductionWorkflow, /repair_shop_free_registration_ended/);
+const cancelRebookProductionWorkflow = await readFile(new URL("../.github/workflows/repair-cancel-rebook-production-smoke.yml", import.meta.url), "utf8");
+assert.match(cancelRebookProductionWorkflow, /REPAIR_CANCEL_REBOOK_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/);
+assert.match(cancelRebookProductionWorkflow, /repair_shop_free_registration_ended/);
+assert.match(cancelRebookProductionWorkflow, /\/services\/hermes-connect\/repair-shops\/plan\//);
 
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step
 // first-value loop through the first completed booking and paid-plan decision.
