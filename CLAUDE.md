@@ -56,9 +56,11 @@ Shared logic for this lives in `src/lib/`:
 - `path-lead.ts` — lead payload shaping for the path-engine flow.
 - `load-board.ts` / `load-operations.ts` / `lane-intelligence.ts` / `carrier-enrichment.ts` — Car Hauling Load Board business logic: demo load matching, rate/deadhead/RPM metrics from synthetic offer and shipment-history data (see `fixtures/load-operations/*.csv`, consumed via `load-operations.test.mjs`), and lane scoring.
 
-### The one server endpoint
+### Cloudflare Pages Functions and contact receiver
 
-`functions/api/logistics-lead.ts` is a Cloudflare Pages Function — the sole piece of server code, and the only path by which `PUBLIC_CONTACT_MODE=live` could ever actually send email. It enforces same-origin (`ALLOWED_ORIGIN`), a fixed sales destination/subject built server-side (never trusts a client-supplied subject), request-ID idempotency and per-IP rate limiting via a KV namespace, and body-size/content-type limits. `wrangler.toml.example` is a template for the real (untracked) `wrangler.toml`; the KV namespace, verified sender, and Cloudflare Email Sending must all be provisioned before flipping this live. Covered by `scripts/sales-lead-receiver.test.mjs`.
+`functions/api/logistics-lead.ts` is one audited Cloudflare Pages Function, not the repository's only server-side surface. It enforces same-origin (`ALLOWED_ORIGIN`), a fixed sales destination/subject built server-side (never trusts a client-supplied subject), request-ID idempotency and per-IP rate limiting via a KV namespace, and body-size/content-type limits. Before making architecture claims or changing runtime ownership, inspect the current `functions/` tree and the relevant contract tests because Hermes Connect, Repair Shop/Auth and other bounded Pages Functions now coexist with this receiver.
+
+`wrangler.jsonc.example` is a versioned runtime reference only. There is **no active root Wrangler configuration** in the public repository, and agents must not create an untracked root `wrangler.toml`/`wrangler.jsonc` as a second Pages deployment authority. Current Production bindings and compatibility-date ownership remain Cloudflare project state until the reviewed #1349 runtime-parity migration is complete. Do not copy production resource IDs or secret values into the repository. The contact receiver remains covered by `scripts/sales-lead-receiver.test.mjs`.
 
 ### Post-build static validation gate
 
