@@ -5,6 +5,14 @@ const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
 const headers = await readFile(join(root, "public/_headers"), "utf8");
+const designOwnerPolish = await readFile(join(root, "public/design-owner-polish.js"), "utf8");
+const hermesConnectExperience = await readFile(join(root, "src/components/HermesConnectExperience.astro"), "utf8");
+if (/wrapper\.innerHTML\s*=/.test(designOwnerPolish)) {
+  throw new Error("Decorative Hermes AI mark must not use innerHTML");
+}
+if (/core\.innerHTML\s*=/.test(hermesConnectExperience)) {
+  throw new Error("Hermes Connect intelligence core must not use innerHTML");
+}
 if (!headers.includes("Strict-Transport-Security: max-age=31536000")) {
   throw new Error("HSTS header is missing from public/_headers");
 }
