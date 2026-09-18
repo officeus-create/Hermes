@@ -39,6 +39,7 @@ assert.match(operationsSource, /if \(needed\) followups\.add\(bookingId\); else 
 assert.match(operationsSource, /followups\.has\(bookingId\)/);
 for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) assert.match(operationsSource, new RegExp(`\\b${locale}: \\{`));
 assert.doesNotMatch(operationsSource, /client_email|client_phone|vin|dataLayer|gtag/i);
+assert.doesNotMatch(operationsSource, /\.innerHTML\s*=/, "Repair Shop operations must not use innerHTML sinks");
 
 assert.match(componentSource, /isRepairShopDashboard/);
 assert.match(componentSource, /repair-shop-operations\.js/);

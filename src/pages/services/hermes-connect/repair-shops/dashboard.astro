@@ -143,7 +143,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function renderServices(items: Service[]) {
     $("services-loading")?.classList.add("hidden"); $("service-count")!.textContent = `${items.length} ${items.length === 1 ? "service" : "services"}`;
-    const list = $("services-list")!; const empty = $("services-empty")!; list.innerHTML = "";
+    const list = $("services-list")!; const empty = $("services-empty")!; list.replaceChildren();
     if (!items.length) { list.classList.add("hidden"); empty.classList.remove("hidden"); return; }
     empty.classList.add("hidden"); list.classList.remove("hidden");
     for (const service of items) {
@@ -192,7 +192,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function renderBookings(items: Booking[]) {
     $("bookings-loading")?.classList.add("hidden"); $("booking-count")!.textContent = `${items.length} ${items.length === 1 ? "booking" : "bookings"}`;
-    const list=$("bookings-list")!; const empty=$("bookings-empty")!; list.innerHTML="";
+    const list=$("bookings-list")!; const empty=$("bookings-empty")!; list.replaceChildren();
     if(!items.length){list.classList.add("hidden");empty.classList.remove("hidden");return;} empty.classList.add("hidden");list.classList.remove("hidden");
     for(const booking of items){
       const card=document.createElement("article"); card.className="booking-card"; card.dataset.bookingId=booking.id;
@@ -210,7 +210,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function renderFeedback(items: Feedback[]) {
     $("feedback-loading")?.classList.add("hidden"); $("feedback-count")!.textContent = `${items.length} ${items.length === 1 ? "note" : "notes"}`;
-    const list=$("feedback-list")!; const empty=$("feedback-empty")!; list.innerHTML="";
+    const list=$("feedback-list")!; const empty=$("feedback-empty")!; list.replaceChildren();
     if(!items.length){list.classList.add("hidden");empty.classList.remove("hidden");return;} empty.classList.add("hidden");list.classList.remove("hidden");
     for(const item of items){const row=document.createElement("article");row.className="feedback-row";const top=document.createElement("div");const category=document.createElement("strong");category.textContent=item.category.charAt(0).toUpperCase()+item.category.slice(1);const rating=document.createElement("span");rating.className="pill";rating.textContent=`${item.rating}/5`;top.append(category,rating);const message=document.createElement("p");message.textContent=item.message;const time=document.createElement("span");time.className="muted small";time.textContent=formatHistoryTime(item.created_at);row.append(top,message,time);list.append(row);}
   }
