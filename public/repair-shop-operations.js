@@ -43,7 +43,7 @@
   const renderHistory = (card, history) => {
     const section = card.querySelector(".history");
     if (!section || !Array.isArray(history)) return;
-    section.innerHTML = "";
+    section.replaceChildren();
     const title = document.createElement("span");
     title.className = "mini-label";
     title.textContent = copy.history;
@@ -93,7 +93,7 @@
       if (!response.ok || !data.success) throw new Error(data.error || "status_failed");
       const control = card.querySelector(".status-control");
       if (control) {
-        control.innerHTML = "";
+        control.replaceChildren();
         const pill = document.createElement("span");
         pill.className = "status-pill status-no_show";
         pill.textContent = copy.noShow;
