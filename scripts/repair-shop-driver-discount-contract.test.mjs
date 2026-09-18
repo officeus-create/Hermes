@@ -34,6 +34,7 @@ assert.match(runtime, /data-driver-discount-owner/);
 assert.match(runtime, /data-driver-discount-public/);
 assert.match(runtime, /#22c55e/);
 assert.doesNotMatch(runtime, /innerHTML\s*\+=\s*.*service\.name/);
+assert.doesNotMatch(runtime, /\.innerHTML\s*=/, "Driver discount owner runtime must not use innerHTML sinks");
 assert.doesNotMatch(polish, /\.innerHTML\s*=/, "Driver discount preview polish must not use innerHTML sinks");
 
 console.log("repair-shop-driver-discount contract: OK");
