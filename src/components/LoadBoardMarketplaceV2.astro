@@ -227,18 +227,78 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       }
     } catch {}
 
+    const makeNode = (tag: string, className = "", text?: unknown) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = String(text);
+      return node;
+    };
+
+    const createEmptyMarketplaceState = (title: string, message: string, href = "") => {
+      const empty = makeNode("div", "lbv2-empty");
+      empty.append(makeNode("strong", "", title), makeNode("span", "", message));
+      if (href) {
+        const link = document.createElement("a");
+        link.href = href;
+        link.textContent = "Register company";
+        empty.append(link);
+      }
+      return empty;
+    };
+
+    const createOwnPostCard = (post: any) => {
+      const article = makeNode("article", "lbv2-post-card");
+      article.dataset.postId = String(post?.id || "");
+
+      const details = makeNode("div");
+      details.append(
+        makeNode("span", "", post?.type === "load" ? "LOAD" : "TRUCK"),
+        makeNode("strong", "", `${post?.origin || ""} → ${post?.destination || "Open destination"}`),
+        makeNode("small", "", `${String(post?.equipment || "").replaceAll("_", " ")} · ${post?.pickup_window || post?.availability || "Current"}`),
+      );
+
+      const status = makeNode("div");
+      const value = post?.rate_amount
+        ? `$${Number(post.rate_amount).toLocaleString("en-US")}`
+        : post?.type === "load"
+          ? "Rate on request"
+          : "Capacity";
+      status.append(
+        makeNode("b", "", value),
+        makeNode("small", "", `${post?.status || ""} · expires ${new Date(post?.expires_at).toLocaleString()}`),
+      );
+      if (post?.status === "active") {
+        const archive = document.createElement("button");
+        archive.type = "button";
+        archive.dataset.archivePost = String(post?.id || "");
+        archive.textContent = "Archive";
+        status.append(archive);
+      }
+
+      article.append(details, status);
+      return article;
+    };
+
     const renderOwnPosts = () => {
       if (myCount) myCount.textContent = String(ownPosts.filter((post) => post.status === "active").length);
       if (!myPostsList) return;
+      myPostsList.replaceChildren();
       if (!companyState) {
-        myPostsList.innerHTML = `<div class="lbv2-empty"><strong>Company profile required</strong><span>Create or sign in to Hermes, register the company you operate with, then post freight or truck capacity.</span><a href="${ACCESS_PATH}?source=my-posts">Register company</a></div>`;
+        myPostsList.append(createEmptyMarketplaceState(
+          "Company profile required",
+          "Create or sign in to Hermes, register the company you operate with, then post freight or truck capacity.",
+          `${ACCESS_PATH}?source=my-posts`,
+        ));
         return;
       }
       if (!ownPosts.length) {
-        myPostsList.innerHTML = `<div class="lbv2-empty"><strong>No marketplace posts yet</strong><span>Use Post load or Post truck above. Posts appear here immediately and expire automatically.</span></div>`;
+        myPostsList.append(createEmptyMarketplaceState(
+          "No marketplace posts yet",
+          "Use Post load or Post truck above. Posts appear here immediately and expire automatically.",
+        ));
         return;
       }
-      myPostsList.innerHTML = ownPosts.map((post) => `<article class="lbv2-post-card" data-post-id="${post.id}"><div><span>${post.type === "load" ? "LOAD" : "TRUCK"}</span><strong>${post.origin} → ${post.destination || "Open destination"}</strong><small>${String(post.equipment || "").replaceAll("_", " ")} · ${post.pickup_window || post.availability || "Current"}</small></div><div><b>${post.rate_amount ? `$${Number(post.rate_amount).toLocaleString("en-US")}` : post.type === "load" ? "Rate on request" : "Capacity"}</b><small>${post.status} · expires ${new Date(post.expires_at).toLocaleString()}</small>${post.status === "active" ? `<button type="button" data-archive-post="${post.id}">Archive</button>` : ""}</div></article>`).join("");
+      for (const post of ownPosts) myPostsList.append(createOwnPostCard(post));
       myPostsList.querySelectorAll<HTMLButtonElement>("[data-archive-post]").forEach((button) => button.addEventListener("click", async () => {
         button.disabled = true;
         const response = await fetch(`/api/load-board/posts/${encodeURIComponent(button.dataset.archivePost || "")}`, { method: "DELETE", headers: { Accept: "application/json" }, credentials: "same-origin" });
@@ -264,19 +324,31 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       renderOwnPosts();
     };
 
-    const truckPreviewRows = () => [
+    const createTruckPreviewRows = () => [
       ["Fulton, NY", "Open destination", "53 ft Dry Van", "Appointment 10 AM", "Solo", "Historical capacity pattern · sanitized"],
       ["Des Plaines, IL", "Open destination", "53 ft Dry Van", "Ready noon", "Solo", "Historical capacity pattern · sanitized"],
       ["State College, PA", "Open destination", "53 ft Dry Van", "11 AM", "Solo", "Historical capacity pattern · sanitized"],
       ["Mokena, IL", "Open destination", "53 ft Reefer", "1 PM", "Solo", "Historical capacity pattern · sanitized"],
       ["Williamsburg, VA", "Open destination", "53 ft Dry Van", "Ready now", "TEAM", "Historical capacity pattern · sanitized"],
       ["Joplin, MO", "Open destination", "53 ft Dry Van", "Ready 2 PM", "TEAM", "Historical capacity pattern · sanitized"],
-    ].map(([origin, destination, equipment, ready, team, source]) => `<article class="hlb-live-row hlb-live-row--capacity lbv2-truck-preview"><div class="hlb-live-route"><span>${origin}</span><b>→</b><span>${destination}</span></div><div class="hlb-live-meta"><span><strong>${equipment}</strong></span><span>${ready} · ${team}</span><span>${source}</span></div><div class="hlb-live-rate"><strong>Truck capacity</strong><small>PREVIEW · NOT LIVE</small></div></article>`).join("");
+    ].map(([origin, destination, equipment, ready, team, source]) => {
+      const row = makeNode("article", "hlb-live-row hlb-live-row--capacity lbv2-truck-preview");
+      const route = makeNode("div", "hlb-live-route");
+      route.append(makeNode("span", "", origin), makeNode("b", "", "→"), makeNode("span", "", destination));
+      const meta = makeNode("div", "hlb-live-meta");
+      const equipmentWrap = makeNode("span");
+      equipmentWrap.append(makeNode("strong", "", equipment));
+      meta.append(equipmentWrap, makeNode("span", "", `${ready} · ${team}`), makeNode("span", "", source));
+      const rate = makeNode("div", "hlb-live-rate");
+      rate.append(makeNode("strong", "", "Truck capacity"), makeNode("small", "", "PREVIEW · NOT LIVE"));
+      row.append(route, meta, rate);
+      return row;
+    });
 
     const ensurePublicTruckPreview = () => {
       if (!capacityRows || root.classList.contains("is-unlocked")) return;
       if (capacityRows.querySelector(".hlb-live-row")) return;
-      capacityRows.innerHTML = truckPreviewRows();
+      capacityRows.append(...createTruckPreviewRows());
     };
 
     const setTab = (tab: string) => {
