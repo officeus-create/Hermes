@@ -1,5 +1,145 @@
 [
   {
+    "id": "eia-diesel-route-planning-september-2026",
+    "direction": "logistics",
+    "slug": "diesel-price-route-planning-september-2026",
+    "title": "U.S. Diesel at $6.285/Gallon: Carrier Route Planning | Hermes",
+    "description": "EIA reported U.S. on-highway diesel at $6.285 per gallon for September 14, 2026. Hermes connects the price shock to deadhead control, lane economics, and carrier rate decisions.",
+    "eyebrow": "Logistics Cost Update · September 2026",
+    "h1": "U.S. diesel reached $6.285 per gallon. What changes for carrier route planning?",
+    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.285 per gallon for September 14, 2026, up $0.318 from the prior week. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
+    "explanation": [
+      "Start with the current fact. The U.S. Energy Information Administration reported an average on-highway diesel price of $6.285 per gallon for September 14, 2026, compared with $5.967 one week earlier. The same table shows the national average $2.546 per gallon above the year-earlier level. For a carrier, that is not a reason to replace lane analysis with a single fuel headline. It is a reason to make fuel exposure explicit in the load decision instead of treating it as background noise.",
+      "Hermes historical dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. That older operating pattern becomes more important when diesel is expensive: an attractive loaded rate can still produce weak economics if the truck travels too far empty before pickup, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The useful lesson from the archive is the decision sequence, not any old promised rate, commission, earnings level, or tool.",
+      "The practical response is to calculate the movement as a route, not as a headline rate. Before accepting or negotiating a load, separate loaded miles from deadhead to pickup and expected repositioning after delivery. Add the fuel assumption that fits the truck and route, then consider tolls, time, equipment fit, appointment risk, payment terms, and the quality of the likely next move. A national diesel average helps update the cost assumption; it does not decide whether a specific load works.",
+      "This also changes negotiation discipline. When fuel moves sharply in one week, stale internal assumptions can make yesterday's acceptable lane look different today. The carrier or dispatcher should be able to explain the operating reason behind a counteroffer—route, empty-mile exposure, timing, equipment or destination economics—rather than simply citing a national diesel number. That creates a more defensible conversation while avoiding claims that every broker, lane or customer must absorb the same adjustment.",
+      "The then-versus-now comparison is straightforward. Historical Hermes operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 2026 EIA data raises the cost of getting those decisions wrong, but it does not change the underlying method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the actual operating picture, and re-check assumptions when fuel or market conditions move."
+    ],
+    "takeaways": [
+      "EIA put the U.S. on-highway diesel average at $6.285 per gallon for September 14, up $0.318 week over week",
+      "High diesel prices increase the importance of deadhead and reload planning; they do not create one universal carrier rate",
+      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load",
+      "Hermes historical operating evidence supports the same core discipline—route planning and deadhead control—but old commercial claims are not reused as current truth"
+    ],
+    "faq": [
+      {
+        "question": "Does $6.285 diesel mean every load rate should rise by the same amount?",
+        "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."
+      },
+      {
+        "question": "Why does deadhead matter more when fuel is expensive?",
+        "answer": "Empty miles still consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."
+      },
+      {
+        "question": "Should a carrier use the national diesel price as its only fuel input?",
+        "answer": "No. The national average is useful context. A carrier should use a fuel assumption that reflects the actual truck, route and operating conditions when calculating a specific movement."
+      },
+      {
+        "question": "What does the historical Hermes archive add to this update?",
+        "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used here only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."
+      }
+    ],
+    "related": [
+      {
+        "title": "RPM calculator",
+        "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.",
+        "href": "/logistics/resources/rpm-calculator/"
+      },
+      {
+        "title": "Owner-Operator Dispatch Support",
+        "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.",
+        "href": "/logistics/owner-operator-dispatch-support/"
+      },
+      {
+        "title": "Car Hauler Capacity Checklist",
+        "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.",
+        "href": "/logistics/resources/car-hauler-capacity-checklist/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Continue to the canonical Hermes Logistics direction and carrier resources.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review RPM Calculator",
+      "href": "/logistics/resources/rpm-calculator/"
+    },
+    "secondaryAction": {
+      "label": "Explore Owner-Operator Support",
+      "href": "/logistics/owner-operator-dispatch-support/"
+    },
+    "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
+    "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
+    "sourcePublishedAt": "2026-09-15",
+    "datePublished": "2026-09-17",
+    "dateModified": "2026-09-17",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "diesel price 2026",
+      "truck fuel cost",
+      "carrier route planning",
+      "deadhead reduction",
+      "owner operator load planning",
+      "diesel price per gallon",
+      "freight rate negotiation",
+      "EIA diesel price"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "U.S. EIA weekly on-highway diesel price data",
+        "use": "primary",
+        "url": "https://www.eia.gov/petroleum/gasdiesel/",
+        "observedAt": "2026-09-17",
+        "eventDate": "2026-09-14",
+        "notes": "Current dated public source for national and regional diesel prices."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"
+    },
+    "publicationScore": {
+      "score": 95,
+      "recommendation": "standalone_historical",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+17 first-party evidence",
+        "+15 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "dat-dry-van-rates-september-2026",
     "direction": "logistics",
     "slug": "dry-van-spot-rates-september-2026",
