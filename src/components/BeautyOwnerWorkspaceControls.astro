@@ -205,16 +205,65 @@
     const dialog = document.createElement("dialog");
     dialog.className = "beauty-b11-dialog";
     dialog.dataset.beautyMemberDialog = "true";
-    dialog.innerHTML = `
-      <form method="dialog" data-beauty-member-edit-form>
-        <div class="beauty-b11-dialog-head"><strong>${t.editMember}</strong><button type="button" data-beauty-dialog-close aria-label="${t.cancel}">×</button></div>
-        <label><span>${t.name}</span><input name="display_name" maxlength="100" required /></label>
-        <label><span>${t.role}</span><input name="role_label" maxlength="80" required /></label>
-        <label><span>${t.title}</span><input name="public_title" maxlength="100" /></label>
-        <label class="beauty-b11-check"><input name="is_public" type="checkbox" /><span>${t.public}</span></label>
-        <label class="beauty-b11-check"><input name="is_active" type="checkbox" /><span>${t.active}</span></label>
-        <div class="beauty-b11-dialog-actions"><button type="button" class="beauty-b11-action" data-beauty-dialog-cancel>${t.cancel}</button><button type="submit" class="beauty-b11-action primary">${t.save}</button></div>
-      </form>`;
+    const form = document.createElement("form");
+    form.method = "dialog";
+    form.dataset.beautyMemberEditForm = "true";
+
+    const head = document.createElement("div");
+    head.className = "beauty-b11-dialog-head";
+    const heading = document.createElement("strong");
+    heading.textContent = t.editMember;
+    const close = document.createElement("button");
+    close.type = "button";
+    close.dataset.beautyDialogClose = "true";
+    close.setAttribute("aria-label", t.cancel);
+    close.textContent = "×";
+    head.append(heading, close);
+    form.append(head);
+
+    const addTextField = (labelText: string, name: string, maxLength: number, required = false) => {
+      const label = document.createElement("label");
+      const caption = document.createElement("span");
+      caption.textContent = labelText;
+      const input = document.createElement("input");
+      input.name = name;
+      input.maxLength = maxLength;
+      input.required = required;
+      label.append(caption, input);
+      form.append(label);
+    };
+    addTextField(t.name, "display_name", 100, true);
+    addTextField(t.role, "role_label", 80, true);
+    addTextField(t.title, "public_title", 100);
+
+    const addCheckbox = (labelText: string, name: string) => {
+      const label = document.createElement("label");
+      label.className = "beauty-b11-check";
+      const input = document.createElement("input");
+      input.name = name;
+      input.type = "checkbox";
+      const caption = document.createElement("span");
+      caption.textContent = labelText;
+      label.append(input, caption);
+      form.append(label);
+    };
+    addCheckbox(t.public, "is_public");
+    addCheckbox(t.active, "is_active");
+
+    const actions = document.createElement("div");
+    actions.className = "beauty-b11-dialog-actions";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "beauty-b11-action";
+    cancel.dataset.beautyDialogCancel = "true";
+    cancel.textContent = t.cancel;
+    const save = document.createElement("button");
+    save.type = "submit";
+    save.className = "beauty-b11-action primary";
+    save.textContent = t.save;
+    actions.append(cancel, save);
+    form.append(actions);
+    dialog.append(form);
     document.body.append(dialog);
 
     const editForm = dialog.querySelector<HTMLFormElement>("[data-beauty-member-edit-form]");

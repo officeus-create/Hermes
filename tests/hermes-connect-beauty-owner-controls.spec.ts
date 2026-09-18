@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const json = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
+
+test("Beauty owner controls avoid TrustedHTML rendering", async () => {
+  const source = await readFile("src/components/BeautyOwnerWorkspaceControls.astro", "utf8");
+  expect(source).not.toMatch(/\.innerHTML\s*=/);
+});
 
 const salon = {
   id: "salon-controls-1",
