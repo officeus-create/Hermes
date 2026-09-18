@@ -16,6 +16,20 @@ function listFiles(directory) {
   });
 }
 
+const TRANSPORT_METADATA_MARKER = "[" + "executed on device" + ":";
+const transportScanRoots = [".github/workflows", "scripts", "config", "functions", "src", "workers"];
+const transportTextFiles = transportScanRoots
+  .flatMap((directory) => listFiles(directory))
+  .filter((file) => /\.(?:ya?ml|mjs|c?js|ts|tsx|jsonc?|toml|astro)$/i.test(file));
+
+for (const file of transportTextFiles) {
+  assert.equal(
+    read(file).toLowerCase().includes(TRANSPORT_METADATA_MARKER),
+    false,
+    `${file} contains local tool/device execution metadata. Transport annotations are never repository source.`,
+  );
+}
+
 // A root Worker configuration would let a dashboard or CLI integration infer a
 // generic Worker deployment for the whole website. Keep the website Pages-only.
 assert.equal(exists("wrangler.jsonc"), false, "Active root wrangler.jsonc must not be committed.");
