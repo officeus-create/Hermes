@@ -105,7 +105,27 @@
     const accessCard = document.createElement("section");
     accessCard.className = "panel hc-web-v1-access";
     accessCard.dataset.webV1Access = "true";
-    accessCard.innerHTML = `<div class="panel-heading"><div><p class="eyebrow">Access</p><h2>${copy.accessTitle}</h2><p class="muted" data-web-v1-access-copy>${copy.accessLoading}</p></div><span class="pill" data-web-v1-access-state>…</span></div><div data-web-v1-access-action></div>`;
+    const accessHeading = document.createElement("div");
+    accessHeading.className = "panel-heading";
+    const accessCopyWrap = document.createElement("div");
+    const accessEyebrow = document.createElement("p");
+    accessEyebrow.className = "eyebrow";
+    accessEyebrow.textContent = "Access";
+    const accessTitle = document.createElement("h2");
+    accessTitle.textContent = copy.accessTitle;
+    const accessCopy = document.createElement("p");
+    accessCopy.className = "muted";
+    accessCopy.dataset.webV1AccessCopy = "true";
+    accessCopy.textContent = copy.accessLoading;
+    accessCopyWrap.append(accessEyebrow, accessTitle, accessCopy);
+    const accessState = document.createElement("span");
+    accessState.className = "pill";
+    accessState.dataset.webV1AccessState = "true";
+    accessState.textContent = "…";
+    accessHeading.append(accessCopyWrap, accessState);
+    const accessAction = document.createElement("div");
+    accessAction.dataset.webV1AccessAction = "true";
+    accessCard.append(accessHeading, accessAction);
     header.insertAdjacentElement("afterend", accessCard);
     try {
       const response = await fetch("/api/repair-shop/access", { credentials: "same-origin" });
@@ -135,7 +155,15 @@
       const presets = document.createElement("div");
       presets.className = "hc-web-v1-presets";
       presets.dataset.webV1ServicePresets = "true";
-      presets.innerHTML = `<div><strong>${copy.quickTitle}</strong><span>${copy.quickBody}</span></div><div class="hc-web-v1-preset-actions"></div>`;
+      const presetCopy = document.createElement("div");
+      const presetTitle = document.createElement("strong");
+      presetTitle.textContent = copy.quickTitle;
+      const presetBody = document.createElement("span");
+      presetBody.textContent = copy.quickBody;
+      presetCopy.append(presetTitle, presetBody);
+      const presetActions = document.createElement("div");
+      presetActions.className = "hc-web-v1-preset-actions";
+      presets.append(presetCopy, presetActions);
       const definitions = [
         { id: "oil_change", name: copy.oil, duration: "30" },
         { id: "diagnostics", name: copy.diagnostics, duration: "45" },

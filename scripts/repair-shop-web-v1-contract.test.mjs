@@ -22,6 +22,7 @@ assert.match(runtime, /fetch\("\/api\/repair-shop\/access"/);
 assert.match(accessApi, /ensureDefaultRepairShopAccess/);
 for (const state of ["trialing", "founding", "active", "past_due", "cancelled", "comped"]) assert.match(runtime, new RegExp(state));
 assert.doesNotMatch(runtime, /localStorage.*(?:access|paid|plan)/i);
+assert.doesNotMatch(runtime, /\.innerHTML\s*=/, "Repair Shop Web V1 runtime must not use innerHTML sinks");
 
 // First-ten-minute quick start reuses existing forms/APIs rather than creating a second data path.
 assert.match(runtime, /oil_change/);
