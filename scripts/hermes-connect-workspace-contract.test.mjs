@@ -83,6 +83,7 @@ assert(ownerCurrentJs.includes("data-hc-today-overview"), "Repair Shop owner hel
 assert(ownerCurrentJs.includes("function updateTodayOverview"), "Repair Shop Today overview must remain explicitly derived and refreshable.");
 assert(ownerCurrentJs.includes("shop-timezone"), "Repair Shop Today overview must derive the shop-local calendar date from the existing timezone control.");
 assert(ownerCurrentJs.includes("#bookings-list .booking-card") && ownerCurrentJs.includes("service-count"), "Repair Shop Today overview must derive booking/service state from existing rendered owner data.");
+assert(!/\\.innerHTML\\s*=/.test(ownerCurrentJs), "Repair Shop Today overview helper must remain Trusted-Types compatible and avoid innerHTML rendering.");
 assert(!/\bfetch\s*\(/.test(ownerCurrentJs), "Repair Shop Today overview helper must not add duplicate API reads.");
 assert(!ownerCurrentJs.includes("XMLHttpRequest") && !ownerCurrentJs.includes("sendBeacon"), "Repair Shop Today overview helper must remain network-free.");
 

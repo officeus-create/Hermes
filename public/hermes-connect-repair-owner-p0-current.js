@@ -119,17 +119,40 @@
     section.className = "hc-today-overview";
     section.setAttribute("data-hc-today-overview", "true");
     section.setAttribute("aria-labelledby", "hc-today-title");
-    section.innerHTML = `
-      <div class="hc-today-head">
-        <div><p class="eyebrow">${copy.eyebrow}</p><h2 id="hc-today-title">${copy.title}</h2></div>
-        <span class="hc-today-ready" data-hc-today-ready>${copy.waiting}</span>
-      </div>
-      <div class="hc-today-grid">
-        <article><span>${copy.today}</span><strong data-hc-today-bookings>0</strong></article>
-        <article><span>${copy.active}</span><strong data-hc-active-bookings>0</strong></article>
-        <article><span>${copy.services}</span><strong data-hc-service-total>—</strong></article>
-        <article class="hc-today-next"><span>${copy.next}</span><strong data-hc-next-booking>${copy.none}</strong></article>
-      </div>`;
+    const head = document.createElement("div");
+    head.className = "hc-today-head";
+    const titleWrap = document.createElement("div");
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = copy.eyebrow;
+    const title = document.createElement("h2");
+    title.id = "hc-today-title";
+    title.textContent = copy.title;
+    titleWrap.append(eyebrow, title);
+    const ready = document.createElement("span");
+    ready.className = "hc-today-ready";
+    ready.dataset.hcTodayReady = "true";
+    ready.textContent = copy.waiting;
+    head.append(titleWrap, ready);
+
+    const grid = document.createElement("div");
+    grid.className = "hc-today-grid";
+    const addMetric = (label, value, dataAttribute, className = "") => {
+      const article = document.createElement("article");
+      if (className) article.className = className;
+      const metricLabel = document.createElement("span");
+      metricLabel.textContent = label;
+      const metricValue = document.createElement("strong");
+      metricValue.setAttribute(dataAttribute, "true");
+      metricValue.textContent = value;
+      article.append(metricLabel, metricValue);
+      grid.append(article);
+    };
+    addMetric(copy.today, "0", "data-hc-today-bookings");
+    addMetric(copy.active, "0", "data-hc-active-bookings");
+    addMetric(copy.services, "—", "data-hc-service-total");
+    addMetric(copy.next, copy.none, "data-hc-next-booking", "hc-today-next");
+    section.append(head, grid);
     header.insertAdjacentElement("afterend", section);
     return section;
   }
