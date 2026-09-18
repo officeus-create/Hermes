@@ -1,6 +1,6 @@
 # Cloudflare deployment ownership
 
-Status: current authenticated topology reconciled on 2026-09-17. Issue #226 is completed. This document records the surviving ownership contract and the remaining Pages runtime source-of-truth gap; it must not revive historical duplicate-deployment work without fresh evidence.
+Status: current authenticated topology reconciled on 2026-09-18. Issue #226 is completed. This document records the surviving ownership contract and the aligned Pages runtime source-of-truth baseline; it must not revive historical duplicate-deployment work without fresh evidence.
 
 ## Evidence precedence
 
@@ -110,31 +110,32 @@ Release state remains:
 
 `CODED != CI_VERIFIED != MERGED != CLOUDFLARE_DEPLOYED != CUSTOM_DOMAIN_READBACK != RUNTIME_HEALTHY != REAL_USER_VALUE`.
 
-## Pages Wrangler source-of-truth gap — CURRENT P1
+## Pages runtime source-of-truth — ALIGNED
 
 This is the surviving deployment-ownership ambiguity.
 
 Authenticated Production settings currently show:
 
-- Production compatibility date: `2026-07-12`;
+- Production compatibility date: `2026-08-04`;
 - Preview compatibility date: `2026-08-04`;
 - private email Worker compatibility date: `2026-08-04`;
 - Pages binding controls report that bindings are being managed through Wrangler configuration.
 
 Current repository truth now includes `config/cloudflare-pages-runtime-baseline.json`, added through #1353. It records the authenticated Production/Preview runtime **shape** (variable names, secret-name presence, binding roles and compatibility-date intent) without storing secret values. `scripts/cloudflare-pages-runtime-baseline.test.mjs` enforces Preview isolation and production binding ownership in the main `npm test` chain.
 
-This baseline is evidence and an anti-regression contract, not an active Pages deploy configuration. The root still intentionally has no committed active `wrangler.jsonc` / `wrangler.toml`, so this must **not** be treated as a one-click compatibility-date change.
+This baseline is evidence and an anti-regression contract, not an active Pages deploy configuration. The root still intentionally has no committed active `wrangler.jsonc` / `wrangler.toml`.
 
-Before changing Production runtime configuration:
+Current canonical control-plane split:
 
-1. re-read authenticated Production and Preview settings immediately before mutation and compare them to `config/cloudflare-pages-runtime-baseline.json`;
-2. require exact variable/binding/secret-name parity with the versioned baseline;
-3. preserve the existing single Pages release owner and rollback path rather than introducing a second editable control plane;
-4. only then align Production compatibility date to the reviewed `2026-08-04` baseline;
-5. perform exact-main deployment/readback plus product/API smoke after the change;
-6. update the runtime baseline only if authenticated post-change truth intentionally differs.
+1. authenticated Cloudflare Pages project state is the runtime authority for Pages variables, secrets, bindings and runtime settings;
+2. the existing Cloudflare Git integration from reviewed `main` is the single release authority;
+3. `config/cloudflare-pages-runtime-baseline.json` is versioned readback/anti-regression evidence, not a second runtime authority;
+4. the dashboard annotation that bindings are “managed through wrangler.toml” is retained as legacy project-state evidence only while no active root Wrangler config exists in `main`;
+5. rollback is Cloudflare Pages deployment history followed by exact-SHA and custom-domain readback.
 
-Do not deploy a partial downloaded config just to change the date. Do not commit secret values. Do not keep two independently editable configuration authorities.
+The Production compatibility date is now aligned to the reviewed `2026-08-04` baseline. Future runtime mutations must begin with authenticated Production/Preview readback, preserve exact variable/binding/secret-name parity unless intentionally reviewed, and update the versioned baseline only after post-change truth is verified.
+
+Do not deploy a partial downloaded config, commit secret values, or create a second independently editable configuration authority.
 
 ## Credential ownership boundary
 
@@ -175,7 +176,7 @@ Do not change Google Workspace apex MX while solving password reset. Do not crea
 
 ## Current canonical trackers
 
-- #1349 — single Cloudflare remediation tracker.
+- #1349 — completed Cloudflare remediation tracker/provenance; do not revive closed DNSSEC/runtime-date work from stale notes.
 - #961 — final bounded `repair_shop_access` D1/operator proof only.
 - #611 — password-reset outbound transport capability/proof.
 - #687 — CLOSED/NOT_PLANNED; generic Preview must remain isolated from Production D1/email-service.
