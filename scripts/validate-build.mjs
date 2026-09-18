@@ -8,6 +8,9 @@ const headers = await readFile(join(root, "public/_headers"), "utf8");
 if (!headers.includes("Strict-Transport-Security: max-age=31536000")) {
   throw new Error("HSTS header is missing from public/_headers");
 }
+if (!headers.includes("Cross-Origin-Opener-Policy: same-origin-allow-popups")) {
+  throw new Error("OAuth-compatible COOP header is missing from public/_headers");
+}
 const routes = [
   {
     path: "paths/logistics/index.html",
