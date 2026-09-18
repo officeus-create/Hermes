@@ -73,30 +73,30 @@ const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
   assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
 }
-assert.match(
+assert.doesNotMatch(
   productionWorkflow,
-  /pages deploy dist --project-name=hermes --branch=main/,
-  "The controlled production workflow must preserve the reviewed Wrangler Pages deploy path when scoped credentials are available.",
+  /pages deploy dist --project-name=hermes --branch=main|cloudflare\/wrangler-action|steps\.credentials|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN/,
+  "Production Pages must keep one release owner: the native Cloudflare Git integration, not an optional Wrangler upload path.",
 );
 assert.match(
   productionWorkflow,
   /checks:\s*read/,
-  "The release verifier needs read-only check access to validate the native Cloudflare exact-SHA deployment fallback.",
+  "The release verifier needs read-only check access to validate the native Cloudflare exact-SHA deployment.",
 );
 assert.match(
   productionWorkflow,
   /run\.name === "Cloudflare Pages" && run\.app\?\.slug === "cloudflare-workers-and-pages"/,
-  "The fallback must accept only the official Cloudflare Pages Git integration check.",
+  "The release verifier must accept only the official Cloudflare Pages Git integration check.",
 );
 assert.match(
   productionWorkflow,
   /commits\/\$\{sha\}\/check-runs\?per_page=100/,
-  "The native Pages fallback must be bound to the exact approved commit SHA.",
+  "The native Pages release proof must be bound to the exact approved commit SHA.",
 );
-assert.match(
+assert.doesNotMatch(
   productionWorkflow,
-  /if: steps\.credentials\.outputs\.available != 'true'/,
-  "The native Cloudflare path must activate only when the optional Wrangler credential path is unavailable.",
+  /if:\s*steps\.credentials|WRANGLER_AVAILABLE|WRANGLER_DEPLOYMENT_/,
+  "Native Cloudflare Git verification must be unconditional and must not depend on an alternate Wrangler credential path.",
 );
 assert.match(
   productionWorkflow,
@@ -177,7 +177,7 @@ for (const workflowPath of listFiles(".github/workflows").filter((file) => /\.ya
   assert.doesNotMatch(
     workflow,
     /^\s*command:\s*deploy(?:\s|$)/im,
-    `${workflowPath} invokes a generic wrangler-action deploy command. Pages releases must use pages deploy.`,
+    `${workflowPath} invokes a generic wrangler-action deploy command. Pages releases must remain owned by the native Cloudflare Git integration.`,
   );
 }
 
@@ -193,6 +193,6 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
   );
 }
 
-console.log("Cloudflare deployment ownership contract passed: Pages has exact-SHA Wrangler/native-Git release verification plus one composed hermes-lead-email Worker owner.");
+console.log("Cloudflare deployment ownership contract passed: Pages has one native Cloudflare Git exact-SHA release owner plus one composed hermes-lead-email Worker owner.");
 
 await import("./production-contact-smoke-contract.test.mjs");
