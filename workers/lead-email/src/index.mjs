@@ -9,6 +9,9 @@ const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
 const DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS = ["dispatchtruck107@gmail.com", "volkogon.v@gmail.com"];
 const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
 const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
+const GMAIL_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
+const GMAIL_SEND_ENDPOINT = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
+const GMAIL_REQUEST_TIMEOUT_MS = 8_000;
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -185,6 +188,81 @@ const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId
   return [...headers, ...body].join("\r\n");
 };
 
+const base64UrlEncode = (value) =>
+  stringToBase64(value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+
+const gmailConfig = (env) => ({
+  clientId: String(env.GMAIL_OAUTH_CLIENT_ID || "").trim(),
+  clientSecret: String(env.GMAIL_OAUTH_CLIENT_SECRET || "").trim(),
+  refreshToken: String(env.GMAIL_OAUTH_REFRESH_TOKEN || "").trim(),
+});
+
+const providerError = (message, status, code) => {
+  const error = new Error(message);
+  error.status = status;
+  error.code = code;
+  return error;
+};
+
+const fetchWithTimeout = async (url, init, timeoutMs = GMAIL_REQUEST_TIMEOUT_MS) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw providerError("gmail provider timeout", 503, "E_PROVIDER_TIMEOUT");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+};
+
+const sendGmailApiMessage = async (env, message) => {
+  const { clientId, clientSecret, refreshToken } = gmailConfig(env);
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw providerError("gmail oauth permission configuration missing", 503, "E_PROVIDER_PERMISSION");
+  }
+  if (message.replyTo || message.attachments.length) {
+    throw providerError("gmail account transport only accepts plain account messages", 503, "E_PROVIDER_CONFIGURATION");
+  }
+
+  const tokenResponse = await fetchWithTimeout(GMAIL_TOKEN_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    }).toString(),
+  });
+  const tokenPayload = await tokenResponse.json().catch(() => ({}));
+  const accessToken = typeof tokenPayload?.access_token === "string" ? tokenPayload.access_token.trim() : "";
+  if (!tokenResponse.ok || !accessToken) {
+    throw providerError("gmail oauth permission rejected", tokenResponse.status || 503, "E_PROVIDER_PERMISSION");
+  }
+
+  const raw = base64UrlEncode(buildRawMime(message));
+  const sendResponse = await fetchWithTimeout(GMAIL_SEND_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ raw }),
+  });
+  const sendPayload = await sendResponse.json().catch(() => ({}));
+  if (!sendResponse.ok || typeof sendPayload?.id !== "string") {
+    const code = sendResponse.status === 429 ? "E_PROVIDER_RATE" :
+      sendResponse.status >= 500 ? "E_PROVIDER_UNAVAILABLE" : "E_PROVIDER_PERMISSION";
+    throw providerError("gmail send permission/provider rejected", sendResponse.status || 502, code);
+  }
+
+  return { messageId: cleanHeader(sendPayload.id, 160) || null };
+};
+
 const sendMessage = async (env, message) => {
   if (env.EMAIL_TRANSPORT_MODE === "cloudflare_email_message") {
     const { EmailMessage } = await import("cloudflare:email");
@@ -211,7 +289,7 @@ const sendMessage = async (env, message) => {
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-const sendSafely = async (env, message) => {
+const sendSafely = async (env, message, transport = sendMessage) => {
   const configuredDelay = Number(env.EMAIL_RETRY_DELAY_MS ?? 250);
   const retryDelay = Number.isFinite(configuredDelay) ? Math.max(0, Math.min(configuredDelay, 1_000)) : 250;
   let lastMapped = { status: 502, error: "provider_rejected" };
@@ -220,7 +298,7 @@ const sendSafely = async (env, message) => {
   for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt += 1) {
     lastAttempt = attempt;
     try {
-      const result = await sendMessage(env, message);
+      const result = await transport(env, message);
       return {
         ok: true,
         attempts: attempt,
@@ -282,7 +360,13 @@ const worker = {
     if (!["/v1/send", "/v1/send-contract", "/v1/send-account"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
     if (request.method !== "POST") return json(405, { ok: false, error: "method_not_allowed" });
 
-    if (!env.LEAD_SERVICE_TOKEN || !env.EMAIL || !env.SALES_SENDER) {
+    const isAccountPath = url.pathname === "/v1/send-account";
+    const accountTransportMode = clean(env.ACCOUNT_EMAIL_TRANSPORT, 40).toLowerCase() || "cloudflare";
+    if (isAccountPath && !["cloudflare", "gmail_api"].includes(accountTransportMode)) {
+      return json(503, { ok: false, error: "service_not_configured" });
+    }
+    const accountUsesGmail = isAccountPath && accountTransportMode === "gmail_api";
+    if (!env.LEAD_SERVICE_TOKEN || !env.SALES_SENDER || (!accountUsesGmail && !env.EMAIL)) {
       return json(503, { ok: false, error: "service_not_configured" });
     }
 
@@ -295,7 +379,6 @@ const worker = {
     }
 
     const isContractPath = url.pathname === "/v1/send-contract";
-    const isAccountPath = url.pathname === "/v1/send-account";
     const maxBodyBytes = isContractPath ? MAX_CONTRACT_BODY_BYTES : MAX_LEAD_BODY_BYTES;
     const contentLength = Number(request.headers.get("Content-Length") || "0");
     if (contentLength > maxBodyBytes) return json(413, { ok: false, error: "request_too_large" });
@@ -323,6 +406,7 @@ const worker = {
     if (isAccountPath) {
       const recipientEmail = cleanHeader(input?.recipient_email, 320).toLowerCase();
       if (!isEmail(recipientEmail) || replyTo) return json(400, { ok: false, error: "invalid_account_delivery" });
+      const accountTransport = accountUsesGmail ? sendGmailApiMessage : sendMessage;
       const result = await sendSafely(env, {
         to: recipientEmail,
         from: cleanHeader(env.SALES_SENDER, 320),
@@ -331,7 +415,7 @@ const worker = {
         replyTo: "",
         attachments: [],
         requestId,
-      });
+      }, accountTransport);
       if (!result.ok) {
         console.error(JSON.stringify({ event: "account_delivery_failed", category: result.mapped.error, attempts: result.attempts, request_id: requestId }));
         return json(result.mapped.status, { ok: false, error: result.mapped.error });
