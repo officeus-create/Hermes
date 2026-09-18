@@ -46,5 +46,6 @@ assert.match(ui, /name="delivery_window"/);
 assert.match(ui, /name="weight_lbs"/);
 assert.match(ui, /name="length_feet"/);
 assert.match(ui, /Pearl|hermes-pearl|--hermes-pearl/);
+assert.doesNotMatch(ui, /\.innerHTML\s*=/, "Load Board marketplace runtime must not use innerHTML sinks");
 
 console.log("load-board-marketplace-posting-contract: company posting, rights gate, carrier-only visibility, archive ownership and marketplace controls verified");
