@@ -5,7 +5,7 @@ const baseline = JSON.parse(fs.readFileSync("config/cloudflare-pages-runtime-bas
 const example = JSON.parse(fs.readFileSync("wrangler.jsonc.example", "utf8"));
 
 assert.equal(baseline.project, "hermes");
-assert.equal(baseline.production.target_compatibility_date, "2026-08-04");
+assert.equal(baseline.production.observed_compatibility_date, "2026-08-04");\nassert.equal(baseline.production.target_compatibility_date, "2026-08-04");\nassert.equal(baseline.production.compatibility_alignment_status, "aligned");
 assert.equal(baseline.preview.observed_compatibility_date, "2026-08-04");
 assert.equal(baseline.preview.target_compatibility_date, "2026-08-04");
 assert.equal(baseline.production.text_vars.LEAD_DELIVERY_MODE, "live");
@@ -16,7 +16,7 @@ assert.equal(baseline.production.bindings.d1.DB, "hermes-connect-prototype");
 assert.deepEqual(baseline.preview.bindings.d1, {});
 assert.equal(baseline.production.bindings.services.LEAD_EMAIL_SERVICE, "hermes-lead-email");
 assert.deepEqual(baseline.preview.bindings.services, {});
-assert.equal(baseline.policy.active_root_wrangler_config_committed, false);
+assert.equal(baseline.policy.active_root_wrangler_config_committed, false);\nassert.equal(baseline.policy.runtime_configuration_authority, "cloudflare_pages_project_state");\nassert.equal(baseline.policy.cloudflare_wrangler_config_hash, null);
 assert.equal(baseline.policy.preview_must_not_gain_production_d1, true);
 assert.equal(baseline.policy.preview_must_not_gain_lead_email_service, true);
 assert.equal(baseline.policy.secret_values_must_not_be_versioned, true);
