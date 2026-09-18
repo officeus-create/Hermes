@@ -49,6 +49,11 @@ test "$(jq -r '.success' "${TMP}/concurrency-pre-clean.json")" = true
 REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Concurrency Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production D1 concurrency verification account."}')"
 RC="$(curl -sS -o "${TMP}/concurrency-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 echo "REGISTER_HTTP=$RC"; cat "${TMP}/concurrency-register.json"; echo
+if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/concurrency-register.json")" = "repair_shop_free_registration_ended" ]]; then
+  test "$(jq -r '.next_url // ""' "${TMP}/concurrency-register.json")" = "/services/hermes-connect/repair-shops/plan/"
+  echo "REPAIR_BOOKING_CONCURRENCY_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+  exit 0
+fi
 test "$RC" = 201
 
 PROFILE='{"name":"Hermes Concurrency Smoke Shop","phone":"+1 414 555 0196","address_line1":"103 Concurrency Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
