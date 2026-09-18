@@ -100,7 +100,11 @@
     const note = document.createElement("aside");
     note.className = "hc-registration-next";
     note.dataset.hcRegistrationNext = "true";
-    note.innerHTML = `<strong>${copy.registerTitle}</strong><p>${copy.registerBody}</p>`;
+    const title = document.createElement("strong");
+    title.textContent = copy.registerTitle;
+    const body = document.createElement("p");
+    body.textContent = copy.registerBody;
+    note.append(title, body);
     form.insertBefore(note, submit);
   };
 
