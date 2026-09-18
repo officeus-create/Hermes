@@ -31,19 +31,20 @@ The workflow does not own a second Pages upload path and does not require a gene
 
 PR #1360 established and live-verified this contract on 2026-09-18. Later releases must satisfy the same exact-SHA verification; do not infer live state from merge status alone.
 
-## Pages runtime configuration — open parity gate
+## Pages runtime configuration — aligned project-state authority
 
-Current authenticated Cloudflare evidence after #1360 shows:
+Authenticated Cloudflare Pages API readback on 2026-09-18 establishes the runtime source of truth:
 
-- Production bindings still carry the legacy dashboard marker that they are managed through `wrangler.toml`;
-- Production compatibility date remains `2026-07-12`;
-- Preview/default compatibility date is `2026-08-04`;
-- Production keeps the intended live delivery, KV, D1 and private `LEAD_EMAIL_SERVICE` binding;
-- Preview remains fail-closed and must not gain Production D1 or the private email-service binding.
+- source = native GitHub integration; production branch = `main`;
+- `wrangler_config_hash = null` for Production and Preview, so there is no active Wrangler-file runtime authority;
+- Cloudflare Pages project state is the current runtime configuration authority;
+- Production and Preview compatibility dates are both `2026-08-04`;
+- Production keeps the intended live delivery, secret names, KV, D1 and private `LEAD_EMAIL_SERVICE` binding;
+- Preview remains fail-closed with its dedicated KV and without Production D1 or the private email-service binding.
 
-The public repository intentionally has **no active root Wrangler configuration**. `wrangler.jsonc.example` is a reviewed reference, not a deployment authority.
+The public repository intentionally has **no active root Wrangler configuration**. `wrangler.jsonc.example` remains a sanitized reference, not a deployment authority. Do not create or deploy a root Wrangler config unless a future reviewed migration explicitly replaces Cloudflare project state as the authority. Never copy production resource IDs or secret values into the public repository.
 
-Do not deploy a partially downloaded Pages config merely to change the compatibility date. Do not copy Cloudflare resource IDs or secret values into the public repository. Resolve the remaining legacy project-state ownership marker under the canonical Cloudflare tracker #1349 before changing the Production date.
+Rollback for the compatibility-date change is the prior Production date `2026-07-12`; use the Pages project API/dashboard plus production smoke/readback, not an alternate deployer.
 
 ## Bounded production D1/operator proof — #961
 
