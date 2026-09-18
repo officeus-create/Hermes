@@ -150,6 +150,16 @@ assert.doesNotMatch(
   /secrets\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/,
   "#961 proof must not fall back to a broad generic Cloudflare token.",
 );
+assert.match(
+  accessStateProofWorkflow,
+  /CLOUDFLARE_ACCOUNT_ID:\s*\$\{\{\s*vars\.CLOUDFLARE_ACCOUNT_ID\s*\|\|\s*secrets\.CLOUDFLARE_ACCOUNT_ID\s*\}\}/,
+  "#961 proof must use only the canonical Cloudflare account-context name.",
+);
+assert.doesNotMatch(
+  accessStateProofWorkflow,
+  /(?:secrets|vars)\.CF_ACCOUNT_ID/,
+  "#961 proof must not retain legacy account-ID aliases.",
+);
 
 const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
 assert.match(
@@ -197,6 +207,21 @@ assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic f
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
+assert.match(
+  leadEmailWorkflow,
+  /CLOUDFLARE_WORKERS_DEPLOY_TOKEN:\s*\$\{\{\s*secrets\.CLOUDFLARE_WORKERS_DEPLOY_TOKEN\s*\}\}/,
+  "Lead-email Worker deploy must require its dedicated deployment credential.",
+);
+assert.match(
+  leadEmailWorkflow,
+  /apiToken:\s*\$\{\{\s*env\.CLOUDFLARE_WORKERS_DEPLOY_TOKEN\s*\}\}/,
+  "Wrangler must receive only the dedicated lead-email Worker deploy token.",
+);
+assert.doesNotMatch(
+  leadEmailWorkflow,
+  /(?:secrets|env)\.(?:CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN)/,
+  "Lead-email Worker deploy must not fall back to broad generic Cloudflare token aliases.",
+);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
 assert.match(leadEmailWorkflow, /node scripts\/load-board-intake-api-contract\.test\.mjs/);
