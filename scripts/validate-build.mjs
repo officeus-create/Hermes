@@ -11,6 +11,9 @@ if (!headers.includes("Strict-Transport-Security: max-age=31536000")) {
 if (!headers.includes("Cross-Origin-Opener-Policy: same-origin-allow-popups")) {
   throw new Error("OAuth-compatible COOP header is missing from public/_headers");
 }
+if (!headers.includes("Content-Security-Policy-Report-Only: require-trusted-types-for 'script';")) {
+  throw new Error("Trusted Types report-only canary is missing from public/_headers");
+}
 const routes = [
   {
     path: "paths/logistics/index.html",
