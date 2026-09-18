@@ -64,6 +64,7 @@ assert.match(clientSource, /if \(!roadside\.checked\) emergency\.checked = false
 assert.match(clientSource, /strings = \{/);
 for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) assert.match(clientSource, new RegExp(`\\b${locale}: \\{`));
 assert.doesNotMatch(clientSource, /dataLayer|gtag|client_email|client_phone|vin/i);
+assert.doesNotMatch(clientSource, /\.innerHTML\s*=/, "Repair Shop capabilities runtime must not use innerHTML sinks");
 
 assert.match(componentSource, /isRepairShopSurface/);
 assert.match(componentSource, /repair-shop-capabilities\.js/);
