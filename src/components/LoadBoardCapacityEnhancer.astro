@@ -266,26 +266,26 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         row.dataset.rpm = rpm;
         row.dataset.deadhead = String(deadhead);
         row.dataset.weight = String(Number(base.weightLbs || 0));
-        row.setAttribute("aria-label", \`Preview lane \${base.origin} to \${base.destination}. Register in Hermes Connect to unlock live Load Board access\`);
+        row.setAttribute("aria-label", `Preview lane ${base.origin} to ${base.destination}. Register in Hermes Connect to unlock live Load Board access`);
 
         const pickup = createNode("div", "hlb-col-pickup");
         pickup.append(createNode("strong", "", base.pickup), createNode("small", "", base.delivery));
         const route = createNode("div", "hlb-live-route hlb-col-lane");
         route.append(createNode("span", "", base.origin), createNode("b", "", "→"), createNode("span", "", base.destination));
         const rateNode = createNode("div", "hlb-live-rate hlb-col-rate");
-        rateNode.append(createNode("strong", "", \`$\${formatNumber(rate)}\`), createNode("small", "", \`\${rpm} RPM\`));
+        rateNode.append(createNode("strong", "", `$${formatNumber(rate)}`), createNode("small", "", `${rpm} RPM`));
         const equipment = createNode("div", "hlb-col-equip");
-        equipment.append(createNode("strong", "", equipmentLabel(base.equipment)), createNode("small", "", \`\${base.loadType} · \${base.lengthFeet} ft\`));
+        equipment.append(createNode("strong", "", equipmentLabel(base.equipment)), createNode("small", "", `${base.loadType} · ${base.lengthFeet} ft`));
         const weight = createNode("div", "hlb-col-weight");
-        weight.append(createNode("strong", "", base.weightLbs ? \`\${formatNumber(base.weightLbs)} lb\` : "Weight n/a"), createNode("small", "", base.commodity));
+        weight.append(createNode("strong", "", base.weightLbs ? `${formatNumber(base.weightLbs)} lb` : "Weight n/a"), createNode("small", "", base.commodity));
         const status = createNode("div", "hlb-col-status");
         status.append(createNode("span", "hlb-demo-pill", "PREVIEW · NOT LIVE"), createNode("small", "", "Market example"));
         row.append(
           createNode("span", "hlb-col-sample", "PREVIEW"),
           pickup,
           route,
-          createNode("span", "hlb-col-dh", \`\${deadhead} mi\`),
-          createNode("span", "hlb-col-trip", \`\${formatNumber(base.distanceMiles)} mi\`),
+          createNode("span", "hlb-col-dh", `${deadhead} mi`),
+          createNode("span", "hlb-col-trip", `${formatNumber(base.distanceMiles)} mi`),
           rateNode,
           equipment,
           weight,
@@ -317,14 +317,14 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         const route = createNode("div", "hlb-live-route hlb-col-lane");
         route.append(createNode("span", "", record?.origin || ""), createNode("b", "", "→"), createNode("span", "", record?.destination || "Open destination"));
         const rate = createNode("div", "hlb-live-rate hlb-col-rate");
-        rate.append(createNode("strong", "", money(record)), createNode("small", "", record?.ratePerMile ? \`\${record.ratePerMile} RPM\` : "RPM pending"));
+        rate.append(createNode("strong", "", money(record)), createNode("small", "", record?.ratePerMile ? `${record.ratePerMile} RPM` : "RPM pending"));
         const equipment = createNode("div", "hlb-col-equip");
-        equipment.append(createNode("strong", "", equipmentLabel(record?.equipment)), createNode("small", "", record?.lengthFeet ? \`\${record.lengthFeet} ft\` : "Size pending"));
+        equipment.append(createNode("strong", "", equipmentLabel(record?.equipment)), createNode("small", "", record?.lengthFeet ? `${record.lengthFeet} ft` : "Size pending"));
         const weight = createNode("div", "hlb-col-weight");
-        weight.append(createNode("strong", "", record?.weightLbs ? \`\${Number(record.weightLbs).toLocaleString("en-US")} lb\` : "Weight pending"), createNode("small", "", record?.paymentTerms || record?.source || "Approved source"));
+        weight.append(createNode("strong", "", record?.weightLbs ? `${Number(record.weightLbs).toLocaleString("en-US")} lb` : "Weight pending"), createNode("small", "", record?.paymentTerms || record?.source || "Approved source"));
         const status = createNode("div", "hlb-col-status");
         const trust = scanTrust(record);
-        status.append(createNode("span", "hlb-live-pill", "LIVE"), createNode("small", "", trust ? \`\${trust} · \${record?.source || "Approved source"}\` : record?.source || "Approved source"));
+        status.append(createNode("span", "hlb-live-pill", "LIVE"), createNode("small", "", trust ? `${trust} · ${record?.source || "Approved source"}` : record?.source || "Approved source"));
 
         row.append(
           createNode("span", "hlb-col-sample hlb-col-live", age(record?.observedAt)),
@@ -349,7 +349,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         const route = createNode("div", "hlb-live-route hlb-col-lane");
         route.append(createNode("span", "", record?.origin || ""), createNode("b", "", "→"), createNode("span", "", record?.destination || "Destination locked"));
         const rate = createNode("div", "hlb-live-rate hlb-col-rate");
-        rate.append(createNode("strong", "", \`🔒 \${money(record)}\`), createNode("small", "", "RPM after sign-in"));
+        rate.append(createNode("strong", "", `🔒 ${money(record)}`), createNode("small", "", "RPM after sign-in"));
         const equipment = createNode("div", "hlb-col-equip");
         equipment.append(createNode("strong", "", equipmentLabel(record?.equipment)), createNode("small", "", "Approved source"));
         const weight = createNode("div", "hlb-col-weight");
@@ -383,7 +383,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         const active = Array.isArray(records) ? records : [];
         const truthfulCount = aggregateCount != null && Number.isFinite(Number(aggregateCount)) && Number(aggregateCount) >= 0 ? Number(aggregateCount) : null;
         if (count) count.textContent = truthfulCount === null ? "—" : String(truthfulCount);
-        if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? \`\${truthfulCount} active record\${truthfulCount === 1 ? "" : "s"} · refreshed automatically\` : "No approved active freight right now";
+        if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? "" : "s"} · refreshed automatically` : "No approved active freight right now";
         if (badge) badge.textContent = accessGranted ? "ACCESS OPEN" : "CURTAIN VIEW";
         if (accessLabel) accessLabel.textContent = accessGranted ? "Hermes company access active" : "Public curtain view";
         if (accessCopy) accessCopy.textContent = accessGranted ? "Your company profile has unlocked carrier-access Load Board records." : "LIVE count is real. Rows labeled PREVIEW · NOT LIVE are market examples; company registration unlocks live source records and actions.";
@@ -430,7 +430,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         if (!(rows instanceof HTMLElement)) return;
         const active = Array.isArray(records) ? records : [];
         if (count) count.textContent = String(active.length);
-        if (status) status.textContent = active.length ? \`Updated \${age(active[0]?.observedAt)}\` : "No approved active trucks right now";
+        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active trucks right now";
         rows.replaceChildren();
         if (!active.length) {
           rows.append(createEmptyState("0 active capacity records.", "Truck lists are counted separately and never inflate the freight total."));
