@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [schema, endpoint, publicEndpoint, runtime, enhancer] = await Promise.all([
+const [schema, endpoint, publicEndpoint, runtime, enhancer, polish] = await Promise.all([
   readFile(new URL("../functions/api/_lib/repair-shop-driver-discount-schema.mjs", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/repair-shop/driver-discount.ts", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/public/repair-shop.ts", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-driver-discount.js", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../public/repair-shop-driver-discount-polish.js", import.meta.url), "utf8"),
 ]);
 
 assert.match(schema, /CREATE TABLE IF NOT EXISTS repair_shop_driver_discounts/);
@@ -33,5 +34,6 @@ assert.match(runtime, /data-driver-discount-owner/);
 assert.match(runtime, /data-driver-discount-public/);
 assert.match(runtime, /#22c55e/);
 assert.doesNotMatch(runtime, /innerHTML\s*\+=\s*.*service\.name/);
+assert.doesNotMatch(polish, /\.innerHTML\s*=/, "Driver discount preview polish must not use innerHTML sinks");
 
 console.log("repair-shop-driver-discount contract: OK");
