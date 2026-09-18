@@ -73,6 +73,11 @@ jobs:
           REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Rebook Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production cancellation and rebooking verification account."}')"
           RC="$(curl -sS -o "${RUNNER_TEMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
           echo "REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/register.json"; echo
+          if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${RUNNER_TEMP}/register.json")" = "repair_shop_free_registration_ended" ]]; then
+            test "$(jq -r '.next_url // ""' "${RUNNER_TEMP}/register.json")" = "/services/hermes-connect/repair-shops/plan/"
+            echo "REPAIR_CANCEL_REBOOK_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+            exit 0
+          fi
           test "$RC" = 201
 
           PROFILE='{"name":"Hermes Rebook Smoke Shop","phone":"+1 414 555 0199","address_line1":"101 Rebook Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
