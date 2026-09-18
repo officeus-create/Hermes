@@ -175,6 +175,71 @@ assert.equal(validResponse.status, 202);
 assert.equal(capturedMessage?.to, "owner@example.com");
 assert.equal(capturedMessage?.subject, PASSWORD_RESET_SUBJECT);
 
+const originalFetch = globalThis.fetch;
+const gmailCalls = [];
+try {
+  globalThis.fetch = async (url, init = {}) => {
+    gmailCalls.push({ url: String(url), init });
+    if (String(url) === "https://oauth2.googleapis.com/token") {
+      assert.equal(init.method, "POST");
+      assert.match(String(init.body), /grant_type=refresh_token/);
+      assert.match(String(init.body), /client_id=unit-client-id/);
+      return Response.json({ access_token: "unit-access-token", token_type: "Bearer", expires_in: 3600 });
+    }
+    if (String(url) === "https://gmail.googleapis.com/gmail/v1/users/me/messages/send") {
+      assert.equal(init.method, "POST");
+      assert.equal(init.headers.Authorization, "Bearer unit-access-token");
+      const payload = JSON.parse(String(init.body));
+      const decoded = Buffer.from(payload.raw, "base64url").toString("utf8");
+      assert.match(decoded, /From: website@hermeslogisticsus.com/);
+      assert.match(decoded, /To: owner@example.com/);
+      assert.match(decoded, /Subject: \[HERMES ACCOUNT\] \[PASSWORD RESET\]/);
+      assert.match(decoded, /secure reset link below within 45 minutes/);
+      return Response.json({ id: "gmail-unit-message", threadId: "gmail-thread" });
+    }
+    throw new Error(`unexpected Gmail transport URL: ${url}`);
+  };
+
+  const gmailResponse = await worker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+    method: "POST",
+    headers: { Authorization: "Bearer unit-secret-token", "Content-Type": "application/json" },
+    body: JSON.stringify({
+      request_id: "password_reset_gmail_12345678",
+      subject: PASSWORD_RESET_SUBJECT,
+      text: "A password reset was requested for your Repair Shop owner account. Use the secure reset link below within 45 minutes. https://hermeslogisticsus.com/reset/gmail-example",
+      recipient_email: "owner@example.com",
+    }),
+  }), {
+    LEAD_SERVICE_TOKEN: "unit-secret-token",
+    SALES_SENDER: "website@hermeslogisticsus.com",
+    ACCOUNT_EMAIL_TRANSPORT: "gmail_api",
+    GMAIL_OAUTH_CLIENT_ID: "unit-client-id",
+    GMAIL_OAUTH_CLIENT_SECRET: "unit-client-secret",
+    GMAIL_OAUTH_REFRESH_TOKEN: "unit-refresh-token",
+  });
+  assert.equal(gmailResponse.status, 202);
+  assert.equal(gmailCalls.length, 2, "Gmail account transport must exchange OAuth token then send one message");
+  assert.ok(!gmailCalls.some((call) => String(call.init?.body || "").includes("owner@example.com") && call.url.includes("oauth2.googleapis.com")), "recipient must not be sent to OAuth token endpoint");
+
+  const missingGmailConfig = await worker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+    method: "POST",
+    headers: { Authorization: "Bearer unit-secret-token", "Content-Type": "application/json" },
+    body: JSON.stringify({
+      request_id: "password_reset_gmail_missing_1234",
+      subject: PASSWORD_RESET_SUBJECT,
+      text: "A password reset was requested for your Repair Shop owner account. This synthetic message verifies fail-closed Gmail configuration handling without sending mail.",
+      recipient_email: "owner@example.com",
+    }),
+  }), {
+    LEAD_SERVICE_TOKEN: "unit-secret-token",
+    SALES_SENDER: "website@hermeslogisticsus.com",
+    ACCOUNT_EMAIL_TRANSPORT: "gmail_api",
+  });
+  assert.equal(missingGmailConfig.status, 503, "Gmail account transport must fail closed when OAuth secrets are absent");
+} finally {
+  globalThis.fetch = originalFetch;
+}
+
 capturedMessage = null;
 const genericAccountSubject = await worker.fetch(new Request("https://lead-email.internal/v1/send", {
   method: "POST",
