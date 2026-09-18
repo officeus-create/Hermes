@@ -5,10 +5,13 @@ import ContactCTA from "../components/ContactCTA.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { site } from "../data/site";
+import { approvedHermesSameAs } from "../data/public-entity-registry";
 
+const organizationId = "https://hermeslogisticsus.com/#organization";
 const contactSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": organizationId,
   name: "Hermes",
   url: "https://hermeslogisticsus.com/",
   areaServed: [
@@ -25,6 +28,7 @@ const contactSchema = {
     areaServed: "US",
     availableLanguage: ["English", "Russian"],
   })),
+  sameAs: approvedHermesSameAs,
 };
 ---
 
