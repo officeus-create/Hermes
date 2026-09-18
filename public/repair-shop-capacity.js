@@ -23,13 +23,40 @@
     const section = document.createElement("section");
     section.className = "hc-capacity-control";
     section.dataset.repairCapacityControl = "true";
-    section.innerHTML = `
-      <div class="hc-capacity-copy"><strong>${copy.title}</strong><span>${copy.body}</span></div>
-      <form data-capacity-form>
-        <label>${copy.label}<select data-capacity-select aria-label="${copy.label}">${Array.from({ length: 10 }, (_, index) => `<option value="${index + 1}">${index + 1}</option>`).join("")}</select></label>
-        <button type="submit" class="secondary-btn">${copy.save}</button>
-      </form>
-      <p data-capacity-status role="status" aria-live="polite">${copy.loading}</p>`;
+    const capacityCopy = document.createElement("div");
+    capacityCopy.className = "hc-capacity-copy";
+    const capacityTitle = document.createElement("strong");
+    capacityTitle.textContent = copy.title;
+    const capacityBody = document.createElement("span");
+    capacityBody.textContent = copy.body;
+    capacityCopy.append(capacityTitle, capacityBody);
+
+    const capacityForm = document.createElement("form");
+    capacityForm.dataset.capacityForm = "true";
+    const capacityLabel = document.createElement("label");
+    capacityLabel.append(document.createTextNode(copy.label));
+    const capacitySelect = document.createElement("select");
+    capacitySelect.dataset.capacitySelect = "true";
+    capacitySelect.setAttribute("aria-label", copy.label);
+    for (const value of Array.from({ length: 10 }, (_, index) => index + 1)) {
+      const option = document.createElement("option");
+      option.value = String(value);
+      option.textContent = String(value);
+      capacitySelect.append(option);
+    }
+    capacityLabel.append(capacitySelect);
+    const saveButton = document.createElement("button");
+    saveButton.type = "submit";
+    saveButton.className = "secondary-btn";
+    saveButton.textContent = copy.save;
+    capacityForm.append(capacityLabel, saveButton);
+
+    const capacityStatus = document.createElement("p");
+    capacityStatus.dataset.capacityStatus = "true";
+    capacityStatus.setAttribute("role", "status");
+    capacityStatus.setAttribute("aria-live", "polite");
+    capacityStatus.textContent = copy.loading;
+    section.append(capacityCopy, capacityForm, capacityStatus);
     parent.append(section);
 
     if (!document.getElementById("repair-capacity-styles")) {
