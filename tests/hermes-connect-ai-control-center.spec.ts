@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const json = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
+
+test("AI activity renderer avoids TrustedHTML sinks", async () => {
+  const source = await readFile("src/pages/services/hermes-connect/internal/ai-connect/activity/index.astro", "utf8");
+  expect(source).not.toMatch(/\.innerHTML\s*=/);
+});
 const owner = { success: true, specialist: { id: "owner-ai", name: "Vladimir Owner", email: "owner@example.com", role: "Owner" } };
 const task = {
   id: "hcai_control_001",
