@@ -1,8 +1,13 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const json = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
+
+test("Company settings runtime avoids TrustedHTML sinks", async () => {
+  const source = await readFile("src/pages/services/hermes-connect/repair-shops/settings.astro", "utf8");
+  expect(source).not.toMatch(/\.innerHTML\s*=/);
+});
 
 type Staff = { id:string; name:string; role:string; specialties:string[]; active:boolean };
 type ScheduleDay = { day_of_week:number; is_working:boolean; start_time:string|null; end_time:string|null; breaks:{start_time:string;end_time:string}[] };
