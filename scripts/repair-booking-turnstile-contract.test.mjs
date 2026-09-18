@@ -38,6 +38,7 @@ assert.ok(page.includes("turnstile_token:turnstileToken"));
 assert.ok(page.includes("render=explicit"));
 assert.ok(page.includes('"expired-callback"'));
 assert.ok(page.includes('"error-callback"'));
+assert.doesNotMatch(page, /\\.innerHTML\\s*=/, "Repair booking runtime must not use innerHTML sinks");
 assert.ok(headers.includes("script-src 'self' 'unsafe-inline' https://accounts.google.com https://challenges.cloudflare.com"));
 assert.ok(headers.includes("connect-src 'self' https://accounts.google.com https://challenges.cloudflare.com"));
 assert.ok(headers.includes("frame-src 'self' https://accounts.google.com https://challenges.cloudflare.com"));
