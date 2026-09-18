@@ -31,19 +31,21 @@ The workflow does not own a second Pages upload path and does not require a gene
 
 PR #1360 established and live-verified this contract on 2026-09-18. Later releases must satisfy the same exact-SHA verification; do not infer live state from merge status alone.
 
-## Pages runtime configuration — open parity gate
+## Pages runtime configuration — aligned production baseline
 
 Current authenticated Cloudflare evidence after #1360 shows:
 
 - Production bindings still carry the legacy dashboard marker that they are managed through `wrangler.toml`;
-- Production compatibility date remains `2026-07-12`;
+- Production compatibility date is `2026-08-04`;
 - Preview/default compatibility date is `2026-08-04`;
 - Production keeps the intended live delivery, KV, D1 and private `LEAD_EMAIL_SERVICE` binding;
 - Preview remains fail-closed and must not gain Production D1 or the private email-service binding.
 
 The public repository intentionally has **no active root Wrangler configuration**. `wrangler.jsonc.example` is a reviewed reference, not a deployment authority.
 
-Do not deploy a partially downloaded Pages config merely to change the compatibility date. Do not copy Cloudflare resource IDs or secret values into the public repository. Resolve the remaining legacy project-state ownership marker under the canonical Cloudflare tracker #1349 before changing the Production date.
+Canonical authority is now explicit: authenticated Cloudflare Pages project state owns runtime variables/bindings/runtime settings; the Cloudflare Git integration from reviewed `main` owns releases; `config/cloudflare-pages-runtime-baseline.json` is versioned evidence and an anti-regression contract, not a second editable runtime control plane. The dashboard's legacy “managed through wrangler.toml” annotation does not create repository authority while no active root Wrangler config exists.
+
+Rollback remains Cloudflare Pages deployment history followed by exact-SHA/custom-domain readback. Do not deploy a partial downloaded config, copy Cloudflare resource IDs or secret values into the public repository, or introduce a second Pages deploy/config authority.
 
 ## Bounded production D1/operator proof — #961
 
@@ -59,7 +61,7 @@ The proof workflow must not fall back to a broad generic Cloudflare token. If th
 
 ## Other surviving Cloudflare gates
 
-The canonical backlog is GitHub issue #1349. Important remaining owner/platform items include MFA, DNSSEC/mail identity, Minimum TLS 1.2, Certificate Transparency Monitoring, the legacy Pages runtime ownership marker, compatibility-date alignment, credential reduction after MFA, useful Free notification policies and Cloudflare-native synthetics.
+The canonical backlog is GitHub issue #1349. Important remaining owner/platform items include MFA, mail identity, Minimum TLS 1.2, Certificate Transparency Monitoring, credential reduction after MFA, useful Free notification policies and Cloudflare-native synthetics. DNSSEC and the Pages compatibility-date alignment are already closed.
 
 Password reset issue #611 is an outbound arbitrary-recipient transport capability gate; it is not a Pages or Worker deployment blocker.
 

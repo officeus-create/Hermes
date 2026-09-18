@@ -2,9 +2,9 @@
   "project": "hermes",
   "verified_at": "2026-09-18",
   "production": {
-    "observed_compatibility_date": "2026-07-12",
+    "observed_compatibility_date": "2026-08-04",
     "target_compatibility_date": "2026-08-04",
-    "compatibility_alignment_status": "pending_owner_mfa_and_admin_change",
+    "compatibility_alignment_status": "aligned",
     "text_vars": {
       "ALLOWED_ORIGIN": "https://hermeslogisticsus.com",
       "LEAD_DELIVERY_MODE": "live"
@@ -16,11 +16,20 @@
       "TURNSTILE_REPAIR_BOOKING_SECRET"
     ],
     "bindings": {
-      "kv": { "LEAD_LIMITS": "HERMES_LEAD_LIMITS_PRODUCTION" },
-      "d1": { "DB": "hermes-connect-prototype" },
-      "services": { "LEAD_EMAIL_SERVICE": "hermes-lead-email" }
+      "kv": {
+        "LEAD_LIMITS": "HERMES_LEAD_LIMITS_PRODUCTION"
+      },
+      "d1": {
+        "DB": "hermes-connect-prototype"
+      },
+      "services": {
+        "LEAD_EMAIL_SERVICE": "hermes-lead-email"
+      }
     },
-    "runtime": { "placement": "default", "fail_mode": "open" }
+    "runtime": {
+      "placement": "default",
+      "fail_mode": "open"
+    }
   },
   "preview": {
     "observed_compatibility_date": "2026-08-04",
@@ -32,16 +41,25 @@
     },
     "secret_names": [],
     "bindings": {
-      "kv": { "LEAD_LIMITS": "HERMES_LEAD_LIMITS_PREVIEW" },
+      "kv": {
+        "LEAD_LIMITS": "HERMES_LEAD_LIMITS_PREVIEW"
+      },
       "d1": {},
       "services": {}
     },
-    "runtime": { "placement": "default", "fail_mode": "open" }
+    "runtime": {
+      "placement": "default",
+      "fail_mode": "open"
+    }
   },
   "policy": {
     "active_root_wrangler_config_committed": false,
     "preview_must_not_gain_production_d1": true,
     "preview_must_not_gain_lead_email_service": true,
-    "secret_values_must_not_be_versioned": true
+    "secret_values_must_not_be_versioned": true,
+    "runtime_configuration_authority": "authenticated_cloudflare_pages_project_state",
+    "release_authority": "cloudflare_git_integration_from_reviewed_main",
+    "rollback_authority": "cloudflare_pages_deployment_history_plus_exact_sha_readback",
+    "legacy_wrangler_dashboard_marker_is_not_repository_authority": true
   }
 }
