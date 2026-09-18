@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const enhancer = read("src/components/LoadBoardCapacityEnhancer.astro");
+const livePilot = read("src/pages/load-board/live-pilot.astro");
 const baseLayout = read("src/layouts/BaseLayout.astro");
 const accessPage = read("src/pages/services/hermes-connect/load-board/access/index.astro");
 const accountApi = read("functions/api/hermes-connect/account.ts");
@@ -37,6 +38,8 @@ assert.match(enhancer, /Market example/);
 assert.match(enhancer, /renderImmediatePreview\(\)/);
 assert.match(enhancer, /appendPreviewRows\(rows, 60\)/);
 assert.doesNotMatch(enhancer, /rows\.innerHTML\s*=/, "Load Board load/capacity rendering must not use innerHTML sinks");
+assert.doesNotMatch(livePilot, /\.innerHTML\s*=/, "Load Board live pilot rendering must not use innerHTML sinks");
+assert.match(livePilot, /rows\.replaceChildren\(\.\.\.rendered\)/);
 assert.match(enhancer, /Chicago, IL/);
 assert.match(enhancer, /Houston, TX/);
 assert.match(enhancer, /Seattle, WA/);

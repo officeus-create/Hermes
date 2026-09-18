@@ -212,8 +212,6 @@ const previewRows = [
     other: "Other",
   }[value] || value.replaceAll("_", " "));
 
-  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char] || char));
-
   const relativeAge = (iso: string) => {
     const minutes = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
     if (minutes < 2) return "now";
@@ -224,20 +222,92 @@ const previewRows = [
 
   const renderLive = (records: ActiveRecord[]) => {
     if (!rows) return;
-    rows.innerHTML = records.map((record) => {
-      const rate = record.rate ? `${record.rate.currency === "USD" ? "$" : `${escapeHtml(record.rate.currency)} `}${Number(record.rate.amount).toLocaleString()}` : "Sign in";
+    const svgNs = "http://www.w3.org/2000/svg";
+    const makeSvg = (kind: "truck" | "lock") => {
+      const svg = document.createElementNS(svgNs, "svg");
+      svg.setAttribute("aria-hidden", "true");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "2");
+      svg.setAttribute("width", kind === "truck" ? "17" : "14");
+      svg.setAttribute("height", kind === "truck" ? "17" : "14");
+      if (kind === "truck") {
+        const body = document.createElementNS(svgNs, "path");
+        body.setAttribute("d", "M10 17h4V5H2v12h3");
+        const cab = document.createElementNS(svgNs, "path");
+        cab.setAttribute("d", "M14 8h4l4 4v5h-3");
+        const wheelA = document.createElementNS(svgNs, "circle");
+        wheelA.setAttribute("cx", "7.5");
+        wheelA.setAttribute("cy", "17.5");
+        wheelA.setAttribute("r", "2.5");
+        const wheelB = document.createElementNS(svgNs, "circle");
+        wheelB.setAttribute("cx", "16.5");
+        wheelB.setAttribute("cy", "17.5");
+        wheelB.setAttribute("r", "2.5");
+        svg.append(body, cab, wheelA, wheelB);
+      } else {
+        const body = document.createElementNS(svgNs, "rect");
+        body.setAttribute("x", "3");
+        body.setAttribute("y", "11");
+        body.setAttribute("width", "18");
+        body.setAttribute("height", "10");
+        body.setAttribute("rx", "2");
+        const shackle = document.createElementNS(svgNs, "path");
+        shackle.setAttribute("d", "M7 11V7a5 5 0 0 1 10 0v4");
+        svg.append(body, shackle);
+      }
+      return svg;
+    };
+
+    const rendered = records.map((record) => {
       const destination = record.destination || "Open destination";
-      return `<article class="hlb-row hlb-row--live" role="row" data-live-row data-equipment="${escapeHtml(record.equipment)}" data-origin="${escapeHtml(record.origin.toLowerCase())}" data-destination="${escapeHtml(destination.toLowerCase())}">
-        <div class="hlb-equipment"><svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17h4V5H2v12h3"/><path d="M14 8h4l4 4v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg><strong>${escapeHtml(equipmentLabel(record.equipment))}</strong></div>
-        <strong>${escapeHtml(record.origin)}</strong>
-        <strong>${escapeHtml(destination)}</strong>
-        <span>${escapeHtml(record.pickupWindow || record.availability || "Current")}</span>
-        <span class="hlb-rate"><strong>${rate}</strong><small>${record.team ? "Team" : ""}</small></span>
-        <span class="hlb-signal">Approved public record</span>
-        <span class="hlb-age">${relativeAge(record.observedAt)}</span>
-        <a href="/load-board/?role=carrier#carrier-access">Unlock <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></a>
-      </article>`;
-    }).join("");
+      const article = document.createElement("article");
+      article.className = "hlb-row hlb-row--live";
+      article.setAttribute("role", "row");
+      article.setAttribute("data-live-row", "");
+      article.dataset.equipment = record.equipment;
+      article.dataset.origin = record.origin.toLowerCase();
+      article.dataset.destination = destination.toLowerCase();
+
+      const equipment = document.createElement("div");
+      equipment.className = "hlb-equipment";
+      const equipmentName = document.createElement("strong");
+      equipmentName.textContent = equipmentLabel(record.equipment);
+      equipment.append(makeSvg("truck"), equipmentName);
+
+      const origin = document.createElement("strong");
+      origin.textContent = record.origin;
+      const destinationNode = document.createElement("strong");
+      destinationNode.textContent = destination;
+      const pickup = document.createElement("span");
+      pickup.textContent = record.pickupWindow || record.availability || "Current";
+
+      const rate = document.createElement("span");
+      rate.className = "hlb-rate";
+      const rateValue = document.createElement("strong");
+      rateValue.textContent = record.rate
+        ? `${record.rate.currency === "USD" ? "$" : `${record.rate.currency} `}${Number(record.rate.amount).toLocaleString()}`
+        : "Sign in";
+      const team = document.createElement("small");
+      team.textContent = record.team ? "Team" : "";
+      rate.append(rateValue, team);
+
+      const signal = document.createElement("span");
+      signal.className = "hlb-signal";
+      signal.textContent = "Approved public record";
+      const age = document.createElement("span");
+      age.className = "hlb-age";
+      age.textContent = relativeAge(record.observedAt);
+
+      const unlock = document.createElement("a");
+      unlock.href = "/load-board/?role=carrier#carrier-access";
+      unlock.append(document.createTextNode("Unlock "), makeSvg("lock"));
+
+      article.append(equipment, origin, destinationNode, pickup, rate, signal, age, unlock);
+      return article;
+    });
+    rows.replaceChildren(...rendered);
   };
 
   const filterVisibleRows = () => {
