@@ -31,6 +31,8 @@ assert.match(dashboard, /fetch\("\/api\/services"/);
 assert.match(runtime, /connect_shop_service_preset_used/);
 assert.match(runtime, /connect_shop_weekday_hours_preset_used/);
 assert.match(availability, /fetch\("\/api\/repair-shop\/availability"/);
+assert.doesNotMatch(dashboard, /\.innerHTML\s*=/, "Repair Shop dashboard must not use innerHTML sinks");
+assert.doesNotMatch(availability, /\.innerHTML\s*=/, "Repair Shop availability must not use innerHTML sinks");
 
 // Share/repeat/contact/feedback stay on the canonical web workflow.
 assert.match(runtime, /navigator\.share/);
