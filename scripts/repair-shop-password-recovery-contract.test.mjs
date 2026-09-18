@@ -194,7 +194,13 @@ try {
       assert.match(decoded, /From: website@hermeslogisticsus.com/);
       assert.match(decoded, /To: owner@example.com/);
       assert.match(decoded, /Subject: \[HERMES ACCOUNT\] \[PASSWORD RESET\]/);
-      assert.match(decoded, /secure reset link below within 45 minutes/);
+      const encodedTextPart = decoded
+        .split("Content-Transfer-Encoding: base64\r\n\r\n")[1]
+        ?.split("\r\n--hermes_")[0]
+        ?.replace(/\s+/g, "");
+      assert.ok(encodedTextPart, "Gmail raw MIME must contain the base64 text part");
+      const plainText = Buffer.from(encodedTextPart, "base64").toString("utf8");
+      assert.match(plainText, /secure reset link below within 45 minutes/);
       return Response.json({ id: "gmail-unit-message", threadId: "gmail-thread" });
     }
     throw new Error(`unexpected Gmail transport URL: ${url}`);
