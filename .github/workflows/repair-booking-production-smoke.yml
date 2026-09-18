@@ -64,7 +64,7 @@ jobs:
           BASE="https://hermeslogisticsus.com"
           EMAIL="repair-booking-production-smoke@hermesconnect.app"
           TEST_ID="${GITHUB_RUN_ID}-access-$(date +%s)"
-          PASSWORD="HermesAccess-${TEST_ID}-A9!"
+          PASSWORD="$(node -e 'const { randomBytes } = require("node:crypto"); process.stdout.write(randomBytes(24).toString("base64url") + "!Aa9")')"
           COOKIE="${RUNNER_TEMP}/access.cookies"
           echo "::add-mask::$PASSWORD"
 

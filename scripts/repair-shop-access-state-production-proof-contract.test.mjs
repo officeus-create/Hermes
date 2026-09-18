@@ -58,6 +58,8 @@ assert.match(proof, /INSERT INTO repair_shops/);
 assert.match(proof, /repair-access-production-smoke@hermesconnect\.app/);
 assert.match(proof, /\/api\/auth\/login/);
 assert.match(proof, /hashPassword/);
+assert.ok(proof.includes("randomBytes(24)"), "synthetic proof password must be generated ephemerally at runtime");
+assert.doesNotMatch(proof, /PASSWORD=.*TEST_ID/, "synthetic proof password must not be derived from the test id template");
 assert.match(proof, /params:\[\$specialist,\$email,\$hash,\$salt/);
 assert.match(proof, /params:\[\$shop,\$specialist/);
 

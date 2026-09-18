@@ -127,6 +127,9 @@ for (const path of workflowPaths) {
   const workflow = fs.readFileSync(path, "utf8");
   assert.ok(workflow.includes("id-token: write"), `Missing id-token permission: ${path}`);
 }
+const bookingProductionSmokeWorkflow = fs.readFileSync(".github/workflows/repair-booking-production-smoke.yml", "utf8");
+assert.ok(bookingProductionSmokeWorkflow.includes("randomBytes(24)"), "booking smoke password must be generated ephemerally at runtime");
+assert.doesNotMatch(bookingProductionSmokeWorkflow, /PASSWORD=.*TEST_ID/, "booking smoke password must not be derived from the test id template");
 for (const path of [
   "scripts/repair-booking-production-smoke.sh",
   "scripts/repair-booking-concurrency-production-smoke.sh",
