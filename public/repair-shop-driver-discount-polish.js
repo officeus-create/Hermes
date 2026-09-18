@@ -73,7 +73,16 @@
     preview.className = "hc-driver-discount-preview";
     preview.dataset.driverDiscountPreview = "true";
     preview.setAttribute("aria-live", "polite");
-    preview.innerHTML = `<strong>${copy.preview}</strong><span class="hc-driver-discount-preview-status"></span><p class="hc-driver-discount-preview-summary"></p><p class="hc-driver-discount-preview-hint">${copy.hint}</p>`;
+    const previewTitle = document.createElement("strong");
+    previewTitle.textContent = copy.preview;
+    const previewStatusNode = document.createElement("span");
+    previewStatusNode.className = "hc-driver-discount-preview-status";
+    const previewSummaryNode = document.createElement("p");
+    previewSummaryNode.className = "hc-driver-discount-preview-summary";
+    const previewHint = document.createElement("p");
+    previewHint.className = "hc-driver-discount-preview-hint";
+    previewHint.textContent = copy.hint;
+    preview.append(previewTitle, previewStatusNode, previewSummaryNode, previewHint);
     form.insertBefore(preview, status || form.querySelector("button[type='submit']"));
 
     const previewStatus = preview.querySelector(".hc-driver-discount-preview-status");
