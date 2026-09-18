@@ -282,15 +282,42 @@
     bar.className = "repair-booking-sharebar";
     bar.dataset.repairBookingSharebar = "true";
     bar.dataset.ready = slug ? "true" : "false";
-    bar.innerHTML = slug ? `
-      <div class="repair-booking-sharebar-copy"><span>${t.customerLinkTitle}</span><strong>${t.customerLinkCopy}</strong><small>${fullBookingUrl}</small></div>
-      <div class="repair-booking-sharebar-actions">
-        <button type="button" data-repair-copy-booking>${t.copyLink}</button>
-        <button type="button" data-repair-share-booking>${t.shareNow}</button>
-        <a href="${withLocale(bookingUrl)}" target="_blank" rel="noopener" data-repair-open-booking>${t.openBooking}</a>
-      </div>` : `
-      <div class="repair-booking-sharebar-copy"><span>${t.customerLinkTitle}</span><strong>${t.finishProfileLink}</strong></div>
-      <div class="repair-booking-sharebar-actions"><a href="${withLocale(`${ROOT}/dashboard/#profile-form`)}" data-repair-attention="true">${t.completeProfile}</a></div>`;
+    const copyWrap = document.createElement("div");
+    copyWrap.className = "repair-booking-sharebar-copy";
+    const copyTitle = document.createElement("span");
+    copyTitle.textContent = t.customerLinkTitle;
+    const copyBody = document.createElement("strong");
+    copyBody.textContent = slug ? t.customerLinkCopy : t.finishProfileLink;
+    copyWrap.append(copyTitle, copyBody);
+    const actions = document.createElement("div");
+    actions.className = "repair-booking-sharebar-actions";
+    if (slug) {
+      const url = document.createElement("small");
+      url.textContent = fullBookingUrl;
+      copyWrap.append(url);
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.dataset.repairCopyBooking = "true";
+      copyButton.textContent = t.copyLink;
+      const shareButton = document.createElement("button");
+      shareButton.type = "button";
+      shareButton.dataset.repairShareBooking = "true";
+      shareButton.textContent = t.shareNow;
+      const openLink = document.createElement("a");
+      openLink.href = withLocale(bookingUrl);
+      openLink.target = "_blank";
+      openLink.rel = "noopener";
+      openLink.dataset.repairOpenBooking = "true";
+      openLink.textContent = t.openBooking;
+      actions.append(copyButton, shareButton, openLink);
+    } else {
+      const profileLink = document.createElement("a");
+      profileLink.href = withLocale(`${ROOT}/dashboard/#profile-form`);
+      profileLink.dataset.repairAttention = "true";
+      profileLink.textContent = t.completeProfile;
+      actions.append(profileLink);
+    }
+    bar.append(copyWrap, actions);
     header.insertAdjacentElement("afterend", bar);
 
     const copy = $("[data-repair-copy-booking]", bar);
