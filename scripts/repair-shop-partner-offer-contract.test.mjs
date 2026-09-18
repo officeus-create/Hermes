@@ -22,6 +22,9 @@ assert.match(runtime, /removeAttribute\("data-demo-form"\)/);
 assert.match(runtime, /data-live-partner-offer/);
 assert.match(runtime, /addEventListener\("submit",[\s\S]*true\);/);
 assert.match(runtime, /event\.stopImmediatePropagation\(\)/);
+assert.doesNotMatch(runtime, /next\.innerHTML/, "Partner-offer next-step copy must not use a TrustedHTML sink.");
+assert.match(runtime, /next\.append\(title, list\)/);
+assert.match(runtime, /entry\.textContent = item/);
 
 // Delivery is server-confirmed, idempotent, consented, and remains human-reviewed.
 assert.match(runtime, /fetch\("\/api\/logistics-lead"/);

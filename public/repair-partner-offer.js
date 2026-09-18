@@ -148,8 +148,15 @@
       const next = document.createElement("aside");
       next.className = "repair-offer-next-step";
       next.dataset.repairOfferNextStep = "true";
-      const list = copy.nextSteps.map((item) => `<li>${item}</li>`).join("");
-      next.innerHTML = `<strong>${copy.nextTitle}</strong><ol>${list}</ol>`;
+      const title = document.createElement("strong");
+      title.textContent = copy.nextTitle;
+      const list = document.createElement("ol");
+      for (const item of copy.nextSteps) {
+        const entry = document.createElement("li");
+        entry.textContent = item;
+        list.append(entry);
+      }
+      next.append(title, list);
       form.insertBefore(next, submitButton);
     }
 
