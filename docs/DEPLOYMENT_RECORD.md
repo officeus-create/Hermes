@@ -2,65 +2,71 @@
 
 ## Current public production
 
-- Last independently confirmed deployment date: 2026-07-17
 - Main domain: `https://hermeslogisticsus.com`
 - Connect domain: `https://connect.hermeslogisticsus.com`
-- Cloudflare Pages project expected to own the main release: `hermes`
-- Last recorded deployment preview: `https://33a3f69c.hermes-eu4.pages.dev`
-- Build mode: Astro static output from `dist`
+- App domain: `https://app.hermeslogisticsus.com`
+- Cloudflare Pages project: `hermes`
+- Production branch: `main`
+- Build: `npm run build`
+- Build output: `dist`
+- Release owner: Cloudflare Git integration
+- Private mail/runtime Worker owner: `hermes-lead-email`
 
-## Approved repository release — 2026-08-05
+The Pages project is released from reviewed GitHub `main`. A merge is not treated as production proof by itself.
 
-The web-only Hermes Connect product and its main-site integration are complete in reviewed `main`:
-
-- PR #234 merged as `c8a00e09649573ad8b229c495dc9b1045cb0a073`;
-- PR #236 merged as `017c57930eb4afe35f83f2a96bf6a536e25b3143`;
-- indexed overview: `/services/hermes-connect/`;
-- homepage and Technology-section bridges;
-- protected Web App access intake;
-- six category-aware product paths;
-- no iPhone, Android, App Store, Google Play, APK, TestFlight, native-download, or mobile-waitlist path;
-- build, static contracts, SEO/schema/sitemap checks, receiver tests, release manifest, and desktop/mobile-browser tests passed.
-
-## Current production classification
-
-`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE`
-
-Fresh public verification after the approved merges still observed the previous Connect title `Hermes Connect · Profile & Availability v0.3`, and the new main-domain overview was not yet available. Do not claim the Web App is live and do not submit a real access request until the controlled verifier reports `LIVE_APPROVED_WEB_APP`.
-
-## Authoritative controlled deployment path
+## Authoritative Pages release contract
 
 Workflow: `.github/workflows/cloudflare-pages-production-v2.yml`
 
-The workflow always checks out reviewed `main`, builds `dist`, runs the static release suite, deploys to Cloudflare Pages project `hermes`, and verifies:
+For each covered `main` change, the workflow:
 
-1. `https://hermeslogisticsus.com/services/hermes-connect/`;
-2. the Hermes Connect Web App bridge on the homepage;
-3. `https://connect.hermeslogisticsus.com/`.
+1. checks out the exact approved `main` revision;
+2. builds `dist` and runs the static release contracts;
+3. waits for the official `Cloudflare Pages` GitHub App check for that exact commit SHA;
+4. reads the current main-domain product truth back from the custom domain;
+5. verifies the Connect custom-domain route;
+6. publishes sanitized release evidence.
 
-The previous queued workflow and its temporary schedule were retired. The v2 workflow uses an isolated concurrency group with `cancel-in-progress: true`.
+The workflow does not own a second Pages upload path and does not require a generic Cloudflare deployment credential. The native Cloudflare Git integration is the single Pages release owner.
 
-## Confirmed deployment blocker
+PR #1360 established and live-verified this contract on 2026-09-18. Later releases must satisfy the same exact-SHA verification; do not infer live state from merge status alone.
 
-The v2 workflow ran successfully through its credential preflight and confirmed that these GitHub Actions repository secrets are missing:
+## Pages runtime configuration — open parity gate
 
-- `CLOUDFLARE_API_TOKEN`;
-- `CLOUDFLARE_ACCOUNT_ID`.
+Current authenticated Cloudflare evidence after #1360 shows:
 
-No secret value was printed, stored in source control, or added to an issue.
+- Production bindings still carry the legacy dashboard marker that they are managed through `wrangler.toml`;
+- Production compatibility date remains `2026-07-12`;
+- Preview/default compatibility date is `2026-08-04`;
+- Production keeps the intended live delivery, KV, D1 and private `LEAD_EMAIL_SERVICE` binding;
+- Preview remains fail-closed and must not gain Production D1 or the private email-service binding.
 
-### Secure activation
+The public repository intentionally has **no active root Wrangler configuration**. `wrangler.jsonc.example` is a reviewed reference, not a deployment authority.
 
-1. In Cloudflare, create a scoped API token for the account that owns Pages project `hermes`.
-2. Grant only the permissions required to edit Cloudflare Pages deployments.
-3. In GitHub repository settings, add the token as Actions secret `CLOUDFLARE_API_TOKEN`.
-4. Add the account identifier as Actions secret `CLOUDFLARE_ACCOUNT_ID`.
-5. Run the workflow **Deploy approved main to Cloudflare Pages v2**.
-6. Keep Issue #232 open until the workflow confirms both the main domain and Connect custom domain.
-7. Keep Issue #226 open until Pages/Workers ownership, production branch rules, bindings, and duplicate integrations are reconciled.
+Do not deploy a partially downloaded Pages config merely to change the compatibility date. Do not copy Cloudflare resource IDs or secret values into the public repository. Resolve the remaining legacy project-state ownership marker under the canonical Cloudflare tracker #1349 before changing the Production date.
 
-Do not paste the token or account identifier into an issue, pull request, commit, workflow input, chat message, or public documentation.
+## Bounded production D1/operator proof — #961
+
+The Repair Shop production access-state proof is a separate capability gate, not a Pages release mechanism.
+
+It requires only the dedicated authorized proof credentials:
+
+- `CLOUDFLARE_PAGES_READ_TOKEN` for the minimum Pages read needed by the proof;
+- `CLOUDFLARE_D1_API_TOKEN` for the bounded D1 proof path;
+- the existing account identifier supplied through the authorized production environment.
+
+The proof workflow must not fall back to a broad generic Cloudflare token. If the dedicated credentials are unavailable, the proof remains blocked rather than borrowing a wider credential.
+
+## Other surviving Cloudflare gates
+
+The canonical backlog is GitHub issue #1349. Important remaining owner/platform items include MFA, DNSSEC/mail identity, Minimum TLS 1.2, Certificate Transparency Monitoring, the legacy Pages runtime ownership marker, compatibility-date alignment, credential reduction after MFA, useful Free notification policies and Cloudflare-native synthetics.
+
+Password reset issue #611 is an outbound arbitrary-recipient transport capability gate; it is not a Pages or Worker deployment blocker.
+
+## Superseded instructions
+
+Historical guidance that treated missing generic Pages deployment credentials, stale custom-domain deployment, or issues #226/#232 as the current release blocker is retired. Do not revive those paths from older notes or handoff history.
 
 ## Rollback
 
-Use the previous successful Cloudflare Pages production deployment if the controlled release creates a regression. Keep the Hermes Connect surface `noindex,nofollow` until the approved Web App is confirmed on the custom domain and canonical ownership is explicitly approved.
+If a reviewed release regresses production, use Cloudflare Pages deployment history to roll back to the previous successful production deployment, then repeat exact-SHA/custom-domain readback. Do not create an alternate deployer as a rollback shortcut.
