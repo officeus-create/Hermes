@@ -23,6 +23,14 @@ assert.match(followupEndpoint, /followup_requires_completed_booking/);
 assert.match(followupEndpoint, /ON CONFLICT\(booking_id\) DO UPDATE/);
 assert.match(followupEndpoint, /DELETE FROM repair_shop_booking_followups/);
 
+assert.match(bookingSource, /LEAD_LIMITS/);
+assert.match(bookingSource, /CF-Connecting-IP/);
+assert.match(bookingSource, /repair-booking:rate:\\$\\{await sha256Hex\\(clientAddress\\)\\}/);
+assert.match(bookingSource, /rate_limit_not_configured/);
+assert.match(bookingSource, /rate_limit_exceeded/);
+assert.match(bookingSource, /expirationTtl: BOOKING_RATE_WINDOW_SECONDS/);
+assert.doesNotMatch(bookingSource, /repair-booking:rate:\\$\\{clientAddress\\}/);
+
 const noShowExclusions = bookingSource.match(/NOT IN \('cancelled','canceled','no_show'\)/g) || [];
 assert.ok(noShowExclusions.length >= 3, "no_show must release public availability, shop capacity and technician capacity");
 assert.match(
