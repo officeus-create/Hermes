@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [runtime, qrRuntime, activationLoader, headers, accessApi, dashboard, availability, booking, customers] = await Promise.all([
+const [runtime, qrRuntime, activationLoader, headers, accessApi, dashboard, availability, booking, customers, formClarity] = await Promise.all([
   readFile(new URL("../public/repair-shop-web-v1.js", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-qr.js", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
@@ -11,6 +11,7 @@ const [runtime, qrRuntime, activationLoader, headers, accessApi, dashboard, avai
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/availability.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/booking.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/customers.astro", import.meta.url), "utf8"),
+  readFile(new URL("../public/repair-shop-form-clarity.js", import.meta.url), "utf8"),
 ]);
 
 assert.match(activationLoader, /\/repair-shop-web-v1\.js/);
@@ -54,6 +55,7 @@ assert.match(qrRuntime, /connect_shop_qr_download/);
 assert.match(qrRuntime, /connect_shop_qr_print/);
 assert.doesNotMatch(qrRuntime, /\.innerHTML\s*=/, "QR flow must not reintroduce innerHTML HTML sinks");
 assert.doesNotMatch(qrRuntime, /document\.write\s*\(/, "QR print flow must not reintroduce document.write");
+assert.doesNotMatch(formClarity, /\.innerHTML\s*=/, "Repair Shop registration clarity must not use innerHTML sinks");
 assert.doesNotMatch(qrRuntime, /client_name|client_email|client_phone|\bvin\b|shopName/);
 assert.match(headers, /img-src[^;]*https:\/\/quickchart\.io/);
 assert.match(headers, /connect-src[^;]*https:\/\/quickchart\.io/);
