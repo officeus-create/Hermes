@@ -134,7 +134,6 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   const clearAlert=()=>{if(!alertBox)return;alertBox.textContent="";alertBox.classList.add("hidden");alertBox.classList.remove("success");};
   const authRedirect=()=>{const url=new URL("/services/hermes-connect/repair-shops/auth/",location.origin);if(locale!=="en")url.searchParams.set("lang",locale);location.assign(`${url.pathname}${url.search}`);};
   const requestJson=async(url:string,init?:RequestInit)=>{const response=await fetch(url,{credentials:"same-origin",...init,headers:{"Content-Type":"application/json",...(init?.headers||{})}});if(response.status===401){authRedirect();throw new Error("not_authenticated");}const data=await response.json().catch(()=>({success:false,error:"invalid_response"}));if(!response.ok||!data?.success)throw new Error(String(data?.error||"request_failed"));return data;};
-  const escapeHtml=(value:string)=>value.replace(/[&<>'"]/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[char]||char));
 
   const fillProfile=(shop:any)=>{if(!shop)return;($<HTMLInputElement>("#shop-name")!).value=shop.name||"";($<HTMLInputElement>("#shop-phone")!).value=shop.phone||"";($<HTMLInputElement>("#shop-address")!).value=shop.address_line1||"";($<HTMLInputElement>("#shop-city")!).value=shop.city||"";($<HTMLInputElement>("#shop-region")!).value=shop.region||shop.state||"";($<HTMLInputElement>("#shop-country")!).value=shop.country_code||"US";($<HTMLInputElement>("#shop-postal")!).value=shop.postal_code||"";($<HTMLInputElement>("#shop-timezone")!).value=shop.timezone||"";const state=$("#profile-state");if(state)state.textContent=t.saved;$("#public-booking-card")?.classList.remove("hidden");const url=new URL(`/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`,location.origin);if(locale!=="en")url.searchParams.set("lang",locale);publicBookingUrl=url.href;const code=$("#public-booking-link");if(code)code.textContent=publicBookingUrl;const open=$("#open-booking-link") as HTMLAnchorElement|null;if(open)open.href=publicBookingUrl;};
   $("#profile-form")?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();try{const body={name:$<HTMLInputElement>("#shop-name")?.value.trim(),phone:$<HTMLInputElement>("#shop-phone")?.value.trim(),address_line1:$<HTMLInputElement>("#shop-address")?.value.trim(),city:$<HTMLInputElement>("#shop-city")?.value.trim(),region:$<HTMLInputElement>("#shop-region")?.value.trim(),country_code:$<HTMLInputElement>("#shop-country")?.value.trim().toUpperCase(),postal_code:$<HTMLInputElement>("#shop-postal")?.value.trim(),timezone:$<HTMLInputElement>("#shop-timezone")?.value.trim()};const data=await requestJson("/api/repair-shop/profile",{method:"PUT",body:JSON.stringify(body)});fillProfile(data.shop);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
@@ -145,11 +144,111 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   const showStaffForm=(member?:Staff)=>{staffForm?.classList.remove("hidden");($<HTMLInputElement>("#staff-id")!).value=member?.id||"";($<HTMLInputElement>("#staff-name")!).value=member?.name||"";($<HTMLInputElement>("#staff-role")!).value=member?.role||"Technician";($<HTMLInputElement>("#staff-specialties")!).value=(member?.specialties||[]).join(", ");($<HTMLInputElement>("#staff-active")!).checked=member?.active??true;$<HTMLInputElement>("#staff-name")?.focus();};
   const hideStaffForm=()=>{staffForm?.classList.add("hidden");staffForm?.reset();const id=$<HTMLInputElement>("#staff-id");if(id)id.value="";};
   $("#new-staff")?.addEventListener("click",()=>showStaffForm());$("#cancel-staff")?.addEventListener("click",hideStaffForm);
-  const renderStaff=()=>{const list=$("#staff-list");const empty=$("#staff-empty");const select=$<HTMLSelectElement>("#schedule-staff");const calendarSelect=$<HTMLSelectElement>("#google-calendar-staff");if(!list||!select||!calendarSelect)return;const previousCalendarStaff=calendarSelect.value;list.innerHTML="";select.innerHTML="";calendarSelect.innerHTML="";empty?.classList.toggle("hidden",staff.length>0);staff.forEach((member)=>{const card=document.createElement("article");card.className="staff-card";card.innerHTML=`<div><strong>${escapeHtml(member.name)}</strong><span>${escapeHtml(member.role)}</span><small>${escapeHtml(member.specialties.join(" · ")||"—")}</small></div><div class="staff-card-actions"><span class="status-pill ${member.active?"active":"inactive"}">${member.active?t.activeStatus:t.inactiveStatus}</span><button type="button" data-edit="${member.id}">${t.edit}</button><button type="button" data-remove="${member.id}">${t.remove}</button></div>`;list.appendChild(card);const option=document.createElement("option");option.value=member.id;option.textContent=member.name;select.appendChild(option);if(member.active){const calendarOption=document.createElement("option");calendarOption.value=member.id;calendarOption.textContent=member.name;calendarSelect.appendChild(calendarOption);}});if(previousCalendarStaff&&[...calendarSelect.options].some((option)=>option.value===previousCalendarStaff))calendarSelect.value=previousCalendarStaff;document.querySelectorAll<HTMLElement>("[data-edit]").forEach((button)=>button.addEventListener("click",()=>{const member=staff.find((item)=>item.id===button.dataset.edit);if(member)showStaffForm(member);}));document.querySelectorAll<HTMLElement>("[data-remove]").forEach((button)=>button.addEventListener("click",async()=>{const id=button.dataset.remove||"";if(!id||!confirm(t.deleteConfirm))return;try{const data=await requestJson("/api/repair-shop/staff",{method:"DELETE",body:JSON.stringify({id})});staff=data.staff||[];renderStaff();renderCalendarConnection();setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}}));$("#schedule-empty")?.classList.toggle("hidden",staff.length>0);$("#schedule-form")?.classList.toggle("hidden",staff.length===0);if(staff.length)void refreshSchedule();};
+  const renderStaff=()=>{
+    const list=$("#staff-list");
+    const empty=$("#staff-empty");
+    const select=$<HTMLSelectElement>("#schedule-staff");
+    const calendarSelect=$<HTMLSelectElement>("#google-calendar-staff");
+    if(!list||!select||!calendarSelect)return;
+    const previousCalendarStaff=calendarSelect.value;
+    list.replaceChildren();
+    select.replaceChildren();
+    calendarSelect.replaceChildren();
+    empty?.classList.toggle("hidden",staff.length>0);
+    staff.forEach((member)=>{
+      const card=document.createElement("article");
+      card.className="staff-card";
+
+      const identity=document.createElement("div");
+      const name=document.createElement("strong");
+      name.textContent=member.name;
+      const role=document.createElement("span");
+      role.textContent=member.role;
+      const specialties=document.createElement("small");
+      specialties.textContent=member.specialties.join(" · ")||"—";
+      identity.append(name,role,specialties);
+
+      const actions=document.createElement("div");
+      actions.className="staff-card-actions";
+      const status=document.createElement("span");
+      status.className=`status-pill ${member.active?"active":"inactive"}`;
+      status.textContent=member.active?t.activeStatus:t.inactiveStatus;
+      const edit=document.createElement("button");
+      edit.type="button";
+      edit.dataset.edit=member.id;
+      edit.textContent=t.edit;
+      const remove=document.createElement("button");
+      remove.type="button";
+      remove.dataset.remove=member.id;
+      remove.textContent=t.remove;
+      actions.append(status,edit,remove);
+      card.append(identity,actions);
+      list.appendChild(card);
+
+      const option=document.createElement("option");
+      option.value=member.id;
+      option.textContent=member.name;
+      select.appendChild(option);
+      if(member.active){
+        const calendarOption=document.createElement("option");
+        calendarOption.value=member.id;
+        calendarOption.textContent=member.name;
+        calendarSelect.appendChild(calendarOption);
+      }
+    });
+    if(previousCalendarStaff&&[...calendarSelect.options].some((option)=>option.value===previousCalendarStaff))calendarSelect.value=previousCalendarStaff;
+    document.querySelectorAll<HTMLElement>("[data-edit]").forEach((button)=>button.addEventListener("click",()=>{const member=staff.find((item)=>item.id===button.dataset.edit);if(member)showStaffForm(member);}));
+    document.querySelectorAll<HTMLElement>("[data-remove]").forEach((button)=>button.addEventListener("click",async()=>{const id=button.dataset.remove||"";if(!id||!confirm(t.deleteConfirm))return;try{const data=await requestJson("/api/repair-shop/staff",{method:"DELETE",body:JSON.stringify({id})});staff=data.staff||[];renderStaff();renderCalendarConnection();setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}}));
+    $("#schedule-empty")?.classList.toggle("hidden",staff.length>0);
+    $("#schedule-form")?.classList.toggle("hidden",staff.length===0);
+    if(staff.length)void refreshSchedule();
+  };
   staffForm?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();const id=$<HTMLInputElement>("#staff-id")?.value.trim()||"";const body={id,name:$<HTMLInputElement>("#staff-name")?.value.trim(),role:$<HTMLInputElement>("#staff-role")?.value.trim(),specialties:($<HTMLInputElement>("#staff-specialties")?.value||"").split(",").map((item)=>item.trim()).filter(Boolean),active:Boolean($<HTMLInputElement>("#staff-active")?.checked)};try{const data=await requestJson("/api/repair-shop/staff",{method:id?"PUT":"POST",body:JSON.stringify(body)});staff=data.staff||[];hideStaffForm();renderStaff();setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
 
   const defaultDays=():ScheduleDay[]=>Array.from({length:7},(_,day)=>({day_of_week:day,is_working:day>0&&day<6,start_time:day>0&&day<6?"09:00":null,end_time:day>0&&day<6?"17:00":null,breaks:day>0&&day<6?[{start_time:"12:00",end_time:"12:30"}]:[]}));
-  const renderSchedule=(values:ScheduleDay[])=>{const root=$("#schedule-days");if(!root)return;root.innerHTML="";const map=new Map(values.map((item)=>[item.day_of_week,item]));defaultDays().forEach((fallback)=>{const value=map.get(fallback.day_of_week)||fallback;const firstBreak=value.breaks?.[0]||{start_time:"",end_time:""};const row=document.createElement("div");row.className="schedule-row";row.dataset.day=String(value.day_of_week);row.innerHTML=`<strong>${days[value.day_of_week]}</strong><label><input class="working-input" type="checkbox" ${value.is_working?"checked":""}/></label><div class="time-pair"><input class="start-input" type="time" value="${value.start_time||"09:00"}"/><span>–</span><input class="end-input" type="time" value="${value.end_time||"17:00"}"/></div><div class="time-pair"><input class="break-start-input" type="time" value="${firstBreak.start_time||""}"/><span>–</span><input class="break-end-input" type="time" value="${firstBreak.end_time||""}"/></div>`;root.appendChild(row);});};
+  const renderSchedule=(values:ScheduleDay[])=>{
+    const root=$("#schedule-days");
+    if(!root)return;
+    root.replaceChildren();
+    const map=new Map(values.map((item)=>[item.day_of_week,item]));
+    defaultDays().forEach((fallback)=>{
+      const value=map.get(fallback.day_of_week)||fallback;
+      const firstBreak=value.breaks?.[0]||{start_time:"",end_time:""};
+      const row=document.createElement("div");
+      row.className="schedule-row";
+      row.dataset.day=String(value.day_of_week);
+
+      const day=document.createElement("strong");
+      day.textContent=days[value.day_of_week];
+      const workingLabel=document.createElement("label");
+      const working=document.createElement("input");
+      working.className="working-input";
+      working.type="checkbox";
+      working.checked=value.is_working;
+      workingLabel.append(working);
+
+      const makeTimePair=(startClass:string,startValue:string,endClass:string,endValue:string)=>{
+        const pair=document.createElement("div");
+        pair.className="time-pair";
+        const start=document.createElement("input");
+        start.className=startClass;
+        start.type="time";
+        start.value=startValue;
+        const dash=document.createElement("span");
+        dash.textContent="–";
+        const end=document.createElement("input");
+        end.className=endClass;
+        end.type="time";
+        end.value=endValue;
+        pair.append(start,dash,end);
+        return pair;
+      };
+      const shift=makeTimePair("start-input",value.start_time||"09:00","end-input",value.end_time||"17:00");
+      const breakPair=makeTimePair("break-start-input",firstBreak.start_time||"","break-end-input",firstBreak.end_time||"");
+      row.append(day,workingLabel,shift,breakPair);
+      root.appendChild(row);
+    });
+  };
   async function refreshSchedule(){const select=$<HTMLSelectElement>("#schedule-staff");if(!select?.value)return;try{const data=await requestJson(`/api/repair-shop/staff-schedule?staff_id=${encodeURIComponent(select.value)}`);renderSchedule(data.schedules||[]);}catch{renderSchedule(defaultDays());}}
   $("#schedule-staff")?.addEventListener("change",()=>void refreshSchedule());
   $("#schedule-form")?.addEventListener("submit",async(event)=>{event.preventDefault();const select=$<HTMLSelectElement>("#schedule-staff");if(!select?.value)return;const payload=[...document.querySelectorAll<HTMLElement>(".schedule-row")].map((row)=>{const isWorking=Boolean(row.querySelector<HTMLInputElement>(".working-input")?.checked);const breakStart=row.querySelector<HTMLInputElement>(".break-start-input")?.value||"";const breakEnd=row.querySelector<HTMLInputElement>(".break-end-input")?.value||"";return{day_of_week:Number(row.dataset.day),is_working:isWorking,start_time:isWorking?(row.querySelector<HTMLInputElement>(".start-input")?.value||""):null,end_time:isWorking?(row.querySelector<HTMLInputElement>(".end-input")?.value||""):null,breaks:isWorking&&breakStart&&breakEnd?[{start_time:breakStart,end_time:breakEnd}]:[]};});try{const data=await requestJson("/api/repair-shop/staff-schedule",{method:"PUT",body:JSON.stringify({staff_id:select.value,days:payload})});renderSchedule(data.schedules||[]);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
