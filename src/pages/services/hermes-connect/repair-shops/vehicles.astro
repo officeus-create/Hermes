@@ -123,7 +123,6 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const search = $("#vehicle-search") as HTMLInputElement | null;
   const alert = $("#page-alert");
 
-  const escapeHtml = (value:unknown) => String(value ?? "").replace(/[&<>'"]/g,(char) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char] || char));
   const formatDate = (value:string|null|undefined) => value ? new Intl.DateTimeFormat(locale === "en" ? "en-US" : locale,{year:"numeric",month:"short",day:"numeric"}).format(new Date(`${value}T12:00:00`)) : "—";
   const vehicleName = (vehicle:Vehicle) => [vehicle.year,vehicle.make,vehicle.model].filter(Boolean).join(" ") || "Vehicle";
   const withLocale = (path:string) => {
@@ -149,6 +148,13 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     return [vehicleName(vehicle),vehicle.vin,vehicle.current_customer?.name,vehicle.current_customer?.email,vehicle.current_customer?.phone,...vehicle.services,...vehicle.customers.flatMap((customer) => [customer.name,customer.email,customer.phone])].join(" ").toLowerCase();
   }
 
+  const node = <K extends keyof HTMLElementTagNameMap>(tag:K,className="",text?:unknown) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = String(text);
+    return element;
+  };
+
   function renderList() {
     if (!list || !empty || !count) return;
     const query = (search?.value || "").trim().toLowerCase();
@@ -156,17 +162,32 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     count.textContent = `${vehicles.length} ${t.vehicles}`;
     empty.classList.toggle("hidden", filtered.length > 0);
     list.classList.toggle("hidden", filtered.length === 0);
-    list.innerHTML = filtered.map((vehicle) => {
+    list.replaceChildren();
+    for (const vehicle of filtered) {
       const actualIndex = vehicles.indexOf(vehicle);
-      const next = vehicle.next_appointment ? `<span class="next-chip">${escapeHtml(t.next)} · ${escapeHtml(formatDate(vehicle.next_appointment.appointment_date))}</span>` : "";
-      return `<button class="vehicle-card" type="button" data-vehicle-index="${actualIndex}" aria-label="${escapeHtml(t.openVehicle)}: ${escapeHtml(vehicleName(vehicle))}">
-        <div class="vehicle-card-main"><span class="vehicle-badge" aria-hidden="true">V</span><div><strong>${escapeHtml(vehicleName(vehicle))}</strong><span>${escapeHtml(vehicle.vin ? `${t.vin} ${vehicle.vin}` : t.vinMissing)}</span></div></div>
-        <div class="vehicle-card-customer"><small>${escapeHtml(t.currentCustomer)}</small><strong>${escapeHtml(vehicle.current_customer?.name || vehicle.current_customer?.email || "—")}</strong></div>
-        <div class="vehicle-card-meta"><span><b>${escapeHtml(vehicle.total_bookings)}</b>${escapeHtml(t.bookings)}</span><span><b>${escapeHtml(vehicle.mileage ?? "—")}</b>${escapeHtml(t.mileage)}</span><span><b>${escapeHtml(formatDate(vehicle.last_completed_visit))}</b>${escapeHtml(t.lastVisit)}</span></div>
-        ${next}
-      </button>`;
-    }).join("");
-    list.querySelectorAll<HTMLButtonElement>("[data-vehicle-index]").forEach((button) => button.addEventListener("click",() => openVehicle(Number(button.dataset.vehicleIndex))));
+      const card = node("button","vehicle-card");
+      card.type = "button";
+      card.dataset.vehicleIndex = String(actualIndex);
+      card.setAttribute("aria-label", `${t.openVehicle}: ${vehicleName(vehicle)}`);
+      const main = node("div","vehicle-card-main");
+      const badge = node("span","vehicle-badge","V");
+      badge.setAttribute("aria-hidden","true");
+      const identity = node("div");
+      identity.append(node("strong","",vehicleName(vehicle)),node("span","",vehicle.vin ? `${t.vin} ${vehicle.vin}` : t.vinMissing));
+      main.append(badge,identity);
+      const customer = node("div","vehicle-card-customer");
+      customer.append(node("small","",t.currentCustomer),node("strong","",vehicle.current_customer?.name || vehicle.current_customer?.email || "—"));
+      const meta = node("div","vehicle-card-meta");
+      for (const [value,label] of [[vehicle.total_bookings,t.bookings],[vehicle.mileage ?? "—",t.mileage],[formatDate(vehicle.last_completed_visit),t.lastVisit]]) {
+        const item = node("span");
+        item.append(node("b","",value),document.createTextNode(String(label)));
+        meta.append(item);
+      }
+      card.append(main,customer,meta);
+      if (vehicle.next_appointment) card.append(node("span","next-chip",`${t.next} · ${formatDate(vehicle.next_appointment.appointment_date)}`));
+      card.addEventListener("click",() => openVehicle(actualIndex));
+      list.append(card);
+    }
   }
 
   function openVehicle(vehicleIndex:number) {
@@ -177,23 +198,60 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     $("#detail-vehicle")!.textContent = vehicleName(vehicle);
     $("#detail-vin")!.textContent = vehicle.vin ? `${t.vin}: ${vehicle.vin}` : t.vinMissing;
     $("#detail-customer-name")!.textContent = vehicle.current_customer?.name || vehicle.current_customer?.email || "—";
-    $("#detail-customer")!.innerHTML = `<span>${escapeHtml(vehicle.current_customer?.email || "—")}</span><span>${escapeHtml(vehicle.current_customer?.phone || "—")}</span>`;
-    $("#detail-stats")!.innerHTML = [
-      [t.bookings,vehicle.total_bookings],[t.completed,vehicle.completed_visits],[t.cancelled,vehicle.cancelled_bookings],[t.mileage,vehicle.mileage ?? t.mileageMissing],[t.lastVisit,formatDate(vehicle.last_completed_visit)],[t.lastSeen,formatDate(vehicle.last_seen_date)]
-    ].map(([label,value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+
+    const contact = $("#detail-customer")!;
+    contact.replaceChildren(node("span","",vehicle.current_customer?.email || "—"),node("span","",vehicle.current_customer?.phone || "—"));
+
+    const stats = $("#detail-stats")!;
+    stats.replaceChildren();
+    for (const [label,value] of [[t.bookings,vehicle.total_bookings],[t.completed,vehicle.completed_visits],[t.cancelled,vehicle.cancelled_bookings],[t.mileage,vehicle.mileage ?? t.mileageMissing],[t.lastVisit,formatDate(vehicle.last_completed_visit)],[t.lastSeen,formatDate(vehicle.last_seen_date)]]) {
+      const item = node("div");
+      item.append(node("span","",label),node("strong","",value));
+      stats.append(item);
+    }
 
     const next = $("#detail-next");
     if (next) {
+      next.replaceChildren();
       if (vehicle.next_appointment) {
-        next.innerHTML = `<strong>${escapeHtml(t.next)}</strong><span>${escapeHtml(formatDate(vehicle.next_appointment.appointment_date))} · ${escapeHtml(vehicle.next_appointment.start_time)} · ${escapeHtml(vehicle.next_appointment.service_name)}</span>`;
+        next.append(node("strong","",t.next),node("span","",`${formatDate(vehicle.next_appointment.appointment_date)} · ${vehicle.next_appointment.start_time} · ${vehicle.next_appointment.service_name}`));
         next.classList.remove("hidden");
       } else next.classList.add("hidden");
     }
 
-    $("#detail-services")!.innerHTML = vehicle.services.length ? vehicle.services.map((service) => `<span>${escapeHtml(service)}</span>`).join("") : `<span class="empty-inline">${escapeHtml(t.servicesMissing)}</span>`;
-    $("#detail-customers")!.innerHTML = vehicle.customers.length ? vehicle.customers.map((customer) => `<div class="customer-history-row"><div><strong>${escapeHtml(customer.name || customer.email || "—")}</strong><span>${escapeHtml(customer.email || "")}</span></div><small>${escapeHtml(formatDate(customer.last_seen_date))}</small></div>`).join("") : `<div class="empty-inline">${escapeHtml(t.customersMissing)}</div>`;
+    const services = $("#detail-services")!;
+    services.replaceChildren();
+    if (vehicle.services.length) for (const service of vehicle.services) services.append(node("span","",service));
+    else services.append(node("span","empty-inline",t.servicesMissing));
+
+    const customers = $("#detail-customers")!;
+    customers.replaceChildren();
+    if (vehicle.customers.length) {
+      for (const customer of vehicle.customers) {
+        const row = node("div","customer-history-row");
+        const identity = node("div");
+        identity.append(node("strong","",customer.name || customer.email || "—"),node("span","",customer.email || ""));
+        row.append(identity,node("small","",formatDate(customer.last_seen_date)));
+        customers.append(row);
+      }
+    } else customers.append(node("div","empty-inline",t.customersMissing));
+
     $("#detail-history-count")!.textContent = `${vehicle.history.length} ${t.bookings}`;
-    $("#detail-history")!.innerHTML = vehicle.history.length ? vehicle.history.map((item) => `<div class="history-row"><div class="history-date"><strong>${escapeHtml(formatDate(item.appointment_date))}</strong><span>${escapeHtml(item.start_time)}</span></div><div class="history-service"><strong>${escapeHtml(item.service_name || "—")}</strong><span>${escapeHtml(item.customer?.name || item.customer?.email || "—")}</span></div><div class="history-status"><span class="status-chip">${escapeHtml(item.status)}</span><small>${escapeHtml(item.mileage == null ? t.mileageMissing : `${item.mileage}`)}</small></div></div>`).join("") : `<div class="empty-inline">${escapeHtml(t.historyMissing)}</div>`;
+    const history = $("#detail-history")!;
+    history.replaceChildren();
+    if (vehicle.history.length) {
+      for (const item of vehicle.history) {
+        const row = node("div","history-row");
+        const date = node("div","history-date");
+        date.append(node("strong","",formatDate(item.appointment_date)),node("span","",item.start_time));
+        const service = node("div","history-service");
+        service.append(node("strong","",item.service_name || "—"),node("span","",item.customer?.name || item.customer?.email || "—"));
+        const status = node("div","history-status");
+        status.append(node("span","status-chip",item.status),node("small","",item.mileage == null ? t.mileageMissing : String(item.mileage)));
+        row.append(date,service,status);
+        history.append(row);
+      }
+    } else history.append(node("div","empty-inline",t.historyMissing));
     window.scrollTo({top:0,behavior:"instant"});
   }
 
