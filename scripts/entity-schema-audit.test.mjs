@@ -50,6 +50,18 @@ if (website) {
 const ids = entities.map((entity) => entity?.["@id"]).filter(Boolean);
 if (new Set(ids).size !== ids.length) errors.push("Duplicate JSON-LD @id values found on the homepage");
 
+const contactsHtml = await readFile(join(dist, "contacts/index.html"), "utf8");
+const contactEntities = parseEntities(contactsHtml);
+const contactOrganization = contactEntities.find((entity) => entity?.["@type"] === "Organization");
+if (!contactOrganization) errors.push("/contacts/: Organization schema is missing");
+else {
+  if (contactOrganization?.["@id"] !== organizationId) errors.push("/contacts/: Organization must reuse the canonical Hermes @id");
+  if (contactOrganization.url !== "https://hermeslogisticsus.com/") errors.push("/contacts/: Organization URL must remain the canonical homepage");
+  const sameAs = new Set(Array.isArray(contactOrganization.sameAs) ? contactOrganization.sameAs : []);
+  for (const url of expectedSameAs) if (!sameAs.has(url)) errors.push(`/contacts/: Organization sameAs is missing ${url}`);
+  for (const url of sameAs) if (!expectedSameAs.has(url)) errors.push(`/contacts/: Organization sameAs contains an unapproved profile: ${url}`);
+}
+
 const marketingHtml = await readFile(join(dist, "paths/marketing/index.html"), "utf8");
 const marketingEntities = parseEntities(marketingHtml);
 for (const entity of marketingEntities) {
@@ -89,4 +101,4 @@ if (errors.length) {
   throw new Error(`Entity schema audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log("Entity schema audit passed: stable Hermes Organization and WebSite references, exact same-entity profiles only, and no premature ProgressoPro sameAs.");
+console.log("Entity schema audit passed: stable Hermes Organization and WebSite references, Contacts reuse of the canonical entity, exact same-entity profiles only, and no premature ProgressoPro sameAs.");
