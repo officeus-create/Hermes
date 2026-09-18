@@ -20,6 +20,8 @@ assert.match(runtime, /cloneNode\(true\)/);
 assert.match(runtime, /originalForm\.replaceWith\(form\)/);
 assert.match(runtime, /removeAttribute\("data-demo-form"\)/);
 assert.match(runtime, /data-live-partner-offer/);
+assert.doesNotMatch(runtime, /\.innerHTML\s*=/, "Repair Partner runtime must not use Trusted Types-incompatible innerHTML sinks");
+assert.match(runtime, /next\.append\(title, list\)/, "Repair Partner next-step block must be assembled with DOM APIs");
 assert.match(runtime, /addEventListener\("submit",[\s\S]*true\);/);
 assert.match(runtime, /event\.stopImmediatePropagation\(\)/);
 
