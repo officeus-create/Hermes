@@ -240,41 +240,124 @@
     panel.className = "panel hc-driver-discount-owner";
     panel.id = "driver-discount";
     panel.dataset.driverDiscountOwner = "true";
-    panel.innerHTML = `
-      <div class="panel-heading"><div><p class="eyebrow">${copy.ownerEyebrow}</p><h2>${copy.ownerTitle}</h2><p class="muted">${copy.ownerBody}</p></div><span class="hc-driver-discount-dollar" aria-hidden="true">$</span></div>
-      <form class="hc-driver-discount-form" data-driver-discount-form>
-        <label class="hc-driver-discount-enable"><input type="checkbox" data-discount-enabled><span>${copy.enable}</span></label>
-        <div class="hc-driver-discount-grid">
-          <section class="hc-driver-discount-card">
-            <h3>${copy.services}</h3>
-            <label class="hc-driver-discount-percent">${copy.percent}<input type="number" min="0" max="100" step="1" value="0" data-service-percent></label>
-            <div class="hc-driver-discount-scopes">
-              <label><input type="radio" name="hc-service-scope" value="all" checked>${copy.allServices}</label>
-              <label><input type="radio" name="hc-service-scope" value="selected">${copy.selectedServices}</label>
-            </div>
-            <div class="hc-driver-discount-selected" data-selected-services hidden>
-              <p class="hc-driver-discount-selected-title">${copy.chooseServices}</p>
-              <div class="hc-driver-discount-services" data-service-list></div>
-            </div>
-          </section>
-          <section class="hc-driver-discount-card">
-            <h3>${copy.materials}</h3>
-            <label class="hc-driver-discount-percent">${copy.percent}<input type="number" min="0" max="100" step="1" value="0" data-materials-percent></label>
-            <div class="hc-driver-discount-scopes">
-              <label><input type="radio" name="hc-materials-scope" value="all" checked>${copy.allMaterials}</label>
-              <label><input type="radio" name="hc-materials-scope" value="selected">${copy.selectedMaterials}</label>
-            </div>
-            <div class="hc-driver-discount-selected" data-selected-materials hidden>
-              <p class="hc-driver-discount-selected-title">${copy.materialsList}</p>
-              <textarea class="hc-driver-discount-textarea" maxlength="1700" data-materials-list placeholder="${copy.materialsPlaceholder}"></textarea>
-              <p class="hc-driver-discount-help">${copy.materialsHelp}</p>
-            </div>
-          </section>
-        </div>
-        <p class="hc-driver-discount-status" data-discount-status role="status" aria-live="polite"></p>
-        <button class="primary-btn" type="submit">${copy.save}</button>
-      </form>`;
+    const makeText = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      node.textContent = text;
+      return node;
+    };
+    const makeChoice = (type, name, value, text, checked = false) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = type;
+      if (name) input.name = name;
+      if (value) input.value = value;
+      input.checked = checked;
+      label.append(input, document.createTextNode(text));
+      return { label, input };
+    };
 
+    const heading = document.createElement("div");
+    heading.className = "panel-heading";
+    const headingCopy = document.createElement("div");
+    headingCopy.append(
+      makeText("p", "eyebrow", copy.ownerEyebrow),
+      makeText("h2", "", copy.ownerTitle),
+      makeText("p", "muted", copy.ownerBody),
+    );
+    const dollar = makeText("span", "hc-driver-discount-dollar", "$");
+    dollar.setAttribute("aria-hidden", "true");
+    heading.append(headingCopy, dollar);
+
+    const discountForm = document.createElement("form");
+    discountForm.className = "hc-driver-discount-form";
+    discountForm.dataset.driverDiscountForm = "true";
+    const enableLabel = document.createElement("label");
+    enableLabel.className = "hc-driver-discount-enable";
+    const enableInput = document.createElement("input");
+    enableInput.type = "checkbox";
+    enableInput.dataset.discountEnabled = "true";
+    enableLabel.append(enableInput, makeText("span", "", copy.enable));
+
+    const grid = document.createElement("div");
+    grid.className = "hc-driver-discount-grid";
+
+    const servicesCard = document.createElement("section");
+    servicesCard.className = "hc-driver-discount-card";
+    servicesCard.append(makeText("h3", "", copy.services));
+    const servicePercentLabel = document.createElement("label");
+    servicePercentLabel.className = "hc-driver-discount-percent";
+    servicePercentLabel.append(document.createTextNode(copy.percent));
+    const servicePercentInput = document.createElement("input");
+    servicePercentInput.type = "number";
+    servicePercentInput.min = "0";
+    servicePercentInput.max = "100";
+    servicePercentInput.step = "1";
+    servicePercentInput.value = "0";
+    servicePercentInput.dataset.servicePercent = "true";
+    servicePercentLabel.append(servicePercentInput);
+    servicesCard.append(servicePercentLabel);
+    const serviceScopes = document.createElement("div");
+    serviceScopes.className = "hc-driver-discount-scopes";
+    const serviceAll = makeChoice("radio", "hc-service-scope", "all", copy.allServices, true);
+    const serviceSelected = makeChoice("radio", "hc-service-scope", "selected", copy.selectedServices);
+    serviceScopes.append(serviceAll.label, serviceSelected.label);
+    servicesCard.append(serviceScopes);
+    const selectedServicesWrap = document.createElement("div");
+    selectedServicesWrap.className = "hc-driver-discount-selected";
+    selectedServicesWrap.dataset.selectedServices = "true";
+    selectedServicesWrap.hidden = true;
+    const selectedServicesTitle = makeText("p", "hc-driver-discount-selected-title", copy.chooseServices);
+    const serviceListNode = document.createElement("div");
+    serviceListNode.className = "hc-driver-discount-services";
+    serviceListNode.dataset.serviceList = "true";
+    selectedServicesWrap.append(selectedServicesTitle, serviceListNode);
+    servicesCard.append(selectedServicesWrap);
+
+    const materialsCard = document.createElement("section");
+    materialsCard.className = "hc-driver-discount-card";
+    materialsCard.append(makeText("h3", "", copy.materials));
+    const materialsPercentLabel = document.createElement("label");
+    materialsPercentLabel.className = "hc-driver-discount-percent";
+    materialsPercentLabel.append(document.createTextNode(copy.percent));
+    const materialsPercentInput = document.createElement("input");
+    materialsPercentInput.type = "number";
+    materialsPercentInput.min = "0";
+    materialsPercentInput.max = "100";
+    materialsPercentInput.step = "1";
+    materialsPercentInput.value = "0";
+    materialsPercentInput.dataset.materialsPercent = "true";
+    materialsPercentLabel.append(materialsPercentInput);
+    materialsCard.append(materialsPercentLabel);
+    const materialsScopes = document.createElement("div");
+    materialsScopes.className = "hc-driver-discount-scopes";
+    const materialsAll = makeChoice("radio", "hc-materials-scope", "all", copy.allMaterials, true);
+    const materialsSelected = makeChoice("radio", "hc-materials-scope", "selected", copy.selectedMaterials);
+    materialsScopes.append(materialsAll.label, materialsSelected.label);
+    materialsCard.append(materialsScopes);
+    const selectedMaterialsWrap = document.createElement("div");
+    selectedMaterialsWrap.className = "hc-driver-discount-selected";
+    selectedMaterialsWrap.dataset.selectedMaterials = "true";
+    selectedMaterialsWrap.hidden = true;
+    selectedMaterialsWrap.append(makeText("p", "hc-driver-discount-selected-title", copy.materialsList));
+    const materialsListNode = document.createElement("textarea");
+    materialsListNode.className = "hc-driver-discount-textarea";
+    materialsListNode.maxLength = 1700;
+    materialsListNode.dataset.materialsList = "true";
+    materialsListNode.placeholder = copy.materialsPlaceholder;
+    selectedMaterialsWrap.append(materialsListNode, makeText("p", "hc-driver-discount-help", copy.materialsHelp));
+    materialsCard.append(selectedMaterialsWrap);
+
+    grid.append(servicesCard, materialsCard);
+    const discountStatus = document.createElement("p");
+    discountStatus.className = "hc-driver-discount-status";
+    discountStatus.dataset.discountStatus = "true";
+    discountStatus.setAttribute("role", "status");
+    discountStatus.setAttribute("aria-live", "polite");
+    const saveButton = makeText("button", "primary-btn", copy.save);
+    saveButton.type = "submit";
+    discountForm.append(enableLabel, grid, discountStatus, saveButton);
+    panel.append(heading, discountForm);
     const anchor = document.querySelector("[data-repair-capabilities]") || profilePanel;
     anchor.insertAdjacentElement("afterend", panel);
     if (window.location.hash === "#driver-discount") requestAnimationFrame(() => panel.scrollIntoView({ block: "start" }));
