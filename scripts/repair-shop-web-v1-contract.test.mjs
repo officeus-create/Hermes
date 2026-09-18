@@ -50,6 +50,8 @@ assert.match(qrRuntime, /data-repair-qr-toggle/);
 assert.match(qrRuntime, /connect_shop_qr_view/);
 assert.match(qrRuntime, /connect_shop_qr_download/);
 assert.match(qrRuntime, /connect_shop_qr_print/);
+assert.doesNotMatch(qrRuntime, /\.innerHTML\s*=/, "QR flow must not reintroduce innerHTML HTML sinks");
+assert.doesNotMatch(qrRuntime, /document\.write\s*\(/, "QR print flow must not reintroduce document.write");
 assert.doesNotMatch(qrRuntime, /client_name|client_email|client_phone|\bvin\b|shopName/);
 assert.match(headers, /img-src[^;]*https:\/\/quickchart\.io/);
 assert.match(headers, /connect-src[^;]*https:\/\/quickchart\.io/);
