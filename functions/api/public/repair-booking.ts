@@ -11,8 +11,10 @@ import { normalizeRepairShopCapacity, saturatedRepairShopIntervals } from "../_l
 import { findServiceForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 import { readGoogleBusyIntervalsForDate } from "../_lib/repair-shop-google-calendar.mjs";
+import { verifyTurnstileToken } from "../_lib/turnstile.mjs";
+import { verifyGithubActionsOidcToken } from "../_lib/github-actions-oidc.mjs";
 
-type Env = { DB?: any };
+type Env = { DB?: any; TURNSTILE_REPAIR_BOOKING_SECRET?: string };
 type BookingInput = {
   shop_slug?: unknown;
   service_id?: unknown;
@@ -26,6 +28,7 @@ type BookingInput = {
   vehicle_model?: unknown;
   mileage?: unknown;
   vin?: unknown;
+  turnstile_token?: unknown;
 };
 type ScheduledStaff = {
   id: string;
@@ -41,6 +44,24 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_RE = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{11,17}$/i;
+const TURNSTILE_ACTION = "repair_booking";
+const TURNSTILE_HOSTNAMES = ["hermeslogisticsus.com", "www.hermeslogisticsus.com"];
+const SYNTHETIC_OIDC_AUDIENCE = "https://hermeslogisticsus.com/api/public/repair-booking";
+const SYNTHETIC_OIDC_WORKFLOW_REFS = [
+  "officeus-create/Hermes/.github/workflows/repair-booking-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-booking-concurrency-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-capacity-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-customer-crm-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-operations-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-cancel-rebook-production-smoke.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-p0-production-closure-command.yml@refs/heads/main",
+  "officeus-create/Hermes/.github/workflows/repair-p0-production-proof-v2-command.yml@refs/heads/main",
+];
+const SYNTHETIC_BOOKING_OWNER_EMAILS = new Set([
+  "repair-booking-production-smoke@hermesconnect.app",
+  "repair-customer-crm-production-smoke@hermesconnect.app",
+  "repair-cancel-rebook-production-smoke@hermesconnect.app",
+]);
 
 const asText = (value: unknown) => String(value ?? "").trim();
 const toMinutes = (value: string) => {
@@ -72,6 +93,17 @@ async function getPublicShop(db: any, slug: string) {
     .prepare("SELECT id,owner_specialist_id,name,slug,timezone FROM repair_shops WHERE slug = ? LIMIT 1")
     .bind(slug)
     .first();
+}
+
+async function isSyntheticBookingSmokeOwner(db: any, ownerId: string) {
+  const row = await db
+    .prepare("SELECT email,role FROM specialists WHERE id = ? LIMIT 1")
+    .bind(ownerId)
+    .first();
+  return (
+    String(row?.role || "") === "Shop Owner" &&
+    SYNTHETIC_BOOKING_OWNER_EMAILS.has(String(row?.email || "").trim().toLowerCase())
+  );
 }
 
 async function getPublicService(db: any, shop: any, serviceId: string) {
@@ -336,6 +368,29 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const shop = await getPublicShop(env.DB, slug);
   if (!shop) return jsonResponse(404, { success: false, error: "shop_not_found" });
+
+  const syntheticSmokeOwner = await isSyntheticBookingSmokeOwner(env.DB, String(shop.owner_specialist_id));
+  const syntheticSmokeProof =
+    syntheticSmokeOwner &&
+    (await verifyGithubActionsOidcToken({
+      token: request.headers.get("X-Hermes-GitHub-OIDC"),
+      expectedAudience: SYNTHETIC_OIDC_AUDIENCE,
+      allowedWorkflowRefs: SYNTHETIC_OIDC_WORKFLOW_REFS,
+    }));
+
+  if (!syntheticSmokeProof) {
+    const verification = await verifyTurnstileToken({
+      secret: env.TURNSTILE_REPAIR_BOOKING_SECRET,
+      token: asText(body.turnstile_token),
+      request,
+      expectedAction: TURNSTILE_ACTION,
+      expectedHostnames: TURNSTILE_HOSTNAMES,
+    });
+    if (!verification.ok) {
+      return jsonResponse(verification.status, { success: false, error: verification.error });
+    }
+  }
+
   if (!(await validateDateWindow(appointmentDate, shop.timezone))) {
     return jsonResponse(400, { success: false, error: "invalid_appointment_date" });
   }

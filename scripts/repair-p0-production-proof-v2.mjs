@@ -12,6 +12,29 @@ const RUN_ID = process.env.GITHUB_RUN_ID || `manual-${Date.now()}`;
 const AUTH_SECRET = `${randomUUID()}Aa9!`;
 const FEEDBACK = `Synthetic Repair Shop P0 current-main proof ${RUN_ID}; safe to delete after verification.`;
 const SERVICE_NAMES = ["P0 Brake Inspection", "P0 Oil Service", "P0 Diagnostic Scan"];
+const BOOKING_OIDC_AUDIENCE = "https://hermeslogisticsus.com/api/public/repair-booking";
+let bookingOidcTokenPromise = null;
+
+async function bookingOidcToken() {
+  if (!bookingOidcTokenPromise) {
+    bookingOidcTokenPromise = (async () => {
+      const requestUrl = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+      const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+      if (!requestUrl || !requestToken) fail("GitHub Actions OIDC is unavailable; id-token: write is required");
+      const url = new URL(requestUrl);
+      url.searchParams.set("audience", BOOKING_OIDC_AUDIENCE);
+      const response = await fetch(url, {
+        headers: { Authorization: `bearer ${requestToken}` },
+      });
+      if (!response.ok) fail(`Unable to mint GitHub Actions OIDC proof (${response.status})`);
+      const body = await response.json();
+      const token = String(body?.value || "").trim();
+      if (token.length < 100) fail("GitHub Actions OIDC proof is missing");
+      return token;
+    })();
+  }
+  return bookingOidcTokenPromise;
+}
 
 function fail(message) {
   throw new Error(message);
@@ -39,9 +62,13 @@ async function browserApi(context, method, path, data, expectedStatus = 200) {
 }
 
 async function publicApi(method, path, data, expectedStatus = 200) {
+  const headers = data ? { "Content-Type": "application/json" } : {};
+  if (method === "POST" && path === "/api/public/repair-booking") {
+    headers["X-Hermes-GitHub-OIDC"] = await bookingOidcToken();
+  }
   const response = await fetch(`${BASE}${path}`, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: data ? JSON.stringify(data) : undefined,
   });
   let body = {};
