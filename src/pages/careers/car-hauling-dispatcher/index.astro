@@ -3,14 +3,17 @@ import { ArrowRight, Check, Clock3, Globe2, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
-import { verifiedOpenVacancies } from "../../../data/careers-governance";
+import { isVacancyEligibleForJobPosting, publicVacancyRegistry } from "../../../data/careers-governance";
 
-const vacancy = verifiedOpenVacancies.find((item) => item.slug === "car-hauling-dispatcher");
-if (!vacancy) throw new Error("Verified Car Hauling Dispatcher vacancy is missing from careers governance.");
+const vacancy = publicVacancyRegistry.find((item) => item.slug === "car-hauling-dispatcher");
+if (!vacancy) throw new Error("Car Hauling Dispatcher vacancy record is missing from careers governance.");
+const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
 
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
 const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
-const metaDescription = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
+const metaDescription = vacancyIsCurrent
+  ? "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply."
+  : "Review the Car Hauling Dispatcher role scope and Hermes recruiting process. The vacancy is not currently published as a verified-open JobPosting pending a fresh owner review.";
 const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
 const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
 
@@ -37,8 +40,8 @@ const jobDescription = [
   "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
 ].join("\n\n");
 
-const schema = [
-  {
+const jobPostingSchema = vacancyIsCurrent ? {
+
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title: "Car Hauling Dispatcher",
@@ -59,7 +62,10 @@ const schema = [
       name: "Hermes Logistics LLC",
       sameAs: "https://hermeslogisticsus.com/",
     },
-  },
+} : null;
+
+const schema = [
+  ...(jobPostingSchema ? [jobPostingSchema] : []),
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -84,7 +90,7 @@ const schema = [
               <a href="/logistics/careers/">Careers</a><span aria-hidden="true">/</span>
               <span aria-current="page">Car Hauling Dispatcher</span>
             </nav>
-            <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
+            <p class="eyebrow">{vacancyIsCurrent ? `Verified open · reviewed ${vacancy.reviewedAt}` : `Publication review due · last reviewed ${vacancy.reviewedAt}`}</p>
             <h1>Car Hauling Dispatcher — Remote / U.S. Market</h1>
             <p class="career-job-lede">A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.</p>
             <div class="career-job-meta" aria-label="Vacancy facts">
@@ -93,15 +99,27 @@ const schema = [
               <span><ShieldCheck size={18} aria-hidden="true" />Human-reviewed hiring process</span>
             </div>
             <div class="career-job-actions">
-              <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
-              <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
+              {vacancyIsCurrent ? (
+                <>
+                  {vacancyIsCurrent ? (
+            <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+          ) : (
+            <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
+          )}
+                  <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
+                </>
+              ) : (
+                <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
+              )}
               <a class="button" href="/logistics/careers/">View careers hub</a>
             </div>
           </div>
           <aside class="career-job-status-card">
             <p class="eyebrow">Current application route</p>
-            <h2>Use the live Work.ua application while the Hermes form remains a preview.</h2>
-            <p>The Work.ua listing is the current public submission route for this opening. The Hermes application page can help prepare the information recruiting asks for, but it does not yet send or store an application. A direct Hermes candidate intake will replace this interim handoff only after its submission and persistence path is independently verified live.</p>
+            <h2>{vacancyIsCurrent ? "Use the live Work.ua application while the Hermes form remains a preview." : "This role needs a fresh owner review before it is advertised as open again."}</h2>
+            <p>{vacancyIsCurrent
+              ? "The Work.ua listing is the current public submission route for this opening. The Hermes application page can help prepare the information recruiting asks for, but it does not yet send or store an application. A direct Hermes candidate intake will replace this interim handoff only after its submission and persistence path is independently verified live."
+              : "The previous publication window has expired. Hermes keeps the role information available for transparency, but suppresses JobPosting schema and active vacancy CTAs until recruiting confirms the role is genuinely open again."}</p>
           </aside>
         </div>
       </header>
