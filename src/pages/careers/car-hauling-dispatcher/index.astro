@@ -151,15 +151,21 @@ const schema = [
       <section class="section career-job-final">
         <div class="shell career-job-final-card">
           <div>
-            <p class="eyebrow">Ready to apply?</p>
-            <h2>Use the current live vacancy to submit your application.</h2>
-            <p>The Hermes preview does not transmit candidate data yet. Until direct Hermes intake is verified, Work.ua remains the public submission route for this role.</p>
+            <p class="eyebrow">{vacancyIsCurrent ? "Ready to apply?" : "Current publication status"}</p>
+            <h2>{vacancyIsCurrent ? "Use the current live vacancy to submit your application." : "This vacancy is awaiting a fresh recruiting review."}</h2>
+            <p>{vacancyIsCurrent
+              ? "The Hermes preview does not transmit candidate data yet. Until direct Hermes intake is verified, Work.ua remains the public submission route for this role."
+              : "The previous verified-open publication window has ended. Review current vacancies or submit only a general careers inquiry until this role is explicitly verified open again."}</p>
           </div>
-          <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+          {vacancyIsCurrent ? (
+            <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+          ) : (
+            <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
+          )}
         </div>
       </section>
 
-      <template data-application-url={applicationUrl}></template>
+      {vacancyIsCurrent && <template data-application-url={applicationUrl}></template>}
     </main>
     <SiteFooter />
   </div>
