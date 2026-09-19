@@ -176,6 +176,8 @@ export async function ensureLoadBoardSchema(db) {
   await ensureColumns(db, "hermes_load_source_requests", {
     connection_state: "TEXT NOT NULL DEFAULT 'not_started'",
     source_id: "TEXT",
+    approved_redistribution_permission: "TEXT",
+    approved_contact_reveal_permission: "TEXT",
     connection_evidence_ref: "TEXT",
     data_rights_evidence_ref: "TEXT",
     retention_rule: "TEXT",
