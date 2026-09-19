@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Check, Mail, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
+import DirectionProductNav from "./DirectionProductNav.astro";
 import { localizedOverviews } from "../data/localized-overviews";
 import { localeConfig } from "../data/locales";
 import { directionOwnerRoutes, getDirectionAlternates, type DirectionId, type LocalizedSiteLocale } from "../data/localized-direction-owners";
@@ -63,6 +64,7 @@ const faqSchema = {
   schema={[serviceSchema, breadcrumbSchema, faqSchema]}
 >
   <SiteHeader theme="dark" locale={locale} activePath={canonicalPath} />
+  {locale === "ru" && <DirectionProductNav direction={directionId} theme="dark" locale="ru" />}
   <main id="main-content" class:list={["localized-owner", `localized-owner--${directionId}`]} data-localized-owner={`${locale}:${directionId}`}>
     <section class="localized-owner-hero" id="top">
       <div class="localized-owner-hero-media" aria-hidden="true"><img src={direction.image} alt="" width="1600" height="1050" loading="eager" fetchpriority="high" decoding="async" /></div>
