@@ -134,7 +134,7 @@ Require affirmative electronic-record consent, signer-authority confirmation, do
 
 ## Current legal-approval boundary
 
-Issue #280 is the governing activation boundary. Qualified Wisconsin transportation counsel approval has not been recorded, so final production execution is disabled. The current repository master is for review/onboarding only:
+Current website execution is intentionally **REVIEW-ONLY / FAIL-CLOSED**. Final production execution remains disabled until qualified Wisconsin transportation counsel and owner approval are recorded and the approved production safeguards are satisfied. The current repository master is for review/onboarding only:
 
 - version: `ATTORNEY-REVIEW-V3-2026-08-06`;
 - PDF: `/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf`;
@@ -144,7 +144,7 @@ Issue #280 is the governing activation boundary. Qualified Wisconsin transportat
 
 Standard 6% and 8% selections create signed review/onboarding packets only. Custom selections also remain review-only. Future activation requires all of the following:
 
-- qualified Wisconsin transportation counsel approval recorded through #280;
+- qualified Wisconsin transportation counsel approval and owner approval recorded;
 - a counsel-approved non-review master version;
 - immutable approved PDF path and SHA-256;
 - `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` containing exactly the supported standard rates `6,8`;
