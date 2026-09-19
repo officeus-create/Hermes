@@ -37,7 +37,7 @@ assert.match(enhancer, /data-rpm/);
 assert.match(enhancer, /Market example/);
 assert.match(enhancer, /renderImmediatePreview\(\)/);
 assert.match(enhancer, /appendPreviewRows\(rows, 60\)/);
-assert.doesNotMatch(enhancer, /rows\.innerHTML\s*=/, "Load Board load/capacity rendering must not use innerHTML sinks");
+assert.doesNotMatch(enhancer, /\.innerHTML\s*=/, "Load Board and Hermes Catalog rendering must not use innerHTML sinks");
 assert.doesNotMatch(livePilot, /\.innerHTML\s*=/, "Load Board live pilot rendering must not use innerHTML sinks");
 assert.match(livePilot, /rows\.replaceChildren\(\.\.\.rendered\)/);
 assert.match(enhancer, /Chicago, IL/);
