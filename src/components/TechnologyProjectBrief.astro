@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Clipboard, Mail, RotateCcw } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Clipboard, Mail, RotateCcw, Send } from "@lucide/astro";
 
 const steps = ["Priorities", "References", "Timing", "Company", "Review"];
 import "../styles/features/it.css";
@@ -133,11 +133,12 @@ import "../styles/features/it.css";
 
         <fieldset class="it-brief-panel it-brief-review" data-brief-step="4" hidden>
           <legend><span>05 · Review</span>Your project brief is ready.</legend>
-          <p class="it-brief-prompt">Review the summary before opening your email. The website has not sent or stored your answers.</p>
+          <p class="it-brief-prompt">Review the summary, then send it securely to Hermes or use the copy/email fallback. The website has not sent or stored your answers yet.</p>
           <pre data-brief-summary tabindex="0" aria-label="IT project brief summary"></pre>
           <div class="it-brief-review-actions">
+            <button class="button button-primary" type="button" data-brief-send><Send size={18} aria-hidden="true" />Send brief to Hermes</button>
             <button class="button it-brief-copy" type="button" data-brief-copy><Clipboard size={18} aria-hidden="true" />Copy brief</button>
-            <a class="button button-primary" href="mailto:officeus@hermeslogisticsus.com" data-brief-email><Mail size={18} aria-hidden="true" />Open email with brief</a>
+            <a class="button" href="mailto:officeus@hermeslogisticsus.com" data-brief-email><Mail size={18} aria-hidden="true" />Open email with brief</a>
             <button class="it-brief-reset" type="button" data-brief-reset><RotateCcw size={17} aria-hidden="true" />Start again</button>
           </div>
           <p class="it-brief-status" role="status" aria-live="polite" data-brief-status></p>
@@ -166,10 +167,12 @@ import "../styles/features/it.css";
     const position = briefRoot.querySelector<HTMLElement>("[data-brief-position]");
     const summary = briefRoot.querySelector<HTMLElement>("[data-brief-summary]");
     const email = briefRoot.querySelector<HTMLAnchorElement>("[data-brief-email]");
+    const send = briefRoot.querySelector<HTMLButtonElement>("[data-brief-send]");
     const status = briefRoot.querySelector<HTMLElement>("[data-brief-status]");
     const budgetMode = briefRoot.querySelector<HTMLSelectElement>("[data-budget-mode]");
     const budgetAmount = briefRoot.querySelector<HTMLInputElement>("[data-budget-amount]");
     let current = 0;
+    let activeRequestId = "";
 
     const alignDirectLink = () => {
       if (window.location.hash !== "#project-brief") return;
@@ -298,6 +301,60 @@ import "../styles/features/it.css";
     });
     back?.addEventListener("click", () => show(current - 1));
 
+    const createRequestId = () => `technology_brief_${crypto.randomUUID().replaceAll("-", "_")}`;
+
+    send?.addEventListener("click", async () => {
+      if (!form) return;
+      const output = summary?.textContent ?? buildSummary();
+      const data = new FormData(form);
+      const requestId = activeRequestId || createRequestId();
+      activeRequestId = requestId;
+      send.disabled = true;
+      if (status) status.textContent = "Sending your brief securely to Hermes…";
+
+      const projects = [1, 2, 3].map((n) => value(data, `project_${n}`, 600)).filter(Boolean);
+      const timeline = [value(data, "investment_horizon", 80), value(data, "timing_notes", 500)].filter(Boolean).join(" · ");
+      const budget = [value(data, "budget_mode", 80).replaceAll("_", " "), value(data, "budget_amount", 120)].filter(Boolean).join(" · ");
+
+      try {
+        const response = await fetch("/api/logistics-lead", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": requestId,
+          },
+          body: JSON.stringify({
+            request_id: requestId,
+            submitted_at: new Date().toISOString(),
+            source_path: window.location.pathname,
+            name: value(data, "contact_name", 120),
+            email: value(data, "contact_email", 180),
+            interest: "IT Development",
+            message: output.slice(0, 6000),
+            consent: data.get("brief_consent") === "on",
+            direction_fields: {
+              direction: "IT Development",
+              fields: {
+                primary_goal: value(data, "business_goal", 900),
+                system_or_workflow_needed: projects.join(" | "),
+                current_tools: value(data, "current_software", 700),
+                timeline,
+                budget_range: budget,
+              },
+            },
+          }),
+        });
+        const payload = await response.json().catch(() => null) as { success?: boolean; duplicate?: boolean } | null;
+        if (!response.ok || !payload?.success) throw new Error("delivery_failed");
+        if (status) status.textContent = payload.duplicate
+          ? "This brief was already received. No duplicate was sent."
+          : "Brief sent securely to Hermes. A team member can now review it.";
+      } catch {
+        send.disabled = false;
+        if (status) status.textContent = "Secure send is temporarily unavailable. Copy the brief or open the email fallback instead.";
+      }
+    });
+
     briefRoot.querySelector<HTMLButtonElement>("[data-brief-copy]")?.addEventListener("click", async () => {
       const output = summary?.textContent ?? buildSummary();
       try {
@@ -310,9 +367,16 @@ import "../styles/features/it.css";
 
     briefRoot.querySelector<HTMLButtonElement>("[data-brief-reset]")?.addEventListener("click", () => {
       form?.reset();
+      activeRequestId = "";
+      if (send) send.disabled = false;
       updateBudgetRequirement();
       if (status) status.textContent = "";
       show(0);
+    });
+
+    form?.addEventListener("input", () => {
+      activeRequestId = "";
+      if (send) send.disabled = false;
     });
 
     document.querySelectorAll<HTMLAnchorElement>("[data-brief-service]").forEach((link) => {
