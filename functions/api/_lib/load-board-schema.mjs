@@ -184,6 +184,8 @@ export async function ensureLoadBoardSchema(db) {
     connection_verified_at: "TEXT",
     ingest_enabled_at: "TEXT",
     first_record_verified_at: "TEXT",
+    revoked_at: "TEXT",
+    revocation_note: "TEXT",
   });
 
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_source_requests_company ON hermes_load_source_requests(company_id, status, updated_at DESC)").run();
