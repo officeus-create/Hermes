@@ -102,4 +102,4 @@ export function isVacancyEligibleForJobPosting(
     && validHttpsUrl(record.submissionUrl);
 }
 
-export const verifiedOpenVacancies = publicVacancyRegistry.filter(isVacancyEligibleForJobPosting);
+export const verifiedOpenVacancies = publicVacancyRegistry.filter((record) => isVacancyEligibleForJobPosting(record));
