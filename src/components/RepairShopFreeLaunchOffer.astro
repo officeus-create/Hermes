@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { compact = false, showCta = true } = Astro.props;
+const freeRegistrationExpired = Date.now() >= Date.parse(REPAIR_SHOP_FREE_REGISTRATION_END_ISO);
 ---
 
 <section
@@ -19,14 +20,16 @@ const { compact = false, showCta = true } = Astro.props;
   data-repair-free-launch
   data-deadline={REPAIR_SHOP_FREE_REGISTRATION_END_ISO}
   data-billing-enabled={String(REPAIR_SHOP_ONLINE_BILLING_ENABLED)}
+  data-launch-state={freeRegistrationExpired ? "ended" : "open"}
+  data-expired={freeRegistrationExpired ? "true" : undefined}
   aria-labelledby="repair-free-launch-title"
 >
   <div class="launch-icon" aria-hidden="true"><Gift size={20} /></div>
   <div class="launch-copy">
-    <p class="launch-kicker" data-launch-kicker>Free registration</p>
-    <h2 id="repair-free-launch-title" data-launch-title>Free repair shop registration through September 15.</h2>
-    <p data-launch-body>Create your Repair Shop owner account and start using the current Hermes Connect workflow without a card.</p>
-    <p class="launch-policy" data-launch-policy>Free registration closes at midnight Central Time after September 15, 2026. Existing accounts keep access.</p>
+    <p class="launch-kicker" data-launch-kicker>{freeRegistrationExpired ? "Registration update" : "Free registration"}</p>
+    <h2 id="repair-free-launch-title" data-launch-title>{freeRegistrationExpired ? "Free repair shop registration ended September 15." : "Free repair shop registration through September 15."}</h2>
+    <p data-launch-body>{freeRegistrationExpired ? "New Repair Shop registrations now use the current Founding Shop Plan." : "Create your Repair Shop owner account and start using the current Hermes Connect workflow without a card."}</p>
+    <p class="launch-policy" data-launch-policy>{freeRegistrationExpired ? "Existing Repair Shop accounts keep access. New registrations continue through the current plan." : "Free registration closes at midnight Central Time after September 15, 2026. Existing accounts keep access."}</p>
   </div>
 
   <div class="launch-timer-wrap">
@@ -43,7 +46,7 @@ const { compact = false, showCta = true } = Astro.props;
         <a class="launch-owner-cta" data-owner-cta href="/services/hermes-connect/repair-shops/auth/?mode=login">
           <LogIn size={16} aria-hidden="true" /><span data-owner-cta-text>Sign in to my shop</span>
         </a>
-        <a class="launch-cta" data-launch-cta href="/services/hermes-connect/repair-shops/auth/?mode=register">Register free <ArrowRight size={16} aria-hidden="true" /></a>
+        <a class="launch-cta" data-launch-cta href={freeRegistrationExpired ? "/services/hermes-connect/repair-shops/plan/" : "/services/hermes-connect/repair-shops/auth/?mode=register"}>{freeRegistrationExpired ? "View current plan" : "Register free"} <ArrowRight size={16} aria-hidden="true" /></a>
       </div>
     )}
   </div>
@@ -192,12 +195,17 @@ const { compact = false, showCta = true } = Astro.props;
       root.remove();
       return;
     }
+    const isExpired = Date.now() >= deadlineMs;
+    root.dataset.launchState = isExpired ? "ended" : "open";
+    if (isExpired) root.dataset.expired = "true";
+    else delete root.dataset.expired;
+
     const cta = root.querySelector<HTMLAnchorElement>("[data-launch-cta]");
     const ownerCta = root.querySelector<HTMLAnchorElement>("[data-owner-cta]");
 
     setText(root, "[data-launch-kicker]", copy.kicker);
-    setText(root, "[data-launch-title]", copy.title);
-    setText(root, "[data-launch-body]", copy.body);
+    setText(root, "[data-launch-title]", isExpired ? copy.endedTitle : copy.title);
+    setText(root, "[data-launch-body]", isExpired ? copy.ended : copy.body);
     setText(root, "[data-launch-policy]", copy.policy);
     setText(root, "[data-launch-timer-label]", copy.timer);
     setText(root, "[data-days-label]", copy.days);
@@ -223,8 +231,8 @@ const { compact = false, showCta = true } = Astro.props;
     }
     if (cta) {
       const textNode = Array.from(cta.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
-      if (textNode) textNode.textContent = copy.cta + " ";
-      cta.href = localizeHref(cta.getAttribute("href") || `${repairRoot}/auth/?mode=register`);
+      if (textNode) textNode.textContent = (isExpired ? copy.plan : copy.cta) + " ";
+      cta.setAttribute("href", localizeHref(isExpired ? `${repairRoot}/plan/` : `${repairRoot}/auth/?mode=register`));
       cta.addEventListener("click", () => {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: "connect_free_registration_cta", product: "repair_shops", offer: offerId });
@@ -257,7 +265,9 @@ const { compact = false, showCta = true } = Astro.props;
       if (timer) window.clearInterval(timer);
 
       setText(root, "[data-launch-title]", copy.endedTitle);
+      setText(root, "[data-launch-body]", copy.ended);
       setText(root, "[data-launch-status]", copy.ended);
+      root.dataset.launchState = "ended";
       root.dataset.expired = "true";
       closeFreeRegistrationUi();
       window.setTimeout(closeFreeRegistrationUi, 0);
