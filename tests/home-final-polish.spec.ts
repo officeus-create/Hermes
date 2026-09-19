@@ -37,17 +37,16 @@ test("final homepage polish keeps the focused entrance and adds living Hermes ef
   expect(polish!.overflow).toBe(false);
 });
 
-test("homepage contact finish exposes office email and phone without a form wall", async ({ page }) => {
+test("homepage contact finish keeps one primary route plus office-email fallback without a form wall", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("link", { name: /Office email officeus@hermeslogisticsus\.com/i })).toHaveAttribute(
+  const contactOptions = page.getByLabel("Hermes contact options");
+  await expect(contactOptions.getByRole("link")).toHaveCount(2);
+  await expect(contactOptions.getByRole("link", { name: /Choose a contact route/i })).toHaveAttribute("href", "/contacts/");
+  await expect(contactOptions.getByRole("link", { name: /officeus@hermeslogisticsus\.com/i })).toHaveAttribute(
     "href",
     "mailto:officeus@hermeslogisticsus.com",
   );
-  await expect(page.getByRole("link", { name: /U\.S\. Logistics \+1 \(262\) 302-3626/i })).toHaveAttribute(
-    "href",
-    "tel:+12623023626",
-  );
-  await expect(page.getByRole("link", { name: /Choose a contact route/i })).toHaveAttribute("href", "/contacts/");
+  await expect(contactOptions.locator('a[href^="tel:"]')).toHaveCount(0);
   await expect(page.locator("#contact form")).toHaveCount(0);
 });
