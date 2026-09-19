@@ -74,7 +74,8 @@ assert.ok(carHaulingDispatcher.includes("U.S. Central Time schedule"));
 assert.ok(!carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
 assert.ok(!carHaulingDispatcher.includes("Prepare Hermes application preview"));
 assert.ok(carHaulingDispatcher.includes("Check current vacancies"));
-assert.ok(!carHaulingDispatcher.includes("source=hermes_careers"));\nassert.ok(carHaulingDispatcher.includes("awaiting a fresh recruiting review"));
+assert.ok(!carHaulingDispatcher.includes("source=hermes_careers"));
+assert.ok(carHaulingDispatcher.includes("awaiting a fresh recruiting review"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 
