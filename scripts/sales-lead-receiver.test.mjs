@@ -180,8 +180,8 @@ const generalDuplicate = await onRequest({
 });
 assert.equal(generalDuplicate.status, 200);
 assert.equal((await generalDuplicate.json()).duplicate, true);
-assert.equal(emailMessages.length, 2);
-assert.equal(serviceCalls.length, 2);
+assert.equal(emailMessages.length, 3);
+assert.equal(serviceCalls.length, 3);
 
 const contactDirections = [
   ["Hermes Logistics", "[HERMES INQUIRY] [LOGISTICS]"],
