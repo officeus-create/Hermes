@@ -31,6 +31,7 @@ async function mockOwnerActivation(page: import("@playwright/test").Page, bookin
   await page.route("**/api/repair-shop/availability", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, days: [{ day_of_week: 1, is_open: true, start_time: "09:00", end_time: "17:00" }] }) }));
   await page.route("**/api/repair-shop/bookings", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, bookings }) }));
   await page.route("**/api/repair-shop/feedback", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, feedback: [] }) }));
+  await page.route("**/api/repair-shop/access", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, access: { state: "trialing", plan_name: "Founding Shop Plan", current_period_end: null } }) }));
 }
 
 test("Hermes Connect language switching stays on the equivalent product route", async ({ page }) => {
@@ -102,8 +103,46 @@ test("Repair Shop dashboard guides a configured owner to share the booking link"
   await expect(activation).toContainText("3/6 completo");
   await expect(activation.getByRole("link", { name: "Abrir enlace" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/booking/?shop=apex-auto&lang=es");
   await expect(activation.getByRole("link", { name: "Plan Founding — $99" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=es");
+  const access = page.locator("[data-web-v1-access]");
+  await expect(access).toBeVisible();
+  await expect(access.locator("[data-web-v1-access-state]")).toContainText("Acceso de lanzamiento gratuito");
+  await expect(access.locator("[data-web-v1-access-copy]")).toContainText("decisión separada");
+  await expect(access.getByRole("link", { name: "Ver Founding Plan" })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
+});
+
+test("Repair Shop access summary keeps free access visually separate from the Founding Plan on desktop", async ({ page }) => {
+  await mockOwnerActivation(page, []);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/");
+
+  const access = page.locator("[data-web-v1-access]");
+  await expect(access).toBeVisible();
+  const layout = await access.evaluate((node) => {
+    const action = node.querySelector<HTMLElement>("[data-web-v1-access-action]");
+    const heading = node.querySelector<HTMLElement>(".panel-heading");
+    const cta = node.querySelector<HTMLElement>(".hc-web-v1-access-cta");
+    if (!action || !heading || !cta) return null;
+    const card = (node as HTMLElement).getBoundingClientRect();
+    const h = heading.getBoundingClientRect();
+    const a = action.getBoundingClientRect();
+    return {
+      display: getComputedStyle(node).display,
+      columns: getComputedStyle(node).gridTemplateColumns,
+      ctaMarginTop: getComputedStyle(cta).marginTop,
+      headingRight: h.right,
+      actionLeft: a.left,
+      cardWidth: card.width,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    };
+  });
+  expect(layout).not.toBeNull();
+  expect(layout!.display).toBe("grid");
+  expect(layout!.columns).not.toBe("none");
+  expect(layout!.ctaMarginTop).toBe("0px");
+  expect(layout!.actionLeft).toBeGreaterThanOrEqual(layout!.headingRight - 2);
+  expect(layout!.overflow).toBe(false);
 });
 
 test("completed first booking produces a 6/6 activation state and paid decision", async ({ page }) => {
@@ -134,6 +173,12 @@ test("Hermes Connect Hub presents one live product, private Academy and Beauty, 
   expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(3);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
+  await expect(page.locator('[data-workspace-preview="canonical-crm"]')).toBeVisible();
+  for (const label of ["Home", "Inbox", "Customers", "Calendar", "Sales", "Marketing", "Finance", "Operations", "Integrations", "Academy"]) {
+    await expect(page.locator(".hc-workspace-body aside").getByText(label, { exact: true })).toBeVisible();
+  }
+  await expect(page.locator(".hc-workspace-hermes")).toContainText("Ask Hermes");
+  await expect(page.locator(".hc-static-mark img")).toHaveAttribute("src", "/demos/hermes-connect/mark-option02.svg");
 });
 
 test("Hermes Connect Hub keeps explicit Russian content and persists the selected locale on clean entries", async ({ page }) => {
