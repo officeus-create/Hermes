@@ -182,7 +182,7 @@ const buildGeneralContact = (input: LeadInput): GeneralContact | null => {
   const name = clean(input.name, 100);
   const email = clean(input.email, 160).toLowerCase();
   const interest = clean(input.interest, 120);
-  const message = clean(input.message, 2_000);
+  const message = clean(input.message, 6_000);
   const salesTag = contactSalesTag(interest);
   if (input.consent !== true || name.length < 2 || !isEmail(email) || message.length < 10 || !salesTag) return null;
 
