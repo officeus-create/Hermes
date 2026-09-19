@@ -148,14 +148,40 @@ assert.match(emailMessages[1].text, /Primary goal: Qualified inquiries/);
 assert.doesNotMatch(emailMessages[1].text, /unsupported_key|must not be forwarded/);
 assert.doesNotMatch(emailMessages[1].text, /Phone:/);
 
+const longTechnologyMessage = `Technology project brief\n${"x".repeat(2_400)}\nEND OF TECHNOLOGY BRIEF`;
+const technologyBriefResponse = await onRequest({
+  request: leadRequest({
+    ...generalContactPayload,
+    request_id: "technology_brief_test_12345",
+    source_path: "/paths/technology/",
+    interest: "IT Development",
+    message: longTechnologyMessage,
+    direction_fields: {
+      direction: "IT Development",
+      fields: {
+        primary_goal: "Connect website inquiry to one operating workflow",
+        system_or_workflow_needed: "CRM and automation",
+        current_tools: "Google Workspace and CRM",
+        timeline: "6 months",
+        budget_range: "Needs definition",
+      },
+    },
+  }, { "CF-Connecting-IP": "192.0.2.12" }),
+  env,
+});
+assert.equal(technologyBriefResponse.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
+assert.match(emailMessages.at(-1).text, /END OF TECHNOLOGY BRIEF/);
+assert.match(emailMessages.at(-1).text, /System\/workflow needed: CRM and automation/);
+
 const generalDuplicate = await onRequest({
   request: leadRequest(generalContactPayload, { "CF-Connecting-IP": "192.0.2.11" }),
   env,
 });
 assert.equal(generalDuplicate.status, 200);
 assert.equal((await generalDuplicate.json()).duplicate, true);
-assert.equal(emailMessages.length, 2);
-assert.equal(serviceCalls.length, 2);
+assert.equal(emailMessages.length, 3);
+assert.equal(serviceCalls.length, 3);
 
 const contactDirections = [
   ["Hermes Logistics", "[HERMES INQUIRY] [LOGISTICS]"],
