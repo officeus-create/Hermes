@@ -112,6 +112,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ingestion_enabled: false,
     redistribution_enabled: false,
     provider_contacted: false,
-    next_gate: status === "approved" ? "source_connection_lifecycle" : "company_follow_up_or_revision",
+    next_gate: status === "approved"
+      ? (saved?.source_type === "manual" ? "manual_marketplace_post_contract" : "source_connection_lifecycle")
+      : "company_follow_up_or_revision",
   }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
 }
