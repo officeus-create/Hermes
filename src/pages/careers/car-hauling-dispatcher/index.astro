@@ -101,11 +101,7 @@ const schema = [
             <div class="career-job-actions">
               {vacancyIsCurrent ? (
                 <>
-                  {vacancyIsCurrent ? (
-            <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
-          ) : (
-            <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
-          )}
+                  <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
                   <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
                 </>
               ) : (
