@@ -22,7 +22,6 @@
   let focus = new Date();
   focus.setHours(12,0,0,0);
 
-  const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
   const iso = (date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
   const parseDate = (value) => { const d=new Date(`${value}T12:00:00`); return Number.isNaN(d.getTime())?new Date():d; };
   const startOfWeek = (date) => { const d=new Date(date); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); d.setHours(12,0,0,0); return d; };
@@ -57,31 +56,100 @@
     });
   };
 
+  const makeTextNode = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = String(text ?? "");
+    return node;
+  };
+  const empty = () => makeTextNode("div", "hc-cal-empty", copy.noBookings);
+
   function eventCard(b, compact=false) {
-    return `<article class="hc-cal-event status-${esc(b.status)}" data-id="${esc(b.id)}">
-      <div class="hc-cal-event-time">${esc(fmtTime(b.start_time))}–${esc(fmtTime(b.end_time))}</div>
-      <strong>${esc(b.service_name)}</strong>
-      <span>${esc(b.client_name||b.client_email||"")}</span>
-      ${compact?"":`<span>${esc(b.technician?.name||copy.unassigned)}</span>`}
-      <a href="${esc(googleUrl(b))}" target="_blank" rel="noopener">${esc(copy.google)}</a>
-    </article>`;
+    const status = String(b.status || "").replace(/[^a-z0-9_-]/gi, "-");
+    const article = makeTextNode("article", `hc-cal-event status-${status}`);
+    article.dataset.id = String(b.id || "");
+    article.append(
+      makeTextNode("div", "hc-cal-event-time", `${fmtTime(b.start_time)}–${fmtTime(b.end_time)}`),
+      makeTextNode("strong", "", b.service_name),
+      makeTextNode("span", "", b.client_name || b.client_email || ""),
+    );
+    if (!compact) article.append(makeTextNode("span", "", b.technician?.name || copy.unassigned));
+    const google = makeTextNode("a", "", copy.google);
+    google.href = googleUrl(b);
+    google.target = "_blank";
+    google.rel = "noopener";
+    article.append(google);
+    return article;
   }
 
   function dayView(items) {
     const date=iso(focus); const onDay=items.filter(b=>b.appointment_date===date).sort((a,b)=>a.start_time.localeCompare(b.start_time));
     const names=[...new Set(onDay.map(b=>b.technician?.name||copy.unassigned))].sort();
     if(!names.length) return empty();
-    return `<div class="hc-cal-lanes">${names.map(name=>`<section class="hc-cal-lane"><header><strong>${esc(name)}</strong><span>${onDay.filter(b=>(b.technician?.name||copy.unassigned)===name).length}</span></header>${onDay.filter(b=>(b.technician?.name||copy.unassigned)===name).map(b=>eventCard(b)).join("")}</section>`).join("")}</div>`;
+    const lanes=makeTextNode("div","hc-cal-lanes");
+    names.forEach((name)=>{
+      const lane=makeTextNode("section","hc-cal-lane");
+      const laneHeader=document.createElement("header");
+      const laneItems=onDay.filter(b=>(b.technician?.name||copy.unassigned)===name);
+      laneHeader.append(makeTextNode("strong","",name),makeTextNode("span","",laneItems.length));
+      lane.append(laneHeader,...laneItems.map((b)=>eventCard(b)));
+      lanes.append(lane);
+    });
+    return lanes;
   }
+
   function weekView(items) {
     const start=startOfWeek(focus);
-    return `<div class="hc-cal-week">${Array.from({length:7},(_,i)=>{const d=addDays(start,i), key=iso(d), dayItems=items.filter(b=>b.appointment_date===key).sort((a,b)=>a.start_time.localeCompare(b.start_time));return `<section class="hc-cal-day ${key===iso(new Date())?"is-today":""}"><header><span>${esc(fmtDay(d,{weekday:"short"}))}</span><strong>${esc(fmtDay(d,{month:"short",day:"numeric"}))}</strong><em>${dayItems.length}</em></header><div>${dayItems.length?dayItems.map(b=>eventCard(b,true)).join(""):"<p class=\"hc-cal-day-empty\">—</p>"}</div></section>`}).join("")}</div>`;
+    const week=makeTextNode("div","hc-cal-week");
+    Array.from({length:7},(_,i)=>{
+      const d=addDays(start,i), key=iso(d), dayItems=items.filter(b=>b.appointment_date===key).sort((a,b)=>a.start_time.localeCompare(b.start_time));
+      const day=makeTextNode("section",`hc-cal-day${key===iso(new Date())?" is-today":""}`);
+      const dayHeader=document.createElement("header");
+      dayHeader.append(
+        makeTextNode("span","",fmtDay(d,{weekday:"short"})),
+        makeTextNode("strong","",fmtDay(d,{month:"short",day:"numeric"})),
+        makeTextNode("em","",dayItems.length),
+      );
+      const body=document.createElement("div");
+      if(dayItems.length) body.append(...dayItems.map((b)=>eventCard(b,true)));
+      else body.append(makeTextNode("p","hc-cal-day-empty","—"));
+      day.append(dayHeader,body);
+      week.append(day);
+    });
+    return week;
   }
+
   function monthView(items) {
     const first=new Date(focus.getFullYear(),focus.getMonth(),1,12), grid=startOfWeek(first);
-    return `<div class="hc-cal-month">${Array.from({length:42},(_,i)=>{const d=addDays(grid,i),key=iso(d),dayItems=items.filter(b=>b.appointment_date===key).sort((a,b)=>a.start_time.localeCompare(b.start_time)),outside=d.getMonth()!==focus.getMonth();return `<section class="hc-cal-month-day ${outside?"is-outside":""} ${key===iso(new Date())?"is-today":""}" data-date="${key}"><header><strong>${d.getDate()}</strong><span>${dayItems.length||""}</span></header>${dayItems.slice(0,3).map(b=>`<button type="button" class="hc-cal-mini" data-jump-date="${key}" title="${esc(b.service_name)}"><span>${esc(fmtTime(b.start_time))}</span>${esc(b.service_name)}</button>`).join("")}${dayItems.length>3?`<button type="button" class="hc-cal-more" data-jump-date="${key}">+${dayItems.length-3}</button>`:""}</section>`}).join("")}</div>`;
+    const month=makeTextNode("div","hc-cal-month");
+    Array.from({length:42},(_,i)=>{
+      const d=addDays(grid,i),key=iso(d),dayItems=items.filter(b=>b.appointment_date===key).sort((a,b)=>a.start_time.localeCompare(b.start_time)),outside=d.getMonth()!==focus.getMonth();
+      const classes=["hc-cal-month-day"];
+      if(outside) classes.push("is-outside");
+      if(key===iso(new Date())) classes.push("is-today");
+      const day=makeTextNode("section",classes.join(" "));
+      day.dataset.date=key;
+      const dayHeader=document.createElement("header");
+      dayHeader.append(makeTextNode("strong","",d.getDate()),makeTextNode("span","",dayItems.length||""));
+      day.append(dayHeader);
+      dayItems.slice(0,3).forEach((b)=>{
+        const jump=makeTextNode("button","hc-cal-mini");
+        jump.type="button";
+        jump.dataset.jumpDate=key;
+        jump.title=String(b.service_name||"");
+        jump.append(makeTextNode("span","",fmtTime(b.start_time)),document.createTextNode(String(b.service_name||"")));
+        day.append(jump);
+      });
+      if(dayItems.length>3){
+        const more=makeTextNode("button","hc-cal-more",`+${dayItems.length-3}`);
+        more.type="button";
+        more.dataset.jumpDate=key;
+        day.append(more);
+      }
+      month.append(day);
+    });
+    return month;
   }
-  const empty=()=>`<div class="hc-cal-empty">${esc(copy.noBookings)}</div>`;
 
   function titleText() {
     if(mode==="day") return fmtDay(focus,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
@@ -99,10 +167,10 @@
     wrap.querySelector("[data-cal-count]").textContent=`${items.length} ${copy.appointments}`;
     wrap.querySelectorAll("[data-view]").forEach(btn=>btn.classList.toggle("is-active",btn.dataset.view===(agendaLike?"agenda":mode)));
     const canvas=wrap.querySelector("[data-cal-canvas]");
-    if(!agendaLike&&mode==="day") canvas.innerHTML=dayView(items);
-    else if(!agendaLike&&mode==="week") canvas.innerHTML=weekView(items);
-    else if(!agendaLike&&mode==="month") canvas.innerHTML=monthView(items);
-    else canvas.innerHTML="";
+    if(!agendaLike&&mode==="day") canvas.replaceChildren(dayView(items));
+    else if(!agendaLike&&mode==="week") canvas.replaceChildren(weekView(items));
+    else if(!agendaLike&&mode==="month") canvas.replaceChildren(monthView(items));
+    else canvas.replaceChildren();
     canvas.classList.toggle("hidden",agendaLike);
     const list=document.getElementById("appointments-list"),emptyNode=document.getElementById("appointments-empty");
     if(!agendaLike){list?.classList.add("hidden");emptyNode?.classList.add("hidden");}
@@ -119,8 +187,40 @@
 
   async function init() {
     const toolbar=document.querySelector(".appointments-toolbar"); if(!toolbar||document.querySelector("[data-hc-calendar]")) return;
-    const techLabel=document.createElement("label");techLabel.className="filter-field";techLabel.innerHTML=`<span>${esc(copy.technician)}</span><select id="appointment-technician"><option value="all">${esc(copy.allTechs)}</option></select>`;toolbar.append(techLabel);
-    const calendar=document.createElement("section");calendar.className="hc-appointments-calendar";calendar.dataset.hcCalendar="true";calendar.innerHTML=`<div class="hc-cal-top"><div><p class="eyebrow">${esc(copy.calendar)}</p><h2 data-cal-title></h2><span data-cal-count></span></div><div class="hc-cal-actions"><div class="hc-view-switch">${["day","week","month","agenda"].map(v=>`<button type="button" data-view="${v}">${esc(copy[v])}</button>`).join("")}</div><div class="hc-date-nav"><button type="button" data-prev aria-label="${esc(copy.previous)}">←</button><button type="button" data-today>${esc(copy.today)}</button><button type="button" data-next aria-label="${esc(copy.next)}">→</button></div></div></div><div class="hc-booking-share" data-booking-share hidden><div><small>${esc(copy.bookingLink)}</small><strong data-booking-url></strong></div><button type="button" data-copy-booking>${esc(copy.copyLink)}</button><a data-open-booking target="_blank" rel="noopener">${esc(copy.openBooking)}</a></div><div class="hc-cal-canvas" data-cal-canvas></div>`;
+    const techLabel=makeTextNode("label","filter-field");
+    const techCaption=makeTextNode("span","",copy.technician);
+    const techSelect=document.createElement("select");techSelect.id="appointment-technician";
+    const allTechs=document.createElement("option");allTechs.value="all";allTechs.textContent=copy.allTechs;techSelect.append(allTechs);
+    techLabel.append(techCaption,techSelect);toolbar.append(techLabel);
+
+    const calendar=makeTextNode("section","hc-appointments-calendar");calendar.dataset.hcCalendar="true";
+    const top=makeTextNode("div","hc-cal-top");
+    const summary=document.createElement("div");
+    const eyebrow=makeTextNode("p","eyebrow",copy.calendar);
+    const title=document.createElement("h2");title.dataset.calTitle="";
+    const count=document.createElement("span");count.dataset.calCount="";
+    summary.append(eyebrow,title,count);
+    const actions=makeTextNode("div","hc-cal-actions");
+    const viewSwitch=makeTextNode("div","hc-view-switch");
+    ["day","week","month","agenda"].forEach((view)=>{
+      const button=makeTextNode("button","",copy[view]);button.type="button";button.dataset.view=view;viewSwitch.append(button);
+    });
+    const dateNav=makeTextNode("div","hc-date-nav");
+    const previous=makeTextNode("button","","←");previous.type="button";previous.dataset.prev="";previous.setAttribute("aria-label",copy.previous);
+    const today=makeTextNode("button","",copy.today);today.type="button";today.dataset.today="";
+    const next=makeTextNode("button","","→");next.type="button";next.dataset.next="";next.setAttribute("aria-label",copy.next);
+    dateNav.append(previous,today,next);actions.append(viewSwitch,dateNav);top.append(summary,actions);
+
+    const share=makeTextNode("div","hc-booking-share");share.dataset.bookingShare="";share.hidden=true;
+    const shareText=document.createElement("div");
+    const shareLabel=makeTextNode("small","",copy.bookingLink);
+    const bookingUrl=document.createElement("strong");bookingUrl.dataset.bookingUrl="";
+    shareText.append(shareLabel,bookingUrl);
+    const copyButton=makeTextNode("button","",copy.copyLink);copyButton.type="button";copyButton.dataset.copyBooking="";
+    const openBooking=makeTextNode("a","",copy.openBooking);openBooking.dataset.openBooking="";openBooking.target="_blank";openBooking.rel="noopener";
+    share.append(shareText,copyButton,openBooking);
+    const canvas=makeTextNode("div","hc-cal-canvas");canvas.dataset.calCanvas="";
+    calendar.append(top,share,canvas);
     toolbar.insertAdjacentElement("beforebegin",calendar);
     calendar.querySelectorAll("[data-view]").forEach(btn=>btn.addEventListener("click",()=>{mode=btn.dataset.view;localStorage.setItem("hc-appointments-view",mode);render();}));
     calendar.querySelector("[data-prev]").addEventListener("click",()=>shift(-1));
@@ -136,7 +236,7 @@
   window.addEventListener("hc:appointments-loaded",(event)=>{
     bookings=Array.isArray(event.detail?.bookings)?event.detail.bookings:[];
     const select=document.getElementById("appointment-technician");
-    if(select){const current=select.value;const names=[...new Set(bookings.map(b=>b.technician?.name).filter(Boolean))].sort();select.innerHTML=`<option value="all">${esc(copy.allTechs)}</option>${names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("")}`;if(names.includes(current))select.value=current;}
+    if(select){const current=select.value;const names=[...new Set(bookings.map(b=>b.technician?.name).filter(Boolean))].sort();const options=[];const all=document.createElement("option");all.value="all";all.textContent=copy.allTechs;options.push(all);names.forEach((name)=>{const option=document.createElement("option");option.value=name;option.textContent=name;options.push(option);});select.replaceChildren(...options);if(names.includes(current))select.value=current;}
     render();
   });
   window.addEventListener("hc:appointments-agenda-request",()=>document.getElementById("appointment-search")?.dispatchEvent(new Event("input")));

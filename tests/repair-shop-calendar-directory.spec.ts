@@ -1,6 +1,15 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 const json = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
+
+
+test("production calendar and department menu avoid TrustedHTML assignment sinks", () => {
+  const calendarSource = readFileSync(new URL("../public/repair-shop-appointments-calendar.js", import.meta.url), "utf8");
+  const departmentMenuSource = readFileSync(new URL("../public/department-menu.js", import.meta.url), "utf8");
+  expect(calendarSource).not.toMatch(/\.innerHTML\s*=/);
+  expect(departmentMenuSource).not.toMatch(/\.innerHTML\s*=/);
+});
 
 test("Repair Shop appointments exposes Day Week Month Agenda and Google Calendar", async ({ page }) => {
   const today = new Date().toISOString().slice(0, 10);

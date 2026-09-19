@@ -16,6 +16,7 @@
   const isRu = () => (document.documentElement.lang || "").toLowerCase() === "ru";
   const departmentId = (href) => order.find((id) => href === departments[id].href || href.endsWith(`#${id}`)) || null;
   const makeLink = (label, href, className) => { const link = document.createElement("a"); link.href = href; link.textContent = label; if (className) link.className = className; return link; };
+  const makeToggleGlyph = () => { const glyph = document.createElement("span"); glyph.setAttribute("aria-hidden", "true"); glyph.textContent = "⌄"; return glyph; };
   const localizedProduct = (id, label, href) => {
     if (!isRu()) return { label, href };
     const localizedLabel = ruLabels[href] || label;
@@ -57,7 +58,7 @@
       const anchor = byId.get(id); if (!anchor) return; const config = departments[id];
       const wrapper = document.createElement("div"); wrapper.className = "department-menu"; wrapper.dataset.departmentMenu = id; wrapper.style.setProperty("--department-accent", config.accent);
       const primary = anchor.cloneNode(true); primary.classList.add("department-menu__primary");
-      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "department-menu__toggle"; toggle.dataset.departmentToggle = id; toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${primary.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "department-menu__toggle"; toggle.dataset.departmentToggle = id; toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${primary.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.append(makeToggleGlyph());
       toggle.addEventListener("click", (event) => { event.stopPropagation(); setDesktopOpen(wrapper, toggle, id, primary, wrapper.getAttribute("data-open") !== "true"); });
       wrapper.addEventListener("mouseenter", () => setDesktopOpen(wrapper, toggle, id, primary, true));
       wrapper.addEventListener("mouseleave", () => setDesktopOpen(wrapper, toggle, id, primary, false));
@@ -86,7 +87,7 @@
     [...nav.querySelectorAll(":scope > a")].forEach((anchor) => {
       const id = departmentId(anchor.getAttribute("href") || ""); if (!id) return;
       const config = departments[id]; anchor.classList.add("mobile-department-primary"); anchor.dataset.mobileDepartment = id; anchor.style.setProperty("--department-accent", config.accent);
-      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "mobile-department-toggle"; toggle.dataset.mobileDepartmentToggle = id; toggle.style.setProperty("--department-accent", config.accent); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${anchor.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "mobile-department-toggle"; toggle.dataset.mobileDepartmentToggle = id; toggle.style.setProperty("--department-accent", config.accent); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${anchor.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.append(makeToggleGlyph());
       anchor.insertAdjacentElement("afterend", toggle);
       toggle.addEventListener("click", () => {
         const body = ensureMobileBody(nav, header, anchor, toggle, id); const open = toggle.getAttribute("aria-expanded") !== "true";
