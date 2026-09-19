@@ -38,6 +38,8 @@ function safeLifecycle(row: any) {
     connection_verified_at: row.connection_verified_at || null,
     ingest_enabled_at: row.ingest_enabled_at || null,
     first_record_verified_at: row.first_record_verified_at || null,
+    revoked_at: row.revoked_at || null,
+    revocation_note_recorded: Boolean(row.revocation_note),
     updated_at: row.updated_at,
     outbound_enabled: false,
   };
@@ -274,14 +276,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     await env.DB.prepare(`
       UPDATE hermes_load_sources
       SET status = 'revoked', read_enabled = 0, ingest_enabled = 0, send_enabled = 0,
-          last_error = ?, updated_at = ?
+          updated_at = ?
       WHERE id = ?
-    `).bind(`revoked: ${reason}`, now, sourceId).run();
+    `).bind(now, sourceId).run();
     await env.DB.prepare(`
       UPDATE hermes_load_source_requests
-      SET connection_state = 'revoked', updated_at = ?
+      SET connection_state = 'revoked', revoked_at = ?, revocation_note = ?, updated_at = ?
       WHERE id = ?
-    `).bind(now, requestId).run();
+    `).bind(now, reason, now, requestId).run();
   }
 
   const saved = await loadRequest(env.DB, requestId);
