@@ -1,8 +1,7 @@
 ---
-import { ArrowUpRight, Mail, Phone } from "@lucide/astro";
+import { ArrowUpRight, Mail } from "@lucide/astro";
 import { site } from "../data/site";
 
-const logisticsPhone = site.publicPhones[0];
 const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
@@ -11,28 +10,20 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
     <div class="home-final-contact-copy">
       <p class="home-final-contact-kicker">CONTACT</p>
       <h2 id="home-final-contact-title">Keep the next step simple.</h2>
-      <p>Office email and the U.S. logistics line are always one tap away.</p>
+      <p>Choose the right business direction first. Office email remains available as a direct fallback.</p>
     </div>
 
     <div class="home-final-contact-actions" aria-label="Hermes contact options">
-      <a class="home-final-contact-action" href={site.logisticsEmail.href}>
+      <a class="home-final-contact-action home-final-contact-route" href="/contacts/" data-home-primary-contact>
         <img src={hermesConnectMark} alt="Hermes Connect mark" width="28" height="28" aria-hidden="true" />
-        <span><small>Office email</small><strong>{site.logisticsEmail.value}</strong></span>
-        <Mail size={18} aria-hidden="true" />
+        <span><small>Primary next step</small><strong>Choose a contact route</strong></span>
+        <ArrowUpRight size={18} aria-hidden="true" />
       </a>
 
-      {logisticsPhone && (
-        <a class="home-final-contact-action" href={logisticsPhone.href}>
-          <img src={hermesConnectMark} alt="Hermes Connect mark" width="28" height="28" aria-hidden="true" />
-          <span><small>U.S. Logistics</small><strong>{logisticsPhone.value}</strong></span>
-          <Phone size={18} aria-hidden="true" />
-        </a>
-      )}
-
-      <a class="home-final-contact-action home-final-contact-route" href="/contacts/">
+      <a class="home-final-contact-action" href={site.logisticsEmail.href} data-home-contact-fallback>
         <img src={hermesConnectMark} alt="Hermes Connect mark" width="28" height="28" aria-hidden="true" />
-        <span><small>Not sure where to start?</small><strong>Choose a contact route</strong></span>
-        <ArrowUpRight size={18} aria-hidden="true" />
+        <span><small>Direct fallback</small><strong>{site.logisticsEmail.value}</strong></span>
+        <Mail size={18} aria-hidden="true" />
       </a>
     </div>
   </div>
