@@ -81,8 +81,19 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
     ["/logistics/carrier-offer/", "carrier_offer_review"],
     ["/logistics/carrier-agreement/", "carrier_agreement_review"],
   ]);
+  const planCtaTypes = new Map([
+    ["essential", "carrier_plan_essential"],
+    ["pro", "carrier_plan_pro"],
+    ["custom", "carrier_plan_custom"],
+  ]);
   const carrierEventBase = (pageGroup = "carrier_contract") => ({ audience_type: "carrier", page_group: pageGroup, service_group: "carrier_contract", page_path: window.location.pathname });
-  const classifyDestination = (target: URL) => target.pathname === "/logistics/carrier-onboarding/" ? "carrier_packet_start" : destinationTypes.get(target.pathname) ?? "";
+  const classifyDestination = (target: URL, link: HTMLAnchorElement) => {
+    if (target.pathname === "/logistics/carrier-onboarding/") {
+      const selectedPlan = link.dataset.planLink ?? "";
+      return planCtaTypes.get(selectedPlan) ?? "carrier_packet_start";
+    }
+    return destinationTypes.get(target.pathname) ?? "";
+  };
 
   document.addEventListener("click", (event) => {
     if (!event.isTrusted) return;
@@ -93,7 +104,7 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
       let target: URL;
       try { target = new URL(link.href, window.location.origin); }
       catch { target = new URL(window.location.origin); }
-      const ctaType = target.origin === window.location.origin ? classifyDestination(target) : "";
+      const ctaType = target.origin === window.location.origin ? classifyDestination(target, link) : "";
       if (ctaType) pushCarrierAnalytics({ event: "commercial_cta_click", cta_type: ctaType, ...carrierEventBase(), destination_path: target.pathname });
     }
     const share = source.closest("[data-carrier-share],[data-carrier-copy],[data-carrier-sms],[data-sign-copy],[data-sign-sms],[data-carrier-journey-copy],[data-carrier-journey-sms]");
@@ -131,7 +142,18 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
     };
     form?.addEventListener("focusin", recordStart);
     form?.addEventListener("input", recordStart);
-    form?.addEventListener("change", recordStart);
+    form?.addEventListener("change", (event) => {
+      recordStart(event);
+      if (!event.isTrusted || !(event.target instanceof HTMLInputElement) || event.target.name !== "selected_plan") return;
+      const ctaType = planCtaTypes.get(event.target.value);
+      if (!ctaType) return;
+      pushCarrierAnalytics({
+        event: "commercial_cta_click",
+        cta_type: ctaType,
+        ...carrierEventBase("carrier_contract_onboarding"),
+        destination_path: "/logistics/carrier-onboarding/",
+      });
+    });
     form?.addEventListener("click", (event) => {
       recordStart(event);
       if (!event.isTrusted) return;
