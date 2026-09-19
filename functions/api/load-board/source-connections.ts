@@ -6,6 +6,10 @@ type Env = { DB?: any };
 
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 const ACTIONS = new Set(["initialize", "verify_connection", "enable_ingest", "verify_first_record", "revoke"]);
+const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
+const CONTACT_MODES = new Set(["hidden", "hermes_review", "source_direct"]);
+const REDISTRIBUTION_RANK: Record<string, number> = { internal_only: 0, carrier_only: 1, public: 2 };
+const CONTACT_RANK: Record<string, number> = { hidden: 0, hermes_review: 1, source_direct: 2 };
 const SECRET_PATTERN = /(?:bearer\s+|api[_ -]?key\s*[:=]|password\s*[:=]|secret\s*[:=]|token\s*[:=]|access[_ -]?token|refresh[_ -]?token)/i;
 
 const sameOriginMutation = (request: Request) =>
@@ -28,8 +32,10 @@ function safeLifecycle(row: any) {
     source_type: row.source_type,
     provider_name: row.provider_name || null,
     connection_state: row.connection_state || "not_started",
-    redistribution_permission: row.requested_redistribution_permission,
-    contact_reveal_permission: row.requested_contact_reveal_permission,
+    requested_redistribution_permission: row.requested_redistribution_permission,
+    requested_contact_reveal_permission: row.requested_contact_reveal_permission,
+    approved_redistribution_permission: row.approved_redistribution_permission || null,
+    approved_contact_reveal_permission: row.approved_contact_reveal_permission || null,
     car_hauling_ingest_allowed: Number(row.car_hauling_ingest_allowed || 0) === 1,
     connection_evidence_recorded: Boolean(row.connection_evidence_ref),
     data_rights_evidence_recorded: Boolean(row.data_rights_evidence_ref),
@@ -138,6 +144,24 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     if (currentState !== "not_started") {
       return jsonResponse(409, { success: false, error: "connection_already_initialized", connection_state: currentState }, privateHeaders);
     }
+    if (row.source_type === "manual") {
+      return jsonResponse(409, { success: false, error: "manual_source_uses_marketplace_post_contract" }, privateHeaders);
+    }
+
+    const approvedRedistribution = clean(body.approved_redistribution_permission ?? body.approvedRedistributionPermission, 30).toLowerCase();
+    const approvedContactMode = clean(body.approved_contact_reveal_permission ?? body.approvedContactRevealPermission, 30).toLowerCase();
+    if (!REDISTRIBUTION.has(approvedRedistribution)) {
+      return jsonResponse(400, { success: false, error: "approved_redistribution_permission_required" }, privateHeaders);
+    }
+    if (!CONTACT_MODES.has(approvedContactMode)) {
+      return jsonResponse(400, { success: false, error: "approved_contact_reveal_permission_required" }, privateHeaders);
+    }
+    if ((REDISTRIBUTION_RANK[approvedRedistribution] ?? 99) > (REDISTRIBUTION_RANK[String(row.requested_redistribution_permission)] ?? -1)) {
+      return jsonResponse(400, { success: false, error: "approved_redistribution_exceeds_request" }, privateHeaders);
+    }
+    if ((CONTACT_RANK[approvedContactMode] ?? 99) > (CONTACT_RANK[String(row.requested_contact_reveal_permission)] ?? -1)) {
+      return jsonResponse(400, { success: false, error: "approved_contact_mode_exceeds_request" }, privateHeaders);
+    }
 
     const dataRightsEvidenceRef = clean(body.data_rights_evidence_ref ?? body.dataRightsEvidenceRef, 500);
     const retentionRule = clean(body.retention_rule ?? body.retentionRule, 500);
@@ -165,7 +189,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       ) VALUES (?, ?, ?, ?, 0, 0, 0, ?, 1, ?, ?, 'connection_pending', ?, ?)
     `).bind(
       sourceId, provider, sourceName, sourceType, carHaulingAllowed,
-      row.requested_redistribution_permission, row.requested_contact_reveal_permission,
+      approvedRedistribution, approvedContactMode,
       now, now,
     ).run();
 
@@ -173,13 +197,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       UPDATE hermes_load_source_requests
       SET connection_state = 'connection_pending',
           source_id = ?,
+          approved_redistribution_permission = ?,
+          approved_contact_reveal_permission = ?,
           data_rights_evidence_ref = ?,
           retention_rule = ?,
           revocation_rule = ?,
           car_hauling_ingest_allowed = ?,
           updated_at = ?
       WHERE id = ?
-    `).bind(sourceId, dataRightsEvidenceRef, retentionRule, revocationRule, carHaulingAllowed, now, requestId).run();
+    `).bind(sourceId, approvedRedistribution, approvedContactMode, dataRightsEvidenceRef, retentionRule, revocationRule, carHaulingAllowed, now, requestId).run();
   }
 
   if (action === "verify_connection") {
