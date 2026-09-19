@@ -82,6 +82,38 @@ test("carrier sales choices, sharing, and document actions emit controlled event
   });
 });
 
+test("carrier plan choices emit controlled plan CTA values without percentages or form data", async ({ page }) => {
+  await page.goto("/logistics/carrier-offer/");
+
+  const choices = [
+    ["Choose Dispatch Support", "carrier_plan_essential"],
+    ["Choose Full Partnership", "carrier_plan_pro"],
+    ["Submit a carrier proposal", "carrier_plan_custom"],
+  ] as const;
+
+  for (const [label] of choices) {
+    const link = page.getByRole("link", { name: new RegExp(label, "i") });
+    await preventNavigation(link);
+    await link.click();
+  }
+
+  const events = (await carrierEvents(page)).filter((entry) => entry.event === "commercial_cta_click");
+  for (const [, ctaType] of choices) {
+    expect(events).toContainEqual({
+      event: "commercial_cta_click",
+      cta_type: ctaType,
+      audience_type: "carrier",
+      page_group: "carrier_contract",
+      service_group: "carrier_contract",
+      page_path: "/logistics/carrier-offer/",
+      destination_path: "/logistics/carrier-onboarding/",
+    });
+  }
+
+  const serialized = JSON.stringify(events);
+  expect(serialized).not.toMatch(/6%|8%|service_percentage|custom_scope/i);
+});
+
 test("carrier onboarding records steps one through three and packet status without form values", async ({ page }) => {
   await page.goto("/logistics/carrier-onboarding/?plan=essential");
 
