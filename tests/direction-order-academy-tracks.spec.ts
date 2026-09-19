@@ -4,11 +4,11 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("Hermes header order stays Logistics → IT → Marketing → Academy, with Catalog separated", async ({ page }) => {
+test("Hermes header order stays Logistics → Marketing → IT → Academy, with Catalog separated", async ({ page }) => {
   const header = await source("src/components/SiteHeader.astro");
   const publicPaths = await source("src/data/public-paths.ts");
 
-  expect(header).toContain('const directionOrder: Record<string, number> = { logistics: 0, technology: 1, marketing: 2, academy: 3 }');
+  expect(header).toContain('const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 }');
   expect(header).toContain('const orderedNavigation = [...site.navigation].sort(');
   expect(header).toContain('const orderedPaths = [...site.paths].sort(');
   expect(header).toContain('["logistics", "marketing", "technology", "academy"]');
@@ -23,10 +23,14 @@ test("Hermes header order stays Logistics → IT → Marketing → Academy, with
   );
   expect(desktopDirections).toEqual([
     { href: "/paths/logistics/", label: "Logistics" },
-    { href: "/paths/technology/", label: "IT" },
     { href: "/paths/marketing/", label: "Marketing" },
+    { href: "/paths/technology/", label: "IT" },
     { href: "/paths/academy/", label: "Academy" },
   ]);
+  const mobileDirections = await page.locator('#mobile-menu a[href^="/paths/"]').evaluateAll((links) =>
+    links.map((link) => ({ href: link.getAttribute("href"), label: link.textContent?.trim() })),
+  );
+  expect(mobileDirections).toEqual(desktopDirections);
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveText("Catalog");
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveClass(/catalog-nav-link/);
 

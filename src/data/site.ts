@@ -68,8 +68,8 @@ export const site = {
   ],
   navigation: [
     { label: "Logistics", href: "paths/logistics/" },
-    { label: "Technology", href: "paths/technology/" },
     { label: "Marketing", href: "paths/marketing/" },
+    { label: "Technology", href: "paths/technology/" },
     { label: "Academy", href: "paths/academy/" },
   ],
   hero: {
