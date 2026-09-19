@@ -32,7 +32,7 @@ test("carrier agreement review summary is private, links to the review PDF, and 
   expect(publicCopy).toContain("No personal guaranty or UCC lien");
   expect(publicCopy).toContain(pdfSha256);
   expect(publicCopy).toContain("Review/onboarding only");
-  expect(publicCopy).toContain("approval gates tracked by #280");
+  expect(publicCopy).toContain("qualified Wisconsin transportation counsel, owner approval");
   expect(publicCopy).not.toMatch(/approved production execution master|live execution packet/i);
   expect(publicCopy).not.toMatch(/<strong>\s*(?:5|6|8)(?:\.00)?%\s*service fee/i);
   await expect(page.locator('input[type="password"], input[name*="password" i], input[name*="pin" i]')).toHaveCount(0);
