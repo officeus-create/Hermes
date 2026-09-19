@@ -31,11 +31,24 @@ test("Repair Shop free-registration policy is fixed through September 15 Central
   expect(component).toContain("data-minutes");
   expect(component).toContain("data-seconds");
   expect(component).toContain("window.setInterval(tick, 1000)");
+  expect(component).toContain("freeRegistrationExpired");
+  expect(component).toContain('data-launch-state={freeRegistrationExpired ? "ended" : "open"}');
   expect(component).toContain("Free repair shop registration through September 15.");
+  expect(component).toContain("Free repair shop registration ended September 15.");
   expect(component).toContain("Free registration closes at midnight Central Time after September 15, 2026.");
   expect(component).toContain("New Repair Shop registrations now use the current Founding Shop Plan.");
   expect(component).not.toMatch(/first\s+1[,.]?000|first\s+1000|первых\s+1000/i);
   expect(component).not.toMatch(/Date\.now\(\)\s*\+\s*14/);
+});
+
+test("built Repair Shop HTML fails closed to the ended registration state after the published deadline", async ({ request }) => {
+  const response = await request.get("/services/hermes-connect/repair-shops/");
+  expect(response.ok()).toBeTruthy();
+  const html = await response.text();
+  expect(html).toContain('data-launch-state="ended"');
+  expect(html).toContain('data-expired="true"');
+  expect(html).toMatch(/<h2[^>]*data-launch-title[^>]*>Free repair shop registration ended September 15\.<\/h2>/);
+  expect(html).toContain("New Repair Shop registrations now use the current Founding Shop Plan.");
 });
 
 test("Repair Shop landing shows the active Russian September 15 free-registration state", async ({ page }) => {
