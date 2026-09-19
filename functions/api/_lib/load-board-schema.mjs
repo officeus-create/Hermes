@@ -173,6 +173,20 @@ export async function ensureLoadBoardSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_source ON hermes_load_quarantine(source_id, observed_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_interest_company ON hermes_load_interest_requests(company_id, status, updated_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_interest_record ON hermes_load_interest_requests(load_record_id, status, updated_at DESC)").run();
+  await ensureColumns(db, "hermes_load_source_requests", {
+    connection_state: "TEXT NOT NULL DEFAULT 'not_started'",
+    source_id: "TEXT",
+    connection_evidence_ref: "TEXT",
+    data_rights_evidence_ref: "TEXT",
+    retention_rule: "TEXT",
+    revocation_rule: "TEXT",
+    car_hauling_ingest_allowed: "INTEGER NOT NULL DEFAULT 0",
+    connection_verified_at: "TEXT",
+    ingest_enabled_at: "TEXT",
+    first_record_verified_at: "TEXT",
+  });
+
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_source_requests_company ON hermes_load_source_requests(company_id, status, updated_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_source_requests_status ON hermes_load_source_requests(status, updated_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_source_requests_source ON hermes_load_source_requests(source_id, connection_state, updated_at DESC)").run();
 }
