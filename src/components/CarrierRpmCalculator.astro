@@ -171,13 +171,13 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
             : "No deadhead or service percentage is entered; fuel, reserve, and fixed-cost assumptions drive the estimate.";
       setOutput("sensitivity", sensitivity);
 
-      if (trackCompletion) trackEvent("rpm_calculator_completed", { tool: "rpm_calculator", context });
+      if (trackCompletion) trackEvent("rpm_calculator_completed", { tool: "rpm_calculator" });
     };
 
     form?.addEventListener("input", () => {
       if (!started) {
         started = true;
-        trackEvent("rpm_calculator_started", { tool: "rpm_calculator", context });
+        trackEvent("rpm_calculator_started", { tool: "rpm_calculator" });
       }
     });
     form?.addEventListener("submit", (event) => {
@@ -188,7 +188,7 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
   });
 </script>
 
-<style>
+<style is:global>
   .carrier-rpm-calculator{color:var(--hermes-ink,#111324);background:var(--hermes-pearl,#f7f6f3)}
   .rpm-tool-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);gap:1.25rem;align-items:start}
   .rpm-panel{padding:clamp(1.25rem,2vw,2rem);border:1px solid var(--hermes-line-light,rgba(17,19,36,.12));border-radius:var(--hermes-radius-card,22px);background:var(--hermes-paper,#fff);box-shadow:var(--hermes-shadow-card,0 18px 50px rgba(18,35,52,.08))}
@@ -204,6 +204,6 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
   .rpm-primary-results span{color:var(--hermes-muted,#5f6674);font-size:.88rem;font-weight:700}.rpm-primary-results strong{color:var(--hermes-ink,#111324);font-size:clamp(1.05rem,2vw,1.35rem);text-align:right}
   .rpm-result-list{display:grid;margin:0}.rpm-result-list>div{display:flex;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--hermes-line-light-soft,rgba(17,19,36,.08))}.rpm-result-list dt{color:var(--hermes-muted,#5f6674)}.rpm-result-list dd{margin:0;color:var(--hermes-ink,#111324);font-weight:800;text-align:right}
   .rpm-sensitivity{margin-top:1rem;padding:.9rem 1rem;color:var(--hermes-graphite,#20232c);border-left:4px solid var(--hermes-violet,#7c5cff);border-radius:var(--hermes-radius-control,12px);background:color-mix(in srgb,var(--hermes-violet,#7c5cff) 8%,var(--hermes-pearl,#f7f6f3));font-weight:700;line-height:1.5}
-  @media(max-width:860px){.rpm-tool-grid,.rpm-field-grid{grid-template-columns:1fr}.rpm-result-panel{position:static}}
+  @media(max-width:860px){.carrier-rpm-calculator .rpm-tool-grid,.carrier-rpm-calculator .rpm-field-grid{grid-template-columns:minmax(0,1fr)!important}.carrier-rpm-calculator .rpm-result-panel{position:static!important}}
   @media(forced-colors:active){.rpm-panel,.rpm-field-grid input,.rpm-primary-results>div,.rpm-sensitivity{border-color:CanvasText}}
 </style>
