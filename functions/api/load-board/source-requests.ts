@@ -31,7 +31,9 @@ function safeRequest(row: any) {
     review_note: row.review_note || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
-    activates_ingestion: false,
+    connection_state: row.connection_state || "not_started",
+    activates_ingestion: ["ingest_enabled", "active"].includes(row.connection_state),
+    source_active: row.connection_state === "active",
   };
 }
 
