@@ -129,9 +129,11 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           const review = document.createElement('div');
           const status = document.createElement('b');
           status.textContent = String(item.status || '');
+          const connection = document.createElement('span');
+          connection.textContent = `Connection: ${String(item.connection_state || 'not_started').replaceAll('_', ' ')}`;
           const permissions = document.createElement('small');
           permissions.textContent = `Visibility request: ${String(item.requested_redistribution_permission || '')} · Contact: ${String(item.requested_contact_reveal_permission || '')}`;
-          review.append(status, permissions);
+          review.append(status, connection, permissions);
           article.append(identity, review);
           list.append(article);
         }
