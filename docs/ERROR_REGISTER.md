@@ -37,7 +37,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 
 | ID | Status | Area | Trigger | Current source of truth |
 | --- | --- | --- | --- | --- |
-| ERR-GATE-001 | OWNER_ACTION | Carrier agreement e-signature | Final production execution/signature release | #280 — qualified Wisconsin transportation counsel + final business approval required. |
+| ERR-GATE-001 | OWNER_ACTION | Carrier agreement e-signature | Final production execution/signature release | Qualified Wisconsin transportation counsel + final owner/business approval + approved execution/provider/audit safeguards required. |
 | ERR-GATE-002 | WATCH | Payment/refund/recurring billing | First real checkout, paid offer, subscription or renewal flow | #319 — no fictional payment policy should be published before the actual offer/process exists. |
 | ERR-GATE-003 | WATCH | International/state compliance | New market/state/data-flow requirement or production legal verification | #321. |
 | ERR-GATE-004 | WATCH | Advertising/vendor technology | Meta Pixel, Ads remarketing, new analytics vendor, international processor or similar activation | #324. |

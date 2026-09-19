@@ -154,7 +154,7 @@ for (const prohibited of [
   executionPath,
 ]) assert.ok(!activePublicCopy.includes(prohibited), `Public carrier copy still exposes: ${prohibited}`);
 assert.match(activePublicCopy, /Review\/onboarding only/);
-assert.match(activePublicCopy, /approval gates tracked by #280/);
+assert.match(activePublicCopy, /qualified Wisconsin transportation counsel, owner approval/);
 
 await assert.rejects(access(new URL(`../public${executionPath}`, import.meta.url)));
 const redirects = await readFile(new URL("../public/_redirects", import.meta.url), "utf8");
