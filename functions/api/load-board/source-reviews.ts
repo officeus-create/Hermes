@@ -30,7 +30,11 @@ function publicReview(row: any) {
     review_note: row.review_note || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
-    source_activated: false,
+    connection_state: row.connection_state || "not_started",
+    source_activated: row.connection_state === "active",
+    ingestion_enabled: ["ingest_enabled", "active"].includes(row.connection_state),
+    connection_evidence_recorded: Boolean(row.connection_evidence_ref),
+    data_rights_evidence_recorded: Boolean(row.data_rights_evidence_ref),
     credentials_present: false,
   };
 }
@@ -108,6 +112,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ingestion_enabled: false,
     redistribution_enabled: false,
     provider_contacted: false,
-    next_gate: status === "approved" ? "separate_connection_and_data_rights_activation" : "company_follow_up_or_revision",
+    next_gate: status === "approved"
+      ? (saved?.source_type === "manual" ? "manual_marketplace_post_contract" : "source_connection_lifecycle")
+      : "company_follow_up_or_revision",
   }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
 }
