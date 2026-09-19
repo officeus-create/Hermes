@@ -73,7 +73,7 @@ for (const required of [
 for (const required of [
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
   "LEGAL_EXECUTION_APPROVED",
-  "Issue #280 is the governing activation boundary",
+  "Final production execution remains fail-closed",
   "execution_record_quarantined_pending_legal_review",
   "allowedPercentages.has(contract.percentageKey)",
   'contract.plan!=="custom"',
@@ -136,6 +136,6 @@ assert.match(protectionAddendum, /lawful hiring without such misuse are allowed/
 for (const secretLike of ["sk_live_", "api_key=", "access_token=", "private_key="])
   assert.ok(!readiness.toLowerCase().includes(secretLike));
 
-console.log("Carrier agreement v3 offer, Wisconsin-aligned protection addendum, minimized review/onboarding signing, and Issue #280 containment contracts passed.");
+console.log("Carrier agreement v3 offer, Wisconsin-aligned protection addendum, minimized review/onboarding signing, and review-only containment contracts passed.");
 
 await import("./carrier-contract-review-containment.test.mjs");
