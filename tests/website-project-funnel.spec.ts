@@ -53,6 +53,17 @@ test("website development service records CTA and opens an exact project scope",
 });
 
 test("website project brief includes exact scope and records start, preview and explicit handoff without analytics PII", async ({ page }) => {
+  let deliveredPayload: Record<string, unknown> | null = null;
+  let idempotencyKey = "";
+  await page.route("**/api/logistics-lead", async (route) => {
+    deliveredPayload = route.request().postDataJSON() as Record<string, unknown>;
+    idempotencyKey = route.request().headers()["idempotency-key"] || "";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, request_id: deliveredPayload.request_id }),
+    });
+  });
   await page.goto("/paths/technology/?project=website_development#project-brief");
   const brief = page.locator("[data-it-project-brief]");
 
@@ -85,6 +96,18 @@ test("website project brief includes exact scope and records start, preview and 
   await expect(summary).toContainText("CRM, scheduling, analytics, and secure lead routing");
   await expect(brief.locator("[data-brief-email]")).toHaveAttribute("href", /Website%20project%20scope/);
   await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "website_project_preview_ready").length).toBe(1);
+
+  await brief.getByRole("button", { name: "Send brief to Hermes" }).click();
+  await expect(brief.locator("[data-brief-status]")).toContainText("Brief sent securely to Hermes");
+  expect(deliveredPayload).toEqual(expect.objectContaining({
+    source_path: "/paths/technology/",
+    name: "Private Alex Morgan",
+    email: "private@example.com",
+    interest: "IT Development",
+    consent: true,
+  }));
+  expect(String(deliveredPayload?.message)).toContain("Private Example Services");
+  expect(idempotencyKey).toBe(String(deliveredPayload?.request_id));
 
   await page.evaluate(() => {
     document.querySelector("[data-brief-email]")?.addEventListener("click", (event) => event.preventDefault(), { capture: true });
