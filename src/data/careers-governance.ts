@@ -82,7 +82,10 @@ function validHttpsUrl(value?: string): boolean {
   }
 }
 
-export function isVacancyEligibleForJobPosting(record: PublicVacancyRecord): boolean {
+export function isVacancyEligibleForJobPosting(
+  record: PublicVacancyRecord,
+  referenceDate = new Date().toISOString().slice(0, 10),
+): boolean {
   return record.status === "verified_open"
     && record.ownerApprovedForPublication
     && Boolean(record.title.trim())
@@ -94,6 +97,7 @@ export function isVacancyEligibleForJobPosting(record: PublicVacancyRecord): boo
     && validDate(record.datePosted)
     && validDate(record.reviewedAt)
     && validDate(record.expiresAt)
+    && record.expiresAt! >= referenceDate
     && Boolean(record.applicationPath?.startsWith("/"))
     && validHttpsUrl(record.submissionUrl);
 }
