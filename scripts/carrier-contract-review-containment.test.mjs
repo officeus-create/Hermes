@@ -3,9 +3,9 @@ import { createHash } from "node:crypto";
 import { access, readFile } from "node:fs/promises";
 import { onRequest as contractHandler } from "../functions/api/carrier-contract.ts";
 
-// Issue #280 is the governing activation boundary. Until qualified Wisconsin
-// transportation counsel approval is recorded, every carrier-contract path must
-// fail closed to a signed review/onboarding packet and never return execution.
+// Review-only is the canonical website state. Until qualified Wisconsin transportation
+// counsel and owner approval are recorded and the approved activation safeguards pass,
+// every carrier-contract path must fail closed to a signed review/onboarding packet.
 
 class MemoryKv {
   values = new Map();
@@ -42,7 +42,7 @@ const makeEnv = (limits = new MemoryKv()) => ({
       });
     },
   },
-  // Hostile or stale production configuration must not bypass Issue #280.
+  // Hostile or stale production configuration must not bypass the review-only legal gate.
   CARRIER_CONTRACT_MODE: "live",
   CARRIER_CONTRACT_APPROVED_VERSION: "HERMES-CARRIER-EXECUTION-V2026-08-06",
   CARRIER_CONTRACT_APPROVED_PDF_PATH: executionPath,
@@ -84,7 +84,7 @@ const makeRequest = (payload, body = JSON.stringify(payload)) => new Request("ht
     "Idempotency-Key": payload.request_id,
     Origin: "https://hermeslogisticsus.com",
     "CF-Connecting-IP": "192.0.2.180",
-    "User-Agent": "Hermes Issue 280 containment test",
+    "User-Agent": "Hermes review containment test",
   },
   body,
 });
@@ -132,7 +132,7 @@ assert.deepEqual(await quarantinedResponse.json(), {
 
 const backend = await readFile(new URL("../functions/api/carrier-contract.ts", import.meta.url), "utf8");
 assert.match(backend, /const LEGAL_EXECUTION_APPROVED = false/);
-assert.match(backend, /Issue #280 is the governing activation boundary/);
+assert.match(backend, /Final production execution remains fail-closed/);
 assert.match(backend, /LEGAL_EXECUTION_APPROVED&&requestedMode==="live"/);
 assert.match(backend, /execution_record_quarantined_pending_legal_review/);
 await assert.rejects(access(new URL("../functions/api/_middleware.js", import.meta.url)));
@@ -160,4 +160,4 @@ await assert.rejects(access(new URL(`../public${executionPath}`, import.meta.url
 const redirects = await readFile(new URL("../public/_redirects", import.meta.url), "utf8");
 assert.match(redirects, /Hermes_Carrier_Agreement_EXECUTION_v2026-08-06\.pdf \/contracts\/carrier-agreement-v3\/ 302/);
 
-console.log("Issue #280 containment passed: standard 6%, standard 8%, custom, stale live configuration, cached live records, public copy, and active contract asset all fail closed to review/onboarding.");
+console.log("Carrier review containment passed: standard 6%, standard 8%, custom, stale live configuration, cached live records, public copy, and active contract asset all fail closed to review/onboarding.");
