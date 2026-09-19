@@ -21,9 +21,10 @@ export type DirectionId = "logistics" | "marketing" | "technology" | "academy" |
 interface Props {
   direction: DirectionId;
   theme?: "light" | "dark";
+  locale?: "en" | "ru";
 }
 
-const { direction, theme = "light" } = Astro.props;
+const { direction, theme = "light", locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 
 const configs = {
@@ -108,11 +109,86 @@ const configs = {
   },
 } as const;
 
+const ruOverrides: Partial<Record<DirectionId, {
+  home?: string;
+  subtitle?: string;
+  items?: Record<string, { label?: string; href?: string }>;
+}>> = {
+  logistics: {
+    home: "/ru/logistics/",
+    subtitle: "Грузы · операции · технологии",
+    items: {
+      "load-board": { label: "Load Board" },
+      carriers: { label: "Перевозчики и автопарки" },
+      agreement: { label: "Договор и подключение" },
+      "owner-operators": { label: "Owner-operators" },
+      brokers: { label: "Брокеры" },
+      "shippers-dealers": { label: "Отправители и дилеры" },
+      operations: { label: "Dispatch и back office" },
+      path: { label: "Подобрать маршрут" },
+      catalog: { label: "Каталог" },
+    },
+  },
+  marketing: {
+    home: "/ru/marketing/",
+    subtitle: "Сайты · SEO/GEO · соцсети · спрос",
+    items: {
+      growth: { label: "Система роста", href: "/ru/business-growth/" },
+      websites: { label: "Сайты", href: "/ru/business-growth/website/" },
+      seo: { label: "SEO и GEO", href: "/ru/business-growth/seo/" },
+      social: { label: "Социальные сети", href: "/ru/business-growth/social-media/" },
+      ads: { label: "Реклама", href: "/ru/business-growth/advertising/" },
+      london: { label: "Международный рынок", href: "/ru/gb/london/marketing/" },
+      learn: { label: "Обучение маркетингу" },
+      catalog: { label: "Каталог" },
+    },
+  },
+  technology: {
+    home: "/ru/technology/",
+    subtitle: "Продукты · системы · AI · автоматизация",
+    items: {
+      connect: { label: "Hermes Connect", href: "/services/hermes-connect/?lang=ru" },
+      "load-board": { label: "Load Board", href: "/load-board/" },
+      websites: { label: "Разработка сайтов", href: "/ru/business-growth/website/" },
+      capabilities: { label: "Возможности", href: "/ru/technology/#scope" },
+      brief: { label: "Бриф проекта" },
+      case: { label: "IT-разработка" },
+      academy: { label: "Обучение IT и AI", href: "/ru/academy/" },
+      catalog: { label: "Каталог" },
+    },
+  },
+  academy: {
+    home: "/ru/academy/",
+    subtitle: "Логистика · маркетинг · IT · продажи · операции",
+    items: {
+      logistics: { label: "Логистика", href: "/ru/academy/us-logistics-operations/" },
+      marketing: { label: "Маркетинг" },
+      it: { label: "IT и AI", href: "/ru/academy/" },
+      sales: { label: "Продажи", href: "/ru/academy/" },
+      operations: { label: "COO / Операции", href: "/ru/academy/" },
+      method: { label: "Как проходит обучение" },
+      apply: { label: "Подать заявку" },
+      catalog: { label: "Каталог" },
+    },
+  },
+};
+
 const config = configs[direction];
+const localeOverride = locale === "ru" ? ruOverrides[direction] : undefined;
+const home = localeOverride?.home ?? config.home;
+const subtitle = localeOverride?.subtitle ?? config.subtitle;
+const items = config.items.map((item) => {
+  const override = localeOverride?.items?.[item.id];
+  return {
+    ...item,
+    label: override?.label ?? item.label,
+    href: override?.href ?? item.href,
+  };
+});
 const pathOnly = (href: string) => href.split("#")[0];
 const isActive = (href: string) => {
   const target = pathOnly(href);
-  return target !== config.home && (currentPath === target || currentPath.startsWith(target.endsWith("/") ? target : `${target}/`));
+  return target !== home && (currentPath === target || currentPath.startsWith(target.endsWith("/") ? target : `${target}/`));
 };
 ---
 
@@ -120,15 +196,16 @@ const isActive = (href: string) => {
   class={`direction-product-nav direction-product-nav--${theme} direction-product-nav--${direction}`}
   aria-label={`${config.brand} products and paths`}
   data-direction-product-nav={direction}
+  data-direction-product-locale={locale}
   style={`--direction-nav-accent:${config.accent}`}
 >
   <div class="shell direction-product-nav__inner">
-    <a class="direction-product-nav__brand" href={config.home} aria-current={currentPath === config.home ? "page" : undefined}>
+    <a class="direction-product-nav__brand" href={home} aria-current={currentPath === home ? "page" : undefined}>
       <span>{config.brand}</span>
-      <small>{config.subtitle}</small>
+      <small>{subtitle}</small>
     </a>
     <div class="direction-product-nav__links">
-      {config.items.map((item) => {
+      {items.map((item) => {
         const Icon = item.icon;
         return (
           <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined} data-direction-product-link={item.id}>
