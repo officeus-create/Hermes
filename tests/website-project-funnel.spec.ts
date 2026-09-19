@@ -53,7 +53,7 @@ test("website development service records CTA and opens an exact project scope",
 });
 
 test("website project brief includes exact scope and records start, preview and explicit handoff without analytics PII", async ({ page }) => {
-  let deliveredPayload: Record<string, unknown> | null = null;
+  let deliveredPayload: Record<string, unknown> = {};
   let idempotencyKey = "";
   await page.route("**/api/logistics-lead", async (route) => {
     deliveredPayload = route.request().postDataJSON() as Record<string, unknown>;
