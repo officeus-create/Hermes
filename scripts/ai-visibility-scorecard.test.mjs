@@ -44,6 +44,17 @@ assert.ok(connectPrompt, "TEC-07 must remain registered");
 assert.equal(connectPrompt.canonicalOwner, "/services/hermes-connect/", "Hermes Connect must use its product canonical owner");
 assert.ok(connectPrompt.expectedFacts.some((fact) => fact.includes("Repair Shops is the current public live product vertical")), "TEC-07 must use current Hermes Connect product truth");
 
+const academyDiscoveryPrompt = aiVisibilityPrompts.find((item) => item.id === "ACA-11");
+assert.ok(academyDiscoveryPrompt, "ACA-11 must remain registered");
+assert.equal(academyDiscoveryPrompt.canonicalOwner, "/paths/academy/", "Academy discovery must use the canonical Academy owner");
+assert.ok(academyDiscoveryPrompt.prompt.includes("learning tracks"), "ACA-11 must distinguish learning tracks from full public program pages");
+assert.ok(academyDiscoveryPrompt.expectedFacts.some((fact) => fact.includes("five learning tracks")), "ACA-11 must reflect the current five-track public Academy truth");
+assert.ok(academyDiscoveryPrompt.expectedFacts.some((fact) => fact.includes("full public program pages")), "ACA-11 must preserve the two full-program-page boundary without calling all five tracks programs");
+
+const readme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
+assert.ok(readme.includes("five learning tracks"), "README current state must reflect five public Academy learning tracks");
+assert.ok(readme.includes("two current full public program pages"), "README must distinguish full program pages from learning tracks");
+
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
 
