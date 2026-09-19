@@ -474,7 +474,28 @@
   }
 
   .hc-brand-page .hc-workspace-body > aside {
-    display: none !important;
+    display: flex !important;
+    align-items: center;
+    gap: .34rem !important;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding: .5rem .65rem !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .hc-brand-page .hc-workspace-body > aside::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hc-brand-page .hc-workspace-body > aside > b,
+  .hc-brand-page .hc-workspace-body > aside > span {
+    flex: 0 0 auto;
+  }
+
+  .hc-brand-page .hc-workspace-body > aside > b {
+    margin: 0 .2rem 0 0 !important;
   }
 
   .hc-brand-page .hc-workspace-main {
