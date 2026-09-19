@@ -63,7 +63,7 @@ test("owner CRM keeps the customer booking link visible and pulses only actionab
   expect(activation).toContain("mountBookingShareBar");
   expect(activation).toContain("Send this link to customers so they can choose an available service time.");
   expect(activation).toContain("data-repair-booking-sharebar");
-  expect(activation).toContain("data-needs-attention");
+  expect(activation).toContain("dataset.needsAttention");
   expect(activation).toContain("navigator.clipboard.writeText");
   expect(enhancer).toContain("repair-booking-sharebar");
   expect(enhancer).toContain("repairAttentionPulse");
