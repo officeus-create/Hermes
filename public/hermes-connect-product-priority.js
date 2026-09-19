@@ -211,11 +211,14 @@
     const labels = LABELS[locale] || LABELS.en;
     const selected = activeKey(window.location.pathname);
     const existing = Array.from(nav.querySelectorAll(":scope > a"));
-    const priorityPaths = new Set(PRIORITY.map((item) => normalize(item.href)));
+    const visiblePriority = selected === "loadBoard"
+      ? PRIORITY.filter((item) => item.key !== "aiCommand")
+      : PRIORITY;
+    const priorityPaths = new Set(visiblePriority.map((item) => normalize(item.href)));
     const trailing = existing.filter((link) => !priorityPaths.has(normalize(link.getAttribute("href"))));
 
     const fragment = document.createDocumentFragment();
-    for (const item of PRIORITY) {
+    for (const item of visiblePriority) {
       let link = existing.find((candidate) => normalize(candidate.getAttribute("href")) === normalize(item.href));
       if (!link) link = document.createElement("a");
       link.textContent = labels[item.key];
