@@ -20,37 +20,37 @@
 
     const chrome = {
       en: {
-        live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", privateFoundation: "PRIVATE OWNER FOUNDATION", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
+        live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", loadBoard: "LOAD BOARD · CURRENT", loadBoardProduct: "Current workspace: Load Board", privateFoundation: "PRIVATE OWNER FOUNDATION", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
         currentProduct: "Current product: Repair Shops", beautyProduct: "Private workspace: Beauty & Wellness", content: "Content language: English",
         englishOnly: "This page is currently English-only. Hermes Connect navigation is localized; page content is not partially translated.",
         familyNavigation: "Hermes Connect product family navigation", modulesNavigation: "Hermes Connect modules",
       },
       uk: {
-        live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНА ОСНОВА ДЛЯ ВЛАСНИКА", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
+        live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", loadBoard: "LOAD BOARD · АКТУАЛЬНО", loadBoardProduct: "Поточний простір: Load Board", privateFoundation: "ПРИВАТНА ОСНОВА ДЛЯ ВЛАСНИКА", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
         currentProduct: "Поточний продукт: СТО", beautyProduct: "Приватний простір: Beauty & Wellness", content: "Мова контенту: англійська",
         englishOnly: "Ця сторінка поки доступна лише англійською. Навігація Hermes Connect локалізована; часткового перекладу контенту немає.",
         familyNavigation: "Навігація сімейством продуктів Hermes Connect", modulesNavigation: "Модулі Hermes Connect",
       },
       ru: {
-        live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНАЯ ОСНОВА ДЛЯ ВЛАДЕЛЬЦА", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
+        live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", loadBoard: "LOAD BOARD · АКТУАЛЬНО", loadBoardProduct: "Текущее пространство: Load Board", privateFoundation: "ПРИВАТНАЯ ОСНОВА ДЛЯ ВЛАДЕЛЬЦА", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
         currentProduct: "Текущий продукт: СТО", beautyProduct: "Приватное пространство: Красота и wellness", content: "Язык контента: английский",
         englishOnly: "Эта страница пока доступна только на английском. Навигация Hermes Connect локализована; частичного перевода контента нет.",
         familyNavigation: "Навигация по продуктам Hermes Connect", modulesNavigation: "Модули Hermes Connect",
       },
       es: {
-        live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", privateFoundation: "BASE PRIVADA PARA PROPIETARIOS", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
+        live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", loadBoard: "LOAD BOARD · ACTUAL", loadBoardProduct: "Espacio actual: Load Board", privateFoundation: "BASE PRIVADA PARA PROPIETARIOS", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
         currentProduct: "Producto actual: Talleres", beautyProduct: "Espacio privado: Beauty & Wellness", content: "Idioma del contenido: inglés",
         englishOnly: "Esta página está disponible actualmente solo en inglés. La navegación de Hermes Connect está localizada; el contenido no se traduce parcialmente.",
         familyNavigation: "Navegación de productos Hermes Connect", modulesNavigation: "Módulos de Hermes Connect",
       },
       it: {
-        live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", privateFoundation: "BASE PRIVATA PER IL TITOLARE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
+        live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", loadBoard: "LOAD BOARD · ATTUALE", loadBoardProduct: "Spazio attuale: Load Board", privateFoundation: "BASE PRIVATA PER IL TITOLARE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
         currentProduct: "Prodotto attuale: Officine", beautyProduct: "Spazio privato: Beauty & Wellness", content: "Lingua dei contenuti: inglese",
         englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione di Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
         familyNavigation: "Navigazione prodotti Hermes Connect", modulesNavigation: "Moduli Hermes Connect",
       },
       fr: {
-        live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", privateFoundation: "BASE PRIVÉE POUR PROPRIÉTAIRE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
+        live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", loadBoard: "LOAD BOARD · ACTUEL", loadBoardProduct: "Espace actuel : Load Board", privateFoundation: "BASE PRIVÉE POUR PROPRIÉTAIRE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
         currentProduct: "Produit actuel : Ateliers", beautyProduct: "Espace privé : Beauty & Wellness", content: "Langue du contenu : anglais",
         englishOnly: "Cette page est actuellement disponible uniquement en anglais. La navigation de Hermes Connect est localisée ; le contenu n'est pas traduit partiellement.",
         familyNavigation: "Navigation des produits Hermes Connect", modulesNavigation: "Modules Hermes Connect",
@@ -58,12 +58,12 @@
     };
 
     const moduleLabels = {
-      en: { hub: "Product Hub", repair: "Repair Shops", aiCommand: "AI Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
-      uk: { hub: "Центр продуктів", repair: "СТО", aiCommand: "Центр керування ШІ", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
-      ru: { hub: "Центр продуктов", repair: "СТО", aiCommand: "ИИ-командный центр", inbox: "Единый центр сообщений", loadAnalyzer: "Анализатор грузов", rateNegotiator: "Переговорщик по ставкам", proposalBuilder: "Конструктор предложений", roi: "Калькулятор ROI", automation: "Автоматизация бизнеса" },
-      es: { hub: "Centro de productos", repair: "Talleres", aiCommand: "Centro de mando de IA", inbox: "Bandeja unificada", loadAnalyzer: "Analizador de cargas", rateNegotiator: "Negociador de tarifas", proposalBuilder: "Generador de propuestas", roi: "Calculadora de ROI", automation: "Automatización empresarial" },
-      it: { hub: "Centro prodotti", repair: "Officine", aiCommand: "Centro di comando IA", inbox: "Posta unificata", loadAnalyzer: "Analizzatore carichi", rateNegotiator: "Negoziazione tariffe", proposalBuilder: "Generatore proposte", roi: "Calcolatore ROI", automation: "Automazione aziendale" },
-      fr: { hub: "Centre produits", repair: "Ateliers", aiCommand: "Centre de commande IA", inbox: "Boîte de réception unifiée", loadAnalyzer: "Analyseur de chargements", rateNegotiator: "Négociateur de tarifs", proposalBuilder: "Générateur de propositions", roi: "Calculateur ROI", automation: "Automatisation d’entreprise" },
+      en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "AI Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
+      uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Центр керування ШІ", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
+      ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "ИИ-командный центр", inbox: "Единый центр сообщений", loadAnalyzer: "Анализатор грузов", rateNegotiator: "Переговорщик по ставкам", proposalBuilder: "Конструктор предложений", roi: "Калькулятор ROI", automation: "Автоматизация бизнеса" },
+      es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Centro de mando de IA", inbox: "Bandeja unificada", loadAnalyzer: "Analizador de cargas", rateNegotiator: "Negociador de tarifas", proposalBuilder: "Generador de propuestas", roi: "Calculadora de ROI", automation: "Automatización empresarial" },
+      it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Centro di comando IA", inbox: "Posta unificata", loadAnalyzer: "Analizzatore carichi", rateNegotiator: "Negoziazione tariffe", proposalBuilder: "Generatore proposte", roi: "Calcolatore ROI", automation: "Automazione aziendale" },
+      fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "Centre de commande IA", inbox: "Boîte de réception unifiée", loadAnalyzer: "Analyseur de chargements", rateNegotiator: "Négociateur de tarifs", proposalBuilder: "Générateur de propositions", roi: "Calculateur ROI", automation: "Automatisation d’entreprise" },
     };
 
     const withLocale = (href) => {
@@ -123,17 +123,20 @@
 
     const isHub = path === "/services/hermes-connect/" || path === "/services/hermes-connect";
     const isRepair = path.startsWith("/services/hermes-connect/repair-shops");
+    const isLoadBoard = path === "/load-board/" || path.startsWith("/load-board/");
     const isBeauty = path === "/services/hermes-connect/beauty/workspace" || path.startsWith("/services/hermes-connect/beauty/workspace/");
     const status = isHub
       ? chrome[locale].hub
       : isRepair
         ? chrome[locale].live
-        : isBeauty
+        : isLoadBoard
+          ? chrome[locale].loadBoard
+          : isBeauty
           ? chrome[locale].privateFoundation
           : chrome[locale].reference;
 
     const context = document.createElement("section");
-    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : isBeauty ? "is-private" : "is-reference"}`;
+    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : isLoadBoard ? "is-load-board" : isBeauty ? "is-private" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
     context.setAttribute("aria-label", chrome[locale].familyNavigation);
 
@@ -148,7 +151,7 @@
     const strong = document.createElement("strong");
     strong.textContent = status;
     const product = document.createElement("span");
-    product.textContent = isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
+    product.textContent = isLoadBoard ? chrome[locale].loadBoardProduct : isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
     const contentLanguage = document.createElement("span");
     contentLanguage.className = "hc-content-language";
     contentLanguage.textContent = isBeauty && locale === "ru" ? "Язык контента: русский" : chrome[locale].content;
@@ -157,6 +160,7 @@
     const productFamily = [
       ["hub", "/services/hermes-connect/"],
       ["repair", "/services/hermes-connect/repair-shops/"],
+      ["loadBoard", "/load-board/"],
       ["aiCommand", "/services/hermes-connect/ai-command-center/"],
       ["inbox", "/services/hermes-connect/unified-inbox/"],
       ["loadAnalyzer", "/services/hermes-connect/load-analyzer/"],
