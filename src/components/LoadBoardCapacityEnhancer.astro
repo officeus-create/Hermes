@@ -141,7 +141,6 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
 {(isCanonicalLoadBoard || isHermesCatalog) && (
   <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath, previewDemoLoads }}>
     (() => {
-      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
       const equipmentLabel = (value) => ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
       const companyTypeLabel = (value) => ({ carrier: "Carrier", owner_operator: "Owner-Operator", fleet: "Fleet", dispatcher: "Dispatcher", broker: "Broker", shipper: "Shipper", dealer: "Dealer", other: "Business" }[String(value || "")] || "Business");
       const age = (value) => {
@@ -177,7 +176,29 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
               card.setAttribute('data-catalog-card', '');
               card.setAttribute('data-company-runtime-id', String(company.id));
               card.setAttribute('data-search-text', `${company.companyName || ''} ${company.companyType || ''} ${company.city || ''} ${company.state || ''}`.toLowerCase());
-              card.innerHTML = `<div class="business-card__hero"><div class="business-card__category">${escapeHtml(companyTypeLabel(company.companyType))}</div><div class="business-card__identity"><h2>${escapeHtml(company.companyName)}</h2><p>${escapeHtml(company.city)}, ${escapeHtml(company.state)}</p></div></div><div class="business-card__body"><p class="business-card__claim-state">${escapeHtml(company.verificationLabel || 'Self-submitted · verification pending')}</p><p>Company registered through Hermes Connect. Public facts remain verification-pending before any dedicated SEO/GEO profile is released.</p></div>`;
+              const hero = document.createElement('div');
+              hero.className = 'business-card__hero';
+              const category = document.createElement('div');
+              category.className = 'business-card__category';
+              category.textContent = companyTypeLabel(company.companyType);
+              const identity = document.createElement('div');
+              identity.className = 'business-card__identity';
+              const companyName = document.createElement('h2');
+              companyName.textContent = String(company.companyName ?? '');
+              const location = document.createElement('p');
+              location.textContent = `${company.city ?? ''}, ${company.state ?? ''}`;
+              identity.append(companyName, location);
+              hero.append(category, identity);
+
+              const body = document.createElement('div');
+              body.className = 'business-card__body';
+              const claimState = document.createElement('p');
+              claimState.className = 'business-card__claim-state';
+              claimState.textContent = String(company.verificationLabel || 'Self-submitted · verification pending');
+              const boundary = document.createElement('p');
+              boundary.textContent = 'Company registered through Hermes Connect. Public facts remain verification-pending before any dedicated SEO/GEO profile is released.';
+              body.append(claimState, boundary);
+              card.append(hero, body);
               grid.appendChild(card);
             }
             if (count) count.textContent = String(grid.querySelectorAll('[data-catalog-card]').length);
