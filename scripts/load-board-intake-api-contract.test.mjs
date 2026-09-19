@@ -75,11 +75,10 @@ assert.match(sourceConnections, /outbound_enabled: false/);
 assert.match(sourceConnections, /secret_material_not_allowed/);
 assert.match(sourceConnections, /X-Robots-Tag/);
 assert.doesNotMatch(sourceConnections, /password_hash|password_salt|access_token|refresh_token/i);
-assert.ok(
-  sourceConnections.indexOf("connection_pending") < sourceConnections.indexOf("connection_verified") &&
-  sourceConnections.indexOf("connection_verified") < sourceConnections.indexOf("ingest_enabled"),
-  "source connection lifecycle must stay fail-closed and ordered",
-);
+assert.match(sourceConnections, /currentState !== "not_started"[\s\S]*connection_already_initialized/);
+assert.match(sourceConnections, /currentState !== "connection_pending"[\s\S]*connection_pending_required/);
+assert.match(sourceConnections, /currentState !== "connection_verified"[\s\S]*verified_connection_required/);
+assert.match(sourceConnections, /currentState !== "ingest_enabled"[\s\S]*ingest_enabled_required/);
 
 assert.match(helpers, /function scoreOpportunity/);
 assert.match(helpers, /function buildOpportunityDedupeKey/);
