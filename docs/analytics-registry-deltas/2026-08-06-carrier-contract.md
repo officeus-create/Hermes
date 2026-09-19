@@ -5,7 +5,7 @@ Effective repository release: PR #291, merge commit `d4c28c3`
 Parent registry: `docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md`  
 Detailed boundary: `docs/CARRIER_CONTRACT_ANALYTICS_2026-08-06.md`  
 Tracking issue: #206  
-Legal execution issue: #280
+Legal execution status: `REVIEW-ONLY / COUNSEL + OWNER APPROVAL REQUIRED`
 
 ## Purpose
 
@@ -19,7 +19,7 @@ This delta establishes repository emission and regression coverage only. It does
 - `/carrier/` — short private proposal link;
 - `/logistics/carrier-offer/` — plans and responsibilities;
 - `/logistics/carrier-agreement/` — draft agreement review;
-- `/logistics/carrier-onboarding/` — five-step packet workflow.
+- `/logistics/carrier-onboarding/` — three-step packet workflow.
 
 All routes except the public carrier audience route are private sales/workspace paths and are not organic landing pages.
 
@@ -31,7 +31,7 @@ All routes except the public carrier audience route are private sales/workspace 
 | `carrier_contract_share` | Native share, copy or SMS action | `handoff_method`, `audience_type`, `page_group`, `service_group`, `page_path` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | A sharing method was selected; not proof that another person received or opened the link. |
 | `carrier_contract_document_action` | Agreement PDF/DOCX action or e-sign request control | `cta_type`, optional controlled `handoff_method`, base route parameters | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Document workflow interaction; not proof of reading, consent or execution. |
 | `carrier_contract_intake_start` | First trusted interaction with onboarding | `audience_type`, `page_group`, `service_group`, `page_path` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Onboarding interface started. |
-| `carrier_contract_step_reached` | First display of each onboarding step | controlled `stepNumber` 1–5 plus base route parameters | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Step displayed; not proof that fields were complete or accurate. |
+| `carrier_contract_step_reached` | First display of each onboarding step | controlled `stepNumber` 1–3 plus base route parameters | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Step displayed; not proof that fields were complete or accurate. |
 | `carrier_contract_packet_result` | Controlled browser result after packet generation/delivery attempt | `preview_status=delivered|pending|failed` plus base route parameters | `DATALAYER_PRESENT` | `GA4_UNVERIFIED`; `DELIVERY_RECONCILIATION_REQUIRED` | Browser result only; reconcile with receiver/private records before aggregate reporting. |
 
 ## Controlled CTA values
@@ -72,7 +72,7 @@ After the parent-registry priority events are verified, test this bounded sequen
 3. agreement PDF action;
 4. e-sign request action;
 5. one `carrier_contract_intake_start`;
-6. steps 1–5 exactly once per page session;
+6. steps 1–3 exactly once per page session;
 7. one controlled packet result;
 8. network payload review for prohibited values;
 9. receiver reconciliation for a synthetic `delivered` result;
@@ -84,5 +84,5 @@ Do not report:
 
 - reached step as completed step;
 - `delivered` browser state as qualified inquiry or permanent record;
-- review/onboarding packet as final executed agreement while #280 is open;
+- review/onboarding packet as a final executed agreement before qualified Wisconsin transportation counsel, owner approval, and the approved production safeguards are satisfied;
 - any event as a ranking, traffic, conversion-rate, contract-value or revenue result without the required platform and private-operations evidence.

@@ -79,6 +79,9 @@ for (const requiredAnalytics of [
   'event: "carrier_contract_intake_start"',
   'event: "carrier_contract_step_reached"',
   'event: "carrier_contract_packet_result"',
+  '"carrier_plan_essential"',
+  '"carrier_plan_pro"',
+  '"carrier_plan_custom"',
   'service_group: "carrier_contract"',
   'carrierEventBase("carrier_contract_onboarding")',
   "stepNumber",
@@ -171,9 +174,9 @@ for (const required of [
   "No passwords, bank details, W-9, CDL image, VIN list, or shipment documents in this flow.",
   "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.",
   "ATTORNEY-REVIEW-V3-2026-08-06",
-  "Issue #280 is the governing activation boundary",
+  "Final production execution remains disabled until qualified Wisconsin transportation counsel and owner approval are recorded",
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
   "opaque, signed, expiring",
 ]) assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 
-console.log("Carrier agreement journey v3 passed: clean SMS entry, plan-only same-origin context, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and Issue #280 boundary are present.");
+console.log("Carrier agreement journey v3 passed: clean SMS entry, controlled plan analytics, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and current review-only boundary are present.");

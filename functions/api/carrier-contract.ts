@@ -70,9 +70,9 @@ const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send-contract";
 const REVIEW_DOCUMENT_VERSION = "ATTORNEY-REVIEW-V3-2026-08-06";
 const REVIEW_DOCUMENT_PATH = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
 const REVIEW_DOCUMENT_SHA256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
-// Issue #280 is the governing activation boundary. Keep the technically useful
-// execution engine fail-closed until qualified Wisconsin transportation counsel
-// approval and the remaining production gates are recorded in code review.
+// Final production execution remains fail-closed. Review-only is the canonical
+// website state until qualified Wisconsin transportation counsel and owner approval
+// are recorded and the remaining production activation safeguards are satisfied.
 const LEGAL_EXECUTION_APPROVED = false;
 const CONSENT_VERSION = "carrier-electronic-records-v2-2026-08-06";
 const MAX_REQUEST_BYTES = 420_000;
