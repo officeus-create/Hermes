@@ -93,6 +93,15 @@ test("direction card opens the matching page and preselects the form", async ({ 
   await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
 });
 
+test("Logistics keeps Academy cross-sell secondary to operating-path choices", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+  const hub = page.locator(".logistics-audience-hub");
+  await expect(hub.locator(".logistics-audience-grid a[href='/paths/academy/']")).toHaveCount(0);
+  const training = hub.locator(".logistics-secondary-cross-sell a[href='/paths/academy/']");
+  await expect(training).toBeVisible();
+  await expect(training).toContainText("Hermes Business Academy");
+});
+
 test("business pillars reveal one direction at a time and support keyboard navigation", async ({ page }) => {
   await page.goto("/#paths");
   const logistics = page.getByRole("tab", { name: /Hermes Logistics/ });
