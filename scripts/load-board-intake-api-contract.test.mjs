@@ -42,7 +42,8 @@ assert.match(schema, /idx_load_records_dedupe/);
 assert.doesNotMatch(schema, /password_hash|password_salt|refresh_token|access_token/i);
 
 for (const column of [
-  "connection_state", "source_id", "connection_evidence_ref", "data_rights_evidence_ref",
+  "connection_state", "source_id", "approved_redistribution_permission", "approved_contact_reveal_permission",
+  "connection_evidence_ref", "data_rights_evidence_ref",
   "retention_rule", "revocation_rule", "car_hauling_ingest_allowed",
   "connection_verified_at", "ingest_enabled_at", "first_record_verified_at", "revoked_at", "revocation_note",
 ]) assert.match(schema, new RegExp(`${column}: `));
@@ -61,6 +62,9 @@ for (const state of ["connection_pending", "connection_verified", "ingest_enable
   assert.match(sourceConnections, new RegExp(`'${state}'|"${state}"`));
 }
 assert.match(sourceConnections, /source_request_must_be_approved/);
+assert.match(sourceConnections, /manual_source_uses_marketplace_post_contract/);
+assert.match(sourceConnections, /approved_redistribution_exceeds_request/);
+assert.match(sourceConnections, /approved_contact_mode_exceeds_request/);
 assert.match(sourceConnections, /runtime_verification_required/);
 assert.match(sourceConnections, /connection_and_rights_evidence_required/);
 assert.match(sourceConnections, /current_source_record_required/);
@@ -161,6 +165,19 @@ assert.match(intake, /record\.covered === true/);
 assert.match(intake, /\["covered", "booked", "unavailable", "cancelled", "canceled"\]/);
 assert.match(intake, /sourceCovered \? "covered"/);
 assert.match(intake, /outbound_enabled: false/);
+assert.match(intake, /source_connection_not_ingest_enabled/);
+assert.match(intake, /source_request_not_approved/);
+assert.match(intake, /source_type_mismatch/);
+assert.match(intake, /managed_source_lifecycle/);
+assert.match(intake, /car_hauling_not_approved_for_source/);
+assert.match(intake, /LEFT JOIN hermes_load_sources/);
+assert.match(intake, /requestedRedistributionPermission/);
+assert.match(intake, /approved_redistribution_permission/);
+assert.match(intake, /approved_contact_reveal_permission/);
+assert.ok(
+  intake.indexOf("source_connection_not_ingest_enabled") < intake.indexOf("INSERT INTO hermes_load_sources"),
+  "managed source intake must not bypass lifecycle before source upsert",
+);
 
 assert.match(active, /getAuthenticatedSpecialist/);
 assert.match(active, /specialistHasLoadBoardAccess/);
