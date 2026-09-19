@@ -20,6 +20,7 @@ assert(header.includes("HermesConnectLauncher"), "Header: missing Hermes Connect
 assert(header.includes('variant="header"') && header.includes('variant="mobile"'), "Header: desktop and mobile launcher variants are required.");
 assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "Header: current Repair Shop product entry is required.");
 assert(header.includes("isHermesConnectRoute"), "Header: Connect-specific language routing is required.");
+assert(header.includes("isLoadBoardRoute") && header.includes("isHermesConnectExperienceRoute"), "Header: canonical Load Board must retain the Hermes Connect experience shell without creating another Load Board route.");
 assert(header.includes("params.set(\"lang\", language)"), "Header: language switching must preserve the equivalent Connect route.");
 
 const experience = await text("src/components/HermesConnectExperience.astro");
@@ -27,6 +28,7 @@ assert(experience.includes("data-hc-product-context"), "Experience: product-fami
 assert(experience.includes("data-hc-english-only"), "Experience: non-English routes must disclose English-only page content until fully localized.");
 assert(experience.includes("REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT"), "Experience: reference-capability status is required.");
 assert(experience.includes("CURRENT LIVE PILOT"), "Experience: current live pilot status is required.");
+assert(experience.includes("LOAD BOARD · CURRENT") && experience.includes('["loadBoard", "/load-board/"]'), "Experience: canonical Load Board must be a first-class current workspace in the Connect family.");
 assert(experience.includes("PRIVATE OWNER FOUNDATION"), "Experience: Beauty B1 must have a distinct private-foundation status rather than reference/live classification.");
 assert(experience.includes("isBeauty") && experience.includes("is-private"), "Experience: canonical Beauty workspace must receive the private product-context state.");
 assert(experience.includes('!(isBeauty && locale === "ru")'), "Experience: localized Russian Beauty must not show an English-only warning.");
@@ -66,6 +68,13 @@ assert(hub.includes('href="/services/hermes-connect/repair-shops/auth/"'), "Hub:
 assert(hub.includes("PREVIEW CONFIGURATION"), "Hub: unreleased verticals must be classified as preview configurations.");
 assert(hub.includes("Configuration preview · not a released vertical"), "Hub: preview verticals must explicitly disclose that they are not released.");
 assert(hub.includes("WORKSPACE PREVIEW · SAMPLE DATA"), "Hub: illustrative workspace must disclose sample data.");
+assert(hub.includes('data-workspace-preview="canonical-crm"'), "Hub: preview must identify the canonical CRM workspace structure.");
+for (const label of ["Home", "Inbox", "Customers", "Calendar", "Sales", "Marketing", "Finance", "Operations", "Integrations", "Academy", "Ask Hermes"]) {
+  assert(hub.includes(label), `Hub: current CRM workspace label missing: ${label}`);
+}
+assert(hub.includes("/demos/hermes-connect/mark-option02.svg"), "Hub: approved Option 02 mark must remain as the static product signature.");
+assert(!hub.includes("hc-knot-float") && !hub.includes('class="hc-knot"'), "Hub: decorative infinity/knot object must not return to perpetual motion.");
+assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
 assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: reference capabilities must remain subordinate and clearly classified.");
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
 assert(!/\$99|\$299|\$799/.test(hub), "Hub: historical planning prices must not appear as current pricing.");
@@ -94,6 +103,14 @@ for (const file of capabilityPages) {
   assert(!source.includes("connect.hermeslogisticsus.com/workspace"), `${file}: legacy workspace must not be linked.`);
   assert(!source.includes("Public Beta"), `${file}: non-live capability must not claim Public Beta.`);
 }
+
+const loadBoard = await text("src/pages/load-board.astro");
+const rpmOwner = await text("src/pages/logistics/resources/rpm-calculator/index.astro");
+const sharedRpm = await text("src/components/CarrierRpmCalculator.astro");
+assert(loadBoard.includes('CarrierRpmCalculator') && loadBoard.includes('sectionId="load-analysis"'), "Load Board: shared Load Analysis / RPM calculator must be embedded in the canonical marketplace.");
+assert(rpmOwner.includes('CarrierRpmCalculator') && rpmOwner.includes('sectionId="calculator"'), "RPM owner: SEO calculator page must reuse the shared calculator rather than duplicate formulas.");
+assert(sharedRpm.includes("rpm_calculator_completed") && sharedRpm.includes("breakEvenAllMileRpm"), "Shared RPM calculator: existing analytics and trip-economics outputs must remain.");
+assert(!loadBoard.includes("/services/hermes-connect/load-board/"), "Load Board: do not create a duplicate Connect Load Board URL.");
 
 const pricing = await text("src/data/hermes-connect-pricing.ts");
 assert(pricing.includes('HERMES_CONNECT_PRICING_STATUS = "historical-planning-only"'), "Pricing: legacy tier data must be explicitly historical-only.");
