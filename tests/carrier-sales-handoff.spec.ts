@@ -47,3 +47,21 @@ test("primary sales choice reaches the carrier onboarding engine", async ({ page
   await expect(page.locator("#carrier-onboarding-form")).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
 });
+
+test("clean /sign handoff is safe to share by SMS, WhatsApp, Telegram, or email", async ({ page }) => {
+  await page.goto("/sign/");
+
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+  await expect(page.getByRole("heading", { name: /One clean link for SMS, WhatsApp, Telegram, or email/i })).toBeVisible();
+  await expect(page.getByText("hermeslogisticsus.com/sign", { exact: true })).toBeVisible();
+
+  const sms = page.locator("[data-sign-sms]");
+  await expect(sms).toHaveAttribute("href", /^sms:/);
+  const smsHref = await sms.getAttribute("href");
+  expect(smsHref).toContain(encodeURIComponent("https://hermeslogisticsus.com/sign/"));
+  expect(smsHref).not.toMatch(/MC\d|USDOT|%25|@|offer|tracking|representative/i);
+
+  await expect(page.getByRole("link", { name: /Continue to carrier packet/ }).first()).toHaveAttribute("href", "/logistics/carrier-onboarding/");
+  await expect(page.getByRole("link", { name: /Review the agreement first/ })).toHaveAttribute("href", "/logistics/carrier-agreement/");
+});
+
