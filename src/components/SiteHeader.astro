@@ -200,7 +200,7 @@ const languageLinks = siteLocales.map((language) => {
   </nav>
 </header>
 
-{isHermesConnectExperienceRoute && <HermesConnectExperience />}
+{isHermesConnectExperienceRoute && <HermesConnectExperience loadBoardContext={isLoadBoardRoute} />}
 {isHermesConnectRoute && <HermesConnectDomReady />}
 {isBeautyPrivateRoute && <BeautyOwnerWorkspaceControls />}
 
