@@ -1,7 +1,94 @@
 ---
+interface Props {
+  loadBoardContext?: boolean;
+}
+const { loadBoardContext = false } = Astro.props;
 ---
 
-<script is:inline>
+{loadBoardContext && (
+  <script is:inline>
+  (() => {
+    const SUPPORTED = new Set(["en", "uk", "ru", "es", "it", "fr"]);
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    const locale = requested && SUPPORTED.has(requested) ? requested : "en";
+    const labels = {
+      en: { status: "LOAD BOARD · CURRENT", product: "Current workspace: Load Board", hub: "Product Hub", repair: "Repair Shops", load: "Load Board", academy: "Academy", language: "Content language: English", nav: "Hermes Connect product family navigation" },
+      uk: { status: "LOAD BOARD · АКТУАЛЬНО", product: "Поточний простір: Load Board", hub: "Центр продуктів", repair: "СТО", load: "Load Board", academy: "Академія", language: "Мова контенту: англійська", nav: "Навігація сімейством продуктів Hermes Connect" },
+      ru: { status: "LOAD BOARD · АКТУАЛЬНО", product: "Текущее пространство: Load Board", hub: "Центр продуктов", repair: "СТО", load: "Load Board", academy: "Академия", language: "Язык контента: английский", nav: "Навигация по продуктам Hermes Connect" },
+      es: { status: "LOAD BOARD · ACTUAL", product: "Espacio actual: Load Board", hub: "Centro de productos", repair: "Talleres", load: "Load Board", academy: "Academia", language: "Idioma del contenido: inglés", nav: "Navegación de productos Hermes Connect" },
+      it: { status: "LOAD BOARD · ATTUALE", product: "Spazio attuale: Load Board", hub: "Centro prodotti", repair: "Officine", load: "Load Board", academy: "Accademia", language: "Lingua dei contenuti: inglese", nav: "Navigazione prodotti Hermes Connect" },
+      fr: { status: "LOAD BOARD · ACTUEL", product: "Espace actuel : Load Board", hub: "Centre produits", repair: "Ateliers", load: "Load Board", academy: "Académie", language: "Langue du contenu : anglais", nav: "Navigation des produits Hermes Connect" },
+    };
+    const copy = labels[locale] || labels.en;
+    const withLocale = (href) => {
+      const url = new URL(href, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    document.documentElement.lang = locale;
+    document.documentElement.classList.add("hc-experience");
+    try { window.localStorage.setItem("hermes-connect-language", locale); } catch {}
+
+    const header = document.querySelector(".site-header");
+    if (!header || document.querySelector("[data-hc-product-context]")) return;
+
+    const context = document.createElement("section");
+    context.className = "hc-product-context is-load-board";
+    context.setAttribute("data-hc-product-context", "true");
+    context.setAttribute("aria-label", copy.nav);
+
+    const inner = document.createElement("div");
+    inner.className = "hc-product-context__inner";
+    const summary = document.createElement("div");
+    summary.className = "hc-product-context__summary";
+    const dot = document.createElement("span");
+    dot.className = "hc-product-context__dot";
+    dot.setAttribute("aria-hidden", "true");
+    const strong = document.createElement("strong");
+    strong.textContent = copy.status;
+    const product = document.createElement("span");
+    product.textContent = copy.product;
+    const language = document.createElement("span");
+    language.className = "hc-content-language";
+    language.textContent = copy.language;
+    summary.append(dot, strong, product, language);
+
+    const nav = document.createElement("nav");
+    nav.className = "hc-family-nav";
+    nav.setAttribute("aria-label", copy.nav);
+    [
+      [copy.hub, "/services/hermes-connect/"],
+      [copy.repair, "/services/hermes-connect/repair-shops/"],
+      [copy.load, "/load-board/"],
+      [copy.academy, "/services/hermes-connect/academy/"],
+    ].forEach(([label, href]) => {
+      const link = document.createElement("a");
+      link.textContent = label;
+      link.href = withLocale(href);
+      if (href === "/load-board/") link.setAttribute("aria-current", "page");
+      nav.append(link);
+    });
+
+    const updateCue = () => {
+      const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
+      nav.dataset.scrollable = String(maxScroll > 4);
+      nav.dataset.scrollStart = String(nav.scrollLeft <= 4);
+      nav.dataset.scrollEnd = String(nav.scrollLeft >= maxScroll - 4);
+    };
+    nav.addEventListener("scroll", updateCue, { passive: true });
+    window.addEventListener("resize", updateCue, { passive: true });
+
+    inner.append(summary, nav);
+    context.append(inner);
+    header.insertAdjacentElement("afterend", context);
+    window.requestAnimationFrame(updateCue);
+  })();
+</script>
+)}
+{!loadBoardContext && (
+  <script is:inline>
   (() => {
     const SUPPORTED = new Set(["en", "uk", "ru", "es", "it", "fr"]);
     const params = new URLSearchParams(window.location.search);
@@ -230,6 +317,7 @@
     })();
   })();
 </script>
+)}
 
 <style is:global>
   .hc-experience body{background:radial-gradient(circle at 8% 4%,rgba(90,200,250,.07),transparent 28rem),radial-gradient(circle at 92% 12%,rgba(157,136,255,.08),transparent 32rem),#090d16}
