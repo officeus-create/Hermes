@@ -53,6 +53,9 @@ async function inspectProductionCalculator(pathname) {
       robots,
       indexableByMeta: !robots?.toLowerCase().includes("noindex"),
       hasWebApplicationSchema: schemaTypes.includes("WebApplication"),
+      hasFinalCommercialCta:
+        html.includes("resource-final-cta") &&
+        html.includes("/logistics/start-car-hauling-dispatch/"),
       cacheStatus: response.headers.get("cf-cache-status"),
       age: response.headers.get("age"),
       error: null,
@@ -68,6 +71,7 @@ async function inspectProductionCalculator(pathname) {
       robots: null,
       indexableByMeta: false,
       hasWebApplicationSchema: false,
+      hasFinalCommercialCta: false,
       cacheStatus: null,
       age: null,
       error: error instanceof Error ? error.message : String(error),
@@ -88,7 +92,8 @@ const calculatorRoutesHealthy = calculators.every((item) =>
   item.finalUrlMatches &&
   item.canonicalMatches &&
   item.indexableByMeta &&
-  item.hasWebApplicationSchema,
+  item.hasWebApplicationSchema &&
+  item.hasFinalCommercialCta,
 );
 
 const passed =
@@ -127,9 +132,9 @@ const markdown = [
   "",
   "## Carrier calculator production routes",
   "",
-  "| Path | Status | Final URL | Canonical | Indexable | WebApplication | Cache |",
-  "| --- | ---: | --- | --- | --- | --- | --- |",
-  ...calculators.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.finalUrlMatches ? "yes" : "no"} | ${item.canonicalMatches ? "yes" : "no"} | ${item.indexableByMeta ? "yes" : "no"} | ${item.hasWebApplicationSchema ? "yes" : "no"} | ${item.cacheStatus ?? "—"} |`),
+  "| Path | Status | Final URL | Canonical | Indexable | WebApplication | Final commercial CTA | Cache |",
+  "| --- | ---: | --- | --- | --- | --- | --- | --- |",
+  ...calculators.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.finalUrlMatches ? "yes" : "no"} | ${item.canonicalMatches ? "yes" : "no"} | ${item.indexableByMeta ? "yes" : "no"} | ${item.hasWebApplicationSchema ? "yes" : "no"} | ${item.hasFinalCommercialCta ? "yes" : "no"} | ${item.cacheStatus ?? "—"} |`),
   "",
   `- Calculator route contract healthy: **${calculatorRoutesHealthy ? "yes" : "no"}**`,
   "",
