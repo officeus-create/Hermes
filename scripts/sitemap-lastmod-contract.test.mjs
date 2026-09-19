@@ -36,6 +36,7 @@ const knownUpdates = [
   ["sitemapindex.xml", "sitemap-academy.xml", "2026-09-16", "sitemap"],
   ["sitemap-insights.xml", "insights/logistics/dry-van-spot-rates-september-2026/", "2026-09-14", "url"],
   ["sitemapindex.xml", "sitemap-insights.xml", "2026-09-14", "sitemap"],
+  ["sitemapindex.xml", "sitemap-business-directory.xml", "2026-09-10", "sitemap"],
 ];
 
 for (const [file, path, minimum, tag] of knownUpdates) {
@@ -46,9 +47,8 @@ for (const [file, path, minimum, tag] of knownUpdates) {
 }
 
 // Parent sitemap-index freshness must never lag the newest URL lastmod inside
-// SEO-owned static children. Catalog children are intentionally excluded here:
-// sitemap-business-directory.xml is under the active Catalog owner lock and
-// sitemap-connect-catalog.xml is generated dynamically at runtime.
+// static sitemap children. sitemap-connect-catalog.xml remains excluded because
+// it is generated dynamically at runtime.
 const seoOwnedChildren = [
   "sitemap.xml",
   "sitemap-local.xml",
@@ -58,6 +58,7 @@ const seoOwnedChildren = [
   "sitemap-cases.xml",
   "sitemap-trust.xml",
   "sitemap-london.xml",
+  "sitemap-business-directory.xml",
   "sitemap-insights.xml",
 ];
 
