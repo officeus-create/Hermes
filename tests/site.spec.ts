@@ -159,6 +159,19 @@ test("premium opening honors the visitor's reduced-motion preference", async ({ 
   await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
 });
 
+test("homepage final contact keeps one primary route and one direct fallback", async ({ page }) => {
+  await openRegularHome(page);
+  const block = page.locator(".home-final-contact");
+  const primary = block.locator("[data-home-primary-contact]");
+  const fallback = block.locator("[data-home-contact-fallback]");
+
+  await expect(primary).toHaveAttribute("href", "/contacts/");
+  await expect(primary).toContainText("Choose a contact route");
+  await expect(fallback).toHaveAttribute("href", /^mailto:/);
+  await expect(block.locator("a.home-final-contact-action")).toHaveCount(2);
+  await expect(block.locator('a[href^="tel:"]')).toHaveCount(0);
+});
+
 test("homepage hero combines office and handwritten typography with a restrained living i-dot", async ({ page }) => {
   await openRegularHome(page);
   const title = page.getByRole("heading", { name: "Four directions. One way forward." });
