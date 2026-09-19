@@ -12,6 +12,16 @@ const calculators = [
     sensitivity: ".rpm-sensitivity",
   },
   {
+    route: "/load-board/#load-analysis",
+    tool: ".carrier-rpm-calculator",
+    grid: "#load-analysis .rpm-tool-grid",
+    panel: "#load-analysis .rpm-panel",
+    resultPanel: "#load-analysis .rpm-result-panel",
+    field: "#load-analysis .rpm-field-grid input",
+    primaryResult: "#load-analysis .rpm-primary-results > div",
+    sensitivity: "#load-analysis .rpm-sensitivity",
+  },
+  {
     route: "/logistics/resources/factoring-vs-direct-payment-calculator/",
     tool: ".factoring-tool-section",
     grid: ".factoring-tool-grid",
