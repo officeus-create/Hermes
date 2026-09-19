@@ -11,6 +11,10 @@ const opportunities = fs.readFileSync(new URL("../functions/api/load-board/oppor
 const dispatchPlan = fs.readFileSync(new URL("../functions/api/load-board/dispatch-plan.ts", import.meta.url), "utf8");
 const agentContext = fs.readFileSync(new URL("../functions/api/load-board/agent-context.ts", import.meta.url), "utf8");
 const providerSync = fs.readFileSync(new URL("../functions/api/load-board/providers/sync.ts", import.meta.url), "utf8");
+const sourceRequests = fs.readFileSync(new URL("../functions/api/load-board/source-requests.ts", import.meta.url), "utf8");
+const sourceReviews = fs.readFileSync(new URL("../functions/api/load-board/source-reviews.ts", import.meta.url), "utf8");
+const sourceConnections = fs.readFileSync(new URL("../functions/api/load-board/source-connections.ts", import.meta.url), "utf8");
+const sourceSetupPage = fs.readFileSync(new URL("../src/pages/services/hermes-connect/load-board/source/index.astro", import.meta.url), "utf8");
 const datReadiness = fs.readFileSync(new URL("../functions/api/_lib/dat-provider-readiness.mjs", import.meta.url), "utf8");
 const seoData = fs.readFileSync(new URL("../src/data/load-board-seo.ts", import.meta.url), "utf8");
 const seoLanding = fs.readFileSync(new URL("../src/components/LoadBoardSeoLanding.astro", import.meta.url), "utf8");
@@ -36,6 +40,42 @@ assert.match(schema, /PRAGMA table_info/);
 assert.match(schema, /idx_load_records_lane/);
 assert.match(schema, /idx_load_records_dedupe/);
 assert.doesNotMatch(schema, /password_hash|password_salt|refresh_token|access_token/i);
+
+for (const column of [
+  "connection_state", "source_id", "connection_evidence_ref", "data_rights_evidence_ref",
+  "retention_rule", "revocation_rule", "car_hauling_ingest_allowed",
+  "connection_verified_at", "ingest_enabled_at", "first_record_verified_at", "revoked_at", "revocation_note",
+]) assert.match(schema, new RegExp(`${column}: `));
+assert.match(schema, /idx_load_source_requests_source/);
+
+assert.match(sourceRequests, /connection_state/);
+assert.match(sourceRequests, /source_active/);
+assert.match(sourceReviews, /connection_state/);
+assert.match(sourceReviews, /source_connection_lifecycle/);
+assert.match(sourceSetupPage, /Connection:/);
+
+assert.match(sourceConnections, /requireInternalOwner/);
+assert.match(sourceConnections, /sameOriginMutation/);
+assert.match(sourceConnections, /"initialize", "verify_connection", "enable_ingest", "verify_first_record", "revoke"/);
+for (const state of ["connection_pending", "connection_verified", "ingest_enabled", "active", "revoked"]) {
+  assert.match(sourceConnections, new RegExp(`'${state}'|"${state}"`));
+}
+assert.match(sourceConnections, /source_request_must_be_approved/);
+assert.match(sourceConnections, /runtime_verification_required/);
+assert.match(sourceConnections, /connection_and_rights_evidence_required/);
+assert.match(sourceConnections, /current_source_record_required/);
+assert.match(sourceConnections, /status = 'active' AND expires_at > \?/);
+assert.match(sourceConnections, /read_enabled = 0, ingest_enabled = 0, send_enabled = 0/);
+assert.match(sourceConnections, /read_enabled = 1, ingest_enabled = 1, send_enabled = 0/);
+assert.match(sourceConnections, /outbound_enabled: false/);
+assert.match(sourceConnections, /secret_material_not_allowed/);
+assert.match(sourceConnections, /X-Robots-Tag/);
+assert.doesNotMatch(sourceConnections, /password_hash|password_salt|access_token|refresh_token/i);
+assert.ok(
+  sourceConnections.indexOf("connection_pending") < sourceConnections.indexOf("connection_verified") &&
+  sourceConnections.indexOf("connection_verified") < sourceConnections.indexOf("ingest_enabled"),
+  "source connection lifecycle must stay fail-closed and ordered",
+);
 
 assert.match(helpers, /function scoreOpportunity/);
 assert.match(helpers, /function buildOpportunityDedupeKey/);
