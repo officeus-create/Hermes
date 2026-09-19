@@ -153,6 +153,16 @@ import "../styles/features/academy.css";
         </div>
       </div>
 
+      <div class="academy-practice-card academy-preapply-check" aria-labelledby="academy-preapply-title">
+        <BookOpen size={24} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Before you apply</p>
+          <h3 id="academy-preapply-title">Try one public exercise first.</h3>
+          <p>Open the Academy resource hub, choose one practical guide or checklist, and write down one observation plus one question you would want reviewed. No account, enrollment, payment, or private data is required.</p>
+          <a class="button button-ghost" href="/academy/resources/">Try a public exercise <ChevronRight size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
+
       <div class="academy-enrollment-grid" aria-label="Academy participation models">
         {academyEnrollmentModels.map((model) => (
           <article>
@@ -169,7 +179,7 @@ import "../styles/features/academy.css";
       </div>
       <div class="academy-screen-actions">
         <button class="academy-text-button" type="button" data-academy-back="3">Back to growth</button>
-        <a class="button button-primary" href="#contact">Ask about the Academy <ChevronRight size={18} aria-hidden="true" /></a>
+        <a class="button button-primary" href="/academy/apply/">Apply for human review <ChevronRight size={18} aria-hidden="true" /></a>
       </div>
     </div>
   </div>
