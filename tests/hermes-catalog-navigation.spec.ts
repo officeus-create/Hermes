@@ -5,7 +5,7 @@ test("Hermes Catalog stays separate in the primary header while Insights becomes
   const header = page.locator(".site-header");
   const desktopNav = header.locator(".desktop-nav");
   const labels = await desktopNav.locator("> a").allTextContents();
-  expect(labels.map((label) => label.trim())).toEqual(["Logistics", "IT", "Marketing", "Academy", "Insights", "Catalog"]);
+  expect(labels.map((label) => label.trim())).toEqual(["Logistics", "Marketing", "IT", "Academy", "Insights", "Catalog"]);
   await expect(desktopNav.locator('> a[href="/insights/"]')).toHaveCount(1);
   await expect(header.locator('.catalog-nav-link[href="/businesses/"]')).toHaveAttribute("aria-current", "page");
   await expect(header.locator('[data-hermes-connect-launcher="header"][href="/services/hermes-connect/"]')).toHaveCount(1);
