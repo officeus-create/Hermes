@@ -44,12 +44,6 @@ import "../styles/hermes-logistics-public.css";
           <strong>Open this path <ArrowUpRight size={18} aria-hidden="true" /></strong>
         </a>
       ))}
-      <a href={training.href}>
-        <span>{training.eyebrow}</span>
-        <h3>{training.label}</h3>
-        <p>{training.summary}</p>
-        <strong>Explore training <ArrowUpRight size={18} aria-hidden="true" /></strong>
-      </a>
       <a class="logistics-audience-load-board" href="/load-board/?role=shipper#post-load">
         <span>Car Hauling Load Board</span>
         <h3>Post a load</h3>
@@ -94,6 +88,9 @@ import "../styles/hermes-logistics-public.css";
           <a href={guide.href}>{guide.label} <ArrowUpRight size={17} aria-hidden="true" /></a>
         ))}
       </nav>
+      <p class="logistics-secondary-cross-sell">
+        Need training rather than an operating path? <a href={training.href}>{training.eyebrow} · {training.label} <ArrowUpRight size={15} aria-hidden="true" /></a>
+      </p>
     </div>
   </div>
 </section>
