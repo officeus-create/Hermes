@@ -230,4 +230,4 @@ for (const key of limits.values.keys()) {
   assert.doesNotMatch(key, /192\.0\.2\.55|contract_test_12345678|carrier-test@example\.com/);
 }
 
-console.log("Carrier contract v3 signed-review generation, Issue #280 fail-closed gate, minimized pre-signature data, retired-recipient filtering, delivery, idempotency, and privacy tests passed.");
+console.log("Carrier contract v3 signed-review generation, review-only fail-closed gate, minimized pre-signature data, retired-recipient filtering, delivery, idempotency, and privacy tests passed.");
