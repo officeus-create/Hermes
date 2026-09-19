@@ -49,13 +49,10 @@ assert.ok(academyService, "Academy Service schema is required");
 assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing"]);
 
 assert.equal(publicVacancyRegistry.length, 1);
-assert.equal(verifiedOpenVacancies.length, 1);
-assert.equal(verifiedOpenVacancies[0]?.slug, "car-hauling-dispatcher");
-assert.equal(verifiedOpenVacancies[0]?.submissionUrl, "https://www.work.ua/jobs/7362244/");
-assert.ok(careers.includes("Verified public vacancies are open."));
-assert.ok(careers.includes("1</strong>"));
-assert.ok(careers.includes("Car Hauling Dispatcher — Remote / U.S. Market"));
-assert.ok(careers.includes('href="/careers/car-hauling-dispatcher/"'));
+assert.equal(verifiedOpenVacancies.length, 0);
+assert.ok(careers.includes("General careers inquiries are open. No verified public vacancy is listed today."));
+assert.ok(careers.includes("0</strong>"));
+assert.ok(!careers.includes('href="/careers/car-hauling-dispatcher/"'));
 assert.ok(careers.includes('href="/logistics/apply/?for=career"'));
 assert.ok(careers.includes("does not guarantee review timing, interview, training access, team placement, employment"));
 assert.ok(!careers.includes('"@type":"JobPosting"'));
@@ -69,24 +66,16 @@ const jobSchemas = [...carHaulingDispatcher.matchAll(/<script[^>]+type=["']appli
     return Array.isArray(parsed) ? parsed : [parsed];
   });
 const jobPostings = jobSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
-assert.equal(jobPostings.length, 1);
-assert.equal(jobPostings[0].title, "Car Hauling Dispatcher");
-assert.equal(jobPostings[0].employmentType, "FULL_TIME");
-assert.equal(jobPostings[0].jobLocationType, "TELECOMMUTE");
-assert.deepEqual(jobPostings[0].applicantLocationRequirements, [
-  { "@type": "Country", name: "United States" },
-  { "@type": "Country", name: "Ukraine" },
-]);
-assert.equal(jobPostings[0].directApply, false);
-assert.match(jobPostings[0].description, /Support car-hauling dispatch work for U.S.-market carrier operations/);
-assert.match(jobPostings[0].description, /Ability to work the applicable U.S. Central Time schedule/);
-assert.equal(jobPostings[0].datePosted, "2026-02-26");
-assert.equal(jobPostings[0].validThrough, "2026-09-14T23:59:59Z");
+assert.equal(jobPostings.length, 0);
+assert.ok(carHaulingDispatcher.includes("Publication review due"));
+assert.ok(carHaulingDispatcher.includes("suppresses JobPosting schema and active vacancy CTAs"));
 assert.ok(carHaulingDispatcher.includes("Remote worldwide"));
 assert.ok(carHaulingDispatcher.includes("U.S. Central Time schedule"));
-assert.ok(carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
-assert.ok(carHaulingDispatcher.includes("Prepare Hermes application preview"));
-assert.ok(carHaulingDispatcher.includes("source=hermes_careers"));
+assert.ok(!carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
+assert.ok(!carHaulingDispatcher.includes("Prepare Hermes application preview"));
+assert.ok(carHaulingDispatcher.includes("Check current vacancies"));
+assert.ok(!carHaulingDispatcher.includes("source=hermes_careers"));
+assert.ok(carHaulingDispatcher.includes("awaiting a fresh recruiting review"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 
@@ -107,7 +96,8 @@ const syntheticVacancy = {
   submissionUrl: "https://example.com/jobs/fixture-role-001/apply",
   ownerApprovedForPublication: true,
 };
-assert.equal(isVacancyEligibleForJobPosting(syntheticVacancy), true);
+assert.equal(isVacancyEligibleForJobPosting(syntheticVacancy, "2026-08-15"), true);
+assert.equal(isVacancyEligibleForJobPosting(syntheticVacancy, "2026-09-01"), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, ownerApprovedForPublication: false }), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, status: "unverified" }), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, expiresAt: "" }), false);

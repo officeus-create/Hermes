@@ -46,7 +46,7 @@ test("top-level direction promo rails lead with the current commercial priority"
     ["/paths/logistics/", "current load opportunities", "/load-board/"],
     ["/paths/marketing/", "focused growth review", "#contact"],
     ["/paths/technology/", "Map one expensive workflow first", "/paths/technology/#project-brief"],
-    ["/paths/academy/", "Car Hauling Dispatcher opening is currently verified", "/careers/car-hauling-dispatcher/"],
+    ["/paths/academy/", "Start with U.S. Logistics Operations training", "/academy/us-logistics-operations/"],
   ] as const;
 
   for (const [path, copy, href] of priorities) {
@@ -55,6 +55,13 @@ test("top-level direction promo rails lead with the current commercial priority"
     await expect(active).toContainText(copy);
     await expect(active.locator("a")).toHaveAttribute("href", href);
   }
+});
+
+test("Academy promo does not promote an expired vacancy", async ({ page }) => {
+  await page.goto("/paths/academy/", { waitUntil: "domcontentloaded" });
+  const rail = page.locator("[data-promo-rail]");
+  await expect(rail).not.toContainText("Car Hauling Dispatcher opening is currently verified");
+  await expect(rail).not.toContainText("Review dispatcher opening");
 });
 
 test("Hermes Connect preserves desktop CRM treatment and the mobile product entry", async ({ page, isMobile }) => {
