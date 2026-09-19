@@ -66,12 +66,11 @@ function extractAttribute(html, tagName, identifyingAttribute, identifyingValue,
   return null;
 }
 
-async function fetchPublic(pathname) {
-  const url = new URL(pathname, baseUrl).toString();
+async function fetchUrl(url, { redirect = "follow" } = {}) {
   const startedAt = Date.now();
   try {
     const response = await fetch(url, {
-      redirect: "follow",
+      redirect,
       headers: {
         "user-agent": "HermesProductionVerifier/1.1 (+public read-only release check)",
         accept: "text/html,application/xml,text/plain;q=0.9,*/*;q=0.8",
@@ -90,6 +89,7 @@ async function fetchPublic(pathname) {
       contentType: response.headers.get("content-type"),
       cacheStatus: response.headers.get("cf-cache-status"),
       age: response.headers.get("age"),
+      location: response.headers.get("location"),
       body,
       error: null,
     };
@@ -103,10 +103,15 @@ async function fetchPublic(pathname) {
       contentType: null,
       cacheStatus: null,
       age: null,
+      location: null,
       body: "",
       error: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+async function fetchPublic(pathname) {
+  return fetchUrl(new URL(pathname, baseUrl).toString());
 }
 
 function inspectCanonicalPage(pathname, fetched) {
@@ -155,6 +160,23 @@ function inspectNoindexPage(pathname, fetched) {
 await fs.mkdir(outputDir, { recursive: true });
 
 const homepage = await fetchPublic("/");
+const wwwCanonicalTargets = [
+  "https://www.hermeslogisticsus.com/",
+  "http://www.hermeslogisticsus.com/",
+];
+const wwwCanonicalRedirects = [];
+for (const url of wwwCanonicalTargets) {
+  const fetched = await fetchUrl(url, { redirect: "manual" });
+  wwwCanonicalRedirects.push({
+    requestedUrl: url,
+    status: fetched.status,
+    location: fetched.location,
+    redirectsToApex: [301, 308].includes(fetched.status) && fetched.location === "https://hermeslogisticsus.com/",
+    error: fetched.error,
+  });
+}
+const wwwCanonicalRedirectHealthy = wwwCanonicalRedirects.every((item) => item.redirectsToApex);
+
 const currentMarkerChecks = Object.fromEntries(
   expectedCurrentMarkers.map((marker) => [marker, homepage.body.includes(marker)]),
 );
@@ -330,6 +352,8 @@ const result = {
   sitemapIndex: sitemapIndexResult,
   llms: llmsResult,
   notFound: notFoundResult,
+  wwwCanonicalRedirects,
+  wwwCanonicalRedirectHealthy,
   routeContractHealthy,
 };
 
@@ -344,6 +368,7 @@ const markdown = [
   `- Homepage final URL: ${homepage.finalUrl ?? "unavailable"}`,
   `- Cloudflare cache status: ${homepage.cacheStatus ?? "not exposed"}`,
   `- Age header: ${homepage.age ?? "not exposed"}`,
+  `- www → apex redirect healthy: ${wwwCanonicalRedirectHealthy ? "yes" : "no — Cloudflare DNS/custom-domain gate remains"}`,
   "",
   "## Classification reasons",
   "",
@@ -353,6 +378,10 @@ const markdown = [
   "",
   ...Object.entries(currentMarkerChecks).map(([marker, found]) => `- Current marker ${found ? "✅" : "❌"}: \`${marker}\``),
   ...Object.entries(staleMarkerChecks).map(([marker, found]) => `- Stale marker ${found ? "⚠️ present" : "✅ absent"}: \`${marker}\``),
+  "",
+  "## Canonical host variants",
+  "",
+  ...wwwCanonicalRedirects.map((item) => `- ${item.requestedUrl}: status ${item.status ?? "—"}; Location ${item.location ?? "—"}; apex redirect ${item.redirectsToApex ? "yes" : "no"}`),
   "",
   "## Canonical pages",
   "",

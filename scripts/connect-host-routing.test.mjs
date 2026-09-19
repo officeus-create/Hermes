@@ -61,6 +61,16 @@ for (const legacyPath of ["/academy", "/academy/"]) {
   assert.equal(observed.assetRequests.length, 0);
 }
 
+for (const origin of ["https://www.hermeslogisticsus.com", "http://www.hermeslogisticsus.com"]) {
+  const { context, observed } = contextFor(`${origin}/services/seo/?utm_source=www`);
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/seo/?utm_source=www");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
+  assert.equal(observed.nextCalls, 0);
+  assert.equal(observed.assetRequests.length, 0);
+}
+
 {
   const { context, observed } = contextFor("https://655e4425.hermes-eu4.pages.dev/release-proof?sha=test");
   const response = await routeMiddleware(context);
