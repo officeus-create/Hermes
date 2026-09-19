@@ -1,5 +1,6 @@
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
 const MAIN_HOST = "hermeslogisticsus.com";
+const WWW_MAIN_HOST = "www.hermeslogisticsus.com";
 const PAGES_PRODUCTION_HOST = "hermes-eu4.pages.dev";
 const CONNECT_ASSET_ROOT = "/demos/hermes-connect";
 const OLD_BRAND_CONNECT_ASSET_ROOT = "/demos/hermes-connect-brand-v1";
@@ -292,9 +293,10 @@ async function routeConnectHost(context) {
   return withTransportSecurity(await connectHtmlResponse(assetResponse, { legacy }));
 }
 
-function canonicalPagesProductionRedirect(request) {
+function canonicalPublicHostRedirect(request) {
   const incomingUrl = new URL(request.url);
-  if (incomingUrl.hostname.toLowerCase() !== PAGES_PRODUCTION_HOST) return null;
+  const hostname = incomingUrl.hostname.toLowerCase();
+  if (hostname !== PAGES_PRODUCTION_HOST && hostname !== WWW_MAIN_HOST) return null;
 
   const target = new URL(`https://${MAIN_HOST}${incomingUrl.pathname}`);
   target.search = incomingUrl.search;
@@ -311,8 +313,8 @@ function canonicalMainLegacyRedirect(incomingUrl) {
 }
 
 async function sanitizeMainDomainCopy(context) {
-  const pagesRedirect = canonicalPagesProductionRedirect(context.request);
-  if (pagesRedirect) return pagesRedirect;
+  const publicHostRedirect = canonicalPublicHostRedirect(context.request);
+  if (publicHostRedirect) return withTransportSecurity(publicHostRedirect);
 
   if (requestHost(context.request) !== MAIN_HOST) {
     return routeConnectHost(context);
