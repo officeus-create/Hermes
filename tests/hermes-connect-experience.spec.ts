@@ -105,7 +105,7 @@ test("Repair Shop dashboard guides a configured owner to share the booking link"
   await expect(activation.getByRole("link", { name: "Plan Founding — $99" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=es");
   const access = page.locator("[data-web-v1-access]");
   await expect(access).toBeVisible();
-  await expect(access.locator("[data-web-v1-access-state]")).toContainText("Acceso de lanzamiento gratuito");
+  await expect(access.locator("[data-web-v1-access-state]")).toContainText("Acceso gratuito de lanzamiento");
   await expect(access.locator("[data-web-v1-access-copy]")).toContainText("decisión separada");
   await expect(access.getByRole("link", { name: "Ver Founding Plan" })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
