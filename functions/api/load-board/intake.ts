@@ -113,17 +113,21 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const managedSource = await env.DB.prepare(`
     SELECT
+      r.status AS request_status,
       r.connection_state,
       s.source_type AS approved_source_type,
       s.redistribution_permission AS approved_redistribution_permission,
       s.contact_reveal_permission AS approved_contact_reveal_permission,
       s.car_hauling_ingest_allowed
     FROM hermes_load_source_requests r
-    JOIN hermes_load_sources s ON s.id = r.source_id
-    WHERE r.source_id = ? AND r.status = 'approved'
+    LEFT JOIN hermes_load_sources s ON s.id = r.source_id
+    WHERE r.source_id = ?
     LIMIT 1
   `).bind(sourceId).first();
 
+  if (managedSource && String(managedSource.request_status || "") !== "approved") {
+    return jsonResponse(409, { success: false, error: "source_request_not_approved" });
+  }
   if (managedSource && !["ingest_enabled", "active"].includes(String(managedSource.connection_state || ""))) {
     return jsonResponse(409, {
       success: false,
