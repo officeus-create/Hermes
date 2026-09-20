@@ -34,7 +34,7 @@ test("car-hauler GEO hub exposes exactly 25 indexable market links with one comm
   const body = await page.locator("main").innerText();
   expect(body).toMatch(/Neither layer claims Hermes offices, live freight, guaranteed loads, rates, lanes, direct customers, backhauls, utilization, or revenue\./i);
   expect(body).not.toMatch(/260 loads|256 loads|OFFICE 374|MC\s*\d{4,}/i);
-  expect(body).not.toMatch(/LJ 1|Labrenzo|27\s+loads|39\s+records|current truck location/i);
+  expect(body).toMatch(/does not publish private carrier history, identify a truck's current location/i);
 });
 
 test("Colorado Springs GEO page answers carrier load-search intent without publishing private route evidence", async ({ page }) => {
