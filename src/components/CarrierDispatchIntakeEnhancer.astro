@@ -144,8 +144,8 @@
       sendButton.hidden = !live || !deliverable;
       deliveryStatus.textContent = deliverable
         ? live
-          ? "Review the qualified request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
-          : "The request is prepared for review. Open the email handoff or call Logistics Sales; preview mode does not send or store it automatically."
+          ? "Review the qualified request, then send it securely to Logistics Sales. The email handoff remains available as a fallback."
+          : "The request is prepared for review. Open the email handoff; preview mode does not send or store it automatically."
         : "Correct the missing or invalid operating information before choosing a handoff.";
       boundary.textContent = live
         ? "A success message appears only after the approved receiver confirms delivery. No dispatcher, load, rate, lane, or revenue is guaranteed."
@@ -195,7 +195,7 @@
         endpoint = new URL(endpointValue, window.location.origin);
         if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
       } catch {
-        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email or call Logistics Sales at +1 (262) 302-3626.";
+        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email to contact Logistics Sales.";
         return;
       }
 
@@ -227,7 +227,7 @@
           preview_status: result.dataset.decision || "unknown",
         });
       } catch {
-        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email or call Logistics Sales.";
+        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email to contact Logistics Sales.";
       } finally {
         window.clearTimeout(timeout);
         sendButton.disabled = false;

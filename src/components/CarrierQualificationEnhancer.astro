@@ -210,7 +210,7 @@
         endpoint = new URL(endpointValue, window.location.origin);
         if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
       } catch {
-        deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option or call Logistics Sales.";
+        deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option to contact Logistics Sales.";
         return;
       }
 
