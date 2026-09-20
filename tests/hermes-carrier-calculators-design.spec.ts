@@ -95,8 +95,12 @@ for (const calculator of calculators) {
 
     const panels = page.locator(calculator.panel);
     expect(await panels.count()).toBeGreaterThanOrEqual(2);
-    const first = await panels.nth(0).boundingBox();
-    const second = await panels.nth(1).boundingBox();
+    const [first, second] = await panels.evaluateAll((elements) =>
+      elements.slice(0, 2).map((element) => {
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { x, y, width, height };
+      }),
+    );
     expect(first).not.toBeNull();
     expect(second).not.toBeNull();
     expect(Math.abs((first?.x ?? 0) - (second?.x ?? 0))).toBeLessThan(2);
