@@ -10,9 +10,10 @@ const [carrierPage, loadBoardPage, carrierMarkets, dealerPage, repairEnhancer, r
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
 ]);
 
-// Carrier GEO is now owned by the owner-approved 2026 operating-history batch:
-// one hub plus exactly 25 carrier-acquisition/search markets. Do not reintroduce
-// the superseded Miami/Atlanta/Orlando carrier hypothesis as a hard requirement.
+// Preserve the existing 25 market URLs as a published research library while the
+// current carrier-acquisition priority is driven by fresh operating evidence. Do not
+// delete/noindex the legacy market set blindly, and do not turn it back into today's
+// business-priority claim.
 const carrierMarketSlugs = [...carrierMarkets.matchAll(/\bslug:\s*"([^"]+)"/g)].map((match) => match[1]);
 assert.equal(carrierMarketSlugs.length, 25, "carrier GEO registry must contain exactly 25 markets");
 assert.equal(new Set(carrierMarketSlugs).size, 25, "carrier GEO registry slugs must be unique");
@@ -27,12 +28,12 @@ for (const requiredSlug of [
 ]) {
   assert.ok(carrierMarketSlugs.includes(requiredSlug), `carrier GEO registry must include ${requiredSlug}`);
 }
-assert.match(carrierPage, /25-market carrier GEO launch/);
-assert.match(carrierPage, /Colorado Front Range/);
-assert.match(carrierPage, /Puget Sound/);
-assert.match(carrierPage, /Missouri\/Kansas/);
-assert.match(carrierPage, /Chicago-area markets/);
-assert.match(carrierPage, /Fremont \/ the Bay Area/);
+assert.match(carrierPage, /Current operating-market priority/);
+assert.match(carrierPage, /Western \/ Upstate New York/);
+assert.match(carrierPage, /Rochester, Buffalo, Le Roy, Akron/);
+assert.match(carrierPage, /Atlanta \/ North Georgia/);
+assert.match(carrierPage, /existing 25 market pages remain a published research library/i);
+assert.doesNotMatch(carrierPage, /current 25-market GEO launch|25-market carrier GEO launch/);
 assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
 assert.match(loadBoardPage, /href="\/logistics\/car-hauler-loads\/"/, "Load Board must provide a contextual discovery link to the Carrier GEO hub");
 assert.match(carrierPage, /label: "Car Hauling Load Board", href: "\/load-board\/"/, "Dispatch owner must provide a descriptive canonical Load Board anchor");
