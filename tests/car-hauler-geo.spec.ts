@@ -32,7 +32,7 @@ test("car-hauler GEO hub exposes exactly 25 indexable market links with one comm
   await expect(page.getByRole("link", { name: /Plans & carrier agreement/i })).toHaveAttribute("href", "/carrier/");
 
   const body = await page.locator("main").innerText();
-  expect(body).toContain("do not claim Hermes offices in those cities");
+  expect(body).toMatch(/Neither layer claims Hermes offices, live freight, guaranteed loads, rates, lanes, direct customers, backhauls, utilization, or revenue\./i);
   expect(body).not.toMatch(/260 loads|256 loads|OFFICE 374|MC\s*\d{4,}/i);
   expect(body).not.toMatch(/LJ 1|Labrenzo|27\s+loads|39\s+records|current truck location/i);
 });
