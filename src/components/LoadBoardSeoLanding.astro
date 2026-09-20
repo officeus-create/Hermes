@@ -19,6 +19,9 @@ const relatedPages = (kind === "provider" ? loadBoardProviderPages : loadBoardEq
   .slice(0, 6);
 const relatedBase = kind === "provider" ? "/load-board/providers/" : "/load-board/equipment/";
 const marketLinks = carHaulerGeoMarkets.slice(0, 12);
+const pageH1 = kind === "equipment" && page.slug === "car-hauler"
+  ? "Car Hauler Loads & Auto Transport Load Search"
+  : `${page.name} ${kind === "provider" ? "Integration for Freight Dispatch" : "Loads and Dispatcher Search"}`;
 const schema = [
   {
     "@context": "https://schema.org",
@@ -60,7 +63,7 @@ const schema = [
         <div class="lb-seo-shell lb-seo-hero-grid">
           <div>
             <p class="lb-seo-eyebrow">Hermes Load Board · {page.eyebrow}</p>
-            <h1>{page.name} {kind === "provider" ? "Integration for Freight Dispatch" : "Loads and Dispatcher Search"}</h1>
+            <h1>{pageH1}</h1>
             <p class="lb-seo-lead">{page.description}</p>
             <div class="lb-seo-actions">
               <a class="lb-button lb-button-primary" href="/load-board/#live-marketplace">Open Hermes Load Board <ArrowRight size={17} aria-hidden="true" /></a>
@@ -120,9 +123,9 @@ const schema = [
       {isCarHauling ? (
         <section class="lb-seo-section lb-seo-section-alt">
           <div class="lb-seo-shell">
-            <p class="lb-seo-eyebrow">U.S. car-hauler markets</p>
-            <h2>Continue from platform research into a real operating market.</h2>
-            <p>Hermes already maintains market-specific car-hauler search pages. Each page focuses on practical radius, nearby cities, lane direction, deadhead, and carrier-fit review instead of pretending that a city name guarantees freight.</p>
+            <p class="lb-seo-eyebrow">Operating-market context</p>
+            <h2>Use the market hub for geography; keep this page focused on equipment and load fit.</h2>
+            <p>Current carrier-acquisition priority is Western / Upstate New York toward Southeast markets where actual equipment, capacity, timing, deadhead, and destination preferences fit. The existing city pages below remain a published research library from the earlier launch; they do not define today's priority and do not guarantee freight.</p>
             <div class="lb-market-grid">
               {marketLinks.map((market) => (
                 <a href={`/logistics/car-hauler-loads/${market.slug}/`}>
@@ -131,7 +134,7 @@ const schema = [
                 </a>
               ))}
             </div>
-            <p class="lb-more"><a href="/logistics/car-hauler-loads/">View the full U.S. car-hauler market cluster <ArrowRight size={16} aria-hidden="true" /></a></p>
+            <p class="lb-more"><a href="/logistics/car-hauler-loads/">Open the car-hauler operating-market hub <ArrowRight size={16} aria-hidden="true" /></a></p>
           </div>
         </section>
       ) : (

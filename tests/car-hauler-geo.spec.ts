@@ -10,16 +10,20 @@ async function analyticsEvents(page: Page, eventName: string) {
 test("car-hauler GEO hub exposes exactly 25 indexable market links with one commercial owner", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/");
 
-  await expect(page).toHaveTitle(/Car Hauler Load Search & Dispatch by U\.S\. Market/);
+  await expect(page).toHaveTitle(/Car Hauler Operating Markets & Route-Fit Research/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
   );
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Load Search & Dispatch by U.S. Market");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Car Hauler Operating Markets & Route-Fit Research");
 
   const marketLinks = page.locator('a[href^="/logistics/car-hauler-loads/"][data-carrier-geo-cta="market_select"]');
   await expect(marketLinks).toHaveCount(25);
+  await expect(page.getByRole("heading", { name: "Western / Upstate New York → Southeast." })).toBeVisible();
+  await expect(page.getByText(/Rochester · Buffalo · Le Roy · Akron/)).toBeVisible();
+  await expect(page.getByText(/Georgia · Atlanta \/ North Georgia · North Carolina · South Carolina/)).toBeVisible();
+  await expect(page.getByText(/Published market library/)).toBeVisible();
   await expect(page.getByRole("link", { name: /Colorado Springs, CO/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/colorado-springs-co/");
   await expect(page.getByRole("link", { name: /Puyallup, WA/i })).toHaveAttribute("href", "/logistics/car-hauler-loads/puyallup-wa/");
 
@@ -28,8 +32,9 @@ test("car-hauler GEO hub exposes exactly 25 indexable market links with one comm
   await expect(page.getByRole("link", { name: /Plans & carrier agreement/i })).toHaveAttribute("href", "/carrier/");
 
   const body = await page.locator("main").innerText();
-  expect(body).toContain("do not claim Hermes offices in those cities");
+  expect(body).toMatch(/Neither layer claims Hermes offices, live freight, guaranteed loads, rates, lanes, direct customers, backhauls, utilization, or revenue\./i);
   expect(body).not.toMatch(/260 loads|256 loads|OFFICE 374|MC\s*\d{4,}/i);
+  expect(body).toMatch(/does not publish private carrier history, identify a truck's current location/i);
 });
 
 test("Colorado Springs GEO page answers carrier load-search intent without publishing private route evidence", async ({ page }) => {

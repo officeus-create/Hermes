@@ -5,8 +5,8 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import { carHaulerGeoMarkets, carHaulerPlatformExamples } from "../../../data/car-hauler-geo-markets";
 
-const title = "Car Hauler Load Search & Dispatch by U.S. Market | Hermes Logistics";
-const description = "Explore 25 priority U.S. car-hauling markets for carrier load-search, dispatch, route review, back-office support, and long-term direct-freight development.";
+const title = "Car Hauler Operating Markets & Route-Fit Research | Hermes Logistics";
+const description = "Review current car-hauler operating-market priorities, route-fit research, and the existing U.S. market library for qualified owner-operators and fleets without implying live freight or local offices.";
 const canonicalUrl = new URL("/logistics/car-hauler-loads/", Astro.site).toString();
 const intakePath = "/logistics/start-car-hauling-dispatch/";
 const dispatchPath = "/logistics/car-hauling-dispatch/";
@@ -19,7 +19,7 @@ const stateGroups = carHaulerGeoMarkets.reduce<Record<string, typeof carHaulerGe
 const faq = [
   {
     question: "Can Hermes help a car hauler search for loads around these markets?",
-    answer: "Hermes can provide carrier-side load-search, route and equipment-fit review, broker communication, document and back-office support within an approved scope. The 25 market pages are search and carrier-acquisition pages, not live public load listings, and they do not guarantee that freight will be available in a specific city.",
+    answer: "Hermes can provide carrier-side load-search, route and equipment-fit review, broker communication, document and back-office support within an approved scope. The 25 published market pages are a research and discovery library, not today's priority list or live public load listings, and they do not guarantee that freight will be available in a specific city.",
   },
   {
     question: "Does Hermes rely on one car-hauling load board?",
@@ -27,7 +27,7 @@ const faq = [
   },
   {
     question: "Why are there 25 city pages if Hermes does not have offices in those cities?",
-    answer: "The cities represent carrier-acquisition and operating-search markets selected for this launch. They help a carrier begin from a real geographic anchor and nearby search radius. They are not Hermes office-location claims, and the pages do not guarantee local freight, rates, backhauls, utilization, or revenue.",
+    answer: "The 25 published city pages remain a market-research library from the earlier launch. Current acquisition priority can change as operating evidence changes. A city page helps a carrier reason about geography and search radius; it is not a Hermes office-location claim and does not guarantee local freight, rates, backhauls, utilization, or revenue.",
   },
   {
     question: "Who decides whether a candidate load is booked?",
@@ -89,14 +89,14 @@ const schema = [
         <div>
           <nav class="hub-breadcrumbs" aria-label="Breadcrumb"><a href="/paths/logistics/">Logistics</a><span>/</span><span aria-current="page">Car Hauler Load Search</span></nav>
           <p class="eyebrow">Hermes Logistics · Carrier acquisition markets</p>
-          <h1>Car Hauler Load Search & Dispatch by U.S. Market</h1>
+          <h1>Car Hauler Operating Markets & Route-Fit Research</h1>
           <p class="hub-lead">Start with the carrier's real operating area. Hermes can help qualified owner-operators and fleets search freight sources, review route and equipment fit, coordinate approved dispatch and back-office work, and develop direct demand over time.</p>
           <div class="hub-actions">
             <a class="button button-primary" href={intakePath} data-commercial-primary-cta data-service-group="car_hauler_geo" data-carrier-geo-cta="start_review">Start carrier load-search review<ArrowRight size={18} aria-hidden="true" /></a>
             <a class="button hub-secondary" href={carrierPath} data-carrier-geo-cta="carrier_agreement"><FileSignature size={18} aria-hidden="true" />Plans & carrier agreement</a>
           </div>
-          <div class="hub-proofline"><span><ShieldCheck size={17} />Carrier approves every load</span><span><Search size={17} />Multi-source search</span><span><MapPin size={17} />25 launch markets</span></div>
-          <p class="hub-disclosure">These pages identify current carrier-acquisition search markets. They do not claim Hermes offices in those cities, publish live freight, or guarantee loads, rates, lanes, direct customers, backhauls, utilization, or revenue.</p>
+          <div class="hub-proofline"><span><ShieldCheck size={17} />Carrier approves every load</span><span><Search size={17} />Multi-source search</span><span><MapPin size={17} />Western NY → Southeast priority</span></div>
+          <p class="hub-disclosure">The priority block reflects current carrier-acquisition operating context; the 25 city pages below remain a published market-research library. Neither layer claims Hermes offices, live freight, guaranteed loads, rates, lanes, direct customers, backhauls, utilization, or revenue.</p>
         </div>
         <aside class="hub-card">
           <p class="eyebrow">What a carrier is actually trying to solve</p>
@@ -112,9 +112,25 @@ const schema = [
       </div>
     </section>
 
+    <section class="section hub-soft" data-carrier-geo-section="current_priority">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Current operating-priority context</p>
+          <h2>Western / Upstate New York → Southeast.</h2>
+          <p>For current carrier-acquisition work, Hermes is prioritizing practical route-fit research around Western and Upstate New York—including Rochester, Buffalo, Le Roy, Akron, and the surrounding operating area—toward Georgia, Atlanta / North Georgia, North Carolina, and South Carolina where the carrier's actual equipment, capacity, timing, and destination preferences fit.</p>
+          <p>This is a search and operating-context priority, not a live-load claim. It does not publish private carrier history, identify a truck's current location, promise freight in any market, or guarantee rates, backhauls, lane consistency, utilization, or revenue.</p>
+        </div>
+        <div class="hub-priority-grid" aria-label="Current car-hauler operating-priority context">
+          <article><strong>Western / Upstate New York</strong><span>Rochester · Buffalo · Le Roy · Akron · surrounding operating area</span></article>
+          <article><strong>Southeast</strong><span>Georgia · Atlanta / North Georgia · North Carolina · South Carolina</span></article>
+          <article><strong>Carrier-controlled fit</strong><span>Equipment · open spaces · deadhead · timing · destination · final load approval</span></article>
+        </div>
+      </div>
+    </section>
+
     <section class="section" data-carrier-geo-section="markets">
       <div class="shell">
-        <div class="section-heading"><p class="eyebrow">25 priority markets</p><h2>Choose the city closest to the truck or the operating area you want to build around.</h2><p>Each page uses local market context and nearby search areas, but the carrier still decides the acceptable radius, direction, timing, equipment use, and operating commitment.</p></div>
+        <div class="section-heading"><p class="eyebrow">Published market library</p><h2>Keep the existing market pages as research context—not as today's priority list.</h2><p>These 25 pages remain useful market-research and discovery surfaces. They are not a claim that every listed market is a current dispatch priority, and they do not guarantee freight, rates, backhauls, utilization, or local Hermes presence.</p></div>
         <div class="market-groups">
           {Object.entries(stateGroups).map(([stateName, markets]) => (
             <section class="market-group" aria-labelledby={`state-${stateName.toLowerCase().replace(/[^a-z]+/g, "-")}`}>
@@ -150,7 +166,7 @@ const schema = [
 
     <section class="section" data-carrier-geo-section="faq">
       <div class="shell hub-faq-shell">
-        <div class="section-heading"><p class="eyebrow">Carrier questions</p><h2>What this 25-market launch does — and does not — promise.</h2><p>The public explanation below matches the FAQ structured data used for search engines.</p></div>
+        <div class="section-heading"><p class="eyebrow">Carrier questions</p><h2>What this operating-market hub does — and does not — promise.</h2><p>The public explanation below matches the FAQ structured data used for search engines.</p></div>
         <div class="hub-faq">
           {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
         </div>
@@ -168,5 +184,5 @@ const schema = [
 </BaseLayout>
 
 <style>
-.carrier-market-hub{background:#fff;color:#071038}.hub-hero{padding:8rem 0 4.5rem;background:linear-gradient(135deg,#071038 0%,#101d5b 58%,#3a1765 100%);color:#fff}.hub-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:clamp(2rem,5vw,5rem);align-items:center}.hub-breadcrumbs{display:flex;gap:.5rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.82rem}.hub-breadcrumbs a{color:inherit}.hub-hero h1{max-width:14ch;font-size:clamp(2.8rem,6vw,5.4rem);line-height:.96}.hub-lead{max-width:68ch;color:rgba(255,255,255,.8);font-size:1.16rem;line-height:1.7}.hub-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.7rem}.hub-secondary{display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(255,255,255,.45);color:#fff}.hub-proofline{display:flex;flex-wrap:wrap;gap:.75rem 1.1rem;margin-top:1.5rem;color:#dfe7ff;font-size:.86rem;font-weight:750}.hub-proofline span{display:inline-flex;align-items:center;gap:.35rem}.hub-disclosure{max-width:72ch;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.hub-card{padding:clamp(1.4rem,3vw,2rem);border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.09)}.hub-card h2{font-size:1.7rem}.hub-card li{margin:.65rem 0;color:rgba(255,255,255,.78);line-height:1.5}.market-groups{display:grid;gap:2rem}.market-group{padding:1.25rem;border:1px solid #dde3f5;border-radius:16px}.market-group h3{margin-top:0}.market-links{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.market-links a{display:flex;justify-content:space-between;align-items:center;gap:.7rem;padding:.85rem 1rem;border:1px solid #e0e5f4;border-radius:11px;background:#fff;text-decoration:none}.market-links a:hover{border-color:#7b64df;box-shadow:0 .6rem 1.4rem rgba(7,16,56,.07)}.market-links span{display:grid}.market-links small{margin-top:.18rem;color:#697590}.hub-soft{background:#f6f7fd}.hub-two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,5rem)}.hub-two-col p{color:#4e5b78;line-height:1.7}.hub-two-col a{display:inline-flex;align-items:center;gap:.35rem;font-weight:850}.platform-grid{display:flex;flex-wrap:wrap;gap:.65rem;align-content:flex-start}.platform-grid span{padding:.72rem .9rem;border:1px solid #d6dcf0;border-radius:11px;background:#fff;font-weight:800}.hub-fineprint{color:#6b7691;font-size:.8rem}.hub-faq-shell{max-width:940px}.hub-faq{display:grid;gap:.75rem}.hub-faq details{border:1px solid #dce3f8;border-radius:13px;background:#fff}.hub-faq summary{cursor:pointer;padding:1rem 1.1rem;font-weight:850}.hub-faq details p{margin:0;padding:0 1.1rem 1.1rem;color:#52607e;line-height:1.7}.hub-final{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:18px;box-shadow:0 1rem 3rem rgba(7,16,56,.06)}.hub-final h2{max-width:18ch}.hub-final p:not(.eyebrow){max-width:65ch;color:#52607e}.hub-final-actions{display:grid;gap:.65rem;min-width:min(100%,280px)}.hub-final-actions .button{justify-content:center}@media(max-width:900px){.hub-hero-grid,.hub-two-col,.hub-final,.market-links{grid-template-columns:1fr}.hub-hero{padding-top:7rem}.hub-hero h1{font-size:clamp(2.5rem,12vw,4rem)}.hub-actions .button{width:100%;justify-content:center}.hub-final-actions{width:100%}}
+.carrier-market-hub{background:#fff;color:#071038}.hub-hero{padding:8rem 0 4.5rem;background:linear-gradient(135deg,#071038 0%,#101d5b 58%,#3a1765 100%);color:#fff}.hub-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:clamp(2rem,5vw,5rem);align-items:center}.hub-breadcrumbs{display:flex;gap:.5rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.82rem}.hub-breadcrumbs a{color:inherit}.hub-hero h1{max-width:14ch;font-size:clamp(2.8rem,6vw,5.4rem);line-height:.96}.hub-lead{max-width:68ch;color:rgba(255,255,255,.8);font-size:1.16rem;line-height:1.7}.hub-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.7rem}.hub-secondary{display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(255,255,255,.45);color:#fff}.hub-proofline{display:flex;flex-wrap:wrap;gap:.75rem 1.1rem;margin-top:1.5rem;color:#dfe7ff;font-size:.86rem;font-weight:750}.hub-proofline span{display:inline-flex;align-items:center;gap:.35rem}.hub-disclosure{max-width:72ch;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.hub-card{padding:clamp(1.4rem,3vw,2rem);border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.09)}.hub-card h2{font-size:1.7rem}.hub-card li{margin:.65rem 0;color:rgba(255,255,255,.78);line-height:1.5}.market-groups{display:grid;gap:2rem}.market-group{padding:1.25rem;border:1px solid #dde3f5;border-radius:16px}.market-group h3{margin-top:0}.market-links{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.market-links a{display:flex;justify-content:space-between;align-items:center;gap:.7rem;padding:.85rem 1rem;border:1px solid #e0e5f4;border-radius:11px;background:#fff;text-decoration:none}.market-links a:hover{border-color:#7b64df;box-shadow:0 .6rem 1.4rem rgba(7,16,56,.07)}.market-links span{display:grid}.market-links small{margin-top:.18rem;color:#697590}.hub-soft{background:#f6f7fd}.hub-two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,5rem)}.hub-two-col p{color:#4e5b78;line-height:1.7}.hub-two-col a{display:inline-flex;align-items:center;gap:.35rem;font-weight:850}.platform-grid{display:flex;flex-wrap:wrap;gap:.65rem;align-content:flex-start}.platform-grid span{padding:.72rem .9rem;border:1px solid #d6dcf0;border-radius:11px;background:#fff;font-weight:800}.hub-fineprint{color:#6b7691;font-size:.8rem}.hub-faq-shell{max-width:940px}.hub-faq{display:grid;gap:.75rem}.hub-faq details{border:1px solid #dce3f8;border-radius:13px;background:#fff}.hub-faq summary{cursor:pointer;padding:1rem 1.1rem;font-weight:850}.hub-faq details p{margin:0;padding:0 1.1rem 1.1rem;color:#52607e;line-height:1.7}.hub-final{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:18px;box-shadow:0 1rem 3rem rgba(7,16,56,.06)}.hub-final h2{max-width:18ch}.hub-final p:not(.eyebrow){max-width:65ch;color:#52607e}.hub-final-actions{display:grid;gap:.65rem;min-width:min(100%,280px)}.hub-final-actions .button{justify-content:center}.hub-priority-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}.hub-priority-grid article{display:grid;gap:.35rem;padding:1rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.hub-priority-grid span{color:#52607e;line-height:1.55;font-size:.9rem}@media(max-width:900px){.hub-hero-grid,.hub-two-col,.hub-final,.market-links,.hub-priority-grid{grid-template-columns:1fr}.hub-hero{padding-top:7rem}.hub-hero h1{font-size:clamp(2.5rem,12vw,4rem)}.hub-actions .button{width:100%;justify-content:center}.hub-final-actions{width:100%}}
 </style>
