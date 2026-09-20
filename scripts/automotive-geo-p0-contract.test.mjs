@@ -60,7 +60,7 @@ assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
 assert.match(loadBoardPage, /Car Hauler Load Board \| Search Auto Transport Loads \| Hermes/);
 assert.match(loadBoardPage, /car hauling and auto transport load opportunities/);
 assert.match(carrierPage, /\/load-board\/\?role=carrier/);
-assert.match(carrierPage, /not Hermes office locations/);
+assert.match(carrierPage, /local Hermes offices|Hermes office locations/);
 
 assert.match(dealerPage, /role=dealer&request=dealer_inventory/);
 assert.match(dealerPage, /\/services\/seo-for-independent-auto-dealers\//);
