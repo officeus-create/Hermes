@@ -10,7 +10,7 @@ async function analyticsEvents(page: Page, eventName: string) {
 test("car-hauler GEO hub exposes exactly 25 indexable market links with one commercial owner", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/");
 
-  await expect(page).toHaveTitle(/Car Hauler Load Search & Dispatch by U\.S\. Market/);
+  await expect(page).toHaveTitle(/Car Hauler Operating Markets & Route-Fit Research/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
