@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import HermesConnectLauncher from "../components/HermesConnectLauncher.astro";
+import CarrierRpmCalculator from "../components/CarrierRpmCalculator.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
@@ -81,6 +82,17 @@ import "../styles/features/load.css";
           <p>Need ongoing search, broker communication, paperwork, and back-office support? Review the <a href="/logistics/car-hauling-dispatch/">car hauling dispatch service</a>, compare the <a href="/logistics/car-hauler-loads/">25 U.S. car-hauler load-search markets</a>, check the <a href="/paths/logistics/carriers/new-authority/">new-authority carrier path</a>, and use the <a href="/logistics/resources/car-hauler-capacity-checklist/">car hauler capacity checklist</a>.</p>
         </div>
       </section>
+
+      <section class="section load-board-analysis-intro" aria-labelledby="load-analysis-heading">
+        <div class="shell">
+          <div class="load-board-section-heading">
+            <p class="eyebrow">Load Analysis · built into Load Board</p>
+            <h2 id="load-analysis-heading">Check RPM, deadhead, fuel, costs, and break-even before the next step.</h2>
+            <p>The Load Board and the RPM calculator now share one decision path. Use the same trip inputs here instead of leaving the marketplace to evaluate basic load economics. The estimate uses only the numbers you enter and does not claim a live market rate.</p>
+          </div>
+        </div>
+      </section>
+      <CarrierRpmCalculator sectionId="load-analysis" context="load-board" />
 
       <section class="section available-loads-preview" id="available-loads" aria-labelledby="available-loads-title">
         <div class="shell">

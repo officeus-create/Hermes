@@ -52,6 +52,21 @@
     ["Reception", "Приём"],
     ["Preview", "Превью"],
     ["Follow-up", "Сопровождение"],
+    ["Workspace aligned with the current Hermes Connect CRM", "Структура рабочего пространства соответствует текущей CRM Hermes Connect"],
+    ["Static brand mark · no decorative loop motion", "Статичный знак бренда · без декоративного циклического движения"],
+    ["Sales", "Продажи"],
+    ["Finance", "Финансы"],
+    ["Integrations", "Интеграции"],
+    ["Ask Hermes", "Спросить Hermes"],
+    ["Open conversations", "Открытые диалоги"],
+    ["Tasks to review", "Задачи на проверку"],
+    ["Operating workspace", "Рабочее пространство"],
+    ["Review", "Проверить"],
+    ["Context", "Контекст"],
+    ["Next step", "Следующий шаг"],
+    ["Ask, decide, execute.", "Спросить, решить, выполнить."],
+    ["One assistant across the workspace. Illustrative UI — no autonomous action.", "Один помощник во всём рабочем пространстве. Демонстрационный интерфейс — без автономных действий."],
+    ["Load Analysis + RPM", "Анализ груза + RPM"],
     ["What needs attention next?", "Что требует внимания дальше?"],
     ["Illustrative UI — no autonomous action.", "Демонстрационный интерфейс — без автономных действий."],
     ["Adaptive by business", "Адаптация под бизнес"],
@@ -196,11 +211,14 @@
     const labels = LABELS[locale] || LABELS.en;
     const selected = activeKey(window.location.pathname);
     const existing = Array.from(nav.querySelectorAll(":scope > a"));
-    const priorityPaths = new Set(PRIORITY.map((item) => normalize(item.href)));
+    const visiblePriority = selected === "loadBoard"
+      ? PRIORITY.filter((item) => item.key !== "aiCommand")
+      : PRIORITY;
+    const priorityPaths = new Set(visiblePriority.map((item) => normalize(item.href)));
     const trailing = existing.filter((link) => !priorityPaths.has(normalize(link.getAttribute("href"))));
 
     const fragment = document.createDocumentFragment();
-    for (const item of PRIORITY) {
+    for (const item of visiblePriority) {
       let link = existing.find((candidate) => normalize(candidate.getAttribute("href")) === normalize(item.href));
       if (!link) link = document.createElement("a");
       link.textContent = labels[item.key];

@@ -20,6 +20,41 @@ test("Hermes Connect product strip keeps current products first and highlights P
   await expect(nav.getByRole("link", { name: "Product Hub", exact: true })).toHaveAttribute("aria-current", "page");
 });
 
+test("canonical Load Board keeps the Hermes Connect product strip and clears the hero from both menus", async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/load-board/");
+    const context = page.locator("[data-hc-product-context]");
+    await expect(context).toBeVisible();
+    const nav = context.locator(".hc-family-nav");
+    await expect(nav).toHaveAttribute("data-hc-priority-order", "current-products-first");
+    await expect(nav.getByRole("link", { name: "Load Board", exact: true })).toHaveAttribute("aria-current", "page");
+    await expect(context).toContainText("LOAD BOARD · CURRENT");
+    await expect(page.locator("#load-analysis [data-rpm-calculator]")).toBeVisible();
+
+    const geometry = await page.evaluate(() => {
+      const header = document.querySelector<HTMLElement>("[data-header]");
+      const context = document.querySelector<HTMLElement>("[data-hc-product-context]");
+      const title = document.querySelector<HTMLElement>(".load-board-hero h1");
+      if (!header || !context || !title) return null;
+      const h = header.getBoundingClientRect();
+      const c = context.getBoundingClientRect();
+      const t = title.getBoundingClientRect();
+      return {
+        headerBottom: h.bottom,
+        contextTop: c.top,
+        contextBottom: c.bottom,
+        titleTop: t.top,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry).not.toBeNull();
+    expect(geometry!.contextTop).toBeGreaterThanOrEqual(geometry!.headerBottom - 2);
+    expect(geometry!.titleTop).toBeGreaterThan(geometry!.contextBottom + 16);
+    expect(geometry!.overflow).toBe(false);
+  }
+});
+
 test("nested Repair Shop routes keep Repair Shops selected in the product family", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
   const nav = page.locator("[data-hc-product-context] .hc-family-nav");

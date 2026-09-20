@@ -16,7 +16,10 @@ test("Product Hub Russian locale translates the shared Hermes Connect module str
   await expect(links.nth(4)).toHaveText("Академия");
   await expect(links.nth(0)).toHaveAttribute("aria-current", "page");
   await expect(family).toContainText("Единый центр сообщений");
-  await expect(family).toContainText("Анализатор грузов");
+  await expect(family).not.toContainText("Анализатор грузов");
+  const loadAnalysis = page.locator('.hc-lab-links a[href="/load-board/?lang=ru#load-analysis"]');
+  await expect(loadAnalysis).toBeVisible();
+  await expect(loadAnalysis).toContainText("Анализ груза + RPM");
   await expect(family).toContainText("Переговорщик по ставкам");
   await expect(family).toContainText("Конструктор предложений");
   await expect(family).toContainText("Калькулятор ROI");

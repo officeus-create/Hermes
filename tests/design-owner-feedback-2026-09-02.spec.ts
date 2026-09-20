@@ -78,19 +78,20 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(title.locator(".hermes-bouncing-i")).toHaveCount(0);
   });
 
-  test("Product Hub signal steps are understandable and interactive", async ({ page }) => {
+  test("Product Hub uses a static signature and the current CRM workspace instead of decorative signal choreography", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/services/hermes-connect/");
 
-    const steps = page.locator(".hc-signal-list > div");
-    await expect(steps).toHaveCount(3);
-    await expect(steps.nth(0)).toContainText("Capture the signal");
-    await expect(steps.nth(1)).toContainText("Connect the context");
-    await expect(steps.nth(2)).toContainText("Move work forward");
-    await expect(steps.nth(0)).toHaveAttribute("aria-expanded", "true");
-    await steps.nth(1).click();
-    await expect(steps.nth(1)).toHaveAttribute("aria-expanded", "true");
-    await expect(steps.nth(1).locator(".hc-signal-extra")).toBeVisible();
+    await expect(page.locator(".hc-knot")).toHaveCount(0);
+    await expect(page.locator(".hc-signal-list")).toHaveCount(0);
+    await expect(page.locator(".hc-static-mark img")).toHaveAttribute("src", "/demos/hermes-connect/mark-option02.svg");
+
+    const workspace = page.locator('[data-workspace-preview="canonical-crm"]');
+    await expect(workspace).toBeVisible();
+    for (const label of ["Home", "Inbox", "Customers", "Calendar", "Sales", "Marketing", "Finance", "Operations", "Integrations", "Academy"]) {
+      await expect(workspace.locator("aside").getByText(label, { exact: true })).toBeVisible();
+    }
+    await expect(workspace.locator(".hc-workspace-hermes")).toContainText("Ask Hermes");
   });
 
   test("AI motion stays sparse and is not injected into a non-AI direction hero", async ({ page }) => {

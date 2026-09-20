@@ -9,7 +9,7 @@
 
   const copy = {
     en: {
-      accessTitle: "Your Hermes Connect access", accessLoading: "Checking access…",
+      accessTitle: "Your Hermes Connect access", accessLoading: "Checking access…", accessTrial: "Free launch access is active. The Founding Shop Plan is a separate continuation decision.",
       states: { trialing: "Free launch access", founding: "Founding Shop", active: "Active", past_due: "Payment due", cancelled: "Cancelled", comped: "Complimentary" },
       plan: "View Founding Plan", billing: "Contact billing", renew: "Continue access",
       quickTitle: "Quick start", quickBody: "Add common services with one tap. You can edit or delete them later.",
@@ -21,7 +21,7 @@
       bookAgain: "Book another service", shareShop: "Share this shop"
     },
     ru: {
-      accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Проверяем доступ…",
+      accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Проверяем доступ…", accessTrial: "Бесплатный стартовый доступ активен. Founding Shop Plan — отдельное решение для продолжения.",
       states: { trialing: "Бесплатный стартовый доступ", founding: "Founding Shop", active: "Активен", past_due: "Нужна оплата", cancelled: "Отменён", comped: "Бесплатный доступ" },
       plan: "Посмотреть Founding Plan", billing: "Связаться по оплате", renew: "Продолжить доступ",
       quickTitle: "Быстрый старт", quickBody: "Добавьте частые услуги одним нажатием. Потом их можно изменить или удалить.",
@@ -33,7 +33,7 @@
       bookAgain: "Записаться ещё раз", shareShop: "Поделиться СТО"
     },
     uk: {
-      accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Перевіряємо доступ…",
+      accessTitle: "Ваш доступ Hermes Connect", accessLoading: "Перевіряємо доступ…", accessTrial: "Безкоштовний стартовий доступ активний. Founding Shop Plan — окреме рішення для продовження.",
       states: { trialing: "Безкоштовний стартовий доступ", founding: "Founding Shop", active: "Активний", past_due: "Потрібна оплата", cancelled: "Скасований", comped: "Безкоштовний доступ" },
       plan: "Переглянути Founding Plan", billing: "Зв’язатися щодо оплати", renew: "Продовжити доступ",
       quickTitle: "Швидкий старт", quickBody: "Додайте популярні послуги одним натисканням. Потім їх можна змінити або видалити.",
@@ -45,7 +45,7 @@
       bookAgain: "Записатися ще раз", shareShop: "Поділитися СТО"
     },
     es: {
-      accessTitle: "Tu acceso a Hermes Connect", accessLoading: "Comprobando acceso…",
+      accessTitle: "Tu acceso a Hermes Connect", accessLoading: "Comprobando acceso…", accessTrial: "El acceso gratuito de lanzamiento está activo. Founding Shop Plan es una decisión separada para continuar.",
       states: { trialing: "Acceso gratuito de lanzamiento", founding: "Founding Shop", active: "Activo", past_due: "Pago pendiente", cancelled: "Cancelado", comped: "Cortesía" },
       plan: "Ver Founding Plan", billing: "Contactar facturación", renew: "Continuar acceso",
       quickTitle: "Inicio rápido", quickBody: "Añade servicios comunes con un toque. Podrás editarlos o eliminarlos después.",
@@ -57,7 +57,7 @@
       bookAgain: "Reservar otro servicio", shareShop: "Compartir taller"
     },
     it: {
-      accessTitle: "Il tuo accesso Hermes Connect", accessLoading: "Verifica accesso…",
+      accessTitle: "Il tuo accesso Hermes Connect", accessLoading: "Verifica accesso…", accessTrial: "L’accesso gratuito di lancio è attivo. Founding Shop Plan è una decisione separata per continuare.",
       states: { trialing: "Accesso gratuito di lancio", founding: "Founding Shop", active: "Attivo", past_due: "Pagamento dovuto", cancelled: "Annullato", comped: "Omaggio" },
       plan: "Vedi Founding Plan", billing: "Contatta fatturazione", renew: "Continua accesso",
       quickTitle: "Avvio rapido", quickBody: "Aggiungi i servizi comuni con un tocco. Potrai modificarli o eliminarli in seguito.",
@@ -69,7 +69,7 @@
       bookAgain: "Prenota un altro servizio", shareShop: "Condividi officina"
     },
     fr: {
-      accessTitle: "Votre accès Hermes Connect", accessLoading: "Vérification de l’accès…",
+      accessTitle: "Votre accès Hermes Connect", accessLoading: "Vérification de l’accès…", accessTrial: "L’accès de lancement gratuit est actif. Founding Shop Plan est une décision distincte pour continuer.",
       states: { trialing: "Accès de lancement gratuit", founding: "Founding Shop", active: "Actif", past_due: "Paiement dû", cancelled: "Annulé", comped: "Offert" },
       plan: "Voir Founding Plan", billing: "Contacter la facturation", renew: "Continuer l’accès",
       quickTitle: "Démarrage rapide", quickBody: "Ajoutez les services courants en un geste. Vous pourrez les modifier ou les supprimer ensuite.",
@@ -135,7 +135,7 @@
         const stateNode = accessCard.querySelector("[data-web-v1-access-state]");
         const copyNode = accessCard.querySelector("[data-web-v1-access-copy]");
         if (stateNode) stateNode.textContent = copy.states[state] || state;
-        if (copyNode) copyNode.textContent = data.access.current_period_end ? `${data.access.plan_name || "Founding Shop Plan"} · through ${data.access.current_period_end}` : (data.access.plan_name || "Founding Shop Plan");
+        if (copyNode) copyNode.textContent = state === "trialing" ? copy.accessTrial : (data.access.current_period_end ? `${data.access.plan_name || "Founding Shop Plan"} · through ${data.access.current_period_end}` : (data.access.plan_name || "Founding Shop Plan"));
         if (["trialing", "past_due", "cancelled"].includes(state)) {
           const action = document.createElement("a");
           action.className = "primary-btn hc-web-v1-access-cta";
@@ -312,8 +312,8 @@
 
   const style = document.createElement("style");
   style.textContent = `
-    .hc-web-v1-access{margin-top:0!important}.hc-web-v1-access-cta{margin-top:14px}.hc-web-v1-presets{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:16px 0;padding:14px;border:1px solid rgba(124,92,255,.18);border-radius:14px;background:rgba(124,92,255,.055)}.hc-web-v1-presets>div:first-child{display:flex;flex-direction:column;gap:4px}.hc-web-v1-presets>div:first-child span{color:#9ea5b4;font-size:12px}.hc-web-v1-preset-actions,.hc-web-v1-success-actions,.hc-web-v1-contact{display:flex;gap:8px;flex-wrap:wrap}.hc-web-v1-presets.is-secondary{opacity:.72}.hc-web-v1-share-guide{margin:8px 2px 0!important}.hc-web-v1-feedback-nudge{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:18px;padding:16px 18px;border:1px solid rgba(95,231,164,.2);border-radius:16px;background:rgba(28,130,85,.09);color:#dff7ea}.hc-web-v1-feedback-nudge>div{display:flex;gap:8px;flex-wrap:wrap}.hc-web-v1-contact{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);align-items:center}.hc-web-v1-contact .mini-label{width:100%;margin-bottom:0}.hc-web-v1-contact a{font-size:12px;padding:8px 10px}.hc-web-v1-success-actions{justify-content:center;margin-top:18px}[data-web-v1-weekday]{margin:0 0 14px;min-height:44px}
-    @media(max-width:720px){.hc-web-v1-presets,.hc-web-v1-feedback-nudge{display:block}.hc-web-v1-preset-actions,.hc-web-v1-feedback-nudge>div{margin-top:12px}.hc-web-v1-preset-actions button,.hc-web-v1-feedback-nudge button,.hc-web-v1-success-actions button{min-height:44px;flex:1}.hc-web-v1-access-cta{width:100%;box-sizing:border-box}.hc-web-v1-contact a{min-height:44px;flex:1}}
+    .hc-web-v1-access{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:0!important;padding:16px 18px!important}.hc-web-v1-access .panel-heading{margin:0!important;align-items:center!important}.hc-web-v1-access [data-web-v1-access-action]{display:flex;align-items:center;justify-content:flex-end}.hc-web-v1-access-cta{margin-top:0!important;white-space:nowrap}.hc-web-v1-presets{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:16px 0;padding:14px;border:1px solid rgba(124,92,255,.18);border-radius:14px;background:rgba(124,92,255,.055)}.hc-web-v1-presets>div:first-child{display:flex;flex-direction:column;gap:4px}.hc-web-v1-presets>div:first-child span{color:#9ea5b4;font-size:12px}.hc-web-v1-preset-actions,.hc-web-v1-success-actions,.hc-web-v1-contact{display:flex;gap:8px;flex-wrap:wrap}.hc-web-v1-presets.is-secondary{opacity:.72}.hc-web-v1-share-guide{margin:8px 2px 0!important}.hc-web-v1-feedback-nudge{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:18px;padding:16px 18px;border:1px solid rgba(95,231,164,.2);border-radius:16px;background:rgba(28,130,85,.09);color:#dff7ea}.hc-web-v1-feedback-nudge>div{display:flex;gap:8px;flex-wrap:wrap}.hc-web-v1-contact{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);align-items:center}.hc-web-v1-contact .mini-label{width:100%;margin-bottom:0}.hc-web-v1-contact a{font-size:12px;padding:8px 10px}.hc-web-v1-success-actions{justify-content:center;margin-top:18px}[data-web-v1-weekday]{margin:0 0 14px;min-height:44px}
+    @media(max-width:720px){.hc-web-v1-access{grid-template-columns:1fr!important}.hc-web-v1-access [data-web-v1-access-action]{justify-content:stretch}.hc-web-v1-presets,.hc-web-v1-feedback-nudge{display:block}.hc-web-v1-preset-actions,.hc-web-v1-feedback-nudge>div{margin-top:12px}.hc-web-v1-preset-actions button,.hc-web-v1-feedback-nudge button,.hc-web-v1-success-actions button{min-height:44px;flex:1}.hc-web-v1-access-cta{width:100%;box-sizing:border-box}.hc-web-v1-contact a{min-height:44px;flex:1}}
   `;
   document.head.append(style);
 

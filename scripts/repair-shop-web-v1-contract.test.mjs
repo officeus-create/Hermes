@@ -22,6 +22,10 @@ assert.match(runtime, /fetch\("\/api\/repair-shop\/access"/);
 assert.match(accessApi, /ensureDefaultRepairShopAccess/);
 for (const state of ["trialing", "founding", "active", "past_due", "cancelled", "comped"]) assert.match(runtime, new RegExp(state));
 assert.doesNotMatch(runtime, /localStorage.*(?:access|paid|plan)/i);
+assert.match(runtime, /accessTrial:/, "Trial access must explain that paid continuation is a separate decision.");
+assert.match(runtime, /state === "trialing" \? copy\.accessTrial/, "Trial state must not collapse directly into the Founding Plan name.");
+assert.match(runtime, /\.hc-web-v1-access\{display:grid!important;grid-template-columns:minmax\(0,1fr\) auto/, "Access summary must use a compact two-column layout on desktop.");
+assert.match(runtime, /\.hc-web-v1-access-cta\{margin-top:0!important/, "Founding Plan CTA must align with access status instead of visually merging below it.");
 assert.doesNotMatch(runtime, /\.innerHTML\s*=/, "Repair Shop Web V1 runtime must not use innerHTML sinks");
 
 // First-ten-minute quick start reuses existing forms/APIs rather than creating a second data path.
