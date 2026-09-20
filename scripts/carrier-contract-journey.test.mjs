@@ -69,8 +69,9 @@ for (const required of [
   'const shortUrl = "https://hermeslogisticsus.com/sign/"',
   "Copy link",
   "data-carrier-journey-sms",
-  "tel:+12623023626",
+  "mailto:officeus@hermeslogisticsus.com",
 ]) assert.ok(journey.includes(required), `Carrier journey component is missing: ${required}`);
+assert.doesNotMatch(journey, /tel:\+12623023626/, "Carrier journey must not publish the retired Logistics phone");
 
 for (const requiredAnalytics of [
   'event: "commercial_cta_click"',

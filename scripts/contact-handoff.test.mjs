@@ -94,7 +94,8 @@ assert.doesNotMatch(telegramAcademyPayload.source_path, /email|must-not-pass/);
 
 const logisticsRoute = getContactHandoffRoute("Hermes Logistics");
 assert.ok(logisticsRoute);
-assert.match(logisticsRoute.href, /^tel:/);
+assert.ok(isEmailOnlyRoute(logisticsRoute));
+assert.match(logisticsRoute.href, /^mailto:officeus@hermeslogisticsus.com/);
 
 const marketingRoute = getContactHandoffRoute("ProgressoPro");
 assert.ok(marketingRoute);

@@ -34,7 +34,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { question: "Can I set a target price?", answer: "Yes. A target price is optional context for review and discussion, not a guaranteed final rate." },
     ],
     primary: { label: "Prepare transport request", href: "/logistics/request-vehicle-transport/?role=shipper#transport-intake" },
-    secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
+    secondary: { label: "Email Logistics Sales", href: "mailto:officeus@hermeslogisticsus.com" },
     demo: { label: "Post a load in the Load Board demo", href: "/load-board/?role=shipper#post-load" },
   },
   {
@@ -55,7 +55,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { question: "How are oversized or unusual loads handled?", answer: "They are held for additional requirements rather than routed automatically because equipment, permits, dimensions, and operating fit may vary." },
     ],
     primary: { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" },
-    secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
+    secondary: { label: "Email Logistics Sales", href: "mailto:officeus@hermeslogisticsus.com" },
     demo: { label: "Open broker Load Board demo", href: "/load-board/?role=broker#post-load" },
   },
   {

@@ -172,8 +172,8 @@
       sendButton.hidden = !live || !deliverable;
       deliveryStatus.textContent = deliverable
         ? live
-          ? "Review the request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
-          : "The request is prepared for review. Open the prepared email or call Logistics Sales; preview mode does not send or store it automatically."
+          ? "Review the request, then send it securely to Logistics Sales. The prepared email remains available as a fallback."
+          : "The request is prepared for review. Open the prepared email; preview mode does not send or store it automatically."
         : "Correct the missing or invalid transport information before choosing a handoff.";
       boundary.textContent = live
         ? "A success state appears only after the approved receiver confirms delivery. Capacity, price, pickup timing, equipment, and carrier assignment remain unconfirmed until separately accepted."
@@ -224,7 +224,7 @@
         endpoint = new URL(endpointValue, window.location.origin);
         if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
       } catch {
-        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email or call Logistics Sales at +1 (262) 302-3626.";
+        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email to contact Logistics Sales.";
         return;
       }
 
@@ -256,7 +256,7 @@
           preview_status: result.dataset.decision || "unknown",
         });
       } catch {
-        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email or call Logistics Sales.";
+        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email to contact Logistics Sales.";
       } finally {
         window.clearTimeout(timeout);
         sendButton.disabled = false;

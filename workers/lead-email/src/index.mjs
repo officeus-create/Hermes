@@ -12,6 +12,9 @@ const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
 const GMAIL_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 const GMAIL_SEND_ENDPOINT = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 const GMAIL_REQUEST_TIMEOUT_MS = 8_000;
+const CAR_HAULING_TELEGRAM_TIME_ZONE = "America/Chicago";
+const CAR_HAULING_TELEGRAM_START_MINUTE = 9 * 60;
+const CAR_HAULING_TELEGRAM_END_MINUTE = 17 * 60 + 45;
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -315,10 +318,33 @@ const sendSafely = async (env, message, transport = sendMessage) => {
   return { ok: false, attempts: lastAttempt, mapped: lastMapped };
 };
 
-const sendCarHaulingSalesTelegram = async (env, text, requestId) => {
+const carHaulingTelegramClock = (now = new Date()) => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: CAR_HAULING_TELEGRAM_TIME_ZONE,
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return {
+    weekday: values.weekday || "",
+    minuteOfDay: Number(values.hour) * 60 + Number(values.minute),
+  };
+};
+
+const isCarHaulingTelegramWorkHours = (now = new Date()) => {
+  const { weekday, minuteOfDay } = carHaulingTelegramClock(now);
+  return ["Mon", "Tue", "Wed", "Thu", "Fri"].includes(weekday)
+    && minuteOfDay >= CAR_HAULING_TELEGRAM_START_MINUTE
+    && minuteOfDay <= CAR_HAULING_TELEGRAM_END_MINUTE;
+};
+
+const sendCarHaulingSalesTelegram = async (env, text, requestId, now = new Date()) => {
   const botToken = String(env.CAR_HAULING_TELEGRAM_BOT_TOKEN || "").trim();
   const chatId = String(env.CAR_HAULING_TELEGRAM_SALES_CHAT_ID || "").trim();
   if (!botToken || !chatId) return { ok: false, status: "not_configured" };
+  if (!isCarHaulingTelegramWorkHours(now)) return { ok: false, status: "outside_working_hours" };
 
   const sourcePage = clean(text.match(/^Page:\s*(.+)$/m)?.[1], 160) || "unknown";
   const telegramText = [
@@ -568,5 +594,5 @@ const worker = {
   },
 };
 
-export { buildRawMime, classifyProviderError, constantTimeEqual, normalizeAttachments, parseCarHaulingRecipients, parseInternalRecipients, sendCarHaulingSalesTelegram, sendMessage };
+export { buildRawMime, carHaulingTelegramClock, classifyProviderError, constantTimeEqual, isCarHaulingTelegramWorkHours, normalizeAttachments, parseCarHaulingRecipients, parseInternalRecipients, sendCarHaulingSalesTelegram, sendMessage };
 export default worker;

@@ -40,7 +40,7 @@ export type LogisticsRecommendation = {
 
 const carrierCta = { label: "Start carrier onboarding", href: "/load-board/?role=carrier#carrier-access" };
 const customerCta = { label: "Request transportation", href: "/load-board/?role=shipper#post-load" };
-const callCta = { label: "Call Logistics Sales", href: "tel:+12623023626" };
+const callCta = { label: "Email Logistics Sales", href: "mailto:officeus@hermeslogisticsus.com" };
 
 const equipmentOptions: PathOption[] = [
   ["car-hauling", "Car Hauler", "Open or enclosed vehicle transport."],

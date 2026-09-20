@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, Check, Clipboard, FileSignature, Mail, MessageSquareText, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -7,7 +7,6 @@ import SiteFooter from "../../components/SiteFooter.astro";
 
 const pageUrl = "https://hermeslogisticsus.com/carrier/";
 const shareUrl = "https://hermeslogisticsus.com/sign/";
-const salesPhone = "+12623023626";
 const smsCopy = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shareUrl}`;
 const schema = {
   "@context": "https://schema.org",
@@ -48,7 +47,7 @@ const schema = {
               Review & sign packet <FileSignature size={18} aria-hidden="true" />
             </a>
             <a class="button carrier-secondary" href="/logistics/carrier-offer/">See what Hermes handles</a>
-            <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
+            <a class="button carrier-call" href="mailto:officeus@hermeslogisticsus.com"><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
           </div>
           <p class="carrier-guidance">Review calmly. Continue only after the control, percentage, and Appendix A terms are clear.</p>
           <p class="carrier-boundary">The attorney-review master is locked by version and SHA-256. Standard 6% and 8% selections create signed review/onboarding packets only; custom terms remain review-only. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel, owner approval, and the existing production activation safeguards.</p>
@@ -108,7 +107,7 @@ const schema = {
         </div>
         <div class="carrier-final-actions">
           <a class="button carrier-primary" href="/logistics/carrier-onboarding/">Review & sign packet <ArrowRight size={18} aria-hidden="true" /></a>
-          <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a>
+          <a class="button carrier-call" href="mailto:officeus@hermeslogisticsus.com"><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
         </div>
       </div>
     </section>

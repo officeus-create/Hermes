@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, Check, FileSignature, Mail, MessageSquareText, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -7,7 +7,7 @@ import SiteFooter from "../../components/SiteFooter.astro";
 const shortUrl = "https://hermeslogisticsus.com/sign/";
 const onboardingPath = "/logistics/carrier-onboarding/";
 const agreementPath = "/logistics/carrier-agreement/";
-const phoneHref = "tel:+12623023626";
+const emailHref = "mailto:officeus@hermeslogisticsus.com";
 const smsText = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shortUrl}`;
 
 const schema = {
@@ -46,7 +46,7 @@ const schema = {
               Continue to carrier packet <ArrowRight size={18} aria-hidden="true" />
             </a>
             <a class="button sign-secondary" href={agreementPath}>Review the agreement first</a>
-            <a class="button sign-call" href={phoneHref}><Phone size={18} aria-hidden="true" />Ask a question</a>
+            <a class="button sign-call" href={emailHref}><Mail size={18} aria-hidden="true" />Ask a question</a>
           </div>
           <p class="sign-reassurance">This route contains no carrier identity, percentage, plan, or tracking identifier. Standard 6% and 8% selections create signed review/onboarding packets only; custom terms remain review-only. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel, owner approval, and the existing production activation safeguards.</p>
         </div>
@@ -64,9 +64,9 @@ const schema = {
             <span><strong>I want to review the terms</strong><small>See the plain-language summary, Appendix A structure, and current document status.</small></span>
             <ArrowRight size={18} aria-hidden="true" />
           </a>
-          <a class="decision" href={phoneHref}>
-            <Phone size={23} aria-hidden="true" />
-            <span><strong>I have a question</strong><small>Speak with Logistics Sales before entering or signing anything.</small></span>
+          <a class="decision" href={emailHref}>
+            <Mail size={23} aria-hidden="true" />
+            <span><strong>I have a question</strong><small>Email Logistics Sales before entering or signing anything.</small></span>
             <ArrowRight size={18} aria-hidden="true" />
           </a>
         </aside>

@@ -396,8 +396,8 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
   await expect(page.locator("[data-handoff-summary]")).toContainText("Direction: Hermes Logistics");
   await expect(page.locator("[data-handoff-summary]")).toContainText("Phone: +1 (312) 555-0182");
-  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+12623023626");
-  await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
+  await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Email Logistics" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   expect(posts).toEqual([]);
 });
 
@@ -663,15 +663,14 @@ test("public logistics contacts use the approved department routing", async ({ p
   await page.goto("/contacts/");
   const contacts = page.locator(".contact-block-list");
 
-  await expect(contacts.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
-  await expect(contacts.getByText("Logistics Sales Department", { exact: true })).toBeVisible();
+  await expect(contacts.getByText("Logistics Email", { exact: true })).toBeVisible();
   await expect(contacts.getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(contacts.getByText("Email-only international coordination", { exact: true })).toBeVisible();
   await expect(page.locator(".contacts-hero")).toContainText("You can also send a structured request below; Hermes routes it to the direction you select.");
   await expect(page.locator(".contacts-hero")).not.toContainText("The structured form below remains a safe preview.");
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
-  expect(telephoneTargets).toEqual(["tel:+12623023626"]);
+  expect(telephoneTargets).toEqual([]);
   await expect(page.getByText("+1 (351) 777-5337", { exact: true })).toHaveCount(0);
   await expect(page.getByText("+1 (717) 696-6829", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Box Truck Department", { exact: true })).toHaveCount(0);

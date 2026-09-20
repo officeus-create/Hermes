@@ -1,12 +1,11 @@
 ---
-import { ArrowRight, Building2, Check, FileText, Info, Phone, ShieldCheck, Sparkles, Users } from "@lucide/astro";
+import { ArrowRight, Building2, Check, FileText, Info, Mail, ShieldCheck, Sparkles, Users } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
 const onboardingPath = "/logistics/carrier-onboarding/";
 const agreementPath = "/logistics/carrier-agreement/";
-const salesPhone = "+12623023626";
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -150,7 +149,7 @@ const schema = {
     <section class="section offer-final" aria-labelledby="offer-final-title">
       <div class="shell offer-final-card">
         <div><p class="eyebrow">Choose the next step</p><h2 id="offer-final-title">Confirm the exact offer or read the full agreement.</h2><p>The attorney-review master and SHA-256 controls support signed review/onboarding packets. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel, owner approval, and the existing production activation safeguards.</p></div>
-        <div class="offer-final-actions"><a class="button button-primary offer-primary" href={onboardingPath}>Review and sign <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href={agreementPath}>Read full agreement <FileText size={18} aria-hidden="true" /></a><a class="button" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Talk to Logistics Sales</a></div>
+        <div class="offer-final-actions"><a class="button button-primary offer-primary" href={onboardingPath}>Review and sign <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href={agreementPath}>Read full agreement <FileText size={18} aria-hidden="true" /></a><a class="button" href="mailto:officeus@hermeslogisticsus.com"><Mail size={18} aria-hidden="true" />Email Logistics Sales</a></div>
       </div>
     </section>
   </main>

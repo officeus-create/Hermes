@@ -1,5 +1,5 @@
 ---
-import { ArrowUp, Phone } from "@lucide/astro";
+import { ArrowUp, Mail } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import { directionOwnerRoutes } from "../data/localized-direction-owners";
@@ -17,11 +17,6 @@ const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPro
 const publicLocationBoundary = locale === "ru"
   ? "Логистика в США · международная координация по электронной почте"
   : "U.S. logistics · International email coordination";
-const logisticsPhone = site.publicPhones[0];
-const showLogisticsPhone =
-  currentPath === "/load-board/" ||
-  currentPath.startsWith("/logistics/") ||
-  currentPath.startsWith("/paths/logistics/");
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
 const directionOrder = { logistics: 0, marketing: 1, technology: 2, academy: 3 } as const;
 const directionRank = (href: string) => {
@@ -50,7 +45,6 @@ const localized = {
     privacy: "Privacy",
     contact: "Contact",
     route: "Choose the right contact route",
-    phone: "U.S. Logistics Sales",
     designed: "Designed and engineered by",
     method: "Human-led, AI-assisted",
     status: "Website inquiries are delivered securely by email",
@@ -64,7 +58,6 @@ const localized = {
     privacy: "Конфіденційність",
     contact: "Контакт",
     route: "Обрати напрям звернення",
-    phone: "Продажі логістики США",
     designed: "Дизайн і розробка",
     method: "Під керівництвом людей, з підтримкою AI",
     status: "Звернення надсилаються електронною поштою",
@@ -78,7 +71,6 @@ const localized = {
     privacy: "Конфиденциальность",
     contact: "Контакт",
     route: "Выбрать направление обращения",
-    phone: "Отдел продаж логистики США",
     designed: "Дизайн и разработка",
     method: "Под управлением людей, с поддержкой AI",
     status: "Обращения отправляются по электронной почте",
@@ -89,7 +81,7 @@ const localized = {
       { label: "Logística", href: "/es/logistica/" }, { label: "Marketing", href: "/es/marketing/" },
       { label: "Desarrollo IT", href: "/es/tecnologia/" }, { label: "Academia", href: "/es/academia/" },
     ],
-    privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
+    privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
   },
   it: {
@@ -98,7 +90,7 @@ const localized = {
       { label: "Logistica", href: "/it/logistica/" }, { label: "Marketing", href: "/it/marketing/" },
       { label: "Sviluppo IT", href: "/it/tecnologia/" }, { label: "Academy", href: "/it/academy/" },
     ],
-    privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
+    privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
   },
   fr: {
@@ -107,7 +99,7 @@ const localized = {
       { label: "Logistique", href: "/fr/logistique/" }, { label: "Marketing", href: "/fr/marketing/" },
       { label: "Développement IT", href: "/fr/technologie/" }, { label: "Académie", href: "/fr/academie/" },
     ],
-    privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
+    privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
   },
 }[locale];
@@ -120,7 +112,7 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
   <>
     <nav class="transport-request-mobile-actions" aria-label="Vehicle transportation request actions">
       <a href="#transport-intake" data-transport-mobile-request>Prepare request</a>
-      <a href="tel:+12623023626" data-transport-mobile-call><Phone size={17} aria-hidden="true" />Call</a>
+      <a href="mailto:officeus@hermeslogisticsus.com" data-transport-mobile-email><Mail size={17} aria-hidden="true" />Email</a>
     </nav>
     <style is:global>
       .transport-request-actions a[href*="/load-board/"] { display: none; }
@@ -192,7 +184,6 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
       <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
-      {showLogisticsPhone && logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">

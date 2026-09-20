@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Mail, Phone } from "@lucide/astro";
+import { ArrowRight, Mail } from "@lucide/astro";
 
 type ActionConfig = {
   label: string;
@@ -157,8 +157,8 @@ const action = actions[Astro.url.pathname] ?? (isGeneralWisconsinTransportPage ?
       {action.label}<ArrowRight size={17} aria-hidden="true" />
     </a>
     {action.secondary === "phone" ? (
-      <a class="money-page-action-secondary" href="tel:+12623023626" aria-label="Call U.S. Logistics Sales">
-        <Phone size={18} aria-hidden="true" /><span>Call</span>
+      <a class="money-page-action-secondary" href="mailto:officeus@hermeslogisticsus.com" aria-label="Email U.S. Logistics Sales">
+        <Mail size={18} aria-hidden="true" /><span>Email</span>
       </a>
     ) : (
       <a class="money-page-action-secondary" href="mailto:officeus@hermeslogisticsus.com" aria-label="Email Hermes">

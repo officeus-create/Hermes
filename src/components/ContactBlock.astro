@@ -1,5 +1,5 @@
 ---
-import { Mail, MapPin, Phone, Send } from "@lucide/astro";
+import { Mail, MapPin, Send } from "@lucide/astro";
 import { site } from "../data/site";
 
 interface Props {
@@ -22,7 +22,7 @@ const { compact = false } = Astro.props;
 
     <div class="contact-block-grid">
       <div>
-        <h3><Phone size={18} aria-hidden="true" /> Logistics contact · USA</h3>
+        <h3><Mail size={18} aria-hidden="true" /> Logistics contact · USA</h3>
         <ul class="contact-block-list">
           {
             site.publicPhones.map((phone) => (

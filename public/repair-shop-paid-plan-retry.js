@@ -37,13 +37,9 @@
     const email = document.createElement("a");
     email.href = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Founding%20Shop%20Plan";
     email.textContent = "email Hermes";
-    const separator = document.createTextNode(" or call ");
-    const phone = document.createElement("a");
-    phone.href = "tel:+12623023626";
-    phone.textContent = "+1 (262) 302-3626";
-    const tail = document.createTextNode(". Nothing is charged by using either fallback.");
+    const tail = document.createTextNode(". Nothing is charged by using this fallback.");
 
-    fallback.append(intro, email, separator, phone, tail);
+    fallback.append(intro, email, tail);
     status.insertAdjacentElement("afterend", fallback);
     window.dataLayer?.push({
       event: "connect_paid_plan_direct_fallback_shown",
