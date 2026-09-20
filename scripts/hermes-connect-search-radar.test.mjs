@@ -30,6 +30,11 @@ assert.equal(findApprovedOwner("Hermes Connect")?.owner, "/services/hermes-conne
 assert.equal(findApprovedOwner("auction vehicle pickup checklist")?.owner, "/logistics/resources/auction-vehicle-pickup-checklist/");
 assert.equal(findApprovedOwner("car hauler capacity checklist")?.owner, "/logistics/resources/car-hauler-capacity-checklist/");
 assert.equal(findApprovedOwner("car hauler load board")?.owner, "/load-board/");
+assert.equal(findApprovedOwner("car hauling dispatch service")?.owner, "/logistics/car-hauling-dispatch/");
+assert.equal(findApprovedOwner("3 car hauler loads")?.owner, "/load-board/equipment/car-hauler/");
+assert.equal(findApprovedOwner("car hauler loads")?.owner, "/load-board/equipment/car-hauler/");
+assert.equal(findApprovedOwner("car hauler loads New York")?.owner, "/logistics/car-hauler-loads/");
+assert.equal(findApprovedOwner("car hauling loads near Buffalo")?.owner, "/logistics/car-hauler-loads/");
 assert.equal(findApprovedOwner("appleton vehicle transport")?.owner, "/logistics/appleton-wi-vehicle-transport/");
 assert.equal(findApprovedOwner("appleton warehousing services")?.supported, false);
 assert.equal(findApprovedOwner("seo services")?.owner, "/services/seo/");
@@ -139,7 +144,7 @@ assert.deepEqual(
   ["query", "page", "clicks", "impressions", "ctr", "position"],
   "Required aggregate input contract changed unexpectedly",
 );
-for (const ownerRule of ["hermes_connect", "auction_vehicle_pickup_checklist", "car_hauler_capacity_checklist"]) {
+for (const ownerRule of ["hermes_connect", "auction_vehicle_pickup_checklist", "car_hauler_capacity_checklist", "car_hauling_dispatch", "car_hauler_market", "car_hauler_loads", "load_board"]) {
   assert.ok(searchRadarContract.approvedOwnerRuleIds.includes(ownerRule), `Missing approved owner rule: ${ownerRule}`);
 }
 assert.ok(searchRadarContract.classes.includes("NEW_PAGE_NOT_JUSTIFIED"));
