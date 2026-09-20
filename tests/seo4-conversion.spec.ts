@@ -36,7 +36,7 @@ test("car-hauling dispatch routes commercial intent to the direct intake and rep
     "href",
     "mailto:officeus@hermeslogisticsus.com",
   );
-  await expect(finalCta.getByRole("link", { name: /262.*302.*3626/i })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(finalCta.locator('a[href^="tel:"]')).toHaveCount(0);
 });
 
 test("direct dispatch intake is noindex, qualified, privacy-safe, and separate from the demo", async ({ page }) => {
@@ -52,12 +52,12 @@ test("direct dispatch intake is noindex, qualified, privacy-safe, and separate f
   await expect(page.getByRole("heading", { name: "Start Your Car Hauling Dispatch Review" })).toBeVisible();
   await expect(page.getByText("Dry-run only")).toHaveCount(0);
   await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveCount(0);
-  await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Call Logistics Sales/i })).toHaveAttribute(
+  await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Email Logistics Sales/i })).toHaveAttribute(
     "href",
-    "tel:+12623023626",
+    "mailto:officeus@hermeslogisticsus.com",
   );
   await expect(page.locator("[data-dispatch-mobile-intake]")).toHaveAttribute("href", "#dispatch-intake");
-  await expect(page.locator("[data-dispatch-mobile-call]")).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator("[data-dispatch-mobile-email]")).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
 
   await page.evaluate(() => {
     window.dataLayer = [];

@@ -46,14 +46,7 @@ export const site = {
     href: "mailto:officeus@hermeslogisticsus.com",
     note: "Email the U.S. Logistics team about freight, documents, dispatch, or operating support",
   },
-  publicPhones: [
-    {
-      label: "Logistics Sales Department",
-      value: "+1 (262) 302-3626",
-      href: "tel:+12623023626",
-      note: "Single public phone for all incoming Hermes Logistics calls in the United States",
-    },
-  ],
+  publicPhones: [] as { label: string; value: string; href: string; note: string }[],
   telegramGroups: [
     {
       label: "Hermes Marketing | ProgressoPro Growth",
@@ -134,7 +127,6 @@ export const site = {
         { question: "Can I choose only part of the service?", answer: "Requests can begin with dispatch, documents, invoicing, or another defined need. The team confirms the available scope before work starts." },
       ],
       directContacts: [
-        { label: "Logistics Sales Department", value: "+1 (262) 302-3626", href: "tel:+12623023626", note: "Single public phone for all incoming Hermes Logistics calls in the United States" },
         { label: "Logistics Email", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com", note: "Freight, documents, dispatch, and operating-support questions" },
       ],
     },
@@ -322,9 +314,7 @@ export const site = {
 };
 
 export const contacts = {
-  phones: {
-    logisticsSales: site.publicPhones[0].value,
-  },
+  phones: {},
   telegram: {
     marketing: site.telegramGroups[0].href,
     logistics: site.telegramGroups[1].href,

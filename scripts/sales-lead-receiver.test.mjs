@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { onRequest } from "../functions/api/logistics-lead.ts";
-import leadEmailWorker from "../workers/lead-email/src/index.mjs";
+import leadEmailWorker, { isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
   values = new Map();
@@ -35,6 +35,21 @@ const workerEnv = {
     },
   },
 };
+
+assert.equal(isCarHaulingTelegramWorkHours(new Date("2026-09-15T14:00:00.000Z")), true, "Weekday 09:00 CT must allow Sales-group delivery.");
+assert.equal(isCarHaulingTelegramWorkHours(new Date("2026-09-15T22:45:00.000Z")), true, "Weekday 17:45 CT must allow Sales-group delivery.");
+assert.equal(isCarHaulingTelegramWorkHours(new Date("2026-09-15T22:46:00.000Z")), false, "Weekday 17:46 CT must block Sales-group delivery.");
+assert.equal(isCarHaulingTelegramWorkHours(new Date("2026-09-20T16:00:00.000Z")), false, "Weekend delivery must remain blocked.");
+
+const quietHoursTelegramCount = telegramMessages.length;
+const quietHoursResult = await sendCarHaulingSalesTelegram(
+  workerEnv,
+  "Page: /logistics/start-car-hauling-dispatch/\nReal carrier review payload with enough safe test content for routing.",
+  "carrier_quiet_1296_12345",
+  new Date("2026-09-15T22:46:00.000Z"),
+);
+assert.deepEqual(quietHoursResult, { ok: false, status: "outside_working_hours" });
+assert.equal(telegramMessages.length, quietHoursTelegramCount, "Quiet-hours guard must run immediately before sendMessage.");
 
 const serviceBinding = (emailEnv = workerEnv) => ({
   async fetch(input, init) {
@@ -376,10 +391,23 @@ const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: ser
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
 const telegramBeforeCarrier = telegramMessages.length;
-const realCarrier = await onRequest({
-  request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
-  env: carrierEnv,
-});
+const NativeDate = globalThis.Date;
+const telegramWorkHoursNow = new NativeDate("2026-09-15T15:00:00.000Z");
+let realCarrier;
+try {
+  globalThis.Date = class extends NativeDate {
+    constructor(...args) {
+      super(...(args.length ? args : [telegramWorkHoursNow]));
+    }
+    static now() { return telegramWorkHoursNow.valueOf(); }
+  };
+  realCarrier = await onRequest({
+    request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
+    env: carrierEnv,
+  });
+} finally {
+  globalThis.Date = NativeDate;
+}
 assert.equal(realCarrier.status, 200);
 assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);

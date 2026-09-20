@@ -1,5 +1,5 @@
 ---
-import { Clipboard, FileSignature, MessageSquareText, Phone } from "@lucide/astro";
+import { Clipboard, FileSignature, Mail, MessageSquareText } from "@lucide/astro";
 
 type JourneyConfig = { stage: string; primaryLabel: string; primaryHref: string };
 
@@ -29,7 +29,7 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
   >
     <div class="carrier-journey-stage"><small>{journey.stage}</small><strong>Keep the next step simple.</strong></div>
     <a class="carrier-journey-primary" href={journey.primaryHref} data-commercial-primary-cta data-service-group="carrier_contract"><FileSignature size={17} aria-hidden="true" />{journey.primaryLabel}</a>
-    <a class="carrier-journey-call" href="tel:+12623023626" aria-label="Call U.S. Logistics Sales"><Phone size={18} aria-hidden="true" /><span>Call</span></a>
+    <a class="carrier-journey-call" href="mailto:officeus@hermeslogisticsus.com" aria-label="Email U.S. Logistics Sales"><Mail size={18} aria-hidden="true" /><span>Email</span></a>
     <button class="carrier-journey-copy" type="button" data-carrier-journey-copy aria-label="Copy carrier agreement SMS text"><Clipboard size={18} aria-hidden="true" /><span>Copy link</span></button>
     <a class="carrier-journey-sms" href="#" data-carrier-journey-sms aria-label="Open an SMS with the carrier agreement link"><MessageSquareText size={18} aria-hidden="true" /><span>Text</span></a>
     <span class="carrier-journey-status" data-carrier-journey-status aria-live="polite"></span>

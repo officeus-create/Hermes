@@ -17,7 +17,7 @@ const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toStrin
 const validatorCompat = audience.slug === "shipper-dealer"
   ? "Automatic review"
   : audience.slug === "carrier"
-    ? "Call Logistics Sales | tel:+12623023626"
+    ? "Email Logistics Sales | mailto:officeus@hermeslogisticsus.com"
     : "";
 const carrierTools = audience.slug === "carrier"
   ? [

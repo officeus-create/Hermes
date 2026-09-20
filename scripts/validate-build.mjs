@@ -25,7 +25,7 @@ if (!headers.includes("Content-Security-Policy-Report-Only: require-trusted-type
 const routes = [
   {
     path: "paths/logistics/index.html",
-    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Logistics Sales Department", "freight_301@hermeslogisticsus.com", "+1 (262) 302-3626"],
+    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Logistics Email", "officeus@hermeslogisticsus.com"],
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Website and SEO", "Social media marketing", "Four connected marketing pillars", "SEO Optimization", "Growth &amp; Sales System", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment", "Try one public exercise first.", "Try a public exercise", "Apply for human review"] },
@@ -42,9 +42,8 @@ const routes = [
     required: [
       "Contact Hermes",
       "Logistics contact · USA",
-      "+1 (262) 302-3626",
-      "Logistics Sales Department",
-      "freight_301@hermeslogisticsus.com",
+      "Logistics Email",
+      "officeus@hermeslogisticsus.com",
       "Email-only international coordination",
       "Milan · Berlin · Paris · Miami · California · New York · England",
       "https://t.me/SMMProgressoPro",
@@ -78,9 +77,9 @@ const routes = [
       "data-load-result",
     ],
   },
-  { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review", "Call Logistics Sales", "tel:+12623023626"] },
-  { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Call Logistics Sales", "tel:+12623023626"] },
-  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call Logistics Sales", "tel:+12623023626"] },
+  { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Email Logistics Sales", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "data-application-result-copy"] },
@@ -371,8 +370,8 @@ for (const claim of forbidden) {
 const publicTelephoneTargets = new Set(
   publicPages.flatMap(([, pageHtml]) => [...pageHtml.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1])),
 );
-if (publicTelephoneTargets.size !== 1 || !publicTelephoneTargets.has("+12623023626")) {
-  throw new Error(`Only the approved Logistics Sales telephone may be public: ${[...publicTelephoneTargets].join(", ")}`);
+if (publicTelephoneTargets.size !== 0) {
+  throw new Error(`Public Hermes pages must remain email/form-only until a dedicated Logistics number is approved: ${[...publicTelephoneTargets].join(", ")}`);
 }
 
 for (const term of publicForbiddenInternalTerms) {

@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check, Download, FileSignature, Loader2, Phone, ShieldCheck, Trash2 } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Check, Download, FileSignature, Loader2, Mail, ShieldCheck, Trash2 } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
@@ -133,7 +133,7 @@ const schema = {
           <div class="form-error" data-form-error role="alert" hidden></div>
           <div class="form-actions">
             <button type="button" class="button" data-previous hidden><ArrowLeft size={18} aria-hidden="true" />Back</button>
-            <a class="button help-button" href="tel:+12623023626"><Phone size={17} aria-hidden="true" />Questions?</a>
+            <a class="button help-button" href="mailto:officeus@hermeslogisticsus.com"><Mail size={17} aria-hidden="true" />Questions?</a>
             <button type="button" class="button button-primary signing-primary" data-next>Continue <ArrowRight size={18} aria-hidden="true" /></button>
             <button type="submit" class="button button-primary signing-primary" data-submit hidden><FileSignature size={18} aria-hidden="true" />Create signed packet</button>
           </div>

@@ -40,7 +40,7 @@ test("paid activation retries the same unchanged purchase intent with the same i
     "href",
     "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Founding%20Shop%20Plan",
   );
-  await expect(fallback.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(fallback.locator('a[href^="tel:"]')).toHaveCount(0);
 
   await page.locator("#paid-plan-submit").click();
   await expect(page.locator("#paid-plan-status")).toContainText("Request received");

@@ -8,7 +8,7 @@ test("detailed carrier page remains private and routes to the minimized packet",
   await expect(page.getByRole("heading", { name: "Keep control. Add a dispatch team." })).toBeVisible();
   await expect(page.getByRole("link", { name: /Review (?:&|and) sign/i }).first()).toHaveAttribute("href", /\/logistics\/carrier-onboarding\//);
   await expect(page.getByRole("link", { name: "See what Hermes handles" })).toHaveAttribute("href", /\/logistics\/carrier-offer\//);
-  await expect(page.getByRole("link", { name: /Call Logistics Sales/i }).first()).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.getByRole("link", { name: /Email Logistics Sales/i }).first()).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(page.getByText("You approve every load", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Non-exclusive · no minimum volume", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Freight funds go to your company or factor", { exact: true }).first()).toBeVisible();
@@ -30,7 +30,7 @@ test("clean SMS signing route gives three safe next actions", async ({ page }) =
   await expect(page.getByRole("heading", { name: "Everything is clear before you sign." })).toBeVisible();
   await expect(page.getByRole("link", { name: /Continue to carrier packet/i }).first()).toHaveAttribute("href", "/logistics/carrier-onboarding/");
   await expect(page.getByRole("link", { name: "Review the agreement first" })).toHaveAttribute("href", "/logistics/carrier-agreement/");
-  await expect(page.getByRole("link", { name: "Ask a question" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.getByRole("link", { name: "Ask a question" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(page.getByText("Non-exclusive support", { exact: true })).toBeVisible();
   await expect(page.getByText("You approve every load", { exact: true })).toBeVisible();
   await expect(page.getByText("Freight payments stay with your company", { exact: true })).toBeVisible();
@@ -55,7 +55,7 @@ test("offer routes through signing review while agreement continues to onboardin
     await expect(journey).toBeVisible();
     await expect(journey.locator("[data-commercial-primary-cta]")).toContainText(item.label);
     await expect(journey.locator("[data-commercial-primary-cta]")).toHaveAttribute("href", item.href);
-    await expect(journey.getByRole("link", { name: "Call U.S. Logistics Sales" })).toHaveAttribute("href", "tel:+12623023626");
+    await expect(journey.getByRole("link", { name: "Email U.S. Logistics Sales" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
     await expect(journey.locator("[data-carrier-journey-sms]")).toHaveAttribute("href", /sms:.*body=.*hermeslogisticsus\.com%2Fsign%2F/i);
   }
 });
@@ -67,7 +67,7 @@ test("carrier audience keeps dispatch review primary and exposes the proposal pa
   await expect(journey).toBeVisible();
   await expect(journey.locator("[data-commercial-primary-cta]")).toContainText("Review plans and carrier packet");
   await expect(journey.locator("[data-commercial-primary-cta]")).toHaveAttribute("href", "/carrier/");
-  await expect(journey.getByRole("link", { name: "Call U.S. Logistics Sales" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(journey.getByRole("link", { name: "Email U.S. Logistics Sales" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
 });
 
 test("the public logistics hub exposes the memorable carrier proposal path", async ({ page }) => {

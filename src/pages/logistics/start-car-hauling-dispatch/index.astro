@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, CheckCircle2, Phone } from "@lucide/astro";
+import { ArrowRight, CheckCircle2, Mail } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
@@ -53,9 +53,9 @@ const schema = [
           </p>
           <div class="dispatch-start-actions">
             <a class="button button-primary" href="#dispatch-intake" data-dispatch-start-cta>Start the carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button button-ghost" href="tel:+12623023626" data-dispatch-call-cta><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
+            <a class="button button-ghost" href="mailto:officeus@hermeslogisticsus.com" data-dispatch-email-cta><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
           </div>
-          <p class="dispatch-start-direct-note">Prefer to speak first? Call +1 (262) 302-3626. The intake remains the fastest way to provide authority, equipment, capacity, location, and availability for review.</p>
+          <p class="dispatch-start-direct-note">The intake is the fastest way to provide authority, equipment, capacity, location, and availability for review. Email remains available as a direct fallback.</p>
         </div>
         <aside class="dispatch-start-expectation">
           <p class="eyebrow">What happens next</p>
@@ -85,7 +85,7 @@ const schema = [
 
   <nav class="dispatch-mobile-actions" aria-label="Car hauling dispatch actions">
     <a href="#dispatch-intake" data-dispatch-mobile-intake>Start intake</a>
-    <a href="tel:+12623023626" data-dispatch-mobile-call><Phone size={17} aria-hidden="true" />Call</a>
+    <a href="mailto:officeus@hermeslogisticsus.com" data-dispatch-mobile-email><Mail size={17} aria-hidden="true" />Email</a>
   </nav>
   <SiteFooter />
 </BaseLayout>

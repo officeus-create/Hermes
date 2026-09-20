@@ -34,7 +34,7 @@ test("Logistics room keeps the validated preview contact workflow", async ({ pag
   await expect(page.locator("[data-form-status]")).toContainText("Your information was not sent or stored");
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
   await expect(page.locator("[data-handoff-summary]")).toContainText("Direction: Hermes Logistics");
-  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   expect(posts).toEqual([]);
 });
 

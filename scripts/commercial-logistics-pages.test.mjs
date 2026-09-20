@@ -106,7 +106,7 @@ for (const page of pages) {
   assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} visible breadcrumb is missing`);
   assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} active logistics email fallback is missing`);
   assert.ok(!html.includes('href="mailto:freight_301@hermeslogisticsus.com"'), `${page.route} still exposes the retired logistics email as an active mailto`);
-  assert.ok(html.includes('href="tel:+12623023626"'), `${page.route} approved phone fallback is missing`);
+  assert.ok(!html.includes('href="tel:'), `${page.route} must remain email/form-only until a dedicated Logistics number is approved`);
   assert.ok(!/<form\b[^>]*action=/i.test(html), `${page.route} contains an unreviewed form action`);
 
   for (const text of page.required) assert.ok(html.includes(text), `${page.route} missing required scope text: ${text}`);

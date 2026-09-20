@@ -64,7 +64,7 @@ export type ContactHandoffRoute = {
 };
 
 const handoffRouteLabels: Record<string, string> = {
-  logistics: "Call Logistics",
+  logistics: "Email Logistics",
   marketing: "Email Marketing",
   academy: "Email the Academy",
   technology: "Email IT Development",
@@ -103,7 +103,7 @@ const attributionKeys = [
 export const contactHandoffRoutes: ContactHandoffRoute[] = site.paths.map((path) => {
   const primary =
     path.directContacts?.find((contact) =>
-      path.id === "logistics" ? contact.href.startsWith("tel:") : contact.href.startsWith("mailto:"),
+      contact.href.startsWith("mailto:"),
     ) ?? path.directContacts?.[0];
 
   if (!primary) throw new Error(`Missing direct contact for ${path.category}`);

@@ -16,7 +16,7 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
     "href",
     "mailto:officeus@hermeslogisticsus.com",
   );
-  await expect(actions.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(actions.locator('a[href^="tel:"]')).toHaveCount(0);
 
   const publicCopy = await page.locator("main").innerText();
   expect(publicCopy).toContain("Workstream 1 · Find the next candidate load");
@@ -69,14 +69,14 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
     "href",
     "mailto:officeus@hermeslogisticsus.com",
   );
-  await expect(page.getByRole("link", { name: "+1 (262) 302-3626" }).first()).toHaveAttribute("href", "tel:+12623023626");
-  await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Call Logistics Sales/i })).toHaveAttribute(
+  await expect(page.locator("main").locator('a[href^="tel:"]')).toHaveCount(0);
+  await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Email Logistics Sales/i })).toHaveAttribute(
     "href",
-    "tel:+12623023626",
+    "mailto:officeus@hermeslogisticsus.com",
   );
   await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveCount(0);
   await expect(page.locator("[data-dispatch-mobile-intake]")).toHaveAttribute("href", "#dispatch-intake");
-  await expect(page.locator("[data-dispatch-mobile-call]")).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator("[data-dispatch-mobile-email]")).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(page.locator("[data-dispatch-intake] [data-vehicle-form]")).toHaveAttribute("data-lead-mode", "preview");
 });
 

@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Mail, Phone } from "@lucide/astro";
+import { ArrowRight, Check, Mail } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
@@ -26,7 +26,6 @@ const { content } = Astro.props;
 const canonicalPath = Astro.url.pathname;
 const absoluteUrl = `https://hermeslogisticsus.com${canonicalPath}`;
 const email = "mailto:officeus@hermeslogisticsus.com";
-const phone = "tel:+12623023626";
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const schema = [
   {
@@ -83,12 +82,10 @@ const schema = [
                     {content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" />
                   </a>
                   <a class="button button-ghost commercial-phone" href={email}><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
-                  <a class="button button-ghost commercial-phone" href={phone}><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
                 </>
               ) : (
                 <>
                   <a class="button button-primary" href={email}><Mail size={18} aria-hidden="true" />Request logistics support</a>
-                  <a class="button button-ghost commercial-phone" href={phone}><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
                 </>
               )}
             </div>
@@ -158,7 +155,6 @@ const schema = [
             <a class="button button-primary" href={email}><Mail size={18} aria-hidden="true" />Request logistics support</a>
           )}
           <a class="button" href={email}><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
-          <a class="button" href={phone}><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
         </div>
       </div>
     </section>
