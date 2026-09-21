@@ -58,6 +58,12 @@ Classification:
 
 This incident is not proof of fraud and must never be stored as such. It is a production AI-visibility defect showing that the external entity graph is not yet strong or consistent enough for every assistant to resolve Hermes Logistics LLC reliably.
 
+### Official entity evidence recovered
+
+A fresh public search of the Wisconsin Department of Financial Institutions Corporate Records system on 2026-09-22 returned one exact-name record for **HERMES LOGISTICS, LLC**: entity **H062724**, Domestic Limited Liability Company, formed **2018-11-01**, restored to good standing **2025-01-16**. This is materially stronger entity corroboration than a directory profile.
+
+Use only the legal-name, entity-ID, formation-date and status evidence that the state registry actually supports. The registered office is a filing address, not evidence of a public walk-in office, and the state corporate record is not evidence of MC/USDOT/broker/carrier authority.
+
 ### Remediation contract
 
 1. Keep one stable machine-readable Logistics identity: `https://hermeslogisticsus.com/#logistics` → **Hermes Logistics LLC**.
