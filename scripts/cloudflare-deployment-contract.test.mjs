@@ -187,6 +187,7 @@ assert.doesNotMatch(
 
 const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
 const deploymentOwnership = read("docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md");
+const agentInstructions = read("AGENTS.md");
 assert.match(
   deploymentRecord,
   /Release owner:\s*Cloudflare Git integration/,
@@ -206,6 +207,16 @@ assert.match(
   deploymentOwnership,
   /#960 bounded D1\/operator proof[\s\S]*#961 is closed/i,
   "Cloudflare deployment ownership must route the bounded D1/operator proof to #960 and keep #961 closed.",
+);
+assert.doesNotMatch(
+  agentInstructions,
+  /The active local checkout is `\/Users\/progressopro\/Hermes`|Claude Code: local Mac execution/,
+  "Repository agent instructions must not route current work to the retired owner Mac.",
+);
+assert.match(
+  agentInstructions,
+  /retired MacBook\/local checkout paths are historical provenance only/i,
+  "Repository agent instructions must explicitly preserve the MacBook-retired current-state boundary.",
 );
 assert.doesNotMatch(
   deploymentRecord,
