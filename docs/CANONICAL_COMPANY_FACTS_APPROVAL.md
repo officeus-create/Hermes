@@ -29,7 +29,7 @@ This file is a public-safe approval template. It must not contain credentials, p
 
 | Field | Proposed canonical value | Status | Evidence/source type | Verified by | Verified date | Next review | Publication notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Legal entity name | `Hermes Logistics LLC` | `VERIFIED_PUBLIC` | Owner directive + current Company Information page | Owner | 2026-09-22 | 2026-12-22 | Approved for the U.S. logistics entity; do not merge same-name businesses into this identity. |
+| Legal entity name | `Hermes Logistics, LLC` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records entity `H062724` + owner-confirmed website identity | SEO/GEO verification + Owner | 2026-09-22 | 2026-12-22 | Exact state-record legal name; public website may use the normalized spelling `Hermes Logistics LLC`. Do not merge same-name businesses into this identity. |
 | Public brand name | `Hermes Logistics` | `VERIFIED_PUBLIC` | Current owned website / public entity registry | Owner | 2026-09-22 | 2026-12-22 | Public-facing logistics direction label; legal identity remains Hermes Logistics LLC. |
 | Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Current public website |  | 2026-08-04 |  | Confirm preferred capitalization and canonical domain. |
 | Primary business category |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Avoid merging all four directions into one vague category. |
