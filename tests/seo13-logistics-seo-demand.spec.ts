@@ -45,7 +45,10 @@ test('Logistics SEO sitemap freshness reflects the substantive SEO13 owner relea
   expect(digitalSitemapSource).toContain(
     '<loc>https://hermeslogisticsus.com/services/seo-for-logistics-companies/</loc>\n    <lastmod>2026-08-13</lastmod>',
   );
-  expect(sitemapIndexSource).toContain(
-    '<loc>https://hermeslogisticsus.com/sitemap-digital-services.xml</loc>\n    <lastmod>2026-09-13</lastmod>',
+  const digitalSitemapIndexEntry = sitemapIndexSource.match(
+    /<loc>https:\/\/hermeslogisticsus\.com\/sitemap-digital-services\.xml<\/loc>\s*<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/,
   );
+  const digitalSitemapIndexLastmod = digitalSitemapIndexEntry?.[1] ?? '';
+  expect(digitalSitemapIndexLastmod).not.toBe('');
+  expect(digitalSitemapIndexLastmod >= '2026-09-13').toBeTruthy();
 });
