@@ -1,0 +1,14 @@
+{
+  "signals": {
+    "freshness": 20,
+    "authority": 20,
+    "firstPartyEvidence": 15,
+    "historicalComparison": 14,
+    "searchValue": 15,
+    "internalLinkFit": 10,
+    "privacyRisk": 0,
+    "unverifiedCurrentClaim": 0,
+    "duplicateRisk": 0,
+    "promotionalOnly": 0
+  }
+}
