@@ -188,6 +188,8 @@ assert.doesNotMatch(
 const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
 const deploymentOwnership = read("docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md");
 const agentInstructions = read("AGENTS.md");
+const aiRoles = read("docs/AI_ROLES.md");
+const claudeInstructions = read("CLAUDE.md");
 assert.match(
   deploymentRecord,
   /Release owner:\s*Cloudflare Git integration/,
@@ -217,6 +219,26 @@ assert.match(
   agentInstructions,
   /retired MacBook\/local checkout paths are historical provenance only/i,
   "Repository agent instructions must explicitly preserve the MacBook-retired current-state boundary.",
+);
+assert.doesNotMatch(
+  aiRoles,
+  /Claude Code on the Mac|use the Mac environment|Primary local coding/,
+  "Current AI role routing must not depend on the retired owner Mac.",
+);
+assert.match(
+  aiRoles,
+  /retired owner Mac\/MacBook is historical provenance/i,
+  "AI role routing must carry the MacBook-retired boundary explicitly.",
+);
+assert.doesNotMatch(
+  claudeInstructions,
+  /Environment available for this role: macOS \(this Mac\)|when operating on the Mac/,
+  "Claude's current repository instructions must not assume the retired Mac is available.",
+);
+assert.match(
+  claudeInstructions,
+  /owner MacBook is retired/i,
+  "Claude's current repository instructions must carry the MacBook-retired boundary explicitly.",
 );
 assert.doesNotMatch(
   deploymentRecord,
