@@ -2,6 +2,8 @@
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
+  # Push on main is the primary release path. Manual dispatch is a fallback
+  # only and must still target the approved main ref.
   workflow_dispatch:
   push:
     branches:
@@ -26,8 +28,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  approved_main_guard:
+    name: Reject non-main release refs
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require the approved main ref
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then
+            echo "Release rejected: ${RELEASE_EVENT} may verify only refs/heads/main, not ${RELEASE_REF}." >&2
+            exit 1
+          fi
+          echo "Approved main ref accepted for ${RELEASE_EVENT}."
+
   deploy:
     name: Build, deploy, and verify approved main
+    needs: approved_main_guard
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 30
@@ -119,15 +138,6 @@ jobs:
         run: |
           node <<'NODE'
           const targets = [
-            {
-              // Raw HTML is intentionally preview-safe. ProductionContactMode upgrades
-              // this exact shell to live mode in the browser on the approved domains.
-              url: "https://hermeslogisticsus.com/paths/logistics/",
-              markers: [
-                "data-contact-form",
-                "Preview request",
-              ],
-            },
             {
               url: "https://hermeslogisticsus.com/paths/academy/",
               markers: [

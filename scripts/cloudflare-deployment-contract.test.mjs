@@ -114,6 +114,20 @@ assert.doesNotMatch(
   /pages deploy dist --project-name=hermes --branch=main|cloudflare\/wrangler-action|steps\.credentials|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN/,
   "Production Pages must keep one release owner: the native Cloudflare Git integration, not an optional Wrangler upload path.",
 );
+for (const marker of [
+  "approved_main_guard:",
+  'RELEASE_REF: ${{ github.ref }}',
+  'if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then',
+  "needs: approved_main_guard",
+  "Manual dispatch is a fallback",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Approved-main release guard is missing: ${marker}`);
+}
+assert.match(
+  productionWorkflow,
+  /approved_main_guard:[\s\S]*exit 1[\s\S]*deploy:[\s\S]*needs: approved_main_guard/,
+  "A non-main manual dispatch must fail before the production deployment job can start.",
+);
 assert.match(
   productionWorkflow,
   /checks:\s*read/,
@@ -162,13 +176,6 @@ for (const retiredMarker of ["2 public programs", "Two public programs", "curren
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
 for (const marker of [
-  "https://hermeslogisticsus.com/paths/logistics/",
-  "data-contact-form",
-  "Preview request",
-]) {
-  assert.ok(productionWorkflow.includes(marker), `Logistics contact raw-shell production marker is missing from release verification: ${marker}`);
-}
-for (const marker of [
   'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
   'form.dataset.contactMode = "live"',
   'form.dataset.contactEndpoint = "/api/logistics-lead"',
@@ -184,6 +191,11 @@ for (const marker of [
 }
 for (const marker of [
   'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  "javaScriptEnabled: false",
+  'rawPage.locator("[data-contact-form]").first().evaluate',
+  'rawForm.mode !== "preview"',
+  '(rawForm.endpoint ?? "").trim() !== ""',
+  'rawForm.label !== "Preview request"',
   'form?.getAttribute("data-contact-mode") === "live"',
   'form?.getAttribute("data-contact-endpoint") === "/api/logistics-lead"',
   'label?.textContent?.trim() === "Send request"',
