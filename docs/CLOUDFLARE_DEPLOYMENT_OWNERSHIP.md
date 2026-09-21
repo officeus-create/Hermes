@@ -82,7 +82,7 @@ Permanent rule:
 
 `GENERIC PREVIEW = DELIVERY OFF + PREVIEW KV + NO PRODUCTION D1 + NO PRODUCTION EMAIL SERVICE`
 
-Do not restore Production D1 to arbitrary PR Preview merely to eliminate `database_not_configured` or satisfy a QA checklist. D1-backed release acceptance belongs to bounded exact-main production synthetic/operator proof with cleanup and evidence (#961/#960). If a true staging database is required later, open a new current-state architecture task with an explicit trust/data/auth/secrets boundary.
+Do not restore Production D1 to arbitrary PR Preview merely to eliminate `database_not_configured` or satisfy a QA checklist. D1-backed release acceptance belongs to bounded exact-main production synthetic/operator proof with cleanup and evidence under #960; #961 is closed. If a true staging database is required later, open a new current-state architecture task with an explicit trust/data/auth/secrets boundary.
 
 ## Historical duplicate generic Worker — CLOSED
 
@@ -150,7 +150,7 @@ Current audit classification:
 Credential separation:
 
 - Pages production release works through the existing exact-SHA Cloudflare Git integration; do not create a broad catch-all token just for Pages.
-- #961 bounded D1/operator proof needs dedicated Pages-read + D1 proof access only.
+- #960 bounded D1/operator proof needs dedicated Pages-read + D1 proof access plus approved account context only; #961 is closed.
 - #611 may later need a narrow Worker deploy credential for automation hardening, but the current password-reset product blocker is outbound email capability, not Worker deployment.
 - never copy local Wrangler OAuth credentials, Global API Key, broad Agent token or legacy build token into GitHub merely to unblock a workflow.
 
@@ -177,7 +177,7 @@ Do not change Google Workspace apex MX while solving password reset. Do not crea
 ## Current canonical trackers
 
 - #1349 — completed Cloudflare remediation tracker/provenance; do not revive closed DNSSEC/runtime-date work from stale notes.
-- #961 — final bounded `repair_shop_access` D1/operator proof only.
+- #960 — current bounded `repair_shop_access` D1/operator proof owner; #961 is CLOSED because deploy parity is complete.
 - #611 — password-reset outbound transport capability/proof.
 - #687 — CLOSED/NOT_PLANNED; generic Preview must remain isolated from Production D1/email-service.
 - #226 — CLOSED/COMPLETED; historical duplicate generic Worker investigation.
