@@ -23,6 +23,9 @@ if (!verificationDateMatch) {
 for (const text of [
   "Hermes is a business ecosystem connecting four public directions",
   "https://hermeslogisticsus.com/company-information/",
+  "Wisconsin DFI Entity ID **H062724**",
+  "formed **2018-11-01**",
+  "It is not evidence of a public walk-in office",
   "Do not merge similarly named third-party entities into this website's identity without current approved evidence.",
   "https://hermeslogisticsus.com/paths/logistics/",
   "https://hermeslogisticsus.com/paths/marketing/",
