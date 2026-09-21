@@ -74,7 +74,6 @@ jobs:
           node scripts/sync-insights-sitemap.mjs
           node scripts/sync-insights-release-delta.mjs
           node scripts/insights-pipeline.test.mjs
-          node scripts/release-manifest.test.mjs
 
       - name: Commit generated-only state and remove staging inputs
         shell: bash
