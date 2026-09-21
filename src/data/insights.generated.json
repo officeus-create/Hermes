@@ -22,122 +22,36 @@
       "Hermes historical operating evidence supports the same core discipline—route planning and deadhead control—but old commercial claims are not reused as current truth"
     ],
     "faq": [
-      {
-        "question": "Does $6.285 diesel mean every load rate should rise by the same amount?",
-        "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."
-      },
-      {
-        "question": "Why does deadhead matter more when fuel is expensive?",
-        "answer": "Empty miles still consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."
-      },
-      {
-        "question": "Should a carrier use the national diesel price as its only fuel input?",
-        "answer": "No. The national average is useful context. A carrier should use a fuel assumption that reflects the actual truck, route and operating conditions when calculating a specific movement."
-      },
-      {
-        "question": "What does the historical Hermes archive add to this update?",
-        "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used here only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."
-      }
+      {"question": "Does $6.285 diesel mean every load rate should rise by the same amount?", "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."},
+      {"question": "Why does deadhead matter more when fuel is expensive?", "answer": "Empty miles still consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."},
+      {"question": "Should a carrier use the national diesel price as its only fuel input?", "answer": "No. The national average is useful context. A carrier should use a fuel assumption that reflects the actual truck, route and operating conditions when calculating a specific movement."},
+      {"question": "What does the historical Hermes archive add to this update?", "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used here only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."}
     ],
     "related": [
-      {
-        "title": "RPM calculator",
-        "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.",
-        "href": "/logistics/resources/rpm-calculator/"
-      },
-      {
-        "title": "Owner-Operator Dispatch Support",
-        "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.",
-        "href": "/logistics/owner-operator-dispatch-support/"
-      },
-      {
-        "title": "Car Hauler Capacity Checklist",
-        "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.",
-        "href": "/logistics/resources/car-hauler-capacity-checklist/"
-      },
-      {
-        "title": "Hermes Logistics",
-        "body": "Continue to the canonical Hermes Logistics direction and carrier resources.",
-        "href": "/paths/logistics/"
-      }
+      {"title": "RPM calculator", "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.", "href": "/logistics/resources/rpm-calculator/"},
+      {"title": "Owner-Operator Dispatch Support", "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.", "href": "/logistics/owner-operator-dispatch-support/"},
+      {"title": "Car Hauler Capacity Checklist", "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.", "href": "/logistics/resources/car-hauler-capacity-checklist/"},
+      {"title": "Hermes Logistics", "body": "Continue to the canonical Hermes Logistics direction and carrier resources.", "href": "/paths/logistics/"}
     ],
-    "primaryAction": {
-      "label": "Review RPM Calculator",
-      "href": "/logistics/resources/rpm-calculator/"
-    },
-    "secondaryAction": {
-      "label": "Explore Owner-Operator Support",
-      "href": "/logistics/owner-operator-dispatch-support/"
-    },
+    "primaryAction": {"label": "Review RPM Calculator", "href": "/logistics/resources/rpm-calculator/"},
+    "secondaryAction": {"label": "Explore Owner-Operator Support", "href": "/logistics/owner-operator-dispatch-support/"},
     "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
     "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
     "sourcePublishedAt": "2026-09-15",
     "datePublished": "2026-09-17",
     "dateModified": "2026-09-17",
     "authorName": "Hermes Editorial Team",
-    "keywords": [
-      "diesel price 2026",
-      "truck fuel cost",
-      "carrier route planning",
-      "deadhead reduction",
-      "owner operator load planning",
-      "diesel price per gallon",
-      "freight rate negotiation",
-      "EIA diesel price"
-    ],
+    "keywords": ["diesel price 2026", "truck fuel cost", "carrier route planning", "deadhead reduction", "owner operator load planning", "diesel price per gallon", "freight rate negotiation", "EIA diesel price"],
     "contentTier": "standalone",
     "currentMarketClaim": true,
-    "telegram": {
-      "group": "Hermes Logistics Academy",
-      "messageId": null
-    },
+    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
     "evidence": [
-      {
-        "sourceId": "PUBLIC-WEB-CURRENT",
-        "kind": "public_external",
-        "label": "U.S. EIA weekly on-highway diesel price data",
-        "use": "primary",
-        "url": "https://www.eia.gov/petroleum/gasdiesel/",
-        "observedAt": "2026-09-17",
-        "eventDate": "2026-09-14",
-        "notes": "Current dated public source for national and regional diesel prices."
-      },
-      {
-        "sourceId": "TG-002",
-        "kind": "first_party_historical",
-        "label": "Hermes historical logistics operating archive",
-        "use": "context_only",
-        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."
-      }
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "U.S. EIA weekly on-highway diesel price data", "use": "primary", "url": "https://www.eia.gov/petroleum/gasdiesel/", "observedAt": "2026-09-17", "eventDate": "2026-09-14", "notes": "Current dated public source for national and regional diesel prices."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."}
     ],
-    "historicalComparison": {
-      "thenPeriod": "2021–2026 historical Hermes operating archive",
-      "nowPeriod": "September 2026",
-      "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.",
-      "evidenceSourceIds": [
-        "TG-002",
-        "PUBLIC-WEB-CURRENT"
-      ],
-      "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"
-    },
-    "publicationScore": {
-      "score": 95,
-      "recommendation": "standalone_historical",
-      "reasons": [
-        "+20 freshness",
-        "+20 source authority",
-        "+17 first-party evidence",
-        "+15 historical comparison",
-        "+13 search value",
-        "+10 internal-link fit"
-      ]
-    },
-    "privacyReview": {
-      "piiRemoved": true,
-      "privateFiguresRemoved": true,
-      "historicalClaimsRevalidated": true,
-      "reviewer": "Hermes Editorial Pipeline"
-    }
+    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"},
+    "publicationScore": {"score": 95, "recommendation": "standalone_historical", "reasons": ["+20 freshness", "+20 source authority", "+17 first-party evidence", "+15 historical comparison", "+13 search value", "+10 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
   },
   {
     "id": "dat-dry-van-rates-september-2026",
@@ -155,82 +69,31 @@
       "Turn the market report into a load decision by calculating an internal floor before the call. Start with the revenue offered for the load, then subtract the costs and empty-mile exposure that actually belong to that movement. A practical worksheet should include loaded miles, deadhead to pickup, expected deadhead after delivery, fuel, tolls, variable operating cost, time requirements, payment terms, and any equipment or access constraint. The market average is then a comparison point, not the calculation itself.",
       "DAT's 35-day forecast placed dry-van spot linehaul near $2.20 per mile in mid-October with an uncertainty band around plus or minus $0.08. Forecasts are useful for planning conversations and setting review dates, but they are not guarantees. Hermes would use that forecast to decide when to re-check lane floors and negotiation assumptions, not to promise a future rate, utilization level, or revenue outcome."
     ],
-    "takeaways": [
-      "$2.21 per mile was linehaul only; fuel was excluded",
-      "Truck supply rose faster than load posts, so the load-to-truck ratio eased to 11.47",
-      "Regional averages ranged widely, making lane context more important than a national average",
-      "Use market data to challenge assumptions, then calculate the actual load with deadhead and operating cost"
-    ],
+    "takeaways": ["$2.21 per mile was linehaul only; fuel was excluded", "Truck supply rose faster than load posts, so the load-to-truck ratio eased to 11.47", "Regional averages ranged widely, making lane context more important than a national average", "Use market data to challenge assumptions, then calculate the actual load with deadhead and operating cost"],
     "faq": [
-      {
-        "question": "Does a $2.21 national average mean a carrier should reject every dry-van load below $2.21 per mile?",
-        "answer": "No. A national average is market context, not a universal floor. The correct decision depends on the specific lane, deadhead, fuel, tolls, equipment, timing, payment terms, operating costs, and what the truck can do after delivery."
-      },
-      {
-        "question": "Did the DAT rate include fuel?",
-        "answer": "No. DAT states that the cited dry-van spot linehaul rates exclude fuel costs and surcharges unless otherwise noted."
-      },
-      {
-        "question": "Why can a strong outbound rate still be a weak load?",
-        "answer": "The return lane can change the economics. Long deadhead after delivery, weak reload demand, appointment delays, tolls, or equipment constraints can offset a strong outbound price."
-      },
-      {
-        "question": "Does the market forecast guarantee that rates will stay near $2.20 per mile?",
-        "answer": "No. DAT publishes a forecast with an uncertainty range. It is planning context, not a guaranteed future rate, load volume, utilization level, or carrier revenue."
-      }
+      {"question": "Does a $2.21 national average mean a carrier should reject every dry-van load below $2.21 per mile?", "answer": "No. A national average is market context, not a universal floor. The correct decision depends on the specific lane, deadhead, fuel, tolls, equipment, timing, payment terms, operating costs, and what the truck can do after delivery."},
+      {"question": "Did the DAT rate include fuel?", "answer": "No. DAT states that the cited dry-van spot linehaul rates exclude fuel costs and surcharges unless otherwise noted."},
+      {"question": "Why can a strong outbound rate still be a weak load?", "answer": "The return lane can change the economics. Long deadhead after delivery, weak reload demand, appointment delays, tolls, or equipment constraints can offset a strong outbound price."},
+      {"question": "Does the market forecast guarantee that rates will stay near $2.20 per mile?", "answer": "No. DAT publishes a forecast with an uncertainty range. It is planning context, not a guaranteed future rate, load volume, utilization level, or carrier revenue."}
     ],
     "related": [
-      {
-        "title": "Dry Van Load Board",
-        "body": "Review the Hermes Load Board entry point for dry-van equipment and carrier workflows.",
-        "href": "/load-board/equipment/dry-van/"
-      },
-      {
-        "title": "Load Board",
-        "body": "See how Hermes separates carrier access, providers, equipment, and source-gated market records.",
-        "href": "/load-board/"
-      },
-      {
-        "title": "Owner-operator logistics path",
-        "body": "Review the operating path for owner-operators evaluating dispatch and carrier support.",
-        "href": "/paths/logistics/carriers/owner-operators/"
-      },
-      {
-        "title": "RPM calculator",
-        "body": "Use an internal rate-per-mile calculation as one input to a full load decision.",
-        "href": "/logistics/resources/rpm-calculator/"
-      }
+      {"title": "Dry Van Load Board", "body": "Review the Hermes Load Board entry point for dry-van equipment and carrier workflows.", "href": "/load-board/equipment/dry-van/"},
+      {"title": "Load Board", "body": "See how Hermes separates carrier access, providers, equipment, and source-gated market records.", "href": "/load-board/"},
+      {"title": "Owner-operator logistics path", "body": "Review the operating path for owner-operators evaluating dispatch and carrier support.", "href": "/paths/logistics/carriers/owner-operators/"},
+      {"title": "RPM calculator", "body": "Use an internal rate-per-mile calculation as one input to a full load decision.", "href": "/logistics/resources/rpm-calculator/"}
     ],
-    "primaryAction": {
-      "label": "Explore Dry Van Load Board",
-      "href": "/load-board/equipment/dry-van/"
-    },
-    "secondaryAction": {
-      "label": "Review Logistics",
-      "href": "/paths/logistics/"
-    },
+    "primaryAction": {"label": "Explore Dry Van Load Board", "href": "/load-board/equipment/dry-van/"},
+    "secondaryAction": {"label": "Review Logistics", "href": "/paths/logistics/"},
     "sourceLabel": "DAT Freight & Analytics — Dry Van Report",
     "sourceUrl": "https://www.dat.com/blog/dry-van-report-rates-tick-up-as-truck-capacity-starts-trickling-back",
     "sourcePublishedAt": "2026-09-08",
     "datePublished": "2026-09-14",
     "dateModified": "2026-09-14",
     "authorName": "Hermes Editorial Team",
-    "keywords": [
-      "dry van spot rates",
-      "dry van rates 2026",
-      "truckload rates",
-      "load to truck ratio",
-      "carrier rate negotiation",
-      "deadhead calculation",
-      "owner operator load planning",
-      "DAT dry van report"
-    ],
+    "keywords": ["dry van spot rates", "dry van rates 2026", "truckload rates", "load to truck ratio", "carrier rate negotiation", "deadhead calculation", "owner operator load planning", "DAT dry van report"],
     "contentTier": "standalone",
     "currentMarketClaim": true,
-    "telegram": {
-      "group": "Hermes Logistics Academy",
-      "messageId": 5188
-    }
+    "telegram": {"group": "Hermes Logistics Academy", "messageId": 5188}
   },
   {
     "id": "tgcontent_BcDG37_WeFas",
@@ -241,52 +104,129 @@
     "eyebrow": "Hermes Marketing · Reviewed update",
     "h1": "Google measurement and Data Strength updates",
     "conciseAnswer": "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief.",
-    "explanation": [
-      "Hermes keeps this item as a reviewed brief because the source is dated 2026-09-10 and the update is relevant to Hermes Marketing. Hermes interpretation: Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief. Use it as decision context, not as a guarantee of ranking, demand, rates, revenue, employment, or another outcome."
-    ],
-    "takeaways": [
-      "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief."
-    ],
+    "explanation": ["Hermes keeps this item as a reviewed brief because the source is dated 2026-09-10 and the update is relevant to Hermes Marketing. Hermes interpretation: Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief. Use it as decision context, not as a guarantee of ranking, demand, rates, revenue, employment, or another outcome."],
+    "takeaways": ["Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief."],
     "faq": [],
     "related": [
-      {
-        "title": "Marketing",
-        "body": "Review the canonical Hermes Marketing direction.",
-        "href": "/paths/marketing/"
-      },
-      {
-        "title": "SEO services",
-        "body": "Connect the update to search and conversion work.",
-        "href": "/services/seo/"
-      }
+      {"title": "Marketing", "body": "Review the canonical Hermes Marketing direction.", "href": "/paths/marketing/"},
+      {"title": "SEO services", "body": "Connect the update to search and conversion work.", "href": "/services/seo/"}
     ],
-    "primaryAction": {
-      "label": "Explore Hermes Marketing",
-      "href": "/paths/marketing/"
-    },
-    "secondaryAction": {
-      "label": "Continue in Hermes",
-      "href": "/services/seo/"
-    },
+    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
+    "secondaryAction": {"label": "Continue in Hermes", "href": "/services/seo/"},
     "sourceLabel": "blog.google",
     "sourceUrl": "https://blog.google/products/ads-commerce/data-strength-updates/",
     "sourcePublishedAt": "2026-09-10",
     "datePublished": "2026-09-14",
     "dateModified": "2026-09-14",
     "authorName": "Hermes Editorial Team",
-    "keywords": [
-      "marketing",
-      "google",
-      "measurement",
-      "data",
-      "strength",
-      "updates"
-    ],
+    "keywords": ["marketing", "google", "measurement", "data", "strength", "updates"],
     "contentTier": "brief",
     "currentMarketClaim": true,
-    "telegram": {
-      "group": "SMM Organic Target",
-      "messageId": 837
-    }
+    "telegram": {"group": "SMM Organic Target", "messageId": 837}
+  },
+  {
+    "id": "fmcsa-fuel-hos-waiver-september-2026",
+    "direction": "logistics",
+    "slug": "fmcsa-fuel-hours-of-service-waiver-september-2026",
+    "title": "FMCSA Fuel HOS Waiver: What Carriers Need to Know | Hermes",
+    "description": "FMCSA issued a temporary hours-of-service waiver for interstate carriers and drivers transporting gasoline and diesel fuel from September 16 through December 16, 2026. Hermes explains the scope, safety conditions, and dispatch implications without treating it as a general trucking HOS exemption.",
+    "eyebrow": "Logistics Compliance Update · September 2026",
+    "h1": "FMCSA changed hours-of-service flexibility for fuel hauling. Who is actually covered?",
+    "conciseAnswer": "FMCSA issued a temporary waiver from 49 CFR 395.3 for interstate motor carriers and drivers transporting gasoline and diesel fuel. It runs from September 16 through December 16, 2026, and is narrow: it does not create a general HOS exemption for freight. Covered drivers may not drive more than 16 hours in any 24-hour period and must follow the waiver's rest, eligibility, documentation, and safety conditions.",
+    "explanation": [
+      "What changed: On September 16, 2026, FMCSA granted a temporary waiver from the hours-of-service limitations in 49 CFR 395.3 for interstate motor carriers and drivers transporting gasoline and diesel fuel. The waiver is effective through December 16, 2026. It is tied to fuel transportation and does not remove other Federal Motor Carrier Safety Regulations or hazardous-material requirements.",
+      "Why it matters: Dispatchers and carriers can create a compliance problem if they treat a narrow waiver as permission to extend every driver's day. FMCSA's conditions include a 16-hour maximum driving limit in any 24-hour period, minimum rest requirements, valid CDL and required endorsements, possession of a copy of the waiver, safety-rating eligibility, immediate rest when requested, transition rules back to normal operations, and crash-reporting duties.",
+      "What to do: Before a dispatcher changes a schedule, first verify that the movement is actually gasoline or diesel fuel transportation covered by the waiver and that the carrier and driver meet the eligibility conditions. Keep the waiver available to the driver, preserve the required rest window, track the transition back to normal HOS operations, and continue following every regulation that FMCSA did not waive.",
+      "Result: The useful operational outcome is not 'more driving hours' in the abstract. It is a clearly documented decision tree: covered fuel movement, eligible carrier and driver, waiver conditions met, safe schedule built, and normal HOS rules restored correctly after waiver operations. That reduces the risk of applying a temporary exception to the wrong load or driver.",
+      "Historical context: Hermes operating archives have long treated routing, scheduling and driver communication as connected dispatch decisions. The 2026 waiver changes the compliance envelope for a narrow fuel-hauling segment, but it does not change the underlying discipline: verify the rule that applies before changing the plan. No historical rates, earnings, private contacts, or old compliance claims are reused as current facts."
+    ],
+    "takeaways": [
+      "The waiver applies to interstate transportation of gasoline and diesel fuel, not freight generally",
+      "It is effective September 16 through December 16, 2026",
+      "Covered drivers may not drive more than 16 hours in any 24-hour period and must meet the waiver's rest and eligibility conditions",
+      "Dispatch should verify scope and conditions before changing a driver's schedule"
+    ],
+    "faq": [
+      {"question": "Does the waiver let every truck driver work a 16-hour driving day?", "answer": "No. The waiver is limited to qualifying interstate operations transporting gasoline and diesel fuel, and covered carriers and drivers must comply with its terms and conditions."},
+      {"question": "When does the FMCSA waiver expire?", "answer": "FMCSA states that it expires at 11:59 p.m. on December 16, 2026."},
+      {"question": "What rest is required under the waiver?", "answer": "FMCSA requires at least 6 consecutive hours in the sleeper berth in each 24-hour period, or at least 8 consecutive hours off duty if there is no sleeper berth. Additional 10-hour rest requirements apply in specified circumstances, including when a driver requests immediate rest and when transitioning back to normal operations after reaching the stated threshold."},
+      {"question": "Does the waiver replace CDL, hazmat, insurance, drug-testing or other safety rules?", "answer": "No. FMCSA expressly states that requirements not specifically waived remain in force, including CDL, controlled-substance and alcohol testing, financial responsibility, hazardous-material rules, vehicle size and weight rules, and other applicable Federal and State requirements."}
+    ],
+    "related": [
+      {"title": "Hermes Logistics", "body": "Review the canonical Hermes Logistics direction and carrier operations resources.", "href": "/paths/logistics/"},
+      {"title": "Owner-Operator Dispatch Support", "body": "Connect compliance checks with load review, route context and operating decisions.", "href": "/logistics/owner-operator-dispatch-support/"},
+      {"title": "Load Board", "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping regulatory verification separate from load selection.", "href": "/load-board/"}
+    ],
+    "primaryAction": {"label": "Review Hermes Logistics", "href": "/paths/logistics/"},
+    "secondaryAction": {"label": "Explore Load Board", "href": "/load-board/"},
+    "sourceLabel": "FMCSA — Hours of Service Waiver for the Transportation of Gasoline and Diesel Fuel",
+    "sourceUrl": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel",
+    "sourcePublishedAt": "2026-09-16",
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "authorName": "Hermes Editorial Team",
+    "keywords": ["FMCSA hours of service waiver", "fuel hauling HOS", "gasoline diesel fuel waiver", "truck driver hours of service 2026", "carrier compliance", "dispatch compliance", "49 CFR 395.3"],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
+    "evidence": [
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "FMCSA fuel transportation HOS waiver", "use": "primary", "url": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel", "observedAt": "2026-09-21", "eventDate": "2026-09-16", "notes": "Primary regulator source for scope, dates, conditions and restrictions."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for routing, scheduling and driver communication. No private details or old compliance claims are republished."}
+    ],
+    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Hermes historical operating material treated routing, scheduling and communication as connected dispatch decisions; the FMCSA waiver changes the legal operating window only for qualifying fuel movements, so current regulator verification must come before any scheduling change.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel"},
+    "publicationScore": {"score": 88, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+15 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+  },
+  {
+    "id": "meta-one-business-tools-september-2026",
+    "direction": "marketing",
+    "slug": "meta-one-business-creator-tools-september-2026",
+    "title": "Meta One Business Tools: What Changes for Organic Social | Hermes",
+    "description": "Meta introduced Meta One with new professional tools for creators and businesses, including enhanced profiles, stronger follow conversion features and, on higher plans, advanced publishing and analytics capabilities. Hermes explains what the September 2026 rollout changes for organic social operations.",
+    "eyebrow": "Marketing Platform Update · September 2026",
+    "h1": "Meta One adds professional publishing and conversion tools. What should organic social teams change?",
+    "conciseAnswer": "Meta announced Meta One on September 15, 2026, with plans for creators and businesses rolling out globally. Meta says the offering includes professional presence and conversion features such as enhanced profiles, a more prominent follow button on Reels and automatic follow invitations for people who interact with content; higher business tiers add capabilities such as Story scheduling, links in organic posts and Reels, exportable analytics, deeper audience insights and team access. Availability varies by region, app and account.",
+    "explanation": [
+      "What changed: Meta introduced Meta One as a subscription layer across its apps with plans for individuals, creators and businesses. For business and creator accounts, Meta describes tools aimed at building presence and turning attention into action: enhanced profile information, a prominent follow button on Reels, automatic follow invitations for people who engage, and expanded access to Meta Business Agent. Meta also lists advanced publishing, analytics and team-access capabilities in higher business tiers.",
+      "Why it matters: Organic social work is increasingly becoming an operating system, not just a posting calendar. Scheduling, profile conversion, analytics export, audience analysis and controlled team access can reduce operational friction, but none of those features create demand by themselves. The underlying job remains to earn relevant attention, understand which content brings qualified audiences, and connect that attention to a measurable business action.",
+      "What to do: Do not buy a subscription just because a feature exists. First identify the bottleneck: publishing consistency, profile conversion, measurement, team access or customer response. Then check which Meta One features are actually available to the account and region, compare them with the current workflow, and test only the feature that can remove a measurable bottleneck. Keep content, audience and conversion metrics separate so a convenience feature is not mistaken for marketing performance.",
+      "Result: A disciplined team can use the new tools to shorten production and measurement loops while keeping strategy independent of the platform subscription. The target outcome is faster publishing, cleaner account access, better measurement and clearer conversion paths—not simply more posts or a paid badge.",
+      "Historical context: Hermes marketing archives previously emphasized consistent organic publishing, audience interaction and content-native optimization as recurring operating work. Meta One moves more of the execution layer—publishing controls, profile conversion and analytics—inside Meta's paid toolset. The method still starts with useful content and audience fit; the platform is changing how teams can execute and measure it. Historical pricing, case metrics and private client figures are not reused here."
+    ],
+    "takeaways": [
+      "Meta One creator and business plans are rolling out globally, with availability varying by region, app and account",
+      "Meta says business tools include enhanced profiles, stronger follow conversion and expanded Meta Business Agent access",
+      "Higher tiers can include Story scheduling, links in organic posts and Reels, exportable analytics, deeper audience insights and team access",
+      "Use new tools to remove a measured workflow bottleneck rather than treating subscription features as a growth strategy"
+    ],
+    "faq": [
+      {"question": "Does Meta One replace organic social strategy?", "answer": "No. Meta One adds tools and higher usage limits. Content relevance, audience fit, creative quality, measurement and conversion design still determine whether social activity creates business value."},
+      {"question": "Can every business account use every Meta One feature immediately?", "answer": "No. Meta says plans and features are rolling out and that availability can vary by region, app and account. Teams should verify what is offered inside the specific account before changing a workflow."},
+      {"question": "What is most useful for an organic social team?", "answer": "That depends on the bottleneck. Publishing teams may value scheduling and team access; growth teams may value follow-conversion tools; analysts may value exportable analytics and deeper audience insights. The right test is the one tied to a measurable workflow or conversion problem."},
+      {"question": "Should a team publish more just because scheduling becomes easier?", "answer": "Not automatically. Lower publishing friction is useful only if the additional content remains relevant, differentiated and measurable. A stronger cadence without audience value can create more activity without better business outcomes."}
+    ],
+    "related": [
+      {"title": "Hermes Marketing", "body": "Review the Hermes Marketing direction for organic social, measurement and growth workflows.", "href": "/paths/marketing/"},
+      {"title": "SEO services", "body": "Connect social discovery with search visibility and measurable conversion paths.", "href": "/services/seo/"}
+    ],
+    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
+    "secondaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
+    "sourceLabel": "Meta Newsroom — Introducing Meta One",
+    "sourceUrl": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/",
+    "sourcePublishedAt": "2026-09-15",
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "authorName": "Hermes Editorial Team",
+    "keywords": ["Meta One business", "Instagram business tools 2026", "organic social media workflow", "Instagram Story scheduling", "organic post links", "social media analytics", "Meta Business Agent"],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "evidence": [
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Meta One creator and business plan announcement", "use": "primary", "url": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/", "observedAt": "2026-09-21", "eventDate": "2026-09-15", "notes": "Primary Meta announcement for rollout, creator/business tooling and availability caveats."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing operating archive", "use": "context_only", "notes": "Used only for anonymized operating patterns around recurring organic publishing and audience interaction. No client identities, prices, private metrics or one-to-one content are republished."}
+    ],
+    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing operating material", "nowPeriod": "September 2026", "summary": "Hermes historical marketing work emphasized recurring organic publishing and audience interaction; Meta One moves more publishing, profile-conversion, analytics and team-access controls into Meta's paid professional tooling, changing execution friction rather than the need for useful content and measurable audience fit.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/"},
+    "publicationScore": {"score": 88, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+15 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
   }
 ]
