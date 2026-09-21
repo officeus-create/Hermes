@@ -52,7 +52,7 @@ After a material result, update the existing canonical record with task, owner, 
 
 ## Project boundary
 
-- The active local checkout is `/Users/progressopro/Hermes` (`~/Hermes`). Older documents may mention `/Users/progressopro/Documents/hermeslogisticus.com`; treat that as a legacy path.
+- The retired MacBook/local checkout paths are historical provenance only. Do not use `/Users/progressopro/Hermes`, old worktrees, local browser state, local databases, Downloads, caches, or screenshots as current truth. Current repository truth comes from fresh GitHub refs/CI; durable shared context comes from Google Drive / One Brain; local execution is allowed only on a freshly authorized endpoint established for the current task.
 - Work only inside this repository unless the owner explicitly assigns a connected external source.
 - Do not read or modify Database Carrier, Digital CEO Bridge, CRM, manager queues, or private company records unless the current task explicitly requires that source and the approved connector is used.
 - Do not publish internal AI prompts, routing rules, employee information, revenue targets, or unfinished experiments on the public website.
@@ -83,7 +83,7 @@ This rule does not authorize uncontrolled scope growth. Implement adjacent value
 The owner is the only CEO and final decision-maker. Agents are specialists operating from the same repository memory.
 
 - Codex: primary coding agent when available.
-- Claude Code: local Mac execution, shell, code, tests, commits, feature-branch pushes, and PR creation; becomes primary implementation agent when Codex is unavailable.
+- Claude Code: local execution only when a fresh authorized endpoint exists for the current task; the retired owner Mac is not a current execution source. On an authorized endpoint it may handle shell, code, tests, commits, feature-branch pushes, and PR creation, and may become primary implementation agent when Codex is unavailable.
 - Claude Web/Cowork: SEO/live-site audit, architecture and PR review, browser-connected checks, research, and precise implementation briefs; may write when repository access is available.
 - ChatGPT: coordination, explanation, public research, connected GitHub/Drive/Gmail work, review, and bounded overflow execution.
 - Other approved AI tools: specialist research or second opinions; verified conclusions must be written into the repository before implementation.
@@ -114,7 +114,7 @@ Escalate only for:
 8. material expansion outside the accepted task; or
 9. an ambiguity that cannot be resolved from current evidence.
 
-Execution environments may still impose their own sandbox or approval prompts. Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` / `--yolo`, standing full-access modes, or an auto-review flag merely to keep an unattended task moving. Ordinary interactive Hermes Codex work should use `./scripts/ai/codex-hermes` and the narrowest sandbox/approval policy appropriate to the assigned task; do not edit global Codex configuration from a repository task unless the owner explicitly assigns that external configuration change. Browser-queued Internal AI is stricter: its trusted wrapper must fail closed, run inside `workspace-write`, disable approval escalation, clean the inherited environment, and sanitize evidence as defined in `docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md`. A sandbox denial is a blocker/evidence signal, not permission to widen authority.
+Execution environments may still impose their own sandbox or approval prompts. Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` / `--yolo`, standing full-access modes, or an auto-review flag merely to keep an unattended task moving. When a fresh authorized local execution endpoint exists, ordinary interactive Hermes Codex work should use `./scripts/ai/codex-hermes` and the narrowest sandbox/approval policy appropriate to the assigned task; do not assume the retired MacBook is available, and do not edit global Codex configuration from a repository task unless the owner explicitly assigns that external configuration change. Browser-queued Internal AI is stricter: its trusted wrapper must fail closed, run inside `workspace-write`, disable approval escalation, clean the inherited environment, and sanitize evidence as defined in `docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md`. A sandbox denial is a blocker/evidence signal, not permission to widen authority.
 
 ### Organizational lessons
 
