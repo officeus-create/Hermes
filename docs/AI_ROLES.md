@@ -24,7 +24,7 @@ Do not ask the owner to repeat context that is already recorded in the current s
 
 The owner sets business priorities, approves production-impacting actions, and decides when work is complete. Agents should convert broad instructions into concrete tasks, but must not replace the owner's final business judgment.
 
-## Claude Code on the Mac — primary implementation executor
+## Claude Code — implementation executor on a fresh authorized endpoint
 
 Claude Code is the primary implementation agent for the Hermes repository when it can complete the task safely in the available environment.
 
@@ -39,7 +39,7 @@ May, without repeated permission inside a bounded owner-approved task:
 - update the current project-state/handoff records when material state changes;
 - continue work handed off by ChatGPT, Codex, or Claude Web without redoing completed work.
 
-Claude Code should use the Mac environment for tasks that require local shell access, browser automation, installed tooling, or repository credentials.
+Claude Code may use local shell, browser automation, installed tooling, or repository credentials only on a freshly authorized execution endpoint for the current task. The retired owner Mac/MacBook is historical provenance and must not be treated as an available current runtime.
 
 ### Execution rule — do not pause for routine confirmation
 
@@ -65,7 +65,7 @@ Primary responsibilities:
 - verify online results after a branch is pushed;
 - record material findings in the compact project state, applicable issue, error register, or handoff when repository write access is available.
 
-When Claude Web has direct repository write access, it may create a feature branch, commit documentation or bounded code, run available checks, push the branch, and open a pull request under the same safety rules. When a cloud environment cannot perform a local or authenticated action, it should hand the exact bounded blocker to Claude Code instead of repeatedly retrying.
+When Claude Web has direct repository write access, it may create a feature branch, commit documentation or bounded code, run available checks, push the branch, and open a pull request under the same safety rules. When a cloud environment cannot perform a local or authenticated action, it should hand the exact bounded blocker to the current authorized implementation owner instead of repeatedly retrying or assuming the retired owner Mac is available.
 
 ## Codex — failover, escalation, and independent verification
 
@@ -118,7 +118,7 @@ Gemini, Kimi, Perplexity, NotebookLM, and other approved tools may be used as sp
 
 Use the lowest-cost capable agent for each task while preserving quality and avoiding duplicated context:
 
-- Primary local coding, shell, tests, commits, and pushes: Claude Code.
+- Coding, shell, tests, commits, and pushes on a fresh authorized execution endpoint: Claude Code or the currently assigned implementation owner.
 - Failover coding, bounded reconstruction, difficult technical verification: Codex.
 - GitHub/Drive reconciliation, architecture, SEO analysis, connected evidence, coordination: ChatGPT or Claude Web.
 - Fresh public research and source verification: ChatGPT or another research-capable agent.
