@@ -44,6 +44,7 @@ test("homepage Organization uses exact Hermes same-entity profiles only", async 
   expect(organization).toBeTruthy();
   expect(organization.sameAs).toEqual(expectedHermesProfiles);
   expect(organization.sameAs).not.toContain(progressoproProfile);
+  expect(organization.department).toBeUndefined();
 });
 
 test("homepage publishes one stable Hermes Logistics LLC Organization node", async ({ page }) => {
