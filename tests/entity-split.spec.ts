@@ -56,7 +56,7 @@ test("homepage publishes one stable Hermes Logistics LLC Organization node", asy
   );
   expect(logistics).toBeTruthy();
   expect(logistics.name).toBe("Hermes Logistics LLC");
-  expect(logistics.legalName).toBe("Hermes Logistics LLC");
+  expect(logistics.legalName).toBe("Hermes Logistics, LLC");
   expect(logistics.identifier?.propertyID).toBe("Wisconsin DFI Entity ID");
   expect(logistics.identifier?.value).toBe("H062724");
   expect(logistics.foundingDate).toBe("2018-11-01");
