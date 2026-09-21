@@ -104,6 +104,7 @@ assert.doesNotMatch(
 );
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
+const productionContactMode = read("src/components/ProductionContactMode.astro");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
   assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
 }
@@ -161,15 +162,22 @@ for (const retiredMarker of ["2 public programs", "Two public programs", "curren
 }
 for (const marker of [
   "https://hermeslogisticsus.com/paths/logistics/",
-  'data-contact-mode=\\"live\\"',
-  'data-contact-endpoint=\\"/api/logistics-lead\\"',
-  "Send request",
+  "data-contact-form",
+  "Preview request",
 ]) {
-  assert.ok(productionWorkflow.includes(marker), `Live Logistics contact production marker is missing from release verification: ${marker}`);
+  assert.ok(productionWorkflow.includes(marker), `Logistics contact raw-shell production marker is missing from release verification: ${marker}`);
+}
+for (const marker of [
+  'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  'form.dataset.contactMode = "live"',
+  'form.dataset.contactEndpoint = "/api/logistics-lead"',
+  'label.textContent = "Send request"',
+]) {
+  assert.ok(productionContactMode.includes(marker), `Production contact runtime activation marker is missing: ${marker}`);
 }
 assert.ok(
-  productionWorkflow.includes('forbiddenMarkers: ["Preview request"]'),
-  "Production release verification must explicitly reject a preview-only Logistics contact form.",
+  productionWorkflow.includes("Logistics contact shell plus runtime-activation contract"),
+  "Production release reporting must describe the split raw-shell plus runtime activation contract accurately.",
 );
 assert.ok(
   productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),
