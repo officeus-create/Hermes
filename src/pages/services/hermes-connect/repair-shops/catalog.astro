@@ -1,9 +1,6 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAccountSwitcher.astro";
-import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../../data/hermes-connect-repair-shop-launch";
-
-const launchEnd = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Chicago" }).format(new Date(REPAIR_SHOP_FREE_REGISTRATION_END_ISO));
 ---
 <BaseLayout
   title="Catalog Listing | Hermes Connect Repair Shop"
@@ -18,12 +15,12 @@ const launchEnd = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone
     <section class="flow" aria-label="Catalog publication flow">
       <article><strong>1 · Complete your company</strong><p>Save the real business name and location in Repair Shop CRM. Add services as you configure the workspace.</p></article>
       <article><strong>2 · Approve publication</strong><p>Turn Catalog publication on here. The listing is marked self-submitted until independently verified.</p></article>
-      <article><strong>3 · Search-ready profile</strong><p>Hermes creates one crawlable Catalog profile and structured business facts without publishing customers, appointments, private contacts or authentication data.</p></article>
-      <article><strong>4 · Measure over time</strong><p>Initial SEO/GEO preparation starts with publication. Reporting is scheduled monthly; organic, local and AI-search performance should be evaluated over 6+ months. No ranking, traffic or lead result is guaranteed.</p></article>
+      <article><strong>3 · Free public listing</strong><p>Hermes creates one crawlable Catalog profile from owner-approved public business facts. The listing has no listing fee; customers, appointments, private contacts and authentication data stay private.</p></article>
+      <article><strong>4 · Search discovery over time</strong><p>After publication, Hermes develops the directory and profile structure for SEO, GEO, local search and AI discovery. Reporting is scheduled monthly, and organic/local/AI-search performance should be evaluated over 6+ months. Search engines control crawling, indexing and rankings. No ranking, traffic or lead result is guaranteed.</p></article>
     </section>
 
     <section class="panel" aria-live="polite">
-      <div><p class="eyebrow">Current Repair Shop pilot</p><h2>Catalog publication</h2><p class="muted">Free Repair Shop registration is currently available through {launchEnd} Central Time. Catalog listing itself has no listing fee; paid website, SEO/GEO, social media and advertising work is scoped separately.</p></div>
+      <div><p class="eyebrow">Current Repair Shop pilot</p><h2>Catalog publication</h2><p class="muted">Repair Shop registration and Hermes Connect software access are currently $0 while Hermes configures the workspace around your business. Catalog listing itself has no listing fee. Publication uses owner-approved public facts, and Hermes develops the directory for SEO, GEO, local search and AI discovery. Separate managed website, SEO/GEO, social media and advertising work is scoped separately.</p></div>
       <div id="catalog-loading" class="status">Loading your company…</div>
       <div id="catalog-missing" class="state hidden"><p>Complete the Repair Shop company profile before publishing.</p><a class="button" href="/services/hermes-connect/repair-shops/settings/">Open Company settings</a></div>
       <div id="catalog-ready" class="state hidden">

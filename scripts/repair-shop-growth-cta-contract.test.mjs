@@ -49,13 +49,14 @@ assert.doesNotMatch(customerActions, /client-name|client-email|client-phone|\/ap
 // through the existing private lead receiver without introducing website payment tech.
 assert.match(repairLanding, /Auto repair shop software for scheduling, bookings, and customer workflow\./);
 assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
-assert.match(repairLanding, /Founding Shop Plan: \$99\/month per location/);
+assert.match(repairLanding, /\$0 during setup · standard Founding Shop price \$99\/month after setup/);
 assert.doesNotMatch(repairLanding, /Current live pilot/);
 
 assert.match(offerContract, /REPAIR_SHOP_OFFER_STATUS\s*=\s*"current-public-offer"/);
 assert.match(offerContract, /id:\s*"repair_shop_founding"/);
 assert.match(offerContract, /priceMonthlyUsd:\s*99/);
 assert.match(offerContract, /purchaseFlow:\s*"human-confirmation-and-invoice"/);
+assert.match(offerContract, /Owner-approved Hermes Catalog listing with no listing fee/);
 for (const state of ["trialing", "founding", "active", "past_due", "cancelled", "comped"]) {
   assert.match(offerContract, new RegExp(`"${state}"`));
 }
@@ -64,7 +65,7 @@ assert.equal(publicPrice, "99");
 assert.match(paidPlan, new RegExp(`\\$${publicPrice}\\/month`));
 assert.match(paidPlan, /Founding Shop Plan/);
 assert.match(paidPlan, /per repair shop location/);
-assert.match(paidPlan, /Try the workspace first/);
+assert.match(paidPlan, /Start free setup/);
 assert.match(paidPlan, /id="plan-consent" type="checkbox" required/);
 assert.match(paidPlan, /fetch\("\/api\/logistics-lead"/);
 assert.match(paidPlan, /"Idempotency-Key": requestId/);
@@ -79,55 +80,35 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
-// CEO promotion decision: Repair Shop owner registration is free through the full
-// Central-Time day of September 15, 2026, then new free Repair Shop creation closes
-// and routes to the existing human-confirmation Founding Shop Plan.
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO\s*=\s*"2026-09-16T05:00:00\.000Z"/);
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE\s*=\s*"America\/Chicago"/);
-assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE\s*=\s*"2026-09-15"/);
-assert.match(launchPolicy, /id:\s*"repair_shop_free_registration_sep15_2026"/);
-assert.match(launchPolicy, /afterDeadlineWithoutBilling:\s*"current_plan_required"/);
-assert.match(launchPolicy, /cardRequired:\s*false/);
-assert.match(freeLaunch, /Free repair shop registration through September 15/);
-assert.match(freeLaunch, /Бесплатная регистрация СТО до 15 сентября включительно/);
-assert.match(freeLaunch, /free_registration_through_2026_09_15/);
-assert.match(freeLaunch, /closeFreeRegistrationUi/);
-assert.match(freeLaunch, /cta\.href = localizeHref\(`\$\{repairRoot\}\/plan\/`\)/);
-assert.doesNotMatch(freeLaunch, /14_day_free_registration|14-day launch offer|14-дневная стартовая акция/);
+// CEO commercial decision: Repair Shop registration and software access stay free
+// while Hermes configures the workspace around the business. The standard Founding
+// Shop price remains $99/month after setup, with human confirmation before billing.
+assert.match(launchPolicy, /REPAIR_SHOP_SETUP_ACCESS_ENABLED\s*=\s*true/);
+assert.match(launchPolicy, /REPAIR_SHOP_SETUP_ACCESS_PRICE_USD\s*=\s*0/);
+assert.match(launchPolicy, /REPAIR_SHOP_FOUNDING_PRICE_USD\s*=\s*99/);
+assert.match(launchPolicy, /REPAIR_SHOP_CATALOG_LISTING_FEE_USD\s*=\s*0/);
+assert.match(launchPolicy, /id:\s*"repair_shop_free_during_setup_2026"/);
+assert.match(launchPolicy, /cardRequiredDuringSetup:\s*false/);
+assert.match(launchPolicy, /catalogPublication:\s*"owner-approved-public-facts-only"/);
+assert.match(launchPolicy, /discoveryScope:\s*\["seo",\s*"geo",\s*"local-search",\s*"ai-discovery"\]/);
+assert.match(launchPolicy, /searchResultsGuaranteed:\s*false/);
+assert.match(freeLaunch, /Use Hermes Connect free while we configure it for your shop/);
+assert.match(freeLaunch, /Пользуйтесь Hermes Connect бесплатно, пока мы настраиваем систему под ваше СТО/);
+assert.match(freeLaunch, /repair_shop_free_during_setup_2026/);
+assert.match(freeLaunch, /free public Hermes Catalog listing/);
+assert.doesNotMatch(freeLaunch, /Free-registration countdown|closeFreeRegistrationUi|free_registration_through_2026_09_15/);
 
-// Public Shop Owner account creation is closed after the deadline, and the actual
-// first Repair Shop record has the same gate so another generic Hermes role cannot
-// bypass the promotion. Existing shop records remain editable because the profile
-// gate is only in the no-existing-shop branch.
-assert.match(registerApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
-assert.match(registerApi, /role === "Shop Owner" && Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
-assert.match(registerApi, /repair_shop_free_registration_ended/);
-assert.match(registerApi, /\/services\/hermes-connect\/repair-shops\/plan\//);
-assert.match(repairProfileApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
-assert.match(repairProfileApi, /if \(existing\)[\s\S]*?UPDATE repair_shops[\s\S]*?else \{[\s\S]*?Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
-assert.match(repairProfileApi, /repair_shop_free_registration_ended/);
+// Shop Owner account creation and first Repair Shop creation use one owner-controlled
+// setup-access flag. There is no hidden calendar cutoff and existing shops remain editable.
+assert.match(registerApi, /REPAIR_SHOP_SETUP_ACCESS_ENABLED/);
+assert.match(registerApi, /role === "Shop Owner" && !REPAIR_SHOP_SETUP_ACCESS_ENABLED/);
+assert.match(registerApi, /repair_shop_setup_access_closed/);
+assert.doesNotMatch(registerApi, /REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
+assert.match(repairProfileApi, /REPAIR_SHOP_SETUP_ACCESS_ENABLED/);
+assert.match(repairProfileApi, /else \{[\s\S]*?!REPAIR_SHOP_SETUP_ACCESS_ENABLED/);
+assert.match(repairProfileApi, /repair_shop_setup_access_closed/);
+assert.doesNotMatch(repairProfileApi, /REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
 assert.match(repairProfileApi, /INSERT INTO repair_shops/);
-
-const closedWindowSmokePaths = [
-  "repair-booking-production-smoke.sh",
-  "repair-customer-crm-production-smoke.sh",
-  "repair-capacity-production-smoke.sh",
-  "repair-operations-production-smoke.sh",
-  "repair-booking-concurrency-production-smoke.sh",
-];
-for (const smokeName of closedWindowSmokePaths) {
-  const smoke = await readFile(new URL("./" + smokeName, import.meta.url), "utf8");
-  assert.match(smoke, /repair_shop_free_registration_ended/, smokeName + " must honor the closed registration window");
-  assert.match(smoke, /SKIPPED_CLOSED_REGISTRATION_WINDOW/, smokeName + " must classify closed-window production writes without bypassing policy");
-  assert.match(smoke, /\/services\/hermes-connect\/repair-shops\/plan\//, smokeName + " must verify the current plan handoff");
-}
-const bookingProductionWorkflow = await readFile(new URL("../.github/workflows/repair-booking-production-smoke.yml", import.meta.url), "utf8");
-assert.match(bookingProductionWorkflow, /REPAIR_ACCESS_STATE_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/);
-assert.match(bookingProductionWorkflow, /repair_shop_free_registration_ended/);
-const cancelRebookProductionWorkflow = await readFile(new URL("../.github/workflows/repair-cancel-rebook-production-smoke.yml", import.meta.url), "utf8");
-assert.match(cancelRebookProductionWorkflow, /REPAIR_CANCEL_REBOOK_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/);
-assert.match(cancelRebookProductionWorkflow, /repair_shop_free_registration_ended/);
-assert.match(cancelRebookProductionWorkflow, /\/services\/hermes-connect\/repair-shops\/plan\//);
 
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step
 // first-value loop through the first completed booking and paid-plan decision.
@@ -165,4 +146,4 @@ assert.doesNotMatch(
 
 await import("./repair-shop-private-design-contract.test.mjs");
 
-console.log("Repair Shop customer-focused booking actions, Sep 15 free-registration account/profile gates, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop customer-focused booking actions, free-setup account/profile gates, revenue, Catalog discovery offer, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");

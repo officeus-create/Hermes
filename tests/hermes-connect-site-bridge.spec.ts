@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
-const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
+const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/?mode=login";
 const academyRoute = "/services/hermes-connect/academy/";
 const beautyRoute = "/services/hermes-connect/beauty/workspace/";
 

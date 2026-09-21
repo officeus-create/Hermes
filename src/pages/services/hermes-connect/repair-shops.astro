@@ -17,8 +17,9 @@ const faqs = [
   { question: "What does Hermes Connect repair shop software include?", answer: "You can register an owner account, set up the shop profile and services, configure weekly availability, share a public online booking link, process bookings, review customer and vehicle context, and send private product feedback." },
   { question: "Is Hermes Connect an auto repair CRM?", answer: "Hermes Connect includes limited CRM capabilities for customer and vehicle context, booking history and status, services, and availability in one owner workspace. It is not presented as a full repair-order, inventory, accounting, payroll, or payment-processing suite." },
   { question: "Can customers book repair appointments online?", answer: "Yes. Your shop can publish services and weekly availability and share one booking link. Customers choose a service and request an available time while Hermes Connect keeps the booking attached to the shop workflow." },
-  { question: "How much is the Founding Shop Plan?", answer: "The current launch offer is $99 per month for one repair shop location. The website does not collect a card on the activation request; Hermes confirms the shop, plan scope, billing details, and invoice before paid activation." },
-  { question: "Can I try the workspace before requesting paid activation?", answer: "Yes. Start with owner registration, configure the shop, and see whether the workflow is useful. When you are ready to keep using it as a paid shop, open the Founding Shop Plan and request activation." },
+  { question: "How much is Hermes Connect for a repair shop?", answer: "The standard Founding Shop price is $99 per month for one repair shop location after setup. During the setup period, the Hermes Connect software fee is $0 while Hermes helps configure the workspace around your shop. Paid activation and the invoice are confirmed with you before billing." },
+  { question: "Can I use Hermes Connect free while my shop is being set up?", answer: "Yes. Registration and software access are currently free during the setup period. Configure the shop, services, availability, booking flow, and CRM first. When setup is complete and you want to continue, Hermes confirms the paid Founding Shop activation with you before billing." },
+  { question: "Does registration include a Hermes Catalog listing?", answer: "After you complete your business profile, you can approve publication of owner-approved public facts to Hermes Catalog at no listing fee. Hermes develops the directory for SEO, GEO, local search, and AI discovery, but search engines control crawling, indexing, and rankings, and traffic or leads are not guaranteed." },
   { question: "Does Hermes Connect guarantee more customers or revenue?", answer: "No. Hermes Connect provides the shop, booking, customer, and operating tools described here. Customer volume, demand, rankings, revenue, and business results are not guaranteed." },
   { question: "Do I need a native mobile app?", answer: "No. The current product is browser-first and responsive, so an owner can use it from a modern phone or computer without installing an app." },
 ];
@@ -60,7 +61,7 @@ const schema = [
 
 <BaseLayout
   title="Auto Repair Shop Software & Scheduling | Hermes Connect"
-  description="Auto repair shop software for independent shops with online scheduling, booking workflow, services, availability, customer and vehicle context. Founding Shop Plan: $99/month."
+  description="Auto repair shop software for independent shops with online scheduling, booking workflow, customer and vehicle context. $0 during setup; standard Founding Shop price is $99/month after setup."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -73,13 +74,13 @@ const schema = [
           <h1>Auto repair shop software for scheduling, bookings, and customer workflow.</h1>
           <p class="repair-lead">Hermes Connect repair shop software helps independent shops publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, and separate notes.</p>
           <div class="repair-actions">
-            <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/">Set up my shop <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">View $99 Founding Plan</a>
+            <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">See pricing after setup</a>
           </div>
           <div class="repair-trust">
             <span><CheckCircle2 size={16} aria-hidden="true" />Works from a modern phone or computer</span>
             <span><CheckCircle2 size={16} aria-hidden="true" />Real booking, customer, and availability data</span>
-            <span><DollarSign size={16} aria-hidden="true" />Founding Shop Plan: $99/month per location</span>
+            <span><DollarSign size={16} aria-hidden="true" />$0 during setup · standard Founding Shop price $99/month after setup</span>
           </div>
         </div>
         <aside class="repair-live-card" aria-label="How to start with Hermes Connect Repair Shops">
@@ -109,14 +110,14 @@ const schema = [
     <section class="repair-section repair-plan-section" aria-labelledby="repair-plan-title">
       <div class="repair-shell repair-plan-card">
         <div>
-          <p class="repair-kicker">Founding Shop Plan</p>
-          <h2 id="repair-plan-title">If the workflow saves your shop time, keep using it for $99/month.</h2>
-          <p>One repair shop location gets the current owner workspace, public booking path, availability, booking inbox, customers, vehicle context, and direct product-feedback channel.</p>
+          <p class="repair-kicker">Free setup → Founding Shop Plan</p>
+          <h2 id="repair-plan-title">Use Hermes Connect free while we configure it around your shop.</h2>
+          <p>During setup, the software fee is $0 while you build the real shop profile, services, availability, booking flow, customer history, and CRM. When setup is complete, the standard Founding Shop price is $99/month per location if you choose to continue.</p>
         </div>
-        <div class="repair-plan-price"><span>$</span><strong>99</strong><small>/month</small></div>
+        <div class="repair-plan-price"><span>$</span><strong>0</strong><small>during setup · $99/month after setup</small></div>
         <div class="repair-plan-actions">
-          <a class="repair-primary" href="/services/hermes-connect/repair-shops/plan/">Request paid activation <ArrowRight size={18} aria-hidden="true" /></a>
-          <small>No card is collected on this website. Hermes confirms the activation and invoice first.</small>
+          <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
+          <small>No card is charged during setup. Paid activation is confirmed with you before invoicing.</small>
         </div>
       </div>
     </section>
@@ -126,7 +127,7 @@ const schema = [
         <div class="repair-heading"><p class="repair-kicker">Owner access</p><h2 id="repair-workspace-title">Start publicly. Continue operations after sign-in.</h2><p>The public product page explains the workflow and launch offer. Shop dashboard, scheduling, customers, and other operational tools stay inside the authenticated Hermes workspace.</p></div>
         <div class="repair-link-grid">
           <a href="/services/hermes-connect/repair-shops/auth/"><UsersRound size={20} aria-hidden="true" /><strong>Login / Register</strong><span>Create your shop or securely return to your owner workspace.</span></a>
-          <a href="/services/hermes-connect/repair-shops/plan/"><DollarSign size={20} aria-hidden="true" /><strong>Founding Shop Plan</strong><span>Review the $99/month launch scope and request paid activation.</span></a>
+          <a href="/services/hermes-connect/repair-shops/plan/"><DollarSign size={20} aria-hidden="true" /><strong>Free setup → $99/month</strong><span>See what stays free during setup and how paid activation works after your workspace is configured.</span></a>
           <a href="#repair-capabilities-title"><CalendarDays size={20} aria-hidden="true" /><strong>How online booking works</strong><span>Review the public booking, availability, customer, and vehicle workflow before signing in.</span></a>
         </div>
       </div>
@@ -134,11 +135,11 @@ const schema = [
 
     <section class="repair-section repair-quick-links" aria-labelledby="repair-growth-title">
       <div class="repair-shell">
-        <div class="repair-heading"><p class="repair-kicker">Get found and booked</p><h2 id="repair-growth-title">Need more customers to discover your repair shop online?</h2><p>The $99 Hermes Connect plan covers the software workflow described above. Hermes can separately help a repair business improve its website, Local SEO, and broader organic search visibility when that growth scope is useful.</p></div>
+        <div class="repair-heading"><p class="repair-kicker">Catalog + search discovery</p><h2 id="repair-growth-title">Build a public discovery asset while we configure your CRM.</h2><p>After registration, complete your real business profile and approve publication to Hermes Catalog. The listing has no listing fee. Hermes develops the directory for SEO, GEO, local search, and AI discovery while keeping customers, appointments, private contacts, and authentication data out of the public profile.</p></div>
         <div class="repair-link-grid">
-          <a href="/services/seo-for-auto-repair-shops/"><CheckCircle2 size={20} aria-hidden="true" /><strong>SEO for auto repair shops</strong><span>Improve service-page ownership, eligible local discovery, technical SEO, and the path from search to a useful customer action.</span></a>
-          <a href="/services/auto-repair-website-design/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Auto repair website design</strong><span>Build a mobile-first repair-shop website that connects real services and local discovery to calls, directions, inquiry, or booking.</span></a>
-          <a href="/services/local-seo/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Local SEO & Google visibility</strong><span>Review the real location or eligible service area, business facts, local profiles, and customer discovery paths without fake-location tactics.</span></a>
+          <a href="/businesses/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Free Hermes Catalog listing</strong><span>Publish one owner-approved business profile with real services and location facts. Search engines control crawling, indexing, and rankings; results are not guaranteed.</span></a>
+          <a href="/services/seo-for-auto-repair-shops/"><CheckCircle2 size={20} aria-hidden="true" /><strong>SEO for auto repair shops</strong><span>Use the Catalog as a discovery layer, then add deeper service-page, technical SEO, and conversion work when a broader growth scope is useful.</span></a>
+          <a href="/services/local-seo/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Local SEO & AI discovery</strong><span>Keep location and service facts consistent across eligible local profiles and search surfaces without fake-location or ranking-guarantee tactics.</span></a>
         </div>
       </div>
     </section>

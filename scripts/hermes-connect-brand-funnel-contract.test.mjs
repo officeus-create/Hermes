@@ -64,7 +64,7 @@ assert(hub.includes("Run your business"), "Hub: adaptive operating-system hero i
 assert(hub.includes("with AI."), "Hub: approved AI operating-system headline is required.");
 assert(hub.includes("One system. Different business realities."), "Hub: adaptive vertical hierarchy statement is required.");
 assert(hub.includes("LIVE PRODUCT") && hub.includes("Repair Shops"), "Hub: Repair Shops must remain the current live product vertical.");
-assert(hub.includes('href="/services/hermes-connect/repair-shops/auth/"'), "Hub: direct Repair Shop owner access must remain visible.");
+assert(hub.includes('href="/services/hermes-connect/repair-shops/auth/?mode=login"'), "Hub: direct Repair Shop owner login must remain visible.");
 assert(hub.includes("PREVIEW CONFIGURATION"), "Hub: unreleased verticals must be classified as preview configurations.");
 assert(hub.includes("Configuration preview · not a released vertical"), "Hub: preview verticals must explicitly disclose that they are not released.");
 assert(hub.includes("WORKSPACE PREVIEW · SAMPLE DATA"), "Hub: illustrative workspace must disclose sample data.");
@@ -77,14 +77,15 @@ assert(!hub.includes("hc-knot-float") && !hub.includes('class="hc-knot"'), "Hub:
 assert(hub.includes('{ name: "Load Analysis + RPM", href: "/load-board/#load-analysis" }'), "Hub: Load Analysis must route into the canonical Load Board decision path.");
 assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: reference capabilities must remain subordinate and clearly classified.");
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
-assert(!/\$99|\$299|\$799/.test(hub), "Hub: historical planning prices must not appear as current pricing.");
+assert(hub.includes("$0 during Repair Shop setup · $99/month after setup if you continue"), "Hub: current free-setup to Founding Shop continuation offer must remain explicit.");
+assert(!/\$299|\$799/.test(hub), "Hub: retired planning-tier prices must not return as current pricing.");
 
 const foundingPlan = await text("src/pages/services/hermes-connect/repair-shops/plan.astro");
 assert(foundingPlan.includes("var(--hermes-pearl)"), "Founding Plan: public shell must consume canonical Pearl.");
 assert(foundingPlan.includes("var(--hermes-obsidian)"), "Founding Plan: conversion hierarchy must retain an intentional Obsidian anchor.");
 assert(!foundingPlan.includes("#090d16"), "Founding Plan: old full-page dark shell must not return.");
 assert(foundingPlan.includes('fetch("/api/logistics-lead"'), "Founding Plan: real purchase-intent delivery must remain unchanged.");
-assert(foundingPlan.includes("No card is collected on this website"), "Founding Plan: no-charge-before-confirmation boundary must remain explicit.");
+assert(foundingPlan.includes("No card is charged during setup"), "Founding Plan: no-charge-during-setup boundary must remain explicit.");
 
 const capabilityPages = [
   "ai-command-center.astro",

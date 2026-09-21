@@ -87,7 +87,9 @@ assert.match(hubSource, /Appointments, CRM, payments, revenue, inventory, payrol
 assert.doesNotMatch(hubSource, /Other industries are previews/);
 assert.doesNotMatch(hubSource, /Appointments, clients, services, specialists, repeat visits, reviews, and relationship management/);
 assert.doesNotMatch(hubSource, /connect\.hermeslogisticsus\.com\/workspace/);
-assert.doesNotMatch(hubSource, /\$99|\$299|\$799/);
+assert.match(hubSource, /\$0 during Repair Shop setup/);
+assert.match(hubSource, /\$99\/month after setup if you continue/);
+assert.doesNotMatch(hubSource, /\$299|\$799/);
 assert.match(capabilityPage, /Reference capability · not current live pilot/);
 assert.match(capabilityPage, /Open current Repair Shop product/);
 

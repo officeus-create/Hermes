@@ -93,8 +93,8 @@ test("Russian locale translates the Founding Shop plan surface", async ({ page }
 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
-  await expect(page.locator(".plan-page .hero h1")).toHaveText("Активируйте Hermes Connect для своего СТО.");
-  await expect(page.locator("#activate-title")).toHaveText("Запросить тариф Founding Shop за $99 в месяц.");
+  await expect(page.locator(".plan-page .hero h1")).toHaveText("Начните бесплатно. Платите только после настройки системы под ваше СТО.");
+  await expect(page.locator("#activate-title")).toHaveText("Продолжите на тарифе Founding Shop за $99 в месяц, когда система будет настроена.");
   await expect(page.locator("#paid-plan-form")).toContainText("Название СТО");
   await expect(page.locator("#paid-plan-form")).not.toContainText("Repair shop name");
 });

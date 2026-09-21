@@ -32,6 +32,7 @@ export const REPAIR_SHOP_FOUNDING_OFFER: RepairShopOffer = {
     "Booking inbox with appointment status history",
     "Customer and vehicle context connected to bookings",
     "Private product feedback with founding-customer priority review",
+    "Owner-approved Hermes Catalog listing with no listing fee",
   ],
 };
 

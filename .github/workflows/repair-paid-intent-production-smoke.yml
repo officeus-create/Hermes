@@ -91,8 +91,8 @@ jobs:
 
             if grep -Fq 'Founding Shop Plan' <<<"$html" \
               && grep -Fq '$99/month per repair shop location' <<<"$html" \
-              && grep -Fq 'No card is collected on this website' <<<"$html" \
-              && grep -Fq 'Request paid activation' <<<"$html"; then
+              && grep -Fq 'Start free. Pay only after your shop is configured.' <<<"$html" \
+              && grep -Fq 'No card is charged during setup.' <<<"$html"; then
               echo "Current paid-plan production truth observed on attempt $attempt."
               live=1
               break
