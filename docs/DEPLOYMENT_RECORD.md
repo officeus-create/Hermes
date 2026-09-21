@@ -47,9 +47,9 @@ Canonical authority is now explicit: authenticated Cloudflare Pages project stat
 
 Rollback remains Cloudflare Pages deployment history followed by exact-SHA/custom-domain readback. Do not deploy a partial downloaded config, copy Cloudflare resource IDs or secret values into the public repository, or introduce a second Pages deploy/config authority.
 
-## Bounded production D1/operator proof — #961
+## Bounded production D1/operator proof — #960
 
-The Repair Shop production access-state proof is a separate capability gate, not a Pages release mechanism.
+The Repair Shop production access-state proof is a separate capability gate owned by #960, not a Pages release mechanism. #961 is closed because Pages deploy/parity is complete.
 
 It requires only the dedicated authorized proof credentials:
 
@@ -61,7 +61,7 @@ The proof workflow must not fall back to a broad generic Cloudflare token. If th
 
 ## Other surviving Cloudflare gates
 
-The canonical backlog is GitHub issue #1349. Important remaining owner/platform items include MFA, mail identity, Minimum TLS 1.2, Certificate Transparency Monitoring, credential reduction after MFA, useful Free notification policies and Cloudflare-native synthetics. DNSSEC and the Pages compatibility-date alignment are already closed.
+The completed Cloudflare remediation tracker is GitHub issue #1349; do not reopen its closed DNSSEC/runtime-date work. Remaining owner/admin Cloudflare gates are coordinated in One Brain; the bounded Repair Shop D1/operator proof is owned by #960.
 
 Password reset issue #611 is an outbound arbitrary-recipient transport capability gate; it is not a Pages or Worker deployment blocker.
 
