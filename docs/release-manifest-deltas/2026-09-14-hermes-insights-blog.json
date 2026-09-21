@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-14-hermes-insights-blog",
-  "generated_at": "2026-09-21T03:00:00+00:00",
+  "generated_at": "2026-09-21T03:00:36+00:00",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
