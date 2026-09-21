@@ -105,6 +105,7 @@ assert.doesNotMatch(
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
 const productionContactMode = read("src/components/ProductionContactMode.astro");
+const productionContactRuntimeCheck = read("scripts/check-production-contact-runtime.mjs");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
   assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
 }
@@ -175,9 +176,28 @@ for (const marker of [
 ]) {
   assert.ok(productionContactMode.includes(marker), `Production contact runtime activation marker is missing: ${marker}`);
 }
+for (const marker of [
+  "npx playwright install --with-deps chromium",
+  "node scripts/check-production-contact-runtime.mjs",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Production browser runtime verification is missing from the release workflow: ${marker}`);
+}
+for (const marker of [
+  'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  'form?.getAttribute("data-contact-mode") === "live"',
+  'form?.getAttribute("data-contact-endpoint") === "/api/logistics-lead"',
+  'label?.textContent?.trim() === "Send request"',
+]) {
+  assert.ok(productionContactRuntimeCheck.includes(marker), `Production browser runtime assertion is missing: ${marker}`);
+}
+assert.doesNotMatch(
+  productionContactRuntimeCheck,
+  /\.click\(|\.fill\(|\.submit\(|request\.post\(/,
+  "Production contact runtime verification must remain read-only and must not submit the form.",
+);
 assert.ok(
-  productionWorkflow.includes("Logistics contact shell plus runtime-activation contract"),
-  "Production release reporting must describe the split raw-shell plus runtime activation contract accurately.",
+  productionWorkflow.includes("preview-safe Logistics contact shell and its live browser runtime activation"),
+  "Production release reporting must describe the raw-shell plus browser runtime contract accurately.",
 );
 assert.ok(
   productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),
