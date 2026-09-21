@@ -50,10 +50,15 @@ assert.ok(staffAction);
 assert.equal(staffAction.status, "CORRECT_OWNED_PROFILE");
 assert.match(staffAction.action_gate, /Authenticated owner access/i);
 
-for (const source of ["google_business_profile", "microsoft_bing_business_presence", "apple_business", "linkedin_company", "dun_and_bradstreet"]) {
+for (const source of ["wisconsin_dfi", "google_business_profile", "microsoft_bing_business_presence", "apple_business", "linkedin_company", "dun_and_bradstreet"]) {
   const action = registry.external_source_actions.find((item) => item.source === source);
   assert.ok(action, `Missing external entity action for ${source}`);
 }
+
+const stateRecord = registry.external_source_actions.find((item) => item.source === "wisconsin_dfi");
+assert.equal(stateRecord.status, "OFFICIAL_RECORD_CONFIRMED");
+assert.match(stateRecord.rule, /H062724/);
+assert.match(stateRecord.rule, /2018-11-01/);
 
 const collectKeys = (value, output = []) => {
   if (Array.isArray(value)) {
