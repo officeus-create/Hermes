@@ -63,7 +63,7 @@ The proof workflow must not fall back to a broad generic Cloudflare token. If th
 
 The completed Cloudflare remediation tracker is GitHub issue #1349; do not reopen its closed DNSSEC/runtime-date work. Remaining owner/admin Cloudflare gates are coordinated in One Brain; the bounded Repair Shop D1/operator proof is owned by #960.
 
-Password reset issue #611 is an outbound arbitrary-recipient transport capability gate; it is not a Pages or Worker deployment blocker.
+Password reset issue #611 has merged opt-in Gmail API transport code but production transport remains OFF pending owner-approved `gmail.send` OAuth/secrets, real reset/session/replay/cleanup proof, and SPF/DKIM/DMARC alignment; it is not a Pages deployment blocker.
 
 ## Superseded instructions
 
