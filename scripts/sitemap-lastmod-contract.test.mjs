@@ -26,7 +26,7 @@ function entryLastmod(entry, label) {
 
 // Dated release evidence, never the build clock.
 const knownUpdates = [
-  ["sitemap.xml", "company-information/", "2026-09-12", "url"],
+  ["sitemap.xml", "company-information/", "2026-09-22", "url"],
   ["sitemap-digital-services.xml", "services/hermes-connect/repair-shops/", "2026-09-12", "url"],
   ["sitemap-digital-services.xml", "services/seo-for-auto-repair-shops/", "2026-09-13", "url"],
   ["sitemap-digital-services.xml", "services/auto-repair-website-design/", "2026-09-13", "url"],
