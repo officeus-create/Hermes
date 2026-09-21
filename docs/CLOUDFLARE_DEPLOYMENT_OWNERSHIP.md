@@ -151,7 +151,7 @@ Credential separation:
 
 - Pages production release works through the existing exact-SHA Cloudflare Git integration; do not create a broad catch-all token just for Pages.
 - #960 bounded D1/operator proof needs dedicated Pages-read + D1 proof access plus approved account context only; #961 is closed.
-- #611 may later need a narrow Worker deploy credential for automation hardening, but the current password-reset product blocker is outbound email capability, not Worker deployment.
+- #611 Gmail API transport code is merged but remains OFF by default; production completion requires owner-approved `gmail.send` OAuth/secrets, activation, reset/session/replay/cleanup proof and mail-auth alignment. Any Worker deploy credential remains a separate automation-hardening concern.
 - never copy local Wrangler OAuth credentials, Global API Key, broad Agent token or legacy build token into GitHub merely to unblock a workflow.
 
 MFA on the sole Super Admin is a prerequisite before broad token/OAuth rotation or revocation.
@@ -163,7 +163,7 @@ Cloudflare Email Routing and Email Sending are different products.
 - Google Workspace remains the apex inbound MX owner.
 - Cloudflare Email Routing is used for intentional routing/forwarding paths and must not be interpreted as arbitrary transactional outbound capability.
 - Current `send_email` binding architecture supports the existing approved verified-destination use case.
-- #611 password-reset delivery to arbitrary eligible Repair Shop account recipients is a separate outbound transport/plan capability gate.
+- #611 password-reset delivery to arbitrary eligible Repair Shop account recipients now has a reviewed Gmail API transport implementation in code, but the transport is not production-active until owner-approved OAuth/secrets and the full reset/mail-auth proof pass.
 
 Do not change Google Workspace apex MX while solving password reset. Do not create a second auth/mail stack to hide a provider-plan limitation.
 
