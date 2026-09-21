@@ -29,8 +29,8 @@ This file is a public-safe approval template. It must not contain credentials, p
 
 | Field | Proposed canonical value | Status | Evidence/source type | Verified by | Verified date | Next review | Publication notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Legal entity name |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  |  |
-| Public brand name |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  |  |
+| Legal entity name | `Hermes Logistics LLC` | `VERIFIED_PUBLIC` | Owner directive + current Company Information page | Owner | 2026-09-22 | 2026-12-22 | Approved for the U.S. logistics entity; do not merge same-name businesses into this identity. |
+| Public brand name | `Hermes Logistics` | `VERIFIED_PUBLIC` | Current owned website / public entity registry | Owner | 2026-09-22 | 2026-12-22 | Public-facing logistics direction label; legal identity remains Hermes Logistics LLC. |
 | Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Current public website |  | 2026-08-04 |  | Confirm preferred capitalization and canonical domain. |
 | Primary business category |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Avoid merging all four directions into one vague category. |
 | Legal jurisdiction/state |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Publish only when supported and useful. |
@@ -52,7 +52,7 @@ This file is a public-safe approval template. It must not contain credentials, p
 
 | Direction | Canonical one-sentence description | Status | Evidence/source type | Owner | Verified date | Next review | Prohibited ambiguity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Hermes Logistics |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not imply fleet ownership, brokerage authority, guaranteed capacity, or carrier control unless verified. |
+| Hermes Logistics | `Hermes Logistics LLC is the U.S. logistics business identified on hermeslogisticsus.com for logistics-related services and communications.` | `VERIFIED_PUBLIC` | Owner directive + Company Information page | Owner | 2026-09-22 | 2026-12-22 | Do not imply fleet ownership, brokerage authority, guaranteed capacity, or carrier control unless verified. |
 | ProgressoPro |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not mix client results, personal results, forecasts, and agency-wide results. |
 | Hermes Business Academy |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not imply guaranteed employment, income, placement, feedback, or an unapproved current program. |
 | IT / website / automation |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not present concepts or specifications as live products. |
@@ -100,13 +100,13 @@ This file is a public-safe approval template. It must not contain credentials, p
 | Platform/profile | Public URL | Login owner known | Current facts compared | Required action | Action owner | Completed date | Recheck date |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Main website | `https://hermeslogisticsus.com/` |  |  | Review against approved matrix |  |  |  |
-| Staff.am |  |  |  | Inventory and classify |  |  |  |
+| Staff.am | `https://staff.am/en/company/hermes-logistics-llc` | Access owner pending | Compared 2026-09-22; stale/conflicting scale, founding, office, services and benefits wording remains visible | Authenticated keep/update/remove under Recruiting/HR #515 | Recruiting/HR |  | Recheck after edit propagation |
 | Work.ua |  |  |  | Separate personal historical record from current company claims |  |  |  |
-| LinkedIn company/person profiles |  |  |  | Inventory and classify |  |  |  |
-| Google Business Profile / Maps |  |  |  | Verify existence, ownership, address/service-area truth |  |  |  |
+| LinkedIn company/person profiles |  | Access/admin status unknown | Personal Hermes-related profiles can surface, but they are not company `sameAs` proof | Audit exact company-page existence/admin ownership; keep personal profiles separate | SEO + owner/admin |  |  |
+| Google Business Profile / Maps |  | Access/admin status unknown | Current public discovery did not establish one canonical Hermes result; absence is not proven | Audit existing entity first; claim/correct before creating; verify address/service-area eligibility | SEO + owner/admin |  |  |
 | Facebook / Instagram / Threads |  |  |  | Align bios, domain, contact, category, direction |  |  |  |
 | GitHub organization/profile |  |  |  | Align public description and domain |  |  |  |
-| Other directories |  |  |  | Add one row per ranking/visible profile |  |  |  |
+| Dun & Bradstreet | `https://www.dnb.com/business-directory/company-profiles.hermes_logistics_llc.8edaf29fe6ae5d78a393fc24657b08ac.html` | Claim/admin unknown | Public Milwaukee Hermes Logistics LLC profile discovered; exact identity fields require owner-record reconciliation | Reconcile exact entity/contact; never promote modelled employee/revenue fields as Hermes facts | SEO + owner/admin |  |  |
 
 # H. Final owner approval
 

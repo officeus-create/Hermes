@@ -21,8 +21,9 @@ const requiredInterfaces = [
 ];
 assert.deepEqual(registry.interfaces, requiredInterfaces);
 
-assert.equal(registry.observations.length, 1, "Owner screenshot starts the real entity-observation baseline");
-const observation = registry.observations[0];
+assert.ok(registry.observations.length >= 2, "Entity monitor must preserve the baseline plus newly observed incidents");
+const observation = registry.observations.find((item) => item.id === "ENTITY-OBS-2026-09-16-001");
+assert.ok(observation);
 assert.equal(observation.interface, "google_ai_overview");
 assert.equal(observation.query, "гермес лоджистикс ллс");
 assert.equal(observation.brand_recognized, true);
@@ -33,10 +34,26 @@ assert.ok(observation.issue_codes.includes("STALE_THIRD_PARTY_RECRUITMENT_CONTEX
 assert.ok(observation.issue_codes.includes("ENTITY_AMBIGUITY_WITH_SIMILAR_UKRAINE_NAMES"));
 assert.ok(observation.corrective_actions.length >= 3);
 
+const falseScamIncident = registry.observations.find((item) => item.id === "ENTITY-OBS-2026-09-22-001");
+assert.ok(falseScamIncident, "False-scam entity incident must be retained as dated evidence");
+assert.equal(falseScamIncident.interface, "unidentified_ai_assistant");
+assert.equal(falseScamIncident.entity_accuracy, "materially_inaccurate");
+assert.equal(falseScamIncident.scam_warning_emitted, true);
+assert.ok(falseScamIncident.issue_codes.includes("FALSE_SCAM_CLASSIFICATION"));
+assert.ok(falseScamIncident.issue_codes.includes("HERMES_EVRI_BRAND_COLLISION"));
+assert.ok(falseScamIncident.issue_codes.includes("EXTERNAL_CORROBORATION_GAP"));
+assert.match(falseScamIncident.summary, /not proof of wrongdoing/i);
+assert.ok(falseScamIncident.corrective_actions.length >= 5);
+
 const staffAction = registry.external_source_actions.find((item) => item.source === "staff.am");
 assert.ok(staffAction);
 assert.equal(staffAction.status, "CORRECT_OWNED_PROFILE");
 assert.match(staffAction.action_gate, /Authenticated owner access/i);
+
+for (const source of ["google_business_profile", "microsoft_bing_business_presence", "apple_business", "linkedin_company", "dun_and_bradstreet"]) {
+  const action = registry.external_source_actions.find((item) => item.source === source);
+  assert.ok(action, `Missing external entity action for ${source}`);
+}
 
 const collectKeys = (value, output = []) => {
   if (Array.isArray(value)) {
@@ -56,7 +73,7 @@ for (const prohibited of ["password", "cookie", "api_key", "access_token", "phon
   assert.ok(!keys.includes(prohibited), `Entity monitor schema must not store ${prohibited}`);
 }
 
-for (const kpi of ["own_domain_citation_rate", "entity_conflict_count", "google_generative_ai_impressions"]) {
+for (const kpi of ["own_domain_citation_rate", "entity_conflict_count", "google_generative_ai_impressions", "false_scam_warning_incident_count", "brand_collision_incident_count", "independent_entity_source_coverage", "verified_business_profile_coverage"]) {
   assert.ok(registry.kpis.includes(kpi), `Missing KPI ${kpi}`);
 }
 
