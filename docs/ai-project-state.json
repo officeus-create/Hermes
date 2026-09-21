@@ -226,7 +226,7 @@
     "product_files_modified": false
   },
   "execution_priorities": [
-    "Close #961 only through bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
+    "#961 is closed. Run the bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup only through owner issue #960 using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
     "After a successful exact-main deploy, require production readback before calling current code live.",
     "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
     "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",
