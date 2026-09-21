@@ -104,6 +104,8 @@ assert.doesNotMatch(
 );
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
+const productionContactMode = read("src/components/ProductionContactMode.astro");
+const productionContactRuntimeCheck = read("scripts/check-production-contact-runtime.mjs");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
   assert.ok(productionWorkflow.includes(`- "${ignoredPath}"`), `Non-runtime path should not spend a production Pages build: ${ignoredPath}`);
 }
@@ -111,6 +113,20 @@ assert.doesNotMatch(
   productionWorkflow,
   /pages deploy dist --project-name=hermes --branch=main|cloudflare\/wrangler-action|steps\.credentials|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|CLOUDFLARE_TOKEN/,
   "Production Pages must keep one release owner: the native Cloudflare Git integration, not an optional Wrangler upload path.",
+);
+for (const marker of [
+  "approved_main_guard:",
+  'RELEASE_REF: ${{ github.ref }}',
+  'if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then',
+  "needs: approved_main_guard",
+  "Manual dispatch is a fallback",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Approved-main release guard is missing: ${marker}`);
+}
+assert.match(
+  productionWorkflow,
+  /approved_main_guard:[\s\S]*exit 1[\s\S]*deploy:[\s\S]*needs: approved_main_guard/,
+  "A non-main manual dispatch must fail before the production deployment job can start.",
 );
 assert.match(
   productionWorkflow,
@@ -160,16 +176,40 @@ for (const retiredMarker of ["2 public programs", "Two public programs", "curren
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
 for (const marker of [
-  "https://hermeslogisticsus.com/paths/logistics/",
-  'data-contact-mode=\\"live\\"',
-  'data-contact-endpoint=\\"/api/logistics-lead\\"',
-  "Send request",
+  'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  'form.dataset.contactMode = "live"',
+  'form.dataset.contactEndpoint = "/api/logistics-lead"',
+  'label.textContent = "Send request"',
 ]) {
-  assert.ok(productionWorkflow.includes(marker), `Live Logistics contact production marker is missing from release verification: ${marker}`);
+  assert.ok(productionContactMode.includes(marker), `Production contact runtime activation marker is missing: ${marker}`);
 }
+for (const marker of [
+  "npx playwright install --with-deps chromium",
+  "node scripts/check-production-contact-runtime.mjs",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Production browser runtime verification is missing from the release workflow: ${marker}`);
+}
+for (const marker of [
+  'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
+  "javaScriptEnabled: false",
+  'rawPage.locator("[data-contact-form]").first().evaluate',
+  'rawForm.mode !== "preview"',
+  '(rawForm.endpoint ?? "").trim() !== ""',
+  'rawForm.label !== "Preview request"',
+  'form?.getAttribute("data-contact-mode") === "live"',
+  'form?.getAttribute("data-contact-endpoint") === "/api/logistics-lead"',
+  'label?.textContent?.trim() === "Send request"',
+]) {
+  assert.ok(productionContactRuntimeCheck.includes(marker), `Production browser runtime assertion is missing: ${marker}`);
+}
+assert.doesNotMatch(
+  productionContactRuntimeCheck,
+  /\.click\(|\.fill\(|\.submit\(|request\.post\(/,
+  "Production contact runtime verification must remain read-only and must not submit the form.",
+);
 assert.ok(
-  productionWorkflow.includes('forbiddenMarkers: ["Preview request"]'),
-  "Production release verification must explicitly reject a preview-only Logistics contact form.",
+  productionWorkflow.includes("preview-safe Logistics contact shell and its live browser runtime activation"),
+  "Production release reporting must describe the raw-shell plus browser runtime contract accurately.",
 );
 assert.ok(
   productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),

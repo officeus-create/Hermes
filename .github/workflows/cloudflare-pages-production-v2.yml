@@ -2,6 +2,8 @@
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
+  # Push on main is the primary release path. Manual dispatch is a fallback
+  # only and must still target the approved main ref.
   workflow_dispatch:
   push:
     branches:
@@ -26,8 +28,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  approved_main_guard:
+    name: Reject non-main release refs
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require the approved main ref
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          if [[ "$RELEASE_REF" != "refs/heads/main" ]]; then
+            echo "Release rejected: ${RELEASE_EVENT} may verify only refs/heads/main, not ${RELEASE_REF}." >&2
+            exit 1
+          fi
+          echo "Approved main ref accepted for ${RELEASE_EVENT}."
+
   deploy:
     name: Build, deploy, and verify approved main
+    needs: approved_main_guard
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 30
@@ -120,15 +139,6 @@ jobs:
           node <<'NODE'
           const targets = [
             {
-              url: "https://hermeslogisticsus.com/paths/logistics/",
-              markers: [
-                "data-contact-mode=\"live\"",
-                "data-contact-endpoint=\"/api/logistics-lead\"",
-                "Send request",
-              ],
-              forbiddenMarkers: ["Preview request"],
-            },
-            {
               url: "https://hermeslogisticsus.com/paths/academy/",
               markers: [
                 "Build practical skills across five Hermes Academy tracks.",
@@ -201,6 +211,16 @@ jobs:
           }
           NODE
 
+      - name: Install Chromium for production runtime verification
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify approved production contact runtime without submitting
+        env:
+          CONTACT_RUNTIME_URL: https://hermeslogisticsus.com/paths/logistics/
+          CONTACT_RUNTIME_ATTEMPTS: "6"
+          CONTACT_RUNTIME_DELAY_MS: "5000"
+        run: node scripts/check-production-contact-runtime.mjs
+
       - name: Verify Connect custom subdomain
         env:
           CONNECT_EXPECTATION: approved_web_app
@@ -216,14 +236,14 @@ jobs:
         run: |
           deployment_path="Cloudflare Git integration exact-SHA deploy"
           deployment_evidence="${NATIVE_DEPLOYMENT_DETAILS:-check verified}"
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built and tested. Production was released through the ${deployment_path}, then the live Logistics contact contract, five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.\n\nDeployment evidence: ${deployment_evidence}."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built and tested. Production was released through the ${deployment_path}, then the preview-safe Logistics contact shell and its live browser runtime activation, five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.\n\nDeployment evidence: ${deployment_evidence}."
 
       - name: Report deployment or verification failure
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nThe release workflow could not prove the native Cloudflare exact-SHA Pages deployment or one of the build, static-contract, production read-back, live Logistics contact, Academy WEB10, or Connect-subdomain checks failed. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nThe release workflow could not prove the native Cloudflare exact-SHA Pages deployment or one of the build, static-contract, production read-back, Logistics contact shell/browser runtime activation, Academy WEB10, or Connect-subdomain checks failed. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
 
       - name: Publish sanitized summary
         if: always()
