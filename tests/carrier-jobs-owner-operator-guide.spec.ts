@@ -9,6 +9,13 @@ async function commercialEvents(page: import("@playwright/test").Page) {
   });
 }
 
+async function lifecyclePathEvents(page: import("@playwright/test").Page) {
+  return page.evaluate(() => {
+    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+    return analyticsWindow.dataLayer?.filter((item) => item.event === "carrier_lifecycle_path_click") ?? [];
+  });
+}
+
 async function preventCommercialNavigation(page: import("@playwright/test").Page) {
   await page.evaluate(() => {
     document.addEventListener(
@@ -99,4 +106,44 @@ test("car-hauler jobs guide attributes carrier-intake clicks to the pilot owner"
     page_path: guidePath,
     destination_path: "/logistics/start-car-hauling-dispatch/",
   });
+});
+
+
+test("car-hauler jobs guide measures early-intent routing without changing canonical ownership", async ({ page }) => {
+  await page.goto(guidePath);
+  await page.evaluate(() => {
+    localStorage.setItem("hermes-analytics-consent", "granted");
+    window.dataLayer = [];
+    document.addEventListener(
+      "click",
+      (event) => {
+        const source = event.target;
+        if (source instanceof Element && source.closest("a[data-carrier-lifecycle-path]")) event.preventDefault();
+      },
+      { capture: true },
+    );
+  });
+
+  const employment = page.locator('a[data-carrier-lifecycle-path="employment"][data-carrier-lifecycle-position="hero"]');
+  const ownerOperator = page.locator('a[data-carrier-lifecycle-path="owner_operator"]');
+  const newAuthority = page.locator('a[data-carrier-lifecycle-path="new_authority"]');
+  const loadBoard = page.locator('a[data-carrier-lifecycle-path="load_board"]');
+
+  await expect(employment).toHaveAttribute("href", "/logistics/careers/");
+  await expect(ownerOperator).toHaveAttribute("href", "/paths/logistics/carriers/owner-operators/");
+  await expect(newAuthority).toHaveAttribute("href", "/logistics/new-authority-car-hauler-support/");
+  await expect(loadBoard).toHaveAttribute("href", "/load-board/?role=carrier&equipment=car_hauler#available-loads");
+
+  await employment.click();
+  await ownerOperator.click();
+  await newAuthority.click();
+  await loadBoard.click();
+
+  await expect.poll(async () => (await lifecyclePathEvents(page)).length).toBe(4);
+  expect(await lifecyclePathEvents(page)).toEqual([
+    expect.objectContaining({ path_choice: "employment", path_position: "hero", page_path: guidePath, destination_path: "/logistics/careers/" }),
+    expect.objectContaining({ path_choice: "owner_operator", path_position: "intent_router", page_path: guidePath, destination_path: "/paths/logistics/carriers/owner-operators/" }),
+    expect.objectContaining({ path_choice: "new_authority", path_position: "intent_router", page_path: guidePath, destination_path: "/logistics/new-authority-car-hauler-support/" }),
+    expect.objectContaining({ path_choice: "load_board", path_position: "related_resources", page_path: guidePath, destination_path: "/load-board/" }),
+  ]);
 });
