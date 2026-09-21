@@ -33,16 +33,17 @@ This file is a public-safe approval template. It must not contain credentials, p
 | Public brand name | `Hermes Logistics` | `VERIFIED_PUBLIC` | Current owned website / public entity registry | Owner | 2026-09-22 | 2026-12-22 | Public-facing logistics direction label; legal identity remains Hermes Logistics LLC. |
 | Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Current public website |  | 2026-08-04 |  | Confirm preferred capitalization and canonical domain. |
 | Primary business category |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Avoid merging all four directions into one vague category. |
-| Legal jurisdiction/state |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Publish only when supported and useful. |
-| Formation/operating start date |  | `EVIDENCE_REQUIRED` |  |  |  |  | Separate legal formation from project or team history. |
+| Legal jurisdiction/state | `Wisconsin` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records, entity `H062724` | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Legal formation jurisdiction only; do not convert a registered office into a public customer location. |
+| Wisconsin DFI Entity ID | `H062724` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records exact-name search | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Public legal identifier for Hermes Logistics, LLC. |
+| Formation/operating start date | `Legal formation: 2018-11-01` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records, entity `H062724` | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Legal formation date only; do not convert it into an unsupported operating-history or "since" marketing claim. |
 | Public legal/correction contact |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  |  |
 
 # B. Contact and location
 
 | Field | Proposed canonical value | Status | Evidence/source type | Verified by | Verified date | Next review | Publication notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Primary public email |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Must match the actual monitored destination or approved public alias. |
-| Primary public phone |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Define direction and coverage expectations. |
+| Primary public email | `officeus@hermeslogisticsus.com` | `VERIFIED_PUBLIC` | Current owned Company Information / Contact pages | Website owner | 2026-09-22 | 2026-12-22 | Primary public coordination email; service-specific documents may identify other approved contacts. |
+| Primary public phone | `+1 (262) 302-3626` | `VERIFIED_PUBLIC` | Current owned About / Contact pages | Website owner | 2026-09-22 | 2026-12-22 | Public U.S. Logistics Sales route; do not imply one universal phone for every direction. |
 | Headquarters wording |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not imply a staffed office without evidence. |
 | Public mailing address |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Keep private/residential addresses out unless legally required and approved. |
 | Service geography |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Separate customer geography from office presence. |
@@ -101,12 +102,13 @@ This file is a public-safe approval template. It must not contain credentials, p
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Main website | `https://hermeslogisticsus.com/` |  |  | Review against approved matrix |  |  |  |
 | Staff.am | `https://staff.am/en/company/hermes-logistics-llc` | Access owner pending | Compared 2026-09-22; stale/conflicting scale, founding, office, services and benefits wording remains visible | Authenticated keep/update/remove under Recruiting/HR #515 | Recruiting/HR |  | Recheck after edit propagation |
-| Work.ua |  |  |  | Separate personal historical record from current company claims |  |  |  |
+| Work.ua | `https://www.work.ua/en/jobs/by-company/366364/` | Access owner pending | Fresh search 2026-09-22 shows current/recent Hermes Logistics, LLC vacancy surfaces; employer-page fetch is bot-blocked from current audit | Audit employer profile fields and active vacancy copy; preserve supported recruiting facts and correct stale company identity facts under #515 | Recruiting/HR |  | Recheck after authenticated review |
 | LinkedIn company/person profiles |  | Access/admin status unknown | Personal Hermes-related profiles can surface, but they are not company `sameAs` proof | Audit exact company-page existence/admin ownership; keep personal profiles separate | SEO + owner/admin |  |  |
 | Google Business Profile / Maps |  | Access/admin status unknown | Current public discovery did not establish one canonical Hermes result; absence is not proven | Audit existing entity first; claim/correct before creating; verify address/service-area eligibility | SEO + owner/admin |  |  |
 | Facebook / Instagram / Threads |  |  |  | Align bios, domain, contact, category, direction |  |  |  |
 | GitHub organization/profile |  |  |  | Align public description and domain |  |  |  |
-| Dun & Bradstreet | `https://www.dnb.com/business-directory/company-profiles.hermes_logistics_llc.8edaf29fe6ae5d78a393fc24657b08ac.html` | Claim/admin unknown | Public Milwaukee Hermes Logistics LLC profile discovered; exact identity fields require owner-record reconciliation | Reconcile exact entity/contact; never promote modelled employee/revenue fields as Hermes facts | SEO + owner/admin |  |  |
+| Wisconsin DFI | `https://apps.dfi.wi.gov/apps/corpsearch/search.aspx` | Public record; no login required for search | Exact-name search 2026-09-22 returned one `HERMES LOGISTICS, LLC`, entity `H062724`, Domestic LLC, formed 2018-11-01, restored to good standing 2025-01-16 | Use legal name/entity ID/formation date as verified entity signals; never present registered office as public walk-in location | SEO/GEO | 2026-09-22 | 2026-12-22 |
+| Dun & Bradstreet | `https://www.dnb.com/business-directory/company-profiles.hermes_logistics_llc.8edaf29fe6ae5d78a393fc24657b08ac.html` | Claim/admin unknown | Public Milwaukee Hermes Logistics LLC profile discovered; named principal aligns with the Wisconsin DFI registered-agent name, but D&B address differs from the DFI registered office | Reconcile exact entity/contact; never promote modelled employee/revenue fields as Hermes facts; do not use directory address as public office without owner verification | SEO + owner/admin |  |  |
 
 # H. Final owner approval
 
