@@ -80,13 +80,13 @@ These come from `docs/DESIGN_INTEGRATION_CONTRACT.md`, `docs/PUBLIC_INFORMATION_
 - Never add secrets, real credentials, private/internal contacts, internal revenue targets, or unsupported public claims. Business claims carry a `ClaimStatus` (`VERIFIED_PUBLIC`, `VERIFIED_INTERNAL`, `OWNER_APPROVED_PENDING_SOURCE`, `PLACEHOLDER_DO_NOT_PUBLISH`) in `src/data/site.ts` — don't publish anything not `VERIFIED_PUBLIC`/approved.
 - Don't deploy, change DNS, or push to `main` as a side effect of a task — treat those as separate, explicitly-requested actions.
 - Run `npm run build`, `npm test`, and `npm run test:e2e` before reporting any change complete.
-- `AGENTS.md` documents a project boundary path (`/Users/progressopro/Documents/hermeslogisticus.com`) from an earlier repo location that no longer matches this checkout (`/Users/progressopro/Hermes`) — treat the *rules* in that file as current, not the literal path.
+- Any historical `/Users/progressopro/...` repository path, old worktree, browser state, cache, local database, or Mac-specific runtime reference is provenance only. The owner MacBook is retired. Use fresh GitHub/current-platform evidence for current truth and local execution only when a new authorized endpoint is explicitly available for the task.
 
 ## Claude's standing role: technical/SEO agent alongside Codex and ChatGPT
 
 Claude Code and Claude Web/Cowork act as ongoing technical and SEO agents for Hermes, working alongside Codex and ChatGPT. When Codex is unavailable, out of quota, or has handed off a task, Claude Code becomes the primary implementation agent and should continue from the project's current state rather than redoing work already done.
 
-Environment available for this role: macOS (this Mac), this repo (`~/Hermes`, GitHub `officeus-create/Hermes`), the live site `https://hermeslogisticsus.com/`, Google Workspace (Drive, Analytics, Search Console), Cloudflare, Vercel, and browser-connected checks — used once the relevant official connectors are configured.
+Current durable execution context is GitHub `officeus-create/Hermes`, Google Drive / One Brain, and the relevant authorized live platforms/connectors. Do not assume the retired MacBook, `~/Hermes`, old browser sessions, or old local credentials exist. Use local tooling only on a freshly authorized endpoint established for the current task.
 
 Before starting any task in this role:
 - Check `git status`, recent commit history, and open PRs for current state.
@@ -96,7 +96,7 @@ Before starting any task in this role:
 ### Collaboration and token routing
 
 - Use the lowest-cost capable agent for each bounded task. Do not spend premium coding context on repetitive copying, routine explanations, or public research another connected agent can perform.
-- Claude Code owns local shell, code editing, tests, commits, feature-branch pushes, and PR creation when operating on the Mac.
+- Claude Code owns local shell, code editing, tests, commits, feature-branch pushes, and PR creation only when operating on a fresh authorized execution endpoint; the retired owner Mac is not a current execution dependency.
 - Claude Web/Cowork owns cloud review, live-site/SEO audits, browser-connected checks, architecture review, and precise handoffs; it may also write code or documentation when repository access is available.
 - Codex is the primary coding agent when available; Claude Code covers implementation while Codex is unavailable or out of quota.
 - ChatGPT may handle explanation, coordination, public research, connected GitHub/Drive work, review, and bounded overflow tasks to preserve Claude/Codex context.
@@ -114,7 +114,7 @@ The following still require the owner's **explicit, per-action confirmation in t
 - Deleting anything (files, branches, PRs, projects, accounts, database/KV records, domains).
 - Handling or storing credentials, tokens, cookies, passwords, or API keys anywhere, including asking the owner to hand one over for standing use.
 - Sending email, Telegram messages, or otherwise publishing/communicating on the owner's behalf.
-- Bypassing a macOS permission prompt, or running with permission-bypass as a standing mode.
+- Bypassing an operating-system or platform permission prompt, or running with permission-bypass as a standing mode.
 
 If asked to do one of the above "from now on, don't ask again," Claude should decline the blanket version and offer to confirm quickly each time instead — the friction is the point, not an oversight to remove.
 

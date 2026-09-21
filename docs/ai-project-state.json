@@ -147,15 +147,15 @@
     }
   },
   "platform_and_owner_gates": {
-    "cloudflare_production_parity_961": "OPEN_ONLY_BOUNDED_REPAIR_SHOP_ACCESS_PRODUCTION_D1_OPERATOR_PROOF_WITH_DEDICATED_PAGES_READ_PLUS_D1_PROOF_ACCESS",
-    "password_reset_email_611": "BLOCKED_ARBITRARY_RECIPIENT_OUTBOUND_TRANSACTIONAL_EMAIL_CAPABILITY_NOT_WORKER_DEPLOYMENT",
+    "password_reset_email_611": "OWNER_ADMIN_ACTIVATION_GMAIL_API_TRANSPORT_OFF_UNTIL_GMAIL_SEND_OAUTH_SECRETS_RESET_PROOF_AND_MAIL_AUTH_ALIGNMENT",
     "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION_NO_PROTECTION_NO_RULESETS",
     "drive_acl_431": "FIX_REQUIRED_LEGACY_AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_OWNER_PRESERVED",
     "telegram_historical_credential_932": "BLOCKED_PROVIDER_SIDE_ROTATION_OR_REVOCATION_NOT_PROVEN",
     "partnership_sender_876": "BLOCKED_PARTNERSHIP_SEND_AS_OR_DEDICATED_SENDER_NOT_PROVEN_DO_NOT_SPOOF",
-    "ceo_qa_671": "CREDENTIAL_HISTORY_SANITIZED_EXISTING_QA_IDENTITY_PRESERVED_BLOCKED_BY_961_DO_NOT_REPROVISION",
-    "owner_mac_internal_ai": "ROUTE_CODEX_2",
-    "design_visual_work": "ROUTE_DESIGN_5"
+    "ceo_qa_671": "EXISTING_QA_IDENTITY_PRESERVED_DO_NOT_REPROVISION_AUTHENTICATED_OWNER_READBACK_REQUIRES_SECURE_SESSION_CREDENTIAL_HANDOFF",
+    "owner_mac_internal_ai": "MACBOOK_RETIRED_DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE_REQUIRES_NEW_AUTHORIZED_ENDPOINT_OR_HANDOFF",
+    "design_visual_work": "ROUTE_DESIGN_5",
+    "repair_shop_access_proof_960": "BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS_DEDICATED_PAGES_READ_D1_AND_ACCOUNT_CONTEXT_REQUIRED_961_CLOSED"
   },
   "one_brain_security": {
     "canonical_core_state": "CANONICAL_GLOBAL_CORE_NO_ANONYMOUS_GRANT_OBSERVED_IN_LAST_VERIFIED_READ",
@@ -226,7 +226,7 @@
     "product_files_modified": false
   },
   "execution_priorities": [
-    "Close #961 only through bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
+    "#961 is closed. Run the bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup only through owner issue #960 using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
     "After a successful exact-main deploy, require production readback before calling current code live.",
     "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
     "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",

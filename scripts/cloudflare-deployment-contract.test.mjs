@@ -72,15 +72,35 @@ assert.doesNotMatch(
   /CLOUDFLARE_API_TOKEN_MISSING_FROM_AUTHORIZED_PRODUCTION_OR_REPOSITORY_SECRET_SCOPE|BLOCKED_ONLY_SCOPED_CLOUDFLARE_API_TOKEN_THEN_BUILD_DEPLOY_AND_PUBLIC_READBACK|BLOCKED_SCOPED_CLOUDFLARE_DEPLOY_TOKEN_PLUS_REAL_EMAIL_RESET/,
   "Current project state must not revive superseded generic Cloudflare token blockers for Pages, #961, or #611.",
 );
+assert.equal(
+  aiProjectState.platform_and_owner_gates?.cloudflare_production_parity_961,
+  undefined,
+  "#961 is closed and must not remain a current owner-gate key.",
+);
 assert.match(
-  aiProjectState.platform_and_owner_gates?.cloudflare_production_parity_961 ?? "",
-  /BOUNDED_REPAIR_SHOP_ACCESS_PRODUCTION_D1_OPERATOR_PROOF/,
-  "#961 must stay narrowed to the bounded production D1/operator proof.",
+  aiProjectState.platform_and_owner_gates?.repair_shop_access_proof_960 ?? "",
+  /BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS.*DEDICATED_PAGES_READ.*D1.*ACCOUNT_CONTEXT_REQUIRED.*961_CLOSED/,
+  "#960 must own the bounded production D1/operator proof with dedicated least-privilege Cloudflare inputs.",
 );
 assert.match(
   aiProjectState.platform_and_owner_gates?.password_reset_email_611 ?? "",
-  /ARBITRARY_RECIPIENT_OUTBOUND_TRANSACTIONAL_EMAIL_CAPABILITY/,
-  "#611 must remain an outbound transactional-recipient capability gate, not a Worker deployment gate.",
+  /OWNER_ADMIN_ACTIVATION_GMAIL_API_TRANSPORT_OFF.*GMAIL_SEND_OAUTH_SECRETS.*RESET_PROOF.*MAIL_AUTH_ALIGNMENT/,
+  "#611 must reflect the merged-but-off Gmail API transport and its owner/admin activation plus mail-auth proof gates.",
+);
+assert.match(
+  aiProjectState.platform_and_owner_gates?.owner_mac_internal_ai ?? "",
+  /MACBOOK_RETIRED.*DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE/,
+  "Retired MacBook/local-runner state must not be routed as a current execution path.",
+);
+assert.match(
+  (aiProjectState.execution_priorities ?? []).join("\n"),
+  /#961 is closed[\s\S]*owner issue #960/,
+  "Current execution priorities must route the bounded D1/operator proof to #960 and keep #961 closed.",
+);
+assert.doesNotMatch(
+  (aiProjectState.execution_priorities ?? []).join("\n"),
+  /Close #961/,
+  "Current project state must not instruct agents to close an already-closed #961.",
 );
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
@@ -166,10 +186,59 @@ assert.doesNotMatch(
 );
 
 const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
+const deploymentOwnership = read("docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md");
+const agentInstructions = read("AGENTS.md");
+const aiRoles = read("docs/AI_ROLES.md");
+const claudeInstructions = read("CLAUDE.md");
 assert.match(
   deploymentRecord,
   /Release owner:\s*Cloudflare Git integration/,
   "Current deployment record must name the native Cloudflare Git integration as the Pages release owner.",
+);
+assert.match(
+  deploymentRecord,
+  /Bounded production D1\/operator proof — #960/,
+  "Current deployment record must route the bounded D1/operator proof to #960.",
+);
+assert.doesNotMatch(
+  deploymentRecord,
+  /Bounded production D1\/operator proof — #961/,
+  "Closed #961 must not remain the deployment-record owner of the D1/operator proof.",
+);
+assert.match(
+  deploymentOwnership,
+  /#960 bounded D1\/operator proof[\s\S]*#961 is closed/i,
+  "Cloudflare deployment ownership must route the bounded D1/operator proof to #960 and keep #961 closed.",
+);
+assert.doesNotMatch(
+  agentInstructions,
+  /The active local checkout is `\/Users\/progressopro\/Hermes`|Claude Code: local Mac execution/,
+  "Repository agent instructions must not route current work to the retired owner Mac.",
+);
+assert.match(
+  agentInstructions,
+  /retired MacBook\/local checkout paths are historical provenance only/i,
+  "Repository agent instructions must explicitly preserve the MacBook-retired current-state boundary.",
+);
+assert.doesNotMatch(
+  aiRoles,
+  /Claude Code on the Mac|use the Mac environment|Primary local coding/,
+  "Current AI role routing must not depend on the retired owner Mac.",
+);
+assert.match(
+  aiRoles,
+  /retired owner Mac\/MacBook is historical provenance/i,
+  "AI role routing must carry the MacBook-retired boundary explicitly.",
+);
+assert.doesNotMatch(
+  claudeInstructions,
+  /Environment available for this role: macOS \(this Mac\)|when operating on the Mac/,
+  "Claude's current repository instructions must not assume the retired Mac is available.",
+);
+assert.match(
+  claudeInstructions,
+  /owner MacBook is retired/i,
+  "Claude's current repository instructions must carry the MacBook-retired boundary explicitly.",
 );
 assert.doesNotMatch(
   deploymentRecord,
