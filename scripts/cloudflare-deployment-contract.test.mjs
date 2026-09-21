@@ -159,6 +159,18 @@ for (const marker of [
 for (const retiredMarker of ["2 public programs", "Two public programs", "currently presents two public program paths"]) {
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
+for (const marker of [
+  "https://hermeslogisticsus.com/paths/logistics/",
+  'data-contact-mode=\\"live\\"',
+  'data-contact-endpoint=\\"/api/logistics-lead\\"',
+  "Send request",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Live Logistics contact production marker is missing from release verification: ${marker}`);
+}
+assert.ok(
+  productionWorkflow.includes('forbiddenMarkers: ["Preview request"]'),
+  "Production release verification must explicitly reject a preview-only Logistics contact form.",
+);
 assert.ok(
   productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),
   "Successful release comments must keep newlines escaped inside the YAML run block.",
