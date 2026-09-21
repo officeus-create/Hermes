@@ -8,13 +8,14 @@
     "MEASURE"
   ],
   "canonical_entity": {
-    "legal_name": "Hermes Logistics LLC",
+    "legal_name": "Hermes Logistics, LLC",
     "canonical_site": "https://hermeslogisticsus.com/",
     "company_information": "https://hermeslogisticsus.com/company-information/",
     "about": "https://hermeslogisticsus.com/about/",
     "entity_role": "U.S. logistics business identified on hermeslogisticsus.com for logistics-related services and communications",
     "boundary": "Marketing, academy, and technology directions shown on the same website do not automatically mean every service is contracted through Hermes Logistics LLC.",
-    "disambiguation": "Do not infer that unrelated businesses, directory records, carriers, brokers, websites, or legal entities using Hermes or Hermes Logistics are the same organization."
+    "disambiguation": "Do not infer that unrelated businesses, directory records, carriers, brokers, websites, or legal entities using Hermes or Hermes Logistics are the same organization.",
+    "public_name": "Hermes Logistics LLC"
   },
   "interfaces": [
     "google_ai_overview",
