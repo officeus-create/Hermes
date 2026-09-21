@@ -1,0 +1,58 @@
+name: Weekday Telegram News command gateway
+
+on:
+  pull_request:
+    paths:
+      - "scripts/telegram-news-cloud-gateway.mjs"
+      - "scripts/telegram-news-cloud-gateway.test.mjs"
+      - ".github/workflows/weekday-telegram-news-command.yml"
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Run fail-closed Telegram news gateway tests
+        run: node scripts/telegram-news-cloud-gateway.test.mjs
+
+  deliver:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.number == 1293 &&
+      startsWith(github.event.comment.body, 'TELEGRAM_NEWS_QUEUE_V1') &&
+      github.event.comment.user.login == 'officeus-create' &&
+      github.event_comment.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: weekday-telegram-news-command
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      COMMAND_COMMENT_ID: ${{ github.event.comment.id }}
+      TELEGRAM_NEWS_LOGISTICS_BOT_TOKEN: ${{ secrets.TELEGRAM_NEWS_LOGISTICS_BOT_TOKEN }}
+      TELEGRAM_NEWS_MARKETING_BOT_TOKEN: ${{ secrets.TELEGRAM_NEWS_MARKETING_BOT_TOKEN }}
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Validate policy, pause, authorization and idempotency, then deliver once
+        run: node scripts/telegram-news-cloud-gateway.mjs --deliver
