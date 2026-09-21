@@ -77,7 +77,9 @@
         "Audit Google, Bing, Apple and LinkedIn business/entity presence without creating duplicate listings when an existing profile can be claimed or corrected.",
         "Increase legitimate independent entity corroboration through relevant business profiles, industry citations, reviews and earned editorial/partner references rather than bulk directory spam.",
         "Repeat the governed AI-visibility query set after corrections propagate and track false-scam warnings, wrong-company collisions and canonical-domain citations separately."
-      ]
+      ],
+      "own_domain": "hermeslogisticsus.com",
+      "third_party_sources_visible": []
     }
   ],
   "external_source_actions": [
