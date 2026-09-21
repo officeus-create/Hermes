@@ -1,5 +1,272 @@
 [
   {
+    "id": "meta-one-business-tools-september-2026",
+    "direction": "marketing",
+    "slug": "meta-one-business-tools-september-2026",
+    "title": "Meta One Business Tools: What Marketers Should Review | Hermes",
+    "description": "Meta launched Meta One with paid creator and business tools across Instagram, Facebook, WhatsApp and Meta AI. Hermes explains which workflow features matter and what not to confuse with organic reach.",
+    "eyebrow": "Social Platform Update · September 2026",
+    "h1": "Meta One adds paid business and creator tools. What should marketers review before subscribing?",
+    "conciseAnswer": "Meta announced Meta One on September 15, 2026, with creator and business subscription plans that can include enhanced profiles, follow prompts, more Meta Business Agent access, advanced scheduling, links in organic posts and Reels, exportable analytics, deeper audience insights, and team access. These are workflow and conversion-support features, not a promise of better organic ranking, reach, leads or revenue.",
+    "explanation": [
+      "What changed: Meta introduced Meta One as a subscription layer across Instagram, Facebook, WhatsApp and Meta AI. Meta says the core experience of its apps and everyday Meta AI use will remain free, while subscriptions add specialized tools and higher AI usage. For creators and businesses, the announced feature set includes enhanced profiles, a more prominent follow button on Reels, automatic follow invitations after engagement, and more access to Meta Business Agent. Meta also describes higher-tier tools such as scheduling Stories up to 30 days ahead, links in organic posts and Reels, exportable analytics, deeper audience insights, team access without password sharing, and more WhatsApp business capacity.",
+      "Why it matters: the change moves several operational tasks closer to the native social platforms. A small business or marketing team may be able to reduce manual work around scheduling, account access, analytics exports, profile conversion paths and customer-response capacity. But subscription access does not change the need for useful creative, a clear offer, a strong profile, consistent publishing, accurate measurement and a destination that converts attention into an inquiry or purchase.",
+      "What to do: audit the current workflow before buying a tier. List which tasks already require another tool or manual process—Story scheduling, analytics export, audience analysis, team access, organic links, follow-up prompts or customer-response coverage. Then compare the actual features available to the specific account and region against that list. Meta explicitly says plans, benefits, pricing and availability can vary by region, app and account, so the subscription screen for the account is the current source of truth for availability.",
+      "Result: the useful decision is not whether Meta One is universally good or bad; it is whether its native features replace enough existing workflow cost or friction to justify the subscription for that business. For Hermes Marketing, the correct test is operational: measure whether the feature shortens publishing time, improves attribution or profile-to-inquiry conversion, strengthens team access, or reduces response delay. Do not report a reach or revenue lift unless account-level measurement actually shows it.",
+      "For organic strategy, keep the distinction clear. A paid feature can improve execution, measurement or conversion surfaces without proving that the platform will rank the content higher. Content quality, audience fit, creative testing, profile clarity and the path from social discovery to a useful owned destination remain separate work. That distinction keeps teams from treating a subscription purchase as an organic-growth strategy by itself."
+    ],
+    "takeaways": [
+      "Meta One adds paid professional features across Instagram, Facebook, WhatsApp and Meta AI while keeping the core app experience free",
+      "Business and creator features can include native scheduling, organic links, analytics exports, audience insights, team access and more Meta Business Agent capacity",
+      "Plans and availability vary by region, app and account, so verify the live subscription offer before budgeting",
+      "Treat Meta One as a workflow and conversion-tool decision, not as a guarantee of organic reach, rankings, leads or revenue"
+    ],
+    "faq": [
+      {
+        "question": "Does Meta One replace the free versions of Instagram, Facebook or WhatsApp?",
+        "answer": "No. Meta says the core experience across its apps and everyday Meta AI use will remain free. Meta One adds specialized subscription features and higher usage for some tools."
+      },
+      {
+        "question": "Can Meta One business plans add links to organic posts and Reels?",
+        "answer": "Meta lists links in organic posts and Reels among the Advanced business and creator plan features, but it also states that plans, benefits and availability can vary by region, app and account. Verify the feature on the specific account before relying on it."
+      },
+      {
+        "question": "Does paying for Meta One guarantee more organic reach?",
+        "answer": "No such guarantee is stated in Meta's announcement. The announced tools can support publishing, analytics, profile conversion and operations, but marketers should measure reach and business outcomes separately."
+      },
+      {
+        "question": "What should a small business compare before subscribing?",
+        "answer": "Compare the live features available to the account against current costs and friction for scheduling, analytics, team access, links, profile conversion, customer response and AI usage. Subscribe only when the operational value is clear for that workflow."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Review the Hermes Marketing path for website, search, social and conversion work.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Search-to-Inquiry Conversion Checklist",
+        "body": "Use the checklist to connect social attention and search visibility to a measurable inquiry path.",
+        "href": "/resources/search-to-inquiry-conversion-checklist/"
+      },
+      {
+        "title": "Marketing Academy application",
+        "body": "Explore the current Hermes Business Academy marketing learning path.",
+        "href": "/academy/apply/?program=marketing"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Open Conversion Checklist",
+      "href": "/resources/search-to-inquiry-conversion-checklist/"
+    },
+    "sourceLabel": "Meta Newsroom — Introducing Meta One",
+    "sourceUrl": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/",
+    "sourcePublishedAt": "2026-09-15",
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Meta One business",
+      "Instagram business subscription",
+      "Facebook business tools",
+      "social media scheduling",
+      "organic post links",
+      "Meta Business Agent",
+      "social media analytics 2026"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta Newsroom Meta One announcement",
+        "use": "primary",
+        "url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/",
+        "observedAt": "2026-09-21",
+        "eventDate": "2026-09-15",
+        "notes": "Primary platform announcement for the product, business features and regional/account availability caveat."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "first_party_current",
+        "label": "Hermes current Marketing conversion architecture",
+        "use": "context_only",
+        "url": "https://hermeslogisticsus.com/paths/marketing/",
+        "observedAt": "2026-09-21",
+        "notes": "Current public Hermes Marketing owner page supplies first-party context and the owned conversion path; it is not evidence for Meta product claims."
+      }
+    ],
+    "publicationScore": {
+      "score": 80,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+15 first-party evidence",
+        "+15 search value",
+        "+10 internal-link fit"
+      ]
+    }
+  },
+  {
+    "id": "fmcsa-ucr-2027-fees-carrier-registration",
+    "direction": "logistics",
+    "slug": "ucr-2027-fees-carrier-registration",
+    "title": "2027 UCR Fees Rise: Carrier Registration Checklist | Hermes",
+    "description": "FMCSA finalized higher Unified Carrier Registration fees for 2027. Hermes explains the new fee brackets, the October 1 portal opening, and what carriers should verify before registration.",
+    "eyebrow": "Carrier Compliance Update · September 2026",
+    "h1": "2027 UCR fees are increasing. What should carriers verify before registration opens?",
+    "conciseAnswer": "FMCSA finalized a 2027 Unified Carrier Registration fee increase averaging 20% over the 2025–2026 fee structure. The UCR Plan says the 2027 portal opens October 1, 2026, with carrier and forwarder fees ranging from $55 for 0–2 vehicles to $54,165 for 1,001+ vehicles; brokers and leasing companies are in the $55 bracket. Carriers should verify the entity, fleet-size bracket, USDOT/authority records, and registration responsibility before paying.",
+    "explanation": [
+      "What changed: FMCSA's final rule increases Unified Carrier Registration fees for registration year 2027 and subsequent years. FMCSA says the increase averages 20% over the fee structure adopted for 2025 and retained for 2026, with the dollar increase varying by bracket. The UCR Plan's published table shows 2027 carrier or forwarder fees of $55 for 0–2 vehicles, $167 for 3–5, $333 for 6–20, $1,163 for 21–100, $5,548 for 101–1,000, and $54,165 for 1,001 or more. The UCR Plan says the 2027 portal opens October 1, 2026.",
+      "Why it matters: UCR is an annual compliance obligation for entities subject to the program, and the fee depends on the applicable entity type and vehicle-count bracket. A small numerical difference in the fleet record can move a carrier into a different bracket, while brokers and leasing companies follow the broker/leasing-company fee shown in the first bracket. This is a registration and record-accuracy issue, not a freight-rate or revenue signal.",
+      "What to do: before the 2027 registration window opens, confirm the legal entity that is registering, the number of commercial motor vehicles used for the applicable bracket, and whether the company's USDOT and operating-authority records are current. Use the official UCR portal or base-state process rather than an unsolicited third-party payment request. Keep the completed registration and proof of payment with the carrier's compliance records, and separate UCR registration from other FMCSA update obligations so one task is not mistaken for another.",
+      "Then versus now: Hermes historical logistics material repeatedly treated carrier agreements, authority readiness, documents, and onboarding checks as connected operating tasks. The useful historical pattern is the discipline of verifying the carrier record before operational work begins. The current 2027 UCR rule changes one input—the fee schedule—but does not turn any old Hermes pricing, commercial promise, or internal process into current compliance advice. Current fee amounts and dates in this article come from FMCSA and the UCR Plan.",
+      "Result: a carrier that verifies its bracket and records before the portal opens can budget the correct registration amount, avoid using an outdated 2026 fee table, and keep compliance readiness separate from load selection or dispatch economics. The practical trigger is October 1, 2026, when the UCR Plan says 2027 registration opens and the approved 2027 fees become effective."
+    ],
+    "takeaways": [
+      "FMCSA finalized an average 20% UCR fee increase for 2027 versus the 2025–2026 structure",
+      "The UCR Plan says 2027 registration opens October 1, 2026",
+      "2027 carrier/forwarder fees run from $55 for 0–2 vehicles to $54,165 for 1,001+ vehicles; brokers/leasing companies are $55",
+      "Verify entity type, fleet-size bracket and current registration records before paying"
+    ],
+    "faq": [
+      {
+        "question": "When does 2027 UCR registration open?",
+        "answer": "The UCR Plan states that the 2027 Registration Portal through the NRS opens October 1, 2026, and that the approved 2027 fee schedule becomes effective on that date."
+      },
+      {
+        "question": "How much is the 2027 UCR fee for a carrier with 0–2 vehicles?",
+        "answer": "The UCR Plan lists $55 for a carrier or forwarder in the 0–2 vehicle bracket. The same $55 fee applies to a broker or leasing company."
+      },
+      {
+        "question": "Is the 20% increase exactly the same for every UCR bracket?",
+        "answer": "No. FMCSA describes the adopted increase as averaging 20% across the fee structure, with different dollar increases by bracket. Use the official 2027 fee table for the applicable entity and fleet size."
+      },
+      {
+        "question": "Does paying UCR replace other FMCSA registration or authority updates?",
+        "answer": "No. UCR registration is a separate compliance obligation. Carriers should keep their USDOT and operating-authority information current under the applicable FMCSA requirements rather than treating UCR payment as a substitute for those records."
+      }
+    ],
+    "related": [
+      {
+        "title": "New-authority car-hauler readiness checklist",
+        "body": "Use the Hermes checklist to organize authority, insurance, equipment and operating-readiness questions before taking loads.",
+        "href": "/logistics/resources/new-authority-car-hauler-readiness-checklist/"
+      },
+      {
+        "title": "Owner-operator logistics path",
+        "body": "Review the Hermes carrier path for owner-operators and small fleets.",
+        "href": "/paths/logistics/carriers/owner-operators/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Continue to the carrier-facing Load Board after compliance and equipment readiness are verified.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Review the canonical Hermes Logistics direction and carrier resources.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open Carrier Readiness Checklist",
+      "href": "/logistics/resources/new-authority-car-hauler-readiness-checklist/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Load Board",
+      "href": "/load-board/"
+    },
+    "sourceLabel": "Federal Motor Carrier Safety Administration — Fees for the Unified Carrier Registration Plan and Agreement",
+    "sourceUrl": "https://www.fmcsa.dot.gov/regulations/federal-register-documents/2026-17893",
+    "sourcePublishedAt": "2026-09-01",
+    "datePublished": "2026-09-21",
+    "dateModified": "2026-09-21",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "2027 UCR fees",
+      "Unified Carrier Registration 2027",
+      "UCR fee brackets",
+      "carrier compliance",
+      "motor carrier registration",
+      "UCR registration October 2026"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "FMCSA final rule for 2027 UCR fees",
+        "use": "primary",
+        "url": "https://www.fmcsa.dot.gov/regulations/federal-register-documents/2026-17893",
+        "observedAt": "2026-09-21",
+        "eventDate": "2026-09-01",
+        "notes": "Primary federal source establishing the 2027 fee increase."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "UCR Plan official 2027 fee brackets and portal opening date",
+        "use": "primary",
+        "url": "https://plan.ucr.gov/fee-brackets/",
+        "observedAt": "2026-09-21",
+        "eventDate": "2026-10-01",
+        "notes": "Official UCR Plan table for the approved 2027 fees and registration opening."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized pattern evidence for carrier agreements, authority readiness, documents and onboarding discipline. No names, identifiers, rates or private correspondence are reused."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "2027 registration cycle announced in September 2026",
+      "summary": "Historical Hermes logistics material treated carrier agreements, documents and authority readiness as connected onboarding work; the 2027 UCR rule changes the official fee schedule, while the verification discipline remains useful.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://plan.ucr.gov/fee-brackets/"
+    },
+    "publicationScore": {
+      "score": 94,
+      "recommendation": "standalone_historical",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+15 first-party historical fit",
+        "+14 historical comparison",
+        "+15 search/compliance value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "eia-diesel-route-planning-september-2026",
     "direction": "logistics",
     "slug": "diesel-price-route-planning-september-2026",
