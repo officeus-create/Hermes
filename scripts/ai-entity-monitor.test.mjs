@@ -7,6 +7,8 @@ const registry = JSON.parse(
 
 assert.deepEqual(registry.workflow, ["DISCOVER", "VERIFY", "CORRECT", "MEASURE"]);
 assert.equal(registry.canonical_entity.legal_name, "Hermes Logistics LLC");
+assert.equal(registry.canonical_entity.legal_name, "Hermes Logistics, LLC");
+assert.equal(registry.canonical_entity.public_name, "Hermes Logistics LLC");
 assert.equal(registry.canonical_entity.canonical_site, "https://hermeslogisticsus.com/");
 assert.ok(registry.canonical_entity.company_information.endsWith("/company-information/"));
 assert.ok(registry.canonical_entity.disambiguation.includes("unrelated businesses"));
