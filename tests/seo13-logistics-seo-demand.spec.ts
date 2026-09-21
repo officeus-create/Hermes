@@ -48,6 +48,7 @@ test('Logistics SEO sitemap freshness reflects the substantive SEO13 owner relea
   const digitalSitemapIndexEntry = sitemapIndexSource.match(
     /<loc>https:\/\/hermeslogisticsus\.com\/sitemap-digital-services\.xml<\/loc>\s*<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/,
   );
-  expect(digitalSitemapIndexEntry?.[1]).toBeDefined();
-  expect(digitalSitemapIndexEntry?.[1] >= '2026-09-13').toBeTruthy();
+  const digitalSitemapIndexLastmod = digitalSitemapIndexEntry?.[1] ?? '';
+  expect(digitalSitemapIndexLastmod).not.toBe('');
+  expect(digitalSitemapIndexLastmod >= '2026-09-13').toBeTruthy();
 });
