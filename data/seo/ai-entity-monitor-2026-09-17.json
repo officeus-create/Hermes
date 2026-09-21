@@ -73,6 +73,7 @@
       "summary": "The assistant did not present evidence of fraud, but treated weak or missing external corroboration as a reason to warn that hermeslogisticsus.com might be a scam, while also conflating the Hermes name with the unrelated European Hermes/Evri brand. This is an entity-resolution and external-authority incident, not proof of wrongdoing.",
       "corrective_actions": [
         "Keep Hermes Logistics LLC tied to one stable #logistics Organization identity and the canonical /company-information/ and /about/ identity owners.",
+        "Use the verified Wisconsin DFI legal entity record (H062724; formed 2018-11-01) as an entity-resolution signal while keeping registered-office and regulated-authority claims separately gated.",
         "Reconcile stale or conflicting claimable external profiles, starting with Staff.am through the existing Recruiting/HR owner lane.",
         "Audit Google, Bing, Apple and LinkedIn business/entity presence without creating duplicate listings when an existing profile can be claimed or corrected.",
         "Increase legitimate independent entity corroboration through relevant business profiles, industry citations, reviews and earned editorial/partner references rather than bulk directory spam.",
@@ -83,6 +84,13 @@
     }
   ],
   "external_source_actions": [
+    {
+      "source": "wisconsin_dfi",
+      "scope": "Hermes Logistics, LLC legal entity record",
+      "status": "OFFICIAL_RECORD_CONFIRMED",
+      "action_gate": "Use only exact public legal facts from the state record; the DFI record does not by itself establish a customer-facing office or regulated transportation authority.",
+      "rule": "Exact-name Wisconsin DFI search on 2026-09-22 returned one HERMES LOGISTICS, LLC, entity H062724, Domestic LLC, formed 2018-11-01, restored to good standing 2025-01-16. Use the legal name, entity ID and formation date as entity-resolution evidence; keep location/service/authority claims separately verified."
+    },
     {
       "source": "staff.am",
       "scope": "Hermes Logistics LLC company profile",
