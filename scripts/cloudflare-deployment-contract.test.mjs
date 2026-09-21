@@ -72,15 +72,25 @@ assert.doesNotMatch(
   /CLOUDFLARE_API_TOKEN_MISSING_FROM_AUTHORIZED_PRODUCTION_OR_REPOSITORY_SECRET_SCOPE|BLOCKED_ONLY_SCOPED_CLOUDFLARE_API_TOKEN_THEN_BUILD_DEPLOY_AND_PUBLIC_READBACK|BLOCKED_SCOPED_CLOUDFLARE_DEPLOY_TOKEN_PLUS_REAL_EMAIL_RESET/,
   "Current project state must not revive superseded generic Cloudflare token blockers for Pages, #961, or #611.",
 );
+assert.equal(
+  aiProjectState.platform_and_owner_gates?.cloudflare_production_parity_961,
+  undefined,
+  "#961 is closed and must not remain a current owner-gate key.",
+);
 assert.match(
-  aiProjectState.platform_and_owner_gates?.cloudflare_production_parity_961 ?? "",
-  /BOUNDED_REPAIR_SHOP_ACCESS_PRODUCTION_D1_OPERATOR_PROOF/,
-  "#961 must stay narrowed to the bounded production D1/operator proof.",
+  aiProjectState.platform_and_owner_gates?.repair_shop_access_proof_960 ?? "",
+  /BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS.*DEDICATED_PAGES_READ.*D1.*ACCOUNT_CONTEXT_REQUIRED.*961_CLOSED/,
+  "#960 must own the bounded production D1/operator proof with dedicated least-privilege Cloudflare inputs.",
 );
 assert.match(
   aiProjectState.platform_and_owner_gates?.password_reset_email_611 ?? "",
-  /ARBITRARY_RECIPIENT_OUTBOUND_TRANSACTIONAL_EMAIL_CAPABILITY/,
-  "#611 must remain an outbound transactional-recipient capability gate, not a Worker deployment gate.",
+  /OWNER_ADMIN_ACTIVATION_GMAIL_API_TRANSPORT_OFF.*GMAIL_SEND_OAUTH_SECRETS.*RESET_PROOF.*MAIL_AUTH_ALIGNMENT/,
+  "#611 must reflect the merged-but-off Gmail API transport and its owner/admin activation plus mail-auth proof gates.",
+);
+assert.match(
+  aiProjectState.platform_and_owner_gates?.owner_mac_internal_ai ?? "",
+  /MACBOOK_RETIRED.*DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE/,
+  "Retired MacBook/local-runner state must not be routed as a current execution path.",
 );
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
