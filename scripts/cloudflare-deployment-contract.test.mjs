@@ -92,6 +92,16 @@ assert.match(
   /MACBOOK_RETIRED.*DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE/,
   "Retired MacBook/local-runner state must not be routed as a current execution path.",
 );
+assert.match(
+  (aiProjectState.execution_priorities ?? []).join("\n"),
+  /#961 is closed[\s\S]*owner issue #960/,
+  "Current execution priorities must route the bounded D1/operator proof to #960 and keep #961 closed.",
+);
+assert.doesNotMatch(
+  (aiProjectState.execution_priorities ?? []).join("\n"),
+  /Close #961/,
+  "Current project state must not instruct agents to close an already-closed #961.",
+);
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
 for (const ignoredPath of [".github/**", "docs/**", "ai-collaboration/**", "tests/**", "README.md", "AGENTS.md", "CLAUDE.md"]) {
@@ -176,10 +186,26 @@ assert.doesNotMatch(
 );
 
 const deploymentRecord = read("docs/DEPLOYMENT_RECORD.md");
+const deploymentOwnership = read("docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md");
 assert.match(
   deploymentRecord,
   /Release owner:\s*Cloudflare Git integration/,
   "Current deployment record must name the native Cloudflare Git integration as the Pages release owner.",
+);
+assert.match(
+  deploymentRecord,
+  /Bounded production D1\/operator proof — #960/,
+  "Current deployment record must route the bounded D1/operator proof to #960.",
+);
+assert.doesNotMatch(
+  deploymentRecord,
+  /Bounded production D1\/operator proof — #961/,
+  "Closed #961 must not remain the deployment-record owner of the D1/operator proof.",
+);
+assert.match(
+  deploymentOwnership,
+  /#960 bounded D1\/operator proof[\s\S]*#961 is closed/i,
+  "Cloudflare deployment ownership must route the bounded D1/operator proof to #960 and keep #961 closed.",
 );
 assert.doesNotMatch(
   deploymentRecord,
