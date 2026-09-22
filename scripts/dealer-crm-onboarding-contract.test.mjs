@@ -11,7 +11,7 @@ const transportSchema = read("functions/api/_lib/dealer-transport-requests.mjs")
 const transportApi = read("functions/api/hermes-connect/dealer/transport-requests.ts");
 const connections = read("functions/api/hermes-connect/company-connections.ts");
 const websiteSync = read("functions/api/hermes-connect/dealer/website-sync.ts");
-const workspace = read("src/pages/services/hermes-connect/dealers/workspace/index.astro");
+const workspace = read("src/pages/services/hermes-connect/dealers/workspace/index.astro");\nconst dealerCrmSchema = read("functions/api/_lib/dealer-crm.mjs");\nconst dealerCrmApi = read("functions/api/hermes-connect/dealer/crm.ts");\nconst dealerCrmWorkspace = read("src/pages/services/hermes-connect/dealers/workspace/crm.astro");
 const access = read("src/pages/services/hermes-connect/load-board/access/index.astro");
 
 assert.match(preset, /Legacy Toyota of Dallas/);
@@ -72,7 +72,7 @@ assert.match(workspace, /data-prepare-provider/);
 assert.doesNotMatch(workspace, /yourfriends@legacytoyotadallas\.net/i);
 assert.doesNotMatch(workspace, /\.innerHTML\s*=/);
 
-assert.match(access, /Dealer Operations/);
+assert.match(workspace, /Open full CRM/);\n\nfor (const table of [\n  "hermes_dealer_customers",\n  "hermes_dealer_vehicles",\n  "hermes_dealer_leads",\n  "hermes_dealer_appointments",\n  "hermes_dealer_team_members",\n  "hermes_dealer_department_hours",\n  "hermes_dealer_activity",\n  "hermes_dealer_bootstrap_state",\n]) assert.match(dealerCrmSchema, new RegExp(table));\nassert.match(dealerCrmSchema, /requireDealerCompany/);\nassert.match(dealerCrmSchema, /legacy-toyota-of-dallas/);\nassert.match(dealerCrmSchema, /no private customers, vehicles, leads or staff were fabricated/);\nassert.doesNotMatch(dealerCrmSchema, /yourfriends@legacytoyotadallas\\.net/i);\n\nassert.match(dealerCrmApi, /sameOriginMutation/);\nassert.match(dealerCrmApi, /rules_based_private_operations/);\nassert.match(dealerCrmApi, /autonomous_actions: false/);\nassert.match(dealerCrmApi, /external_ai_write: false/);\nassert.match(dealerCrmApi, /transport_drafts_waiting/);\nassert.match(dealerCrmApi, /social_owner_auth/);\nfor (const moduleName of ["customers", "vehicles", "leads", "appointments", "team", "activity", "intelligence"]) {\n  assert.match(dealerCrmApi, new RegExp(moduleName));\n  assert.match(dealerCrmWorkspace, new RegExp(moduleName, "i"));\n}\nassert.match(dealerCrmWorkspace, /robots="noindex,nofollow"/);\nassert.match(dealerCrmWorkspace, /Private owner workspace/);\nassert.match(dealerCrmWorkspace, /A vehicle record is not a Transport Request/);\nassert.match(dealerCrmWorkspace, /Autonomous actions: OFF/);\nassert.doesNotMatch(dealerCrmWorkspace, /yourfriends@legacytoyotadallas\\.net/i);\nassert.doesNotMatch(dealerCrmWorkspace, /\\.innerHTML\\s*=/);\nassert.match(access, /Dealer Operations/);
 assert.match(access, /<option value="dealer">Dealer<\/option>/);
 
-console.log("dealer-crm-onboarding-contract: Legacy Toyota dealer profile, private transport CRM, Load Board sync, website read-only boundary and Meta owner-auth gates verified");
+console.log("dealer-crm-onboarding-contract: Legacy Toyota dealer profile, full private dealer CRM modules, Transport Request -> Load Board sync, website read-only boundary and Meta owner-auth gates verified");
