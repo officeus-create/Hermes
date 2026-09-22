@@ -96,6 +96,10 @@ export function requireInternalAiRunner(request, env) {
 
 export const nowIso = () => new Date().toISOString();
 export const newTaskId = () => `hcai_${crypto.randomUUID()}`;
+export function internalAiTaskBranch(taskId) {
+  const safe = Array.from(String(taskId || ""), (character) => /[A-Za-z0-9_-]/.test(character) ? character : "-").join("").slice(0, 80);
+  return `internal-ai/${safe || "task"}`;
+}
 export const normalizePrompt = (value) => { const prompt = String(value || "").replace(/\u0000/g, "").trim(); return prompt && prompt.length <= MAX_PROMPT_LENGTH ? prompt : null; };
 export function normalizeApprovalGate(value) { const gate = String(value || "").trim(); return APPROVAL_GATES.has(gate) ? gate : null; }
 export function sanitizeExecutionText(value, maxLength = MAX_EVENT_LENGTH) {
