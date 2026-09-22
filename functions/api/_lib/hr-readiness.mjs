@@ -434,14 +434,16 @@ export async function decideHrReadiness(db, {
   const why = cleanHrLongText(reason, 4000);
   if (why.length < 15) throw new Error("readiness_reason_required");
   const packet = await db.prepare(`
-    SELECT id,open_gap_count,accepted_evidence_count,supervised_practice_count,state
+    SELECT id,readiness_level,open_gap_count,accepted_evidence_count,supervised_practice_count,state
     FROM hr_readiness_packets
     WHERE id=? AND candidate_id=?
     LIMIT 1
   `).bind(packetId, candidateId).first();
   if (!packet) throw new Error("readiness_packet_not_found");
   if (decision === "READY_FOR_TEAM") {
-    if (Number(packet.open_gap_count || 0) > 0) throw new Error("capability_gaps_open");
+    if (!["SUPERVISED_LIVE", "INDEPENDENT_BOUNDED_WORK"].includes(String(packet.readiness_level || ""))) {
+      throw new Error("supervised_readiness_required");
+    }
     if (Number(packet.accepted_evidence_count || 0) < 1 && Number(packet.supervised_practice_count || 0) < 1) {
       throw new Error("readiness_evidence_required");
     }
