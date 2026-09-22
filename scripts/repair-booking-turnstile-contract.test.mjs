@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import { verifyTurnstileToken } from "../functions/api/_lib/turnstile.mjs";
 import { verifyGithubActionsOidcToken } from "../functions/api/_lib/github-actions-oidc.mjs";
@@ -131,6 +132,55 @@ for (const path of workflowPaths) {
 const bookingProductionSmokeWorkflow = fs.readFileSync(".github/workflows/repair-booking-production-smoke.yml", "utf8");
 assert.ok(bookingProductionSmokeWorkflow.includes("randomBytes(24)"), "booking smoke password must be generated ephemerally at runtime");
 assert.doesNotMatch(bookingProductionSmokeWorkflow, /PASSWORD=.*TEST_ID/, "booking smoke password must not be derived from the test id template");
+assert.doesNotMatch(
+  bookingProductionSmokeWorkflow,
+  /REPAIR_ACCESS_STATE_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW/,
+  "Current free setup access must fail closed instead of treating a retired deadline gate as success.",
+);
+assert.match(
+  bookingProductionSmokeWorkflow,
+  /scripts\/lib\/repair-shop-rollout\.sh/,
+  "Changes to the rollout retry policy must trigger the production booking smoke.",
+);
+const bookingProductionSmoke = fs.readFileSync("scripts/repair-booking-production-smoke.sh", "utf8");
+assert.match(bookingProductionSmoke, /PAGES_HEAD_SHA/);
+assert.match(bookingProductionSmoke, /PAGES_DEPLOYMENT_ID/);
+assert.match(bookingProductionSmoke, /EXACT_DEPLOYED_SHA_CONFIRMED=true/);
+assert.match(bookingProductionSmoke, /trap cleanup_smoke EXIT/);
+assert.ok(
+  bookingProductionSmoke.indexOf("trap cleanup_smoke EXIT") < bookingProductionSmoke.indexOf('REGISTER="'),
+  "Fail-safe cleanup must be active before the first synthetic account write.",
+);
+assert.equal(
+  (bookingProductionSmoke.match(/hermes_should_retry_repair_shop_rollout/g) || []).length,
+  2,
+  "Only registration and idempotent profile setup may retry the retired rollout gate.",
+);
+assert.doesNotMatch(bookingProductionSmoke, /REPAIR_BOOKING_PRODUCTION_WRITE=SKIPPED_SETUP_ACCESS_CLOSED/);
+
+for (const scriptPath of ["scripts/lib/repair-shop-rollout.sh", "scripts/repair-booking-production-smoke.sh"]) {
+  const syntax = spawnSync("bash", ["-n", scriptPath], { encoding: "utf8" });
+  assert.equal(syntax.status, 0, `${scriptPath}: ${syntax.stderr}`);
+}
+
+const rolloutHelper = "scripts/lib/repair-shop-rollout.sh";
+const shouldRetry = (...args) =>
+  spawnSync(
+    "bash",
+    [
+      "-c",
+      'source "$1"; hermes_should_retry_repair_shop_rollout "$2" "$3" "$4" "$5" "$6"',
+      "bash",
+      rolloutHelper,
+      ...args.map(String),
+    ],
+    { encoding: "utf8" },
+  ).status === 0;
+assert.equal(shouldRetry(true, 403, "repair_shop_free_registration_ended", 1, 6), true);
+assert.equal(shouldRetry(false, 403, "repair_shop_free_registration_ended", 1, 6), false);
+assert.equal(shouldRetry(true, 403, "repair_shop_setup_access_closed", 1, 6), false);
+assert.equal(shouldRetry(true, 401, "repair_shop_free_registration_ended", 1, 6), false);
+assert.equal(shouldRetry(true, 403, "repair_shop_free_registration_ended", 6, 6), false);
 for (const path of [
   "scripts/repair-booking-production-smoke.sh",
   "scripts/repair-booking-concurrency-production-smoke.sh",

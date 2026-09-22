@@ -28,6 +28,11 @@ jobs:
     env:
       TESTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
     steps:
+      - name: Check out exact deployed revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TESTED_SHA }}
+
       - name: Decide whether full receiver smoke is required
         id: scope
         shell: bash
@@ -41,32 +46,14 @@ jobs:
             exit 0
           fi
 
-          commit_json="$(curl --fail --silent --show-error \
-            --header "Authorization: Bearer ${GH_TOKEN}" \
-            --header "Accept: application/vnd.github+json" \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/commits/${TESTED_SHA}")"
-
-          decision="$(COMMIT_JSON="$commit_json" node - <<'NODE'
-          const payload = JSON.parse(process.env.COMMIT_JSON || "{}");
-          const rawFiles = Array.isArray(payload.files) ? payload.files : null;
-          if (!rawFiles || rawFiles.length >= 300) {
-            process.stdout.write(JSON.stringify({ full: true, matched: ["fail_safe_large_or_missing_commit_file_list"] }));
-            process.exit(0);
-          }
-          const files = rawFiles.map((file) => String(file.filename || ""));
-          const relevant = [
-            /^functions\/api\/logistics-lead\.ts$/,
-            /^functions\/api\/_lib\/.*(?:lead|email|delivery|rate|idempot)/i,
-            /^workers\/lead-email\//,
-            /^wrangler\.jsonc\.example$/,
-            /^workers\/lead-email\/wrangler(?:\.production)?\.jsonc(?:\.example)?$/,
-            /^\.github\/workflows\/(?:repair-paid-intent-production-smoke|cloudflare-pages-production-v2|lead-email-worker-production)\.yml$/,
-            /^src\/pages\/services\/hermes-connect\/repair-shops\/plan\//,
-          ];
-          const matched = files.filter((file) => relevant.some((pattern) => pattern.test(file)));
-          process.stdout.write(JSON.stringify({ full: matched.length > 0, matched }));
-          NODE
+          decision="$(
+            curl --fail --silent --show-error \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header "Accept: application/vnd.github+json" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/commits/${TESTED_SHA}" \
+            | jq -c 'if (.files | type) == "array" then {files: [.files[] | .filename]} else {files: null} end' \
+            | node scripts/paid-intent-smoke-scope.mjs
           )"
 
           full="$(DECISION="$decision" node -e 'const d=JSON.parse(process.env.DECISION); process.stdout.write(d.full ? "true" : "false")')"

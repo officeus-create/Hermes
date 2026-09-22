@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -311,11 +312,38 @@ assert.match(
 );
 
 const paidIntentSmokeWorkflow = read(".github/workflows/repair-paid-intent-production-smoke.yml");
+const paidIntentScopeSource = read("scripts/paid-intent-smoke-scope.mjs");
 assert.match(paidIntentSmokeWorkflow, /schedule:\s*\n\s*- cron:/, "Paid-intent E2E needs a bounded recurring proof even without receiver code changes.");
 assert.match(paidIntentSmokeWorkflow, /Decide whether full receiver smoke is required/, "Every deploy should classify whether a real synthetic email is justified.");
 assert.match(paidIntentSmokeWorkflow, /steps\.scope\.outputs\.full == 'true'/, "Real receiver sends must be gated to relevant changes or the scheduled/manual proof.");
-assert.match(paidIntentSmokeWorkflow, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
+assert.match(paidIntentScopeSource, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
 assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "A lightweight production readback must remain on every successful deployment.");
+assert.match(paidIntentSmokeWorkflow, /Check out exact deployed revision[\s\S]*ref: \$\{\{ env\.TESTED_SHA \}\}/, "Paid-intent scope classification must use the exact deployed revision.");
+assert.match(paidIntentSmokeWorkflow, /jq -c[\s\S]*node scripts\/paid-intent-smoke-scope\.mjs/, "Commit metadata must be reduced to filenames and streamed over stdin.");
+assert.doesNotMatch(paidIntentSmokeWorkflow, /COMMIT_JSON|commit_json/, "Full commit JSON must never be copied into process environment or argv.");
+
+const paidIntentScopeScript = path.join(root, "scripts", "paid-intent-smoke-scope.mjs");
+const classifyPaidIntentScope = (input) => {
+  const result = spawnSync(process.execPath, [paidIntentScopeScript], {
+    input: typeof input === "string" ? input : JSON.stringify(input),
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+  return JSON.parse(result.stdout);
+};
+assert.deepEqual(classifyPaidIntentScope({ files: ["docs/AI_HANDOFF.md"] }), { full: false, matched: [] });
+assert.deepEqual(classifyPaidIntentScope({ files: ["src/pages/services/hermes-connect/repair-shops/plan/index.astro"] }), {
+  full: true,
+  matched: ["src/pages/services/hermes-connect/repair-shops/plan/index.astro"],
+});
+assert.deepEqual(classifyPaidIntentScope({ files: Array.from({ length: 300 }, (_, index) => `docs/file-${index}.md`) }), {
+  full: true,
+  matched: ["fail_safe_large_or_missing_commit_file_list"],
+});
+assert.deepEqual(classifyPaidIntentScope("not-json"), {
+  full: true,
+  matched: ["fail_safe_invalid_commit_file_list"],
+});
 
 const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
 assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");

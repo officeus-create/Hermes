@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/repair-shop-rollout.sh"
 
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
@@ -16,6 +17,10 @@ echo "::add-mask::$PASSWORD"
 BOOKING_OIDC_TOKEN="$(hermes_booking_oidc_token)"
 echo "::add-mask::$BOOKING_OIDC_TOKEN"
 
+ROLLOUT_ATTEMPTS="${REPAIR_SHOP_ROLLOUT_ATTEMPTS:-6}"
+ROLLOUT_DELAY_SECONDS="${REPAIR_SHOP_ROLLOUT_DELAY_SECONDS:-10}"
+EXACT_DEPLOYED_SHA_CONFIRMED=false
+
 # Production is the source of truth. Never start product writes until the
 # Cloudflare Pages check for this exact main SHA has completed successfully.
 if [[ -n "${GITHUB_SHA:-}" && -n "${GITHUB_REPOSITORY:-}" && -n "${GITHUB_TOKEN:-}" ]]; then
@@ -27,10 +32,17 @@ if [[ -n "${GITHUB_SHA:-}" && -n "${GITHUB_REPOSITORY:-}" && -n "${GITHUB_TOKEN:
       "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" || true)"
     PAGES_STATUS="$(printf '%s' "$CHECKS" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .status // "missing"' 2>/dev/null || echo missing)"
     PAGES_CONCLUSION="$(printf '%s' "$CHECKS" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .conclusion // "pending"' 2>/dev/null || echo pending)"
-    echo "CLOUDFLARE_PAGES_ATTEMPT_${attempt}: status=${PAGES_STATUS} conclusion=${PAGES_CONCLUSION}"
-    if [[ "$PAGES_STATUS" == "completed" && "$PAGES_CONCLUSION" == "success" ]]; then
+    PAGES_HEAD_SHA="$(printf '%s' "$CHECKS" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .head_sha // "missing"' 2>/dev/null || echo missing)"
+    PAGES_DEPLOYMENT_ID="$(printf '%s' "$CHECKS" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .external_id // "missing"' 2>/dev/null || echo missing)"
+    echo "CLOUDFLARE_PAGES_ATTEMPT_${attempt}: status=${PAGES_STATUS} conclusion=${PAGES_CONCLUSION} head_sha=${PAGES_HEAD_SHA}"
+    if [[ "$PAGES_STATUS" == "completed" && "$PAGES_CONCLUSION" == "success" && "$PAGES_HEAD_SHA" == "$GITHUB_SHA" && "$PAGES_DEPLOYMENT_ID" != "missing" && -n "$PAGES_DEPLOYMENT_ID" ]]; then
       PAGES_READY=true
+      EXACT_DEPLOYED_SHA_CONFIRMED=true
       break
+    fi
+    if [[ "$PAGES_STATUS" == "completed" && "$PAGES_CONCLUSION" == "success" && "$PAGES_HEAD_SHA" != "$GITHUB_SHA" ]]; then
+      echo "Cloudflare Pages receipt does not match ${GITHUB_SHA}; refusing production smoke."
+      exit 1
     fi
     if [[ "$PAGES_STATUS" == "completed" && "$PAGES_CONCLUSION" != "success" && "$PAGES_CONCLUSION" != "pending" ]]; then
       echo "Cloudflare Pages failed for ${GITHUB_SHA}; refusing production smoke."
@@ -44,24 +56,50 @@ else
   exit 1
 fi
 
+cleanup_smoke() {
+  curl -sS -o "${TMP}/exit-cleanup.json" -X POST "$BASE/api/repair-shop/cleanup-booking-smoke" >/dev/null || true
+}
+trap cleanup_smoke EXIT
+
 CLEAN="$(curl -sS -o "${TMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
 echo "PRE_CLEAN_HTTP=$CLEAN"; cat "${TMP}/pre-clean.json"; echo
 test "$CLEAN" = 200
 test "$(jq -r '.success // false' "${TMP}/pre-clean.json")" = true
 
 REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Booking Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production booking verification account for Hermes Connect Repair Shops."}')"
-RC="$(curl -sS -o "${TMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
-echo "REGISTER_HTTP=$RC"; cat "${TMP}/register.json"; echo
-if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/register.json")" = "repair_shop_setup_access_closed" ]]; then
-  test "$(jq -r '.next_url // ""' "${TMP}/register.json")" = "/services/hermes-connect/repair-shops/plan/"
-  echo "REPAIR_BOOKING_PRODUCTION_WRITE=SKIPPED_SETUP_ACCESS_CLOSED"
-  exit 0
-fi
+RC=000
+for register_attempt in $(seq 1 "$ROLLOUT_ATTEMPTS"); do
+  RC="$(curl -sS -o "${TMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
+  REGISTER_ERROR="$(jq -r '.error // ""' "${TMP}/register.json" 2>/dev/null || true)"
+  echo "REGISTER_ATTEMPT_${register_attempt}_HTTP=$RC error=${REGISTER_ERROR:-none}"
+  if [[ "$RC" == "201" ]]; then
+    break
+  fi
+  if hermes_should_retry_repair_shop_rollout "$EXACT_DEPLOYED_SHA_CONFIRMED" "$RC" "$REGISTER_ERROR" "$register_attempt" "$ROLLOUT_ATTEMPTS"; then
+    echo "Transient retired registration gate observed after exact-SHA deployment; retrying registration."
+    sleep "$ROLLOUT_DELAY_SECONDS"
+    continue
+  fi
+  break
+done
 test "$RC" = 201
 
 PROFILE='{"name":"Hermes Booking Smoke Shop","phone":"+1 414 555 0199","address_line1":"100 Booking Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
-PC="$(curl -sS -o "${TMP}/profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
-echo "PROFILE_HTTP=$PC"; cat "${TMP}/profile.json"; echo
+PC=000
+for profile_attempt in $(seq 1 "$ROLLOUT_ATTEMPTS"); do
+  PC="$(curl -sS -o "${TMP}/profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
+  PROFILE_ERROR="$(jq -r '.error // ""' "${TMP}/profile.json" 2>/dev/null || true)"
+  echo "PROFILE_ATTEMPT_${profile_attempt}_HTTP=$PC error=${PROFILE_ERROR:-none}"
+  if [[ "$PC" == "200" ]]; then
+    break
+  fi
+  if hermes_should_retry_repair_shop_rollout "$EXACT_DEPLOYED_SHA_CONFIRMED" "$PC" "$PROFILE_ERROR" "$profile_attempt" "$ROLLOUT_ATTEMPTS"; then
+    echo "Transient retired profile gate observed after exact-SHA deployment; retrying the idempotent profile write."
+    sleep "$ROLLOUT_DELAY_SECONDS"
+    continue
+  fi
+  break
+done
 test "$PC" = 200
 SLUG="$(jq -r '.shop.slug' "${TMP}/profile.json")"
 test -n "$SLUG"
@@ -170,5 +208,6 @@ test "$(jq -r '.remaining' "${TMP}/cleanup.json")" = 0
 AFTER="$(curl -sS -o "${TMP}/after.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
 echo "OWNER_SESSION_AFTER_CLEANUP_HTTP=$AFTER"; cat "${TMP}/after.json"; echo
 test "$AFTER" = 401
+trap - EXIT
 
 echo "REPAIR_BOOKING_VEHICLE_STATUS_HISTORY_PRODUCTION_PASS=YES"
