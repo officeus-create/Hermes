@@ -199,8 +199,18 @@ assert.match(rejectedFeature.stderr, /may run only from refs\/heads\/main/);
 const capacityProductionSmoke = fs.readFileSync("scripts/repair-capacity-production-smoke.sh", "utf8");
 assert.match(
   capacityProductionSmoke,
-  /actions\/runs\?head_sha=\$\{GITHUB_SHA\}&event=push/,
+  /actions\/runs\?head_sha=\$\{GITHUB_SHA\}&per_page=100/,
   "Capacity serialization must bind the prerequisite booking proof to the exact checked-out SHA.",
+);
+assert.doesNotMatch(
+  capacityProductionSmoke,
+  /actions\/runs\?[^\n"]*event=push/,
+  "Capacity serialization must not exclude authorized issue-command or manual-dispatch booking proofs.",
+);
+assert.match(
+  capacityProductionSmokeWorkflow,
+  /scripts\/lib\/repair-capacity-prerequisite\.sh/,
+  "Changes to the trusted booking prerequisite selector must trigger the capacity smoke.",
 );
 assert.match(
   capacityProductionSmoke,
@@ -208,7 +218,92 @@ assert.match(
   "Capacity smoke must fail closed when exact deployment metadata is unavailable.",
 );
 
-for (const scriptPath of ["scripts/lib/repair-shop-rollout.sh", "scripts/repair-booking-production-smoke.sh"]) {
+const capacityPrerequisiteHelper = "scripts/lib/repair-capacity-prerequisite.sh";
+const prerequisiteSha = "fced0d1a942ae36974b9adf845c637d980dfb8ec";
+const selectPrerequisite = (workflowRuns, expectedSha = prerequisiteSha) => {
+  const selected = spawnSync(
+    "bash",
+    [
+      "-c",
+      'source "$1"; hermes_select_repair_booking_prerequisite "$2"',
+      "bash",
+      capacityPrerequisiteHelper,
+      expectedSha,
+    ],
+    {
+      encoding: "utf8",
+      input: JSON.stringify({ workflow_runs: workflowRuns }),
+    },
+  );
+  assert.equal(selected.status, 0, selected.stderr);
+  const [status, conclusion, event, runId, headSha = ""] = selected.stdout.trimEnd().split("\t");
+  return { status, conclusion, event, runId, headSha };
+};
+const bookingRun = (overrides = {}) => ({
+  id: 1001,
+  name: "Repair Shop real booking production smoke",
+  head_sha: prerequisiteSha,
+  event: "push",
+  status: "completed",
+  conclusion: "success",
+  created_at: "2026-09-22T01:00:00Z",
+  ...overrides,
+});
+
+assert.deepEqual(selectPrerequisite([bookingRun({ event: "issue_comment" })]), {
+  status: "completed",
+  conclusion: "success",
+  event: "issue_comment",
+  runId: "1001",
+  headSha: prerequisiteSha,
+});
+assert.deepEqual(selectPrerequisite([bookingRun({ event: "push" })]), {
+  status: "completed",
+  conclusion: "success",
+  event: "push",
+  runId: "1001",
+  headSha: prerequisiteSha,
+});
+assert.deepEqual(selectPrerequisite([bookingRun({ event: "workflow_dispatch" })]), {
+  status: "completed",
+  conclusion: "success",
+  event: "workflow_dispatch",
+  runId: "1001",
+  headSha: prerequisiteSha,
+});
+assert.deepEqual(selectPrerequisite([bookingRun({ event: "schedule" })]), {
+  status: "missing",
+  conclusion: "pending",
+  event: "missing",
+  runId: "missing",
+  headSha: "",
+});
+assert.deepEqual(selectPrerequisite([bookingRun({ head_sha: "wrong-sha" })]), {
+  status: "missing",
+  conclusion: "pending",
+  event: "missing",
+  runId: "missing",
+  headSha: "",
+});
+assert.deepEqual(selectPrerequisite([bookingRun({ conclusion: "failure" })]), {
+  status: "completed",
+  conclusion: "failure",
+  event: "push",
+  runId: "1001",
+  headSha: prerequisiteSha,
+});
+assert.match(
+  capacityProductionSmoke,
+  /if \[\[ "\$BASELINE_STATUS" == "completed" && "\$BASELINE_CONCLUSION" != "success" && "\$BASELINE_CONCLUSION" != "pending" \]\]; then[\s\S]*refusing capacity writes[\s\S]*exit 1/,
+  "A completed trusted prerequisite with a failure conclusion must stop before production writes.",
+);
+
+for (const scriptPath of [
+  "scripts/lib/repair-shop-rollout.sh",
+  "scripts/lib/repair-capacity-prerequisite.sh",
+  "scripts/repair-booking-production-smoke.sh",
+  "scripts/repair-capacity-production-smoke.sh",
+]) {
   const syntax = spawnSync("bash", ["-n", scriptPath], { encoding: "utf8" });
   assert.equal(syntax.status, 0, `${scriptPath}: ${syntax.stderr}`);
 }
