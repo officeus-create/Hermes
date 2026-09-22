@@ -1,11 +1,11 @@
-import { getAuthenticatedSpecialist, jsonResponse } from "./_lib/session.mjs";
-import { ensureHermesCompanyProfilesSchema } from "./_lib/hermes-company-profiles.mjs";
-import { getOwnedHermesCompany, sameOriginMutation } from "./_lib/load-board-market-posts.mjs";
+import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
+import { getOwnedHermesCompany, sameOriginMutation } from "../_lib/load-board-market-posts.mjs";
 import {
   cleanConnectionText,
   listCompanyConnections,
   upsertCompanyConnection,
-} from "./_lib/company-connections.mjs";
+} from "../_lib/company-connections.mjs";
 
 type Env = {
   DB?: any;
