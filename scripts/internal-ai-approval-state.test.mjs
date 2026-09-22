@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { decideInternalAiTask, ensureInternalAiSchema, publicTask } from "../functions/api/_lib/internal-ai.mjs";
+import { decideInternalAiTask, ensureInternalAiSchema, internalAiTaskBranch, publicTask } from "../functions/api/_lib/internal-ai.mjs";
 import { onRequestPost as claimTask } from "../functions/api/internal-ai/runner/claim.ts";
 import { onRequestPost as completeTask } from "../functions/api/internal-ai/runner/complete.ts";
 
@@ -55,6 +55,8 @@ const insertTask = async ({ id, status, gate = null, grantedAt = null, runnerId 
     VALUES (?, 'hermes_internal', 'software_engineer', ?, ?, 'owner-1', ?, ?, ?, ?, ?)`)
     .bind(id, `Repository-only task ${id}`, status, "2026-09-22T00:00:00.000Z", "2026-09-22T00:00:00.000Z", gate, grantedAt, runnerId).run();
 };
+
+assert.equal(internalAiTaskBranch("hcai/unsafe id"), "internal-ai/hcai-unsafe-id", "server and runner must derive the same normalized task branch");
 
 await ensureInternalAiSchema(DB);
 await insertTask({ id: "hcai_approval", status: "running", runnerId: "internal-ai-mac-runner" });
@@ -147,13 +149,38 @@ decision = await decideInternalAiTask(DB, {
 assert.equal(decision.body.state, "already_approved", "replay while the approved continuation is running must remain idempotent");
 
 result = await responseJson(await completeTask({
-  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_approval", status: "completed", output_summary: "Repository-only proof complete." }),
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_approval", status: "completed", branch: "main", output_summary: "Unauthorized main completion." }),
+  env,
+}));
+assert.equal(result.status, 409);
+assert.equal(result.body.error, "task_branch_mismatch");
+assert.equal((await row("hcai_approval")).status, "running", "main completion must not persist terminal state");
+
+result = await responseJson(await completeTask({
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_approval", status: "completed", branch: "internal-ai/another-task", output_summary: "Mismatched task branch." }),
+  env,
+}));
+assert.equal(result.status, 409);
+assert.equal(result.body.error, "task_branch_mismatch");
+assert.equal((await row("hcai_approval")).status, "running", "mismatched task branch must not persist terminal state");
+
+result = await responseJson(await completeTask({
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_approval", status: "completed", branch: "internal-ai/hcai_approval", output_summary: "Repository-only proof complete." }),
   env,
 }));
 assert.equal(result.status, 200);
 assert.equal(result.body.task.status, "completed");
 assert.equal(result.body.task.approval_gate, "merge_deploy", "terminal audit must preserve the gate that was approved");
 assert.equal(result.body.task.approval_state, "approved");
+
+await insertTask({ id: "hcai_branch_failure", status: "running", runnerId: "internal-ai-mac-runner" });
+result = await responseJson(await completeTask({
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_branch_failure", status: "failed", branch: null, output_summary: "Branch isolation violation detected by runner." }),
+  env,
+}));
+assert.equal(result.status, 200);
+assert.equal(result.body.task.status, "failed", "runner branch violation must reach a durable failed state");
+assert.equal(result.body.task.branch, null, "unauthorized branch must not be persisted as canonical task evidence");
 
 await insertTask({ id: "hcai_cancel", status: "needs_approval", gate: "external_communication" });
 decision = await decideInternalAiTask(DB, { taskId: "hcai_cancel", action: "cancel", ownerId: "owner-1" });
@@ -195,7 +222,7 @@ let raceEvents = await DB.prepare("SELECT event_type, message FROM hermes_intern
 assert.deepEqual(raceEvents.results.map((event) => event.event_type), ["cancel_requested"]);
 
 result = await responseJson(await completeTask({
-  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_cancel_claim_race", status: "cancelled", output_summary: "Synthetic race task observed cancellation." }),
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_cancel_claim_race", status: "cancelled", branch: "internal-ai/hcai_cancel_claim_race", output_summary: "Synthetic race task observed cancellation." }),
   env,
 }));
 assert.equal(result.status, 200);
