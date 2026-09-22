@@ -12,6 +12,7 @@ on:
       - 'scripts/hermes-connect-hr-backend-contract.test.mjs'
       - 'scripts/hermes-connect-hr-communication-state.test.mjs'
       - 'scripts/hermes-connect-hr-readiness-bridge.test.mjs'
+      - 'scripts/hermes-connect-hr-readiness-integration.test.mjs'
       - '.github/workflows/hr-backend-security.yml'
   workflow_dispatch:
 
@@ -47,3 +48,6 @@ jobs:
 
       - name: Verify HR Academy readiness bridge
         run: node scripts/hermes-connect-hr-readiness-bridge.test.mjs
+
+      - name: Verify HR Academy readiness lifecycle integration
+        run: node scripts/hermes-connect-hr-readiness-integration.test.mjs
