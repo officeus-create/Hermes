@@ -23,8 +23,19 @@ const directions = [
     cta: "Open Marketing",
   },
   {
-    id: "academy",
+    id: "technology",
     number: "03",
+    name: "Technology",
+    verb: "Build.",
+    idea: "Build systems that make work simpler.",
+    detail: "For teams that need websites, CRM, automation, and AI systems.",
+    story: ["Map the process that matters.", "Build the smallest useful core.", "Connect the system as the business grows."],
+    href: "/paths/technology/",
+    cta: "Open Technology",
+  },
+  {
+    id: "academy",
+    number: "04",
     name: "Academy",
     verb: "Learn.",
     idea: "Turn knowledge into practical capability.",
@@ -32,17 +43,6 @@ const directions = [
     story: ["Understand the role.", "Practice the real workflow.", "Grow into greater responsibility."],
     href: "/paths/academy/",
     cta: "Open Academy",
-  },
-  {
-    id: "technology",
-    number: "04",
-    name: "IT Development",
-    verb: "Build.",
-    idea: "Build systems that make work simpler.",
-    detail: "For teams that need websites, CRM, automation, and AI systems.",
-    story: ["Map the process that matters.", "Build the smallest useful core.", "Connect the system as the business grows."],
-    href: "/paths/technology/",
-    cta: "Open IT Development",
   },
 ];
 ---
@@ -71,7 +71,7 @@ const directions = [
   </div>
 
   <div class="site-intro-ideology">
-    <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Learn. Build.">
+    <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Build. Learn.">
       {directions.map((direction) => <span data-intro-verb={direction.id}>{direction.verb}</span>)}
     </p>
     <p class="site-intro-idea" data-intro-idea>{directions[0].idea}</p>
@@ -106,7 +106,7 @@ const directions = [
   </div>
 
   <div class="site-intro-footer">
-    <p>Four businesses. One practical standard.</p>
+    <p>Four directions. One practical standard.</p>
     <button type="button" class="site-intro-home" data-intro-close>Open regular Home <span aria-hidden="true">→</span></button>
   </div>
 </section>

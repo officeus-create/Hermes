@@ -147,7 +147,7 @@ assert.ok(!llmsFull.includes("## 5. Hermes Business Academy"), "Hermes Business 
 assert.ok(!llmsFull.includes("## 6. Hermes IT Development and Hermes Connect"), "IT Development must not own the root Technology section");
 
 assert.ok(about.includes(`four practical directions: ${canonicalFourDirections}.`), "About body must use the canonical Four Directions");
-assert.ok(about.includes('title="About Hermes | Logistics, Marketing, Academy & IT"'), "This GEO change must preserve the frozen About title");
-assert.ok(about.includes('description="Learn how Hermes organizes U.S. logistics, ProgressoPro marketing and SEO, practical business education, and IT development with clear evidence and service boundaries."'), "This GEO change must preserve the frozen About description");
+assert.ok(about.includes('title="About Hermes | Logistics, Marketing, Academy & Technology"'), "About title must expose the canonical Technology root");
+assert.ok(about.includes('description="Learn how Hermes organizes U.S. logistics, Hermes Marketing and SEO, Hermes Academy education, and Hermes Technology / IT development with clear evidence and service boundaries."'), "About description must expose canonical root entities while retaining IT development as a subordinate service term");
 
 console.log("AI visibility scorecard, 48x5 ledger, and pre-Wave entity context contract passed");
