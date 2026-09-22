@@ -127,6 +127,20 @@ export async function ensureDealerCrmSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_dealer_team_company ON hermes_dealer_team_members(company_id, active, department)").run();
 
   await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_dealer_team_schedule (
+      company_id TEXT NOT NULL,
+      team_member_id TEXT NOT NULL,
+      day_of_week INTEGER NOT NULL,
+      is_working INTEGER NOT NULL DEFAULT 0,
+      start_time TEXT,
+      end_time TEXT,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (team_member_id, day_of_week)
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_dealer_team_schedule_company ON hermes_dealer_team_schedule(company_id, team_member_id, day_of_week)").run();
+
+  await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_dealer_appointments (
       id TEXT PRIMARY KEY,
       company_id TEXT NOT NULL,
