@@ -5,7 +5,9 @@ import { onRequestPost as claimTask } from "../functions/api/internal-ai/runner/
 import { onRequestPost as completeTask } from "../functions/api/internal-ai/runner/complete.ts";
 
 class D1Statement {
-  constructor(statement) {
+  constructor(owner, sql, statement) {
+    this.owner = owner;
+    this.sql = sql;
     this.statement = statement;
     this.values = [];
   }
@@ -18,7 +20,9 @@ class D1Statement {
     return { meta: { changes: Number(result.changes || 0) } };
   }
   async first() {
-    return this.statement.get(...this.values) || null;
+    const result = this.statement.get(...this.values) || null;
+    if (this.owner.afterFirst) await this.owner.afterFirst({ sql: this.sql, values: this.values, result });
+    return result;
   }
   async all() {
     return { results: this.statement.all(...this.values) };
@@ -28,9 +32,10 @@ class D1Statement {
 class D1Database {
   constructor() {
     this.database = new DatabaseSync(":memory:");
+    this.afterFirst = null;
   }
   prepare(sql) {
-    return new D1Statement(this.database.prepare(sql));
+    return new D1Statement(this, sql, this.database.prepare(sql));
   }
 }
 
@@ -154,9 +159,52 @@ await insertTask({ id: "hcai_cancel", status: "needs_approval", gate: "external_
 decision = await decideInternalAiTask(DB, { taskId: "hcai_cancel", action: "cancel", ownerId: "owner-1" });
 assert.equal(decision.status, 200);
 assert.equal(decision.body.state, "cancelled");
+assert.equal(decision.body.task.cancel_requested, true);
 decision = await decideInternalAiTask(DB, { taskId: "hcai_cancel", action: "cancel", ownerId: "owner-1" });
 assert.equal(decision.status, 200);
 assert.equal(decision.body.state, "already_cancelled", "cancel replay must be idempotent");
+
+await insertTask({ id: "hcai_cancel_claim_race", status: "queued" });
+let interleavedClaim = null;
+DB.afterFirst = async ({ sql, values, result: selected }) => {
+  if (!sql.includes("SELECT * FROM hermes_internal_ai_tasks WHERE id = ?") || values[0] !== "hcai_cancel_claim_race" || selected?.status !== "queued") return;
+  DB.afterFirst = null;
+  interleavedClaim = await responseJson(await claimTask({
+    request: runnerRequest("/api/internal-ai/runner/claim", { repo_sha: "race123", runtime_version: "synthetic-race" }),
+    env,
+  }));
+};
+decision = await decideInternalAiTask(DB, {
+  taskId: "hcai_cancel_claim_race",
+  action: "cancel",
+  ownerId: "owner-1",
+  now: "2026-09-22T00:04:00.000Z",
+});
+assert.equal(interleavedClaim?.status, 200, "runner claim must occur between the cancel read and update");
+assert.equal(interleavedClaim?.body.task.status, "running");
+assert.equal(decision.status, 200);
+assert.equal(decision.body.state, "cancel_requested", "cancel must target the current running state after a concurrent claim");
+assert.equal(decision.body.task.status, "running");
+assert.equal(decision.body.task.cancel_requested, true, "success must never report a running task without its cancellation flag");
+
+decision = await decideInternalAiTask(DB, { taskId: "hcai_cancel_claim_race", action: "cancel", ownerId: "owner-1" });
+assert.equal(decision.status, 200);
+assert.equal(decision.body.state, "already_cancel_requested", "running cancel replay must not create a second transition");
+assert.equal(decision.body.task.cancel_requested, true);
+let raceEvents = await DB.prepare("SELECT event_type, message FROM hermes_internal_ai_events WHERE task_id = ? ORDER BY id").bind("hcai_cancel_claim_race").all();
+assert.deepEqual(raceEvents.results.map((event) => event.event_type), ["cancel_requested"]);
+
+result = await responseJson(await completeTask({
+  request: runnerRequest("/api/internal-ai/runner/complete", { task_id: "hcai_cancel_claim_race", status: "cancelled", output_summary: "Synthetic race task observed cancellation." }),
+  env,
+}));
+assert.equal(result.status, 200);
+assert.equal(result.body.task.status, "cancelled");
+decision = await decideInternalAiTask(DB, { taskId: "hcai_cancel_claim_race", action: "cancel", ownerId: "owner-1" });
+assert.equal(decision.status, 200);
+assert.equal(decision.body.state, "already_cancelled", "terminal cancel replay must remain idempotent");
+raceEvents = await DB.prepare("SELECT event_type FROM hermes_internal_ai_events WHERE task_id = ? ORDER BY id").bind("hcai_cancel_claim_race").all();
+assert.deepEqual(raceEvents.results.map((event) => event.event_type), ["cancel_requested"], "cancel replay must not duplicate audit events");
 
 await insertTask({ id: "hcai_invalid", status: "queued", gate: "merge_deploy" });
 result = await responseJson(await claimTask({

@@ -175,3 +175,11 @@ EVIDENCE: Repository-only runner transport test plus an in-memory SQLite integra
 LESSON: A fail-closed approval boundary needs one executable state-machine test across producer payload, persistence, decision and consumer claim—not independent token checks.
 
 REUSE_RULE: For every consequential workflow, test the complete transition `running → awaiting approval → exact scoped decision → approved continuation/terminal`, including reload and replay behavior.
+
+FOLLOW-UP P1: The first cancellation helper selected a queued task, then chose a status-specific write. A runner claim between that read and write could move the task to `running`, make the queued-only update affect zero rows, and still produce a false success response with `cancel_requested=false`.
+
+WORKING_APPROACH: Use one conditional write whose predicates are evaluated against the current database state: queued/awaiting tasks become terminal `cancelled`, while running tasks atomically receive `cancel_requested=1`. On zero changes, reload and return success only for a verified idempotent cancelled/cancel-requested state; otherwise fail closed. Emit the cancellation audit event only for the first state transition.
+
+EVIDENCE: A deterministic SQLite interleave claims the queued task after the cancel read but before the cancel update, then proves the response and stored row are either terminal cancelled or running with `cancel_requested=true`. Running and terminal replays remain idempotent and create no duplicate audit event.
+
+REUSE_RULE: A successful control-plane response must describe the post-write row, never the state inferred from a pre-write read. Cover claim/cancel and other state-machine races with deterministic interleaving tests.

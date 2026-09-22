@@ -162,15 +162,25 @@ export async function decideInternalAiTask(db, { taskId, action, requestedGate, 
   if (action === "cancel") {
     if (row.status === "cancelled") return { status: 200, body: { success: true, state: "already_cancelled", task: publicTask(row) } };
     if (["completed", "failed"].includes(row.status)) return { status: 409, body: { success: false, error: "task_already_terminal", task: publicTask(row) } };
-    if (["queued", "needs_approval"].includes(row.status)) {
-      await db.prepare("UPDATE hermes_internal_ai_tasks SET status = 'cancelled', cancel_requested = 1, completed_at = ?, updated_at = ? WHERE id = ? AND organization_scope = ? AND status IN ('queued','needs_approval')")
-        .bind(now, now, taskId, INTERNAL_AI_ORGANIZATION_SCOPE).run();
-    } else {
-      await db.prepare("UPDATE hermes_internal_ai_tasks SET cancel_requested = 1, updated_at = ? WHERE id = ? AND organization_scope = ? AND status = 'running'")
-        .bind(now, taskId, INTERNAL_AI_ORGANIZATION_SCOPE).run();
-    }
+    const update = await db.prepare(`UPDATE hermes_internal_ai_tasks
+      SET status = CASE WHEN status IN ('queued','needs_approval') THEN 'cancelled' ELSE status END,
+          cancel_requested = 1,
+          completed_at = CASE WHEN status IN ('queued','needs_approval') THEN ? ELSE completed_at END,
+          updated_at = ?
+      WHERE id = ? AND organization_scope = ? AND status IN ('queued','needs_approval','running') AND cancel_requested = 0`)
+      .bind(now, now, taskId, INTERNAL_AI_ORGANIZATION_SCOPE).run();
     row = await getTask();
-    return { status: 200, body: { success: true, state: row.status === "cancelled" ? "cancelled" : "cancel_requested", task: publicTask(row) } };
+    if (!update?.meta?.changes) {
+      if (row?.status === "cancelled") return { status: 200, body: { success: true, state: "already_cancelled", task: publicTask(row) } };
+      if (row?.status === "running" && row?.cancel_requested) return { status: 200, body: { success: true, state: "already_cancel_requested", task: publicTask(row) } };
+      if (["completed", "failed"].includes(row?.status)) return { status: 409, body: { success: false, error: "task_already_terminal", task: publicTask(row) } };
+      return { status: 409, body: { success: false, error: "cancellation_state_changed", task: publicTask(row) } };
+    }
+    const state = row?.status === "cancelled" ? "cancelled" : row?.status === "running" && row?.cancel_requested ? "cancel_requested" : null;
+    if (!state) return { status: 409, body: { success: false, error: "cancellation_state_changed", task: publicTask(row) } };
+    await db.prepare("INSERT INTO hermes_internal_ai_events (organization_scope, task_id, event_type, message, created_at) VALUES (?, ?, ?, ?, ?)")
+      .bind(INTERNAL_AI_ORGANIZATION_SCOPE, taskId, state === "cancelled" ? "task_cancelled" : "cancel_requested", state === "cancelled" ? "Owner cancelled the task before runner execution." : "Owner requested cancellation of the running task.", now).run();
+    return { status: 200, body: { success: true, state, task: publicTask(row) } };
   }
 
   return { status: 400, body: { success: false, error: "unsupported_action" } };

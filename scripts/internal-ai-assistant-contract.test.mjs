@@ -39,6 +39,10 @@ assert.match(helper, /organization_scope TEXT NOT NULL CHECK \(organization_scop
 assert.match(helper, /approval_granted_at TEXT/, "scoped approval receipt must persist across reloads");
 assert.match(helper, /approval_attempt INTEGER NOT NULL DEFAULT 0/, "approval replay must have a durable idempotency counter");
 assert.match(helper, /approval_state: row\.status === "needs_approval" \? "awaiting_approval"/, "owner DTO must expose the fail-closed awaiting-approval state");
+assert.match(helper, /status = CASE WHEN status IN \('queued','needs_approval'\) THEN 'cancelled' ELSE status END/, "cancellation must atomically follow a concurrent queued-to-running claim");
+assert.match(helper, /status IN \('queued','needs_approval','running'\) AND cancel_requested = 0/, "one conditional cancellation write must cover every active task state exactly once");
+assert.match(helper, /already_cancel_requested/, "running cancellation replay must be explicitly idempotent");
+assert.match(helper, /cancellation_state_changed/, "cancellation must fail closed when the resulting state cannot be verified");
 assert.match(helper, /\[REDACTED_TOKEN\]/, "execution output must be sanitized");
 assert.match(helper, /hermes_internal_owner_required/, "task API must fail closed for non-owner sessions");
 const publicTaskBody = helper.match(/export function publicTask\(row\) \{[\s\S]*?\n\}/)?.[0] || "";
