@@ -29,6 +29,11 @@ class MemoryD1 {
     this.hrSessions = new Map();
     this.hrAnswers = new Map();
     this.hrEvents = new Map();
+    this.hrEvidenceItems = new Map();
+    this.hrQuestionPathEvents = new Map();
+    this.hrScoreSnapshots = new Map();
+    this.hrRouteDecisions = new Map();
+    this.hrCalibrationReviews = new Map();
     this.hrReviewerAccess = new Map();
     this.hrReviews = new Map();
     this.hrAcademyLinks = new Map();
@@ -45,7 +50,7 @@ class MemoryD1 {
 
   async execute(sql, args, mode) {
     const q = this.normalized(sql);
-    if (q.startsWith('create table') || q.startsWith('create index')) return mode === 'all' ? { results: [] } : { success: true };
+    if (q.startsWith('create table') || q.startsWith('create index') || q.startsWith('alter table')) return mode === 'all' ? { results: [] } : { success: true };
 
     if (q.includes('select specialist_id, expires_at from sessions where token = ?')) {
       return this.sessions.get(args[0]) || null;
@@ -112,6 +117,26 @@ class MemoryD1 {
       }
       return { success: true };
     }
+    if (q.startsWith('insert or ignore into hr_evidence_items')) {
+      const [id, candidateId, sessionId, sourceRef, createdAt] = args;
+      if (!this.hrEvidenceItems.has(id)) {
+        this.hrEvidenceItems.set(id, {
+          id, candidate_id: candidateId, session_id: sessionId, kind: 'INTERVIEW_ANSWER',
+          source_ref: sourceRef, created_at: createdAt,
+        });
+      }
+      return { success: true };
+    }
+    if (q.startsWith('insert or ignore into hr_question_path_events')) {
+      const [id, candidateId, sessionId, questionId, parentQuestionId, phase, occurredAt] = args;
+      if (!this.hrQuestionPathEvents.has(id)) {
+        this.hrQuestionPathEvents.set(id, {
+          id, candidate_id: candidateId, session_id: sessionId, question_id: questionId,
+          parent_question_id: parentQuestionId, phase, occurred_at: occurredAt,
+        });
+      }
+      return { success: true };
+    }
     if (q.startsWith("update hr_interview_sessions set state='completed'")) {
       const [completedAt, signalsJson, recommendationCode, updatedAt, candidateId] = args;
       const row = this.hrSessions.get(candidateId);
@@ -128,6 +153,27 @@ class MemoryD1 {
       assert.ok(row, 'candidate must exist');
       if (row.status === 'interviewing') row.status = 'completed';
       row.updated_at = updatedAt;
+      return { success: true };
+    }
+    if (q.startsWith('insert or ignore into hr_score_snapshots')) {
+      const [id, candidateId, sessionId, policyVersion, interviewVersion, modelVersion, dimensionsJson, missingEvidenceJson, createdAt] = args;
+      if (!this.hrScoreSnapshots.has(id)) {
+        this.hrScoreSnapshots.set(id, {
+          id, candidate_id: candidateId, session_id: sessionId, policy_version: policyVersion,
+          interview_version: interviewVersion, model_version: modelVersion,
+          dimensions_json: dimensionsJson, missing_evidence_json: missingEvidenceJson, created_at: createdAt,
+        });
+      }
+      return { success: true };
+    }
+    if (q.startsWith('insert or ignore into hr_route_decisions')) {
+      const [id, candidateId, sessionId, recommendation, rationale, evidenceIdsJson, createdAt] = args;
+      if (!this.hrRouteDecisions.has(id)) {
+        this.hrRouteDecisions.set(id, {
+          id, candidate_id: candidateId, session_id: sessionId, recommendation, rationale,
+          evidence_ids_json: evidenceIdsJson, requires_human_review: 1, created_at: createdAt,
+        });
+      }
       return { success: true };
     }
     if (q.startsWith('update hr_interview_sessions set updated_at=? where candidate_id=?')) {
@@ -158,6 +204,21 @@ class MemoryD1 {
         .filter((row) => row.candidate_id === args[0])
         .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
       return rows[0] || null;
+    }
+    if (q.includes('from hr_route_decisions') && q.includes('where candidate_id=?') && q.includes('order by created_at desc')) {
+      const rows = [...this.hrRouteDecisions.values()]
+        .filter((row) => row.candidate_id === args[0])
+        .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+      return rows[0] ? { recommendation: rows[0].recommendation } : null;
+    }
+    if (q.startsWith('insert into hr_calibration_reviews')) {
+      const [id, reviewId, candidateId, reviewerSpecialistId, humanRoute, aiRoute, disagreementCategory, reviewerConfidence, createdAt] = args;
+      this.hrCalibrationReviews.set(id, {
+        id, review_id: reviewId, candidate_id: candidateId, reviewer_specialist_id: reviewerSpecialistId,
+        human_route: humanRoute, ai_route: aiRoute, disagreement_category: disagreementCategory,
+        reviewer_confidence: reviewerConfidence, created_at: createdAt,
+      });
+      return { success: true };
     }
 
     if (q.startsWith('update hr_candidates set specialist_id=?,updated_at=? where id=?')) {
@@ -263,6 +324,17 @@ const replay = await candidatePut({ request: candidateRequest(updateBody, 'PUT')
 assert.equal(replay.status, 200);
 assert.equal(db.hrAnswers.size, 1, 'replayed evidence_id must remain exactly once');
 assert.equal(db.hrEvents.size, 1, 'replayed event_id must remain exactly once');
+assert.equal(db.hrEvidenceItems.size, 1, 'replayed evidence item must remain exactly once');
+assert.equal(db.hrQuestionPathEvents.size, 1, 'replayed question path event must remain exactly once');
+assert.equal(db.hrScoreSnapshots.size, 1, 'completed interview must keep one versioned score snapshot per model');
+assert.equal(db.hrRouteDecisions.size, 1, 'completed interview must keep one idempotent AI route recommendation');
+const persistedScore = [...db.hrScoreSnapshots.values()][0];
+assert.equal(persistedScore.policy_version, 'hr-eval-policy-v1');
+assert.equal(persistedScore.interview_version, 'hr-interview-v2');
+assert.equal(persistedScore.model_version, 'deterministic-practice-signals-v1');
+const persistedRoute = [...db.hrRouteDecisions.values()][0];
+assert.equal(persistedRoute.recommendation, 'HUMAN_SPECIAL_REVIEW');
+assert.equal(persistedRoute.requires_human_review, 1);
 
 const futureExpiry = '2099-01-01T00:00:00.000Z';
 db.specialists.set('reviewer-denied', { id: 'reviewer-denied', email: 'denied@example.com', name: 'Denied Reviewer', role: 'Reviewer', location: null, bio: null });
@@ -278,6 +350,8 @@ const reviewPayload = {
   candidate_id: candidateId,
   outcome: 'MORE_EVIDENCE',
   reason: 'Candidate should provide one recorded discovery roleplay before any supervised live-work consideration.',
+  calibration_mode: 'BLIND',
+  reviewer_confidence: 'HIGH',
 };
 
 const deniedReview = await reviewerPut({ request: reviewRequest('session-denied', reviewPayload), env });
@@ -298,6 +372,12 @@ assert.equal(acceptedReviewBody.review.automated, false);
 assert.equal(acceptedReviewBody.candidate_status, 'more_evidence');
 assert.equal(db.hrCandidates.get(candidateId).status, 'more_evidence');
 assert.equal(db.hrReviews.size, 1);
+assert.equal(db.hrCalibrationReviews.size, 1);
+assert.equal(acceptedReviewBody.calibration.mode, 'BLIND');
+assert.equal(acceptedReviewBody.calibration.human_route, 'MORE_EVIDENCE_REQUIRED');
+assert.equal(acceptedReviewBody.calibration.ai_route, 'HUMAN_SPECIAL_REVIEW');
+assert.equal(acceptedReviewBody.calibration.disagreement_category, 'DIFFERENT_ROUTE');
+assert.equal(acceptedReviewBody.calibration.reviewer_confidence, 'HIGH');
 
 const claimRequest = (sessionToken) => new Request(`${origin}/api/hr/claim`, {
   method: 'POST',

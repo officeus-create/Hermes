@@ -33,7 +33,7 @@ class MemoryD1 {
 
   async execute(sql, args, mode) {
     const q = this.normalized(sql);
-    if (q.startsWith('create table') || q.startsWith('create index')) {
+    if (q.startsWith('create table') || q.startsWith('create index') || q.startsWith('alter table')) {
       return mode === 'all' ? { results: [] } : { success: true };
     }
 

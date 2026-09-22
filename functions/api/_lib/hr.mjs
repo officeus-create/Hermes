@@ -10,6 +10,17 @@ export const HR_CANDIDATE_STATUSES = Object.freeze([
   "more_evidence",
   "supervised_test",
 ]);
+export const HR_EVALUATION_POLICY_VERSION = "hr-eval-policy-v1";
+export const HR_INTERVIEW_VERSION = "hr-interview-v2";
+export const HR_MODEL_VERSION = "deterministic-practice-signals-v1";
+export const HR_ROUTE_RECOMMENDATIONS = Object.freeze([
+  "DIRECT_HIRE_REVIEW",
+  "ACADEMY",
+  "MORE_EVIDENCE_REQUIRED",
+  "HUMAN_SPECIAL_REVIEW",
+  "NO_CURRENT_FIT",
+]);
+
 export const HR_ATTRIBUTION_KEYS = Object.freeze([
   "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
   "vacancy", "creative", "market", "placement", "landing_path", "referrer_host",
@@ -62,6 +73,55 @@ export function isHrReviewOutcome(value) {
 
 export function isHrLanguage(value) {
   return HR_LANGUAGES.has(String(value || ""));
+}
+
+export function buildHrScoreDimensions(signals, evidenceIds = []) {
+  const safeEvidenceIds = Array.isArray(evidenceIds)
+    ? [...new Set(evidenceIds.map((value) => cleanHrText(value, 140)).filter(Boolean))].slice(0, 24)
+    : [];
+  const keys = ["clarity", "evidence", "learning", "discovery", "application"];
+  const dimensions = {};
+  for (const key of keys) {
+    const raw = signals && typeof signals === "object" ? Number(signals[key]) : Number.NaN;
+    const score = Number.isFinite(raw) ? Math.max(0, Math.min(100, Math.round(raw))) : null;
+    dimensions[key] = {
+      score,
+      confidence: score === null ? "UNKNOWN" : (safeEvidenceIds.length ? "LOW" : "UNKNOWN"),
+      evidence_ids: score === null ? [] : safeEvidenceIds,
+    };
+  }
+  return dimensions;
+}
+
+export function hrRouteRecommendation(recommendationCode, dimensions = {}) {
+  const missing = Object.entries(dimensions)
+    .filter(([, value]) => !value || value.score === null || value.confidence === "UNKNOWN")
+    .map(([key]) => key);
+  if (recommendationCode === "ACADEMY_PRACTICE_RECOMMENDED") {
+    return {
+      recommendation: "ACADEMY",
+      rationale: "Structured Academy practice is the current automated development suggestion; an authorized human reviewer decides the consequential next step.",
+      missing_evidence: [...missing, "independent_or_supervised_job_evidence"],
+    };
+  }
+  if (recommendationCode === "REVIEW_FOR_SUPERVISED_TEST") {
+    return {
+      recommendation: "HUMAN_SPECIAL_REVIEW",
+      rationale: "Written evidence may justify a supervised test review, but the system does not authorize employment or live work.",
+      missing_evidence: [...missing, "supervised_live_roleplay_or_call"],
+    };
+  }
+  return {
+    recommendation: "MORE_EVIDENCE_REQUIRED",
+    rationale: "The current evidence is insufficient for a stronger development recommendation; human review remains required.",
+    missing_evidence: missing.length ? missing : ["additional_job_relevant_evidence"],
+  };
+}
+
+export function hrHumanRouteForReviewOutcome(outcome) {
+  if (outcome === "ACADEMY") return "ACADEMY";
+  if (outcome === "SUPERVISED_TEST") return "HUMAN_SPECIAL_REVIEW";
+  return "MORE_EVIDENCE_REQUIRED";
 }
 
 export function cleanHrAttribution(value) {
@@ -155,6 +215,70 @@ export async function ensureHrSchema(db) {
   `).run();
 
   await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hr_evidence_items (
+      id TEXT PRIMARY KEY,
+      candidate_id TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      kind TEXT NOT NULL CHECK (kind IN ('INTERVIEW_ANSWER')),
+      source_ref TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hr_question_path_events (
+      id TEXT PRIMARY KEY,
+      candidate_id TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      question_id TEXT NOT NULL,
+      parent_question_id TEXT,
+      phase TEXT NOT NULL,
+      occurred_at TEXT NOT NULL
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hr_score_snapshots (
+      id TEXT PRIMARY KEY,
+      candidate_id TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      policy_version TEXT NOT NULL,
+      interview_version TEXT NOT NULL,
+      model_version TEXT NOT NULL,
+      dimensions_json TEXT NOT NULL,
+      missing_evidence_json TEXT NOT NULL DEFAULT '[]',
+      created_at TEXT NOT NULL
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hr_route_decisions (
+      id TEXT PRIMARY KEY,
+      candidate_id TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      recommendation TEXT NOT NULL CHECK (recommendation IN ('DIRECT_HIRE_REVIEW','ACADEMY','MORE_EVIDENCE_REQUIRED','HUMAN_SPECIAL_REVIEW','NO_CURRENT_FIT')),
+      rationale TEXT NOT NULL,
+      evidence_ids_json TEXT NOT NULL DEFAULT '[]',
+      requires_human_review INTEGER NOT NULL DEFAULT 1 CHECK (requires_human_review IN (0,1)),
+      created_at TEXT NOT NULL
+    )
+  `).run();
+
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hr_calibration_reviews (
+      id TEXT PRIMARY KEY,
+      review_id TEXT NOT NULL UNIQUE,
+      candidate_id TEXT NOT NULL,
+      reviewer_specialist_id TEXT NOT NULL,
+      human_route TEXT NOT NULL,
+      ai_route TEXT,
+      disagreement_category TEXT NOT NULL CHECK (disagreement_category IN ('MATCH','DIFFERENT_ROUTE','AI_ROUTE_MISSING')),
+      reviewer_confidence TEXT NOT NULL CHECK (reviewer_confidence IN ('LOW','MEDIUM','HIGH')),
+      created_at TEXT NOT NULL
+    )
+  `).run();
+
+  await db.prepare(`
     CREATE TABLE IF NOT EXISTS hr_reviewer_access (
       specialist_id TEXT PRIMARY KEY,
       active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
@@ -192,6 +316,11 @@ export async function ensureHrSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_answers_candidate ON hr_interview_answers(candidate_id,submitted_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_events_candidate ON hr_events(candidate_id,occurred_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_reviews_candidate ON hr_reviews(candidate_id,created_at)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_evidence_candidate ON hr_evidence_items(candidate_id,created_at)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_question_path_candidate ON hr_question_path_events(candidate_id,occurred_at)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_scores_candidate ON hr_score_snapshots(candidate_id,created_at)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_routes_candidate ON hr_route_decisions(candidate_id,created_at)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hr_calibration_candidate ON hr_calibration_reviews(candidate_id,created_at)").run();
 }
 
 export async function getHrReviewerAccess(db, specialistId) {
@@ -243,7 +372,7 @@ export async function getHrCandidateSnapshot(db, candidateId) {
     LIMIT 1
   `).bind(candidateId).first();
 
-  const [answerResult, eventResult, reviewResult, academyLink] = await Promise.all([
+  const [answerResult, eventResult, reviewResult, academyLink, evidenceResult, pathResult, scoreResult, routeResult, calibrationResult] = await Promise.all([
     db.prepare(`
       SELECT id,question_id,phase,parent_question_id,answer_text,submitted_at
       FROM hr_interview_answers
@@ -268,6 +397,36 @@ export async function getHrCandidateSnapshot(db, candidateId) {
       WHERE candidate_id = ?
       LIMIT 1
     `).bind(candidateId).first(),
+    db.prepare(`
+      SELECT id,kind,source_ref,created_at
+      FROM hr_evidence_items
+      WHERE candidate_id = ?
+      ORDER BY created_at ASC
+    `).bind(candidateId).all(),
+    db.prepare(`
+      SELECT id,question_id,parent_question_id,phase,occurred_at
+      FROM hr_question_path_events
+      WHERE candidate_id = ?
+      ORDER BY occurred_at ASC
+    `).bind(candidateId).all(),
+    db.prepare(`
+      SELECT id,policy_version,interview_version,model_version,dimensions_json,missing_evidence_json,created_at
+      FROM hr_score_snapshots
+      WHERE candidate_id = ?
+      ORDER BY created_at ASC
+    `).bind(candidateId).all(),
+    db.prepare(`
+      SELECT id,recommendation,rationale,evidence_ids_json,requires_human_review,created_at
+      FROM hr_route_decisions
+      WHERE candidate_id = ?
+      ORDER BY created_at ASC
+    `).bind(candidateId).all(),
+    db.prepare(`
+      SELECT id,review_id,reviewer_specialist_id,human_route,ai_route,disagreement_category,reviewer_confidence,created_at
+      FROM hr_calibration_reviews
+      WHERE candidate_id = ?
+      ORDER BY created_at ASC
+    `).bind(candidateId).all(),
   ]);
 
   const parseJson = (value, fallback) => {
@@ -302,6 +461,22 @@ export async function getHrCandidateSnapshot(db, candidateId) {
     })),
     reviews: Array.isArray(reviewResult?.results) ? reviewResult.results : [],
     academy_link: academyLink || null,
+    evidence_items: Array.isArray(evidenceResult?.results) ? evidenceResult.results : [],
+    question_path: Array.isArray(pathResult?.results) ? pathResult.results : [],
+    score_snapshots: (scoreResult?.results || []).map((row) => ({
+      ...row,
+      dimensions: parseJson(row.dimensions_json, {}),
+      missing_evidence: parseJson(row.missing_evidence_json, []),
+      dimensions_json: undefined,
+      missing_evidence_json: undefined,
+    })),
+    route_decisions: (routeResult?.results || []).map((row) => ({
+      ...row,
+      evidence_ids: parseJson(row.evidence_ids_json, []),
+      requires_human_review: Boolean(row.requires_human_review),
+      evidence_ids_json: undefined,
+    })),
+    calibration_reviews: Array.isArray(calibrationResult?.results) ? calibrationResult.results : [],
   };
 }
 

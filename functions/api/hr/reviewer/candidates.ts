@@ -6,6 +6,7 @@ import {
   ensureHrSchema,
   getHrCandidateSnapshot,
   getHrReviewerAccess,
+  hrHumanRouteForReviewOutcome,
   isHrCandidateId,
   isHrReviewOutcome,
   sameOriginMutation,
@@ -41,7 +42,9 @@ export async function onRequestGet({ request, env }: Context) {
   if (!auth.ok) return auth.response;
   await ensureHrCommunicationSchema(env.DB);
 
-  const candidateId = cleanHrText(new URL(request.url).searchParams.get("candidate_id"), 120);
+  const requestUrl = new URL(request.url);
+  const candidateId = cleanHrText(requestUrl.searchParams.get("candidate_id"), 120);
+  const blindCalibration = requestUrl.searchParams.get("blind") === "1";
   if (candidateId) {
     if (!isHrCandidateId(candidateId)) {
       return jsonResponse(400, { success: false, error: "candidate_id_invalid" }, privateHeaders);
@@ -49,10 +52,21 @@ export async function onRequestGet({ request, env }: Context) {
     const snapshot = await getHrCandidateSnapshot(env.DB, candidateId);
     if (!snapshot) return jsonResponse(404, { success: false, error: "candidate_not_found" }, privateHeaders);
     const communicationState = await getHrCommunicationState(env.DB, candidateId);
+    const visibleSnapshot = blindCalibration ? {
+      ...snapshot,
+      session: snapshot.session ? {
+        ...snapshot.session,
+        practice_signals: null,
+        recommendation_code: null,
+      } : null,
+      score_snapshots: [],
+      route_decisions: [],
+    } : snapshot;
     return jsonResponse(200, {
       success: true,
       reviewer: { id: auth.specialist.id, name: auth.specialist.name, access_source: auth.access.source },
-      snapshot: { ...snapshot, communication_state: communicationState || null },
+      calibration_mode: blindCalibration ? "BLIND" : "STANDARD",
+      snapshot: { ...visibleSnapshot, communication_state: communicationState || null },
     }, privateHeaders);
   }
 
@@ -114,6 +128,8 @@ export async function onRequestPut({ request, env }: Context) {
   const candidateId = cleanHrText(body.candidate_id, 120);
   const outcome = cleanHrText(body.outcome, 40);
   const reason = cleanHrLongText(body.reason, 4000);
+  const calibrationMode = cleanHrText(body.calibration_mode, 24).toUpperCase() || "STANDARD";
+  const reviewerConfidence = cleanHrText(body.reviewer_confidence, 16).toUpperCase();
   if (!isHrCandidateId(candidateId)) {
     return jsonResponse(400, { success: false, error: "candidate_id_invalid" }, privateHeaders);
   }
@@ -122,6 +138,13 @@ export async function onRequestPut({ request, env }: Context) {
   }
   if (reason.length < 15) {
     return jsonResponse(400, { success: false, error: "review_reason_required" }, privateHeaders);
+  }
+
+  if (!["STANDARD", "BLIND"].includes(calibrationMode)) {
+    return jsonResponse(400, { success: false, error: "calibration_mode_invalid" }, privateHeaders);
+  }
+  if (calibrationMode === "BLIND" && !["LOW", "MEDIUM", "HIGH"].includes(reviewerConfidence)) {
+    return jsonResponse(400, { success: false, error: "reviewer_confidence_required_for_blind_calibration" }, privateHeaders);
   }
 
   const candidate = await env.DB.prepare(`
@@ -142,8 +165,7 @@ export async function onRequestPut({ request, env }: Context) {
   };
   const now = new Date().toISOString();
   const reviewId = `hr-review-${crypto.randomUUID()}`;
-
-  await env.DB.batch([
+  const statements = [
     env.DB.prepare(`
       INSERT INTO hr_reviews
         (id,candidate_id,reviewer_specialist_id,outcome,reason,created_at)
@@ -154,7 +176,49 @@ export async function onRequestPut({ request, env }: Context) {
       SET status=?,updated_at=?
       WHERE id=?
     `).bind(statusByOutcome[outcome], now, candidateId),
-  ]);
+  ];
+
+  let calibration = null;
+  if (calibrationMode === "BLIND") {
+    const aiRouteRow = await env.DB.prepare(`
+      SELECT recommendation
+      FROM hr_route_decisions
+      WHERE candidate_id=?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).bind(candidateId).first();
+    const humanRoute = hrHumanRouteForReviewOutcome(outcome);
+    const aiRoute = aiRouteRow?.recommendation || null;
+    const disagreementCategory = !aiRoute
+      ? "AI_ROUTE_MISSING"
+      : aiRoute === humanRoute ? "MATCH" : "DIFFERENT_ROUTE";
+    const calibrationId = `hr-calibration-${crypto.randomUUID()}`;
+    statements.push(env.DB.prepare(`
+      INSERT INTO hr_calibration_reviews
+        (id,review_id,candidate_id,reviewer_specialist_id,human_route,ai_route,disagreement_category,reviewer_confidence,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?)
+    `).bind(
+      calibrationId,
+      reviewId,
+      candidateId,
+      auth.specialist.id,
+      humanRoute,
+      aiRoute,
+      disagreementCategory,
+      reviewerConfidence,
+      now,
+    ));
+    calibration = {
+      id: calibrationId,
+      mode: "BLIND",
+      human_route: humanRoute,
+      ai_route: aiRoute,
+      disagreement_category: disagreementCategory,
+      reviewer_confidence: reviewerConfidence,
+    };
+  }
+
+  await env.DB.batch(statements);
 
   let academyLink = null;
   if (outcome === "ACADEMY" && candidate.specialist_id) {
@@ -180,5 +244,6 @@ export async function onRequestPut({ request, env }: Context) {
     },
     candidate_status: statusByOutcome[outcome],
     academy_link: academyLink,
+    calibration,
   }, privateHeaders);
 }

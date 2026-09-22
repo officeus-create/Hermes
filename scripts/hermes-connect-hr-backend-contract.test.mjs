@@ -17,6 +17,11 @@ for (const table of [
   'hr_interview_sessions',
   'hr_interview_answers',
   'hr_events',
+  'hr_evidence_items',
+  'hr_question_path_events',
+  'hr_score_snapshots',
+  'hr_route_decisions',
+  'hr_calibration_reviews',
   'hr_reviewer_access',
   'hr_reviews',
   'hr_academy_links',
@@ -29,6 +34,12 @@ assert.match(hrLib, /active = 1/);
 assert.match(hrLib, /hermes_internal_owner_access/);
 assert.match(hrLib, /HERMES_INTERNAL_OWNER/);
 assert.match(hrLib, /export async function ensureHrAcademyLink/);
+assert.match(hrLib, /HR_EVALUATION_POLICY_VERSION/);
+assert.match(hrLib, /HR_INTERVIEW_VERSION/);
+assert.match(hrLib, /HR_MODEL_VERSION/);
+assert.match(hrLib, /export function buildHrScoreDimensions/);
+assert.match(hrLib, /export function hrRouteRecommendation/);
+assert.match(hrLib, /export function hrHumanRouteForReviewOutcome/);
 assert.doesNotMatch(hrLib, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 // Candidate writes are same-origin, token-bound, rate-limited and idempotent.
@@ -38,6 +49,13 @@ assert.match(candidateApi, /X-HR-Candidate-Token/);
 assert.match(candidateApi, /Idempotency-Key/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_interview_answers/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_events/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_evidence_items/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_question_path_events/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_score_snapshots/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_route_decisions/);
+assert.match(candidateApi, /HR_EVALUATION_POLICY_VERSION/);
+assert.match(candidateApi, /HR_INTERVIEW_VERSION/);
+assert.match(candidateApi, /HR_MODEL_VERSION/);
 assert.match(candidateApi, /candidate_token_invalid/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
@@ -48,6 +66,12 @@ assert.match(reviewerApi, /sameOriginMutation/);
 assert.match(reviewerApi, /hr_reviewer_not_authorized/);
 assert.match(reviewerApi, /automated:\s*false/);
 assert.match(reviewerApi, /ensureHrAcademyLink/);
+assert.match(reviewerApi, /blindCalibration/);
+assert.match(reviewerApi, /calibration_mode/);
+assert.match(reviewerApi, /reviewer_confidence/);
+assert.match(reviewerApi, /INSERT INTO hr_calibration_reviews/);
+assert.match(reviewerApi, /AI_ROUTE_MISSING/);
+assert.match(reviewerApi, /DIFFERENT_ROUTE/);
 assert.doesNotMatch(reviewerApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 // Account claim cannot silently bind a candidate to a different Hermes identity.

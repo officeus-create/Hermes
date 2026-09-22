@@ -37,6 +37,7 @@ let candidates = [];
 let selectedId = null;
 let reviewer = null;
 let serverMode = false;
+const calibrationBlind = new URLSearchParams(location.search).get('calibration') === 'blind';
 
 function showToast(text) {
   if (!toast) return;
@@ -206,6 +207,12 @@ function renderSnapshot(snapshot) {
   head.append(copy,el('span',latest?'stage':'stage warn',reviewLabel(latest?.outcome)));
   card.append(head,el('div','hr-review-id',candidate.id));
 
+  if (calibrationBlind) {
+    const blind=el('div','callout hr-safe');
+    blind.append(el('b','','Blind calibration mode: '),document.createTextNode('AI practice scores and route recommendation are hidden until your independent human review is recorded.'));
+    card.append(blind);
+  }
+
   const source=el('div','hr-review-banner');
   source.append(el('b','','Funnel context only: '),document.createTextNode(`source ${candidate.source || 'unknown'} · ${JSON.stringify(candidate.attribution || {})}`));
   card.append(source);
@@ -251,12 +258,28 @@ function renderSnapshot(snapshot) {
   const reasonLabel=el('label','','Reviewer reason / evidence references');
   const reason=document.createElement('textarea'); reason.name='reason'; reason.required=true; reason.maxLength=4000; reason.placeholder='Reference the job-relevant evidence and explain why this is the appropriate next controlled step.';
   reasonLabel.append(reason);
+
+  let confidenceSelect=null;
+  let confidenceLabel=null;
+  if (calibrationBlind) {
+    confidenceLabel=el('label','','Reviewer confidence');
+    confidenceSelect=document.createElement('select'); confidenceSelect.name='reviewer_confidence'; confidenceSelect.required=true;
+    for (const [value,label] of [['','Select confidence'],['LOW','Low'],['MEDIUM','Medium'],['HIGH','High']]) {
+      const option=document.createElement('option'); option.value=value; option.textContent=label; confidenceSelect.append(option);
+    }
+    confidenceLabel.append(confidenceSelect);
+  }
+
   const save=el('button','btn primary','Record authenticated human review'); save.type='submit';
-  form.append(outcomeLabel,reasonLabel,save);
+  form.append(outcomeLabel,reasonLabel);
+  if (confidenceLabel) form.append(confidenceLabel);
+  form.append(save);
   form.addEventListener('submit',async(event)=>{
     event.preventDefault(); save.disabled=true;
     try {
-      const response=await fetch(API_URL,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({candidate_id:candidate.id,outcome:select.value,reason:reason.value.trim()})});
+      const reviewBody={candidate_id:candidate.id,outcome:select.value,reason:reason.value.trim(),calibration_mode:calibrationBlind?'BLIND':'STANDARD'};
+      if (calibrationBlind) reviewBody.reviewer_confidence=confidenceSelect?.value || '';
+      const response=await fetch(API_URL,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(reviewBody)});
       const payload=await response.json().catch(()=>({}));
       if (!response.ok || payload.success!==true) throw new Error(payload.error || `HTTP ${response.status}`);
       showToast('Authenticated human review recorded in Hermes HR.');
@@ -272,7 +295,9 @@ function renderSnapshot(snapshot) {
 async function selectCandidate(candidateId) {
   selectedId=candidateId; renderQueue();
   try {
-    const response=await fetch(`${API_URL}?candidate_id=${encodeURIComponent(candidateId)}`,{credentials:'same-origin',headers:{'Accept':'application/json'}});
+    const query=new URLSearchParams({candidate_id:candidateId});
+    if (calibrationBlind) query.set('blind','1');
+    const response=await fetch(`${API_URL}?${query.toString()}`,{credentials:'same-origin',headers:{'Accept':'application/json'}});
     const payload=await response.json().catch(()=>({}));
     if (!response.ok || payload.success!==true) throw new Error(payload.error || `HTTP ${response.status}`);
     renderSnapshot(payload.snapshot);
