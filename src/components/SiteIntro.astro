@@ -23,19 +23,8 @@ const directions = [
     cta: "Open Marketing",
   },
   {
-    id: "academy",
-    number: "03",
-    name: "Academy",
-    verb: "Learn.",
-    idea: "Turn knowledge into practical capability.",
-    detail: "For people building useful business and logistics skills.",
-    story: ["Understand the role.", "Practice the real workflow.", "Grow into greater responsibility."],
-    href: "/paths/academy/",
-    cta: "Open Academy",
-  },
-  {
     id: "technology",
-    number: "04",
+    number: "03",
     name: "Technology",
     verb: "Build.",
     idea: "Build systems that make work simpler.",
@@ -43,6 +32,17 @@ const directions = [
     story: ["Map the process that matters.", "Build the smallest useful core.", "Connect the system as the business grows."],
     href: "/paths/technology/",
     cta: "Open Technology",
+  },
+  {
+    id: "academy",
+    number: "04",
+    name: "Academy",
+    verb: "Learn.",
+    idea: "Turn knowledge into practical capability.",
+    detail: "For people building useful business and logistics skills.",
+    story: ["Understand the role.", "Practice the real workflow.", "Grow into greater responsibility."],
+    href: "/paths/academy/",
+    cta: "Open Academy",
   },
 ];
 ---
@@ -71,7 +71,7 @@ const directions = [
   </div>
 
   <div class="site-intro-ideology">
-    <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Learn. Build.">
+    <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Build. Learn.">
       {directions.map((direction) => <span data-intro-verb={direction.id}>{direction.verb}</span>)}
     </p>
     <p class="site-intro-idea" data-intro-idea>{directions[0].idea}</p>
