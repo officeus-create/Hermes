@@ -16,6 +16,7 @@ const dealerCrmSchema = read("functions/api/_lib/dealer-crm.mjs");
 const dealerCrmApi = read("functions/api/hermes-connect/dealer/crm.ts");
 const dealerCrmWorkspace = read("src/pages/services/hermes-connect/dealers/workspace/crm.astro");
 const access = read("src/pages/services/hermes-connect/load-board/access/index.astro");
+const privateDealerContactPattern = /@legacytoyotadallas\.net/i;
 
 assert.match(preset, /Legacy Toyota of Dallas/);
 assert.match(preset, /39660 Lyndon B Johnson Fwy/);
@@ -23,13 +24,13 @@ assert.match(preset, /legacytoyotadallas\.com/);
 assert.match(preset, /autoCreateTransportRequests: false/);
 assert.match(preset, /autoPublishLoads: false/);
 assert.match(preset, /dynamicCompanyOptIn: false/);
-assert.doesNotMatch(preset, /yourfriends@legacytoyotadallas\.net/i);
+assert.doesNotMatch(preset, privateDealerContactPattern);
 
 assert.match(catalog, /slug:"legacy-toyota-of-dallas"/);
 assert.match(catalog, /claimState:"unclaimed"/);
 assert.match(catalog, /hermesCustomer:false/);
 assert.match(catalog, /bookingEnabled:false/);
-assert.doesNotMatch(catalog, /yourfriends@legacytoyotadallas\.net/i);
+assert.doesNotMatch(catalog, privateDealerContactPattern);
 
 for (const column of ["phone", "address_line1", "postal_code", "country_code", "timezone", "public_source_ref"]) {
   assert.match(companySchema, new RegExp(`${column}:?`));
@@ -83,7 +84,7 @@ assert.match(workspace, /VIN <span>private<\/span>/);
 assert.match(workspace, /Retail inventory is context, not freight/);
 assert.match(workspace, /catalogOptIn: false/);
 assert.match(workspace, /data-prepare-provider/);
-assert.doesNotMatch(workspace, /yourfriends@legacytoyotadallas\.net/i);
+assert.doesNotMatch(workspace, privateDealerContactPattern);
 assert.doesNotMatch(workspace, /\.innerHTML\s*=/);
 
 assert.match(workspace, /Open full CRM/);
@@ -102,7 +103,7 @@ for (const table of [
 assert.match(dealerCrmSchema, /requireDealerCompany/);
 assert.match(dealerCrmSchema, /legacy-toyota-of-dallas/);
 assert.match(dealerCrmSchema, /no private customers, vehicles, leads or staff were fabricated/);
-assert.doesNotMatch(dealerCrmSchema, /yourfriends@legacytoyotadallas\\.net/i);
+assert.doesNotMatch(dealerCrmSchema, privateDealerContactPattern);
 
 assert.match(dealerCrmApi, /sameOriginMutation/);
 assert.match(dealerCrmApi, /rules_based_private_operations/);
@@ -122,7 +123,7 @@ assert.match(dealerCrmWorkspace, /A vehicle record is not a Transport Request/);
 assert.match(dealerCrmWorkspace, /Autonomous actions: OFF/);
 assert.match(dealerCrmWorkspace, /data-team-schedule-form/);
 assert.match(dealerCrmWorkspace, /Individual weekly schedule/);
-assert.doesNotMatch(dealerCrmWorkspace, /yourfriends@legacytoyotadallas\\.net/i);
+assert.doesNotMatch(dealerCrmWorkspace, privateDealerContactPattern);
 assert.doesNotMatch(dealerCrmWorkspace, /\\.innerHTML\\s*=/);
 assert.match(access, /Dealer Operations/);
 assert.match(access, /<option value="dealer">Dealer<\/option>/);
