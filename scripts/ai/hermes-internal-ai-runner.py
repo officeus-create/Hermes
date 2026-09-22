@@ -132,7 +132,7 @@ def repo_execution_preflight() -> str | None:
 
 
 def task_branch_name(task_id: str) -> str:
-    safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in task_id)[:80]
+    safe = "".join(ch if ch.isascii() and (ch.isalnum() or ch in "-_") else "-" for ch in task_id)[:80]
     return f"internal-ai/{safe or 'task'}"
 
 
@@ -262,8 +262,27 @@ def claim() -> dict[str, Any] | None:
     return response.get("task")
 
 
-def complete(task_id: str, *, status: str, output: str, return_code: int | None, approval_gate: str | None = None) -> None:
-    branch = git("branch", "--show-current")
+def complete(
+    task_id: str,
+    *,
+    status: str,
+    output: str,
+    return_code: int | None,
+    approval_gate: str | None = None,
+    expected_branch: str | None = None,
+) -> None:
+    branch = git("branch", "--show-current") if expected_branch else None
+    if expected_branch and (expected_branch == "main" or branch != expected_branch):
+        actual_branch = branch or "unknown"
+        status = "failed"
+        approval_gate = None
+        output = (
+            f"{output}\n\nBranch isolation violation: expected {expected_branch}, "
+            f"but the post-run checkout was {actual_branch}. Refusing terminal success."
+        )
+        # Never persist an unauthorized checkout as canonical task-branch evidence.
+        # The server accepts a missing branch only for a failed run.
+        branch = None
     repo_sha = git("rev-parse", "HEAD")
     summary = sanitize(output, MAX_SUMMARY_CHARS)
     if return_code is not None:
@@ -420,20 +439,21 @@ def execute_task(task: dict[str, Any]) -> None:
             approval_gate = None
 
         if cancelled:
-            complete(task_id, status="cancelled", output=summary_tail or "Cancelled by owner.", return_code=return_code)
+            complete(task_id, status="cancelled", output=summary_tail or "Cancelled by owner.", return_code=return_code, expected_branch=task_branch)
         elif remaining_tracked:
             complete(
                 task_id,
                 status="failed",
                 output=(summary_tail + "\n\nGovernance gate: tracked working-tree changes remain uncommitted; checkout was left untouched for review."),
                 return_code=return_code,
+                expected_branch=task_branch,
             )
         elif approval_gate:
-            complete(task_id, status="needs_approval", output=summary_tail, return_code=return_code, approval_gate=approval_gate)
+            complete(task_id, status="needs_approval", output=summary_tail, return_code=return_code, approval_gate=approval_gate, expected_branch=task_branch)
         elif return_code == 0:
-            complete(task_id, status="completed", output=summary_tail, return_code=return_code)
+            complete(task_id, status="completed", output=summary_tail, return_code=return_code, expected_branch=task_branch)
         else:
-            complete(task_id, status="failed", output=summary_tail, return_code=return_code)
+            complete(task_id, status="failed", output=summary_tail, return_code=return_code, expected_branch=task_branch)
     finally:
         # KeyboardInterrupt, terminal closure or an unexpected runner exception must
         # never leave the owned Codex child running detached in the background.

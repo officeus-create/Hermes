@@ -71,6 +71,7 @@ def execute_runner_case(
     output: str,
     return_code: int | None = 0,
     cancel_requested: bool = False,
+    current_branch: str | None = None,
 ) -> tuple[dict[str, Any], list[tuple[str, dict[str, Any] | None]]]:
     calls: list[tuple[str, dict[str, Any] | None]] = []
     process = FakeProcess(output, None if cancel_requested else return_code)
@@ -82,7 +83,7 @@ def execute_runner_case(
 
     def fake_git(*args: str) -> str:
         if args == ("branch", "--show-current"):
-            return f"internal-ai/{task_id}"
+            return current_branch or runner.task_branch_name(task_id)
         if args == ("rev-parse", "HEAD"):
             return "abc123"
         return ""
@@ -221,6 +222,18 @@ def branch_isolation() -> None:
     assert branch != "main"
     assert starting_sha == "base123"
     assert commands == [["git", "-C", str(runner.REPO), "switch", "-c", branch]]
+
+    completion, _ = execute_runner_case(
+        task_id="hcai-branch-switch",
+        prompt="Run a bounded repository check.",
+        output="Child switched branches before reporting success.\n",
+        current_branch="main",
+    )
+    assert completion["status"] == "failed", completion
+    assert completion["branch"] is None, completion
+    assert "Branch isolation violation" in completion["output_summary"]
+    assert "expected internal-ai/hcai-branch-switch" in completion["output_summary"]
+    assert "post-run checkout was main" in completion["output_summary"]
 
 
 def cancellation() -> None:

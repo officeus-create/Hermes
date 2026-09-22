@@ -63,6 +63,8 @@ assert.match(claim, /runnerTask\(/, "runner claim may receive the private prompt
 assert.match(runnerTaskEndpoint, /runnerTask\(/, "runner state polling may receive the private prompt-bearing DTO");
 assert.match(complete, /needs_approval/, "real approval state must be represented");
 assert.match(complete, /approval_gate_required/, "approval state needs a defined consequential gate");
+assert.match(complete, /task_branch_mismatch/, "completion must reject main or another task's reported branch");
+assert.match(complete, /task_branch_required/, "terminal success must require the exact task branch");
 assert.match(complete, /approval_granted_at = CASE WHEN \? = 'needs_approval' THEN NULL/, "a newly reached gate must consume any prior approval receipt");
 assert.match(event, /organization_scope, task_id, event_type/, "events must be internal tenant scoped");
 assert.match(fccCompatibilityPatch, /current\.count\(replacement\.new\) != 1/, "FCC patcher must require one exact reviewed new fragment");
@@ -72,6 +74,7 @@ assert.match(runner, /subprocess\.Popen\(/, "runner invokes Codex through an arg
 assert.doesNotMatch(runner, /shell\s*=\s*True/, "runner must never interpolate task text into a shell");
 assert.doesNotMatch(runner, /socket\.|listen\(|HTTPServer|Flask|FastAPI/, "runner remains outbound-only with no remote shell");
 assert.match(runner, /switch", "-c", branch/, "runner isolates each task branch");
+assert.match(runner, /Branch isolation violation/, "runner must re-check the post-run branch before terminal success");
 assert.match(runner, /HERMES_INTERNAL_APPROVAL_GATE/, "runner must record an explicit consequential approval stop");
 assert.match(runner, /status="needs_approval"/, "runner must surface a documented approval gate instead of treating it as success");
 assert.match(runner, /"approval_gate": approval_gate/, "runner must transport the detected gate required by the server contract");
