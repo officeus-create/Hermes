@@ -39,4 +39,11 @@ assert.ok(
   "The retired phone must not appear in the global footer",
 );
 
+const about = await readBuiltPage("dist/about/index.html");
+assert.ok(about.includes("officeus@hermeslogisticsus.com"), "About page must keep the approved public email route");
+assert.ok(
+  !about.includes("+1 (262) 302-3626"),
+  "The retired Logistics phone must not appear on the About page",
+);
+
 console.log("Homepage title and email/form-only Logistics contact contract passed.");
