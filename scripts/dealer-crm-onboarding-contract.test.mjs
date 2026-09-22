@@ -83,6 +83,7 @@ for (const table of [
   "hermes_dealer_leads",
   "hermes_dealer_appointments",
   "hermes_dealer_team_members",
+  "hermes_dealer_team_schedule",
   "hermes_dealer_department_hours",
   "hermes_dealer_activity",
   "hermes_dealer_bootstrap_state",
@@ -98,6 +99,8 @@ assert.match(dealerCrmApi, /autonomous_actions: false/);
 assert.match(dealerCrmApi, /external_ai_write: false/);
 assert.match(dealerCrmApi, /transport_drafts_waiting/);
 assert.match(dealerCrmApi, /social_owner_auth/);
+assert.match(dealerCrmApi, /set_team_schedule/);
+assert.match(dealerCrmApi, /seven_schedule_days_required/);
 for (const moduleName of ["customers", "vehicles", "leads", "appointments", "team", "activity", "intelligence"]) {
   assert.match(dealerCrmApi, new RegExp(moduleName));
   assert.match(dealerCrmWorkspace, new RegExp(moduleName, "i"));
@@ -106,6 +109,8 @@ assert.match(dealerCrmWorkspace, /robots="noindex,nofollow"/);
 assert.match(dealerCrmWorkspace, /Private owner workspace/);
 assert.match(dealerCrmWorkspace, /A vehicle record is not a Transport Request/);
 assert.match(dealerCrmWorkspace, /Autonomous actions: OFF/);
+assert.match(dealerCrmWorkspace, /data-team-schedule-form/);
+assert.match(dealerCrmWorkspace, /Individual weekly schedule/);
 assert.doesNotMatch(dealerCrmWorkspace, /yourfriends@legacytoyotadallas\\.net/i);
 assert.doesNotMatch(dealerCrmWorkspace, /\\.innerHTML\\s*=/);
 assert.match(access, /Dealer Operations/);
