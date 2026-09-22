@@ -1,9 +1,14 @@
 import {
+  buildHrScoreDimensions,
   cleanHrAttribution,
   cleanHrLongText,
   cleanHrText,
   ensureHrSchema,
   getLatestHrReview,
+  hrRouteRecommendation,
+  HR_EVALUATION_POLICY_VERSION,
+  HR_INTERVIEW_VERSION,
+  HR_MODEL_VERSION,
   isHrCandidateId,
   isHrEmail,
   isHrEventId,
@@ -229,6 +234,7 @@ export async function onRequestPut({ request, env }: Context) {
   const answers = Array.isArray(input.answers) ? input.answers.slice(0, 24) : [];
   const events = Array.isArray(input.events) ? input.events.slice(0, 100) : [];
   const statements: any[] = [];
+  const acceptedEvidenceIds: string[] = [];
 
   for (const raw of answers) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
@@ -245,6 +251,17 @@ export async function onRequestPut({ request, env }: Context) {
         (id,candidate_id,session_id,question_id,phase,parent_question_id,answer_text,submitted_at)
       VALUES (?,?,?,?,?,?,?,?)
     `).bind(evidenceId, candidateId, session.id, questionId, phase, parentQuestionId, answerText, submittedAt));
+    acceptedEvidenceIds.push(evidenceId);
+    statements.push(env.DB.prepare(`
+      INSERT OR IGNORE INTO hr_evidence_items
+        (id,candidate_id,session_id,kind,source_ref,created_at)
+      VALUES (?,?,?,'INTERVIEW_ANSWER',?,?)
+    `).bind(evidenceId, candidateId, session.id, evidenceId, submittedAt));
+    statements.push(env.DB.prepare(`
+      INSERT OR IGNORE INTO hr_question_path_events
+        (id,candidate_id,session_id,question_id,parent_question_id,phase,occurred_at)
+      VALUES (?,?,?,?,?,?,?)
+    `).bind(`path_${evidenceId}`, candidateId, session.id, questionId, parentQuestionId, phase, submittedAt));
   }
 
   for (const raw of events) {
@@ -269,6 +286,12 @@ export async function onRequestPut({ request, env }: Context) {
   const now = new Date().toISOString();
 
   if (completedAt) {
+    const normalizedRecommendation = RECOMMENDATION_CODES.has(recommendationCode) ? recommendationCode : null;
+    const dimensions = buildHrScoreDimensions(signals, acceptedEvidenceIds);
+    const route = hrRouteRecommendation(normalizedRecommendation, dimensions);
+    const scoreSnapshotId = `hr-score-${session.id}-${HR_MODEL_VERSION}`;
+    const routeDecisionId = `hr-route-${session.id}-${HR_MODEL_VERSION}`;
+
     await env.DB.batch([
       env.DB.prepare(`
         UPDATE hr_interview_sessions
@@ -277,7 +300,7 @@ export async function onRequestPut({ request, env }: Context) {
       `).bind(
         completedAt,
         signals ? JSON.stringify(signals) : null,
-        RECOMMENDATION_CODES.has(recommendationCode) ? recommendationCode : null,
+        normalizedRecommendation,
         now,
         candidateId,
       ),
@@ -286,6 +309,34 @@ export async function onRequestPut({ request, env }: Context) {
         SET status=CASE WHEN status='interviewing' THEN 'completed' ELSE status END,updated_at=?
         WHERE id=?
       `).bind(now, candidateId),
+      env.DB.prepare(`
+        INSERT OR IGNORE INTO hr_score_snapshots
+          (id,candidate_id,session_id,policy_version,interview_version,model_version,dimensions_json,missing_evidence_json,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?)
+      `).bind(
+        scoreSnapshotId,
+        candidateId,
+        session.id,
+        HR_EVALUATION_POLICY_VERSION,
+        HR_INTERVIEW_VERSION,
+        HR_MODEL_VERSION,
+        JSON.stringify(dimensions),
+        JSON.stringify(route.missing_evidence),
+        completedAt,
+      ),
+      env.DB.prepare(`
+        INSERT OR IGNORE INTO hr_route_decisions
+          (id,candidate_id,session_id,recommendation,rationale,evidence_ids_json,requires_human_review,created_at)
+        VALUES (?,?,?,?,?,?,1,?)
+      `).bind(
+        routeDecisionId,
+        candidateId,
+        session.id,
+        route.recommendation,
+        route.rationale,
+        JSON.stringify([...new Set(acceptedEvidenceIds)]),
+        completedAt,
+      ),
     ]);
   } else {
     await env.DB.prepare(`UPDATE hr_interview_sessions SET updated_at=? WHERE candidate_id=?`).bind(now, candidateId).run();
