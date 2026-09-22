@@ -36,7 +36,8 @@ const knownUpdates = [
   ["sitemapindex.xml", "sitemap-academy.xml", "2026-09-16", "sitemap"],
   ["sitemap-insights.xml", "insights/logistics/dry-van-spot-rates-september-2026/", "2026-09-14", "url"],
   ["sitemapindex.xml", "sitemap-insights.xml", "2026-09-14", "sitemap"],
-  ["sitemapindex.xml", "sitemap-business-directory.xml", "2026-09-10", "sitemap"],
+  ["sitemap-business-directory.xml", "businesses/texas/dallas/legacy-toyota-of-dallas/", "2026-09-22", "url"],
+  ["sitemapindex.xml", "sitemap-business-directory.xml", "2026-09-22", "sitemap"],
 ];
 
 for (const [file, path, minimum, tag] of knownUpdates) {
