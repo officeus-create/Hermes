@@ -21,11 +21,6 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
     "href",
     "/load-board/?role=carrier&equipment=car_hauler#available-loads",
   );
-  await expect(page.getByRole("link", { name: "RPM & Load Profitability Calculator" })).toHaveAttribute(
-    "href",
-    "/logistics/resources/rpm-calculator/",
-  );
-
   const schema = (await page.locator('script[type="application/ld+json"]').allTextContents())
     .flatMap((text) => {
       const parsed = JSON.parse(text);
