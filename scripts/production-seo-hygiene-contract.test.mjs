@@ -60,7 +60,7 @@ const indexedChildSitemapFiles = [
 // The Legacy Toyota dealer pilot adds exactly three static Catalog discovery owners:
 // Texas state, Dallas city, and the unclaimed dealership profile. Its private CRM workspace
 // stays noindex and is intentionally absent from every sitemap.
-const nonInsightsExpectedPageUrlCount = 261;
+const nonInsightsExpectedPageUrlCount = 264;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
