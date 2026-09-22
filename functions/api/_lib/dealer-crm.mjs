@@ -198,6 +198,10 @@ export async function requireDealerCompany(request, env) {
   return { specialist, company };
 }
 
+/**
+ * @param {any} db
+ * @param {{ companyId: any, actorId?: any, eventType: any, entityType?: any, entityId?: any, summary?: any }} options
+ */
 export async function recordDealerActivity(db, { companyId, actorId, eventType, entityType = null, entityId = null, summary = null }) {
   await ensureDealerCrmSchema(db);
   const now = new Date().toISOString();
