@@ -5,6 +5,76 @@ Purpose: run the product with real shops and fix the earliest repeated funnel br
 
 Use one numbered slot per real shop. Keep shop names, contact details, customer data, invoices, private feedback text, account identifiers and raw screenshots in the approved private operating system, not this repository. GitHub records only sanitized status, timing, categories and aggregate evidence.
 
+## Owner-ready First-5 call + invoice activation packet (10 minutes)
+
+Use this packet only with a real independent U.S. repair-shop owner or manager already approved for a human conversation. It prepares a truthful manual close; it does not authorize outreach, send an invoice, charge a card, promise results, or activate access by itself.
+
+### Ownership and evidence
+
+- **Business owner:** Sales / Customer Success plus the authorized Hermes commercial owner.
+- **Single writer:** the trained human caller who owns the canonical private `CALL LOG` row for that shop.
+- **Independent verifier:** Completion Architect checks offer fidelity; Finance verifies invoice/payment evidence; Analytics/QA verifies activation and product readback.
+- **Public offer:** setup-period software fee `$0`; standard Founding Shop price `$99/month per repair shop location` only after setup and human confirmation before invoicing.
+- **Private evidence only:** decision-maker identity, contact details, call notes, billing contact, invoice, payment/provider receipt and account identifiers.
+- **Repository evidence only:** sanitized slot/state, timing, friction category, payment state and next action in this scorecard.
+
+### Before the call — 2-minute operator check
+
+1. Open the existing private shop/lead row and confirm one owner, one next action and no duplicate or `DNC` state.
+2. Confirm the person is the owner/manager or can bring the decision-maker into the conversation.
+3. Open the live Repair Shops page, owner registration route and Founding Shop Plan; stop if they do not show `$0 during setup`, `$99/month after setup`, no card during setup and human confirmation before invoice.
+4. Keep the canonical private `CALL LOG` ready. Do not copy PII, verbatim notes, invoice data or screenshots into GitHub.
+
+### Call — maximum 10 minutes
+
+| Time | Human prompt | Required private note |
+|---|---|---|
+| 0:00–0:45 | “Are you the owner or manager responsible for scheduling and software decisions? I want to understand the current workflow before discussing Hermes Connect.” | `DECISION_MAKER = YES / NO / UNKNOWN` |
+| 0:45–2:30 | “How do customers request appointments today, and where does the team lose the most time: calls/messages, services, availability, booking status, customer history or vehicle history?” | One observed primary friction category; no invented pain |
+| 2:30–4:30 | “Hermes Connect puts services, weekly availability, one booking link, booking status, customers and vehicles in one browser workspace. Which part would you test first?” | `FIRST_VALUE_TARGET` and the owner’s own success signal |
+| 4:30–6:30 | “Setup-period software access is $0 while the real shop profile, services, availability and booking workflow are configured. Would you be willing to complete setup and test one real workflow?” | `SETUP_DECISION = YES / NO / LATER` plus next date/owner |
+| 6:30–8:00 | “If the configured workflow is useful, the standard Founding Shop price is $99/month for one location. Hermes confirms the scope, billing contact and invoice with you before paid activation; the website does not charge a card. Is that process clear?” | `PRICE_UNDERSTOOD`, `INVOICE_CONSENT`, sanitized objection category |
+| 8:00–10:00 | Agree one next step only: start/finish setup, schedule observed traversal, request the manual invoice, or close/pause the opportunity. Repeat that no customer, booking, ranking or revenue result is guaranteed. | `NEXT_ACTION`, human owner, due date, permission state |
+
+### Stop / pause rules
+
+Stop the commercial close and record a bounded reason when any of these is true:
+
+- the decision-maker is absent and no approved follow-up exists;
+- the shop is outside the represented repair-shop workflow or current First-5 scope;
+- the person does not consent to billing follow-up;
+- the owner expects guaranteed customers, rankings, bookings or revenue;
+- price, cancellation, refund, tax, contract or provider facts would need to be invented;
+- a duplicate, `DNC`, privacy, identity or account-ownership conflict exists;
+- the real workflow has not been tested enough for the owner to make an informed decision.
+
+Allowed dispositions: `SETUP_ACCEPTED | OBSERVED_TRAVERSAL_SCHEDULED | INVOICE_REQUESTED | NOT_NOW | NOT_FIT | DNC | OWNER_DECISION_REQUIRED`.
+
+### Manual invoice + activation handoff
+
+The authorized commercial owner completes this only after `INVOICE_REQUESTED` from a real decision-maker:
+
+1. Confirm privately: one shop location, `$0` setup period, `$99/month` continuation price, billing contact, invoice cadence/start date and the exact scope already published on the Founding Shop Plan.
+2. Issue the invoice through the existing approved company process. Store only a pointer/reference in the private operating system; never place financial data in this repository.
+3. Keep states separate: `PAID_INTENT` is not `INVOICE_SENT`; `INVOICE_SENT` is not `PAID`; `PAID` requires settled provider/financial evidence.
+4. After settled payment or another explicitly authorized commercial state, the authorized operator applies the existing `repair_shop_access` state and records who approved it and when.
+5. Independently read back the paid/access state in the owner product and confirm the real shop can continue the intended workflow.
+6. Update the private evidence first, then this repository’s sanitized First-5 slot and aggregate KPI.
+
+### DONE for one First-5 paying shop
+
+All of the following must be true:
+
+- real decision-maker conversation and disposition exist in the canonical private `CALL LOG`;
+- the shop completed or observed enough of the real workflow to make an informed payment decision;
+- exact `$99/month/location` manual invoice evidence exists and settled payment is independently verified;
+- authorized access state is applied and read back in the owner product;
+- at least one real post-activation use signal is observed;
+- Finance and Analytics/QA independently sign off on payment and activation evidence;
+- only sanitized state/timing/categories are written to this scorecard.
+
+Synthetic requests, test invoices, screenshots, workflow checks or access-state smoke runs never satisfy this business DONE contract.
+
 ## Release gates before a real first-5 cohort
 
 Do not move a real shop from `INVITED` into `REGISTERED` or later cohort tracking until the selected exact `main` release has cleared the applicable production gates:
