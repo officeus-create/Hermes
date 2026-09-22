@@ -100,7 +100,7 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
       </section>
 
       <section class="crm-panel" data-panel="appointments">
-        <div class="panel-head"><div><p class="eyebrow">Appointments</p><h2>Sales, service and follow-up appointments</h2></div><p>Times are stored in ISO form and interpreted against the dealer company timezone.</p></div>
+        <div class="panel-head"><div><p class="eyebrow">Appointments</p><h2>Sales, service and follow-up appointments</h2></div><p>Times are stored as absolute timestamps. The dealer timezone remains on the company profile for scheduling context.</p></div>
         <form class="crm-form" data-crm-form="appointments">
           <input type="hidden" name="id" />
           <label>Customer<select name="customer_id"><option value="">Unassigned</option></select></label>
@@ -128,7 +128,23 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
           <div class="form-actions wide"><button class="button primary" type="submit">Save team member</button><button class="button" type="button" data-form-reset>Clear</button></div>
         </form>
         <div class="subsection"><h3>Team members</h3><div class="record-list" data-list="team"></div></div>
-        <div class="subsection"><h3>Department hours</h3><div class="hours-grid" data-department-hours></div></div>
+        <div class="subsection schedule-editor">
+          <div class="schedule-head"><div><h3>Individual weekly schedule</h3><p>Owner-managed only. Department hours are a reference, not an employee schedule.</p></div></div>
+          <form data-team-schedule-form>
+            <label class="schedule-member">Team member<select name="team_member_id"><option value="">Choose a team member</option></select></label>
+            <div class="schedule-grid">
+              <div class="schedule-row" data-schedule-day="0"><strong>Sun</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="1"><strong>Mon</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="2"><strong>Tue</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="3"><strong>Wed</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="4"><strong>Thu</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="5"><strong>Fri</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="6"><strong>Sat</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+            </div>
+            <div class="form-actions"><button class="button primary" type="submit">Save weekly schedule</button></div>
+          </form>
+        </div>
+        <div class="subsection"><h3>Verified department hours</h3><div class="hours-grid" data-department-hours></div></div>
       </section>
 
       <section class="crm-panel" data-panel="activity">
@@ -150,7 +166,7 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
       const status = root.querySelector('[data-crm-status]');
       const dashboardEl = root.querySelector('[data-dashboard]');
       const workspace = root.querySelector('[data-workspace]');
-      const state = { customers: [], vehicles: [], leads: [], appointments: [], team: { members: [], department_hours: [] } };
+      const state = { customers: [], vehicles: [], leads: [], appointments: [], team: { members: [], department_hours: [], member_schedules: [] } };
 
       const setStatus = (message, error) => {
         if (!(status instanceof HTMLElement)) return;
@@ -287,6 +303,15 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
           const meta = [row.department, row.role, row.active ? 'Active' : 'Inactive'].filter(Boolean).join(' · ');
           target.append(recordCard(row.name, meta, [row.email, row.phone].filter(Boolean).join(' · '), row.id, 'team'));
         });
+        const scheduleMember = root.querySelector('[data-team-schedule-form] select[name="team_member_id"]');
+        if (scheduleMember instanceof HTMLSelectElement) {
+          const current = scheduleMember.value;
+          while (scheduleMember.options.length > 1) scheduleMember.remove(1);
+          state.team.members.filter((row) => row.active).forEach((row) => {
+            scheduleMember.add(new Option(row.name + (row.role ? ' · ' + row.role : ''), row.id));
+          });
+          scheduleMember.value = state.team.members.some((row) => row.id === current && row.active) ? current : '';
+        }
         const hours = root.querySelector('[data-department-hours]');
         clear(hours);
         const byDepartment = new Map();
@@ -334,7 +359,7 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
         if (module === 'vehicles') { state.vehicles = payload.vehicles || []; renderVehicles(); }
         if (module === 'leads') { state.leads = payload.leads || []; renderLeads(); }
         if (module === 'appointments') { state.appointments = payload.appointments || []; renderAppointments(); }
-        if (module === 'team') { state.team = payload.team || { members: [], department_hours: [] }; renderTeam(); }
+        if (module === 'team') { state.team = payload.team || { members: [], department_hours: [], member_schedules: [] }; renderTeam(); fillTeamSchedule(); }
         if (module === 'activity') renderActivity(payload.activity || []);
         if (module === 'intelligence') renderIntelligence(payload.intelligence || {});
         refillReferenceSelects();
@@ -391,6 +416,65 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
         const active = form.elements.namedItem('active');
         if (active instanceof HTMLInputElement) active.checked = true;
       };
+
+      const fillTeamSchedule = () => {
+        const form = root.querySelector('[data-team-schedule-form]');
+        if (!(form instanceof HTMLFormElement)) return;
+        const select = form.elements.namedItem('team_member_id');
+        const memberId = select && 'value' in select ? String(select.value || '') : '';
+        form.querySelectorAll('[data-schedule-day]').forEach((row) => {
+          const day = Number(row.getAttribute('data-schedule-day'));
+          const saved = (state.team.member_schedules || []).find((item) => item.team_member_id === memberId && Number(item.day_of_week) === day);
+          const working = row.querySelector('[data-working]');
+          const start = row.querySelector('[data-start]');
+          const end = row.querySelector('[data-end]');
+          if (working instanceof HTMLInputElement) working.checked = Boolean(saved?.is_working);
+          if (start instanceof HTMLInputElement) start.value = saved?.start_time || '';
+          if (end instanceof HTMLInputElement) end.value = saved?.end_time || '';
+        });
+      };
+
+      const scheduleForm = root.querySelector('[data-team-schedule-form]');
+      scheduleForm?.querySelector('select[name="team_member_id"]')?.addEventListener('change', fillTeamSchedule);
+      scheduleForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(scheduleForm instanceof HTMLFormElement)) return;
+        const select = scheduleForm.elements.namedItem('team_member_id');
+        const teamMemberId = select && 'value' in select ? String(select.value || '') : '';
+        if (!teamMemberId) {
+          setStatus('Choose a team member before saving a weekly schedule.', true);
+          return;
+        }
+        const days = Array.from(scheduleForm.querySelectorAll('[data-schedule-day]')).map((row) => {
+          const working = row.querySelector('[data-working]');
+          const start = row.querySelector('[data-start]');
+          const end = row.querySelector('[data-end]');
+          return {
+            day_of_week: Number(row.getAttribute('data-schedule-day')),
+            is_working: working instanceof HTMLInputElement ? working.checked : false,
+            start_time: start instanceof HTMLInputElement ? start.value : '',
+            end_time: end instanceof HTMLInputElement ? end.value : '',
+          };
+        });
+        const button = scheduleForm.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        try {
+          const payload = await json('/api/hermes-connect/dealer/crm', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'set_team_schedule', team_member_id: teamMemberId, days }),
+          });
+          state.team = payload.team || state.team;
+          renderTeam();
+          const refreshed = scheduleForm.elements.namedItem('team_member_id');
+          if (refreshed && 'value' in refreshed) refreshed.value = teamMemberId;
+          fillTeamSchedule();
+          setStatus('Weekly team schedule saved.', false);
+        } catch (error) {
+          setStatus('Schedule save failed: ' + error.message, true);
+        } finally {
+          if (button instanceof HTMLButtonElement) button.disabled = false;
+        }
+      });
 
       root.addEventListener('click', async (event) => {
         const button = event.target instanceof Element ? event.target.closest('button') : null;
@@ -486,6 +570,6 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
   </script>
 
   <style>
-    .dealer-crm{min-height:100vh;background:#f5f8fb;color:#173046;padding-bottom:80px}.crm-shell{width:min(1240px,calc(100% - 32px));margin:0 auto}.crm-hero{display:flex;justify-content:space-between;gap:36px;align-items:flex-end;padding:64px 0 34px}.eyebrow{margin:0 0 10px;color:#2862a9;font-weight:800;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase}.crm-hero h1{font-size:clamp(2rem,4vw,4rem);line-height:1.02;letter-spacing:-.045em;margin:0;max-width:760px}.lede{max-width:760px;color:#587084;font-size:1.05rem;line-height:1.65}.hero-actions,.form-actions,.record-actions{display:flex;gap:10px;flex-wrap:wrap}.button,.mini-button,.crm-tabs button{border:1px solid #cbd8e4;background:#fff;color:#214766;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.button.primary{background:#2666b2;color:#fff;border-color:#2666b2}.button:disabled{opacity:.55;cursor:not-allowed}.notice{display:flex;gap:12px;background:#edf5ff;border:1px solid #c7dcf6;border-radius:16px;padding:16px 18px;color:#365873}.status{border-radius:12px;padding:12px 14px;background:#fff;border:1px solid #d9e3eb;color:#557083}.status[data-error="true"]{background:#fff5f4;border-color:#f1c8c4;color:#8b3a32}.metric-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px}.metric-grid article{background:#fff;border:1px solid #dbe5ed;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(44,73,96,.04)}.metric-grid span{display:block;color:#6b8193;font-size:.8rem}.metric-grid strong{display:block;font-size:1.8rem;margin-top:7px}.crm-workspace{margin-top:22px;background:#fff;border:1px solid #dbe5ed;border-radius:22px;overflow:hidden;box-shadow:0 18px 48px rgba(44,73,96,.06)}.crm-tabs{display:flex;gap:7px;overflow:auto;padding:14px;border-bottom:1px solid #e2eaf0;background:#f8fafc}.crm-tabs button{white-space:nowrap;padding:9px 12px}.crm-tabs button.is-active{background:#eaf3ff;border-color:#b8d2f0;color:#184f8b}.crm-panel{display:none;padding:26px}.crm-panel.is-active{display:block}.panel-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-start;margin-bottom:22px}.panel-head h2{margin:0;font-size:1.7rem}.panel-head>p{max-width:460px;color:#6b8193;line-height:1.55;margin:0}.crm-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:18px;padding:16px;margin-bottom:22px}.crm-form label{display:grid;gap:6px;color:#4c677c;font-size:.82rem;font-weight:700}.crm-form input,.crm-form select,.crm-form textarea{width:100%;box-sizing:border-box;border:1px solid #cfdce6;border-radius:10px;padding:10px 11px;background:#fff;color:#173046;font:inherit}.crm-form textarea{min-height:86px;resize:vertical}.crm-form .wide{grid-column:1/-1}.crm-form .check{display:flex;flex-direction:row;align-items:center;align-self:end;padding:10px 0}.crm-form .check input{width:auto}.record-list{display:grid;gap:10px}.record-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;background:#fff}.record-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.record-head strong{display:block}.record-head small{display:block;margin-top:4px;color:#71879a}.record-card p{color:#587084;margin:10px 0 0;line-height:1.5}.mini-button{padding:6px 9px;font-size:.76rem}.empty{padding:20px;border:1px dashed #cbd8e4;border-radius:14px;color:#71879a}.subsection{margin-top:26px}.subsection h3{margin-bottom:12px}.hours-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hours-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;display:grid;gap:5px}.hours-card span{font-size:.82rem;color:#587084}.intelligence{display:grid;gap:14px}.intelligence-note{padding:18px;border-radius:16px;background:#edf5ff;border:1px solid #c7dcf6}.intelligence-note p{margin:.4rem 0 0;color:#587084}.action-list{display:grid;gap:10px;margin:0;padding-left:24px}.action-list li{padding:10px 12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:12px}@media(max-width:960px){.crm-hero,.panel-head{display:block}.hero-actions{margin-top:18px}.metric-grid{grid-template-columns:repeat(3,1fr)}.crm-form{grid-template-columns:repeat(2,1fr)}.hours-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metric-grid,.crm-form,.hours-grid{grid-template-columns:1fr}.crm-form .wide{grid-column:auto}.crm-panel{padding:18px}.notice{display:block}.record-head{display:block}.record-actions{margin-top:10px}}
+    .dealer-crm{min-height:100vh;background:#f5f8fb;color:#173046;padding-bottom:80px}.crm-shell{width:min(1240px,calc(100% - 32px));margin:0 auto}.crm-hero{display:flex;justify-content:space-between;gap:36px;align-items:flex-end;padding:64px 0 34px}.eyebrow{margin:0 0 10px;color:#2862a9;font-weight:800;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase}.crm-hero h1{font-size:clamp(2rem,4vw,4rem);line-height:1.02;letter-spacing:-.045em;margin:0;max-width:760px}.lede{max-width:760px;color:#587084;font-size:1.05rem;line-height:1.65}.hero-actions,.form-actions,.record-actions{display:flex;gap:10px;flex-wrap:wrap}.button,.mini-button,.crm-tabs button{border:1px solid #cbd8e4;background:#fff;color:#214766;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.button.primary{background:#2666b2;color:#fff;border-color:#2666b2}.button:disabled{opacity:.55;cursor:not-allowed}.notice{display:flex;gap:12px;background:#edf5ff;border:1px solid #c7dcf6;border-radius:16px;padding:16px 18px;color:#365873}.status{border-radius:12px;padding:12px 14px;background:#fff;border:1px solid #d9e3eb;color:#557083}.status[data-error="true"]{background:#fff5f4;border-color:#f1c8c4;color:#8b3a32}.metric-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px}.metric-grid article{background:#fff;border:1px solid #dbe5ed;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(44,73,96,.04)}.metric-grid span{display:block;color:#6b8193;font-size:.8rem}.metric-grid strong{display:block;font-size:1.8rem;margin-top:7px}.crm-workspace{margin-top:22px;background:#fff;border:1px solid #dbe5ed;border-radius:22px;overflow:hidden;box-shadow:0 18px 48px rgba(44,73,96,.06)}.crm-tabs{display:flex;gap:7px;overflow:auto;padding:14px;border-bottom:1px solid #e2eaf0;background:#f8fafc}.crm-tabs button{white-space:nowrap;padding:9px 12px}.crm-tabs button.is-active{background:#eaf3ff;border-color:#b8d2f0;color:#184f8b}.crm-panel{display:none;padding:26px}.crm-panel.is-active{display:block}.panel-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-start;margin-bottom:22px}.panel-head h2{margin:0;font-size:1.7rem}.panel-head>p{max-width:460px;color:#6b8193;line-height:1.55;margin:0}.crm-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:18px;padding:16px;margin-bottom:22px}.crm-form label{display:grid;gap:6px;color:#4c677c;font-size:.82rem;font-weight:700}.crm-form input,.crm-form select,.crm-form textarea{width:100%;box-sizing:border-box;border:1px solid #cfdce6;border-radius:10px;padding:10px 11px;background:#fff;color:#173046;font:inherit}.crm-form textarea{min-height:86px;resize:vertical}.crm-form .wide{grid-column:1/-1}.crm-form .check{display:flex;flex-direction:row;align-items:center;align-self:end;padding:10px 0}.crm-form .check input{width:auto}.record-list{display:grid;gap:10px}.record-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;background:#fff}.record-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.record-head strong{display:block}.record-head small{display:block;margin-top:4px;color:#71879a}.record-card p{color:#587084;margin:10px 0 0;line-height:1.5}.mini-button{padding:6px 9px;font-size:.76rem}.empty{padding:20px;border:1px dashed #cbd8e4;border-radius:14px;color:#71879a}.subsection{margin-top:26px}.subsection h3{margin-bottom:12px}.schedule-editor{padding:16px;border:1px solid #e2eaf0;border-radius:16px;background:#fbfcfd}.schedule-head p{margin:.35rem 0 1rem;color:#6b8193}.schedule-member{display:grid;gap:6px;max-width:420px;color:#4c677c;font-size:.82rem;font-weight:700}.schedule-member select{border:1px solid #cfdce6;border-radius:10px;padding:10px 11px;background:#fff;color:#173046;font:inherit}.schedule-grid{display:grid;gap:8px;margin:14px 0}.schedule-row{display:grid;grid-template-columns:52px 110px 120px 24px 120px;gap:9px;align-items:center;padding:9px 10px;border:1px solid #e2eaf0;border-radius:10px;background:#fff}.schedule-row label{display:flex;align-items:center;gap:6px;color:#587084;font-size:.8rem}.schedule-row input[type="time"]{border:1px solid #cfdce6;border-radius:9px;padding:8px;color:#173046;background:#fff}.hours-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hours-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;display:grid;gap:5px}.hours-card span{font-size:.82rem;color:#587084}.intelligence{display:grid;gap:14px}.intelligence-note{padding:18px;border-radius:16px;background:#edf5ff;border:1px solid #c7dcf6}.intelligence-note p{margin:.4rem 0 0;color:#587084}.action-list{display:grid;gap:10px;margin:0;padding-left:24px}.action-list li{padding:10px 12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:12px}@media(max-width:960px){.crm-hero,.panel-head{display:block}.hero-actions{margin-top:18px}.metric-grid{grid-template-columns:repeat(3,1fr)}.crm-form{grid-template-columns:repeat(2,1fr)}.hours-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metric-grid,.crm-form,.hours-grid{grid-template-columns:1fr}.schedule-row{grid-template-columns:44px 1fr 1fr}.schedule-row>span{display:none}.crm-form .wide{grid-column:auto}.crm-panel{padding:18px}.notice{display:block}.record-head{display:block}.record-actions{margin-top:10px}}
   </style>
 </BaseLayout>
