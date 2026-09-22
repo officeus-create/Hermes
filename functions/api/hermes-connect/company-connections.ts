@@ -6,6 +6,7 @@ import {
   listCompanyConnections,
   upsertCompanyConnection,
 } from "../_lib/company-connections.mjs";
+import { recordDealerActivity } from "../_lib/dealer-crm.mjs";
 
 type Env = {
   DB?: any;
@@ -110,6 +111,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       auto_publish_enabled: false,
       dm_automation_enabled: false,
     },
+  });
+  await recordDealerActivity(env.DB, {
+    companyId: context.company.id,
+    actorId: context.specialist.id,
+    eventType: "social_connection_prepared",
+    entityType: "connection",
+    entityId: String(row?.id || provider),
+    summary: metaConfigured
+      ? provider + " connector prepared for owner OAuth; no connected claim or autonomous publishing enabled."
+      : provider + " connector remains configuration-required; no connected claim or autonomous publishing enabled.",
   });
 
   return jsonResponse(200, {
