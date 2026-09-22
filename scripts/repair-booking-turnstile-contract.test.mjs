@@ -130,6 +130,7 @@ for (const path of workflowPaths) {
   assert.ok(workflow.includes("id-token: write"), `Missing id-token permission: ${path}`);
 }
 const bookingProductionSmokeWorkflow = fs.readFileSync(".github/workflows/repair-booking-production-smoke.yml", "utf8");
+const capacityProductionSmokeWorkflow = fs.readFileSync(".github/workflows/repair-capacity-production-smoke.yml", "utf8");
 assert.ok(bookingProductionSmokeWorkflow.includes("randomBytes(24)"), "booking smoke password must be generated ephemerally at runtime");
 assert.doesNotMatch(bookingProductionSmokeWorkflow, /PASSWORD=.*TEST_ID/, "booking smoke password must not be derived from the test id template");
 assert.doesNotMatch(
@@ -157,6 +158,55 @@ assert.equal(
   "Only registration and idempotent profile setup may retry the retired rollout gate.",
 );
 assert.doesNotMatch(bookingProductionSmoke, /REPAIR_BOOKING_PRODUCTION_WRITE=SKIPPED_SETUP_ACCESS_CLOSED/);
+
+assert.match(capacityProductionSmokeWorkflow, /workflow_dispatch:/, "Capacity smoke must expose the bounded recovery dispatch.");
+assert.match(
+  capacityProductionSmokeWorkflow,
+  /approved_main_guard:[\s\S]*if \[\[ "\$RELEASE_REF" != "refs\/heads\/main" \]\]; then[\s\S]*exit 1[\s\S]*smoke:[\s\S]*needs: approved_main_guard/,
+  "A non-main capacity dispatch must fail before the production smoke job can start.",
+);
+assert.match(
+  capacityProductionSmokeWorkflow,
+  /push:\n\s+branches: \[main\][\s\S]*paths:[\s\S]*scripts\/repair-capacity-production-smoke\.sh/,
+  "The existing path-filtered push-to-main capacity trigger must remain intact.",
+);
+assert.match(
+  capacityProductionSmokeWorkflow,
+  /concurrency:\n\s+group: repair-shop-capacity-production\n\s+cancel-in-progress: false/,
+  "Capacity runs must remain serialized instead of cancelling an in-flight synthetic cleanup.",
+);
+
+const guardStep = capacityProductionSmokeWorkflow.match(
+  /- name: Require the approved main ref[\s\S]*?\n\s{8}run: \|\n((?:\s{10}.*(?:\n|$))+)/,
+);
+assert.ok(guardStep, "Capacity smoke approved-main guard script must be extractable for behavior testing.");
+const guardScript = guardStep[1]
+  .split("\n")
+  .map((line) => line.replace(/^\s{10}/, ""))
+  .join("\n");
+const runGuard = (ref) =>
+  spawnSync("bash", ["-c", guardScript], {
+    encoding: "utf8",
+    env: { ...process.env, RELEASE_REF: ref, RELEASE_EVENT: "workflow_dispatch" },
+  });
+const acceptedMain = runGuard("refs/heads/main");
+assert.equal(acceptedMain.status, 0, acceptedMain.stderr);
+assert.match(acceptedMain.stdout, /Approved main ref accepted/);
+const rejectedFeature = runGuard("refs/heads/feature/capacity-check");
+assert.notEqual(rejectedFeature.status, 0, "Feature refs must be rejected before the production smoke starts.");
+assert.match(rejectedFeature.stderr, /may run only from refs\/heads\/main/);
+
+const capacityProductionSmoke = fs.readFileSync("scripts/repair-capacity-production-smoke.sh", "utf8");
+assert.match(
+  capacityProductionSmoke,
+  /actions\/runs\?head_sha=\$\{GITHUB_SHA\}&event=push/,
+  "Capacity serialization must bind the prerequisite booking proof to the exact checked-out SHA.",
+);
+assert.match(
+  capacityProductionSmoke,
+  /if \[\[ -z "\$\{GITHUB_SHA:-\}" \|\| -z "\$\{GITHUB_REPOSITORY:-\}" \|\| -z "\$\{GITHUB_TOKEN:-\}" \]\]; then[\s\S]*refusing an ungated production capacity smoke/,
+  "Capacity smoke must fail closed when exact deployment metadata is unavailable.",
+);
 
 for (const scriptPath of ["scripts/lib/repair-shop-rollout.sh", "scripts/repair-booking-production-smoke.sh"]) {
   const syntax = spawnSync("bash", ["-n", scriptPath], { encoding: "utf8" });
