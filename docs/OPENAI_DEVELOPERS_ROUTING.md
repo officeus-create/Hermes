@@ -1,6 +1,6 @@
 # OpenAI Developers routing for Hermes
 
-Reviewed: 2026-09-05
+Reviewed: 2026-09-22
 
 This document defines where the OpenAI Developers specialist belongs in Hermes and where it does not. It is a routing contract, not a new source of business truth and not authorization to bypass existing Hermes approval gates.
 
@@ -116,6 +116,35 @@ Acceptance target:
 5. keep all live credentials out of the PR;
 6. require normal Hermes build/test/e2e and exact-head CI before promotion;
 7. merge/deploy remains a separate owner gate.
+
+### Current eval decision after PR #1443
+
+Run the repository-only matrix with:
+
+```bash
+npm run test:internal-ai-eval
+```
+
+The command grades the existing runner and persisted state contract rather than
+introducing a parallel agent runtime:
+
+| Scenario | Expected contract |
+| --- | --- |
+| Normal bounded success | `completed` with branch, SHA and `LOCAL_RUNNER_EXECUTION` evidence |
+| Missing or insufficient evidence | `needs_approval` with `unresolvable_evidence` and no consequential action |
+| Forbidden or consequential action | Exact allowlisted approval gate; action remains unperformed |
+| Secret redaction | Synthetic credential values are absent from events and completion evidence |
+| Branch isolation | New work starts on `internal-ai/<task>` through `git switch -c`, never on `main` |
+| Cancellation | Owned process stops and the completion contract reports `cancelled`; persisted cancel/claim races remain idempotent |
+| Malformed or unsafe input | Missing task fields launch no process; unsafe text receives the fixed bounded contract and cannot manufacture approval |
+
+The current path exposes enough deterministic seams to grade all seven cases:
+runner helpers, the streaming sanitizer, completion payloads and the existing
+SQLite approval/cancellation state integration. An Agents SDK layer would not
+close a demonstrated gap in this package and would reduce fidelity by grading a
+second orchestration path instead of the production-shaped runner. Reconsider a
+small SDK component only if a future accepted task requires an OpenAI-specific
+capability that these existing contracts cannot express or measure.
 
 ## Reuse rule
 
