@@ -19,12 +19,28 @@ function safeCompany(row: any) {
     city: row.city,
     state: row.state,
     website: row.website || null,
+    phone: row.phone || null,
+    addressLine1: row.address_line1 || null,
+    postalCode: row.postal_code || null,
+    countryCode: row.country_code || "US",
+    timezone: row.timezone || null,
+    publicSourceRef: row.public_source_ref || null,
     catalogOptIn: Boolean(row.catalog_opt_in),
     catalogStatus: row.catalog_status,
     loadBoardAccess: Boolean(row.load_board_access),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function validTimezone(value: string) {
+  if (!value) return true;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date());
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
@@ -54,12 +70,21 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const state = normalizeState(body.state);
   const websiteRaw = cleanCompanyText(body.website, 240);
   const authorityNumber = cleanCompanyText(body.authorityNumber, 40);
+  const phone = cleanCompanyText(body.phone, 40);
+  const addressLine1 = cleanCompanyText(body.addressLine1, 180);
+  const postalCode = cleanCompanyText(body.postalCode, 24);
+  const countryCode = cleanCompanyText(body.countryCode || "US", 2).toUpperCase();
+  const timezone = cleanCompanyText(body.timezone, 64);
+  const publicSourceRef = cleanCompanyText(body.publicSourceRef, 160);
   const catalogOptIn = body.catalogOptIn !== false;
 
   const errors: string[] = [];
   if (companyName.length < 2) errors.push("company_name_required");
   if (city.length < 2) errors.push("city_required");
   if (!state) errors.push("state_required");
+  if (!/^[A-Z]{2}$/.test(countryCode)) errors.push("country_code_invalid");
+  if (timezone && !validTimezone(timezone)) errors.push("timezone_invalid");
+  if (phone && phone.length < 7) errors.push("phone_invalid");
 
   let website = "";
   if (websiteRaw) {
@@ -82,14 +107,21 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await env.DB.prepare(`
     INSERT INTO hermes_company_profiles (
       id, owner_specialist_id, company_name, slug, company_type, city, state, website,
+      phone, address_line1, postal_code, country_code, timezone, public_source_ref,
       authority_number, catalog_opt_in, catalog_status, load_board_access, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'self_submitted', 1, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'self_submitted', 1, ?, ?)
     ON CONFLICT(owner_specialist_id) DO UPDATE SET
       company_name = excluded.company_name,
       company_type = excluded.company_type,
       city = excluded.city,
       state = excluded.state,
       website = excluded.website,
+      phone = excluded.phone,
+      address_line1 = excluded.address_line1,
+      postal_code = excluded.postal_code,
+      country_code = excluded.country_code,
+      timezone = excluded.timezone,
+      public_source_ref = excluded.public_source_ref,
       authority_number = excluded.authority_number,
       catalog_opt_in = excluded.catalog_opt_in,
       catalog_status = CASE WHEN hermes_company_profiles.catalog_status = 'verified_public' THEN 'verified_public' ELSE 'self_submitted' END,
@@ -97,6 +129,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       updated_at = excluded.updated_at
   `).bind(
     id, specialist.id, companyName, slug, companyType, city, state, website || null,
+    phone || null, addressLine1 || null, postalCode || null, countryCode, timezone || null, publicSourceRef || null,
     authorityNumber || null, catalogOptIn ? 1 : 0, createdAt, now,
   ).run();
 

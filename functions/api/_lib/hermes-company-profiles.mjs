@@ -1,5 +1,14 @@
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 
+async function ensureColumns(db, table, columns) {
+  const existing = await db.prepare(`PRAGMA table_info(${table})`).all();
+  const names = new Set((existing?.results || []).map((row) => String(row.name)));
+  for (const [name, definition] of Object.entries(columns)) {
+    if (names.has(name)) continue;
+    await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`).run();
+  }
+}
+
 export const HERMES_COMPANY_TYPES = new Set([
   "carrier",
   "owner_operator",
@@ -55,6 +64,14 @@ export async function ensureHermesCompanyProfilesSchema(db) {
       updated_at TEXT NOT NULL
     )
   `).run();
+  await ensureColumns(db, "hermes_company_profiles", {
+    phone: "TEXT",
+    address_line1: "TEXT",
+    postal_code: "TEXT",
+    country_code: "TEXT NOT NULL DEFAULT 'US'",
+    timezone: "TEXT",
+    public_source_ref: "TEXT",
+  });
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_company_catalog ON hermes_company_profiles(catalog_opt_in, catalog_status, state, city)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_company_loadboard ON hermes_company_profiles(owner_specialist_id, load_board_access)").run();
 }

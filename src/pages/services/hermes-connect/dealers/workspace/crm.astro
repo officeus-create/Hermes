@@ -1,0 +1,575 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connect-dealer-pilots";
+---
+
+<BaseLayout
+  title="Dealer CRM | Hermes Connect"
+  description="Private dealer CRM workspace for customers, vehicles, leads, appointments, team, activity and Hermes Intelligence."
+  robots="noindex,nofollow"
+>
+  <SiteHeader theme="light" activePath="/paths/technology/" />
+  <main class="dealer-crm" id="main-content">
+    <section class="crm-shell crm-hero">
+      <div>
+        <p class="eyebrow">Hermes Connect · Dealer CRM</p>
+        <h1>One dealer workspace, connected to the Load Board.</h1>
+        <p class="lede">Customers, vehicles, leads, appointments, team schedules and transport requests stay inside the same Hermes company identity. Nothing here is public unless the dealer explicitly publishes it.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="/services/hermes-connect/dealers/workspace/">Transport workspace</a>
+        <a class="button" href="/load-board/">Load Board</a>
+        <a class="button" href="/businesses/texas/dallas/legacy-toyota-of-dallas/">Catalog profile</a>
+      </div>
+    </section>
+
+    <section class="crm-shell notice" aria-label="Privacy boundary">
+      <strong>Private owner workspace.</strong>
+      <span>Customer contact data, VINs, internal notes, team records and lead history are never placed in the public Catalog or analytics. Website inventory is context only and never becomes freight automatically.</span>
+    </section>
+
+    <section class="crm-shell" aria-live="polite">
+      <p class="status" data-crm-status>Checking your Hermes dealer company…</p>
+    </section>
+
+    <section class="crm-shell metric-grid" data-dashboard hidden>
+      <article><span>Customers</span><strong data-metric="customers">0</strong></article>
+      <article><span>Vehicles</span><strong data-metric="vehicles">0</strong></article>
+      <article><span>Active leads</span><strong data-metric="active_leads">0</strong></article>
+      <article><span>Appointments</span><strong data-metric="upcoming_appointments">0</strong></article>
+      <article><span>Team</span><strong data-metric="active_team_members">0</strong></article>
+      <article><span>Load Board live</span><strong data-metric="published_loads">0</strong></article>
+    </section>
+
+    <section class="crm-shell crm-workspace" data-workspace hidden>
+      <nav class="crm-tabs" aria-label="Dealer CRM modules">
+        <button class="is-active" type="button" data-tab="customers">Customers</button>
+        <button type="button" data-tab="vehicles">Vehicles</button>
+        <button type="button" data-tab="leads">Leads</button>
+        <button type="button" data-tab="appointments">Appointments</button>
+        <button type="button" data-tab="team">Team & hours</button>
+        <button type="button" data-tab="activity">Activity</button>
+        <button type="button" data-tab="intelligence">Hermes Intelligence</button>
+      </nav>
+
+      <section class="crm-panel is-active" data-panel="customers">
+        <div class="panel-head"><div><p class="eyebrow">Customers</p><h2>Private customer records</h2></div><p>No public seed data is fabricated. Add or import only owner-approved records.</p></div>
+        <form class="crm-form" data-crm-form="customers">
+          <input type="hidden" name="id" />
+          <label>Name<input name="name" required maxlength="140" /></label>
+          <label>Email<input name="email" type="email" maxlength="254" /></label>
+          <label>Phone<input name="phone" maxlength="40" /></label>
+          <label class="wide">Notes<textarea name="notes" maxlength="1200"></textarea></label>
+          <div class="form-actions wide"><button class="button primary" type="submit">Save customer</button><button class="button" type="button" data-form-reset>Clear</button></div>
+        </form>
+        <div class="record-list" data-list="customers"></div>
+      </section>
+
+      <section class="crm-panel" data-panel="vehicles">
+        <div class="panel-head"><div><p class="eyebrow">Vehicles</p><h2>Vehicles and inventory context</h2></div><p>A vehicle record is not a Transport Request. Freight is created only from the transport workflow after approval.</p></div>
+        <form class="crm-form" data-crm-form="vehicles">
+          <input type="hidden" name="id" />
+          <label>Customer<select name="customer_id"><option value="">Unassigned</option></select></label>
+          <label>VIN<input name="vin" maxlength="17" /></label>
+          <label>Year<input name="vehicle_year" type="number" min="1900" max="2030" /></label>
+          <label>Make<input name="vehicle_make" maxlength="80" /></label>
+          <label>Model<input name="vehicle_model" maxlength="100" /></label>
+          <label>Stock #<input name="stock_number" maxlength="80" /></label>
+          <label>Status<select name="status"><option value="tracked">Tracked</option><option value="inventory">Inventory</option><option value="customer">Customer</option><option value="sold">Sold</option><option value="transport">Transport</option><option value="archived">Archived</option></select></label>
+          <label class="wide">Notes<textarea name="notes" maxlength="1200"></textarea></label>
+          <div class="form-actions wide"><button class="button primary" type="submit">Save vehicle</button><button class="button" type="button" data-form-reset>Clear</button></div>
+        </form>
+        <div class="record-list" data-list="vehicles"></div>
+      </section>
+
+      <section class="crm-panel" data-panel="leads">
+        <div class="panel-head"><div><p class="eyebrow">Leads</p><h2>Lead and inquiry pipeline</h2></div><p>Website and social connectors may create owner-approved context later; no fake live integration status is shown.</p></div>
+        <form class="crm-form" data-crm-form="leads">
+          <input type="hidden" name="id" />
+          <label>Customer<select name="customer_id"><option value="">Unassigned</option></select></label>
+          <label>Channel<input name="channel" maxlength="48" placeholder="phone, website, Facebook…" /></label>
+          <label>Stage<select name="stage"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="appointment">Appointment</option><option value="won">Won</option><option value="lost">Lost</option></select></label>
+          <label>Follow-up<input name="follow_up_at" type="datetime-local" /></label>
+          <label class="wide">Subject<input name="subject" maxlength="180" /></label>
+          <label class="wide">Message<textarea name="message" maxlength="2000"></textarea></label>
+          <label class="wide">Next action<input name="next_action" maxlength="500" /></label>
+          <div class="form-actions wide"><button class="button primary" type="submit">Save lead</button><button class="button" type="button" data-form-reset>Clear</button></div>
+        </form>
+        <div class="record-list" data-list="leads"></div>
+      </section>
+
+      <section class="crm-panel" data-panel="appointments">
+        <div class="panel-head"><div><p class="eyebrow">Appointments</p><h2>Sales, service and follow-up appointments</h2></div><p>Times are stored as absolute timestamps. The dealer timezone remains on the company profile for scheduling context.</p></div>
+        <form class="crm-form" data-crm-form="appointments">
+          <input type="hidden" name="id" />
+          <label>Customer<select name="customer_id"><option value="">Unassigned</option></select></label>
+          <label>Vehicle<select name="vehicle_id"><option value="">Unassigned</option></select></label>
+          <label>Team member<select name="assigned_team_member_id"><option value="">Unassigned</option></select></label>
+          <label>Type<input name="appointment_type" maxlength="100" placeholder="Sales, service, collision…" required /></label>
+          <label>Starts<input name="starts_at" type="datetime-local" required /></label>
+          <label>Status<select name="status"><option value="scheduled">Scheduled</option><option value="confirmed">Confirmed</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no_show">No show</option></select></label>
+          <label class="wide">Notes<textarea name="notes" maxlength="1200"></textarea></label>
+          <div class="form-actions wide"><button class="button primary" type="submit">Save appointment</button><button class="button" type="button" data-form-reset>Clear</button></div>
+        </form>
+        <div class="record-list" data-list="appointments"></div>
+      </section>
+
+      <section class="crm-panel" data-panel="team">
+        <div class="panel-head"><div><p class="eyebrow">Team & schedules</p><h2>People plus verified department hours</h2></div><p>Department hours below are prefilled from the dealership’s verified public website. Named staff are never invented.</p></div>
+        <form class="crm-form" data-crm-form="team">
+          <input type="hidden" name="id" />
+          <label>Name<input name="name" required maxlength="140" /></label>
+          <label>Role<input name="role" maxlength="100" /></label>
+          <label>Department<select name="department"><option value="sales">Sales</option><option value="service">Service</option><option value="parts">Parts</option><option value="collision">Collision</option><option value="finance">Finance</option><option value="operations">Operations</option><option value="management">Management</option><option value="other">Other</option></select></label>
+          <label>Email<input name="email" type="email" maxlength="254" /></label>
+          <label>Phone<input name="phone" maxlength="40" /></label>
+          <label class="check"><input name="active" type="checkbox" checked /> Active</label>
+          <div class="form-actions wide"><button class="button primary" type="submit">Save team member</button><button class="button" type="button" data-form-reset>Clear</button></div>
+        </form>
+        <div class="subsection"><h3>Team members</h3><div class="record-list" data-list="team"></div></div>
+        <div class="subsection schedule-editor">
+          <div class="schedule-head"><div><h3>Individual weekly schedule</h3><p>Owner-managed only. Department hours are a reference, not an employee schedule.</p></div></div>
+          <form data-team-schedule-form>
+            <label class="schedule-member">Team member<select name="team_member_id"><option value="">Choose a team member</option></select></label>
+            <div class="schedule-grid">
+              <div class="schedule-row" data-schedule-day="0"><strong>Sun</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="1"><strong>Mon</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="2"><strong>Tue</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="3"><strong>Wed</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="4"><strong>Thu</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="5"><strong>Fri</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+              <div class="schedule-row" data-schedule-day="6"><strong>Sat</strong><label><input type="checkbox" data-working /> Working</label><input type="time" data-start /><span>to</span><input type="time" data-end /></div>
+            </div>
+            <div class="form-actions"><button class="button primary" type="submit">Save weekly schedule</button></div>
+          </form>
+        </div>
+        <div class="subsection"><h3>Verified department hours</h3><div class="hours-grid" data-department-hours></div></div>
+      </section>
+
+      <section class="crm-panel" data-panel="activity">
+        <div class="panel-head"><div><p class="eyebrow">Activity</p><h2>Private operational timeline</h2></div><p>CRUD and bootstrap events are kept inside dealer CRM; they are not marketing analytics.</p></div>
+        <div class="record-list" data-list="activity"></div>
+      </section>
+
+      <section class="crm-panel" data-panel="intelligence">
+        <div class="panel-head"><div><p class="eyebrow">Hermes Intelligence</p><h2>Operational next actions without autonomous writes</h2></div><p>This pilot uses deterministic private signals. It does not autonomously publish loads, send messages or change social accounts.</p></div>
+        <div class="intelligence" data-intelligence></div>
+      </section>
+    </section>
+  </main>
+
+  <script is:inline define:vars={{ pilotKey: legacyToyotaDallasDealerPilot.key }}>
+    (() => {
+      const root = document.querySelector('.dealer-crm');
+      if (!root) return;
+      const status = root.querySelector('[data-crm-status]');
+      const dashboardEl = root.querySelector('[data-dashboard]');
+      const workspace = root.querySelector('[data-workspace]');
+      const state = { customers: [], vehicles: [], leads: [], appointments: [], team: { members: [], department_hours: [], member_schedules: [] } };
+
+      const setStatus = (message, error) => {
+        if (!(status instanceof HTMLElement)) return;
+        status.textContent = message;
+        status.dataset.error = error ? 'true' : 'false';
+      };
+
+      const json = async (url, options) => {
+        const init = options || {};
+        const response = await fetch(url, {
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
+          ...init,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const error = new Error(payload.error || ('request_failed_' + response.status));
+          error.payload = payload;
+          error.status = response.status;
+          throw error;
+        }
+        return payload;
+      };
+
+      const create = (tag, text, className) => {
+        const node = document.createElement(tag);
+        if (text != null) node.textContent = String(text);
+        if (className) node.className = className;
+        return node;
+      };
+
+      const clear = (node) => {
+        if (!(node instanceof HTMLElement)) return;
+        while (node.firstChild) node.removeChild(node.firstChild);
+      };
+
+      const formatDate = (value) => {
+        if (!value) return '—';
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+      };
+
+      const actionButton = (label, action, id) => {
+        const button = create('button', label, 'mini-button');
+        button.type = 'button';
+        button.dataset.action = action;
+        button.dataset.id = id;
+        return button;
+      };
+
+      const recordCard = (title, meta, body, id, module) => {
+        const card = create('article', null, 'record-card');
+        const head = create('div', null, 'record-head');
+        const titleWrap = create('div');
+        titleWrap.append(create('strong', title || 'Untitled'), create('small', meta || ''));
+        const actions = create('div', null, 'record-actions');
+        if (module !== 'activity') actions.append(actionButton('Edit', 'edit', id), actionButton('Delete', 'delete', id));
+        head.append(titleWrap, actions);
+        card.append(head);
+        if (body) card.append(create('p', body));
+        card.dataset.recordId = id;
+        card.dataset.module = module;
+        return card;
+      };
+
+      const refillReferenceSelects = () => {
+        for (const select of root.querySelectorAll('select[name="customer_id"]')) {
+          const current = select.value;
+          while (select.options.length > 1) select.remove(1);
+          state.customers.forEach((row) => select.add(new Option(row.name || row.email || row.id, row.id)));
+          select.value = current;
+        }
+        const vehicleSelect = root.querySelector('form[data-crm-form="appointments"] select[name="vehicle_id"]');
+        if (vehicleSelect instanceof HTMLSelectElement) {
+          const current = vehicleSelect.value;
+          while (vehicleSelect.options.length > 1) vehicleSelect.remove(1);
+          state.vehicles.forEach((row) => {
+            const label = [row.vehicle_year, row.vehicle_make, row.vehicle_model, row.vin].filter(Boolean).join(' ') || row.id;
+            vehicleSelect.add(new Option(label, row.id));
+          });
+          vehicleSelect.value = current;
+        }
+        const teamSelect = root.querySelector('form[data-crm-form="appointments"] select[name="assigned_team_member_id"]');
+        if (teamSelect instanceof HTMLSelectElement) {
+          const current = teamSelect.value;
+          while (teamSelect.options.length > 1) teamSelect.remove(1);
+          state.team.members.filter((row) => row.active).forEach((row) => {
+            teamSelect.add(new Option(row.name + (row.role ? ' · ' + row.role : ''), row.id));
+          });
+          teamSelect.value = current;
+        }
+      };
+
+      const renderCustomers = () => {
+        const target = root.querySelector('[data-list="customers"]');
+        clear(target);
+        if (!state.customers.length) { target?.append(create('p', 'No private customer records yet.', 'empty')); return; }
+        state.customers.forEach((row) => target.append(recordCard(row.name, [row.email, row.phone].filter(Boolean).join(' · '), row.notes, row.id, 'customers')));
+      };
+
+      const renderVehicles = () => {
+        const target = root.querySelector('[data-list="vehicles"]');
+        clear(target);
+        if (!state.vehicles.length) { target?.append(create('p', 'No private vehicle records yet.', 'empty')); return; }
+        state.vehicles.forEach((row) => {
+          const title = [row.vehicle_year, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ') || row.vin || 'Vehicle';
+          const meta = [row.status, row.stock_number ? 'Stock ' + row.stock_number : '', row.vin ? 'VIN ' + row.vin : ''].filter(Boolean).join(' · ');
+          target.append(recordCard(title, meta, row.notes, row.id, 'vehicles'));
+        });
+      };
+
+      const renderLeads = () => {
+        const target = root.querySelector('[data-list="leads"]');
+        clear(target);
+        if (!state.leads.length) { target?.append(create('p', 'No private leads yet.', 'empty')); return; }
+        state.leads.forEach((row) => {
+          const meta = [row.stage, row.channel, row.follow_up_at ? 'Follow-up ' + formatDate(row.follow_up_at) : ''].filter(Boolean).join(' · ');
+          target.append(recordCard(row.subject || 'Lead', meta, row.next_action || row.message, row.id, 'leads'));
+        });
+      };
+
+      const renderAppointments = () => {
+        const target = root.querySelector('[data-list="appointments"]');
+        clear(target);
+        if (!state.appointments.length) { target?.append(create('p', 'No appointments yet.', 'empty')); return; }
+        state.appointments.forEach((row) => target.append(recordCard(row.appointment_type, row.status + ' · ' + formatDate(row.starts_at), row.notes, row.id, 'appointments')));
+      };
+
+      const renderTeam = () => {
+        const target = root.querySelector('[data-list="team"]');
+        clear(target);
+        if (!state.team.members.length) target?.append(create('p', 'No named staff records yet. Public department hours are shown separately.', 'empty'));
+        state.team.members.forEach((row) => {
+          const meta = [row.department, row.role, row.active ? 'Active' : 'Inactive'].filter(Boolean).join(' · ');
+          target.append(recordCard(row.name, meta, [row.email, row.phone].filter(Boolean).join(' · '), row.id, 'team'));
+        });
+        const scheduleMember = root.querySelector('[data-team-schedule-form] select[name="team_member_id"]');
+        if (scheduleMember instanceof HTMLSelectElement) {
+          const current = scheduleMember.value;
+          while (scheduleMember.options.length > 1) scheduleMember.remove(1);
+          state.team.members.filter((row) => row.active).forEach((row) => {
+            scheduleMember.add(new Option(row.name + (row.role ? ' · ' + row.role : ''), row.id));
+          });
+          scheduleMember.value = state.team.members.some((row) => row.id === current && row.active) ? current : '';
+        }
+        const hours = root.querySelector('[data-department-hours]');
+        clear(hours);
+        const byDepartment = new Map();
+        state.team.department_hours.forEach((row) => {
+          const list = byDepartment.get(row.department) || [];
+          list.push(row);
+          byDepartment.set(row.department, list);
+        });
+        const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        for (const pair of byDepartment.entries()) {
+          const department = pair[0];
+          const rows = pair[1];
+          const card = create('article', null, 'hours-card');
+          card.append(create('strong', department.charAt(0).toUpperCase() + department.slice(1)));
+          rows.sort((a,b) => a.day_of_week - b.day_of_week).forEach((row) => {
+            const text = dayNames[row.day_of_week] + ': ' + (row.is_open ? row.start_time + '–' + row.end_time : 'Closed');
+            card.append(create('span', text));
+          });
+          hours?.append(card);
+        }
+      };
+
+      const renderActivity = (rows) => {
+        const target = root.querySelector('[data-list="activity"]');
+        clear(target);
+        if (!rows.length) { target?.append(create('p', 'No CRM activity yet.', 'empty')); return; }
+        rows.forEach((row) => target.append(recordCard(row.event_type, formatDate(row.created_at), row.summary, row.id, 'activity')));
+      };
+
+      const renderIntelligence = (payload) => {
+        const target = root.querySelector('[data-intelligence]');
+        clear(target);
+        const note = create('div', null, 'intelligence-note');
+        note.append(create('strong', 'Mode: rules-based private operations'), create('p', 'Autonomous actions: OFF · External AI writes: OFF'));
+        target?.append(note);
+        const actions = payload.next_actions || [];
+        if (!actions.length) { target?.append(create('p', 'No rule-based operational exceptions detected.', 'empty')); return; }
+        const list = create('ol', null, 'action-list');
+        actions.forEach((item) => list.append(create('li', item.label)));
+        target?.append(list);
+      };
+
+      const renderModule = (module, payload) => {
+        if (module === 'customers') { state.customers = payload.customers || []; renderCustomers(); }
+        if (module === 'vehicles') { state.vehicles = payload.vehicles || []; renderVehicles(); }
+        if (module === 'leads') { state.leads = payload.leads || []; renderLeads(); }
+        if (module === 'appointments') { state.appointments = payload.appointments || []; renderAppointments(); }
+        if (module === 'team') { state.team = payload.team || { members: [], department_hours: [], member_schedules: [] }; renderTeam(); fillTeamSchedule(); }
+        if (module === 'activity') renderActivity(payload.activity || []);
+        if (module === 'intelligence') renderIntelligence(payload.intelligence || {});
+        refillReferenceSelects();
+      };
+
+      const loadModule = async (module) => {
+        const payload = await json('/api/hermes-connect/dealer/crm?module=' + encodeURIComponent(module));
+        renderModule(module, payload);
+        return payload;
+      };
+
+      const loadDashboard = async () => {
+        const payload = await json('/api/hermes-connect/dealer/crm?module=dashboard');
+        const counts = payload.dashboard?.counts || {};
+        root.querySelectorAll('[data-metric]').forEach((node) => {
+          node.textContent = String(counts[node.dataset.metric] || 0);
+        });
+        if (dashboardEl instanceof HTMLElement) dashboardEl.hidden = false;
+      };
+
+      const recordFor = (module, id) => {
+        if (module === 'team') return state.team.members.find((row) => row.id === id);
+        return (state[module] || []).find((row) => row.id === id);
+      };
+
+      const toLocalInput = (value) => {
+        if (!value) return '';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '';
+        const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return local.toISOString().slice(0, 16);
+      };
+
+      const fillForm = (module, row) => {
+        const form = root.querySelector('form[data-crm-form="' + module + '"]');
+        if (!(form instanceof HTMLFormElement) || !row) return;
+        Object.entries(row).forEach((entry) => {
+          const key = entry[0];
+          const value = entry[1];
+          const field = form.elements.namedItem(key);
+          if (field instanceof HTMLInputElement && field.type === 'checkbox') field.checked = Boolean(value);
+          else if (field && 'value' in field) field.value = key.endsWith('_at') ? toLocalInput(value) : String(value ?? '');
+        });
+        const id = form.elements.namedItem('id');
+        if (id && 'value' in id) id.value = row.id;
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      const resetForm = (form) => {
+        if (!(form instanceof HTMLFormElement)) return;
+        form.reset();
+        const id = form.elements.namedItem('id');
+        if (id && 'value' in id) id.value = '';
+        const active = form.elements.namedItem('active');
+        if (active instanceof HTMLInputElement) active.checked = true;
+      };
+
+      const fillTeamSchedule = () => {
+        const form = root.querySelector('[data-team-schedule-form]');
+        if (!(form instanceof HTMLFormElement)) return;
+        const select = form.elements.namedItem('team_member_id');
+        const memberId = select && 'value' in select ? String(select.value || '') : '';
+        form.querySelectorAll('[data-schedule-day]').forEach((row) => {
+          const day = Number(row.getAttribute('data-schedule-day'));
+          const saved = (state.team.member_schedules || []).find((item) => item.team_member_id === memberId && Number(item.day_of_week) === day);
+          const working = row.querySelector('[data-working]');
+          const start = row.querySelector('[data-start]');
+          const end = row.querySelector('[data-end]');
+          if (working instanceof HTMLInputElement) working.checked = Boolean(saved?.is_working);
+          if (start instanceof HTMLInputElement) start.value = saved?.start_time || '';
+          if (end instanceof HTMLInputElement) end.value = saved?.end_time || '';
+        });
+      };
+
+      const scheduleForm = root.querySelector('[data-team-schedule-form]');
+      scheduleForm?.querySelector('select[name="team_member_id"]')?.addEventListener('change', fillTeamSchedule);
+      scheduleForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(scheduleForm instanceof HTMLFormElement)) return;
+        const select = scheduleForm.elements.namedItem('team_member_id');
+        const teamMemberId = select && 'value' in select ? String(select.value || '') : '';
+        if (!teamMemberId) {
+          setStatus('Choose a team member before saving a weekly schedule.', true);
+          return;
+        }
+        const days = Array.from(scheduleForm.querySelectorAll('[data-schedule-day]')).map((row) => {
+          const working = row.querySelector('[data-working]');
+          const start = row.querySelector('[data-start]');
+          const end = row.querySelector('[data-end]');
+          return {
+            day_of_week: Number(row.getAttribute('data-schedule-day')),
+            is_working: working instanceof HTMLInputElement ? working.checked : false,
+            start_time: start instanceof HTMLInputElement ? start.value : '',
+            end_time: end instanceof HTMLInputElement ? end.value : '',
+          };
+        });
+        const button = scheduleForm.querySelector('button[type="submit"]');
+        if (button instanceof HTMLButtonElement) button.disabled = true;
+        try {
+          const payload = await json('/api/hermes-connect/dealer/crm', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'set_team_schedule', team_member_id: teamMemberId, days }),
+          });
+          state.team = payload.team || state.team;
+          renderTeam();
+          const refreshed = scheduleForm.elements.namedItem('team_member_id');
+          if (refreshed && 'value' in refreshed) refreshed.value = teamMemberId;
+          fillTeamSchedule();
+          setStatus('Weekly team schedule saved.', false);
+        } catch (error) {
+          setStatus('Schedule save failed: ' + error.message, true);
+        } finally {
+          if (button instanceof HTMLButtonElement) button.disabled = false;
+        }
+      });
+
+      root.addEventListener('click', async (event) => {
+        const button = event.target instanceof Element ? event.target.closest('button') : null;
+        if (!(button instanceof HTMLButtonElement)) return;
+        if (button.dataset.tab) {
+          const module = button.dataset.tab;
+          root.querySelectorAll('[data-tab]').forEach((node) => node.classList.toggle('is-active', node === button));
+          root.querySelectorAll('[data-panel]').forEach((node) => node.classList.toggle('is-active', node.getAttribute('data-panel') === module));
+          try { await loadModule(module); }
+          catch (error) { setStatus('Could not load ' + module + ': ' + error.message, true); }
+          return;
+        }
+        if (button.hasAttribute('data-form-reset')) {
+          resetForm(button.closest('form'));
+          return;
+        }
+        if (button.dataset.action && button.dataset.id) {
+          const card = button.closest('[data-module]');
+          const module = card?.getAttribute('data-module');
+          if (!module) return;
+          if (button.dataset.action === 'edit') {
+            fillForm(module, recordFor(module, button.dataset.id));
+            return;
+          }
+          if (button.dataset.action === 'delete') {
+            if (!confirm('Delete this private CRM record?')) return;
+            try {
+              await json('/api/hermes-connect/dealer/crm?module=' + encodeURIComponent(module) + '&id=' + encodeURIComponent(button.dataset.id), { method: 'DELETE' });
+              await Promise.all([loadModule(module), loadDashboard()]);
+              setStatus('CRM record deleted.', false);
+            } catch (error) { setStatus('Delete failed: ' + error.message, true); }
+          }
+        }
+      });
+
+      root.querySelectorAll('[data-crm-form]').forEach((form) => form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!(form instanceof HTMLFormElement)) return;
+        const module = form.dataset.crmForm;
+        const data = new FormData(form);
+        const id = String(data.get('id') || '');
+        const body = { module };
+        for (const entry of data.entries()) {
+          const key = entry[0];
+          const value = entry[1];
+          if (key !== 'id') body[key] = value;
+        }
+        const active = form.elements.namedItem('active');
+        if (active instanceof HTMLInputElement) body.active = active.checked;
+        ['follow_up_at', 'starts_at'].forEach((key) => {
+          if (body[key]) {
+            const parsed = new Date(body[key]);
+            if (!Number.isNaN(parsed.getTime())) body[key] = parsed.toISOString();
+          }
+        });
+        if (id) body.id = id;
+        const submit = form.querySelector('button[type="submit"]');
+        if (submit instanceof HTMLButtonElement) submit.disabled = true;
+        try {
+          await json('/api/hermes-connect/dealer/crm', {
+            method: id ? 'PATCH' : 'POST',
+            body: JSON.stringify(body),
+          });
+          resetForm(form);
+          await Promise.all([loadModule(module), loadDashboard()]);
+          setStatus(module.charAt(0).toUpperCase() + module.slice(1) + ' saved.', false);
+        } catch (error) {
+          setStatus('Save failed: ' + error.message, true);
+        } finally {
+          if (submit instanceof HTMLButtonElement) submit.disabled = false;
+        }
+      }));
+
+      void (async () => {
+        try {
+          await json('/api/hermes-connect/dealer/crm', {
+            method: 'POST',
+            body: JSON.stringify({ action: 'bootstrap', pilot_key: pilotKey }),
+          });
+          await Promise.all([loadDashboard(), loadModule('customers'), loadModule('vehicles'), loadModule('team')]);
+          renderCustomers();
+          if (workspace instanceof HTMLElement) workspace.hidden = false;
+          setStatus('Dealer CRM ready. Verified public hours are prefilled; private records remain owner-controlled.', false);
+        } catch (error) {
+          if (error.status === 401 || error.status === 409 || error.status === 403) {
+            setStatus('Sign in with the dealer Hermes account and save the dealer company profile before using this private CRM.', true);
+            return;
+          }
+          setStatus('Dealer CRM could not initialize: ' + error.message, true);
+        }
+      })();
+    })();
+  </script>
+
+  <style>
+    .dealer-crm{min-height:100vh;background:#f5f8fb;color:#173046;padding-bottom:80px}.crm-shell{width:min(1240px,calc(100% - 32px));margin:0 auto}.crm-hero{display:flex;justify-content:space-between;gap:36px;align-items:flex-end;padding:64px 0 34px}.eyebrow{margin:0 0 10px;color:#2862a9;font-weight:800;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase}.crm-hero h1{font-size:clamp(2rem,4vw,4rem);line-height:1.02;letter-spacing:-.045em;margin:0;max-width:760px}.lede{max-width:760px;color:#587084;font-size:1.05rem;line-height:1.65}.hero-actions,.form-actions,.record-actions{display:flex;gap:10px;flex-wrap:wrap}.button,.mini-button,.crm-tabs button{border:1px solid #cbd8e4;background:#fff;color:#214766;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.button.primary{background:#2666b2;color:#fff;border-color:#2666b2}.button:disabled{opacity:.55;cursor:not-allowed}.notice{display:flex;gap:12px;background:#edf5ff;border:1px solid #c7dcf6;border-radius:16px;padding:16px 18px;color:#365873}.status{border-radius:12px;padding:12px 14px;background:#fff;border:1px solid #d9e3eb;color:#557083}.status[data-error="true"]{background:#fff5f4;border-color:#f1c8c4;color:#8b3a32}.metric-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px}.metric-grid article{background:#fff;border:1px solid #dbe5ed;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(44,73,96,.04)}.metric-grid span{display:block;color:#6b8193;font-size:.8rem}.metric-grid strong{display:block;font-size:1.8rem;margin-top:7px}.crm-workspace{margin-top:22px;background:#fff;border:1px solid #dbe5ed;border-radius:22px;overflow:hidden;box-shadow:0 18px 48px rgba(44,73,96,.06)}.crm-tabs{display:flex;gap:7px;overflow:auto;padding:14px;border-bottom:1px solid #e2eaf0;background:#f8fafc}.crm-tabs button{white-space:nowrap;padding:9px 12px}.crm-tabs button.is-active{background:#eaf3ff;border-color:#b8d2f0;color:#184f8b}.crm-panel{display:none;padding:26px}.crm-panel.is-active{display:block}.panel-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-start;margin-bottom:22px}.panel-head h2{margin:0;font-size:1.7rem}.panel-head>p{max-width:460px;color:#6b8193;line-height:1.55;margin:0}.crm-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:18px;padding:16px;margin-bottom:22px}.crm-form label{display:grid;gap:6px;color:#4c677c;font-size:.82rem;font-weight:700}.crm-form input,.crm-form select,.crm-form textarea{width:100%;box-sizing:border-box;border:1px solid #cfdce6;border-radius:10px;padding:10px 11px;background:#fff;color:#173046;font:inherit}.crm-form textarea{min-height:86px;resize:vertical}.crm-form .wide{grid-column:1/-1}.crm-form .check{display:flex;flex-direction:row;align-items:center;align-self:end;padding:10px 0}.crm-form .check input{width:auto}.record-list{display:grid;gap:10px}.record-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;background:#fff}.record-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.record-head strong{display:block}.record-head small{display:block;margin-top:4px;color:#71879a}.record-card p{color:#587084;margin:10px 0 0;line-height:1.5}.mini-button{padding:6px 9px;font-size:.76rem}.empty{padding:20px;border:1px dashed #cbd8e4;border-radius:14px;color:#71879a}.subsection{margin-top:26px}.subsection h3{margin-bottom:12px}.schedule-editor{padding:16px;border:1px solid #e2eaf0;border-radius:16px;background:#fbfcfd}.schedule-head p{margin:.35rem 0 1rem;color:#6b8193}.schedule-member{display:grid;gap:6px;max-width:420px;color:#4c677c;font-size:.82rem;font-weight:700}.schedule-member select{border:1px solid #cfdce6;border-radius:10px;padding:10px 11px;background:#fff;color:#173046;font:inherit}.schedule-grid{display:grid;gap:8px;margin:14px 0}.schedule-row{display:grid;grid-template-columns:52px 110px 120px 24px 120px;gap:9px;align-items:center;padding:9px 10px;border:1px solid #e2eaf0;border-radius:10px;background:#fff}.schedule-row label{display:flex;align-items:center;gap:6px;color:#587084;font-size:.8rem}.schedule-row input[type="time"]{border:1px solid #cfdce6;border-radius:9px;padding:8px;color:#173046;background:#fff}.hours-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.hours-card{border:1px solid #dbe5ed;border-radius:14px;padding:14px;display:grid;gap:5px}.hours-card span{font-size:.82rem;color:#587084}.intelligence{display:grid;gap:14px}.intelligence-note{padding:18px;border-radius:16px;background:#edf5ff;border:1px solid #c7dcf6}.intelligence-note p{margin:.4rem 0 0;color:#587084}.action-list{display:grid;gap:10px;margin:0;padding-left:24px}.action-list li{padding:10px 12px;background:#f8fafc;border:1px solid #e2eaf0;border-radius:12px}@media(max-width:960px){.crm-hero,.panel-head{display:block}.hero-actions{margin-top:18px}.metric-grid{grid-template-columns:repeat(3,1fr)}.crm-form{grid-template-columns:repeat(2,1fr)}.hours-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metric-grid,.crm-form,.hours-grid{grid-template-columns:1fr}.schedule-row{grid-template-columns:44px 1fr 1fr}.schedule-row>span{display:none}.crm-form .wide{grid-column:auto}.crm-panel{padding:18px}.notice{display:block}.record-head{display:block}.record-actions{margin-top:10px}}
+  </style>
+</BaseLayout>

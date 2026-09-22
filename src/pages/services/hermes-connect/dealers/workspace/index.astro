@@ -1,0 +1,496 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import { legacyToyotaDallasDealerPilot as preset } from "../../../../../data/hermes-connect-dealer-pilots";
+---
+
+<BaseLayout
+  title="Legacy Toyota of Dallas | Hermes Connect Dealer CRM"
+  description="Private dealer CRM onboarding workspace for company profile, transport requests, Hermes Load Board publishing, website sync and owner-authorized social connectors."
+  robots="noindex,nofollow"
+>
+  <SiteHeader theme="light" activePath="/paths/technology/" />
+  <main
+    id="main-content"
+    class="dealer-crm"
+    data-inventory-paths={JSON.stringify(preset.websiteConnector.inventoryPaths)}
+    data-source-ref={preset.source.sourceRef}
+  >
+    <section class="hero">
+      <div class="shell">
+        <div class="hero-top">
+          <div>
+            <p class="eyebrow">Hermes Connect · Dealer CRM pilot</p>
+            <h1>{preset.company.companyName}</h1>
+            <p class="lead">One dealer workspace for company data, transport requests, approved Load Board publishing, public website context and owner-authorized social connections.</p>
+          </div>
+          <div class="truth-card">
+            <strong>Truth boundary</strong>
+            <span>Retail inventory is context, not freight.</span>
+            <span>Only an approved Transport Request becomes a Load Board post.</span>
+            <span>VIN, phone and private notes stay in the owner workspace.</span>
+          </div>
+        </div>
+        <div class="status-grid" aria-label="Onboarding status">
+          <article><small>Hermes Catalog</small><strong>Prepared</strong><span>Public profile remains unclaimed until dealership verification.</span></article>
+          <article><small>Website</small><strong>Read-only ready</strong><span>Official-site inventory can refresh context without creating loads.</span></article>
+          <article><small>Facebook · Instagram · Threads</small><strong>Owner auth required</strong><span>No account is labeled connected before OAuth/readback.</span></article>
+          <article><small>Load Board</small><strong>Dealer-supported</strong><span>Approved dealer transport requests publish into the existing board.</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="shell grid">
+        <section class="panel wide">
+          <div class="panel-head">
+            <div><p class="eyebrow">1 · Company</p><h2>Prefilled dealer profile</h2></div>
+            <span class="pill" data-auth-state>Checking Hermes session…</span>
+          </div>
+
+          <div class="auth-gate" data-auth-gate hidden>
+            <div><strong>Hermes account required</strong><p>Use the shared Hermes identity. No second CRM login is created.</p></div>
+            <a href="/services/hermes-connect/load-board/access/?mode=login&source=dealer-workspace">Sign in / create Hermes account</a>
+          </div>
+
+          <form class="form profile-form" data-company-form>
+            <label class="span-2">Company name<input name="companyName" value={preset.company.companyName} required /></label>
+            <label>Type<select name="companyType"><option value="dealer" selected>Dealer</option></select></label>
+            <label>Phone<input name="phone" value={preset.departments[0].phone || ""} /></label>
+            <label class="span-2">Address<input name="addressLine1" value={preset.company.addressLine1} /></label>
+            <label>City<input name="city" value={preset.company.city} required /></label>
+            <label>State<input name="state" value={preset.company.state} maxlength="2" required /></label>
+            <label>ZIP<input name="postalCode" value={preset.company.postalCode} /></label>
+            <label>Country<input name="countryCode" value={preset.company.countryCode} maxlength="2" /></label>
+            <label>Timezone<input name="timezone" value={preset.company.timezone} /></label>
+            <label class="span-2">Website<input name="website" value={preset.company.website} /></label>
+            <input type="hidden" name="publicSourceRef" value={preset.source.sourceRef} />
+            <div class="form-actions span-2">
+              <button type="submit" class="primary">Save prefilled company profile</button>
+              <span data-company-message role="status"></span>
+            </div>
+          </form>
+
+          <div class="department-grid">
+            {preset.departments.map((department) => (
+              <div><small>{department.name}</small><strong>{department.phone || "Use company contact"}</strong></div>
+            ))}
+          </div>
+
+          <div class="hours-grid" aria-label="Verified public department hours">
+            <div><small>Sales hours</small><strong>Mon–Sat {preset.hours.sales.monSat}</strong><span>Sun {preset.hours.sales.sun}</span></div>
+            <div><small>Service hours</small><strong>Mon–Fri {preset.hours.service.monFri}</strong><span>Sat {preset.hours.service.sat} · Sun {preset.hours.service.sun}</span></div>
+            <div><small>Parts hours</small><strong>Mon–Fri {preset.hours.parts.monFri}</strong><span>Sat {preset.hours.parts.sat} · Sun {preset.hours.parts.sun}</span></div>
+            <div><small>Collision hours</small><strong>Mon–Fri {preset.hours.collision.monFri}</strong><span>Sat–Sun {preset.hours.collision.satSun}</span></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">2 · Website</p><h2>Public website sync</h2></div><span class="pill" data-website-state>Ready</span></div>
+          <p class="muted">Read the official website and verified LLM-friendly inventory feeds. This connector never converts retail inventory directly into freight.</p>
+          <div class="source-box">
+            <span>Official source</span>
+            <strong>{preset.company.website}</strong>
+            <small>New + used inventory feeds configured.</small>
+          </div>
+          <button type="button" class="secondary" data-website-sync>Sync public website now</button>
+          <div class="sync-result" data-website-result aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">3 · Channels</p><h2>Social connectors</h2></div><span class="pill">Approval-first</span></div>
+          <p class="muted">Connector preparation is safe to do now. Actual Facebook, Instagram and Threads accounts stay disconnected until an authorized dealership user completes Meta authorization.</p>
+          <div class="connection-list" data-connections>
+            {preset.socialConnectors.map((item) => (
+              <div class="connection-row" data-provider={item.provider}>
+                <div><strong>{item.provider[0].toUpperCase() + item.provider.slice(1)}</strong><small data-provider-state>Needs owner authorization</small></div>
+                <button type="button" class="mini" data-prepare-provider={item.provider}>Prepare</button>
+              </div>
+            ))}
+          </div>
+          <p class="tiny">Planned publish flow: approved draft → human review → approved account → controlled publish → UTM/attribution → quality review. No automatic DMs or autonomous posting.</p>
+        </section>
+
+        <section class="panel wide">
+          <div class="panel-head">
+            <div><p class="eyebrow">4 · Dealer CRM</p><h2>Transport Requests → Hermes Load Board</h2></div>
+            <div class="panel-links">
+              <a class="text-link" href="/services/hermes-connect/dealers/workspace/crm/">Open full CRM ↗</a>
+              <a class="text-link" href="/load-board/?access=unlocked#live-marketplace">Open Load Board ↗</a>
+            </div>
+          </div>
+          <div class="transport-layout">
+            <form class="form transport-form" data-transport-form>
+              <input type="hidden" name="source_record_id" />
+              <label>VIN <span>private</span><input name="vin" maxlength="17" autocomplete="off" /></label>
+              <label>Year<input name="vehicle_year" inputmode="numeric" /></label>
+              <label>Make<input name="vehicle_make" placeholder="Toyota" /></label>
+              <label>Model<input name="vehicle_model" placeholder="Camry" /></label>
+              <label class="span-2">Origin<input name="origin" placeholder="Dallas, TX 75237" required /></label>
+              <label class="span-2">Destination<input name="destination" placeholder="Austin, TX" required /></label>
+              <label>Ready date<input name="ready_date" type="date" /></label>
+              <label>Approved target price<input name="target_price" type="number" min="0" step="0.01" /></label>
+              <label class="span-2">Contact phone <span>private</span><input name="contact_phone" /></label>
+              <label class="span-2">Internal notes <span>private</span><textarea name="special_notes" rows="3"></textarea></label>
+              <label class="attest span-2"><input type="checkbox" name="rights_attested" /><span>I confirm the dealership is authorized to post this transport request and approve the Load Board handoff.</span></label>
+              <div class="form-actions span-2">
+                <button type="button" class="secondary" data-save-draft>Save draft</button>
+                <button type="submit" class="primary">Approve & post to Load Board</button>
+                <button type="button" class="ghost" data-new-request>New request</button>
+                <span data-transport-message role="status"></span>
+              </div>
+            </form>
+            <aside class="privacy-card">
+              <strong>Load Board receives</strong>
+              <ul><li>vehicle label</li><li>origin / destination</li><li>ready date</li><li>approved target price</li></ul>
+              <strong>Stays private</strong>
+              <ul><li>VIN</li><li>dealer contact phone</li><li>internal notes</li></ul>
+            </aside>
+          </div>
+          <div class="requests">
+            <div class="requests-head"><strong>Transport request history</strong><button type="button" class="mini" data-refresh-requests>Refresh</button></div>
+            <div data-request-list><p class="muted">Sign in and save the dealer company to load requests.</p></div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const root = document.querySelector<HTMLElement>(".dealer-crm");
+    const authState = document.querySelector<HTMLElement>("[data-auth-state]");
+    const authGate = document.querySelector<HTMLElement>("[data-auth-gate]");
+    const companyForm = document.querySelector<HTMLFormElement>("[data-company-form]");
+    const companyMessage = document.querySelector<HTMLElement>("[data-company-message]");
+    const websiteState = document.querySelector<HTMLElement>("[data-website-state]");
+    const websiteResult = document.querySelector<HTMLElement>("[data-website-result]");
+    const transportForm = document.querySelector<HTMLFormElement>("[data-transport-form]");
+    const transportMessage = document.querySelector<HTMLElement>("[data-transport-message]");
+    const requestList = document.querySelector<HTMLElement>("[data-request-list]");
+    let authenticated = false;
+    let companyReady = false;
+    let requests: any[] = [];
+
+    const setMessage = (node: HTMLElement | null, message: string, error = false) => {
+      if (!node) return;
+      node.textContent = message;
+      node.dataset.error = error ? "true" : "false";
+    };
+
+    const api = async (url: string, options: RequestInit = {}) => {
+      const response = await fetch(url, {
+        credentials: "same-origin",
+        cache: "no-store",
+        ...options,
+        headers: { Accept: "application/json", "Content-Type": "application/json", ...(options.headers || {}) },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error: any = new Error(payload.error || payload.errors?.join(", ") || `request_${response.status}`);
+        error.status = response.status;
+        error.payload = payload;
+        throw error;
+      }
+      return payload;
+    };
+
+    const value = (form: HTMLFormElement, name: string) => {
+      const field = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+      return field?.value?.trim?.() || "";
+    };
+
+    const setValue = (form: HTMLFormElement, name: string, next: unknown) => {
+      const field = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+      if (field && next !== undefined && next !== null) field.value = String(next);
+    };
+
+    const newSourceId = () => `dealer-crm-${crypto.randomUUID()}`;
+    const ensureSourceId = () => {
+      if (!transportForm) return "";
+      const field = transportForm.elements.namedItem("source_record_id") as HTMLInputElement | null;
+      if (field && !field.value) field.value = newSourceId();
+      return field?.value || "";
+    };
+
+    const resetTransport = () => {
+      if (!transportForm) return;
+      transportForm.reset();
+      const source = transportForm.elements.namedItem("source_record_id") as HTMLInputElement | null;
+      if (source) source.value = newSourceId();
+      setMessage(transportMessage, "");
+    };
+
+    const transportPayload = (action: "save" | "publish") => {
+      if (!transportForm) return {};
+      const attest = transportForm.elements.namedItem("rights_attested") as HTMLInputElement | null;
+      return {
+        action,
+        source_record_id: ensureSourceId(),
+        vin: value(transportForm, "vin"),
+        vehicle_year: value(transportForm, "vehicle_year"),
+        vehicle_make: value(transportForm, "vehicle_make"),
+        vehicle_model: value(transportForm, "vehicle_model"),
+        origin: value(transportForm, "origin"),
+        destination: value(transportForm, "destination"),
+        ready_date: value(transportForm, "ready_date"),
+        target_price: value(transportForm, "target_price"),
+        contact_phone: value(transportForm, "contact_phone"),
+        special_notes: value(transportForm, "special_notes"),
+        rights_attested: Boolean(attest?.checked),
+        owner_approval: action === "publish" && Boolean(attest?.checked),
+      };
+    };
+
+    const statusLabel = (status: string) => ({
+      draft: "Draft",
+      published: "Published to Load Board",
+      cancelled: "Cancelled",
+      sync_error: "Sync error",
+    } as Record<string,string>)[status] || status;
+
+    const renderRequests = () => {
+      if (!requestList) return;
+      requestList.replaceChildren();
+      if (!requests.length) {
+        const empty = document.createElement("p");
+        empty.className = "muted";
+        empty.textContent = "No transport requests yet.";
+        requestList.append(empty);
+        return;
+      }
+      for (const item of requests) {
+        const card = document.createElement("article");
+        card.className = "request-card";
+        const copy = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = [item.vehicle_year, item.vehicle_make, item.vehicle_model].filter(Boolean).join(" ") || item.vin || "Vehicle transport";
+        const route = document.createElement("span");
+        route.textContent = `${item.origin} → ${item.destination}`;
+        const meta = document.createElement("small");
+        meta.textContent = `${statusLabel(item.status)} · ${item.ready_date || "ready date not set"}${item.load_post_id ? ` · Load Board ${String(item.load_post_id).slice(-8)}` : ""}`;
+        copy.append(title, route, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "request-actions";
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "mini";
+        edit.textContent = item.status === "published" ? "Edit + re-approve" : "Edit";
+        edit.addEventListener("click", () => {
+          if (!transportForm) return;
+          setValue(transportForm, "source_record_id", item.source_record_id);
+          for (const key of ["vin","vehicle_year","vehicle_make","vehicle_model","origin","destination","ready_date","target_price","contact_phone","special_notes"]) {
+            setValue(transportForm, key, item[key] ?? "");
+          }
+          const attest = transportForm.elements.namedItem("rights_attested") as HTMLInputElement | null;
+          if (attest) attest.checked = false;
+          transportForm.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        actions.append(edit);
+
+        if (item.status !== "cancelled") {
+          const cancel = document.createElement("button");
+          cancel.type = "button";
+          cancel.className = "mini danger";
+          cancel.textContent = "Cancel";
+          cancel.addEventListener("click", async () => {
+            cancel.disabled = true;
+            try {
+              await api(`/api/hermes-connect/dealer/transport-requests?id=${encodeURIComponent(item.id)}`, { method: "DELETE" });
+              await loadRequests();
+            } catch (error: any) {
+              setMessage(transportMessage, `Cancel failed: ${error.message}`, true);
+            } finally { cancel.disabled = false; }
+          });
+          actions.append(cancel);
+        }
+        card.append(copy, actions);
+        requestList.append(card);
+      }
+    };
+
+    const loadRequests = async () => {
+      if (!authenticated || !companyReady) return;
+      try {
+        const payload = await api("/api/hermes-connect/dealer/transport-requests");
+        requests = Array.isArray(payload.requests) ? payload.requests : [];
+        renderRequests();
+      } catch (error: any) {
+        setMessage(transportMessage, `Could not load Transport Requests: ${error.message}`, true);
+      }
+    };
+
+    const loadConnections = async () => {
+      if (!authenticated || !companyReady) return;
+      try {
+        const payload = await api("/api/hermes-connect/company-connections");
+        for (const connection of payload.connections || []) {
+          const row = document.querySelector<HTMLElement>(`[data-provider="${CSS.escape(connection.provider)}"]`);
+          const state = row?.querySelector<HTMLElement>("[data-provider-state]");
+          if (state) state.textContent = String(connection.state || "not_configured").replaceAll("_", " ");
+        }
+      } catch {}
+    };
+
+    const loadCompany = async () => {
+      const payload = await api("/api/hermes-connect/company");
+      const company = payload.company;
+      companyReady = Boolean(company && company.companyType === "dealer");
+      if (company && companyForm) {
+        const mapping: Record<string,unknown> = {
+          companyName: company.companyName, companyType: company.companyType, phone: company.phone,
+          addressLine1: company.addressLine1, city: company.city, state: company.state,
+          postalCode: company.postalCode, countryCode: company.countryCode, timezone: company.timezone,
+          website: company.website, publicSourceRef: company.publicSourceRef,
+        };
+        for (const [key, next] of Object.entries(mapping)) if (next) setValue(companyForm, key, next);
+      }
+      if (company && company.companyType !== "dealer") {
+        setMessage(companyMessage, "This Hermes identity already owns a non-dealer company profile. Use the dealership's authorized Hermes identity instead.", true);
+      } else if (companyReady) {
+        setMessage(companyMessage, "Dealer company profile is saved.");
+      }
+      return company;
+    };
+
+    companyForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!authenticated) {
+        authGate?.removeAttribute("hidden");
+        setMessage(companyMessage, "Sign in to the shared Hermes account first.", true);
+        return;
+      }
+      const button = companyForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+      setMessage(companyMessage, "Saving dealer profile…");
+      try {
+        const payload = await api("/api/hermes-connect/company", {
+          method: "POST",
+          body: JSON.stringify({
+            companyName: value(companyForm, "companyName"),
+            companyType: "dealer",
+            phone: value(companyForm, "phone"),
+            addressLine1: value(companyForm, "addressLine1"),
+            city: value(companyForm, "city"),
+            state: value(companyForm, "state"),
+            postalCode: value(companyForm, "postalCode"),
+            countryCode: value(companyForm, "countryCode"),
+            timezone: value(companyForm, "timezone"),
+            website: value(companyForm, "website"),
+            publicSourceRef: value(companyForm, "publicSourceRef"),
+            catalogOptIn: false,
+          }),
+        });
+        companyReady = payload.company?.companyType === "dealer";
+        setMessage(companyMessage, "Dealer profile saved. Catalog duplication remains disabled until the prepared public listing is owner-bound.");
+        await Promise.all([loadRequests(), loadConnections()]);
+      } catch (error: any) {
+        setMessage(companyMessage, `Could not save profile: ${error.message}`, true);
+      } finally { if (button) button.disabled = false; }
+    });
+
+    document.querySelector<HTMLButtonElement>("[data-website-sync]")?.addEventListener("click", async (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      if (!authenticated || !companyReady) return setMessage(websiteResult, "Save the dealer company under an authorized Hermes account first.", true);
+      button.disabled = true;
+      if (websiteState) websiteState.textContent = "Syncing";
+      setMessage(websiteResult, "Reading the official public website…");
+      try {
+        const inventoryPaths = JSON.parse(root?.dataset.inventoryPaths || "[]");
+        const payload = await api("/api/hermes-connect/dealer/website-sync", {
+          method: "POST",
+          body: JSON.stringify({ inventory_paths: inventoryPaths }),
+        });
+        if (websiteState) websiteState.textContent = "Connected · read only";
+        const feeds = Array.isArray(payload.inventory?.feeds) ? payload.inventory.feeds : [];
+        const summary = feeds.map((feed: any) => `${feed.title || feed.path}: ${feed.reported_count ?? feed.vin_count_observed ?? "read"}`).join(" · ");
+        setMessage(websiteResult, `${summary || "Website verified."} No transport requests or loads were auto-created.`);
+        await loadConnections();
+      } catch (error: any) {
+        if (websiteState) websiteState.textContent = "Degraded";
+        setMessage(websiteResult, `Website sync failed: ${error.message}`, true);
+      } finally { button.disabled = false; }
+    });
+
+    document.querySelectorAll<HTMLButtonElement>("[data-prepare-provider]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        if (!authenticated || !companyReady) return setMessage(companyMessage, "Save the dealer company first.", true);
+        const provider = button.dataset.prepareProvider || "";
+        button.disabled = true;
+        try {
+          const payload = await api("/api/hermes-connect/company-connections", {
+            method: "POST",
+            body: JSON.stringify({ provider, action: "prepare" }),
+          });
+          const row = document.querySelector<HTMLElement>(`[data-provider="${CSS.escape(provider)}"]`);
+          const state = row?.querySelector<HTMLElement>("[data-provider-state]");
+          if (state) state.textContent = String(payload.connection?.state || "prepared").replaceAll("_", " ");
+          button.textContent = payload.oauth?.configured ? "Ready for OAuth" : "Needs Meta app config";
+        } catch (error: any) {
+          setMessage(companyMessage, `${provider} connector: ${error.message}`, true);
+        } finally { button.disabled = false; }
+      });
+    });
+
+    document.querySelector<HTMLButtonElement>("[data-save-draft]")?.addEventListener("click", async () => {
+      if (!transportForm || !authenticated || !companyReady) return setMessage(transportMessage, "Save the dealer company first.", true);
+      setMessage(transportMessage, "Saving draft…");
+      try {
+        const payload = await api("/api/hermes-connect/dealer/transport-requests", {
+          method: "POST",
+          body: JSON.stringify(transportPayload("save")),
+        });
+        setMessage(transportMessage, `Draft saved · ${payload.request?.source_record_id || ""}`);
+        await loadRequests();
+      } catch (error: any) {
+        setMessage(transportMessage, `Draft save failed: ${error.message}`, true);
+      }
+    });
+
+    transportForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!authenticated || !companyReady) return setMessage(transportMessage, "Save the dealer company first.", true);
+      const attest = transportForm.elements.namedItem("rights_attested") as HTMLInputElement | null;
+      if (!attest?.checked) return setMessage(transportMessage, "Approval and posting-rights confirmation are required before Load Board publication.", true);
+      const button = transportForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+      setMessage(transportMessage, "Approving and syncing to the Hermes Load Board…");
+      try {
+        const payload = await api("/api/hermes-connect/dealer/transport-requests", {
+          method: "POST",
+          body: JSON.stringify(transportPayload("publish")),
+        });
+        setMessage(transportMessage, payload.load_board_sync?.same_post_updated
+          ? "Approved. The existing Load Board post was updated — no duplicate created."
+          : "Approved. One Load Board post was created.");
+        await loadRequests();
+      } catch (error: any) {
+        setMessage(transportMessage, `Load Board sync failed: ${error.message}`, true);
+      } finally { if (button) button.disabled = false; }
+    });
+
+    document.querySelector<HTMLButtonElement>("[data-new-request]")?.addEventListener("click", resetTransport);
+    document.querySelector<HTMLButtonElement>("[data-refresh-requests]")?.addEventListener("click", loadRequests);
+
+    resetTransport();
+    void (async () => {
+      try {
+        const me = await api("/api/auth/me");
+        authenticated = Boolean(me?.specialist);
+        if (authState) authState.textContent = authenticated ? `Signed in · ${me.specialist.name || me.specialist.email}` : "Sign in required";
+        if (authenticated) {
+          await loadCompany();
+          if (companyReady) await Promise.all([loadRequests(), loadConnections()]);
+        }
+      } catch {
+        authenticated = false;
+        if (authState) authState.textContent = "Sign in required";
+        authGate?.removeAttribute("hidden");
+      }
+    })();
+  </script>
+
+  <style>
+    .dealer-crm{min-height:100vh;background:#f6f7f9;color:#172033}.shell{width:min(1220px,calc(100% - 32px));margin:0 auto}.hero{padding:56px 0 34px;background:radial-gradient(circle at 90% 5%,rgba(124,92,255,.09),transparent 30rem),#fbfbfa;border-bottom:1px solid #e2e6ed}.hero-top{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:24px;align-items:end}.eyebrow{margin:0 0 8px;color:#6555c9;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.hero h1{margin:0;font-size:clamp(2.4rem,5vw,5rem);letter-spacing:-.045em;line-height:.95}.lead{max-width:760px;color:#667085;font-size:1.02rem;line-height:1.65}.truth-card{display:grid;gap:7px;padding:18px;border:1px solid #dfe3eb;border-radius:16px;background:#fff}.truth-card span{color:#687386;font-size:.78rem}.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px}.status-grid article{display:grid;gap:5px;padding:15px;border:1px solid #e0e4eb;border-radius:14px;background:rgba(255,255,255,.82)}.status-grid small{color:#7b8391;font-weight:800}.status-grid strong{font-size:1rem}.status-grid span{color:#697386;font-size:.72rem;line-height:1.4}.workspace{padding:26px 0 80px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{padding:22px;border:1px solid #dfe3ea;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(17,24,39,.035)}.panel.wide{grid-column:1/-1}.panel-head{display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:16px}.panel h2{margin:0;font-size:1.35rem}.pill{display:inline-flex;align-items:center;border:1px solid #d8dce4;border-radius:999px;padding:6px 9px;background:#fafafa;color:#5d6676;font-size:.64rem;font-weight:850}.muted{color:#707a8c;line-height:1.55}.tiny{margin:14px 0 0;color:#7c8594;font-size:.7rem;line-height:1.5}.auth-gate{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;padding:14px;border:1px solid #e7d9a4;border-radius:12px;background:#fffbec}.auth-gate[hidden]{display:none}.auth-gate p{margin:3px 0 0;color:#6f6751;font-size:.75rem}.auth-gate a{white-space:nowrap;border-radius:10px;background:#172033;color:#fff;padding:9px 12px;text-decoration:none;font-weight:850;font-size:.72rem}.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.form label{display:grid;gap:5px;color:#485265;font-size:.68rem;font-weight:850}.form label span{color:#8a92a1;font-weight:650}.form input,.form select,.form textarea{width:100%;box-sizing:border-box;border:1px solid #ccd3df;border-radius:9px;background:#fff;padding:9px 10px;color:#172033;font:inherit;outline:none}.form input:focus,.form select:focus,.form textarea:focus{border-color:#7867d8;box-shadow:0 0 0 3px rgba(120,103,216,.09)}.span-2{grid-column:span 2}.form-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.form-actions span{color:#21815d;font-size:.72rem;font-weight:750}.form-actions span[data-error="true"],.sync-result[data-error="true"]{color:#b33d4f}.primary,.secondary,.ghost,.mini{border-radius:9px;padding:9px 12px;font:inherit;font-size:.7rem;font-weight:900;cursor:pointer}.primary{border:1px solid #172033;background:#172033;color:#fff}.secondary{border:1px solid #cdd4df;background:#fff;color:#172033}.ghost{border:0;background:transparent;color:#6656cc}.mini{border:1px solid #d3d8e1;background:#fff;color:#4c5667;padding:6px 8px}.mini.danger{color:#a43d4a}.primary:disabled,.secondary:disabled,.mini:disabled{opacity:.55;cursor:wait}.department-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:18px}.department-grid div{display:grid;gap:4px;padding:11px;border-radius:10px;background:#f7f8fa}.department-grid small{color:#7f8795;font-size:.62rem;font-weight:850;text-transform:uppercase}.department-grid strong{font-size:.78rem}.hours-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}.hours-grid div{display:grid;gap:4px;padding:11px;border-radius:10px;background:#fbfbfc;border:1px solid #eceff3}.hours-grid small{color:#7f8795;font-size:.62rem;font-weight:850;text-transform:uppercase}.hours-grid strong{font-size:.74rem}.hours-grid span{color:#7b8494;font-size:.66rem}.source-box{display:grid;gap:5px;margin:14px 0;padding:12px;border-radius:11px;background:#f7f8fa}.source-box span,.source-box small{color:#7b8494;font-size:.68rem}.source-box strong{overflow-wrap:anywhere;font-size:.76rem}.sync-result{min-height:1.2rem;margin-top:12px;color:#247b5c;font-size:.72rem;font-weight:750}.connection-list{display:grid;gap:8px;margin-top:14px}.connection-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px;border:1px solid #e2e6ec;border-radius:11px}.connection-row>div{display:grid;gap:3px}.connection-row small{color:#7a8494;font-size:.66rem}.transport-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px}.transport-form{grid-template-columns:repeat(4,minmax(0,1fr))}.attest{display:grid!important;grid-template-columns:auto 1fr!important;align-items:start!important;gap:8px!important;padding:10px;border:1px solid #e0e4eb;border-radius:10px;background:#fafbfc}.attest input{width:auto!important;margin-top:2px}.privacy-card{padding:16px;border:1px solid #dde2ea;border-radius:13px;background:#f8f9fb}.privacy-card strong{display:block;margin-top:9px;font-size:.78rem}.privacy-card ul{margin:6px 0 12px;padding-left:18px;color:#687386;font-size:.72rem;line-height:1.6}.requests{margin-top:18px;border-top:1px solid #e4e7ec;padding-top:16px}.requests-head{display:flex;align-items:center;justify-content:space-between}.request-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #eef0f3}.request-card>div:first-child{display:grid;gap:3px}.request-card span,.request-card small{color:#727c8d;font-size:.7rem}.request-actions{display:flex;gap:6px}.panel-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}.text-link{color:#6555c9;text-decoration:none;font-weight:850;font-size:.74rem}@media(max-width:920px){.hero-top{grid-template-columns:1fr}.status-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.panel.wide{grid-column:auto}.department-grid{grid-template-columns:repeat(2,1fr)}.hours-grid{grid-template-columns:repeat(2,1fr)}.transport-layout{grid-template-columns:1fr}.form,.transport-form{grid-template-columns:1fr 1fr}.span-2{grid-column:span 2}}@media(max-width:600px){.status-grid{grid-template-columns:1fr}.form,.transport-form{grid-template-columns:1fr}.span-2{grid-column:auto}.department-grid{grid-template-columns:1fr}.hours-grid{grid-template-columns:1fr}.auth-gate{align-items:flex-start;flex-direction:column}.request-card{grid-template-columns:1fr}.request-actions{justify-content:flex-start}}
+  </style>
+</BaseLayout>

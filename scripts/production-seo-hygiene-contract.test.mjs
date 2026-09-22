@@ -57,7 +57,10 @@ const indexedChildSitemapFiles = [
 // employment searches away from B2B carrier intake while preserving existing commercial owners.
 // The Repair Shop Catalog sitemap is runtime-generated from owner opt-in records and is therefore
 // verified as an indexed child, not counted as a build-time static page inventory.
-const nonInsightsExpectedPageUrlCount = 258;
+// The Legacy Toyota dealer pilot adds exactly three static Catalog discovery owners:
+// Texas state, Dallas city, and the unclaimed dealership profile. Its private CRM workspace
+// stays noindex and is intentionally absent from every sitemap.
+const nonInsightsExpectedPageUrlCount = 261;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
