@@ -158,3 +158,20 @@ EVIDENCE: Deployment workflow `35670092982` and Cloudflare check `106564786622` 
 LESSON: Exact commit identity proves which release was accepted; it does not prove that every custom-domain edge has converged at the same instant. Production smoke must tolerate only a narrowly identified transient state and must never turn a persistent commercial/auth mismatch into success.
 
 REUSE_RULE: Keep production payloads bounded before crossing environment or argv boundaries, make synthetic cleanup unconditional, and gate any rollout retry on an immutable exact-deployment receipt plus an explicit allowlisted transient error.
+
+
+## 2026-09-22 — Internal AI approval transport contract
+
+PROBLEM: The local runner detected a valid `HERMES_INTERNAL_APPROVAL_GATE` marker and selected `needs_approval`, but its completion payload omitted `approval_gate`; the server correctly rejected that state with `approval_gate_required`.
+
+ROOT_CAUSE: Detection and persistence were covered by separate static assertions without an end-to-end contract test for the actual runner payload and D1 transition.
+
+FAILED_APPROACH: Treating the presence of the marker parser and server validation as proof that the two sides agreed on the wire contract.
+
+WORKING_APPROACH: Transport the allowlisted gate explicitly; persist `awaiting_approval`; require an exact-gate owner decision; keep waiting tasks unclaimable; issue a scoped persisted receipt for the same task/branch; make approve/cancel replay idempotent; and consume the receipt when another gate is reached.
+
+EVIDENCE: Repository-only runner transport test plus an in-memory SQLite integration exercises missing/wrong gates, reload, pre-approval claim denial, exact approval, replay, approved claim, terminal audit retention, cancel replay and malformed continuation denial. Full current-head verification and exact-head CI remain required.
+
+LESSON: A fail-closed approval boundary needs one executable state-machine test across producer payload, persistence, decision and consumer claim—not independent token checks.
+
+REUSE_RULE: For every consequential workflow, test the complete transition `running → awaiting approval → exact scoped decision → approved continuation/terminal`, including reload and replay behavior.
