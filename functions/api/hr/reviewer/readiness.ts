@@ -60,7 +60,7 @@ function apiError(error: unknown) {
     readiness_decision_invalid: 400,
     readiness_reason_required: 400,
     readiness_packet_not_found: 404,
-    capability_gaps_open: 409,
+    supervised_readiness_required: 409,
     readiness_evidence_required: 409,
     bounded_scope_required: 400,
     ready_for_team_decision_required: 409,
