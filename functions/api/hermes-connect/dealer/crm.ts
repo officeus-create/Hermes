@@ -2,7 +2,6 @@ import { jsonResponse } from "../../_lib/session.mjs";
 import {
   bootstrapLegacyToyotaDealerCrm,
   cleanDealerCrmText,
-  ensureDealerCrmSchema,
   normalizeAppointmentStatus,
   normalizeDealerEmail,
   normalizeDealerPhone,
@@ -32,11 +31,33 @@ const sameOriginMutation = (request: Request) =>
 const MODULES = new Set(["customers", "vehicles", "leads", "appointments", "team", "activity", "intelligence", "dashboard"]);
 const MUTABLE_MODULES = new Set(["customers", "vehicles", "leads", "appointments", "team"]);
 const CURRENT_YEAR = new Date().getUTCFullYear();
+const TIME_RE = /^(?:[01]\\d|2[0-3]):[0-5]\\d$/;
 
 function finiteYear(value: unknown) {
   if (value === null || value === undefined || value === "") return null;
   const year = Number(value);
   return Number.isInteger(year) && year >= 1900 && year <= CURRENT_YEAR + 2 ? year : null;
+}
+
+function normalizeTeamSchedule(value: unknown) {
+  if (!Array.isArray(value) || value.length !== 7) return { error: "seven_schedule_days_required" };
+  const seen = new Set<number>();
+  const days: Array<{ day_of_week: number; is_working: boolean; start_time: string | null; end_time: string | null }> = [];
+  for (const raw of value as Array<Record<string, unknown>>) {
+    const day = Number(raw.day_of_week);
+    if (!Number.isInteger(day) || day < 0 || day > 6 || seen.has(day)) return { error: "invalid_schedule_day" };
+    seen.add(day);
+    if (typeof raw.is_working !== "boolean") return { error: "invalid_schedule_working_state" };
+    if (!raw.is_working) {
+      days.push({ day_of_week: day, is_working: false, start_time: null, end_time: null });
+      continue;
+    }
+    const start = cleanDealerCrmText(raw.start_time, 5);
+    const end = cleanDealerCrmText(raw.end_time, 5);
+    if (!TIME_RE.test(start) || !TIME_RE.test(end) || start >= end) return { error: "invalid_schedule_time" };
+    days.push({ day_of_week: day, is_working: true, start_time: start, end_time: end });
+  }
+  return { days: days.sort((a, b) => a.day_of_week - b.day_of_week) };
 }
 
 async function parseBody(request: Request) {
@@ -94,22 +115,31 @@ async function listAppointments(db: any, companyId: string) {
 }
 
 async function listTeam(db: any, companyId: string) {
-  const members = await db.prepare(`
-    SELECT id,name,role,department,email,phone,active,created_at,updated_at
-    FROM hermes_dealer_team_members
-    WHERE company_id = ?
-    ORDER BY active DESC, department ASC, name ASC
-    LIMIT 250
-  `).bind(companyId).all();
-  const hours = await db.prepare(`
-    SELECT department,day_of_week,is_open,start_time,end_time,source_ref,updated_at
-    FROM hermes_dealer_department_hours
-    WHERE company_id = ?
-    ORDER BY department ASC, day_of_week ASC
-  `).bind(companyId).all();
+  const [members, hours, schedules] = await Promise.all([
+    db.prepare(`
+      SELECT id,name,role,department,email,phone,active,created_at,updated_at
+      FROM hermes_dealer_team_members
+      WHERE company_id = ?
+      ORDER BY active DESC, department ASC, name ASC
+      LIMIT 250
+    `).bind(companyId).all(),
+    db.prepare(`
+      SELECT department,day_of_week,is_open,start_time,end_time,source_ref,updated_at
+      FROM hermes_dealer_department_hours
+      WHERE company_id = ?
+      ORDER BY department ASC, day_of_week ASC
+    `).bind(companyId).all(),
+    db.prepare(`
+      SELECT team_member_id,day_of_week,is_working,start_time,end_time,updated_at
+      FROM hermes_dealer_team_schedule
+      WHERE company_id = ?
+      ORDER BY team_member_id ASC, day_of_week ASC
+    `).bind(companyId).all(),
+  ]);
   return {
     members: (members?.results || []).map((row: any) => ({ ...row, active: Number(row.active) === 1 })),
     department_hours: (hours?.results || []).map((row: any) => ({ ...row, is_open: Number(row.is_open) === 1 })),
+    member_schedules: (schedules?.results || []).map((row: any) => ({ ...row, is_working: Number(row.is_working) === 1 })),
   };
 }
 
@@ -238,6 +268,39 @@ export async function onRequestPost({ request, env }: Context) {
     });
     if (!result.initialized) return jsonResponse(400, { success: false, error: result.reason || "bootstrap_failed" }, privateHeaders);
     return jsonResponse(200, { success: true, bootstrap: result, team: await listTeam(env.DB, String(auth.company.id)) }, privateHeaders);
+  }
+
+  if (action === "set_team_schedule") {
+    const companyId = String(auth.company.id);
+    const teamMemberId = cleanDealerCrmText(body.team_member_id, 120);
+    if (!teamMemberId || !(await ownedRow(env.DB, "hermes_dealer_team_members", teamMemberId, companyId))) {
+      return jsonResponse(404, { success: false, error: "team_member_not_found" }, privateHeaders);
+    }
+    const normalized = normalizeTeamSchedule(body.days);
+    if ("error" in normalized) return jsonResponse(400, { success: false, error: normalized.error }, privateHeaders);
+    const now = new Date().toISOString();
+    for (const day of normalized.days) {
+      await env.DB.prepare(`
+        INSERT INTO hermes_dealer_team_schedule
+          (company_id,team_member_id,day_of_week,is_working,start_time,end_time,updated_at)
+        VALUES (?,?,?,?,?,?,?)
+        ON CONFLICT(team_member_id,day_of_week) DO UPDATE SET
+          company_id=excluded.company_id,
+          is_working=excluded.is_working,
+          start_time=excluded.start_time,
+          end_time=excluded.end_time,
+          updated_at=excluded.updated_at
+      `).bind(companyId, teamMemberId, day.day_of_week, day.is_working ? 1 : 0, day.start_time, day.end_time, now).run();
+    }
+    await recordDealerActivity(env.DB, {
+      companyId,
+      actorId: auth.specialist.id,
+      eventType: "team_schedule_updated",
+      entityType: "team",
+      entityId: teamMemberId,
+      summary: "Owner-managed weekly team schedule updated.",
+    });
+    return jsonResponse(200, { success: true, team_member_id: teamMemberId, team: await listTeam(env.DB, companyId) }, privateHeaders);
   }
 
   const module = cleanDealerCrmText(body.module, 32).toLowerCase();
@@ -449,6 +512,9 @@ export async function onRequestDelete({ request, env }: Context) {
   const companyId = String(auth.company.id);
   const row = await ownedRow(env.DB, table, id, companyId);
   if (!row) return jsonResponse(404, { success: false, error: "record_not_found" }, privateHeaders);
+  if (module === "team") {
+    await env.DB.prepare("DELETE FROM hermes_dealer_team_schedule WHERE team_member_id = ? AND company_id = ?").bind(id, companyId).run();
+  }
   await env.DB.prepare(`DELETE FROM ${table} WHERE id = ? AND company_id = ?`).bind(id, companyId).run();
   await recordDealerActivity(env.DB, {
     companyId,
