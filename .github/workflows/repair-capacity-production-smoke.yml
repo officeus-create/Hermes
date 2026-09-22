@@ -11,6 +11,7 @@ on:
       - functions/api/_lib/github-actions-oidc.mjs
       - functions/api/_lib/turnstile.mjs
       - scripts/lib/github-actions-oidc.sh
+      - scripts/lib/repair-capacity-prerequisite.sh
       - functions/api/repair-shop/capabilities.ts
       - functions/api/repair-shop/capacity.ts
       - functions/api/repair-shop/cleanup-booking-smoke.ts

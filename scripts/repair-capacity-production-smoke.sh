@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/github-actions-oidc.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/repair-capacity-prerequisite.sh"
 
 BASE="https://hermeslogisticsus.com"
 EMAIL="repair-booking-production-smoke@hermesconnect.app"
@@ -26,10 +27,10 @@ for attempt in $(seq 1 90); do
   RUNS="$(curl -fsS \
     -H "Authorization: Bearer ${GITHUB_TOKEN}" \
     -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&event=push&per_page=100" || true)"
-  BASELINE_STATUS="$(printf '%s' "$RUNS" | jq -r '[.workflow_runs[]? | select(.name=="Repair Shop real booking production smoke")] | sort_by(.created_at) | last | .status // "missing"' 2>/dev/null || echo missing)"
-  BASELINE_CONCLUSION="$(printf '%s' "$RUNS" | jq -r '[.workflow_runs[]? | select(.name=="Repair Shop real booking production smoke")] | sort_by(.created_at) | last | .conclusion // "pending"' 2>/dev/null || echo pending)"
-  echo "BASELINE_BOOKING_SMOKE_ATTEMPT_${attempt}: status=${BASELINE_STATUS} conclusion=${BASELINE_CONCLUSION}"
+    "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&per_page=100" || true)"
+  IFS=$'\t' read -r BASELINE_STATUS BASELINE_CONCLUSION BASELINE_EVENT BASELINE_RUN_ID BASELINE_HEAD_SHA <<< \
+    "$(printf '%s' "$RUNS" | hermes_select_repair_booking_prerequisite "$GITHUB_SHA" 2>/dev/null || printf 'missing\tpending\tmissing\tmissing\t')"
+  echo "BASELINE_BOOKING_SMOKE_ATTEMPT_${attempt}: status=${BASELINE_STATUS} conclusion=${BASELINE_CONCLUSION} event=${BASELINE_EVENT} run_id=${BASELINE_RUN_ID} head_sha=${BASELINE_HEAD_SHA}"
   if [[ "$BASELINE_STATUS" == "completed" && "$BASELINE_CONCLUSION" == "success" ]]; then
     BASELINE_READY=true
     break
