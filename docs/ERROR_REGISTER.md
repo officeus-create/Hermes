@@ -141,3 +141,20 @@ WORKING_APPROACH: Provide explicit persistent pause, stop on keyboard focus unti
 EVIDENCE: Focused Catalog/Academy/claim desktop-mobile run 38/38 PASS; separate controlled-clock check confirms the eight-second transition. Current full-suite/CI release checks remain required. No production incident is inferred from this pre-release draft finding.
 LESSON: New marketing motion needs usable controls and truthful next-step links before release, not only animation.
 REUSE_RULE: Reuse the shared HermesPromoRail behavior; preserve the owner-controlled pause and do not hide essential offers behind JavaScript-only rendering.
+
+
+## 2026-09-21 — Exact-SHA rollout convergence and paid-intent scope transport
+
+PROBLEM: The first post-merge Repair Shop booking smoke for main `66fff8c480583209b3756bce8b613dabddd10dd0` registered under the new free-setup policy, then received the retired `repair_shop_free_registration_ended` response from the profile endpoint. The post-deploy paid-intent verifier also failed before its production readback with `Argument list too long`.
+
+ROOT_CAUSE: A successful exact-SHA Cloudflare Pages check can precede full custom-domain Functions convergence by a short interval. Separately, the paid-intent workflow copied the complete GitHub commit response into one process environment variable, exceeding the runner's argument/environment limit on a large merge commit.
+
+FAILED_APPROACH: Treating the first green Pages check as immediate convergence for every Function, allowing the retired closed-registration result to count as a successful skip, and transporting unbounded commit JSON through `COMMIT_JSON`.
+
+WORKING_APPROACH: Require the Cloudflare check's exact `head_sha` and deployment ID, retry only the retired 403 gate with bounded backoff, fail every other or persistent auth/commercial response, and keep synthetic cleanup active through an `EXIT` trap. Reduce commit metadata to filenames with `jq`, stream it over stdin to a bounded classifier, and fail safe to the full receiver proof when the list is invalid, missing, or at the GitHub pagination boundary.
+
+EVIDENCE: Deployment workflow `35670092982` and Cloudflare check `106564786622` succeeded for the exact main SHA; deployment ID `8649342e-4685-45b4-8aca-9af942ce8975`. Booking run `35670092939` captured the rollout split, and paid-intent run `35670520086` captured the runner limit. The bounded repair branch passes focused retry/scope simulations, YAML and shell syntax, build, and full static tests. Exact-head PR CI and a later main production rerun remain required.
+
+LESSON: Exact commit identity proves which release was accepted; it does not prove that every custom-domain edge has converged at the same instant. Production smoke must tolerate only a narrowly identified transient state and must never turn a persistent commercial/auth mismatch into success.
+
+REUSE_RULE: Keep production payloads bounded before crossing environment or argv boundaries, make synthetic cleanup unconditional, and gate any rollout retry on an immutable exact-deployment receipt plus an explicit allowlisted transient error.
