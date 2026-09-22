@@ -130,7 +130,7 @@ test("premium opening explains four directions, supports choice, and runs once p
   await expect(page.getByRole("link", { name: /Open Logistics/ })).toHaveAttribute("href", "/paths/logistics/");
   await expect(page.getByRole("link", { name: /Open Marketing/ })).toHaveAttribute("href", "/paths/marketing/");
   await expect(page.getByRole("link", { name: /Open Academy/ })).toHaveAttribute("href", "/paths/academy/");
-  await expect(page.getByRole("link", { name: /Open IT Development/ })).toHaveAttribute("href", "/paths/technology/");
+  await expect(page.getByRole("link", { name: /Open Technology/ })).toHaveAttribute("href", "/paths/technology/");
 
   await expect.poll(() => page.locator("[data-intro-count]").textContent(), { timeout: 7000 }).not.toBe("01");
   await expect(page.locator('[data-intro-rail][data-active="true"]')).toHaveCount(1);
