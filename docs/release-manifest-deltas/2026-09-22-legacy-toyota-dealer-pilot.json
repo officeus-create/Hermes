@@ -68,10 +68,26 @@
         "production": "pending_deployment",
         "immutable_release": "missing"
       }
+    },
+    {
+      "route": "/services/hermes-connect/dealers/workspace/crm/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/dealers/workspace/crm/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/dealers/workspace/crm.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 4,
+    "route_count_added": 5,
     "indexable_route_count_added": 3,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
