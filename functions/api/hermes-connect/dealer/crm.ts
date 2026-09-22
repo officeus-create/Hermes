@@ -363,30 +363,63 @@ export async function onRequestPatch({ request, env }: Context) {
     const email = body.email ? normalizeDealerEmail(body.email) : "";
     if (!name) return jsonResponse(400, { success: false, error: "customer_name_required" }, privateHeaders);
     if (body.email && !email) return jsonResponse(400, { success: false, error: "invalid_customer_email" }, privateHeaders);
+    if (email) {
+      const duplicate = await env.DB.prepare("SELECT id FROM hermes_dealer_customers WHERE company_id=? AND email=? AND id<>? LIMIT 1").bind(companyId, email, id).first();
+      if (duplicate) return jsonResponse(409, { success: false, error: "customer_email_exists", id: duplicate.id }, privateHeaders);
+    }
     await env.DB.prepare("UPDATE hermes_dealer_customers SET name=?,email=?,phone=?,notes=?,updated_at=? WHERE id=? AND company_id=?")
       .bind(name, email || null, normalizeDealerPhone(body.phone) || null, cleanDealerCrmText(body.notes, 1200) || null, now, id, companyId).run();
   } else if (module === "vehicles") {
     if (!(await ownedRow(env.DB, "hermes_dealer_vehicles", id, companyId))) return jsonResponse(404, { success: false, error: "record_not_found" }, privateHeaders);
+    const customerId = cleanDealerCrmText(body.customer_id, 120);
+    if (customerId && !(await ownedRow(env.DB, "hermes_dealer_customers", customerId, companyId))) return jsonResponse(400, { success: false, error: "customer_not_found" }, privateHeaders);
     const vin = body.vin ? normalizeDealerVin(body.vin) : "";
     if (body.vin && !vin) return jsonResponse(400, { success: false, error: "invalid_vin" }, privateHeaders);
     const year = finiteYear(body.vehicle_year);
     if (body.vehicle_year && year == null) return jsonResponse(400, { success: false, error: "invalid_vehicle_year" }, privateHeaders);
-    await env.DB.prepare("UPDATE hermes_dealer_vehicles SET customer_id=?,vin=?,vehicle_year=?,vehicle_make=?,vehicle_model=?,stock_number=?,status=?,notes=?,updated_at=? WHERE id=? AND company_id=?")
-      .bind(cleanDealerCrmText(body.customer_id, 120) || null, vin || null, year, cleanDealerCrmText(body.vehicle_make, 80) || null, cleanDealerCrmText(body.vehicle_model, 100) || null, cleanDealerCrmText(body.stock_number, 80) || null, normalizeVehicleStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, id, companyId).run();
+    const make = cleanDealerCrmText(body.vehicle_make, 80);
+    const model = cleanDealerCrmText(body.vehicle_model, 100);
+    if (!vin && !make && !model) return jsonResponse(400, { success: false, error: "vehicle_identity_required" }, privateHeaders);
+    try {
+      await env.DB.prepare("UPDATE hermes_dealer_vehicles SET customer_id=?,vin=?,vehicle_year=?,vehicle_make=?,vehicle_model=?,stock_number=?,status=?,notes=?,updated_at=? WHERE id=? AND company_id=?")
+        .bind(customerId || null, vin || null, year, make || null, model || null, cleanDealerCrmText(body.stock_number, 80) || null, normalizeVehicleStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, id, companyId).run();
+    } catch (error: any) {
+      if (/unique/i.test(String(error?.message || error))) return jsonResponse(409, { success: false, error: "vehicle_vin_exists" }, privateHeaders);
+      throw error;
+    }
   } else if (module === "leads") {
     if (!(await ownedRow(env.DB, "hermes_dealer_leads", id, companyId))) return jsonResponse(404, { success: false, error: "record_not_found" }, privateHeaders);
+    const customerId = cleanDealerCrmText(body.customer_id, 120);
+    if (customerId && !(await ownedRow(env.DB, "hermes_dealer_customers", customerId, companyId))) return jsonResponse(400, { success: false, error: "customer_not_found" }, privateHeaders);
     const followUp = body.follow_up_at ? validIsoDateTime(body.follow_up_at) : "";
     if (body.follow_up_at && !followUp) return jsonResponse(400, { success: false, error: "invalid_follow_up_at" }, privateHeaders);
-    await env.DB.prepare("UPDATE hermes_dealer_leads SET stage=?,next_action=?,follow_up_at=?,updated_at=? WHERE id=? AND company_id=?")
-      .bind(normalizeLeadStage(body.stage), cleanDealerCrmText(body.next_action, 500) || null, followUp || null, now, id, companyId).run();
+    const subject = cleanDealerCrmText(body.subject, 180);
+    const message = cleanDealerCrmText(body.message, 2000);
+    if (!subject && !message) return jsonResponse(400, { success: false, error: "lead_subject_or_message_required" }, privateHeaders);
+    await env.DB.prepare("UPDATE hermes_dealer_leads SET customer_id=?,channel=?,stage=?,subject=?,message=?,next_action=?,follow_up_at=?,updated_at=? WHERE id=? AND company_id=?")
+      .bind(customerId || null, cleanDealerCrmText(body.channel, 48) || "manual", normalizeLeadStage(body.stage), subject || null, message || null, cleanDealerCrmText(body.next_action, 500) || null, followUp || null, now, id, companyId).run();
   } else if (module === "appointments") {
     if (!(await ownedRow(env.DB, "hermes_dealer_appointments", id, companyId))) return jsonResponse(404, { success: false, error: "record_not_found" }, privateHeaders);
-    await env.DB.prepare("UPDATE hermes_dealer_appointments SET status=?,notes=?,updated_at=? WHERE id=? AND company_id=?")
-      .bind(normalizeAppointmentStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, id, companyId).run();
+    const startsAt = validIsoDateTime(body.starts_at);
+    const appointmentType = cleanDealerCrmText(body.appointment_type, 100);
+    if (!appointmentType) return jsonResponse(400, { success: false, error: "appointment_type_required" }, privateHeaders);
+    if (!startsAt) return jsonResponse(400, { success: false, error: "invalid_starts_at" }, privateHeaders);
+    const customerId = cleanDealerCrmText(body.customer_id, 120);
+    const vehicleId = cleanDealerCrmText(body.vehicle_id, 120);
+    const teamId = cleanDealerCrmText(body.assigned_team_member_id, 120);
+    if (customerId && !(await ownedRow(env.DB, "hermes_dealer_customers", customerId, companyId))) return jsonResponse(400, { success: false, error: "customer_not_found" }, privateHeaders);
+    if (vehicleId && !(await ownedRow(env.DB, "hermes_dealer_vehicles", vehicleId, companyId))) return jsonResponse(400, { success: false, error: "vehicle_not_found" }, privateHeaders);
+    if (teamId && !(await ownedRow(env.DB, "hermes_dealer_team_members", teamId, companyId))) return jsonResponse(400, { success: false, error: "team_member_not_found" }, privateHeaders);
+    await env.DB.prepare("UPDATE hermes_dealer_appointments SET customer_id=?,vehicle_id=?,assigned_team_member_id=?,appointment_type=?,starts_at=?,status=?,notes=?,updated_at=? WHERE id=? AND company_id=?")
+      .bind(customerId || null, vehicleId || null, teamId || null, appointmentType, startsAt, normalizeAppointmentStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, id, companyId).run();
   } else {
     if (!(await ownedRow(env.DB, "hermes_dealer_team_members", id, companyId))) return jsonResponse(404, { success: false, error: "record_not_found" }, privateHeaders);
-    await env.DB.prepare("UPDATE hermes_dealer_team_members SET role=?,department=?,active=?,updated_at=? WHERE id=? AND company_id=?")
-      .bind(cleanDealerCrmText(body.role, 100) || null, normalizeTeamDepartment(body.department), body.active === false ? 0 : 1, now, id, companyId).run();
+    const name = cleanDealerCrmText(body.name, 140);
+    const email = body.email ? normalizeDealerEmail(body.email) : "";
+    if (!name) return jsonResponse(400, { success: false, error: "team_member_name_required" }, privateHeaders);
+    if (body.email && !email) return jsonResponse(400, { success: false, error: "invalid_team_email" }, privateHeaders);
+    await env.DB.prepare("UPDATE hermes_dealer_team_members SET name=?,role=?,department=?,email=?,phone=?,active=?,updated_at=? WHERE id=? AND company_id=?")
+      .bind(name, cleanDealerCrmText(body.role, 100) || null, normalizeTeamDepartment(body.department), email || null, normalizeDealerPhone(body.phone) || null, body.active === false ? 0 : 1, now, id, companyId).run();
   }
 
   await recordDealerActivity(env.DB, {
