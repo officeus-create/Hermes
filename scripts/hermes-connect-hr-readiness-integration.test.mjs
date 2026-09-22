@@ -53,7 +53,7 @@ await db.prepare(`
 await db.prepare(`
   INSERT INTO academy_enrollments
     (id,specialist_id,program_slug,state,participation_model,cohort_code,created_at,updated_at)
-  VALUES (?,?,?,'enrolled','internal',NULL,?,?)
+  VALUES (?,?,?,'enrolled','unspecified',NULL,?,?)
 `).bind(academyLink.enrollment_id,candidate.specialist_id,academyLink.program_slug,now,now).run();
 
 await db.prepare(`
