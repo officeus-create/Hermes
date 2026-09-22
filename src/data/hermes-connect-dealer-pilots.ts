@@ -10,6 +10,7 @@ export const legacyToyotaDallasDealerPilot = {
     countryCode: "US",
     timezone: "America/Chicago",
     website: "https://www.legacytoyotadallas.com/",
+    mainPhone: "(945) 207-3254",
     catalogOptIn: false,
   },
   catalog: {
@@ -34,6 +35,12 @@ export const legacyToyotaDallasDealerPilot = {
     "Genuine Toyota parts",
     "Collision repair",
   ],
+  hours: {
+    sales: { monSat: "8:30 AM - 8:00 PM", sun: "Closed" },
+    service: { monFri: "7:00 AM - 6:00 PM", sat: "7:00 AM - 4:00 PM", sun: "Closed" },
+    parts: { monFri: "7:00 AM - 6:00 PM", sat: "7:00 AM - 4:00 PM", sun: "Closed" },
+    collision: { monFri: "7:30 AM - 6:00 PM", satSun: "Closed" },
+  },
   serviceAreas: [
     "Dallas, Texas",
     "South Dallas, Texas",
@@ -61,5 +68,7 @@ export const legacyToyotaDallasDealerPilot = {
     officialWebsite: "https://www.legacytoyotadallas.com/",
     officialContactPage: "https://www.legacytoyotadallas.com/contact-us/",
     localServicePage: "https://www.legacytoyotadallas.com/toyota-dealership-south-dallas/",
+    servicePage: "https://www.legacytoyotadallas.com/service/",
+    collisionPage: "https://www.legacytoyotadallas.com/Collision-Center/",
   },
 } as const;
