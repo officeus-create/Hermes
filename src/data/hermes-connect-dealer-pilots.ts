@@ -10,9 +10,9 @@ export const legacyToyotaDallasDealerPilot = {
     countryCode: "US",
     timezone: "America/Chicago",
     website: "https://www.legacytoyotadallas.com/",
-    catalogOptIn: true,
+    catalogOptIn: false,
   },
-  departments: [
+  catalog: {\n    publicProfileSlug: "legacy-toyota-of-dallas",\n    currentState: "unclaimed_public_profile",\n    dynamicCompanyOptIn: false,\n    note: "Keep the authenticated company profile out of the dynamic Catalog feed until the existing public profile is owner-verified and bound, preventing duplicate business entities.",\n  },\n  departments: [
     { name: "Sales", phone: "(945) 207-3254" },
     { name: "Service", phone: "(945) 758-1471" },
     { name: "Parts", phone: "(945) 758-1460" },
