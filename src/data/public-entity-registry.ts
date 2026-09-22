@@ -60,27 +60,27 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
   },
   hermes_logistics: {
     id: "hermes_logistics",
-    publicName: "Hermes Logistics",
+    publicName: "Hermes Logistics LLC",
     schemaId: "https://hermeslogisticsus.com/#logistics",
     websiteOwner: "/paths/logistics/",
-    relationshipStatus: "owner_verification_required",
-    schemaPublication: "hold",
+    relationshipStatus: "approved_direction",
+    schemaPublication: "approved",
     socialProfiles: [
       {
         platform: "instagram",
         url: "https://www.instagram.com/hermes.logistics/",
         status: "website_linked_signal",
-        evidence: "Linked from the public Hermes website; exact root-versus-direction ownership still requires a canonical owner decision.",
+        evidence: "Linked from the public Hermes website; exact root-versus-direction social-profile ownership remains separately governed.",
       },
       {
         platform: "threads",
         url: "https://www.threads.com/@hermes.logistics",
         status: "website_linked_signal",
-        evidence: "Linked from the public Hermes website; exact root-versus-direction ownership still requires a canonical owner decision.",
+        evidence: "Linked from the public Hermes website; exact root-versus-direction social-profile ownership remains separately governed.",
       },
     ],
     notes:
-      "Do not create a competing Organization node or duplicate sameAs arrays until the owner confirms whether these profiles represent the root Hermes brand or the Logistics direction specifically.",
+      "Owner directive confirms Hermes Logistics LLC as the U.S. logistics business identified on hermeslogisticsus.com. Publish one stable #logistics Organization identity for the direction, while keeping external sameAs/profile ownership separately evidence-gated.",
   },
   progressopro_marketing: {
     id: "progressopro_marketing",

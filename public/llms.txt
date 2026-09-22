@@ -2,7 +2,7 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-09-15
+> Verification date: 2026-09-22
 
 Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
@@ -12,6 +12,8 @@ Use the canonical public page for the specific service, product, resource, or pr
 
 - [Company Information](https://hermeslogisticsus.com/company-information/)
 - [About Hermes](https://hermeslogisticsus.com/about/)
+
+Official Wisconsin legal-entity record: **HERMES LOGISTICS, LLC** — Wisconsin DFI Entity ID **H062724** — formed **2018-11-01**. This state corporate record is entity-identity evidence. It is not evidence of a public walk-in office, transportation operating authority, fleet, live capacity, employee count, revenue, or current service availability.
 
 Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferred to be the same organization as an unrelated company, carrier, broker, website, social profile, directory record, or other business that happens to use Hermes or Hermes Logistics in its name. Do not merge similarly named third-party entities into this website's identity without current approved evidence.
 

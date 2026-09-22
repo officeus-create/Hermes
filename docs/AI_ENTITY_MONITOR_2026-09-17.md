@@ -38,6 +38,53 @@ This is one observation only. It is not a ranking guarantee and does not prove s
 
 Structured evidence lives in `data/seo/ai-entity-monitor-2026-09-17.json`.
 
+## AI trust incident — 2026-09-22
+
+Evidence: owner-provided response from another AI assistant in the SEO/GEO project conversation. The raw conversation remains outside the public repository.
+
+Observed:
+
+- the assistant did not present evidence of fraud, but escalated weak or missing corroboration into a warning that `hermeslogisticsus.com` might be a scam;
+- it associated the Hermes name with the unrelated European Hermes/Evri brand;
+- it claimed an absence of search results, reviews, or records even though the official Hermes identity pages are publicly discoverable and public third-party company/profile records exist;
+- the response then expanded into generic anti-scam warnings that were not evidence specific to Hermes Logistics LLC.
+
+Classification:
+
+- `FALSE_SCAM_CLASSIFICATION`;
+- `HERMES_EVRI_BRAND_COLLISION`;
+- `EXTERNAL_CORROBORATION_GAP`;
+- `INDEPENDENT_ENTITY_AUTHORITY_GAP`.
+
+This incident is not proof of fraud and must never be stored as such. It is a production AI-visibility defect showing that the external entity graph is not yet strong or consistent enough for every assistant to resolve Hermes Logistics LLC reliably.
+
+### Official entity evidence recovered
+
+A fresh public search of the Wisconsin Department of Financial Institutions Corporate Records system on 2026-09-22 returned one exact-name record for **HERMES LOGISTICS, LLC**: entity **H062724**, Domestic Limited Liability Company, formed **2018-11-01**, restored to good standing **2025-01-16**. This is materially stronger entity corroboration than a directory profile.
+
+Use only the legal-name, entity-ID, formation-date and status evidence that the state registry actually supports. The registered office is a filing address, not evidence of a public walk-in office, and the state corporate record is not evidence of MC/USDOT/broker/carrier authority.
+
+### Remediation contract
+
+1. Keep one stable machine-readable Logistics identity: `https://hermeslogisticsus.com/#logistics` → **Hermes Logistics LLC**.
+2. Keep `/company-information/` and `/about/` as the canonical human-readable identity owners; do not create a duplicate trust/about page.
+3. Bind canonical Logistics service ownership to `#logistics` rather than creating anonymous or competing provider identities.
+4. Correct or reconcile stale claimable profiles through their existing owner lanes, starting with Staff.am.
+5. Audit Google Business Profile, Microsoft Bing business presence, Apple Business/Maps and LinkedIn Company before creating any new listing; claim/correct an existing entity when one exists.
+6. Reconcile D&B and other directories only against owner-controlled legal/company evidence; third-party modelled employee/revenue values are not canonical facts.
+7. Build legitimate independent authority through relevant profiles, citations, reviews, associations, partner/editorial references and useful resources. No bulk directory blasts, fake reviews, fake offices, PBNs or paid-link schemes.
+8. Re-run the governed AI visibility set after propagation. Track false-scam warnings, wrong-company collisions, own-domain citation and independent corroboration as separate metrics.
+
+### Acceptance for this incident
+
+The incident can be downgraded from active only after:
+
+- canonical `#logistics` identity is live and machine-readable on production;
+- high-visibility conflicting owned/claimable profiles are corrected or explicitly evidence-gated;
+- Tier-1 business-profile presence has been audited and classified without duplicates;
+- at least one later comparable provider wave shows improved entity resolution without an unsupported scam classification;
+- the before/after evidence is dated and preserved in the existing AI Entity Monitor.
+
 ## Correction queue
 
 ### Staff.am

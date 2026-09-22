@@ -35,7 +35,7 @@ export interface ContentEntityRecord {
   id: ContentDirection;
   publicName: string;
   websiteOwner: string;
-  relationshipStatus: "approved_parent" | "owner_verification_required" | "relationship_resolution_required";
+  relationshipStatus: "approved_parent" | "approved_direction" | "owner_verification_required" | "relationship_resolution_required";
   socialProfiles: Array<{
     platform: SourcePlatform;
     url: string;
@@ -98,15 +98,15 @@ const clampScore = (value: number) => Math.max(SCORE_MIN, Math.min(SCORE_MAX, Ma
 export const contentEntityRegistry: ContentEntityRecord[] = [
   {
     id: "hermes_logistics",
-    publicName: "Hermes Logistics",
+    publicName: "Hermes Logistics LLC",
     websiteOwner: "/paths/logistics/",
-    relationshipStatus: "owner_verification_required",
+    relationshipStatus: "approved_direction",
     socialProfiles: [
       { platform: "instagram", url: "https://www.instagram.com/hermes.logistics/", status: "owner_verification_required" },
       { platform: "threads", url: "https://www.threads.com/@hermes.logistics", status: "owner_verification_required" },
     ],
-    publishingStatus: "blocked",
-    notes: "Existing public profiles appear in current schema, but control and exact entity ownership must be re-verified before API or sameAs expansion.",
+    publishingStatus: "preview_only",
+    notes: "Hermes Logistics LLC is the approved U.S. logistics entity on the canonical website. External social/API identity expansion remains separately owner-verified before sameAs or automated publishing.",
   },
   {
     id: "progressopro_marketing",

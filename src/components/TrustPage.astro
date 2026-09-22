@@ -19,9 +19,10 @@ interface Props {
   sections: TrustSection[];
   actionLabel?: string;
   actionHref?: string;
+  extraSchema?: Record<string, unknown>[];
 }
 
-const { title, description, eyebrow, h1, intro, reviewedAt, sections, actionLabel, actionHref } = Astro.props;
+const { title, description, eyebrow, h1, intro, reviewedAt, sections, actionLabel, actionHref, extraSchema = [] } = Astro.props;
 const canonical = `https://hermeslogisticsus.com${Astro.url.pathname}`;
 const schema = [
   {
@@ -42,6 +43,7 @@ const schema = [
       { "@type": "ListItem", position: 2, name: h1, item: canonical },
     ],
   },
+  ...extraSchema,
 ];
 ---
 

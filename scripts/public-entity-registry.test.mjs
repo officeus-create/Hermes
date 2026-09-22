@@ -21,6 +21,28 @@ assert.equal(root.relationshipStatus, "approved_root");
 assert.equal(root.schemaPublication, "approved");
 assert.ok(root.socialProfiles.every((profile) => profile.status === "approved_same_entity"));
 
+const logistics = publicEntityRegistry.hermes_logistics;
+assert.equal(logistics.publicName, "Hermes Logistics LLC");
+assert.equal(logistics.schemaId, "https://hermeslogisticsus.com/#logistics");
+assert.equal(logistics.relationshipStatus, "approved_direction");
+assert.equal(logistics.schemaPublication, "approved");
+assert.equal(logistics.websiteOwner, "/paths/logistics/");
+assert.ok(
+  logistics.socialProfiles.every((profile) => profile.status !== "approved_same_entity"),
+  "Approving the Logistics entity must not auto-approve root-vs-direction social sameAs ownership.",
+);
+
+const pipelineLogistics = contentEntityRegistry.find((entity) => entity.id === "hermes_logistics");
+assert.ok(pipelineLogistics);
+assert.equal(pipelineLogistics.publicName, logistics.publicName);
+assert.equal(pipelineLogistics.relationshipStatus, logistics.relationshipStatus);
+assert.equal(pipelineLogistics.websiteOwner, logistics.websiteOwner);
+assert.equal(pipelineLogistics.publishingStatus, "preview_only");
+assert.ok(
+  pipelineLogistics.socialProfiles.every((profile) => profile.status !== "approved"),
+  "Canonical Logistics entity approval must not auto-approve external social publishing.",
+);
+
 const progressopro = publicEntityRegistry.progressopro_marketing;
 assert.equal(progressopro.relationshipStatus, "relationship_resolution_required");
 assert.equal(progressopro.schemaPublication, "hold");

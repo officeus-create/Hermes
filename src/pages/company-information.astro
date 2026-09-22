@@ -1,6 +1,26 @@
 ---
 import TrustPage from "../components/TrustPage.astro";
 
+const logisticsEntitySchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://hermeslogisticsus.com/#logistics",
+  name: "Hermes Logistics LLC",
+  legalName: "Hermes Logistics, LLC",
+  alternateName: "Hermes Logistics",
+  identifier: {
+    "@type": "PropertyValue",
+    propertyID: "Wisconsin DFI Entity ID",
+    value: "H062724",
+  },
+  foundingDate: "2018-11-01",
+  url: "https://hermeslogisticsus.com/paths/logistics/",
+  email: "officeus@hermeslogisticsus.com",
+  areaServed: { "@type": "Country", name: "United States" },
+  mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
+};
+
+
 const sections = [
   {
     title: "Website and public contact",
@@ -11,7 +31,8 @@ const sections = [
   {
     title: "U.S. logistics entity",
     body: [
-      "Hermes Logistics LLC is the U.S. logistics business identified on this website for logistics-related services and communications. A specific proposal, carrier agreement, order, invoice, or other written agreement controls the exact contracting relationship, service scope, authority, fees, responsibilities, and applicable legal terms.",
+      "Hermes Logistics LLC is the public business name used on this website for the U.S. logistics direction. The Wisconsin DFI legal entity name is Hermes Logistics, LLC. A specific proposal, carrier agreement, order, invoice, or other written agreement controls the exact contracting relationship, service scope, authority, fees, responsibilities, and applicable legal terms.",
+      "Wisconsin Department of Financial Institutions corporate records identify HERMES LOGISTICS, LLC as Domestic Limited Liability Company entity H062724, formed November 1, 2018. A registered-office record is a legal filing address and is not presented here as a public walk-in office or customer-service location.",
     ],
   },
   {
@@ -52,10 +73,11 @@ const sections = [
 
 <TrustPage
   title="Hermes Logistics LLC | Company Information | Hermes"
-  description="Company information for Hermes Logistics LLC on hermeslogisticsus.com, including entity disambiguation, public contact routes and contracting-entity guidance."
+  description="Company information for Hermes Logistics LLC, Wisconsin DFI entity H062724, including legal formation, public contact routes, entity disambiguation and contracting guidance."
   eyebrow="Company identity"
   h1="Company Information"
   intro="Who operates the relevant Hermes service, how contracting-entity boundaries work, and what to verify before payment or signing."
-  reviewedAt="2026-09-12"
+  reviewedAt="2026-09-22"
   {sections}
+  extraSchema={[logisticsEntitySchema]}
 />

@@ -44,6 +44,37 @@ test("homepage Organization uses exact Hermes same-entity profiles only", async 
   expect(organization).toBeTruthy();
   expect(organization.sameAs).toEqual(expectedHermesProfiles);
   expect(organization.sameAs).not.toContain(progressoproProfile);
+  expect(organization.department).toBeUndefined();
+});
+
+test("homepage publishes one stable Hermes Logistics LLC Organization node", async ({ page }) => {
+  const response = await page.goto("/");
+  expect(response?.ok()).toBeTruthy();
+  const entities = await readJsonLd(page);
+  const logistics = entities.find(
+    (entity) => entity?.["@type"] === "Organization" && entity?.["@id"] === "https://hermeslogisticsus.com/#logistics",
+  );
+  expect(logistics).toBeTruthy();
+  expect(logistics.name).toBe("Hermes Logistics LLC");
+  expect(logistics.legalName).toBe("Hermes Logistics, LLC");
+  expect(logistics.identifier?.propertyID).toBe("Wisconsin DFI Entity ID");
+  expect(logistics.identifier?.value).toBe("H062724");
+  expect(logistics.foundingDate).toBe("2018-11-01");
+  expect(logistics.url).toBe("https://hermeslogisticsus.com/paths/logistics/");
+  expect(logistics.mainEntityOfPage).toBe("https://hermeslogisticsus.com/company-information/");
+  expect(logistics.sameAs).toBeUndefined();
+});
+
+test("canonical Logistics hub binds Service provider to the stable Logistics entity", async ({ page }) => {
+  const response = await page.goto("/paths/logistics/");
+  expect(response?.ok()).toBeTruthy();
+  const entities = await readJsonLd(page);
+  const logistics = entities.find(
+    (entity) => entity?.["@type"] === "Organization" && entity?.["@id"] === "https://hermeslogisticsus.com/#logistics",
+  );
+  const service = entities.find((entity) => entity?.["@type"] === "Service");
+  expect(logistics?.name).toBe("Hermes Logistics LLC");
+  expect(service?.provider?.["@id"]).toBe("https://hermeslogisticsus.com/#logistics");
 });
 
 test("homepage schema excludes unrelated and owner-unverified Hermes entity signals", async ({ page }) => {

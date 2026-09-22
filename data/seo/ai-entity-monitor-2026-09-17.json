@@ -1,15 +1,21 @@
 {
   "version": "2026-09-17",
   "status": "OWNER_EVIDENCE_BASELINE",
-  "workflow": ["DISCOVER", "VERIFY", "CORRECT", "MEASURE"],
+  "workflow": [
+    "DISCOVER",
+    "VERIFY",
+    "CORRECT",
+    "MEASURE"
+  ],
   "canonical_entity": {
-    "legal_name": "Hermes Logistics LLC",
+    "legal_name": "Hermes Logistics, LLC",
     "canonical_site": "https://hermeslogisticsus.com/",
     "company_information": "https://hermeslogisticsus.com/company-information/",
     "about": "https://hermeslogisticsus.com/about/",
     "entity_role": "U.S. logistics business identified on hermeslogisticsus.com for logistics-related services and communications",
     "boundary": "Marketing, academy, and technology directions shown on the same website do not automatically mean every service is contracted through Hermes Logistics LLC.",
-    "disambiguation": "Do not infer that unrelated businesses, directory records, carriers, brokers, websites, or legal entities using Hermes or Hermes Logistics are the same organization."
+    "disambiguation": "Do not infer that unrelated businesses, directory records, carriers, brokers, websites, or legal entities using Hermes or Hermes Logistics are the same organization.",
+    "public_name": "Hermes Logistics LLC"
   },
   "interfaces": [
     "google_ai_overview",
@@ -30,7 +36,9 @@
       "brand_recognized": true,
       "own_domain_present": true,
       "own_domain": "hermeslogisticsus.com",
-      "third_party_sources_visible": ["staff.am"],
+      "third_party_sources_visible": [
+        "staff.am"
+      ],
       "entity_accuracy": "partially_accurate",
       "description_accuracy": "partially_accurate",
       "issue_codes": [
@@ -43,15 +51,88 @@
         "Keep /company-information/ and /about/ as canonical identity owners and strengthen consistent external-profile facts rather than creating duplicate identity pages.",
         "Track AI Overview and AI Mode separately so a search-summary citation is not collapsed into a generic AI-visibility score."
       ]
+    },
+    {
+      "id": "ENTITY-OBS-2026-09-22-001",
+      "interface": "unidentified_ai_assistant",
+      "query": "Owner-requested trust / legitimacy check for hermeslogisticsus.com; exact prompt not retained in the public registry.",
+      "language": "unknown",
+      "observed_at": "2026-09-22",
+      "evidence_reference": "Owner-provided AI response in the SEO/GEO project conversation; raw conversation remains outside the public repository.",
+      "brand_recognized": true,
+      "own_domain_present": true,
+      "entity_accuracy": "materially_inaccurate",
+      "description_accuracy": "materially_inaccurate",
+      "wrong_company_risk": "high",
+      "scam_warning_emitted": true,
+      "issue_codes": [
+        "FALSE_SCAM_CLASSIFICATION",
+        "HERMES_EVRI_BRAND_COLLISION",
+        "EXTERNAL_CORROBORATION_GAP",
+        "INDEPENDENT_ENTITY_AUTHORITY_GAP"
+      ],
+      "summary": "The assistant did not present evidence of fraud, but treated weak or missing external corroboration as a reason to warn that hermeslogisticsus.com might be a scam, while also conflating the Hermes name with the unrelated European Hermes/Evri brand. This is an entity-resolution and external-authority incident, not proof of wrongdoing.",
+      "corrective_actions": [
+        "Keep Hermes Logistics LLC tied to one stable #logistics Organization identity and the canonical /company-information/ and /about/ identity owners.",
+        "Use the verified Wisconsin DFI legal entity record (H062724; formed 2018-11-01) as an entity-resolution signal while keeping registered-office and regulated-authority claims separately gated.",
+        "Reconcile stale or conflicting claimable external profiles, starting with Staff.am through the existing Recruiting/HR owner lane.",
+        "Audit Google, Bing, Apple and LinkedIn business/entity presence without creating duplicate listings when an existing profile can be claimed or corrected.",
+        "Increase legitimate independent entity corroboration through relevant business profiles, industry citations, reviews and earned editorial/partner references rather than bulk directory spam.",
+        "Repeat the governed AI-visibility query set after corrections propagate and track false-scam warnings, wrong-company collisions and canonical-domain citations separately."
+      ],
+      "own_domain": "hermeslogisticsus.com",
+      "third_party_sources_visible": []
     }
   ],
   "external_source_actions": [
+    {
+      "source": "wisconsin_dfi",
+      "scope": "Hermes Logistics, LLC legal entity record",
+      "status": "OFFICIAL_RECORD_CONFIRMED",
+      "action_gate": "Use only exact public legal facts from the state record; the DFI record does not by itself establish a customer-facing office or regulated transportation authority.",
+      "rule": "Exact-name Wisconsin DFI search on 2026-09-22 returned one HERMES LOGISTICS, LLC, entity H062724, Domestic LLC, formed 2018-11-01, restored to good standing 2025-01-16. Use the legal name, entity ID and formation date as entity-resolution evidence; keep location/service/authority claims separately verified."
+    },
     {
       "source": "staff.am",
       "scope": "Hermes Logistics LLC company profile",
       "status": "CORRECT_OWNED_PROFILE",
       "action_gate": "Authenticated owner access required",
       "rule": "Correct unsupported or stale company wording only; do not treat the profile as earned editorial authority."
+    },
+    {
+      "source": "google_business_profile",
+      "scope": "Hermes Logistics LLC business presence / Maps",
+      "status": "DISCOVERY_GAP_AUDIT_REQUIRED",
+      "action_gate": "Authenticated owner access and eligibility/location truth required",
+      "rule": "Audit for an existing claimable profile before creating anything. Keep real name, category, website, phone and truthful location/service-area facts consistent; never create a fake office."
+    },
+    {
+      "source": "microsoft_bing_business_presence",
+      "scope": "Hermes Logistics LLC Bing business/entity presence",
+      "status": "DISCOVERY_GAP_AUDIT_REQUIRED",
+      "action_gate": "Authenticated owner access required for claim or correction",
+      "rule": "Prefer claim/correction of an existing entity over duplicate creation and keep canonical website/contact facts aligned."
+    },
+    {
+      "source": "apple_business",
+      "scope": "Hermes Logistics LLC Apple Business / Maps presence",
+      "status": "DISCOVERY_GAP_AUDIT_REQUIRED",
+      "action_gate": "Authenticated owner access and eligibility/location truth required",
+      "rule": "Verify existing presence first; publish only truthful address or supported service/location information."
+    },
+    {
+      "source": "linkedin_company",
+      "scope": "Hermes Logistics LLC company-page identity",
+      "status": "DISCOVERY_GAP_AUDIT_REQUIRED",
+      "action_gate": "Authenticated company admin access required",
+      "rule": "Use one governed company identity and canonical website; do not infer company facts from personal profiles."
+    },
+    {
+      "source": "dun_and_bradstreet",
+      "scope": "Public Milwaukee Hermes Logistics LLC directory profile",
+      "status": "PUBLIC_PROFILE_RECONCILIATION_REQUIRED",
+      "action_gate": "Owner-controlled legal/company records required before correction",
+      "rule": "Use the directory only as an independent public signal after exact entity reconciliation; modelled employee/revenue fields are not Hermes evidence."
     }
   ],
   "kpis": [
@@ -63,12 +144,17 @@
     "service_understanding_accuracy",
     "geography_accuracy",
     "language_consistency",
-    "google_generative_ai_impressions"
+    "google_generative_ai_impressions",
+    "false_scam_warning_incident_count",
+    "brand_collision_incident_count",
+    "independent_entity_source_coverage",
+    "verified_business_profile_coverage"
   ],
   "measurement_notes": [
     "One owner screenshot is evidence for one observation, not proof of a stable ranking or universal AI behavior.",
     "Unknown remains UNKNOWN; do not convert missing observations into zero.",
     "Google AI Overview and Google AI Mode are distinct measurement surfaces.",
-    "No private prompts, account identifiers, cookies, tokens, emails, phone numbers, or full conversations belong in this registry."
+    "No private prompts, account identifiers, cookies, tokens, emails, phone numbers, or full conversations belong in this registry.",
+    "A false-scam warning is logged as an incident only when observed. It is not treated as evidence that the website is fraudulent, and remediation targets the exact entity-resolution or corroboration gap rather than manipulating one provider answer."
   ]
 }

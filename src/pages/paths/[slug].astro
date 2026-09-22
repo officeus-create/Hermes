@@ -28,6 +28,7 @@ export function getStaticPaths() {
 
 const { path } = Astro.props;
 const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
+const logisticsOrganizationId = "https://hermeslogisticsus.com/#logistics";
 const contactInterestCategory = site.paths.find((item) => item.id === path.id)?.category ?? path.category;
 const alternates = getDirectionAlternates(path.id as DirectionId);
 const areaServed = path.id === "logistics"
@@ -46,9 +47,29 @@ const serviceSchema = {
   description: path.seoDescription,
   url: canonicalUrl,
   areaServed,
-  provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  provider: { "@id": path.id === "logistics" ? logisticsOrganizationId : "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
+const logisticsOrganizationSchema = path.id === "logistics"
+  ? {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": logisticsOrganizationId,
+      name: "Hermes Logistics LLC",
+      legalName: "Hermes Logistics, LLC",
+      alternateName: "Hermes Logistics",
+      identifier: {
+        "@type": "PropertyValue",
+        propertyID: "Wisconsin DFI Entity ID",
+        value: "H062724",
+      },
+      foundingDate: "2018-11-01",
+      url: "https://hermeslogisticsus.com/paths/logistics/",
+      email: "officeus@hermeslogisticsus.com",
+      areaServed: { "@type": "Country", name: "United States" },
+      mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
+    }
+  : null;
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -68,9 +89,12 @@ const faqSchema = path.faq?.length
       })),
     }
   : null;
-const schema = faqSchema
-  ? [serviceSchema, breadcrumbSchema, faqSchema]
-  : [serviceSchema, breadcrumbSchema];
+const schema = [
+  ...(logisticsOrganizationSchema ? [logisticsOrganizationSchema] : []),
+  serviceSchema,
+  breadcrumbSchema,
+  ...(faqSchema ? [faqSchema] : []),
+];
 ---
 
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema} alternates={alternates}>

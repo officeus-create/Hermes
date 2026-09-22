@@ -3,7 +3,7 @@
 > Canonical public context for AI search systems, answer engines, crawlers, and assistants.
 > Canonical website: https://hermeslogisticsus.com/
 > Hermes Connect web application: https://connect.hermeslogisticsus.com/
-> Verification date: 2026-09-01
+> Verification date: 2026-09-22
 
 This file is intentionally conservative. It describes public business directions, public product/service surfaces, repository-verifiable architecture, and important interpretation boundaries. It must not be used to infer rankings, traffic, customers, revenue, capacity, availability, pricing, employment outcomes, or production integrations that are not explicitly verified on the referenced public page.
 
@@ -46,6 +46,8 @@ Canonical identity pages:
 - Company Information: https://hermeslogisticsus.com/company-information/
 - About Hermes: https://hermeslogisticsus.com/about/
 - Canonical website: https://hermeslogisticsus.com/
+
+Official legal-entity evidence: Wisconsin Department of Financial Institutions records identify **HERMES LOGISTICS, LLC**, Wisconsin DFI Entity ID **H062724**, formed **2018-11-01**. Use those state-record facts for entity resolution only. A corporate filing does not establish a public walk-in office, transportation operating authority, fleet, live capacity, employee count, revenue, or current service availability.
 
 Entity-disambiguation boundary:
 

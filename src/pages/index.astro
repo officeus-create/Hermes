@@ -12,6 +12,7 @@ import "../styles/home-mobile-visual-fixes.css";
 import "../styles/home-approved-division-colors.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
+const logisticsOrganizationId = "https://hermeslogisticsus.com/#logistics";
 const websiteId = "https://hermeslogisticsus.com/#website";
 const ecosystemHeroUrl = new URL(ecosystemHeroImage.src, Astro.site).href;
 
@@ -48,6 +49,25 @@ const organizationSchema = {
   sameAs: approvedHermesSameAs,
 };
 
+const logisticsOrganizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": logisticsOrganizationId,
+  name: "Hermes Logistics LLC",
+  legalName: "Hermes Logistics, LLC",
+  alternateName: "Hermes Logistics",
+  identifier: {
+    "@type": "PropertyValue",
+    propertyID: "Wisconsin DFI Entity ID",
+    value: "H062724",
+  },
+  foundingDate: "2018-11-01",
+  url: "https://hermeslogisticsus.com/paths/logistics/",
+  email: "officeus@hermeslogisticsus.com",
+  areaServed: { "@type": "Country", name: "United States" },
+  mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
+};
+
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -63,7 +83,7 @@ const websiteSchema = {
 <BaseLayout
   title="Hermes | U.S. Logistics, Marketing, Academy & AI Systems"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
-  schema={[organizationSchema, websiteSchema]}
+  schema={[organizationSchema, logisticsOrganizationSchema, websiteSchema]}
   alternates={languageAlternates}
 >
   <SiteHeader />
