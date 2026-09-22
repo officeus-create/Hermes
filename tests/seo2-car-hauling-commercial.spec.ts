@@ -21,6 +21,13 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
     "href",
     "/load-board/?role=carrier&equipment=car_hauler#available-loads",
   );
+  const schema = (await page.locator('script[type="application/ld+json"]').allTextContents())
+    .flatMap((text) => {
+      const parsed = JSON.parse(text);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    });
+  const service = schema.find((entity) => entity?.["@type"] === "Service");
+  expect(service?.provider?.["@id"]).toBe("https://hermeslogisticsus.com/#logistics");
 });
 
 test("load board explains how owner-operators evaluate car hauling loads", async ({ page }) => {

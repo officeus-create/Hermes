@@ -116,7 +116,7 @@ for (const page of pages) {
   const breadcrumbs = entities.find((entity) => entity?.["@type"] === "BreadcrumbList");
   const faq = entities.find((entity) => entity?.["@type"] === "FAQPage");
   assert.ok(service, `${page.route} Service schema is missing`);
-  assert.equal(service.provider?.["@id"], "https://hermeslogisticsus.com/#organization");
+  assert.equal(service.provider?.["@id"], "https://hermeslogisticsus.com/#logistics");
   assert.equal(service.url, `https://hermeslogisticsus.com${page.route}`);
   assert.ok(breadcrumbs, `${page.route} BreadcrumbList schema is missing`);
   assert.equal(breadcrumbs.itemListElement?.at(-1)?.item, `https://hermeslogisticsus.com${page.route}`);
