@@ -21,6 +21,7 @@ import {
   normalizeVin,
   serializeDealerTransportRequest,
 } from "../../_lib/dealer-transport-requests.mjs";
+import { recordDealerActivity } from "../../_lib/dealer-crm.mjs";
 
 type Env = { DB?: any };
 type Context = { request: Request; env: Env };
@@ -346,12 +347,32 @@ export async function onRequestPost({ request, env }: Context) {
         SET status='sync_error', last_error=?, updated_at=?
         WHERE id=? AND company_id=?
       `).bind(code, new Date().toISOString(), row.id, context.company.id).run();
+      await recordDealerActivity(env.DB, {
+        companyId: context.company.id,
+        actorId: context.specialist.id,
+        eventType: "transport_load_board_sync_error",
+        entityType: "transport_request",
+        entityId: row.id,
+        summary: "Transport Request Load Board synchronization failed; error state recorded for owner review.",
+      });
       return jsonResponse(409, { success: false, error: code, request_id: row.id }, privateHeaders);
     }
   }
 
   row = await env.DB.prepare("SELECT * FROM hermes_dealer_transport_requests WHERE id=? AND company_id=? LIMIT 1")
     .bind(row.id, context.company.id).first();
+  await recordDealerActivity(env.DB, {
+    companyId: context.company.id,
+    actorId: context.specialist.id,
+    eventType: action === "publish"
+      ? (before?.load_post_id ? "transport_load_board_updated" : "transport_load_board_published")
+      : (before ? "transport_request_updated" : "transport_request_created"),
+    entityType: "transport_request",
+    entityId: row.id,
+    summary: action === "publish"
+      ? (before?.load_post_id ? "Approved Transport Request updated the same linked Load Board post." : "Approved Transport Request created one linked Load Board post.")
+      : "Private Transport Request saved as a dealer CRM draft.",
+  });
   return jsonResponse(action === "publish" ? 201 : 200, {
     success: true,
     request: serializeDealerTransportRequest(row),
@@ -404,6 +425,16 @@ export async function onRequestDelete({ request, env }: Context) {
 
   const updated = await env.DB.prepare("SELECT * FROM hermes_dealer_transport_requests WHERE id=? AND company_id=? LIMIT 1")
     .bind(id, context.company.id).first();
+  await recordDealerActivity(env.DB, {
+    companyId: context.company.id,
+    actorId: context.specialist.id,
+    eventType: "transport_request_cancelled",
+    entityType: "transport_request",
+    entityId: id,
+    summary: row.load_post_id
+      ? "Transport Request cancelled and the same linked Load Board post archived."
+      : "Private Transport Request cancelled before Load Board publication.",
+  });
   return jsonResponse(200, {
     success: true,
     request: serializeDealerTransportRequest(updated),
