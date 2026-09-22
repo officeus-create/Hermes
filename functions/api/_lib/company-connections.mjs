@@ -46,17 +46,32 @@ export async function ensureCompanyConnectionsSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_company_connections_company ON hermes_company_connections(company_id, provider, state)").run();
 }
 
-export async function upsertCompanyConnection(db, {
-  companyId,
-  provider,
-  state,
-  mode = "none",
-  sourceUrl = null,
-  externalAccountRef = null,
-  lastVerifiedAt = null,
-  lastError = null,
-  metadata = null,
-}) {
+/**
+ * @param {any} db
+ * @param {{
+ *   companyId: any,
+ *   provider: any,
+ *   state: any,
+ *   mode?: any,
+ *   sourceUrl?: any,
+ *   externalAccountRef?: any,
+ *   lastVerifiedAt?: any,
+ *   lastError?: any,
+ *   metadata?: any
+ * }} options
+ */
+export async function upsertCompanyConnection(db, options) {
+  const {
+    companyId,
+    provider,
+    state,
+    mode = "none",
+    sourceUrl = null,
+    externalAccountRef = null,
+    lastVerifiedAt = null,
+    lastError = null,
+    metadata = null,
+  } = options;
   await ensureCompanyConnectionsSchema(db);
   const safeProvider = cleanConnectionText(provider, 48).toLowerCase().replace(/[^a-z0-9_-]+/g, "_");
   if (!safeProvider) throw new Error("provider_required");
