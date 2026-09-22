@@ -92,11 +92,25 @@ function publicVehicleLabel(requestRow: any) {
   return label || "Vehicle transport";
 }
 
+async function stableDealerLoadIds(companyId: unknown, sourceRecordId: unknown) {
+  const material = new TextEncoder().encode(`dealer-load|${String(companyId)}|${String(sourceRecordId)}`);
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", material));
+  const suffix = [...digest]
+    .slice(0, 12)
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+  return {
+    postId: `hmp_dealer_${suffix}`,
+    recordId: `hlr_dealer_${suffix}`,
+  };
+}
+
 async function publishToLoadBoard(db: any, specialist: any, company: any, requestRow: any) {
   const now = new Date().toISOString();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-  const postId = requestRow.load_post_id || `hmp_${crypto.randomUUID()}`;
-  const recordId = requestRow.load_record_id || `hlr_${crypto.randomUUID()}`;
+  const stableIds = await stableDealerLoadIds(company.id, requestRow.source_record_id);
+  const postId = requestRow.load_post_id || stableIds.postId;
+  const recordId = requestRow.load_record_id || stableIds.recordId;
   const sourceId = `company_${String(company.id).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 120)}`;
   const origin = String(requestRow.origin);
   const destination = String(requestRow.destination);
@@ -159,48 +173,9 @@ async function publishToLoadBoard(db: any, specialist: any, company: any, reques
       updated_at = excluded.updated_at
   `).bind(sourceId, company.company_name, now, now, now).run();
 
-  if (requestRow.load_post_id && requestRow.load_record_id) {
-    const ownedPost = await db.prepare(`
-      SELECT id, record_id
-      FROM hermes_load_market_posts
-      WHERE id = ? AND company_id = ?
-      LIMIT 1
-    `).bind(postId, company.id).first();
-    if (!ownedPost || String(ownedPost.record_id) !== String(recordId)) {
-      const error = new Error("linked_load_post_not_found");
-      (error as any).code = "linked_load_post_not_found";
-      throw error;
-    }
-
+  if (!requestRow.load_post_id || !requestRow.load_record_id) {
     await db.prepare(`
-      UPDATE hermes_load_records
-      SET source_id=?, source_message_id=?, fingerprint=?, record_type='load', source_name=?,
-          equipment='car_hauler', origin=?, destination=?, pickup_window=?, delivery_window=NULL,
-          availability_text=?, team=0, rate_amount=?, rate_currency=?,
-          received_at=?, observed_at=?, last_seen_at=?, expires_at=?, status='active',
-          visibility='carrier_only', raw_evidence_ref=NULL, provider_record_id=?,
-          origin_city=?, origin_state=?, origin_zip=?, destination_city=?, destination_state=?, destination_zip=?,
-          distance_miles=NULL, deadhead_miles=NULL, weight_lbs=NULL, length_feet=NULL, vehicle_count=1,
-          operable=NULL, enclosed=NULL, payment_terms=NULL, rate_per_mile=?, source_quality_score=?,
-          risk_flags=NULL, dedupe_key=?, provider_url=NULL, updated_at=?
-      WHERE id=?
-    `).bind(
-      sourceId, postId, postId, company.company_name,
-      origin, destination, requestRow.ready_date || null, vehicleLabel,
-      rateAmount, rateAmount == null ? null : "USD",
-      now, now, now, expiresAt, postId,
-      originParts.city, originParts.state, originParts.zip,
-      destinationParts.city, destinationParts.state, destinationParts.zip,
-      ratePerMile, scoring.score, dedupeKey, now, recordId,
-    ).run();
-    await db.prepare(`
-      UPDATE hermes_load_market_posts
-      SET status='active', rights_attested=1, specialist_id=?, updated_at=?
-      WHERE id=? AND company_id=?
-    `).bind(specialist.id, now, postId, company.id).run();
-  } else {
-    await db.prepare(`
-      INSERT INTO hermes_load_records (
+      INSERT OR IGNORE INTO hermes_load_records (
         id, source_id, source_message_id, fingerprint, record_type, source_name,
         equipment, origin, destination, pickup_window, delivery_window, availability_text, team,
         rate_amount, rate_currency, received_at, observed_at, last_seen_at,
@@ -222,12 +197,51 @@ async function publishToLoadBoard(db: any, specialist: any, company: any, reques
     ).run();
 
     await db.prepare(`
-      INSERT INTO hermes_load_market_posts (
+      INSERT OR IGNORE INTO hermes_load_market_posts (
         id, record_id, company_id, specialist_id, post_type, status,
         rights_attested, created_at, updated_at
       ) VALUES (?, ?, ?, ?, 'load', 'active', 1, ?, ?)
     `).bind(postId, recordId, company.id, specialist.id, now, now).run();
   }
+
+  const ownedPost = await db.prepare(`
+    SELECT id, record_id
+    FROM hermes_load_market_posts
+    WHERE id = ? AND company_id = ?
+    LIMIT 1
+  `).bind(postId, company.id).first();
+  if (!ownedPost || String(ownedPost.record_id) !== String(recordId)) {
+    const error = new Error("linked_load_post_not_found");
+    (error as any).code = "linked_load_post_not_found";
+    throw error;
+  }
+
+  await db.prepare(`
+    UPDATE hermes_load_records
+    SET source_id=?, source_message_id=?, fingerprint=?, record_type='load', source_name=?,
+        equipment='car_hauler', origin=?, destination=?, pickup_window=?, delivery_window=NULL,
+        availability_text=?, team=0, rate_amount=?, rate_currency=?,
+        received_at=?, observed_at=?, last_seen_at=?, expires_at=?, status='active',
+        visibility='carrier_only', raw_evidence_ref=NULL, provider_record_id=?,
+        origin_city=?, origin_state=?, origin_zip=?, destination_city=?, destination_state=?, destination_zip=?,
+        distance_miles=NULL, deadhead_miles=NULL, weight_lbs=NULL, length_feet=NULL, vehicle_count=1,
+        operable=NULL, enclosed=NULL, payment_terms=NULL, rate_per_mile=?, source_quality_score=?,
+        risk_flags=NULL, dedupe_key=?, provider_url=NULL, updated_at=?
+    WHERE id=?
+  `).bind(
+    sourceId, postId, postId, company.company_name,
+    origin, destination, requestRow.ready_date || null, vehicleLabel,
+    rateAmount, rateAmount == null ? null : "USD",
+    now, now, now, expiresAt, postId,
+    originParts.city, originParts.state, originParts.zip,
+    destinationParts.city, destinationParts.state, destinationParts.zip,
+    ratePerMile, scoring.score, dedupeKey, now, recordId,
+  ).run();
+  await db.prepare(`
+    UPDATE hermes_load_market_posts
+    SET status='active', rights_attested=1, specialist_id=?, updated_at=?
+    WHERE id=? AND company_id=?
+  `).bind(specialist.id, now, postId, company.id).run();
 
   return { postId, recordId, syncedAt: now, expiresAt };
 }
