@@ -50,7 +50,7 @@ class MemoryD1 {
 
   async execute(sql, args, mode) {
     const q = this.normalized(sql);
-    if (q.startsWith('create table') || q.startsWith('create index')) return mode === 'all' ? { results: [] } : { success: true };
+    if (q.startsWith('create table') || q.startsWith('create index') || q.startsWith('alter table')) return mode === 'all' ? { results: [] } : { success: true };
 
     if (q.includes('select specialist_id, expires_at from sessions where token = ?')) {
       return this.sessions.get(args[0]) || null;
