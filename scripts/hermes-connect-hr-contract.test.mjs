@@ -123,15 +123,23 @@ assert.match(adminServer, /Rationale:/);
 assert.match(adminServer, /Missing \/ unknown:/);
 assert.match(adminServer, /evidence coverage, not probability of job success/i);
 assert.match(adminServer, /No supervised live roleplay\/call evidence/i);
+assert.match(adminServer, /Blind calibration mode:/);
+assert.match(adminServer, /calibrationBlind/);
+assert.match(adminServer, /reviewer_confidence/);
+assert.match(adminServer, /query\.set\('blind','1'\)/);
 assert.doesNotMatch(adminServer, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
-for (const table of ['hr_candidates','hr_interview_sessions','hr_interview_answers','hr_events','hr_reviewer_access','hr_reviews','hr_academy_links']) {
+for (const table of ['hr_candidates','hr_interview_sessions','hr_interview_answers','hr_events','hr_evidence_items','hr_question_path_events','hr_score_snapshots','hr_route_decisions','hr_calibration_reviews','hr_reviewer_access','hr_reviews','hr_academy_links']) {
   assert.match(hrLib, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`));
 }
 assert.match(hrLib, /access_token_hash TEXT NOT NULL/);
 assert.match(hrLib, /hermes_internal_owner_access/);
 assert.match(hrLib, /HERMES_INTERNAL_OWNER/);
 assert.match(hrLib, /ensureHrAcademyLink/);
+assert.match(hrLib, /HR_EVALUATION_POLICY_VERSION/);
+assert.match(hrLib, /buildHrScoreDimensions/);
+assert.match(hrLib, /hrRouteRecommendation/);
+assert.match(hrLib, /hrHumanRouteForReviewOutcome/);
 assert.match(hrLib, /us-logistics-operations/);
 assert.match(hrLib, /return "marketing"/);
 assert.match(hrLib, /awaiting_program/);
@@ -145,6 +153,10 @@ assert.match(candidateApi, /X-HR-Candidate-Token/);
 assert.match(candidateApi, /Idempotency-Key/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_interview_answers/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_events/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_evidence_items/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_question_path_events/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_score_snapshots/);
+assert.match(candidateApi, /INSERT OR IGNORE INTO hr_route_decisions/);
 assert.match(candidateApi, /CASE WHEN status='interviewing' THEN 'completed' ELSE status END/);
 assert.match(candidateApi, /candidate_token_invalid/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
@@ -158,6 +170,10 @@ assert.match(reviewerApi, /MORE_EVIDENCE:\s*"more_evidence"/);
 assert.match(reviewerApi, /SUPERVISED_TEST:\s*"supervised_test"/);
 assert.match(reviewerApi, /ensureHrAcademyLink/);
 assert.match(reviewerApi, /automated:\s*false/);
+assert.match(reviewerApi, /blindCalibration/);
+assert.match(reviewerApi, /calibration_mode/);
+assert.match(reviewerApi, /reviewer_confidence/);
+assert.match(reviewerApi, /INSERT INTO hr_calibration_reviews/);
 assert.doesNotMatch(reviewerApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 assert.match(claimApi, /getAuthenticatedSpecialist/);
