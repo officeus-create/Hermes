@@ -17,10 +17,18 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
   const directIntakeLinks = page.getByRole("link", { name: "Start car-hauling dispatch review" });
   await expect(directIntakeLinks.first()).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
   await expect(directIntakeLinks).toHaveCount(2);
-  await expect(page.getByRole("link", { name: "Open the Car Hauling Load Board" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "RPM & Load Profitability Calculator" })).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
+    "/logistics/resources/rpm-calculator/",
   );
+
+  const schema = (await page.locator('script[type="application/ld+json"]').allTextContents())
+    .flatMap((text) => {
+      const parsed = JSON.parse(text);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    });
+  const service = schema.find((entity) => entity?.["@type"] === "Service");
+  expect(service?.provider?.["@id"]).toBe("https://hermeslogisticsus.com/#logistics");
 });
 
 test("load board explains how owner-operators evaluate car hauling loads", async ({ page }) => {
