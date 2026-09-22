@@ -1099,3 +1099,13 @@ Owner: current Load Board workstream; bounded closeout authorized by the owner.
 - Verification on the rebased candidate: four focused static contracts PASS; build PASS with 336 pages; full `npm test` PASS; isolated desktop/mobile browser subset PASS, 34/34 across Repair Shop free setup, Hermes Connect site bridge, and Russian parity. Exact pushed-head CI remains required.
 - Scope and risk: existing PR only; no new PR, merge, production deploy, credential, analytics, sender, or customer-data action. #1438 remains owner-gated pending independent Portfolio verification and exact-head CI.
 - Ecosystem compounding: conversion clarity, multilingual parity, owner-controlled Catalog discovery, and reusable release safety improve; no separate SEO/GEO execution or additional public URL family was introduced in this sequencing pass.
+
+
+## 2026-09-21 — Codex QA — Repair Shop capacity smoke recovery dispatch
+
+- Agent/task owner: Codex QA; branch `qa/capacity-workflow-dispatch-guard` from exact production-verified main `4fd451f5344389b369dc25f8a422d30c0b422ce4`; review-only PR to be opened from this branch, with no merge or deployment.
+- Behavior delivered: the existing path-filtered push-to-main capacity smoke remains unchanged and gains a manual recovery dispatch. A separate fail-closed job accepts only `refs/heads/main`; the production/synthetic smoke job cannot start until that guard succeeds. Existing non-cancelling concurrency and exact-`GITHUB_SHA` booking-smoke prerequisite remain intact.
+- Files changed: `.github/workflows/repair-capacity-production-smoke.yml`, `scripts/repair-booking-turnstile-contract.test.mjs`, and this handoff. No product, payment, public copy, route, SEO/GEO, customer-data, or secret surface changed.
+- Verification: focused guard contract PASS, including actual guard-script execution for accepted main and rejected feature refs; workflow YAML parse and `git diff --check` PASS; build PASS with 336 pages; full `npm test` PASS. Full Playwright completed with 1,645 passed, 12 expected skips, and one unrelated mobile timing failure; the failed scenario passed 3/3 immediate isolated reruns.
+- Ecosystem compounding: primary outcome is reusable, owner-invokable production verification with a main-only permission boundary; architecture and release evidence improve. SEO, conversion UI, knowledge content, internal links, public data collection, and content distribution are unchanged. Deferred: exact-head PR CI, independent review, owner merge, then an owner-dispatched exact-main capacity run with cleanup `remaining=0`.
+- Rollback: revert the bounded workflow/test/handoff commit. Next owner: independent Portfolio reviewer, then CEO/root for merge and the post-merge capacity dispatch.
