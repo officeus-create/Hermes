@@ -13,12 +13,13 @@ const included = [
   "Booking inbox with appointment status history",
   "Customer and vehicle context connected to bookings",
   "Private product feedback with founding-customer priority review",
+  "Owner-approved Hermes Catalog listing with no listing fee and search-discovery preparation",
 ];
 
 const faqs = [
   {
     question: "Can I try the workspace before paying?",
-    answer: "Yes. Use the current owner registration flow, configure the shop, and see how the workspace fits your operation before requesting paid activation.",
+    answer: "Yes. Registration and Hermes Connect software access are currently $0 during the setup period while the workspace is configured around your real operation. Paid activation is a separate step after setup.",
   },
   {
     question: "Will this form charge my card?",
@@ -26,7 +27,11 @@ const faqs = [
   },
   {
     question: "What is included for $99/month?",
-    answer: "The current Founding Shop Plan covers one repair shop location and the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, and private product feedback described on this page.",
+    answer: "The standard Founding Shop price is $99/month per repair shop location after setup. During setup, the software fee is $0. If you continue after setup, the plan covers the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, Catalog connection, and private product feedback described on this page.",
+  },
+  {
+    question: "Is the Hermes Catalog listing included during setup?",
+    answer: "Yes. After your business profile is complete, you can approve publication of owner-approved public facts to Hermes Catalog at no listing fee. Hermes develops the directory for SEO, GEO, local search, and AI discovery, but rankings, traffic, and leads are not guaranteed.",
   },
   {
     question: "Does Hermes Connect guarantee more customers or revenue?",
@@ -52,7 +57,7 @@ const schema = [
       price: "99",
       priceCurrency: "USD",
       url: pageUrl,
-      description: "Founding Shop Plan for one repair shop location, billed monthly after human confirmation and invoicing.",
+      description: "Founding Shop Plan for one repair shop location. Setup-period software access is $0; the $99/month subscription begins only after setup and human confirmation before invoicing.",
     },
   },
   {
@@ -78,8 +83,8 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Repair Shop Founding Plan — $99/month | Hermes Connect"
-  description="Activate Hermes Connect Repair Shops for $99/month per location: booking, availability, customers, vehicle context, and owner operations in one workspace."
+  title="Repair Shop CRM — Free During Setup, Then $99/month | Hermes Connect"
+  description="Use Hermes Connect Repair Shops for $0 during setup. Configure booking, availability, customers, vehicle context, CRM, and Catalog presence before choosing the $99/month Founding Shop Plan."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -91,23 +96,23 @@ const schema = [
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">Hermes Connect · Founding Shop Plan</p>
-          <h1>Activate Hermes Connect for your repair shop.</h1>
-          <p class="lead">Keep the booking workflow your shop can already try — services, hours, appointment requests, customers, and vehicle context — for <strong>$99/month per repair shop location</strong>.</p>
+          <h1>Start free. Pay only after your shop is configured.</h1>
+          <p class="lead">The standard Founding Shop price is <strong>$99/month per repair shop location</strong>, but your Hermes Connect software fee is <strong>$0 during setup</strong> while we help configure services, availability, booking, customer context, CRM, and your owner-approved Catalog presence.</p>
           <div class="hero-actions">
-            <a class="primary" href="#activate">Request paid activation <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="secondary" href="/services/hermes-connect/repair-shops/auth/">Try the workspace first</a>
+            <a class="primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="secondary" href="#activate">See paid activation after setup</a>
           </div>
-          <p class="microcopy">No card is collected on this website. A paid activation request starts a human confirmation and invoice process.</p>
+          <p class="microcopy">No card is charged during setup. When setup is complete, Hermes confirms the paid activation and invoice with you before billing.</p>
         </div>
 
         <aside class="price-card" aria-label="Founding Shop Plan pricing">
-          <p class="price-label">Launch price</p>
-          <div class="price"><span>$</span><strong>99</strong><small>/month</small></div>
-          <p class="price-note">per repair shop location</p>
+          <p class="price-label">Setup-period software fee</p>
+          <div class="price"><span>$</span><strong>0</strong><small>during setup</small></div>
+          <p class="price-note">$99/month standard Founding Shop price after setup, if you continue</p>
           <ul>
             {included.map((item) => <li><Check size={17} aria-hidden="true" /><span>{item}</span></li>)}
           </ul>
-          <a class="primary full" href="#activate">I want this plan <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="primary full" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
         </aside>
       </section>
 
@@ -126,10 +131,10 @@ const schema = [
 
       <section id="activate" class="activate" aria-labelledby="activate-title">
         <div class="activate-copy">
-          <p class="eyebrow">Paid activation</p>
-          <h2 id="activate-title">Request the $99/month Founding Shop Plan.</h2>
-          <p>Send your shop details. Hermes will confirm the current plan scope, billing contact, and invoice before paid activation. Submitting this form does not charge you.</p>
-          <div class="signal"><DollarSign size={20} aria-hidden="true" /><span>This is a purchase-intent request for shops ready to keep using Hermes Connect — not a generic demo form.</span></div>
+          <p class="eyebrow">After setup</p>
+          <h2 id="activate-title">Continue with the $99/month Founding Shop Plan when your workspace is ready.</h2>
+          <p>Use the free setup period first. When the workspace is configured and you want to continue, send your shop details. Hermes will confirm the plan scope, billing contact, and invoice before paid activation. Submitting this form does not charge you.</p>
+          <div class="signal"><DollarSign size={20} aria-hidden="true" /><span>This is a purchase-intent request for shops ready to continue after setup. Free setup access and paid activation remain separate states.</span></div>
         </div>
 
         <form id="paid-plan-form" class="activation-card">
@@ -144,7 +149,7 @@ const schema = [
           <label class="consent"><input id="plan-consent" type="checkbox" required /><span>I agree that Hermes may contact me about this paid activation request and billing setup.</span></label>
           <button id="paid-plan-submit" class="primary full" type="submit">Request paid activation <ArrowRight size={18} aria-hidden="true" /></button>
           <p id="paid-plan-status" class="form-status" role="status" aria-live="polite"></p>
-          <p class="form-note">No payment is taken here. The $99/month price is the current Founding Shop Plan launch offer; final activation details are confirmed before invoicing.</p>
+          <p class="form-note">No payment is taken here. Setup-period software access is $0. The $99/month Founding Shop price applies only after setup when paid activation details are confirmed before invoicing.</p>
         </form>
       </section>
 

@@ -52,9 +52,9 @@ test "$(jq -r '.success // false' "${TMP}/pre-clean.json")" = true
 REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Booking Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production booking verification account for Hermes Connect Repair Shops."}')"
 RC="$(curl -sS -o "${TMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 echo "REGISTER_HTTP=$RC"; cat "${TMP}/register.json"; echo
-if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/register.json")" = "repair_shop_free_registration_ended" ]]; then
+if [[ "$RC" = "403" ]] && [[ "$(jq -r '.error // ""' "${TMP}/register.json")" = "repair_shop_setup_access_closed" ]]; then
   test "$(jq -r '.next_url // ""' "${TMP}/register.json")" = "/services/hermes-connect/repair-shops/plan/"
-  echo "REPAIR_BOOKING_PRODUCTION_WRITE=SKIPPED_CLOSED_REGISTRATION_WINDOW"
+  echo "REPAIR_BOOKING_PRODUCTION_WRITE=SKIPPED_SETUP_ACCESS_CLOSED"
   exit 0
 fi
 test "$RC" = 201

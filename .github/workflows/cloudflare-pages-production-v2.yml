@@ -160,11 +160,11 @@ jobs:
             },
             {
               url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
-              markers: ["Founding Shop Plan", "data-launch-state=\"ended\"", "Free repair shop registration ended September 15."],
+              markers: ["Founding Shop Plan", "data-launch-state=\"open\"", "Use Hermes Connect free while we configure it for your shop."],
             },
             {
               url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/",
-              markers: ["Repair Shop Owner Access", "data-launch-state=\"ended\"", "Free repair shop registration ended September 15."],
+              markers: ["Repair Shop Owner Access", "data-launch-state=\"open\"", "Use Hermes Connect free while we configure it for your shop."],
               forbiddenMarkers: ["14-day launch offer", "registration stays free until it is"],
             },
             {

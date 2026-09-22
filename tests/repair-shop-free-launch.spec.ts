@@ -1,9 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
-const deadline = "2026-09-16T05:00:00.000Z";
-const activeNow = "2026-09-01T06:00:00.000Z";
-const expiredNow = "2026-09-16T06:00:00.000Z";
 const visibleOffer = "[data-repair-free-launch]:visible";
 
 async function freezeNow(page: Page, iso: string) {
@@ -13,125 +10,115 @@ async function freezeNow(page: Page, iso: string) {
   }, fixedNow);
 }
 
-test("Repair Shop free-registration policy is fixed through September 15 Central Time and honest about billing", async () => {
-  const [policy, component] = await Promise.all([
+test("Repair Shop policy keeps setup access free without a date cutoff and preserves truthful billing", async () => {
+  const [policy, component, registerApi, profileApi] = await Promise.all([
     readFile(new URL("../src/data/hermes-connect-repair-shop-launch.ts", import.meta.url), "utf8"),
     readFile(new URL("../src/components/RepairShopFreeLaunchOffer.astro", import.meta.url), "utf8"),
+    readFile(new URL("../functions/api/auth/register.ts", import.meta.url), "utf8"),
+    readFile(new URL("../functions/api/repair-shop/profile.ts", import.meta.url), "utf8"),
   ]);
 
-  expect(policy).toContain(`REPAIR_SHOP_FREE_REGISTRATION_END_ISO = "${deadline}"`);
-  expect(policy).toContain('REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE = "America/Chicago"');
-  expect(policy).toContain('REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE = "2026-09-15"');
+  expect(policy).toContain("REPAIR_SHOP_SETUP_ACCESS_ENABLED = true");
+  expect(policy).toContain("REPAIR_SHOP_SETUP_ACCESS_PRICE_USD = 0");
+  expect(policy).toContain("REPAIR_SHOP_FOUNDING_PRICE_USD = 99");
+  expect(policy).toContain("REPAIR_SHOP_CATALOG_LISTING_FEE_USD = 0");
   expect(policy).toContain("REPAIR_SHOP_ONLINE_BILLING_ENABLED = false");
-  expect(policy).toContain("countLimited: false");
-  expect(policy).toContain("cardRequired: false");
-  expect(policy).toContain('afterDeadlineWithoutBilling: "current_plan_required"');
-  expect(component).toContain("data-days");
-  expect(component).toContain("data-hours");
-  expect(component).toContain("data-minutes");
-  expect(component).toContain("data-seconds");
-  expect(component).toContain("window.setInterval(tick, 1000)");
-  expect(component).toContain("freeRegistrationExpired");
-  expect(component).toContain('data-launch-state={freeRegistrationExpired ? "ended" : "open"}');
-  expect(component).toContain("Free repair shop registration through September 15.");
-  expect(component).toContain("Free repair shop registration ended September 15.");
-  expect(component).toContain("Free registration closes at midnight Central Time after September 15, 2026.");
-  expect(component).toContain("New Repair Shop registrations now use the current Founding Shop Plan.");
-  expect(component).not.toMatch(/first\s+1[,.]?000|first\s+1000|первых\s+1000/i);
-  expect(component).not.toMatch(/Date\.now\(\)\s*\+\s*14/);
+  expect(policy).toContain('id: "repair_shop_free_during_setup_2026"');
+  expect(policy).toContain('catalogPublication: "owner-approved-public-facts-only"');
+  expect(policy).toContain('discoveryScope: ["seo", "geo", "local-search", "ai-discovery"]');
+  expect(policy).toContain("searchResultsGuaranteed: false");
+
+  expect(component).toContain("Use Hermes Connect free while we configure it for your shop.");
+  expect(component).toContain("The standard Founding Shop price is $99/month.");
+  expect(component).toContain("free public Hermes Catalog listing");
+  expect(component).toContain("Search engines control indexing and rankings");
+  expect(component).not.toContain("Free-registration countdown");
+  expect(component).not.toContain("closeFreeRegistrationUi");
+  expect(component).not.toContain("free_registration_through_2026_09_15");
+
+  expect(registerApi).toContain('role === "Shop Owner" && !REPAIR_SHOP_SETUP_ACCESS_ENABLED');
+  expect(registerApi).toContain("repair_shop_setup_access_closed");
+  expect(registerApi).not.toContain("REPAIR_SHOP_FREE_REGISTRATION_END_MS");
+  expect(profileApi).toContain("!REPAIR_SHOP_SETUP_ACCESS_ENABLED");
+  expect(profileApi).toContain("repair_shop_setup_access_closed");
+  expect(profileApi).not.toContain("REPAIR_SHOP_FREE_REGISTRATION_END_MS");
 });
 
-test("built Repair Shop HTML fails closed to the ended registration state after the published deadline", async ({ request }) => {
+test("built Repair Shop HTML exposes the current free-setup offer", async ({ request }) => {
   const response = await request.get("/services/hermes-connect/repair-shops/");
   expect(response.ok()).toBeTruthy();
   const html = await response.text();
-  expect(html).toContain('data-launch-state="ended"');
-  expect(html).toContain('data-expired="true"');
-  expect(html).toMatch(/<h2[^>]*data-launch-title[^>]*>Free repair shop registration ended September 15\.<\/h2>/);
-  expect(html).toContain("New Repair Shop registrations now use the current Founding Shop Plan.");
+  expect(html).toContain('data-launch-state="open"');
+  expect(html).toContain('data-setup-price="0"');
+  expect(html).toContain('data-founding-price="99"');
+  expect(html).toContain("Use Hermes Connect free while we configure it for your shop.");
+  expect(html).not.toContain("Free repair shop registration ended September 15.");
 });
 
-test("Repair Shop landing shows the active Russian September 15 free-registration state", async ({ page }) => {
-  await freezeNow(page, activeNow);
+test("Repair Shop landing shows Russian free setup on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru", { waitUntil: "domcontentloaded" });
 
   const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
-  await expect(offer).toHaveAttribute("data-deadline", deadline);
-  await expect(offer).not.toHaveAttribute("data-expired", "true");
-  await expect(offer.getByRole("heading", { name: "Бесплатная регистрация СТО до 15 сентября включительно." })).toBeVisible();
-  await expect(offer).toContainText("Создайте аккаунт владельца СТО и начните пользоваться текущим Hermes Connect без банковской карты.");
-  await expect(offer).toContainText("Уже созданные аккаунты сохраняют доступ.");
-  await expect(offer.locator("[data-days]")).not.toHaveText("00");
-  await expect(offer.getByRole("link", { name: "Зарегистрироваться бесплатно" })).toHaveAttribute(
+  await expect(offer).toHaveAttribute("data-launch-state", "open");
+  await expect(offer).toContainText("Пользуйтесь Hermes Connect бесплатно, пока мы настраиваем систему под ваше СТО.");
+  await expect(offer).toContainText("Стандартная цена Founding Shop — $99 в месяц.");
+  await expect(offer).toContainText("Hermes Catalog");
+  await expect(offer.getByRole("link", { name: "Начать бесплатную настройку" })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=register&lang=ru",
   );
-  await expect(offer).not.toContainText("1000");
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
 });
 
-test("owner login stays operational without free-registration countdown pressure", async ({ page }) => {
-  await freezeNow(page, activeNow);
-  await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
+test("owner login stays operational without conversion offer pressure", async ({ page }) => {
+  await page.route("**/api/auth/me", (route) =>
+    route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }),
+  );
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator("#login-form")).toHaveClass(/active/);
   await expect(page.locator(visibleOffer)).toHaveCount(0);
-  await expect(page.locator("[data-launch-timer]:visible")).toHaveCount(0);
 });
 
-test("direct free-registration CTA opens the Repair Shop registration form while the offer is active", async ({ page }) => {
-  await freezeNow(page, activeNow);
-  await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
+test("direct Spanish registration opens the current free-setup path", async ({ page }) => {
+  await page.route("**/api/auth/me", (route) =>
+    route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }),
+  );
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register&lang=es", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator('[data-tab="register"]')).toHaveClass(/active/);
   await expect(page.locator("#register-form")).toHaveClass(/active/);
   const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
-  await expect(offer).not.toHaveAttribute("data-expired", "true");
-  await expect(offer.getByRole("heading", { name: "Registro gratuito de talleres hasta el 15 de septiembre inclusive." })).toBeVisible();
-  await expect(offer.getByRole("link", { name: "Registrarme gratis" })).toHaveAttribute(
+  await expect(offer).toContainText("Usa Hermes Connect gratis mientras configuramos el sistema para tu taller.");
+  await expect(offer.getByRole("link", { name: "Empezar configuración gratis" })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=register&lang=es",
   );
 });
 
-test("Founding Plan page keeps active Ukrainian free registration as the lower-friction first step", async ({ page }) => {
-  await freezeNow(page, activeNow);
+test("Founding Plan page presents free setup as the lower-friction first step", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/plan/?lang=uk", { waitUntil: "domcontentloaded" });
   const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
-  await expect(offer).not.toHaveAttribute("data-expired", "true");
-  await expect(offer).toContainText("Безкоштовна реєстрація СТО до 15 вересня включно.");
-  await expect(offer).toContainText("Уже створені акаунти зберігають доступ.");
-  await expect(offer.getByRole("link", { name: "Зареєструватися безкоштовно" })).toHaveAttribute(
+  await expect(offer).toContainText("Користуйтеся Hermes Connect безкоштовно, поки ми налаштовуємо систему під ваше СТО.");
+  await expect(offer.getByRole("link", { name: "Почати безкоштовне налаштування" })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=register&lang=uk",
   );
 });
 
-test("after the September 15 cutoff new Repair Shop registration routes to the current plan", async ({ page }) => {
-  await freezeNow(page, expiredNow);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/services/hermes-connect/repair-shops/?lang=ru", { waitUntil: "domcontentloaded" });
-
+test("free setup does not silently expire on a future clock date", async ({ page }) => {
+  await freezeNow(page, "2030-01-01T12:00:00.000Z");
+  await page.goto("/services/hermes-connect/repair-shops/?lang=en", { waitUntil: "domcontentloaded" });
   const offer = page.locator(visibleOffer);
-  await expect(offer).toBeVisible();
-  await expect(offer).toHaveAttribute("data-deadline", deadline);
-  await expect(offer).toHaveAttribute("data-expired", "true");
-  await expect(offer.getByRole("heading", { name: "Бесплатная регистрация СТО завершилась 15 сентября." })).toBeVisible();
-  await expect(offer).toContainText("Новые регистрации СТО теперь проходят через текущий тариф Founding Shop.");
-  await expect(offer.locator("[data-days]")).toHaveText("00");
-  await expect(offer.locator("[data-hours]")).toHaveText("00");
-  await expect(offer.locator("[data-minutes]")).toHaveText("00");
-  await expect(offer.locator("[data-seconds]")).toHaveText("00");
-  await expect(offer.getByRole("link", { name: "Посмотреть тариф" })).toHaveAttribute(
+  await expect(offer).toHaveAttribute("data-launch-state", "open");
+  await expect(offer.getByRole("link", { name: "Start free setup" })).toHaveAttribute(
     "href",
-    "/services/hermes-connect/repair-shops/plan/?lang=ru",
+    "/services/hermes-connect/repair-shops/auth/?mode=register",
   );
 });

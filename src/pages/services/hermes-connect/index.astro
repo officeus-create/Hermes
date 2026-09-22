@@ -75,6 +75,14 @@ const faqs = [
     question: "Are the dashboard numbers real customer data?",
     answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live and private product surfaces are identified separately.",
   },
+  {
+    question: "Can a repair shop start Hermes Connect without paying $99 immediately?",
+    answer: "Yes. Repair Shop registration and software access are currently $0 during the setup period while Hermes helps configure the workspace around the shop. The standard Founding Shop continuation price is $99/month per location after setup, with confirmation before billing.",
+  },
+  {
+    question: "Is an AI phone receptionist live today?",
+    answer: "No. Hermes Connect is building an AI-assisted customer-intake path on top of the live Repair Shops booking, customer, and vehicle workflow. Web, phone, SMS, or messaging channels are only described as live when their integrations and production evidence exist.",
+  },
 ];
 
 const schema = [
@@ -118,13 +126,15 @@ const schema = [
           <h1 id="hc-title">Run your business <span>with AI.</span></h1>
           <p class="hc-lead">One operating system for leads, bookings, customers, operations, and growth. Hermes adapts the workspace around the way your business actually works.</p>
           <div class="hc-actions">
-            <a class="hc-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner access</a>
+            <a class="hc-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register"><Wrench size={18} aria-hidden="true" />Start Repair Shops free <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="hc-secondary" href="/services/hermes-connect/repair-shops/">See live Repair Shops</a>
+            <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/?mode=login">Owner access</a>
             <a class="hc-secondary" href="/services/hermes-connect/academy/">Open Academy</a>
             <a class="hc-secondary" href="#choose-your-business">Choose your business</a>
           </div>
           <div class="hc-truth" aria-label="Current Hermes Connect product status">
             <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
+            <span><CheckCircle2 size={15} aria-hidden="true" />$0 during Repair Shop setup · $99/month after setup if you continue</span>
             <span><ShieldCheck size={15} aria-hidden="true" />Academy has private learner access</span>
             <span><ShieldCheck size={15} aria-hidden="true" />Beauty has a private owner foundation</span>
             <span><CheckCircle2 size={15} aria-hidden="true" />Unreleased industries remain previews</span>
@@ -179,6 +189,41 @@ const schema = [
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hc-section" id="ai-customer-intake" aria-labelledby="ai-intake-title">
+      <div class="hc-shell">
+        <div class="hc-heading-row">
+          <div><p class="hc-kicker">Hermes Intelligence · customer intake</p><h2 id="ai-intake-title">From customer signal to an owner-approved next step.</h2></div>
+          <p>The live Repair Shops workflow already stores services, availability, bookings, customers, and vehicles. Hermes Intelligence is being layered on top of that real workflow instead of pretending a separate AI receptionist is already live.</p>
+        </div>
+        <div class="hc-vertical-grid">
+          <article class="is-live">
+            <div class="hc-card-top"><span>LIVE FOUNDATION</span><small>01</small></div>
+            <h3>Capture a real request</h3>
+            <p>Public booking already captures service, preferred time, contact, and vehicle context into the Repair Shop workflow.</p>
+            <div class="hc-chips"><span>Service</span><span>Time</span><span>Vehicle</span><span>Contact</span></div>
+          </article>
+          <article class="is-preview">
+            <div class="hc-card-top"><span>IN DEVELOPMENT</span><small>02</small></div>
+            <h3>AI-assisted intake</h3>
+            <p>The next layer turns a natural-language customer inquiry into structured service intent and a proposed next action. Web intake comes before any claim of live phone, SMS, or messaging automation.</p>
+            <div class="hc-chips"><span>Intent</span><span>Context</span><span>Draft action</span></div>
+          </article>
+          <article class="is-live">
+            <div class="hc-card-top"><span>LIVE FOUNDATION</span><small>03</small></div>
+            <h3>Keep customer memory</h3>
+            <p>Bookings remain connected to customer and vehicle context so the next interaction can start with useful history instead of a blank conversation.</p>
+            <div class="hc-chips"><span>Customers</span><span>Vehicles</span><span>Bookings</span></div>
+          </article>
+          <article class="is-private">
+            <div class="hc-card-top"><span>HUMAN CONTROL</span><small>04</small></div>
+            <h3>Owner approves important actions</h3>
+            <p>Hermes can recommend the next step, but this public product page does not claim autonomous calls, messages, bookings, or customer commitments.</p>
+            <div class="hc-chips"><span>Review</span><span>Approve</span><span>Execute</span></div>
+          </article>
         </div>
       </div>
     </section>
@@ -251,8 +296,17 @@ const schema = [
         ["Run your business", "Управляйте бизнесом"],
         ["with AI.", "с AI."],
         ["One operating system for leads, bookings, customers, operations, and growth. Hermes adapts the workspace around the way your business actually works.", "Одна операционная система для лидов, записей, клиентов, операций и роста. Hermes адаптирует рабочее пространство под реальные процессы вашего бизнеса."],
-        ["Open Repair Shops", "Открыть СТО"],
+        ["Start Repair Shops free", "Начать настройку СТО бесплатно"],
+        ["See live Repair Shops", "Открыть рабочий продукт для СТО"],
         ["Owner access", "Вход владельца"],
+        ["$0 during Repair Shop setup · $99/month after setup if you continue", "$0 во время настройки СТО · $99/месяц после настройки, если вы продолжите"],
+        ["Hermes Intelligence · customer intake", "Hermes Intelligence · приём обращений"],
+        ["From customer signal to an owner-approved next step.", "От обращения клиента к следующему шагу, подтверждённому владельцем."],
+        ["The live Repair Shops workflow already stores services, availability, bookings, customers, and vehicles. Hermes Intelligence is being layered on top of that real workflow instead of pretending a separate AI receptionist is already live.", "Рабочая система для СТО уже хранит услуги, расписание, записи, клиентов и автомобили. Hermes Intelligence добавляется поверх этого реального процесса — без ложного заявления, что отдельный AI-регистратор уже работает."],
+        ["Capture a real request", "Принять реальный запрос"],
+        ["AI-assisted intake", "Приём обращения с помощью AI"],
+        ["Keep customer memory", "Сохранять контекст клиента"],
+        ["Owner approves important actions", "Владелец подтверждает важные действия"],
         ["Open Academy", "Открыть Академию"],
         ["Choose your business", "Выбрать направление"],
         ["Repair Shops is live", "СТО уже работает"],
