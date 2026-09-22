@@ -81,7 +81,7 @@ for (const table of [
 assert.match(lib, /UNIQUE\(candidate_id, code\)/);
 assert.match(lib, /idempotency_key TEXT NOT NULL UNIQUE/);
 assert.match(lib, /decision === "READY_FOR_TEAM"/);
-assert.match(lib, /capability_gaps_open/);
+assert.match(lib, /supervised_readiness_required/);
 assert.match(lib, /readiness_evidence_required/);
 assert.match(lib, /ready_for_team_decision_required/);
 assert.match(lib, /completed_handoff_required/);
