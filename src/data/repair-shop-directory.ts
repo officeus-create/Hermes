@@ -49,7 +49,7 @@ export const repairShopDirectory: RepairShopDirectoryEntry[] = [
       {label:"Gold Standard Diesel and Fleet",url:"https://gsdfalaska.com/",observed:"Official website lists mobile diesel repair, fleet maintenance, diagnostics, emergency service, upfitting, fabrication, DOT inspections, phone (907) 229-5401, and statewide Alaska coverage."},
       {label:"FMCSA SAFER",url:"https://safer.fmcsa.dot.gov/query.asp?query_param=USDOT&query_string=4454175&query_type=queryCarrierSnapshot&searchtype=ANY",observed:"Federal snapshot lists GOLD STANDARD DIESEL AND FLEET LLC, USDOT 4454175, physical address 825 S Iris Cir, Palmer, AK 99645, and phone (907) 229-5401."},
     ],
-  },,
+  },
   {
     slug:"legacy-toyota-of-dallas", stateSlug:"texas", citySlug:"dallas", businessName:"Legacy Toyota of Dallas", category:"Toyota Dealer & Service Center",
     city:"Dallas", state:"TX", region:"Texas", country:"US", phone:"(945) 207-3254",
