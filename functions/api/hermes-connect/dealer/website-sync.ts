@@ -3,6 +3,7 @@ import { ensureHermesCompanyProfilesSchema } from "../../_lib/hermes-company-pro
 import { getOwnedHermesCompany, sameOriginMutation } from "../../_lib/load-board-market-posts.mjs";
 import { cleanDealerText } from "../../_lib/dealer-transport-requests.mjs";
 import { upsertCompanyConnection } from "../../_lib/company-connections.mjs";
+import { recordDealerActivity } from "../../_lib/dealer-crm.mjs";
 
 type Env = { DB?: any };
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
@@ -152,6 +153,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       },
     });
 
+    await recordDealerActivity(env.DB, {
+      companyId: company.id,
+      actorId: specialist.id,
+      eventType: "website_sync_verified",
+      entityType: "connection",
+      entityId: String(connection?.id || "website"),
+      summary: "Official public website read-only sync verified; inventory remained context only with zero transport auto-publish.",
+    });
     return jsonResponse(200, {
       success: true,
       connection,
@@ -169,7 +178,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }, privateHeaders);
   } catch (error: any) {
     const code = cleanDealerText(error?.message || "website_sync_failed", 120);
-    await upsertCompanyConnection(env.DB, {
+    const connection = await upsertCompanyConnection(env.DB, {
       companyId: company.id,
       provider: "website",
       state: "degraded",
@@ -181,6 +190,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         owner_scoped_public_read: true,
         transport_auto_publish: false,
       },
+    });
+    await recordDealerActivity(env.DB, {
+      companyId: company.id,
+      actorId: specialist.id,
+      eventType: "website_sync_degraded",
+      entityType: "connection",
+      entityId: String(connection?.id || "website"),
+      summary: "Official public website read-only sync entered a degraded state; no Transport Request or Load Board post was created.",
     });
     return jsonResponse(502, { success: false, error: code }, privateHeaders);
   }
