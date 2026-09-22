@@ -129,6 +129,20 @@ exact `HERMES_INTERNAL_APPROVAL_GATE=<gate>` marker on its own output line.
 The local runner accepts only the listed gate values and reports the task as
 `needs_approval`; it never performs the gated action itself.
 
+The server projects that persisted state as `approval_state=awaiting_approval`.
+It is not claimable by the runner. The internal owner may either cancel it or
+approve exactly the stored gate. Approval records the owner, timestamp and
+attempt, appends an audit event, and queues the same task for continuation.
+Replaying the same approve or cancel request is idempotent. A mismatched,
+missing or unsupported gate fails closed.
+
+On an approved continuation, the runner accepts the receipt only when both the
+allowlisted gate and server-recorded approval timestamp are present. It resumes
+the same isolated task branch when that branch contains prior work, and scopes
+the prompt to that one gate. Task text cannot grant approval. Reaching any gate
+again consumes the prior receipt and returns the task to `awaiting_approval`;
+another consequential gate always requires another owner decision.
+
 ## First live proof boundary
 
 Only after a fresh `INTERNAL_AI_PREFLIGHT=PASS`, the first live proof must remain harmless and repository-only:

@@ -24,6 +24,9 @@ const task = {
   evidence_class: null,
   output_summary: null,
   approval_gate: null,
+  approval_state: null,
+  approval_granted_at: null,
+  approval_attempt: 0,
   cancel_requested: false,
 };
 
@@ -81,6 +84,55 @@ test("internal owner can manage AI from the Russian cabinet at 390px", async ({ 
 
   const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+});
+
+test("approval gate survives reload and only the exact gate can be approved", async ({ page }) => {
+  let activeTask: any = {
+    ...task,
+    status: "needs_approval",
+    approval_gate: "merge_deploy",
+    approval_state: "awaiting_approval",
+    branch: "internal-ai/hcai_control_001",
+    output_summary: "Repository evidence prepared; merge was not attempted.",
+  };
+  let approvalBody: any = null;
+  await page.route("**/api/auth/me", route => route.fulfill(json(owner)));
+  await page.route("**/api/repair-shop/profile", route => route.fulfill(json({ success: true, shop: null })));
+  await page.route("**/api/internal-ai/status", route => route.fulfill(json({
+    success: true,
+    runtime: { online: true, repo_sha: "abc123", runtime_version: "codex 1.0" },
+    active_task: activeTask,
+    latest_task: activeTask,
+  })));
+  await page.route("**/api/internal-ai/tasks/*", async route => {
+    if (route.request().method() === "PATCH") {
+      approvalBody = route.request().postDataJSON();
+      activeTask = {
+        ...activeTask,
+        status: "queued",
+        approval_state: "approved",
+        approval_granted_at: "2026-09-01T09:35:00Z",
+        approval_attempt: 1,
+      };
+      return route.fulfill(json({ success: true, state: "approved", task: activeTask }));
+    }
+    return route.fulfill(json({ success: true, task: activeTask, events: [] }));
+  });
+
+  await page.goto("/services/hermes-connect/internal/ai-connect/", { waitUntil: "domcontentloaded" });
+  const approve = page.getByRole("button", { name: "Approve this gate only" });
+  await expect(page.locator("[data-task-status]")).toHaveText("Needs approval");
+  await expect(page.locator("[data-approval-copy]")).toContainText("merge deploy");
+  await expect(approve).toBeVisible();
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-task-status]")).toHaveText("Needs approval");
+  await expect(approve).toBeVisible();
+  await approve.click();
+  await expect.poll(() => approvalBody).toEqual({ action: "approve", approval_gate: "merge_deploy" });
+  await expect(page.locator("[data-form-status]")).toContainText("Approval recorded only for merge deploy");
+  await expect(page.locator("[data-task-status]")).toHaveText("Queued");
+  await expect(approve).toBeHidden();
 });
 
 test("Activity never renders stored task prompt and only allowlists Hermes PR URLs", async ({ page }) => {
