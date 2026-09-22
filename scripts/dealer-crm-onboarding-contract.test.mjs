@@ -52,6 +52,10 @@ assert.match(transportApi, /same_post_updated/);
 assert.match(transportApi, /UPDATE hermes_load_market_posts/);
 assert.match(transportApi, /UPDATE hermes_load_records/);
 assert.match(transportApi, /SET status='archived'/);
+assert.match(transportApi, /transport_load_board_published/);
+assert.match(transportApi, /transport_load_board_updated/);
+assert.match(transportApi, /transport_request_cancelled/);
+assert.match(transportApi, /transport_load_board_sync_error/);
 
 assert.match(connections, /facebook/);
 assert.match(connections, /instagram/);
@@ -59,12 +63,15 @@ assert.match(connections, /threads/);
 assert.match(connections, /authorization_required: true/);
 assert.match(connections, /auto_publish_enabled: false/);
 assert.match(connections, /dm_automation_enabled: false/);
+assert.match(connections, /social_connection_prepared/);
 
 assert.match(websiteSync, /cross_site_redirect_blocked/);
 assert.match(websiteSync, /connected_read_only/);
 assert.match(websiteSync, /auto_created_transport_requests: 0/);
 assert.match(websiteSync, /auto_created_load_board_posts: 0/);
 assert.match(websiteSync, /transport_auto_publish: false/);
+assert.match(websiteSync, /website_sync_verified/);
+assert.match(websiteSync, /website_sync_degraded/);
 
 assert.match(workspace, /robots="noindex,nofollow"/);
 assert.match(workspace, /Approve & post to Load Board/);
