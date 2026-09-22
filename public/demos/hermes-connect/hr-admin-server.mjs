@@ -1,4 +1,5 @@
 const API_URL = '/api/hr/reviewer/candidates';
+const READINESS_API_URL = '/api/hr/reviewer/readiness';
 const REVIEW_OUTCOMES = Object.freeze({
   ACADEMY: 'Academy practice',
   MORE_EVIDENCE: 'Request more evidence',
@@ -196,6 +197,165 @@ function renderAccessMessage(title, copy) {
   detailEl.append(callout);
 }
 
+async function readinessAction(candidateId, action, body={}) {
+  const response=await fetch(READINESS_API_URL,{
+    method:'PUT',
+    credentials:'same-origin',
+    headers:{'Content-Type':'application/json','Idempotency-Key':body.idempotency_key || `hr-ui-${action}-${candidateId}-${Date.now()}`},
+    body:JSON.stringify({candidate_id:candidateId,action,...body})
+  });
+  const payload=await response.json().catch(()=>({}));
+  if (!response.ok || payload.success!==true) throw new Error(payload.error || `HTTP ${response.status}`);
+  return payload;
+}
+
+async function loadReadinessPanel(candidate, academyLink, panel) {
+  panel.replaceChildren();
+  const head=el('div','panel-head');
+  const title=el('div'); title.append(el('small','','HR ↔ ACADEMY READINESS'),el('h4','','Human-gated readiness bridge'));
+  head.append(title,el('span','stage',academyLink?.program_slug || 'Academy'));
+  panel.append(head);
+
+  try {
+    const response=await fetch(`${READINESS_API_URL}?candidate_id=${encodeURIComponent(candidate.id)}`,{credentials:'same-origin',headers:{'Accept':'application/json'}});
+    const payload=await response.json().catch(()=>({}));
+    if (!response.ok || payload.success!==true) throw new Error(payload.error || `HTTP ${response.status}`);
+    const readiness=payload.readiness || {};
+    const gaps=Array.isArray(readiness.capability_gaps)?readiness.capability_gaps:[];
+    const latestPacket=readiness.latest_packet;
+    const latestDecision=readiness.latest_decision;
+
+    const summary=el('div','hr-review-banner');
+    summary.append(el('b','','Current readiness: '),document.createTextNode(
+      latestPacket
+        ? `${latestPacket.readiness_level} · open gaps ${latestPacket.open_gap_count} · supervised practice ${latestPacket.supervised_practice_count}`
+        : 'No readiness packet yet.'
+    ));
+    panel.append(summary);
+
+    const controls=el('div','hr-review-form');
+    const sync=el('button','btn','Sync evaluation gaps'); sync.type='button';
+    sync.addEventListener('click',async()=>{
+      sync.disabled=true;
+      try { await readinessAction(candidate.id,'sync_evaluation_gaps'); showToast('Capability gaps synchronized.'); await loadReadinessPanel(candidate,academyLink,panel); }
+      catch(error){ showToast(`Gap sync failed: ${error instanceof Error?error.message:'server error'}`); }
+      finally { sync.disabled=false; }
+    });
+    const practice=el('button','btn','Record supervised practice'); practice.type='button';
+    practice.addEventListener('click',async()=>{
+      const evidenceRef=window.prompt('Private evidence reference or approved practice receipt ID');
+      if (!evidenceRef) return;
+      practice.disabled=true;
+      try { await readinessAction(candidate.id,'record_supervised_practice',{evidence_ref:evidenceRef}); showToast('Supervised practice recorded.'); await loadReadinessPanel(candidate,academyLink,panel); }
+      catch(error){ showToast(`Practice evidence failed: ${error instanceof Error?error.message:'server error'}`); }
+      finally { practice.disabled=false; }
+    });
+    const packet=el('button','btn','Prepare readiness packet'); packet.type='button';
+    packet.addEventListener('click',async()=>{
+      packet.disabled=true;
+      try { await readinessAction(candidate.id,'prepare_readiness_packet'); showToast('Readiness packet prepared for human review.'); await loadReadinessPanel(candidate,academyLink,panel); }
+      catch(error){ showToast(`Packet not prepared: ${error instanceof Error?error.message:'server error'}`); }
+      finally { packet.disabled=false; }
+    });
+    controls.append(sync,practice,packet);
+    panel.append(controls);
+
+    if (gaps.length) {
+      panel.append(el('h4','','Capability gaps'));
+      const list=el('div','hr-evidence-list');
+      for (const gap of gaps) {
+        const item=el('div','hr-evidence');
+        item.append(el('small','',`${gap.state.toUpperCase()} · ${gap.code}`),el('p','',gap.title || gap.description || gap.code));
+        if (gap.state==='open') {
+          const resolve=el('button','btn','Resolve with evidence'); resolve.type='button';
+          resolve.addEventListener('click',async()=>{
+            const ref=window.prompt('Academy/human evidence reference that resolves this gap');
+            if (!ref) return;
+            resolve.disabled=true;
+            try { await readinessAction(candidate.id,'resolve_gap',{code:gap.code,resolution_source:'academy',resolution_ref:ref}); showToast('Capability gap resolved.'); await loadReadinessPanel(candidate,academyLink,panel); }
+            catch(error){ showToast(`Gap resolution failed: ${error instanceof Error?error.message:'server error'}`); }
+            finally { resolve.disabled=false; }
+          });
+          item.append(resolve);
+        }
+        list.append(item);
+      }
+      panel.append(list);
+    }
+
+    if (latestPacket?.state==='ready_for_review') {
+      const form=el('form','hr-review-form');
+      const decisionLabel=el('label','','Human readiness decision');
+      const select=document.createElement('select'); select.required=true;
+      for (const [value,label] of [['','Select'],['READY_FOR_TEAM','Ready for bounded team work'],['MORE_PRACTICE','More practice'],['HOLD','Hold']]) {
+        const option=document.createElement('option'); option.value=value; option.textContent=label; select.append(option);
+      }
+      decisionLabel.append(select);
+      const scopeLabel=el('label','','Bounded live-work scope');
+      const scope=document.createElement('textarea'); scope.maxLength=1000; scope.placeholder='Required for READY_FOR_TEAM. Describe exactly what work is allowed.';
+      scopeLabel.append(scope);
+      const reasonLabel=el('label','','Reviewer reason');
+      const reason=document.createElement('textarea'); reason.maxLength=4000; reason.required=true; reason.placeholder='Reference the evidence and explain the human decision.';
+      reasonLabel.append(reason);
+      const save=el('button','btn primary','Record readiness decision'); save.type='submit';
+      form.append(decisionLabel,scopeLabel,reasonLabel,save);
+      form.addEventListener('submit',async(event)=>{
+        event.preventDefault(); save.disabled=true;
+        try {
+          await readinessAction(candidate.id,'decide_readiness',{packet_id:latestPacket.id,decision:select.value,bounded_scope:scope.value.trim(),reason:reason.value.trim()});
+          showToast('Human readiness decision recorded.'); await loadReadinessPanel(candidate,academyLink,panel);
+        } catch(error){ showToast(`Readiness decision failed: ${error instanceof Error?error.message:'server error'}`); }
+        finally { save.disabled=false; }
+      });
+      panel.append(form);
+    }
+
+    if (latestDecision?.decision==='READY_FOR_TEAM') {
+      const handoff=el('button','btn primary','Record bounded team handoff'); handoff.type='button';
+      handoff.addEventListener('click',async()=>{
+        const channel=(window.prompt('Handoff channel: telegram, whatsapp, or other','telegram')||'').toLowerCase();
+        if (!['telegram','whatsapp','other'].includes(channel)) { showToast('Unsupported handoff channel.'); return; }
+        const destinationRef=window.prompt('Private destination reference / team receipt');
+        if (!destinationRef) return;
+        handoff.disabled=true;
+        try {
+          await readinessAction(candidate.id,'complete_team_handoff',{
+            readiness_decision_id:latestDecision.id,
+            channel,
+            destination_ref:destinationRef,
+            bounded_scope:latestDecision.bounded_scope,
+          });
+          showToast('Bounded team handoff recorded.'); await loadReadinessPanel(candidate,academyLink,panel);
+        } catch(error){ showToast(`Handoff failed: ${error instanceof Error?error.message:'server error'}`); }
+        finally { handoff.disabled=false; }
+      });
+      panel.append(handoff);
+    }
+
+    const handoffs=Array.isArray(readiness.team_handoffs)?readiness.team_handoffs:[];
+    if (handoffs.some(item=>item.state==='completed')) {
+      const outcome=el('button','btn','Record performance outcome'); outcome.type='button';
+      outcome.addEventListener('click',async()=>{
+        const completed=handoffs.find(item=>item.state==='completed');
+        const marker=(window.prompt('Outcome marker: FIRST_LIVE_TASK, RETAINED_7D, RETAINED_30D, RETAINED_90D, KPI_OUTCOME','FIRST_LIVE_TASK')||'').toUpperCase();
+        const resultClass=window.prompt('Privacy-safe result class (example: completed, retained, needs_coaching)');
+        if (!resultClass) return;
+        outcome.disabled=true;
+        try {
+          await readinessAction(candidate.id,'record_outcome',{handoff_id:completed.id,marker,result_class:resultClass,quality_flags:[]});
+          showToast('Performance outcome linked to the original candidate source.'); await loadReadinessPanel(candidate,academyLink,panel);
+        } catch(error){ showToast(`Outcome not recorded: ${error instanceof Error?error.message:'server error'}`); }
+        finally { outcome.disabled=false; }
+      });
+      panel.append(outcome);
+    }
+  } catch(error) {
+    const callout=el('div','callout');
+    callout.append(el('b','','Readiness bridge unavailable: '),document.createTextNode(error instanceof Error?error.message:'server error'));
+    panel.append(callout);
+  }
+}
+
 function renderSnapshot(snapshot) {
   const candidate=snapshot.candidate;
   detailEl.replaceChildren();
@@ -289,7 +449,13 @@ function renderSnapshot(snapshot) {
       showToast(`Review not saved: ${error instanceof Error ? error.message : 'server error'}`);
     } finally { save.disabled=false; }
   });
-  card.append(form); detailEl.append(card);
+  card.append(form);
+  if (candidate.specialist_id && snapshot.academy_link?.program_slug) {
+    const readinessPanel=el('div','hr-review-card');
+    card.append(readinessPanel);
+    loadReadinessPanel(candidate,snapshot.academy_link,readinessPanel);
+  }
+  detailEl.append(card);
 }
 
 async function selectCandidate(candidateId) {
