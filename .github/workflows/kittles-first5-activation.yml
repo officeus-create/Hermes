@@ -98,8 +98,8 @@ jobs:
           }
 
           MATCH_BODY="$(jq -nc --arg name "${TARGET_NAME}" --arg phone "${TARGET_PHONE}" '{
-            sql:"SELECT r.id,r.owner_specialist_id,r.name,r.slug,r.phone,r.city,r.state,r.catalog_opt_in,s.role FROM repair_shops r JOIN specialists s ON s.id=r.owner_specialist_id WHERE (r.phone IN (?, ?, ?) OR (LOWER(TRIM(r.name))=LOWER(TRIM(?)) AND UPPER(COALESCE(r.state,''))='AR')) LIMIT 5;",
-            params:[$phone,("+1 " + $phone),("+1" + ($phone|gsub("[^0-9]";""))),$name]
+            sql:"SELECT r.id,r.owner_specialist_id,r.name,r.slug,r.phone,r.city,r.state,r.catalog_opt_in,s.role FROM repair_shops r JOIN specialists s ON s.id=r.owner_specialist_id WHERE (r.phone IN (?, ?, ?) OR (LOWER(TRIM(r.name))=LOWER(TRIM(?)) AND UPPER(COALESCE(r.state,?))=?)) LIMIT 5;",
+            params:[$phone,("+1 " + $phone),("+1" + ($phone|gsub("[^0-9]";""))),$name,"","AR"]
           }')"
           MATCH_HTTP="$(d1 "${TMP}/match.json" "${MATCH_BODY}")"
           [ "${MATCH_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/match.json")" = true ] \
@@ -148,12 +148,12 @@ jobs:
             '{
               batch:[
                 {
-                  sql:"UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code='US',postal_code=?,timezone=?,website=?,catalog_opt_in=1,catalog_opt_in_at=COALESCE(catalog_opt_in_at,?),catalog_published_at=COALESCE(catalog_published_at,?),seo_geo_started_at=COALESCE(seo_geo_started_at,?),next_seo_report_at=COALESCE(next_seo_report_at,?),updated_at=? WHERE id=?;",
-                  params:[$name,$phone,$address,$city,$state,$state,$postal,$timezone,$website,$now,$now,$now,$next,$now,$shop]
+                  sql:"UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,website=?,catalog_opt_in=1,catalog_opt_in_at=COALESCE(catalog_opt_in_at,?),catalog_published_at=COALESCE(catalog_published_at,?),seo_geo_started_at=COALESCE(seo_geo_started_at,?),next_seo_report_at=COALESCE(next_seo_report_at,?),updated_at=? WHERE id=?;",
+                  params:[$name,$phone,$address,$city,$state,$state,"US",$postal,$timezone,$website,$now,$now,$now,$next,$now,$shop]
                 },
                 {
-                  sql:"INSERT INTO repair_shop_access (shop_id,access_state,plan_id,started_at,current_period_end,updated_at) VALUES (?, 'trialing', 'repair_shop_founding', ?, NULL, ?) ON CONFLICT(shop_id) DO UPDATE SET access_state=CASE WHEN access_state IN ('founding','active','comped') THEN access_state ELSE 'trialing' END,plan_id='repair_shop_founding',updated_at=excluded.updated_at;",
-                  params:[$shop,$now,$now]
+                  sql:"INSERT INTO repair_shop_access (shop_id,access_state,plan_id,started_at,current_period_end,updated_at) VALUES (?, ?, ?, ?, NULL, ?) ON CONFLICT(shop_id) DO UPDATE SET access_state=CASE WHEN access_state IN (?, ?, ?) THEN access_state ELSE ? END,plan_id=?,updated_at=excluded.updated_at;",
+                  params:[$shop,"trialing","repair_shop_founding",$now,$now,"founding","active","comped","trialing","repair_shop_founding"]
                 },
                 {
                   sql:"INSERT INTO hermes_registration_flags (specialist_id,synthetic,reviewed_at,updated_at) VALUES (?,0,?,?) ON CONFLICT(specialist_id) DO UPDATE SET reviewed_at=excluded.reviewed_at,updated_at=excluded.updated_at;",
