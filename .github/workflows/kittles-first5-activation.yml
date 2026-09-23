@@ -1,0 +1,244 @@
+name: Activate Kittle's Garage First-5 workspace
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: kittles-first5-activation
+  cancel-in-progress: false
+
+jobs:
+  activate:
+    if: >-
+      github.event.issue.number == 510 &&
+      github.event.comment.body == '/activate-kittles-first5' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_READ_TOKEN }}
+      CLOUDFLARE_D1_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+      TARGET_NAME: "Kittle's Garage"
+      TARGET_PHONE: "501-376-1519"
+      TARGET_ADDRESS: "1300 N Poplar St"
+      TARGET_CITY: "North Little Rock"
+      TARGET_STATE: "AR"
+      TARGET_POSTAL: "72114"
+      TARGET_TIMEZONE: "America/Chicago"
+      TARGET_WEBSITE: "http://www.kittlesgarage.com/"
+      BASE_URL: "https://hermeslogisticsus.com"
+
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Activate exact real Repair Shop workspace and Catalog profile
+        id: activation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TMP="${RUNNER_TEMP}/kittles-first5"
+          RESULT="${TMP}/result.md"
+          mkdir -p "${TMP}"
+          chmod 700 "${TMP}"
+
+          fail() {
+            local class="$1"
+            local message="$2"
+            echo "classification=${class}" >> "${GITHUB_OUTPUT}"
+            cat > "${RESULT}" <<EOF
+          ## Kittle's Garage activation — STOPPED SAFELY
+
+          - Classification: \`${class}\`
+          - ${message}
+          - No new login identity was invented.
+          - No duplicate Repair Shop row was created.
+          - No unrelated production customer/shop data was changed.
+          EOF
+            exit 1
+          }
+
+          for required in CLOUDFLARE_PAGES_API_TOKEN CLOUDFLARE_D1_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            [ -n "${!required:-}" ] || fail "production_operator_access_missing" "Required bounded production operator capability is unavailable."
+            echo "::add-mask::${!required}"
+          done
+
+          pages_http="$(curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/pages.json" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes" \
+            -H "Authorization: Bearer ${CLOUDFLARE_PAGES_API_TOKEN}" \
+            -H 'Content-Type: application/json')"
+          [ "${pages_http}" = 200 ] || fail "pages_read_failed" "Could not read the governed Hermes Pages production binding."
+
+          DB_ID="$(jq -r '.result.deployment_configs.production.d1_databases.DB.id // empty' "${TMP}/pages.json")"
+          rm -f "${TMP}/pages.json"
+          [ -n "${DB_ID}" ] || fail "production_db_binding_missing" "Production D1 binding DB was not found."
+          echo "::add-mask::${DB_ID}"
+
+          d1() {
+            local output="$1"
+            local body="$2"
+            curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+              -o "${output}" -w '%{http_code}' \
+              -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data-binary "${body}"
+          }
+
+          MATCH_BODY="$(jq -nc --arg name "${TARGET_NAME}" --arg phone "${TARGET_PHONE}" '{
+            sql:"SELECT r.id,r.owner_specialist_id,r.name,r.slug,r.phone,r.city,r.state,r.catalog_opt_in,s.role FROM repair_shops r JOIN specialists s ON s.id=r.owner_specialist_id WHERE (r.phone IN (?, ?, ?) OR (LOWER(TRIM(r.name))=LOWER(TRIM(?)) AND UPPER(COALESCE(r.state,''))='AR')) LIMIT 5;",
+            params:[$phone,("+1 " + $phone),("+1" + ($phone|gsub("[^0-9]";""))),$name]
+          }')"
+          MATCH_HTTP="$(d1 "${TMP}/match.json" "${MATCH_BODY}")"
+          [ "${MATCH_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/match.json")" = true ] \
+            || fail "production_match_query_failed" "Production Repair Shop lookup failed before any mutation."
+
+          MATCH_COUNT="$(jq '.result[0].results | length' "${TMP}/match.json")"
+          [ "${MATCH_COUNT}" = 1 ] || {
+            if [ "${MATCH_COUNT}" = 0 ]; then
+              fail "production_shop_not_found" "No unique production Repair Shop matched the supplied business phone/name. The existing Acheme prospect row was not promoted into a fake login."
+            fi
+            fail "production_shop_ambiguous" "More than one production Repair Shop matched. Activation stopped instead of guessing."
+          }
+
+          SHOP_ID="$(jq -r '.result[0].results[0].id' "${TMP}/match.json")"
+          OWNER_ID="$(jq -r '.result[0].results[0].owner_specialist_id' "${TMP}/match.json")"
+          SLUG="$(jq -r '.result[0].results[0].slug // empty' "${TMP}/match.json")"
+          ROLE="$(jq -r '.result[0].results[0].role // empty' "${TMP}/match.json")"
+          [ -n "${SHOP_ID}" ] && [ -n "${OWNER_ID}" ] && [ -n "${SLUG}" ] \
+            || fail "production_identity_incomplete" "Matched production row is missing its shop/owner/slug linkage."
+          [ "${ROLE}" = "Shop Owner" ] || fail "owner_role_mismatch" "Matched identity is not a Repair Shop Owner account."
+          echo "::add-mask::${SHOP_ID}"
+          echo "::add-mask::${OWNER_ID}"
+
+          FLAG_BODY="$(jq -nc --arg owner "${OWNER_ID}" '{sql:"SELECT COALESCE(synthetic,0) AS synthetic FROM hermes_registration_flags WHERE specialist_id=? LIMIT 1;",params:[$owner]}')"
+          FLAG_HTTP="$(d1 "${TMP}/flag.json" "${FLAG_BODY}")"
+          [ "${FLAG_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/flag.json")" = true ] \
+            || fail "registration_flag_read_failed" "Could not verify that the matched registration is real."
+          SYNTHETIC="$(jq -r '.result[0].results[0].synthetic // 0' "${TMP}/flag.json")"
+          [ "${SYNTHETIC}" = 0 ] || fail "synthetic_registration_rejected" "Matched registration is synthetic/test data and cannot be promoted to First-5."
+
+          NOW="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+          NEXT_REPORT="$(date -u -d '+30 days' +%Y-%m-%dT%H:%M:%S.000Z)"
+
+          MUTATION_BODY="$(jq -nc \
+            --arg shop "${SHOP_ID}" \
+            --arg name "${TARGET_NAME}" \
+            --arg phone "+1 501-376-1519" \
+            --arg address "${TARGET_ADDRESS}" \
+            --arg city "${TARGET_CITY}" \
+            --arg state "${TARGET_STATE}" \
+            --arg postal "${TARGET_POSTAL}" \
+            --arg timezone "${TARGET_TIMEZONE}" \
+            --arg website "${TARGET_WEBSITE}" \
+            --arg now "${NOW}" \
+            --arg next "${NEXT_REPORT}" \
+            '{
+              batch:[
+                {
+                  sql:"UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code='US',postal_code=?,timezone=?,website=?,catalog_opt_in=1,catalog_opt_in_at=COALESCE(catalog_opt_in_at,?),catalog_published_at=COALESCE(catalog_published_at,?),seo_geo_started_at=COALESCE(seo_geo_started_at,?),next_seo_report_at=COALESCE(next_seo_report_at,?),updated_at=? WHERE id=?;",
+                  params:[$name,$phone,$address,$city,$state,$state,$postal,$timezone,$website,$now,$now,$now,$next,$now,$shop]
+                },
+                {
+                  sql:"INSERT INTO repair_shop_access (shop_id,access_state,plan_id,started_at,current_period_end,updated_at) VALUES (?, 'trialing', 'repair_shop_founding', ?, NULL, ?) ON CONFLICT(shop_id) DO UPDATE SET access_state=CASE WHEN access_state IN ('founding','active','comped') THEN access_state ELSE 'trialing' END,plan_id='repair_shop_founding',updated_at=excluded.updated_at;",
+                  params:[$shop,$now,$now]
+                },
+                {
+                  sql:"INSERT INTO hermes_registration_flags (specialist_id,synthetic,reviewed_at,updated_at) VALUES (?,0,?,?) ON CONFLICT(specialist_id) DO UPDATE SET reviewed_at=excluded.reviewed_at,updated_at=excluded.updated_at;",
+                  params:[$shop,$now,$now]
+                }
+              ]
+            }')"
+
+          # Replace the registration-flag specialist id in the final batch item without ever publishing it.
+          MUTATION_BODY="$(jq --arg owner "${OWNER_ID}" '.batch[2].params[0]=$owner' <<<"${MUTATION_BODY}")"
+          MUTATION_HTTP="$(d1 "${TMP}/mutation.json" "${MUTATION_BODY}")"
+          if [ "${MUTATION_HTTP}" = 401 ] || [ "${MUTATION_HTTP}" = 403 ]; then
+            fail "d1_write_not_authorized" "Bounded production D1 write capability was rejected."
+          fi
+          [ "${MUTATION_HTTP}" = 200 ] \
+            && [ "$(jq -r '.success // false' "${TMP}/mutation.json")" = true ] \
+            && [ "$(jq -r '[.result[]?.success == true] | all' "${TMP}/mutation.json")" = true ] \
+            || fail "activation_write_failed" "The bounded activation transaction did not complete successfully."
+
+          READ_BODY="$(jq -nc --arg shop "${SHOP_ID}" '{
+            sql:"SELECT r.name,r.slug,r.phone,r.address_line1,r.city,r.state,r.country_code,r.postal_code,r.timezone,r.website,r.catalog_opt_in,r.catalog_published_at,r.seo_geo_started_at,r.next_seo_report_at,a.access_state,a.plan_id FROM repair_shops r LEFT JOIN repair_shop_access a ON a.shop_id=r.id WHERE r.id=? LIMIT 1;",
+            params:[$shop]
+          }')"
+          READ_HTTP="$(d1 "${TMP}/readback.json" "${READ_BODY}")"
+          [ "${READ_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/readback.json")" = true ] \
+            || fail "readback_failed" "Activation wrote but exact production readback failed; manual review is required."
+
+          ROW="$(jq -c '.result[0].results[0] // {}' "${TMP}/readback.json")"
+          [ "$(jq -r '.name' <<<"${ROW}")" = "${TARGET_NAME}" ] \
+            && [ "$(jq -r '.phone' <<<"${ROW}")" = "+1 501-376-1519" ] \
+            && [ "$(jq -r '.city' <<<"${ROW}")" = "${TARGET_CITY}" ] \
+            && [ "$(jq -r '.state' <<<"${ROW}")" = "${TARGET_STATE}" ] \
+            && [ "$(jq -r '.catalog_opt_in' <<<"${ROW}")" = 1 ] \
+            && [ "$(jq -r '.plan_id' <<<"${ROW}")" = "repair_shop_founding" ] \
+            || fail "readback_mismatch" "Production readback did not match the approved Kittle's Garage profile/access contract."
+
+          ACCESS_STATE="$(jq -r '.access_state // empty' <<<"${ROW}")"
+          case "${ACCESS_STATE}" in
+            trialing|founding|active|comped) ;;
+            *) fail "access_state_unexpected" "Production access state is not usable for the Repair Shop owner dashboard." ;;
+          esac
+
+          PROFILE_PATH="/businesses/connect/repair-shop/${SLUG}/"
+          PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PROFILE_PATH}?verify=$(date +%s)")"
+          [ "${PROFILE_HTTP}" = 200 ] \
+            && grep -Fq "Kittle" "${TMP}/profile.html" \
+            && grep -Fq "Hermes Catalog" "${TMP}/profile.html" \
+            || fail "public_catalog_readback_failed" "D1 activation succeeded, but the public Catalog profile did not read back correctly."
+
+          SITEMAP_HTTP="$(curl -sS --retry 3 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/sitemap.xml" -w '%{http_code}' "${BASE_URL}/sitemap-connect-catalog.xml?verify=$(date +%s)")"
+          [ "${SITEMAP_HTTP}" = 200 ] && grep -Fq "${PROFILE_PATH}" "${TMP}/sitemap.xml" \
+            || fail "catalog_sitemap_readback_failed" "Public profile is live, but the dynamic Hermes Connect Catalog sitemap did not include it."
+
+          echo "classification=pass" >> "${GITHUB_OUTPUT}"
+          cat > "${RESULT}" <<EOF
+          ## Kittle's Garage First-5 activation — PASS
+
+          - ✅ Existing real Hermes Connect Shop Owner identity was preserved; no duplicate login or Repair Shop row was created.
+          - ✅ Repair Shop CRM owner workspace is active under the current free-during-setup policy.
+          - ✅ Canonical business facts were updated: Kittle's Garage · North Little Rock, Arkansas · public website linked.
+          - ✅ Hermes Catalog publication is enabled and production readback returned the public profile.
+          - ✅ Dynamic Hermes Connect Catalog sitemap contains the public profile.
+          - ✅ Access state is usable: \`${ACCESS_STATE}\` on plan \`repair_shop_founding\`.
+          - Public profile: ${BASE_URL}${PROFILE_PATH}
+
+          No password, owner email, account ID, shop ID, D1 ID, Cloudflare credential, session, customer data, or private CRM record is published here.
+          EOF
+
+      - name: Publish sanitized activation result
+        if: always()
+        shell: bash
+        run: |
+          RESULT="${RUNNER_TEMP}/kittles-first5/result.md"
+          if [ -f "${RESULT}" ]; then
+            gh issue comment 510 --repo "${GITHUB_REPOSITORY}" --body-file "${RESULT}"
+          else
+            gh issue comment 510 --repo "${GITHUB_REPOSITORY}" --body $'## Kittle\x27s Garage activation — FAILED\n\nThe bounded operator stopped before it could produce a verified sanitized receipt. No completion claim is made.'
+          fi
+
+      - name: Enforce verified completion
+        if: always()
+        shell: bash
+        env:
+          CLASSIFICATION: ${{ steps.activation.outputs.classification }}
+        run: |
+          [ "${CLASSIFICATION:-}" = pass ]
