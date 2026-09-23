@@ -28,6 +28,8 @@ const pages = [
       "Search-to-qualified-inquiry measurement",
       "Current load-board offers are private observations",
       "No universal package, price or implementation volume",
+      "What is logistics SEO for trucking and transportation companies?",
+      "Hermes treats each intent as one canonical page",
       "Is Hermes a logistics SEO agency for trucking and transportation companies?",
       "Do trucking SEO, transportation SEO and warehousing SEO need separate pages?",
       "Does Hermes provide SEO for trucking and dispatch companies?",

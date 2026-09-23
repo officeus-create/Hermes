@@ -44,6 +44,12 @@ assert.ok(connectPrompt, "TEC-07 must remain registered");
 assert.equal(connectPrompt.canonicalOwner, "/services/hermes-connect/", "Hermes Connect must use its product canonical owner");
 assert.ok(connectPrompt.expectedFacts.some((fact) => fact.includes("Repair Shops is the current public live product vertical")), "TEC-07 must use current Hermes Connect product truth");
 
+const logisticsSeoPrompt = aiVisibilityPrompts.find((item) => item.id === "MKT-01");
+assert.ok(logisticsSeoPrompt, "MKT-01 must remain registered");
+assert.equal(logisticsSeoPrompt.canonicalOwner, "/services/seo-for-logistics-companies/", "Logistics SEO discovery must use its niche commercial owner");
+assert.ok(logisticsSeoPrompt.expectedFacts.some((fact) => fact.includes("logistics-focused SEO strategy")), "MKT-01 must expose the supported logistics SEO scope");
+assert.ok(logisticsSeoPrompt.expectedFacts.some((fact) => fact.includes("privacy-safe measurement")), "MKT-01 must preserve the governed measurement boundary");
+
 const academyDiscoveryPrompt = aiVisibilityPrompts.find((item) => item.id === "ACA-11");
 assert.ok(academyDiscoveryPrompt, "ACA-11 must remain registered");
 assert.equal(academyDiscoveryPrompt.canonicalOwner, "/paths/academy/", "Academy discovery must use the canonical Academy owner");
