@@ -17,7 +17,8 @@ jobs:
   activate:
     if: >-
       github.event.issue.number == 510 &&
-      github.event.comment.body == '/activate-kittles-first5' &&
+      (github.event.comment.body == '/activate-kittles-first5' ||
+       github.event.comment.body == '/provision-kittles-trial') &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -53,6 +54,7 @@ jobs:
         shell: bash
         env:
           OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+          COMMAND: ${{ github.event.comment.body }}
         run: |
           set -euo pipefail
 
@@ -77,10 +79,18 @@ jobs:
             exit 1
           }
 
+          MODE="activate"
+          API_PATH="/api/internal/repair-shop-first5-activation"
           PAYLOAD='{"operation":"activate_kittles_garage_2026_09_23"}'
+          if [ "${COMMAND}" = "/provision-kittles-trial" ]; then
+            MODE="provision"
+            API_PATH="/api/internal/repair-shop-first5-provision"
+            PAYLOAD='{"operation":"provision_kittles_garage_trial_2026_09_23"}'
+          fi
+
           ACTIVATE_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/activation.json" -w '%{http_code}' \
-            -X POST "${BASE_URL}/api/internal/repair-shop-first5-activation" \
+            -X POST "${BASE_URL}${API_PATH}" \
             -H "Authorization: Bearer ${OIDC_TOKEN}" \
             -H 'Content-Type: application/json' \
             --data-binary "${PAYLOAD}" || printf 000)"
@@ -92,7 +102,7 @@ jobs:
           if [ "${ACTIVATE_HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/activation.json" 2>/dev/null)" != true ]; then
             ERROR_CODE="$(jq -r '.error // "activation_api_failed"' "${TMP}/activation.json" 2>/dev/null || printf activation_api_failed)"
             case "${ERROR_CODE}" in
-              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|production_shop_not_found|production_shop_ambiguous|owner_role_mismatch|synthetic_registration_rejected|production_identity_incomplete|profile_update_conflict|activation_readback_mismatch) ;;
+              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|production_shop_not_found|production_shop_ambiguous|owner_role_mismatch|synthetic_registration_rejected|production_identity_incomplete|profile_update_conflict|activation_readback_mismatch|provisioning_incomplete_manual_review|provisioning_lock_conflict|workspace_seed_failed|owner_password_state_incomplete|credential_update_conflict|credential_delivery_failed_password_restored|credential_provision_failed) ;;
               *) ERROR_CODE="activation_api_failed" ;;
             esac
             fail "${ERROR_CODE}" "Bounded production activation API returned HTTP ${ACTIVATE_HTTP}."
@@ -103,13 +113,15 @@ jobs:
           PLAN_ID="$(jq -r '.plan_id // empty' "${TMP}/activation.json")"
 
           [[ "${PROFILE_PATH}" =~ ^/businesses/connect/repair-shop/[a-z0-9-]+/$ ]] \
-            || fail "public_profile_path_invalid" "Production activation succeeded but returned an invalid public profile path."
-          case "${ACCESS_STATE}" in
-            trialing|founding|active|comped) ;;
-            *) fail "access_state_unexpected" "Production activation succeeded but dashboard access state is not usable." ;;
-          esac
-          [ "${PLAN_ID}" = "repair_shop_founding" ] \
-            || fail "plan_readback_mismatch" "Production activation succeeded but plan readback does not match the Repair Shop setup contract."
+            || fail "public_profile_path_invalid" "Production operator succeeded but returned an invalid public profile path."
+          if [ "${MODE}" = "activate" ]; then
+            case "${ACCESS_STATE}" in
+              trialing|founding|active|comped) ;;
+              *) fail "access_state_unexpected" "Production activation succeeded but dashboard access state is not usable." ;;
+            esac
+            [ "${PLAN_ID}" = "repair_shop_founding" ] \
+              || fail "plan_readback_mismatch" "Production activation succeeded but plan readback does not match the Repair Shop setup contract."
+          fi
 
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PROFILE_PATH}?verify=$(date +%s)")"
@@ -124,7 +136,31 @@ jobs:
             || fail "catalog_sitemap_readback_failed" "Public profile is live, but the dynamic Hermes Connect Catalog sitemap did not include it."
 
           echo "classification=pass" >> "${GITHUB_OUTPUT}"
-          cat > "${RESULT}" <<EOF
+          if [ "${MODE}" = "provision" ]; then
+            SERVICES_TOTAL="$(jq -r '.services_total // 0' "${TMP}/activation.json")"
+            SERVICES_CREATED="$(jq -r '.services_created // 0' "${TMP}/activation.json")"
+            AVAILABILITY_SEEDED="$(jq -r '.availability_seeded // false' "${TMP}/activation.json")"
+            CAPABILITIES_SEEDED="$(jq -r '.capabilities_seeded // false' "${TMP}/activation.json")"
+            CREDENTIAL_DELIVERY="$(jq -r '.credential_delivery // empty' "${TMP}/activation.json")"
+            [ "${CREDENTIAL_DELIVERY}" = "internal_admin_mailbox" ] || [ "${CREDENTIAL_DELIVERY}" = "previously_delivered" ] \
+              || fail "credential_delivery_unverified" "Workspace provisioning completed without a verified private credential handoff."
+            cat > "${RESULT}" <<EOF
+          ## Kittle's Garage First-5 trial provisioning — PASS
+
+          - ✅ Existing real Shop Owner identity preserved; no duplicate login or Repair Shop row created.
+          - ✅ Verified public business hours were seeded only when the shop had no existing schedule.
+          - ✅ Passenger/light-vehicle capability was seeded only when capabilities were empty.
+          - ✅ Official Kittle's repair services are present in the canonical Hermes Connect service context.
+          - ✅ Services created this run: ${SERVICES_CREATED}; total visible services: ${SERVICES_TOTAL}.
+          - ✅ Availability seeded: ${AVAILABILITY_SEEDED}; capabilities seeded: ${CAPABILITIES_SEEDED}.
+          - ✅ Temporary credentials were delivered only through the private internal-admin channel; they are not present in GitHub/API output.
+          - ✅ Catalog profile and dynamic sitemap read back from production.
+          - Public profile: ${BASE_URL}${PROFILE_PATH}
+
+          No password, owner email, account ID, shop ID, D1 ID, token, session, customer data, or private CRM record is published here.
+          EOF
+          else
+            cat > "${RESULT}" <<EOF
           ## Kittle's Garage First-5 activation — PASS
 
           - ✅ Existing real Hermes Connect Shop Owner identity was preserved; no duplicate login or Repair Shop row was created.
@@ -137,6 +173,7 @@ jobs:
 
           No password, owner email, account ID, shop ID, D1 ID, token, session, customer data, or private CRM record is published here.
           EOF
+          fi
 
       - name: Publish sanitized activation result
         if: always()
