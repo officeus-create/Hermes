@@ -37,7 +37,7 @@ const jobDescription = [
   "Work arrangement: remote worldwide. Working schedule: U.S. Central Time.",
   `Responsibilities: ${responsibilities.join(" ")}`,
   `Screening information to prepare: ${screening.join(" ")}`,
-  "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
+  vacancyIsCurrent\n    ? "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation."\n    : "Application process: this role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not submit through the expired Work.ua listing. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
 ].join("\n\n");
 
 const jobPostingSchema = vacancyIsCurrent ? {
@@ -140,7 +140,7 @@ const schema = [
           <p class="eyebrow">Hiring flow</p>
           <h2 id="career-process-title">Application → human review → evidence → interview</h2>
           <div class="career-job-process-grid">
-            <article><span>01</span><h3>Application</h3><p>Submit through the current Work.ua vacancy. If useful, prepare the same factual location, language, experience, role-interest, and availability details in the Hermes preview first.</p></article>
+            <article><span>01</span><h3>Application</h3><p>{vacancyIsCurrent ? "Submit through the current Work.ua vacancy. If useful, prepare the same factual location, language, experience, role-interest, and availability details in the Hermes preview first." : "This role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not submit through the expired Work.ua listing."}</p></article>
             <article><span>02</span><h3>Human review</h3><p>Recruiting checks fit with the current role, schedule, experience level, and evidence. AI may assist organization but does not make the final hiring decision.</p></article>
             <article><span>03</span><h3>Practical evidence</h3><p>When useful, the next step may be a short scenario, call sample, practical task, or training path appropriate to the candidate's starting level.</p></article>
             <article><span>04</span><h3>Interview</h3><p>An interview is scheduled only when the earlier screening gives enough reason to continue. No step guarantees employment or compensation.</p></article>
