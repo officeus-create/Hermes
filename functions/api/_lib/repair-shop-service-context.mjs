@@ -11,6 +11,11 @@ async function tableExists(db, name) {
   return Boolean(row?.name);
 }
 
+/**
+ * @param {any} db
+ * @param {string} ownerId
+ * @param {{ id?: string, owner_specialist_id?: string } | null} [knownShop]
+ */
 export async function resolveDefaultRepairShopServiceContext(db, ownerId, knownShop = null) {
   await ensureRepairShopProfileSchema(db);
   const shop = knownShop?.id
