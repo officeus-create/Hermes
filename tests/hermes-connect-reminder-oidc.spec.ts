@@ -130,3 +130,25 @@ test("First-5 activation uses short-lived OIDC and cannot invent a Repair Shop l
   expect(endpoint).not.toContain("INSERT INTO repair_shops");
 });
 
+
+
+test("First-5 trial provisioning reuses bounded OIDC and keeps credentials out of GitHub", async () => {
+  const workflow = await readFile(".github/workflows/kittles-first5-activation.yml", "utf8");
+  const endpoint = await readFile("functions/api/internal/repair-shop-first5-provision.ts", "utf8");
+
+  expect(workflow).toContain("/provision-kittles-trial");
+  expect(workflow).toContain("/api/internal/repair-shop-first5-provision");
+  expect(workflow).toContain("provision_kittles_garage_trial_2026_09_23");
+  expect(workflow).not.toContain("Temporary password:");
+  expect(workflow).not.toContain("Friday-");
+
+  expect(endpoint).toContain("verifyGitHubFirst5ActivationOidcToken");
+  expect(endpoint).toContain('const OPERATION_ID = "provision_kittles_garage_trial_2026_09_23"');
+  expect(endpoint).toContain("hashPassword");
+  expect(endpoint).toContain("verifyPassword");
+  expect(endpoint).toContain("DELETE FROM sessions");
+  expect(endpoint).toContain("credential_delivery: \"internal_admin_mailbox\"");
+  expect(endpoint).toContain("credential_delivery_failed_password_restored");
+  expect(endpoint).not.toContain("INSERT INTO specialists");
+  expect(endpoint).not.toContain("erik@kittlesgarage.com");
+});
