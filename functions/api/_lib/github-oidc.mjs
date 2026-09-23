@@ -15,6 +15,12 @@ const CABINET_AUDIT_IDENTITY = {
   allowedEvents: new Set(["issue_comment"]),
 };
 
+const FIRST5_ACTIVATION_IDENTITY = {
+  audience: "hermes-connect-first5-activation",
+  workflowRef: "officeus-create/Hermes/.github/workflows/kittles-first5-activation.yml@refs/heads/main",
+  allowedEvents: new Set(["issue_comment"]),
+};
+
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -52,6 +58,10 @@ export function validateGitHubOidcClaims(claims, now = new Date()) {
 
 export function validateGitHubCabinetAuditOidcClaims(claims, now = new Date()) {
   return validateClaimsForIdentity(claims, CABINET_AUDIT_IDENTITY, now);
+}
+
+export function validateGitHubFirst5ActivationOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, FIRST5_ACTIVATION_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -98,6 +108,10 @@ export async function verifyGitHubReminderOidcToken(token, now = new Date()) {
 
 export async function verifyGitHubCabinetAuditOidcToken(token, now = new Date()) {
   return verifyGitHubOidcToken(token, validateGitHubCabinetAuditOidcClaims, now);
+}
+
+export async function verifyGitHubFirst5ActivationOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubFirst5ActivationOidcClaims, now);
 }
 
 export function bearerToken(request) {

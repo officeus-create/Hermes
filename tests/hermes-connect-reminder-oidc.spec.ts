@@ -23,6 +23,13 @@ const cabinetAuditClaims = {
   event_name: "issue_comment",
 };
 
+const first5ActivationClaims = {
+  ...baseClaims,
+  aud: "hermes-connect-first5-activation",
+  workflow_ref: "officeus-create/Hermes/.github/workflows/kittles-first5-activation.yml@refs/heads/main",
+  event_name: "issue_comment",
+};
+
 test("weekly reminder scheduler accepts only the expected GitHub Actions identity", async () => {
   expect(oidc.validateGitHubOidcClaims(baseClaims, now)).toBe(true);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
@@ -57,6 +64,21 @@ test("reminder and cabinet audit OIDC identities cannot be substituted for each 
   expect(oidc.validateGitHubCabinetAuditOidcClaims(baseClaims, now)).toBe(false);
 });
 
+test("First-5 activation accepts only the exact main issue-comment workflow identity", async () => {
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims(first5ActivationClaims, now)).toBe(true);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims({ ...first5ActivationClaims, aud: cabinetAuditClaims.aud }, now)).toBe(false);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims({ ...first5ActivationClaims, workflow_ref: cabinetAuditClaims.workflow_ref }, now)).toBe(false);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims({ ...first5ActivationClaims, event_name: "workflow_dispatch" }, now)).toBe(false);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims({ ...first5ActivationClaims, ref: "refs/heads/feature" }, now)).toBe(false);
+});
+
+test("First-5 activation identity cannot be substituted with reminder or cabinet audit identities", async () => {
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims(baseClaims, now)).toBe(false);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims(cabinetAuditClaims, now)).toBe(false);
+  expect(oidc.validateGitHubCabinetAuditOidcClaims(first5ActivationClaims, now)).toBe(false);
+  expect(oidc.validateGitHubOidcClaims(first5ActivationClaims, now)).toBe(false);
+});
+
 test("cabinet audit workflow no longer depends on password artifacts or login cookies", async () => {
   const workflow = await readFile(".github/workflows/hc-cabinet-audit.yml", "utf8");
   expect(workflow).toContain("id-token: write");
@@ -86,3 +108,25 @@ test("bearer token parsing is strict", async () => {
   expect(oidc.bearerToken(new Request("https://example.test", { headers: { Authorization: "Bearer abc.def.ghi" } }))).toBe("abc.def.ghi");
   expect(oidc.bearerToken(new Request("https://example.test", { headers: { Authorization: "Basic abc" } }))).toBe("");
 });
+
+test("First-5 activation uses short-lived OIDC and cannot invent a Repair Shop login", async () => {
+  const workflow = await readFile(".github/workflows/kittles-first5-activation.yml", "utf8");
+  const endpoint = await readFile("functions/api/internal/repair-shop-first5-activation.ts", "utf8");
+
+  expect(workflow).toContain("id-token: write");
+  expect(workflow).toContain("OIDC_AUDIENCE: hermes-connect-first5-activation");
+  expect(workflow).toContain("Authorization: Bearer ${OIDC_TOKEN}");
+  expect(workflow).toContain("/api/internal/repair-shop-first5-activation");
+  expect(workflow).not.toContain("CLOUDFLARE_D1_API_TOKEN");
+  expect(workflow).not.toContain("CLOUDFLARE_ACCOUNT_ID");
+  expect(workflow).not.toContain("/api/auth/login");
+
+  expect(endpoint).toContain("verifyGitHubFirst5ActivationOidcToken");
+  expect(endpoint).toContain('const OPERATION_ID = "activate_kittles_garage_2026_09_23"');
+  expect(endpoint).toContain("UPDATE repair_shops");
+  expect(endpoint).toContain("catalog_opt_in=1");
+  expect(endpoint).toContain("repair_shop_access");
+  expect(endpoint).not.toContain("INSERT INTO specialists");
+  expect(endpoint).not.toContain("INSERT INTO repair_shops");
+});
+
