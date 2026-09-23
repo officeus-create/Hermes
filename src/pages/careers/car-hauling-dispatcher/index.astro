@@ -37,7 +37,9 @@ const jobDescription = [
   "Work arrangement: remote worldwide. Working schedule: U.S. Central Time.",
   `Responsibilities: ${responsibilities.join(" ")}`,
   `Screening information to prepare: ${screening.join(" ")}`,
-  vacancyIsCurrent\n    ? "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation."\n    : "Application process: this role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not submit through the expired Work.ua listing. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
+  vacancyIsCurrent
+    ? "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation."
+    : "Application process: this role is awaiting a fresh recruiting review. Check current vacancies or use the general careers inquiry; do not submit through the expired Work.ua listing. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
 ].join("\n\n");
 
 const jobPostingSchema = vacancyIsCurrent ? {
