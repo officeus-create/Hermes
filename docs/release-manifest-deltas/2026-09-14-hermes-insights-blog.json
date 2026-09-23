@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-14-hermes-insights-blog",
-  "generated_at": "2026-09-22T04:15:00+00:00",
+  "generated_at": "2026-09-23T12:00:00+00:00",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
@@ -24,6 +24,19 @@
       "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
       "canonical": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+    },
+    {
+      "route": "/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
       "sitemap_owner": "public/sitemap-insights.xml",
       "source_file": "src/pages/insights/[direction]/[slug].astro",
       "status": "COMPLETE",
@@ -72,8 +85,8 @@
     }
   ],
   "acceptance": {
-    "route_count_added": 5,
-    "indexable_route_count_added": 5,
+    "route_count_added": 6,
+    "indexable_route_count_added": 6,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
