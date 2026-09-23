@@ -3,29 +3,29 @@
     "id": "eia-diesel-route-planning-september-2026",
     "direction": "logistics",
     "slug": "diesel-price-route-planning-september-2026",
-    "title": "U.S. Diesel at $6.285/Gallon: Carrier Route Planning | Hermes",
-    "description": "EIA reported U.S. on-highway diesel at $6.285 per gallon for September 14, 2026. Hermes connects the price shock to deadhead control, lane economics, and carrier rate decisions.",
+    "title": "U.S. Diesel at $6.529/Gallon: Carrier Route Planning | Hermes",
+    "description": "EIA reported U.S. on-highway diesel at $6.529 per gallon for September 21, 2026, up $0.244 in one week. Hermes connects the latest fuel move to deadhead control, lane economics, and carrier rate decisions.",
     "eyebrow": "Logistics Cost Update · September 2026",
-    "h1": "U.S. diesel reached $6.285 per gallon. What changes for carrier route planning?",
-    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.285 per gallon for September 14, 2026, up $0.318 from the prior week. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
+    "h1": "U.S. diesel reached $6.529 per gallon. What changes for carrier route planning?",
+    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.529 per gallon for September 21, 2026, up $0.244 from $6.285 one week earlier and $2.780 above the year-earlier level. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
     "explanation": [
-      "Start with the current fact. The U.S. Energy Information Administration reported an average on-highway diesel price of $6.285 per gallon for September 14, 2026, compared with $5.967 one week earlier. The same table shows the national average $2.546 per gallon above the year-earlier level. For a carrier, that is not a reason to replace lane analysis with a single fuel headline. It is a reason to make fuel exposure explicit in the load decision instead of treating it as background noise.",
-      "Hermes historical dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. That older operating pattern becomes more important when diesel is expensive: an attractive loaded rate can still produce weak economics if the truck travels too far empty before pickup, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The useful lesson from the archive is the decision sequence, not any old promised rate, commission, earnings level, or tool.",
-      "The practical response is to calculate the movement as a route, not as a headline rate. Before accepting or negotiating a load, separate loaded miles from deadhead to pickup and expected repositioning after delivery. Add the fuel assumption that fits the truck and route, then consider tolls, time, equipment fit, appointment risk, payment terms, and the quality of the likely next move. A national diesel average helps update the cost assumption; it does not decide whether a specific load works.",
-      "This also changes negotiation discipline. When fuel moves sharply in one week, stale internal assumptions can make yesterday's acceptable lane look different today. The carrier or dispatcher should be able to explain the operating reason behind a counteroffer—route, empty-mile exposure, timing, equipment or destination economics—rather than simply citing a national diesel number. That creates a more defensible conversation while avoiding claims that every broker, lane or customer must absorb the same adjustment.",
-      "The then-versus-now comparison is straightforward. Historical Hermes operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 2026 EIA data raises the cost of getting those decisions wrong, but it does not change the underlying method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the actual operating picture, and re-check assumptions when fuel or market conditions move."
+      "What changed: the U.S. Energy Information Administration released its September 22 update with a national on-highway diesel average of $6.529 per gallon for September 21, up from $6.285 on September 14. The one-week increase was $0.244 per gallon, and the national average was $2.780 above the year-earlier level. Regional prices also remained materially different, so one national number should be treated as a cost benchmark rather than a lane quote.",
+      "Why it matters: fuel exposure compounds weak route decisions. Historical Hermes dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. With a higher fuel benchmark, an attractive loaded rate can still produce weak economics if the truck travels too far empty, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The archive contributes the decision pattern only; no old promised rate, commission, earnings level, customer detail, or tool claim is reused as current truth.",
+      "What to do: calculate the movement as a route, not as a headline rate. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Use a current fuel assumption appropriate to the truck and route, then account for tolls, time, equipment fit, appointment risk, payment terms, and the quality of the next move. Where regional fuel prices differ substantially, update the route assumption instead of applying the national average mechanically.",
+      "Result: the carrier or dispatcher gets a repeatable operating decision instead of a reactive fuel rule. A counteroffer can be tied to actual route economics—empty-mile exposure, timing, equipment, destination and current fuel assumptions—rather than simply citing a national diesel headline. That makes the load review more defensible without claiming every broker, lane or customer should absorb the same adjustment.",
+      "Then versus now: Hermes historical operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 21, 2026 EIA data increases the cost of getting those decisions wrong, but it does not change the method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the operating picture, and re-check assumptions when fuel or market conditions move."
     ],
     "takeaways": [
-      "EIA put the U.S. on-highway diesel average at $6.285 per gallon for September 14, up $0.318 week over week",
+      "EIA put the U.S. on-highway diesel average at $6.529 per gallon for September 21, up $0.244 week over week",
+      "The national average was $2.780 per gallon above the year-earlier level",
       "High diesel prices increase the importance of deadhead and reload planning; they do not create one universal carrier rate",
-      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load",
-      "Hermes historical operating evidence supports the same core discipline—route planning and deadhead control—but old commercial claims are not reused as current truth"
+      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load"
     ],
     "faq": [
-      {"question": "Does $6.285 diesel mean every load rate should rise by the same amount?", "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."},
-      {"question": "Why does deadhead matter more when fuel is expensive?", "answer": "Empty miles still consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."},
-      {"question": "Should a carrier use the national diesel price as its only fuel input?", "answer": "No. The national average is useful context. A carrier should use a fuel assumption that reflects the actual truck, route and operating conditions when calculating a specific movement."},
-      {"question": "What does the historical Hermes archive add to this update?", "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used here only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."}
+      {"question": "Does $6.529 diesel mean every load rate should rise by the same amount?", "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."},
+      {"question": "How much did the national diesel average change in one week?", "answer": "EIA reported $6.529 per gallon for September 21, 2026 versus $6.285 on September 14, an increase of $0.244 per gallon."},
+      {"question": "Why does deadhead matter more when fuel is expensive?", "answer": "Empty miles consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."},
+      {"question": "What does the historical Hermes archive add to this update?", "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."}
     ],
     "related": [
       {"title": "RPM calculator", "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.", "href": "/logistics/resources/rpm-calculator/"},
@@ -37,20 +37,72 @@
     "secondaryAction": {"label": "Explore Owner-Operator Support", "href": "/logistics/owner-operator-dispatch-support/"},
     "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
     "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
-    "sourcePublishedAt": "2026-09-15",
+    "sourcePublishedAt": "2026-09-22",
     "datePublished": "2026-09-17",
-    "dateModified": "2026-09-17",
+    "dateModified": "2026-09-23",
     "authorName": "Hermes Editorial Team",
     "keywords": ["diesel price 2026", "truck fuel cost", "carrier route planning", "deadhead reduction", "owner operator load planning", "diesel price per gallon", "freight rate negotiation", "EIA diesel price"],
     "contentTier": "standalone",
     "currentMarketClaim": true,
     "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "U.S. EIA weekly on-highway diesel price data", "use": "primary", "url": "https://www.eia.gov/petroleum/gasdiesel/", "observedAt": "2026-09-17", "eventDate": "2026-09-14", "notes": "Current dated public source for national and regional diesel prices."},
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "U.S. EIA weekly on-highway diesel price data", "use": "primary", "url": "https://www.eia.gov/petroleum/gasdiesel/", "observedAt": "2026-09-23", "eventDate": "2026-09-21", "notes": "Current dated public source for national and regional diesel prices, released September 22, 2026."},
       {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."}
     ],
     "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"},
-    "publicationScore": {"score": 95, "recommendation": "standalone_historical", "reasons": ["+20 freshness", "+20 source authority", "+17 first-party evidence", "+15 historical comparison", "+13 search value", "+10 internal-link fit"]},
+    "publicationScore": {"score": 97, "recommendation": "standalone_historical", "reasons": ["+20 freshness", "+20 source authority", "+19 first-party evidence", "+15 historical comparison", "+13 search value", "+10 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+  },
+  {
+    "id": "cloudflare-disallow-ai-training-september-2026",
+    "direction": "marketing",
+    "slug": "cloudflare-disallow-ai-training-search-visibility-september-2026",
+    "title": "Cloudflare Disallow AI Training: Keep Search Visibility | Hermes",
+    "description": "Cloudflare introduced a Disallow AI Training control intended to keep accountable mixed-use crawlers available for search while refusing AI-training use. Hermes explains how to protect training preferences without accidentally blocking search discovery.",
+    "eyebrow": "Search & AI Visibility Update · September 2026",
+    "h1": "Cloudflare can now separate search discovery from AI training. What should site owners change?",
+    "conciseAnswer": "Cloudflare announced a Disallow AI Training setting on September 15, 2026. Cloudflare says the setting publishes a no-training preference through Bot Preference Sync while allowing accountable mixed-use crawlers to remain available for search, whereas the broader Block setting can stop mixed-use crawlers such as Googlebot, Bingbot and Applebot entirely. The operational lesson is to govern Search, Training and Agent traffic separately instead of treating every AI-related crawler as one category.",
+    "explanation": [
+      "What changed: Cloudflare added a Disallow AI Training option to its more granular Search, Training and Agent crawler controls. Cloudflare says Bot Preference Sync publishes the applicable no-training preference in robots.txt, accountable mixed-use crawlers remain allowed for search, and other training crawlers are blocked. The same announcement warns that the broader Block and Block on pages with ads settings now apply to mixed-use crawlers too, so those choices can affect search discovery as well as training.",
+      "Why it matters: search visibility and AI-training permission are related but not identical business decisions. A blanket bot rule can unintentionally remove a site from useful discovery surfaces if the same crawler supports both search and another use. For a company investing in SEO, GEO, AEO and AI visibility, the safer operating model is to decide explicitly which traffic is allowed for Search, which is allowed for Training, and which Agent behavior is acceptable, then verify the actual crawl result instead of assuming every 'AI bot' label means the same thing.",
+      "What to do: audit the current Cloudflare AI Crawl Control and Bot Preference Sync settings before changing robots behavior. If the goal is to remain searchable while refusing training, evaluate Disallow AI Training rather than a blanket Block. After any change, verify robots.txt, Google and Bing crawlability, Search Console or Bing Webmaster evidence, and server or Cloudflare crawl logs. Keep Agent policy separate because Cloudflare says the Internet does not yet have a well-established directive for expressing a universal disallow preference to agents.",
+      "Result: site owners can apply a more precise governance policy without intentionally sacrificing search crawlability. This is not a ranking guarantee and it does not mean every crawler will behave identically; it creates a clearer technical policy that can be measured and audited. The website remains the canonical source, while search and AI systems receive the permissions the owner actually intends.",
+      "Historical context: Hermes marketing and search operating material has repeatedly treated discoverability, owned-site control and platform distribution as connected work. The earlier tradeoff was often framed too coarsely as allow or block. The September 2026 Cloudflare controls make that operating decision more granular. Historical private metrics, client details and old platform claims are not reused here; the current capability and limits come from Cloudflare's dated public documentation."
+    ],
+    "takeaways": [
+      "Cloudflare announced Disallow AI Training on September 15, 2026 for separating training preferences from search access",
+      "Cloudflare says broader Block settings can now affect mixed-use crawlers such as Googlebot, Bingbot and Applebot, including search",
+      "Audit Search, Training and Agent controls separately instead of applying one blanket AI-bot rule",
+      "After any crawler-policy change, verify robots.txt and real search crawl evidence; do not treat the setting as a rankings guarantee"
+    ],
+    "faq": [
+      {"question": "Does Disallow AI Training block Googlebot or Bingbot from search?", "answer": "Cloudflare says accountable mixed-use crawlers can remain allowed for search under Disallow AI Training while a no-training preference is published. A broader Block setting can stop mixed-use crawlers entirely, including their search use."},
+      {"question": "Does this guarantee that a site will rank better in Google or Bing?", "answer": "No. The setting governs crawler access and training preferences; it does not guarantee rankings, impressions, Discover exposure or traffic."},
+      {"question": "How does Cloudflare express the no-training preference?", "answer": "Cloudflare says Bot Preference Sync publishes the applicable preference in robots.txt and pairs that stated preference with its crawler controls."},
+      {"question": "Should Agent traffic be treated the same as Training traffic?", "answer": "Not automatically. Cloudflare separates Search, Training and Agent controls and says there is not yet a well-established Internet-wide directive for expressing the same Disallow preference to agents."}
+    ],
+    "related": [
+      {"title": "Hermes Marketing", "body": "Connect search discovery, content distribution and measurable conversion inside the Hermes Marketing direction.", "href": "/paths/marketing/"},
+      {"title": "SEO services", "body": "Review the Hermes search visibility path for technical SEO, content, entity discovery and measurement.", "href": "/services/seo/"}
+    ],
+    "primaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
+    "secondaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
+    "sourceLabel": "Cloudflare Blog — Have it both ways: stay discoverable in search while disallowing AI training",
+    "sourceUrl": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/",
+    "sourcePublishedAt": "2026-09-15",
+    "datePublished": "2026-09-23",
+    "dateModified": "2026-09-23",
+    "authorName": "Hermes Editorial Team",
+    "keywords": ["Cloudflare Disallow AI Training", "AI crawler controls", "Googlebot AI training", "Bingbot AI training", "robots.txt AI training", "search visibility AI crawlers", "AI Crawl Control"],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "evidence": [
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Cloudflare mixed-use crawler and Disallow AI Training announcement", "use": "primary", "url": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/", "observedAt": "2026-09-23", "eventDate": "2026-09-15", "notes": "Primary Cloudflare source for Search, Training and Agent control behavior, migration notes and mixed-use crawler implications."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing and search operating archive", "use": "context_only", "notes": "Used only for anonymized operating patterns around discoverability, owned-site control and recurring distribution. No client identities, prices, private metrics or one-to-one content are republished."}
+    ],
+    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing/search operating material", "nowPeriod": "September 2026", "summary": "Hermes historical operating work treated discoverability and owned-site control as connected; Cloudflare's September 2026 controls make crawler governance more granular by separating Search, Training and Agent decisions, with current Cloudflare documentation defining the capability and its limits.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/"},
+    "publicationScore": {"score": 86, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+13 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
     "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
   },
   {
