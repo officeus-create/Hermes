@@ -64,8 +64,7 @@ assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\
 assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
 assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
 assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outbound lead-email implementation must remain present.");
-assert.match(emailWorkerEntry, /import \{ DurableObject \} from "cloudflare:workers"/);
-assert.match(emailWorkerEntry, /export class CarHaulingDeliveryCoordinator extends DurableObject/);
+assert.match(emailWorkerEntry, /export class CarHaulingDeliveryCoordinator \{/);
 assert.match(emailWorkerEntry, /return this\.coordinator\.alarm\(\)/);
 for (const config of [emailWorkerExample, emailWorkerProduction]) {
   assert.deepEqual(config.durable_objects?.bindings, [{
