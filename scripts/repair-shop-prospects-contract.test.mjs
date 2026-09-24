@@ -25,7 +25,16 @@ assert.match(helper, /PUBLIC-WEB-SEANS-AUTOPRO-20260909/);
 assert.match(helper, /ensurePublicDirectoryProspects/);
 assert.match(helper, /public_profile_enabled=1/);
 
-const directorySourceRefs = [...directory.matchAll(/sourceRef:\\s*"([^"]+)"/g)].map((match) => match[1]);\nassert.ok(directorySourceRefs.length > 0, "Business directory must contain at least one evidence-backed sourceRef");\nassert.equal(new Set(directorySourceRefs).size, directorySourceRefs.length, "Business directory sourceRef values must remain unique");\nconst crmPublicSourceRefs = [...helper.matchAll(/source_ref:\\s*"((?:PUBLIC|CLIENT)-[^"]+)"/g)].map((match) => match[1]);\nfor (const sourceRef of crmPublicSourceRefs) {\n  assert.ok(directorySourceRefs.includes(sourceRef), `CRM public prospect ${sourceRef} must have a matching public Catalog profile`);\n}\nassert.ok(directorySourceRefs.includes("CLIENT-SUPPLIED-CHAYKA-STORE-20260924"));\nassert.match(helper, /source_ref:\\s*"CLIENT-SUPPLIED-CHAYKA-STORE-20260924"/);\nassert.match(helper, /business_name:\\s*"Чайка Store"/);
+const directorySourceRefs = [...directory.matchAll(/sourceRef:\s*"([^"]+)"/g)].map((match) => match[1]);
+assert.ok(directorySourceRefs.length > 0, "Business directory must contain at least one evidence-backed sourceRef");
+assert.equal(new Set(directorySourceRefs).size, directorySourceRefs.length, "Business directory sourceRef values must remain unique");
+const crmPublicSourceRefs = [...helper.matchAll(/source_ref:\s*"((?:PUBLIC|CLIENT)-[^"]+)"/g)].map((match) => match[1]);
+for (const sourceRef of crmPublicSourceRefs) {
+  assert.ok(directorySourceRefs.includes(sourceRef), `CRM public prospect ${sourceRef} must have a matching public Catalog profile`);
+}
+assert.ok(directorySourceRefs.includes("CLIENT-SUPPLIED-CHAYKA-STORE-20260924"));
+assert.match(helper, /source_ref:\s*"CLIENT-SUPPLIED-CHAYKA-STORE-20260924"/);
+assert.match(helper, /business_name:\s*"Чайка Store"/);
 
 assert.match(api, /requireInternalOwner/);
 assert.match(api, /ensureVadymPrefilledProspects/);
