@@ -143,16 +143,13 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       end.disabled = !day.is_open;
       end.setAttribute("aria-label", `${dayNames[dayNumber]} end time`);
       timeWrap.append(start, separator, end);
-      const closed = document.createElement("span");
-      closed.className = "closed-label";
-      closed.textContent = "Closed";
 
       checkbox.addEventListener("change", () => {
         row.classList.toggle("is-open", checkbox.checked);
         start.disabled = !checkbox.checked;
         end.disabled = !checkbox.checked;
       });
-      row.append(openLabel, timeWrap, closed);
+      row.append(openLabel, timeWrap);
       list.append(row);
     }
   }
@@ -266,11 +263,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   html.hc-repair-crm .availability-page #availability-list .time-wrap input:focus-visible {
     outline:2px solid #6cacf0;outline-offset:2px
   }
-  html.hc-repair-crm .availability-page #availability-list .closed-label {
-    grid-column:2;grid-row:1;justify-self:end;color:#7b8796;font-size:13px
-  }
-  html.hc-repair-crm .availability-page #availability-list .day-row.is-open .closed-label,
-  html.hc-repair-crm .availability-page #availability-list .day-row:not(.is-open) .time-wrap {display:none}
+  html.hc-repair-crm .availability-page #availability-list .day-row:not(.is-open) .time-wrap {opacity:.55}
   html.hc-repair-crm .availability-page [data-web-v1-weekday] {
     display:inline-flex;align-items:center;justify-content:center;min-height:42px;
     padding:0 14px;border:1px solid #d5e1ee;border-radius:10px;
@@ -286,6 +279,5 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     }
     html.hc-repair-crm .availability-page #availability-list .time-wrap {justify-content:flex-start}
     html.hc-repair-crm .availability-page #availability-list .time-wrap input {width:min(42%,136px);max-width:none}
-    html.hc-repair-crm .availability-page #availability-list .closed-label {grid-column:1;grid-row:2;justify-self:start}
   }
 </style>
