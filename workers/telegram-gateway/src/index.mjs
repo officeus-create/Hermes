@@ -125,7 +125,7 @@ async function verifyDestination(env) {
   if (!["administrator", "creator"].includes(member.status)) throw new Error("bot_not_admin");
 }
 
-export async function deliver(env, now = new Date()) {
+export async function deliver(env, now = new Date(), clock = () => new Date()) {
   if (!configured(env) || env.TELEGRAM_SEND_ENABLED !== "true" || env.GROUP_PAUSED !== "false"
       || !env.EXPECTED_BOT_USERNAME || !insideGroupWindow(now)) return { skipped: true };
   const control = await env.DB.prepare("SELECT paused FROM telegram_gateway_control WHERE id=1").first();
@@ -136,6 +136,14 @@ export async function deliver(env, now = new Date()) {
     "UPDATE telegram_outbox SET status='sending', attempted_at=datetime('now') WHERE id=(SELECT id FROM telegram_outbox WHERE status='approved' AND kind='client_progress' ORDER BY created_at, id LIMIT 1) AND status='approved' RETURNING id, text"
   ).first();
   if (!row) return { empty: true };
+  // Recheck at the last mile: bot preflight can cross a working-hour boundary
+  // or the owner can pause delivery after the first control read.
+  const latestControl = await env.DB.prepare("SELECT paused FROM telegram_gateway_control WHERE id=1").first();
+  if (latestControl?.paused !== 0 || !insideGroupWindow(clock())) {
+    await env.DB.prepare("UPDATE telegram_outbox SET status='approved' WHERE id=? AND status='sending'")
+      .bind(row.id).run();
+    return { id: row.id, skipped: true };
+  }
   try {
     const sent = await telegram(env, "sendMessage", {
       chat_id: env.GROUP_CHAT_ID, text: row.text, disable_web_page_preview: true,
