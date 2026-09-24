@@ -275,6 +275,7 @@
         if (!(checkbox instanceof HTMLInputElement) || times.length < 2) continue;
         const open = day >= 1 && day <= 5;
         checkbox.checked = open;
+        checkbox.dispatchEvent(new Event("change", { bubbles:true }));
         if (times[0] instanceof HTMLInputElement) { times[0].value="08:00"; times[0].disabled=!open; }
         if (times[1] instanceof HTMLInputElement) { times[1].value="17:00"; times[1].disabled=!open; }
         changed++;
