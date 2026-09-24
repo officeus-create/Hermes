@@ -65,6 +65,15 @@ test("Repair Shops V3 uses progressive disclosure without removing product detai
   await capabilities.first().locator("summary").click();
   await expect(capabilities.first()).toHaveAttribute("open", "");
   await expect(capabilities.first().locator(".repair-disclosure-body")).toContainText("simple public path");
+  const disclosureEvents = await page.evaluate(() => (window as any).dataLayer || []);
+  expect(disclosureEvents).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      event: "repair_disclosure_open",
+      product: "repair_shops",
+      section: "capability",
+      label: "One booking link",
+    }),
+  ]));
 
   const partner = page.locator(".repair-partner-disclosure");
   await expect(partner).not.toHaveAttribute("open", "");
