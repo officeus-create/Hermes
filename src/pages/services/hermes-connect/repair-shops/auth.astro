@@ -294,6 +294,8 @@ const schema: any[] = [];
   .auth-container {
     width: 100%;
     max-width: 480px;
+    box-sizing: border-box;
+    min-width: 0;
   }
 
   .back-link {
@@ -311,6 +313,8 @@ const schema: any[] = [];
   .back-link:hover { color: #7c5cff; }
 
   .glass-panel {
+    box-sizing: border-box;
+    min-width: 0;
     background: rgba(23, 26, 35, 0.55);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -389,6 +393,9 @@ const schema: any[] = [];
   }
 
   .form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -410,6 +417,8 @@ const schema: any[] = [];
   }
 
   .btn {
+    box-sizing: border-box;
+    max-width: 100%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -487,3 +496,31 @@ const schema: any[] = [];
   .detail-row span { color: #8b8f9d; }
   .detail-row strong { color: #fff; }
 </style>
+  @media (max-width: 560px) {
+    .auth-page {
+      padding: 88px 12px 56px;
+      overflow-x: clip;
+    }
+    .glass-panel {
+      padding: 28px 18px;
+      border-radius: 20px;
+    }
+    .auth-tabs {
+      min-width: 0;
+    }
+    .tab-btn {
+      min-width: 0;
+      padding-inline: 8px;
+      white-space: normal;
+      line-height: 1.2;
+    }
+    .detail-row {
+      gap: 12px;
+      min-width: 0;
+    }
+    .detail-row strong {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+  }
