@@ -1153,3 +1153,50 @@ Owner: current Load Board workstream; bounded closeout authorized by the owner.
 - Evidence boundary: the supplied demand specification identifies the existing page as an impression-bearing P0 owner, but this task did not directly inspect an authenticated GSC export. Real AI visibility observations remain empty / `DATA_PENDING`; no ranking, citation, qualified-lead or revenue improvement is claimed.
 - Verification on functional commit `00dfd777`: `npm run build` PASS (341 pages); full `npm test` PASS; focused digital-niche and AI visibility contracts PASS; focused desktop Playwright `tests/seo13-logistics-seo-demand.spec.ts` PASS 5/5; `git diff --check` PASS. Full E2E was intentionally not run because the assigned scope requested narrow verification and the change is bounded to static governed data plus server-rendered FAQ content.
 - Ecosystem compounding: canonical query and AI-prompt ownership, AI-retrievable knowledge and privacy-safe measurement context improve. Existing FAQ schema and typed content architecture are reused. CTA, layout, metadata, sitemap, analytics payloads, data collection, distribution, automation and programmatic page count are unchanged. Deferred: owner-approved merge/deploy, production HTML + FAQPage JSON-LD readback, then a governed MKT-01 provider wave before any visibility conclusion. Rollback is PR #1455 or revert of its bounded commits; next owner is an independent reviewer, then the human owner for merge/deploy.
+
+## 2026-09-24 — Codex Growth Engineering — PR #1485 durable Car Hauling delivery
+
+```yaml
+ai_name: Codex
+model: GPT-5
+chat_or_thread: SEOGeo completion burn-down
+role: implementation owner
+department: SEO/GEO revenue delivery reliability
+date: 2026-09-24
+contribution_type: Implementation Report
+confidence: 92
+task_id: issue #1296 / PR #1485
+source_of_truth: issue #1296 current body and comments + current main bb974c49366ed6d2a59b9b2a9985d12c837df129
+authority_scope: Branch write / review-only PR / human approval required for merge and deploy
+write_scope:
+  - fix/car-hauling-durable-outbox-20260924
+  - PR #1485
+  - issue #1296 after exact-head evidence
+specialization:
+  - Cloudflare Worker delivery reliability
+  - idempotency, durable queues and repository verification
+not_specialized_in:
+  - Telegram destination approval or human Sales qualification
+reviewed:
+  - AGENTS.md and required current-state/governance files
+  - issue #1296 and current comments
+  - current lead Pages Function, Worker, deployment config/workflow and tests
+  - current official Cloudflare Durable Object/export/alarm documentation
+not_reviewed:
+  - production Cloudflare account configuration
+  - private Telegram destination manifest
+  - any genuine carrier record
+handoff_to: independent reviewer, then human owner for merge/deploy decision
+```
+
+- Primary outcome: PR #1485 replaces the real Car Hauling Worker's best-effort fan-out with one SQLite-backed Durable Object per `request_id`. It atomically claims the request, rejects request-ID payload conflicts, persists a receipt and retry state for the primary email, each secondary email and Telegram, and skips destinations already delivered.
+- Reliability behavior: quiet-hours Telegram remains blocked at the last mile and is rescheduled by an alarm for the next 09:00–17:45 America/Chicago weekday window. Provider/configuration failures use bounded exponential retry timing. Active leases are renewed after destination writes and preserve the next alarm. Deterministic per-destination Message-IDs reduce ambiguous email retry duplication.
+- Data/privacy: the lead body and reply-to value are removed as soon as all destinations are delivered; the delivery ledger is retained for seven days and then deleted by alarm. No secret, chat ID, real lead, CRM row or private operational record was added. Production fails closed if the Durable Object binding is missing.
+- Files changed: existing lead-email Worker entry/core/config/example/deployment summary; existing Sales receiver and Cloudflare deployment-contract tests; this error-register row and handoff. No public URL, page, design, analytics payload, SEO owner, bot, receiver or data store outside the existing Worker was created.
+- Verification coverage added: duplicate `request_id` skips already delivered emails; conflicting payload reuse returns 409; quiet-hours Telegram schedules an alarm and later sends once; the alarm skips delivered email destinations; completion purges the lead body; deployment contracts require the named SQLite Durable Object export/binding and production fail-closed variable.
+- Verification state at handoff commit: Cloudflare deployment ownership and Carrier Contract checks passed on the preceding functional head; the documentation-inclusive exact head must still pass `npm run build`, full `npm test`, full `npm run test:e2e`, and the PR checks before owner review. No merge or production deployment is authorized by this entry.
+- Ecosystem compounding scorecard: SEO/query ownership, public content, metadata, schema and internal links unchanged; conversion protection improves because a qualified intake can survive partial transport failure without resending completed destinations; knowledge improves through one canonical error/handoff record; scale and content reuse are not applicable; AI/product gains a reusable durable per-destination outbox primitive; privacy gains explicit payload purge/retention; architecture reuses the existing Worker and routes rather than creating a second receiver. Deferred: approved Telegram destination/configuration, exact production release/readback, next genuine carrier receipt, human qualification and business outcome evidence.
+- Risks/assumptions: provider acceptance is a transport receipt, not proof of human reading or qualification; exact-once external delivery cannot be guaranteed after an unknowable provider timeout, so deterministic Message-ID plus durable receipts narrow rather than mathematically eliminate that ambiguity. Telegram remains pending while its approved server-side configuration is absent.
+- Rollback: revert the squash merge if later authorized; the existing Pages and Worker routes remain unchanged, while the production-required flag prevents silent fallback to best-effort fan-out.
+- Next smallest step / owner: exact-head CI and independent review; then the human owner explicitly approves or declines merge/deploy. After deployment, Codex may perform read-only exact-SHA/config verification; Sales / Carrier Operations owns passive proof from the next genuine lead.
+
