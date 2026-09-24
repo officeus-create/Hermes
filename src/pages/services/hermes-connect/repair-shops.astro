@@ -487,8 +487,8 @@ const schema = [
     .repair-live-hero { padding-top: 2.8rem; }
     .repair-live-grid { grid-template-columns: minmax(0,1fr); gap: 2rem; }
     .repair-live-hero h1 { font-size: clamp(2.7rem, 14vw, 4.5rem); }
-    .repair-actions { flex-direction: column; }
-    .repair-primary, .repair-secondary { width: 100%; box-sizing: border-box; }
+    .repair-actions { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); }
+    .repair-primary, .repair-secondary { width: auto; box-sizing: border-box; padding-inline: .72rem; font-size: .82rem; }
     .repair-trust { display: grid; }
     .repair-trust span { border-radius: 14px; }
     .repair-outcome-grid, .repair-disclosure-grid, .repair-path-grid, .repair-form-grid { grid-template-columns: 1fr; }
@@ -505,6 +505,11 @@ const schema = [
     .repair-partner-open { white-space: normal; }
     .repair-lifecycle { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .repair-checkbox-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  }
+
+  @media (max-width: 360px) {
+    .repair-actions { grid-template-columns: 1fr; }
+    .repair-primary, .repair-secondary { width: 100%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
