@@ -47,9 +47,9 @@ assert.doesNotMatch(customerActions, /client-name|client-email|client-phone|\/ap
 
 // Revenue V1: keep the public Repair Shop path value-first and route paid intent
 // through the existing private lead receiver without introducing website payment tech.
-assert.match(repairLanding, /Auto repair shop software for scheduling, bookings, and customer workflow\./);
+assert.match(repairLanding, /Auto repair shop software for bookings, customers, and availability\\./);
 assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
-assert.match(repairLanding, /\$0 during setup · standard Founding Shop price \$99\/month after setup/);
+assert.match(repairLanding, /\\$0 during setup · \\$99\\/month after setup/);\nassert.match(repairLanding, /standard Founding Shop price after setup/);
 assert.doesNotMatch(repairLanding, /Current live pilot/);
 
 assert.match(offerContract, /REPAIR_SHOP_OFFER_STATUS\s*=\s*"current-public-offer"/);
