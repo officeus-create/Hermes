@@ -117,16 +117,8 @@
       return `${url.pathname}${url.search}`;
     };
 
-    const hideLowerOwnerCta = () => {
-      const lower = document.querySelector("[data-repair-free-launch] [data-owner-cta]");
-      if (lower instanceof HTMLElement) lower.hidden = true;
-    };
-
     const install = () => {
-      if (document.querySelector("[data-repair-owner-quick-login]")) {
-        hideLowerOwnerCta();
-        return true;
-      }
+      if (document.querySelector("[data-repair-owner-quick-login]")) return true;
 
       const hero = document.querySelector(".repair-live-hero");
       const heroCopy = hero?.querySelector(".repair-hero-copy");
@@ -226,8 +218,6 @@
       const trust = heroCopy.querySelector(".repair-trust");
       if (trust) trust.insertAdjacentElement("beforebegin", entry);
       else heroCopy.insertAdjacentElement("beforeend", entry);
-      hideLowerOwnerCta();
-
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         message.textContent = "";
@@ -279,16 +269,12 @@
     };
 
     if (!install()) requestAnimationFrame(() => install());
-    window.setTimeout(() => {
-      install();
-      hideLowerOwnerCta();
-    }, 100);
+    window.setTimeout(() => install(), 100);
   })();
 </script>
 
 <style is:global>
   .repair-owner-quick-login {
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: minmax(0,1fr) auto;
     gap: 8px 14px;
