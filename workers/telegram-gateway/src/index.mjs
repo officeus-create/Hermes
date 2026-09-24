@@ -41,7 +41,10 @@ const hex = bytes => Array.from(bytes, b => b.toString(16).padStart(2, "0")).joi
 const validId = s => typeof s === "string" && /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,35}$/.test(s);
 const safeText = s => typeof s === "string" && s.length > 0 && s.length <= 3000
   && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(s)
-  && !/(password|парол[ья]|api[_ -]?key|bot[_ -]?token|секрет|одноразов[а-я]* код|\b\d{6}\b)/i.test(s);
+  && !/(password|парол[ья]|api[_ -]?key|bot[_ -]?token|секрет|одноразов[а-я]* код|\b\d{6}\b)/i.test(s)
+  && !/[\w.+-]+@[\w.-]+\.[a-z]{2,}/i.test(s)
+  && !/(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/.test(s)
+  && !/[?&](?:token|key|password|secret|code)=/i.test(s);
 
 async function propose(req, env) {
   if (!await equal(req.headers.get("Authorization") || "", `Bearer ${env.PRODUCER_SECRET}`)) {
