@@ -76,6 +76,8 @@ assert.ok(!carHaulingDispatcher.includes("Prepare Hermes application preview"));
 assert.ok(carHaulingDispatcher.includes("Check current vacancies"));
 assert.ok(!carHaulingDispatcher.includes("source=hermes_careers"));
 assert.ok(carHaulingDispatcher.includes("awaiting a fresh recruiting review"));
+assert.ok(!carHaulingDispatcher.includes("Submit through the current Work.ua vacancy."));
+assert.ok(carHaulingDispatcher.includes("do not submit through the expired Work.ua listing"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 

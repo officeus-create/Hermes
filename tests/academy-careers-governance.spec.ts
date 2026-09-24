@@ -56,7 +56,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText("Remote worldwide", { exact: true })).toBeVisible();
     await expect(page.getByText("U.S. Central Time schedule", { exact: true })).toBeVisible();
     await expect(page.getByText(/Publication review due/)).toBeVisible();
-    await expect(page.getByText(/awaiting a fresh recruiting review/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "This vacancy is awaiting a fresh recruiting review." })).toBeVisible();
 
     const previewLinks = page.locator('a[href^="/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers"]');
     await expect(previewLinks).toHaveCount(0);
