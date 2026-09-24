@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-24-chayka-catalog-concept",
+  "generated_at": "2026-09-24T18:30:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/businesses/ukraine/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/ukraine/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/data/repair-shop-directory.ts",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+    },
+    {
+      "route": "/businesses/ukraine/chaiky/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/ukraine/chaiky/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/data/repair-shop-directory.ts",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+    },
+    {
+      "route": "/businesses/ukraine/chaiky/chayka-store/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/ukraine/chaiky/chayka-store.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+    },
+    {
+      "route": "/services/hermes-connect/demos/chayka-store/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/demos/chayka-store/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/demos/chayka-store.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 4,
+    "indexable_route_count_added": 3,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

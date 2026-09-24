@@ -61,8 +61,8 @@ const indexedChildSitemapFiles = [
 // Texas state, Dallas city, and the unclaimed dealership profile. Its private CRM workspace
 // stays noindex and is intentionally absent from every sitemap.
 // The September 24 verified repair prospect wave adds 17 static owners. Two additional
-// source-bounded profiles add five owners: Alabama, Brookwood, East Dundee and both profiles.
-const nonInsightsExpectedPageUrlCount = 283;
+// source-bounded profiles add five owners: Alabama, Brookwood, East Dundee and both profiles.\n// The Chayka Store pilot adds three intentional Ukraine Catalog owners: country, locality and business concept.
+const nonInsightsExpectedPageUrlCount = 286;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
