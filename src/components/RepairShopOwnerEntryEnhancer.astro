@@ -223,7 +223,9 @@
       });
 
       entry.append(header, toggle, panel);
-      heroCopy.insertAdjacentElement("beforeend", entry);
+      const trust = heroCopy.querySelector(".repair-trust");
+      if (trust) trust.insertAdjacentElement("beforebegin", entry);
+      else heroCopy.insertAdjacentElement("beforeend", entry);
       hideLowerOwnerCta();
 
       form.addEventListener("submit", async (event) => {
