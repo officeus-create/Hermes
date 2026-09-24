@@ -201,7 +201,7 @@ export const PUBLIC_DIRECTORY_PROSPECTS = Object.freeze([
     crm_interest_level: "Unknown",
     crm_budget_range: "Not Discussed",
     provenance_json: JSON.stringify({ source: "official website + FMCSA SAFER bounded public-web verification", selected_for: "Hermes Business Directory truck-repair wave 2", verified_at: "2026-09-10", google_business_profile: "not_confirmed_not_proven_absent" }),
-  },,
+  },
   {
     id: "prospect-client-chayka-store-ua",
     source_system: "PUBLIC_WEB",
