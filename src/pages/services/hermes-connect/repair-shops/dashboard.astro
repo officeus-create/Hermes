@@ -128,13 +128,14 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const activeLocale = new URLSearchParams(window.location.search).get("lang") || "en";
   let publicBookingUrl = "";
   const setupState = { profileLoaded:false, servicesLoaded:false, hoursLoaded:false, serviceCount:0, openDays:0 };
-  const profileDetails = ["shop-name","shop-phone","shop-address","shop-city","shop-state","shop-zip"];
+  const requiredProfileDetails = ["shop-name","shop-city","shop-state"];
+  const recommendedProfileDetails = ["shop-phone","shop-address","shop-zip"];
   function updateProfilePrompts() {
-    for (const id of profileDetails) {
+    for (const id of [...requiredProfileDetails, ...recommendedProfileDetails]) {
       const field = $<HTMLInputElement>(id);
       field?.closest("label")?.classList.toggle("needs-detail", !field.value.trim());
     }
-    saveProfileButton?.classList.toggle("needs-attention", profileDetails.some((id) => !$<HTMLInputElement>(id)?.value.trim()));
+    saveProfileButton?.classList.toggle("needs-attention", requiredProfileDetails.some((id) => !$<HTMLInputElement>(id)?.value.trim()));
   }
   let savedPresence: Record<string,string> = {};
   function updatePresence() {
@@ -152,15 +153,23 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   }
   profileForm?.addEventListener("input", () => { updateProfilePrompts(); updatePresence(); updateSetupNotice(); });
   function updateSetupNotice() {
-    if (!setupState.profileLoaded || !setupState.servicesLoaded || !setupState.hoursLoaded) return;
+    if (!setupState.profileLoaded) return;
+    const missingRequiredProfile = requiredProfileDetails.some((id) => !$<HTMLInputElement>(id)?.value.trim());
     const notice = $("setup-next-step");
     const copy = $("setup-next-copy");
     const link = $<HTMLAnchorElement>("setup-next-link");
     if (!notice || !copy || !link) return;
+    const profileSaved = $("profile-state")?.dataset.ready === "true";
+    if (profileSaved && !missingRequiredProfile && (!setupState.servicesLoaded || !setupState.hoursLoaded)) {
+      notice.classList.add("hidden"); return;
+    }
     let message = "", target = "", action = "";
-    if (profileDetails.some((id) => !$<HTMLInputElement>(id)?.value.trim())) {
-      message = "Complete the missing shop details so customers can recognize your business.";
+    if (missingRequiredProfile) {
+      message = "Add your shop name and location to set up your workspace.";
       target = "#profile-title"; action = "Complete profile";
+    } else if (!profileSaved) {
+      message = "Save your shop profile to unlock the rest of setup.";
+      target = "#profile-title"; action = "Save profile";
     } else if (!setupState.serviceCount) {
       message = "Add your first service to make it available on the booking page.";
       target = "#services-title"; action = "Add a service";
