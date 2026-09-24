@@ -15,6 +15,8 @@ const GMAIL_REQUEST_TIMEOUT_MS = 8_000;
 const CAR_HAULING_TELEGRAM_TIME_ZONE = "America/Chicago";
 const CAR_HAULING_TELEGRAM_START_MINUTE = 9 * 60;
 const CAR_HAULING_TELEGRAM_END_MINUTE = 17 * 60 + 45;
+const CAR_HAULING_OUTBOX_RETENTION_MS = 7 * 24 * 60 * 60 * 1_000;
+const CAR_HAULING_DELIVERY_LEASE_MS = 60 * 1_000;
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -157,15 +159,16 @@ const parseCarHaulingRecipients = (env) => {
     .slice(0, 8);
 };
 
-const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId }) => {
+const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId, deliveryKey = "delivery" }) => {
   const boundary = `hermes_${requestId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 48)}`;
+  const deliverySuffix = String(deliveryKey).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "delivery";
   const headers = [
     `From: ${from}`,
     `To: ${to}`,
     `Subject: ${subject}`,
     ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
     `Date: ${new Date().toUTCString()}`,
-    `Message-ID: <${requestId}.${crypto.randomUUID()}@hermeslogisticsus.com>`,
+    `Message-ID: <${requestId}.${deliverySuffix}@hermeslogisticsus.com>`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     "",
@@ -372,13 +375,319 @@ const sendCarHaulingSalesTelegram = async (env, text, requestId, now = new Date(
     if (!response.ok || !payload?.ok || !payload?.result?.message_id) {
       return { ok: false, status: `http_${response.status}` };
     }
-    return { ok: true, status: "delivered" };
+    return { ok: true, status: "delivered", providerMessageId: String(payload.result.message_id) };
   } catch (error) {
     return { ok: false, status: error instanceof DOMException && error.name === "AbortError" ? "timeout" : "network_error" };
   } finally {
     clearTimeout(timeout);
   }
 };
+
+
+const sha256Hex = async (value) => {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
+const durablePayloadFingerprint = (payload) => sha256Hex(JSON.stringify([
+  payload.requestId,
+  payload.subject,
+  payload.text,
+  payload.replyTo,
+  payload.sender,
+  payload.recipients,
+]));
+
+const nextCarHaulingTelegramWorkTime = (now = new Date()) => {
+  const candidate = new Date(now.getTime() + 15 * 60 * 1_000);
+  candidate.setUTCSeconds(0, 0);
+  for (let offset = 0; offset < 8 * 24 * 4; offset += 1) {
+    if (isCarHaulingTelegramWorkHours(candidate)) return candidate.getTime();
+    candidate.setTime(candidate.getTime() + 15 * 60 * 1_000);
+  }
+  return now.getTime() + 60 * 60 * 1_000;
+};
+
+const durableRetryDelay = (attempts) =>
+  Math.min(6 * 60 * 60 * 1_000, 60 * 1_000 * (2 ** Math.min(Math.max(attempts - 1, 0), 8)));
+
+const createDurableDeliveryRecord = ({ requestId, payloadHash, subject, text, replyTo, sender, recipients }, now) => ({
+  version: 1,
+  requestId,
+  payloadHash,
+  subject,
+  text,
+  replyTo,
+  sender,
+  createdAt: now,
+  updatedAt: now,
+  leaseUntil: 0,
+  completedAt: null,
+  purgeAt: null,
+  destinations: [
+    ...recipients.map((recipient, index) => ({
+      key: index === 0 ? "email:primary" : `email:secondary:${index}`,
+      channel: "email",
+      role: index === 0 ? "primary" : "secondary",
+      recipient,
+      status: "pending",
+      attempts: 0,
+      lastAttemptAt: null,
+      deliveredAt: null,
+      providerMessageId: null,
+      lastError: null,
+      nextAttemptAt: now,
+    })),
+    {
+      key: "telegram:sales",
+      channel: "telegram",
+      role: "sales",
+      status: "pending",
+      attempts: 0,
+      lastAttemptAt: null,
+      deliveredAt: null,
+      providerMessageId: null,
+      lastError: null,
+      nextAttemptAt: now,
+    },
+  ],
+});
+
+const durableDeliverySummary = (record, { accepted = false, deduplicated = false } = {}) => {
+  const destinations = record.destinations.map((destination) => ({
+    key: destination.key,
+    channel: destination.channel,
+    role: destination.role,
+    ...(destination.recipient ? { recipient: destination.recipient } : {}),
+    status: destination.status,
+    attempts: destination.attempts,
+    last_attempt_at: destination.lastAttemptAt ? new Date(destination.lastAttemptAt).toISOString() : null,
+    delivered_at: destination.deliveredAt ? new Date(destination.deliveredAt).toISOString() : null,
+    provider_message_id: destination.providerMessageId,
+    error: destination.lastError,
+    next_attempt_at: destination.status === "pending" && destination.nextAttemptAt
+      ? new Date(destination.nextAttemptAt).toISOString()
+      : null,
+  }));
+  const primary = destinations.find((destination) => destination.role === "primary");
+  return {
+    ok: accepted || primary?.status === "delivered",
+    request_id: record.requestId,
+    durable: true,
+    accepted,
+    deduplicated,
+    complete: destinations.every((destination) => destination.status === "delivered"),
+    recipient_count: destinations.filter((destination) => destination.channel === "email" && destination.status === "delivered").length,
+    delivery_ledger: {
+      primary: primary?.status || "pending",
+      destinations,
+      updated_at: new Date(record.updatedAt).toISOString(),
+    },
+  };
+};
+
+class CarHaulingDeliveryCoordinatorCore {
+  constructor(ctx, env) {
+    this.ctx = ctx;
+    this.storage = ctx.storage;
+    this.env = env;
+  }
+
+  async claim(payload, payloadHash, now) {
+    return this.storage.transaction(async (transaction) => {
+      let record = await transaction.get("delivery");
+      if (record && record.payloadHash !== payloadHash) return { conflict: true, record };
+      if (!record) record = createDurableDeliveryRecord({ ...payload, payloadHash }, now);
+      if (record.completedAt || record.leaseUntil > now) {
+        return { conflict: false, claimed: false, record };
+      }
+      record.leaseUntil = now + CAR_HAULING_DELIVERY_LEASE_MS;
+      record.updatedAt = now;
+      await transaction.put("delivery", record);
+      return { conflict: false, claimed: true, record };
+    });
+  }
+
+  async persistDestination(key, patch, now) {
+    return this.storage.transaction(async (transaction) => {
+      const record = await transaction.get("delivery");
+      if (!record) return null;
+      const destination = record.destinations.find((item) => item.key === key);
+      if (!destination || destination.status === "delivered") return record;
+      Object.assign(destination, patch);
+      record.updatedAt = now;
+      await transaction.put("delivery", record);
+      return record;
+    });
+  }
+
+  async process(record, now = Date.now()) {
+    for (const destination of record.destinations) {
+      if (destination.status === "delivered" || destination.nextAttemptAt > now) continue;
+      const attemptedAt = Date.now();
+      if (destination.channel === "email") {
+        const result = await sendSafely(this.env, {
+          to: destination.recipient,
+          from: record.sender,
+          subject: record.subject,
+          text: record.text,
+          replyTo: record.replyTo,
+          attachments: [],
+          requestId: record.requestId,
+          deliveryKey: destination.key,
+        });
+        if (result.ok) {
+          record = await this.persistDestination(destination.key, {
+            status: "delivered",
+            attempts: destination.attempts + result.attempts,
+            lastAttemptAt: attemptedAt,
+            deliveredAt: Date.now(),
+            providerMessageId: result.providerMessageId,
+            lastError: null,
+            nextAttemptAt: null,
+          }, Date.now());
+        } else {
+          const attempts = destination.attempts + result.attempts;
+          record = await this.persistDestination(destination.key, {
+            status: "pending",
+            attempts,
+            lastAttemptAt: attemptedAt,
+            lastError: result.mapped.error,
+            nextAttemptAt: Date.now() + durableRetryDelay(attempts),
+          }, Date.now());
+        }
+      } else {
+        const result = await sendCarHaulingSalesTelegram(this.env, record.text, record.requestId, new Date(attemptedAt));
+        const attempts = destination.attempts + 1;
+        if (result.ok) {
+          record = await this.persistDestination(destination.key, {
+            status: "delivered",
+            attempts,
+            lastAttemptAt: attemptedAt,
+            deliveredAt: Date.now(),
+            providerMessageId: result.providerMessageId || null,
+            lastError: null,
+            nextAttemptAt: null,
+          }, Date.now());
+        } else {
+          const nextAttemptAt = result.status === "outside_working_hours"
+            ? nextCarHaulingTelegramWorkTime(new Date(attemptedAt))
+            : Date.now() + durableRetryDelay(attempts);
+          record = await this.persistDestination(destination.key, {
+            status: "pending",
+            attempts,
+            lastAttemptAt: attemptedAt,
+            lastError: result.status,
+            nextAttemptAt,
+          }, Date.now());
+        }
+      }
+    }
+    return record;
+  }
+
+  async finalize(record) {
+    const now = Date.now();
+    record = await this.storage.transaction(async (transaction) => {
+      const current = await transaction.get("delivery");
+      if (!current) return null;
+      current.leaseUntil = 0;
+      current.updatedAt = now;
+      if (current.destinations.every((destination) => destination.status === "delivered")) {
+        current.completedAt ||= now;
+        current.purgeAt ||= now + CAR_HAULING_OUTBOX_RETENTION_MS;
+        current.text = "";
+        current.replyTo = "";
+      }
+      await transaction.put("delivery", current);
+      return current;
+    });
+    if (!record) return null;
+
+    const pendingTimes = record.destinations
+      .filter((destination) => destination.status === "pending")
+      .map((destination) => destination.nextAttemptAt || now + 60 * 1_000);
+    const nextAlarm = pendingTimes.length ? Math.min(...pendingTimes) : record.purgeAt;
+    if (nextAlarm) await this.storage.setAlarm(Math.max(nextAlarm, now + 1_000));
+    return record;
+  }
+
+  async run(record) {
+    try {
+      return await this.finalize(await this.process(record));
+    } catch (error) {
+      console.error(JSON.stringify({
+        event: "car_hauling_durable_delivery_failed",
+        request_id: record.requestId,
+        message: clean(error?.message, 200),
+      }));
+      const current = await this.storage.get("delivery");
+      if (current) {
+        current.leaseUntil = 0;
+        current.updatedAt = Date.now();
+        await this.storage.put("delivery", current);
+        await this.storage.setAlarm(Date.now() + 15 * 60 * 1_000);
+      }
+      return current;
+    }
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method !== "POST" || url.pathname !== "/internal/car-hauling-delivery") {
+      return json(404, { ok: false, error: "not_found" });
+    }
+
+    const input = await request.json().catch(() => null);
+    const requestId = clean(input?.request_id, 80);
+    const subject = cleanHeader(input?.subject, 160);
+    const text = clean(input?.text, MAX_MESSAGE_TEXT);
+    const replyTo = cleanHeader(input?.reply_to, 320).toLowerCase();
+    const sender = cleanHeader(this.env.SALES_SENDER, 320);
+    const recipients = parseCarHaulingRecipients(this.env);
+    if (!isRequestId(requestId) || subject !== CAR_HAULING_SALES_SUBJECT || text.length < 80 ||
+        (replyTo && !isEmail(replyTo)) || !isEmail(sender) || recipients.length < 1) {
+      return json(400, { ok: false, error: "invalid_message" });
+    }
+
+    const payload = { requestId, subject, text, replyTo, sender, recipients };
+    const payloadHash = await durablePayloadFingerprint(payload);
+    const claim = await this.claim(payload, payloadHash, Date.now());
+    if (claim.conflict) return json(409, { ok: false, error: "request_id_payload_conflict" });
+    if (!claim.claimed) {
+      return json(202, durableDeliverySummary(claim.record, { accepted: true, deduplicated: true }));
+    }
+
+    const record = await this.run(claim.record);
+    if (!record) return json(503, { ok: false, error: "delivery_state_unavailable" });
+    const summary = durableDeliverySummary(record);
+    const primary = record.destinations.find((destination) => destination.role === "primary");
+    return json(primary?.status === "delivered" ? 202 : 503, summary);
+  }
+
+  async alarm() {
+    const now = Date.now();
+    const record = await this.storage.get("delivery");
+    if (!record) return;
+    if (record.purgeAt && record.purgeAt <= now) {
+      await this.storage.delete("delivery");
+      return;
+    }
+    if (record.completedAt) {
+      await this.storage.setAlarm(record.purgeAt);
+      return;
+    }
+    const claim = await this.storage.transaction(async (transaction) => {
+      const current = await transaction.get("delivery");
+      if (!current || current.completedAt || current.leaseUntil > now) return null;
+      current.leaseUntil = now + CAR_HAULING_DELIVERY_LEASE_MS;
+      current.updatedAt = now;
+      await transaction.put("delivery", current);
+      return current;
+    });
+    if (claim) await this.run(claim);
+  }
+}
 
 const worker = {
   async fetch(request, env) {
@@ -526,6 +835,23 @@ const worker = {
     }
 
     if (subject === CAR_HAULING_SALES_SUBJECT) {
+      if (env.CAR_HAULING_DELIVERY_COORDINATOR) {
+        const coordinator = env.CAR_HAULING_DELIVERY_COORDINATOR.getByName(requestId);
+        return coordinator.fetch(new Request("https://car-hauling-delivery.internal/internal/car-hauling-delivery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            request_id: requestId,
+            subject,
+            text,
+            reply_to: replyTo,
+          }),
+        }));
+      }
+      if (clean(env.CAR_HAULING_DURABLE_OUTBOX_REQUIRED, 10).toLowerCase() === "true") {
+        return json(503, { ok: false, error: "durable_outbox_not_configured" });
+      }
+
       const primary = cleanHeader(env.SALES_DESTINATION, 320).toLowerCase();
       const recipients = parseCarHaulingRecipients(env);
       if (!isEmail(primary) || !recipients.includes(primary)) {
@@ -594,5 +920,5 @@ const worker = {
   },
 };
 
-export { buildRawMime, carHaulingTelegramClock, classifyProviderError, constantTimeEqual, isCarHaulingTelegramWorkHours, normalizeAttachments, parseCarHaulingRecipients, parseInternalRecipients, sendCarHaulingSalesTelegram, sendMessage };
+export { buildRawMime, CarHaulingDeliveryCoordinatorCore, carHaulingTelegramClock, classifyProviderError, constantTimeEqual, durableDeliverySummary, isCarHaulingTelegramWorkHours, normalizeAttachments, parseCarHaulingRecipients, parseInternalRecipients, sendCarHaulingSalesTelegram, sendMessage };
 export default worker;
