@@ -748,3 +748,19 @@
   background: transparent;
   box-shadow: none;
 }
+
+
+/* Final V3 conversion anchor: this one bounded dark price card intentionally stays dark
+   inside the otherwise Pearl pricing section. */
+.hc-experience .repair-pilot-page .repair-plan-card .repair-plan-price {
+  color: #fff;
+  background: #172033;
+}
+.hc-experience .repair-pilot-page .repair-plan-card .repair-plan-price strong,
+.hc-experience .repair-pilot-page .repair-plan-card .repair-plan-price b {
+  color: #fff;
+}
+.hc-experience .repair-pilot-page .repair-plan-card .repair-plan-price span,
+.hc-experience .repair-pilot-page .repair-plan-card .repair-plan-price small {
+  color: #aeb9ca;
+}
