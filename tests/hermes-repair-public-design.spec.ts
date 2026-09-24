@@ -28,6 +28,9 @@ test("Repair Shops landing keeps Pearl background and one visible pricing story"
   expect(visual!.priceBackground).toBe("rgb(23, 32, 51)");
   expect(visual!.priceColor).toBe("rgb(255, 255, 255)");
   await expect(page.locator("[data-repair-free-launch]:visible")).toHaveCount(0);
+  const pilotSurface = page.locator(".repair-geo-growth");
+  await expect(pilotSurface).toBeVisible();
+  expect(await pilotSurface.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(247, 246, 243)");
 });
 
 
