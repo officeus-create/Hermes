@@ -13,9 +13,24 @@
   "vars": {
     "SALES_DESTINATION": "officeus@hermeslogisticsus.com",
     "SALES_SENDER": "website@hermeslogisticsus.com",
+    "CAR_HAULING_DURABLE_OUTBOX_REQUIRED": "true",
     "LOADBOARD_EMAIL_RECIPIENT": "loads@loadboard.hermeslogisticsus.com",
     "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake",
     "LOADBOARD_EMAIL_SOURCE_CONFIG": "{\"approved-source@example.com\":{\"id\":\"source_example\",\"name\":\"Approved Source\",\"redistribution_permission\":\"internal_only\",\"requested_visibility\":\"internal_only\",\"contact_reveal_permission\":\"hidden\",\"ttl_hours\":12}}"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CAR_HAULING_DELIVERY_COORDINATOR",
+        "class_name": "CarHaulingDeliveryCoordinator"
+      }
+    ]
+  },
+  "exports": {
+    "CarHaulingDeliveryCoordinator": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
   },
   "send_email": [
     {
