@@ -111,4 +111,14 @@ test("Repair Shop public shell stays within the mobile viewport", async ({ page 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
   await expect(page.locator(".repair-free-launch h2")).toBeVisible();
+
+  const secondary = page.locator(".repair-live-hero .repair-secondary").first();
+  await expect(secondary).toBeVisible();
+  const consent = page.locator(".tracking-consent-banner");
+  await expect(consent).toBeVisible();
+  const secondaryBox = await secondary.boundingBox();
+  const consentBox = await consent.boundingBox();
+  expect(secondaryBox).not.toBeNull();
+  expect(consentBox).not.toBeNull();
+  expect(secondaryBox!.y + secondaryBox!.height).toBeLessThanOrEqual(consentBox!.y);
 });
