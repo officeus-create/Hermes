@@ -71,7 +71,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <div class="panel-heading"><div><p class="eyebrow">Real D1 data</p><h2 id="services-title">Services</h2><p class="muted">These are the same services customers see on your public booking page.</p></div><span id="service-count" class="pill">0 services</span></div>
         <form id="service-form" class="service-form">
           <label class="field grow">Service name<input id="service-name" minlength="2" maxlength="120" required placeholder="Brake inspection" /></label>
-          <label class="field duration">Duration<select id="service-duration" required><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option><option value="180">180 min</option><option value="240">240 min</option></select></label>
+          <label class="field duration">Duration<select id="service-duration" required><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option><option value="180">180 min</option><option value="240">240 min</option><option value="360">360 min</option><option value="480">480 min</option><option value="600">600 min</option><option value="720">720 min</option></select></label>
           <button id="add-service-btn" class="primary-btn" type="submit"><Plus size={17} /> Add service</button>
         </form>
         <div id="services-loading" class="state-card">Loading services…</div>
