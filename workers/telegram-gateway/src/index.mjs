@@ -89,7 +89,7 @@ async function webhook(req, env) {
   if (message) {
     if (String(message.from?.id) !== String(env.OWNER_USER_ID)
         || String(message.chat?.id) !== String(env.OWNER_USER_ID)
-        || message.chat?.type !== "private") return response(403, { error: "wrong_owner" });
+        || message.chat?.type !== "private") return response(200, { ok: true, ignored: true });
     const command = String(message.text || "").split("@")[0];
     if (["/pause", "/resume"].includes(command)) {
       const paused = command === "/pause" ? 1 : 0;
@@ -102,7 +102,7 @@ async function webhook(req, env) {
   if (!cb) return response(200, { ok: true });
   if (String(cb.from?.id) !== String(env.OWNER_USER_ID)
       || String(cb.message?.chat?.id) !== String(env.OWNER_USER_ID)) {
-    return response(403, { error: "wrong_owner" });
+    return response(200, { ok: true, ignored: true });
   }
   const match = /^([ar]):([a-zA-Z0-9][a-zA-Z0-9_-]{7,35}):([0-9a-f]{16})$/.exec(cb.data || "");
   if (!match) return response(400, { error: "invalid_callback" });
