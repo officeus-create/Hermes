@@ -201,7 +201,32 @@ export const PUBLIC_DIRECTORY_PROSPECTS = Object.freeze([
     crm_interest_level: "Unknown",
     crm_budget_range: "Not Discussed",
     provenance_json: JSON.stringify({ source: "official website + FMCSA SAFER bounded public-web verification", selected_for: "Hermes Business Directory truck-repair wave 2", verified_at: "2026-09-10", google_business_profile: "not_confirmed_not_proven_absent" }),
-  },
+  },,
+  {
+    id: "prospect-client-chayka-store-ua",
+    source_system: "PUBLIC_WEB",
+    source_ref: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924",
+    business_name: "Чайка Store",
+    shop_type: "Phone Repair & Accessories",
+    state: "Kyiv region",
+    city: "Chaiky",
+    address_line1: "вул. Валерія Лобановського, 21/3, Чайки, Київська область, 08135",
+    phone: "+380 63 924 22 22",
+    email: "",
+    website: "",
+    social_url: "https://www.instagram.com/chayka_store1",
+    contact_name: "",
+    contact_role: "",
+    services_summary: "Phone repair/accessories direction plus a separate More Chay tea direction. Exact service menu, inventory, pricing, turnaround and warranty require owner confirmation.",
+    website_observation: "Hermes Catalog website concept prepared from client-supplied Google Maps and social sources; no owner domain is asserted.",
+    social_observation: "Client supplied @chayka_store1 for repair/accessories and @more_chau plus t.me/more_chay for the tea direction.",
+    crm_stage: "Research",
+    crm_call_result: "Not Called",
+    crm_decision_maker_reached: "Unknown",
+    crm_interest_level: "Warm",
+    crm_budget_range: "Not Discussed",
+    provenance_json: JSON.stringify({ source: "client-supplied Google Maps + Instagram + Telegram", selected_for: "Hermes Catalog Website Concept pilot", verified_at: "2026-09-24", country: "UA" }),
+  }
 ]);
 
 export async function ensureRepairShopProspectSchema(db) {
