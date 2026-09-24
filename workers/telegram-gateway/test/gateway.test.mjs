@@ -93,6 +93,8 @@ test("proposal requires producer secret, rejects credentials and deduplicates", 
   try {
     assert.equal((await worker.fetch(req("/proposals", proposal), e)).status, 401);
     assert.equal((await worker.fetch(req("/proposals", { ...proposal, text: "password: 123" }, { Authorization: "Bearer producer-secret" }), e)).status, 400);
+    assert.equal((await worker.fetch(req("/proposals", { ...proposal, text: "Call +1 262 555 0100" }, { Authorization: "Bearer producer-secret" }), e)).status, 400);
+    assert.equal((await worker.fetch(req("/proposals", { ...proposal, text: "Email user@example.org" }, { Authorization: "Bearer producer-secret" }), e)).status, 400);
     const good = req("/proposals", proposal, { Authorization: "Bearer producer-secret" });
     assert.equal((await worker.fetch(good, e)).status, 202);
     assert.equal((await worker.fetch(req("/proposals", proposal, { Authorization: "Bearer producer-secret" }), e)).status, 409);
