@@ -114,6 +114,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       };
       const row = document.createElement("div");
       row.className = "day-row";
+      row.classList.toggle("is-open", day.is_open);
       row.dataset.day = String(dayNumber);
 
       const openLabel = document.createElement("label");
@@ -134,7 +135,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       start.disabled = !day.is_open;
       start.setAttribute("aria-label", `${dayNames[dayNumber]} start time`);
       const separator = document.createElement("span");
-      separator.textContent = "to";
+      separator.textContent = "–";
       separator.className = "muted";
       const end = document.createElement("input");
       end.type = "time";
@@ -142,12 +143,16 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       end.disabled = !day.is_open;
       end.setAttribute("aria-label", `${dayNames[dayNumber]} end time`);
       timeWrap.append(start, separator, end);
+      const closed = document.createElement("span");
+      closed.className = "closed-label";
+      closed.textContent = "Closed";
 
       checkbox.addEventListener("change", () => {
+        row.classList.toggle("is-open", checkbox.checked);
         start.disabled = !checkbox.checked;
         end.disabled = !checkbox.checked;
       });
-      row.append(openLabel, timeWrap);
+      row.append(openLabel, timeWrap, closed);
       list.append(row);
     }
   }
@@ -232,4 +237,55 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 <style>
   .availability-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.shell{width:min(900px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:650;margin-bottom:26px}.page-header,.panel-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.page-header{margin-bottom:28px}.eyebrow{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(30px,5vw,48px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab8;line-height:1.6}.panel,.note-panel{border:1px solid rgba(255,255,255,.08);background:rgba(20,22,30,.76);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.panel{padding:28px;margin-bottom:22px}.note-panel{padding:22px 26px}.timezone-pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border-radius:999px;padding:8px 12px;background:rgba(124,92,255,.14);color:#c9bfff;font-size:13px;font-weight:750}.availability-list{display:grid;gap:10px;margin:28px 0 22px}.day-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 17px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(7,8,12,.36)}.open-toggle{display:flex;align-items:center;gap:11px;min-width:150px;cursor:pointer}.open-toggle input{width:18px;height:18px;accent-color:#7c5cff}.time-wrap{display:flex;align-items:center;gap:10px}.time-wrap input{min-height:42px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#11131a;color:#fff;padding:0 11px;font:inherit;outline:none;color-scheme:dark}.time-wrap input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}.time-wrap input:disabled{opacity:.4}.primary-btn,.secondary-btn{cursor:pointer;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary-btn{min-height:46px;border:0;border-radius:11px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4ba9dc)}.secondary-btn{border-radius:11px;padding:11px 15px;color:#e8e9ee;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}button:disabled{opacity:.55;cursor:not-allowed}.alert{margin:0 0 18px;padding:13px 15px;border-radius:12px;font-weight:650}.alert.error{color:#ffc1c1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.17)}.alert.success{color:#a7f3d0;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.17)}.hidden{display:none!important}@media(max-width:680px){.availability-page{padding:100px 16px 64px}.page-header,.panel-heading,.day-row{flex-direction:column;align-items:stretch}.page-header .secondary-btn{width:100%}.panel{padding:20px}.open-toggle{min-width:0}.time-wrap{display:grid;grid-template-columns:1fr auto 1fr}.primary-btn{width:100%}}
+</style>
+
+<style is:global>
+  html.hc-repair-crm .availability-page #availability-list {
+    display:grid;gap:10px;margin:22px 0
+  }
+  html.hc-repair-crm .availability-page #availability-list .day-row {
+    display:grid;grid-template-columns:minmax(130px,1fr) minmax(0,2fr);
+    align-items:center;gap:16px;min-height:74px;box-sizing:border-box;
+    padding:12px 18px;border:1px solid #e0e7ef;border-radius:14px;background:#fff
+  }
+  html.hc-repair-crm .availability-page #availability-list .open-toggle {
+    display:inline-flex;align-items:center;gap:12px;min-width:0;cursor:pointer;
+    color:#172033;font-size:14px
+  }
+  html.hc-repair-crm .availability-page #availability-list .open-toggle input {
+    flex:0 0 18px;width:18px;height:18px;margin:0;accent-color:#1763b4
+  }
+  html.hc-repair-crm .availability-page #availability-list .time-wrap {
+    display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:0
+  }
+  html.hc-repair-crm .availability-page #availability-list .time-wrap input {
+    width:136px;max-width:calc((100% - 30px)/2);min-height:44px;
+    box-sizing:border-box;padding:8px 11px;border:1px solid #d5dfe9;
+    border-radius:10px;background:#fff;color:#172033;font:inherit;font-size:14px
+  }
+  html.hc-repair-crm .availability-page #availability-list .time-wrap input:focus-visible {
+    outline:2px solid #6cacf0;outline-offset:2px
+  }
+  html.hc-repair-crm .availability-page #availability-list .closed-label {
+    grid-column:2;grid-row:1;justify-self:end;color:#7b8796;font-size:13px
+  }
+  html.hc-repair-crm .availability-page #availability-list .day-row.is-open .closed-label,
+  html.hc-repair-crm .availability-page #availability-list .day-row:not(.is-open) .time-wrap {display:none}
+  html.hc-repair-crm .availability-page [data-web-v1-weekday] {
+    display:inline-flex;align-items:center;justify-content:center;min-height:42px;
+    padding:0 14px;border:1px solid #d5e1ee;border-radius:10px;
+    background:#f5f9fe;color:#225e9f;font:inherit;font-size:13px;font-weight:750;cursor:pointer
+  }
+  html.hc-repair-crm .availability-page [data-web-v1-weekday]:hover,
+  html.hc-repair-crm .availability-page [data-web-v1-weekday]:focus-visible {
+    border-color:#78ade2;outline:2px solid #d5e8fb;outline-offset:2px
+  }
+  @media(max-width:600px) {
+    html.hc-repair-crm .availability-page #availability-list .day-row {
+      grid-template-columns:1fr;gap:10px;padding:14px
+    }
+    html.hc-repair-crm .availability-page #availability-list .time-wrap {justify-content:flex-start}
+    html.hc-repair-crm .availability-page #availability-list .time-wrap input {width:min(42%,136px);max-width:none}
+    html.hc-repair-crm .availability-page #availability-list .closed-label {grid-column:1;grid-row:2;justify-self:start}
+  }
 </style>
