@@ -72,6 +72,7 @@ test("Repair Shops V3 uses progressive disclosure without removing product detai
       ".repair-partner-disclosure > summary span:not(.repair-partner-open)",
       ".repair-faq-item summary span",
       ".repair-faq-item p",
+      ".repair-geo-summary",
     ];
     return selectors.map((selector) => {
       const element = document.querySelector<HTMLElement>(selector);
