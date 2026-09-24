@@ -20,7 +20,7 @@ export type CatalogBusinessConcept = {
   sourceRef: string;
 };
 
-export const chaykaStoreConcept: CatalogBusinessConcept = Object.freeze({
+export const chaykaStoreConcept = Object.freeze({
   id: "catalog-ua-chayka-store",
   slug: "chayka-store",
   countrySlug: "ukraine",
@@ -55,6 +55,6 @@ export const chaykaStoreConcept: CatalogBusinessConcept = Object.freeze({
     "tea inventory"
   ],
   sourceRef: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924"
-});
+} satisfies CatalogBusinessConcept);
 
 export const catalogBusinessConcepts = Object.freeze([chaykaStoreConcept]);
