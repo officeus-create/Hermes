@@ -62,6 +62,26 @@ test("Repair Shops V3 uses progressive disclosure without removing product detai
   expect(heroSequence.indexOf("repair-actions")).toBeLessThan(heroSequence.indexOf("repair-owner-quick-login"));
   expect(heroSequence.indexOf("repair-owner-quick-login")).toBeLessThan(heroSequence.indexOf("repair-trust"));
 
+  const readablePublicCopy = await page.evaluate(() => {
+    const selectors = [
+      ".repair-outcome-grid span",
+      ".repair-capability-copy small",
+      ".repair-disclosure-body p",
+      ".repair-plan-copy > p",
+      ".repair-path-grid p",
+      ".repair-partner-disclosure > summary span:not(.repair-partner-open)",
+      ".repair-faq-item summary span",
+      ".repair-faq-item p",
+    ];
+    return selectors.map((selector) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      return { selector, fontSize: element ? Number.parseFloat(getComputedStyle(element).fontSize) : 0 };
+    });
+  });
+  for (const sample of readablePublicCopy) {
+    expect(sample.fontSize, `${sample.selector} should stay at least 16px`).toBeGreaterThanOrEqual(16);
+  }
+
   const capabilities = page.locator(".repair-disclosure-card");
   await expect(capabilities).toHaveCount(5);
   await expect(capabilities.first()).not.toHaveAttribute("open", "");
