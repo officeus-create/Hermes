@@ -242,7 +242,6 @@ const schema = [
           <a href="/services/auto-repair-website-design/">Repair shop website</a>
           <a href="/services/website-development/">Website development</a>
           <a href="/services/seo/">SEO services</a>
-          <a href="/services/local-seo/">Local SEO</a>
         </nav>
       </div>
     </section>
@@ -358,6 +357,13 @@ const schema = [
   .repair-secondary { color: var(--hermes-ink, #0b0d12); border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); background: rgba(255,255,255,.72); }
   .repair-tertiary { min-height: 44px; padding-inline: .45rem; color: #176fc8; background: transparent; }
   .repair-primary:hover, .repair-secondary:hover, .repair-tertiary:hover { transform: translateY(-1px); }
+  .repair-primary:focus-visible, .repair-secondary:focus-visible, .repair-tertiary:focus-visible,
+  .repair-path-grid a:focus-visible, .repair-growth-owner-nav a:focus-visible,
+  .repair-disclosure-card summary:focus-visible, .repair-faq-item summary:focus-visible,
+  .repair-partner-disclosure > summary:focus-visible {
+    outline: 3px solid rgba(26,115,232,.42);
+    outline-offset: 3px;
+  }
   .repair-trust { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; color: #626976; font-size: .78rem; }
   .repair-trust span { display: flex; align-items: center; gap: .4rem; min-height: 34px; padding: .42rem .65rem; border: 1px solid rgba(11,13,18,.08); border-radius: 999px; background: rgba(255,255,255,.58); }
   .repair-trust svg { color: var(--hermes-success, #28b487); }
@@ -434,7 +440,7 @@ const schema = [
   .repair-path-grid p { margin: 0; color: var(--hermes-muted, #666c79); font-size: .82rem; line-height: 1.58; }
   .repair-path-grid b { margin-top: auto; padding-top: 1rem; color: #176fc8; font-size: .78rem; }
   .repair-growth-owner-nav { display:flex; flex-wrap:wrap; gap:.55rem .9rem; margin-top:.9rem; }
-  .repair-growth-owner-nav a { color:#176fc8; font-size:.72rem; font-weight:760; text-decoration:none; }
+  .repair-growth-owner-nav a { display:inline-flex; align-items:center; min-height:36px; color:#176fc8; font-size:.72rem; font-weight:760; text-decoration:none; }
   .repair-growth-owner-nav a:hover { text-decoration:underline; text-underline-offset:3px; }
   .repair-search-note { max-width: 900px; margin: 1.2rem 0 0; color: #777d88; font-size: .72rem; line-height: 1.55; }\n  .repair-search-note a { color: #176fc8; font-weight: 760; }
 
