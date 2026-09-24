@@ -11,6 +11,7 @@
   --hc-violet: #7c5cff;
   --hc-blue: #5ac8fa;
   --hc-green: #28b487;
+  --hc-action: #1a73e8;
   color: var(--hc-ink);
   background:
     radial-gradient(circle at 78% 5%, rgba(124,92,255,.10), transparent 27rem),
@@ -64,9 +65,9 @@
 
 .hc-experience .repair-pilot-page .repair-primary {
   color: #fff;
-  border: 1px solid #0b0d12;
-  background: #0b0d12;
-  box-shadow: 0 10px 24px rgba(11,13,18,.10);
+  border: 1px solid var(--hc-action, #1a73e8);
+  background: var(--hc-action, #1a73e8);
+  box-shadow: 0 12px 30px rgba(26,115,232,.18);
 }
 
 .hc-experience .repair-pilot-page .repair-secondary {
@@ -97,7 +98,7 @@
   border-radius: 26px;
   background:
     radial-gradient(circle at 82% 12%, rgba(124,92,255,.16), transparent 16rem),
-    linear-gradient(160deg, #151922 0%, #0b0d12 72%);
+    linear-gradient(160deg, #1c2940 0%, #172033 72%);
   box-shadow: 0 30px 90px rgba(18,22,34,.20);
 }
 
@@ -427,6 +428,7 @@
   --hc-violet: var(--hermes-violet);
   --hc-blue: var(--hermes-ocean);
   --hc-green: var(--hermes-success);
+  --hc-action: #1a73e8;
 }
 
 /* The Connect family context is public navigation, so it stays Pearl rather than becoming a dark product bar. */
@@ -734,4 +736,15 @@
   .site-header .header-actions .hc-account-menu > summary:hover {
     transform: none;
   }
+}
+
+
+/* Final V3 synthesis: the optional partner flow is already contained by one bounded dark disclosure.
+   Do not stack a second dark panel around the nested form. */
+.hc-experience .repair-pilot-page .repair-partner-disclosure .repair-offer-grid {
+  padding: 0 clamp(1.3rem, 3vw, 1.8rem) clamp(1.3rem, 3vw, 1.8rem);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
