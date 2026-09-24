@@ -56,6 +56,7 @@ globalThis.fetch = async () => { sends++; throw new Error("timeout after request
 assert.equal((await send("owner2")).error, "delivery_ambiguous_manual_review");
 assert.equal((await send("owner2")).error, "delivery_claimed_reconcile_before_retry");
 assert.equal(sends, 2, "ambiguous result must not be sent a second time");
+assert.equal(alerts.get("registration:owner2").last_error, "delivery_ambiguous_manual_review");
 
 await enqueueRegistrationAlert({ db, specialistId: "owner3", kind: "registration" });
 globalThis.fetch = async () => { sends++; return new Response(JSON.stringify({ ok: false }), { status: 429 }); };
