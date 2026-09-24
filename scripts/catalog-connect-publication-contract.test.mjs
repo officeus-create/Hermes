@@ -50,4 +50,10 @@ assert.match(sitemapIndex, /https:\/\/hermeslogisticsus\.com\/sitemap-connect-ca
 assert.match(connectCatalogSitemap, /WHERE catalog_opt_in=1/);
 assert.match(connectCatalogSitemap, /\/businesses\/connect\/repair-shop\/\$\{esc\(slug\)\}\//);
 assert.doesNotMatch(connectCatalogSitemap, /client_email|client_phone|appointment|customer/);
+const staticDealerProfile = read("src/pages/businesses/[state]/[city]/[slug].astro");
+assert.match(staticDealerProfile, /class="catalog-profile-hero"/);
+assert.match(staticDealerProfile, /\.catalog-profile-hero\{/);
+assert.match(staticDealerProfile, /@media\(max-width:800px\)\{\.catalog-profile-hero/);
+assert.doesNotMatch(staticDealerProfile, /class="hero"/);
+assert.doesNotMatch(staticDealerProfile, /(?:^|[^-])\.hero\b/);
 console.log("Catalog Connect publication contract OK");
