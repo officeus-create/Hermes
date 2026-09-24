@@ -163,7 +163,7 @@ const schema = [
 
         <div class="repair-disclosure-grid">
           {liveCapabilities.map((capability, index) => (
-            <details class="repair-disclosure-card">
+            <details class="repair-disclosure-card" data-repair-disclosure-analytics data-analytics-section="capability" data-analytics-label={capability.title}>
               <summary>
                 <span class="repair-capability-number">{String(index + 1).padStart(2, "0")}</span>
                 <span class="repair-capability-copy">
@@ -248,7 +248,7 @@ const schema = [
 
     <section class="repair-section repair-partner-section" aria-labelledby="partner-offer-title">
       <div class="repair-shell">
-        <details class="repair-partner-disclosure">
+        <details class="repair-partner-disclosure" data-repair-disclosure-analytics data-analytics-section="partner_opportunity" data-analytics-label="Hermes Logistics repair partner">
           <summary>
             <div>
               <p class="repair-kicker">Additional opportunity · Hermes Logistics</p>
@@ -322,7 +322,7 @@ const schema = [
         </div>
         <div class="repair-faq-grid">
           {faqs.map((faq) => (
-            <details class="repair-faq-item">
+            <details class="repair-faq-item" data-repair-disclosure-analytics data-analytics-section="faq" data-analytics-label={faq.question}>
               <summary><span>{faq.question}</span><b aria-hidden="true">+</b></summary>
               <p>{faq.answer}</p>
             </details>
@@ -331,6 +331,30 @@ const schema = [
       </div>
     </section>
   </main>
+
+  <script>
+    const bindRepairDisclosureAnalytics = () => {
+      document.querySelectorAll<HTMLDetailsElement>("[data-repair-disclosure-analytics]").forEach((details) => {
+        if (details.dataset.analyticsBound === "true") return;
+        details.dataset.analyticsBound = "true";
+        details.addEventListener("toggle", () => {
+          if (!details.open) return;
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "repair_disclosure_open",
+            product: "repair_shops",
+            section: details.dataset.analyticsSection || "detail",
+            label: details.dataset.analyticsLabel || "detail",
+          });
+        });
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bindRepairDisclosureAnalytics, { once: true });
+    } else {
+      bindRepairDisclosureAnalytics();
+    }
+  </script>
 
   <SiteFooter />
 </BaseLayout>
