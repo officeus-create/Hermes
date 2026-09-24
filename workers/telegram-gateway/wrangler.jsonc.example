@@ -1,0 +1,17 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hermes-telegram-gateway",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-09-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "d1_databases": [{ "binding": "DB", "database_name": "EXISTING_APPROVED_HERMES_D1", "database_id": "EXISTING_D1_ID" }],
+  "vars": {
+    "GROUP_CHAT_ID": "-100_REPLACE_WITH_VERIFIED_GROUP_ID",
+    "EXPECTED_BOT_USERNAME": "progressopro1_BOT",
+    "OWNER_USER_ID": "CONFIGURE_PRIVATELY",
+    "TELEGRAM_SEND_ENABLED": "false",
+    "GROUP_PAUSED": "true"
+  }
+}
