@@ -40,8 +40,19 @@ test("Repair Shops V3 uses progressive disclosure without removing product detai
   await expect(primary).toBeVisible();
   expect(await primary.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(26, 115, 232)");
 
+  const secondary = page.locator(".repair-live-hero .repair-secondary").first();
+  await expect(secondary).toContainText("See pricing & plans");
+  await expect(secondary).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/");
+
+  const ownerLogin = page.locator("[data-repair-owner-quick-login]");
+  await expect(ownerLogin).toBeVisible();
+  const heroOrder = await page.locator(".repair-live-grid > *").evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("class") || node.tagName.toLowerCase()),
+  );
+  expect(heroOrder.at(-1)).toContain("repair-owner-quick-login");
+
   const capabilities = page.locator(".repair-disclosure-card");
-  await expect(capabilities).toHaveCount(6);
+  await expect(capabilities).toHaveCount(5);
   await expect(capabilities.first()).not.toHaveAttribute("open", "");
   await capabilities.first().locator("summary").click();
   await expect(capabilities.first()).toHaveAttribute("open", "");
