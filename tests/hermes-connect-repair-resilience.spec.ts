@@ -22,6 +22,38 @@ async function routeStableWorkspace(page: any, serviceResponder?: (route: any) =
   });
 }
 
+test("New owner sees a profile step even before availability exists; optional details do not keep the save button active", async ({ page }) => {
+  await routeStableWorkspace(page);
+  let profileSaved = false;
+  await page.route("**/api/repair-shop/profile", (route) => {
+    if (route.request().method() === "PUT") {
+      profileSaved = true;
+      return route.fulfill(json({ success: true, shop: { name: "Example Repair", city: "Chicago", state: "IL", slug: "example-repair", timezone: "America/Chicago" } }));
+    }
+    return route.fulfill(json({ success: true, shop: null }));
+  });
+  await page.route("**/api/repair-shop/availability", (route) => route.fulfill(profileSaved
+    ? json({ success: true, days: [] })
+    : json({ success: false, error: "shop_profile_required" }, 409)));
+  await page.goto(dashboardUrl);
+
+  const nextStep = page.locator("#setup-next-step");
+  await expect(nextStep).toBeVisible();
+  await expect(nextStep).toContainText("Add your shop name and location");
+  await expect(page.locator("#save-profile-btn")).toHaveClass(/needs-attention/);
+
+  await page.locator("#shop-name").fill("Example Repair");
+  await page.locator("#shop-city").fill("Chicago");
+  await page.locator("#shop-state").fill("IL");
+  await expect(page.locator("#save-profile-btn")).not.toHaveClass(/needs-attention/);
+  await expect(nextStep).toContainText("Save your shop profile");
+  await expect(page.locator("#shop-phone")).toBeEmpty();
+  await expect(page.locator("#shop-address")).toBeEmpty();
+  await expect(page.locator("#shop-zip")).toBeEmpty();
+  await page.locator("#save-profile-btn").click();
+  await expect(nextStep).toContainText("Add your first service");
+});
+
 test("Repair owner sees section-local recovery and can retry a failed services load", async ({ page }) => {
   // The dashboard and the activation enhancer both legitimately read /api/services.
   // Model a real endpoint outage until the owner retries instead of coupling the test

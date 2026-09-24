@@ -4,7 +4,7 @@ test("Hermes Catalog claim request preserves business identity and verification 
   await page.goto("/businesses/arkansas/sherwood/seans-autopro-mobile/");
   await expect(page.getByText("Unclaimed profile", { exact: true })).toBeVisible();
   await expect(page.getByText("Not a Hermes customer", { exact: true })).toBeVisible();
-  await expect(page.getByText("Not activated", { exact: true })).toBeVisible();
+  await expect(page.getByText("Not linked to this profile", { exact: true })).toBeVisible();
   await expect(page.getByText("Off until owner verification", { exact: true })).toBeVisible();
 
   const claim = page.getByRole("link", { name: "Request claim / verification" });

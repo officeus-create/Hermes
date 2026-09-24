@@ -22,6 +22,17 @@ entries — append only.
 
 ## Log
 
+## 2026-09-24 — Codex — Prospect demo handoff and first-run cues
+
+- Branch: `fix/repair-first-login-setup-prompts-20260924`
+- Commit(s): pending review branch.
+- PR: pending.
+- What was done: Reconciled the supplied follow-up workbook with the existing manager Google Sheet. Seven separate Repair Shop CRM logins were registered, signed in again, and their private shop profiles read back; their login details and truthful team-QA status are stored in the manager rows and the first summary tab, not this repository. Four leads remain held for missing or mismatched contact or product fit. No prospect emails were sent. The first-run dashboard now cues completion before availability exists and limits button attention to required fields. The public Catalog header is a compact light card; its CRM label no longer asserts that no private workspace exists.
+- Files changed: `src/pages/services/hermes-connect/repair-shops/dashboard.astro`, `src/pages/businesses/[state]/[city]/[slug].astro`, `tests/hermes-connect-repair-resilience.spec.ts`, `docs/ERROR_REGISTER.md`, this log.
+- Tests run (and result): `npm test` passed; `npm run build` passed both before and after the Catalog CSS change (359 generated pages). Focused Playwright browser tests were attempted but could not launch because Chromium is absent; `playwright install chromium` also failed to download in this environment. Live manager-prepared accounts were verified by registration/login/profile API readback.
+- Remaining / open items: Manager team must perform its own login and service/hour QA before any customer email. Public Catalog claims remain unverified and separate from private previews. Social cards are saved links with sync off; Meta authorization and notifications are not live. Review production build and visual route after merge.
+- Next step: Finish test/build, review and merge this branch, verify production. Obtain corrected source contacts for held leads, then let the calling team request a specific customer email only after QA.
+
 ## 2026-09-06 — Codex — Repair Shop CRM local demo and visual repair
 
 - Agent: Codex
