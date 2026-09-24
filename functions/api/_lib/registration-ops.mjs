@@ -177,6 +177,10 @@ export async function deliverTelegramRegistrationAlert({ db, env, specialistId, 
   if (Number(claim?.meta?.changes || 0) !== 1) {
     return { ok: false, error: "delivery_claimed_reconcile_before_retry" };
   }
+  // Expose a claim in the existing owner ledger even if the process stops before fetch.
+  await updateAlertState(db, id, {
+    status: "failed", attempts: attempts + 1, lastError: "delivery_claimed_reconcile_before_retry",
+  });
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
