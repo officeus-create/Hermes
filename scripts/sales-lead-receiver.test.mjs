@@ -535,7 +535,7 @@ try {
   );
   assert.equal(durableEmailMessages.length, 3);
   assert.equal(telegramMessages.length, telegramBeforeDurable);
-  assert.ok(durableStorage.alarmTime > NativeDate.now(), "Quiet-hours Telegram delivery must schedule a Durable Object alarm.");
+  assert.ok(durableStorage.alarmTime > new NativeDate("2026-09-15T22:46:00.000Z").valueOf(), "Quiet-hours Telegram delivery must schedule a Durable Object alarm.");
 
   const durableDuplicate = await durableCoordinator.fetch(durableRequest());
   assert.equal(durableDuplicate.status, 202);
