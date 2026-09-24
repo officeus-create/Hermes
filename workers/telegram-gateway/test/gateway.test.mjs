@@ -20,6 +20,7 @@ class Db {
           if (row) {
             if (sql.includes("preview_message_id")) row.preview_message_id = args[0];
             if (sql.includes("status='sent'")) Object.assign(row, { status: "sent", telegram_message_id: args[0] });
+            if (sql.includes("status='approved'")) row.status = "approved";
             if (sql.includes("status='ambiguous'")) row.status = "ambiguous";
           }
           return { meta: { changes: Number(Boolean(row)) } };
@@ -113,8 +114,8 @@ test("owner-only approval, callback replay and exactly one group send", async ()
     const approved = await worker.fetch(req("/telegram/webhook", callback(1234567), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e);
     assert.equal((await approved.json()).changed, true);
     assert.equal((await (await worker.fetch(req("/telegram/webhook", callback(1234567), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e)).json()).changed, false);
-    assert.deepEqual(await deliver(e, noon), { id: row.id, message_id: 77 });
-    assert.deepEqual(await deliver(e, noon), { empty: true });
+    assert.deepEqual(await deliver(e, noon, () => noon), { id: row.id, message_id: 77 });
+    assert.deepEqual(await deliver(e, noon, () => noon), { empty: true });
     assert.equal(m.calls.filter(c => c.method === "sendMessage" && c.body.chat_id === e.GROUP_CHAT_ID).length, 1);
   } finally { m.restore(); }
 });
@@ -127,10 +128,21 @@ test("pause and ambiguous delivery never replay", async () => {
     e.GROUP_PAUSED = "true";
     assert.deepEqual(await deliver(e, noon), { skipped: true });
     e.GROUP_PAUSED = "false";
-    assert.deepEqual(await deliver(e, noon), { id: proposal.id, ambiguous: true });
+    assert.deepEqual(await deliver(e, noon, () => noon), { id: proposal.id, ambiguous: true });
     assert.equal(e.DB.rows.get(proposal.id).status, "ambiguous");
-    assert.deepEqual(await deliver(e, noon), { empty: true });
+    assert.deepEqual(await deliver(e, noon, () => noon), { empty: true });
     assert.equal(m.calls.filter(c => c.method === "sendMessage").length, 1);
+  } finally { m.restore(); }
+});
+
+test("last-mile quiet-hour change returns claim to approved without group send", async () => {
+  const e = env();
+  const m = mockTelegram();
+  try {
+    e.DB.rows.set(proposal.id, { ...proposal, status: "approved" });
+    assert.deepEqual(await deliver(e, noon, () => new Date("2026-09-24T22:45:00Z")), { id: proposal.id, skipped: true });
+    assert.equal(e.DB.rows.get(proposal.id).status, "approved");
+    assert.equal(m.calls.some(c => c.method === "sendMessage"), false);
   } finally { m.restore(); }
 });
 
