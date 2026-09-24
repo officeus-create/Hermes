@@ -6,30 +6,28 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("Repair Shops landing keeps Pearl background and readable public launch offer", async ({ page }) => {
+test("Repair Shops landing keeps Pearl background and one visible pricing story", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
 
   const visual = await page.evaluate(() => {
     const root = document.querySelector<HTMLElement>(".repair-pilot-page");
     const heading = document.querySelector<HTMLElement>(".repair-pilot-page .repair-live-hero h1");
-    const launchHeading = document.querySelector<HTMLElement>(".repair-free-launch h2");
-    const launchCta = document.querySelector<HTMLElement>(".repair-free-launch .launch-cta");
-    if (!root || !heading || !launchHeading || !launchCta) return null;
+    const price = document.querySelector<HTMLElement>(".repair-plan-price");
+    if (!root || !heading || !price) return null;
     return {
       rootBackgroundColor: getComputedStyle(root).backgroundColor,
       headingColor: getComputedStyle(heading).color,
-      launchHeadingColor: getComputedStyle(launchHeading).color,
-      launchCtaBackground: getComputedStyle(launchCta).backgroundColor,
-      launchCtaColor: getComputedStyle(launchCta).color,
+      priceBackground: getComputedStyle(price).backgroundColor,
+      priceColor: getComputedStyle(price).color,
     };
   });
 
   expect(visual).not.toBeNull();
   expect(visual!.rootBackgroundColor).toBe("rgb(247, 246, 243)");
   expect(visual!.headingColor).toBe("rgb(11, 13, 18)");
-  expect(visual!.launchHeadingColor).toBe("rgb(11, 13, 18)");
-  expect(visual!.launchCtaBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.launchCtaColor).toBe("rgb(255, 255, 255)");
+  expect(visual!.priceBackground).toBe("rgb(23, 32, 51)");
+  expect(visual!.priceColor).toBe("rgb(255, 255, 255)");
+  await expect(page.locator("[data-repair-free-launch]:visible")).toHaveCount(0);
 });
 
 
@@ -119,7 +117,7 @@ test("Repair Shop public shell stays within the mobile viewport", async ({ page 
   await page.goto("/services/hermes-connect/repair-shops/");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
-  await expect(page.locator(".repair-free-launch h2")).toBeVisible();
+  await expect(page.locator(".repair-plan-card")).toBeVisible();
 
   const secondary = page.locator(".repair-live-hero .repair-secondary").first();
   await expect(secondary).toBeVisible();
