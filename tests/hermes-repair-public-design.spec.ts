@@ -53,10 +53,11 @@ test("Repair Shops V3 uses progressive disclosure without removing product detai
   await expect(ownerToggle).toHaveAttribute("aria-expanded", "true");
   await expect(ownerForm).toBeVisible();
 
-  const heroOrder = await page.locator(".repair-live-grid > *").evaluateAll((nodes) =>
+  const heroSequence = await page.locator(".repair-hero-copy > *").evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute("class") || node.tagName.toLowerCase()),
   );
-  expect(heroOrder.at(-1)).toContain("repair-owner-quick-login");
+  expect(heroSequence.indexOf("repair-actions")).toBeLessThan(heroSequence.indexOf("repair-owner-quick-login"));
+  expect(heroSequence.indexOf("repair-owner-quick-login")).toBeLessThan(heroSequence.indexOf("repair-trust"));
 
   const capabilities = page.locator(".repair-disclosure-card");
   await expect(capabilities).toHaveCount(5);
