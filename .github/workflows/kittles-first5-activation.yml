@@ -18,7 +18,8 @@ jobs:
     if: >-
       github.event.issue.number == 510 &&
       (github.event.comment.body == '/activate-kittles-first5' ||
-       github.event.comment.body == '/provision-kittles-trial') &&
+       github.event.comment.body == '/provision-kittles-trial' ||
+       github.event.comment.body == '/recover-kittles-provision') &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -78,6 +79,28 @@ jobs:
           EOF
             exit 1
           }
+
+          if [ "${COMMAND}" = "/recover-kittles-provision" ]; then
+            RECOVERY_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+              -o "${TMP}/recovery.json" -w '%{http_code}' \
+              -X POST "${BASE_URL}/api/internal/repair-shop-first5-recovery" \
+              -H "Authorization: Bearer ${OIDC_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              --data-binary '{"operation":"recover_kittles_garage_trial_provisioning_2026_09_24"}' || printf 000)"
+
+            if [ "${RECOVERY_HTTP}" = 401 ] || [ "${RECOVERY_HTTP}" = 403 ]; then
+              fail "operator_not_authorized" "Workflow-bound short-lived OIDC identity was rejected by the bounded recovery endpoint."
+            fi
+            if [ "${RECOVERY_HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/recovery.json" 2>/dev/null)" != true ]; then
+              RECOVERY_ERROR="$(jq -r '.error // "provisioning_recovery_failed"' "${TMP}/recovery.json" 2>/dev/null || printf provisioning_recovery_failed)"
+              case "${RECOVERY_ERROR}" in
+                database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|production_shop_not_found|production_shop_ambiguous|owner_role_mismatch|synthetic_registration_rejected|production_identity_incomplete|provisioning_lock_owner_mismatch|provisioning_receipt_state_invalid|provisioning_receipt_timestamp_invalid|provisioning_lock_active|provisioning_recovery_conflict|provisioning_recovery_readback_failed) ;;
+                *) RECOVERY_ERROR="provisioning_recovery_failed" ;;
+              esac
+              fail "${RECOVERY_ERROR}" "Bounded stale-receipt recovery returned HTTP ${RECOVERY_HTTP}."
+            fi
+            COMMAND="/provision-kittles-trial"
+          fi
 
           MODE="activate"
           API_PATH="/api/internal/repair-shop-first5-activation"
