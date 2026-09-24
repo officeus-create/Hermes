@@ -147,6 +147,7 @@ test("Founding Plan does not inherit the legacy full-screen dark hero", async ({
 });
 
 test("Repair Shop public shell stays within the mobile viewport", async ({ page }) => {
+  await page.addInitScript(() => localStorage.removeItem("hermes-analytics-consent"));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
