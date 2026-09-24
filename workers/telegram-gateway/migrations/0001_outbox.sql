@@ -12,3 +12,8 @@ CREATE TABLE IF NOT EXISTS telegram_outbox (
   sent_at TEXT
 );
 CREATE INDEX IF NOT EXISTS telegram_outbox_ready ON telegram_outbox(status, created_at);
+CREATE TABLE IF NOT EXISTS telegram_gateway_control (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  paused INTEGER NOT NULL DEFAULT 1 CHECK (paused IN (0, 1))
+);
+INSERT OR IGNORE INTO telegram_gateway_control (id, paused) VALUES (1, 1);
