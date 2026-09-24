@@ -498,7 +498,10 @@ class CarHaulingDeliveryCoordinatorCore {
       let record = await transaction.get("delivery");
       if (record && record.payloadHash !== payloadHash) return { conflict: true, record };
       if (!record) record = createDurableDeliveryRecord({ ...payload, payloadHash }, now);
-      if (record.completedAt || record.leaseUntil > now) {
+      const hasReadyDestination = record.destinations.some(
+        (destination) => destination.status === "pending" && destination.nextAttemptAt <= now,
+      );
+      if (record.completedAt || record.leaseUntil > now || !hasReadyDestination) {
         return { conflict: false, claimed: false, record };
       }
       record.leaseUntil = now + CAR_HAULING_DELIVERY_LEASE_MS;
