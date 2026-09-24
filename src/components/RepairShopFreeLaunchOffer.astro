@@ -122,7 +122,10 @@ const { compact = false, showCta = true } = Astro.props;
 
   const placeOffer = (root: HTMLElement) => {
     let anchor: Element | null = null;
-    if (route === repairRoot) anchor = document.querySelector(".repair-live-hero .repair-lead");
+    if (route === repairRoot) {
+      anchor = document.querySelector(".repair-plan-card");
+      root.classList.add("is-landing-secondary");
+    }
     else if (route === `${repairRoot}/auth`) {
       if (params.get("mode") !== "register") return false;
       anchor = document.querySelector("#auth-forms .auth-header");
@@ -215,7 +218,14 @@ const { compact = false, showCta = true } = Astro.props;
   .launch-owner-cta,.launch-plan-cta{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035);color:#f8fafc}
   .launch-plan-cta{min-height:44px;font-size:.74rem}
   .repair-free-launch.is-compact{grid-template-columns:auto 1fr;margin:.8rem 0;padding:.85rem}
+  .repair-free-launch.is-landing-secondary{width:min(1160px,calc(100% - 2rem));box-sizing:border-box;grid-template-columns:minmax(0,1fr) auto;margin:.7rem auto 0;padding:.8rem 1rem;border-color:rgba(30,136,255,.12);background:rgba(255,255,255,.68);box-shadow:none}
+  .repair-free-launch.is-landing-secondary .launch-icon{display:none}
+  .repair-free-launch.is-landing-secondary .launch-kicker{display:none}
+  .repair-free-launch.is-landing-secondary .launch-copy>p:not(.launch-kicker){display:none}
+  .repair-free-launch.is-landing-secondary .launch-copy h2{font-size:.92rem;line-height:1.35}
+  .repair-free-launch.is-landing-secondary .launch-actions{flex-direction:row;min-width:0}
+  .repair-free-launch.is-landing-secondary .launch-actions>a{min-height:40px;padding:.5rem .72rem}
   .repair-free-launch.is-compact .launch-catalog{display:none}
   @media(max-width:820px){.repair-free-launch{grid-template-columns:auto 1fr}.launch-actions{grid-column:1/-1;flex-direction:row;min-width:0}.launch-actions>a{flex:1}}
-  @media(max-width:520px){.repair-free-launch{grid-template-columns:1fr}.launch-icon{display:none}.launch-actions{flex-direction:column}.launch-actions>a{width:100%;box-sizing:border-box}}
+  @media(max-width:520px){.repair-free-launch{grid-template-columns:1fr}.launch-icon{display:none}.launch-actions{flex-direction:column}.launch-actions>a{width:100%;box-sizing:border-box}.repair-free-launch.is-landing-secondary{width:calc(100% - 1rem);grid-template-columns:1fr;margin-top:.55rem}.repair-free-launch.is-landing-secondary .launch-actions{flex-direction:row}.repair-free-launch.is-landing-secondary .launch-actions>a{width:auto;flex:1}}
 </style>
