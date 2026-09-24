@@ -96,6 +96,7 @@ const schema = [
           <div class="repair-actions">
             <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">See pricing & plans</a>
+            <a class="repair-tertiary" href="#repair-capabilities-title">Explore workflow ↓</a>
           </div>
 
           <div class="repair-trust" aria-label="Hermes Connect Repair Shops facts">
@@ -208,8 +209,8 @@ const schema = [
       <div class="repair-shell">
         <div class="repair-heading">
           <p class="repair-kicker">Choose your next action</p>
-          <h2 id="repair-next-title">Choose the next step that matches what your shop needs now.</h2>
-          <p>Start the workspace, publish approved business facts, or go deeper on search growth when that becomes the priority.</p>
+          <h2 id="repair-next-title">Start publicly. Continue operations after sign-in.</h2>
+          <p>Choose the next step that matches what your shop needs now: start the workspace, publish approved business facts, or go deeper on growth.</p>
         </div>
 
         <div class="repair-path-grid">
@@ -232,11 +233,24 @@ const schema = [
             <span>GROWTH</span>
             <strong>Go deeper on SEO & local discovery</strong>
             <p>Add service-page, technical SEO, GEO, local search, and conversion work when a broader growth scope is useful.</p>
-            <b>See repair SEO →</b>
+            <div class="repair-growth-links">
+              <span>See repair SEO →</span>
+              <span data-growth-owner-links>
+                <u data-href="/services/auto-repair-website-design/">Website design</u>
+                <u data-href="/services/website-development/">Website development</u>
+                <u data-href="/services/seo/">SEO services</u>
+              </span>
+            </div>
           </a>
         </div>
 
         <p class="repair-search-note">Hermes develops Catalog and related search surfaces for SEO, GEO, local search, and AI discovery. <a href="/services/local-seo/">Explore Local SEO & AI discovery</a> when location visibility becomes the priority. Search engines control crawling, indexing, rankings, and traffic; results are not guaranteed.</p>
+        <nav class="repair-growth-owner-nav" aria-label="Related repair shop growth services">
+          <a href="/services/auto-repair-website-design/">Repair shop website</a>
+          <a href="/services/website-development/">Website development</a>
+          <a href="/services/seo/">SEO services</a>
+          <a href="/services/local-seo/">Local SEO</a>
+        </nav>
       </div>
     </section>
 
@@ -346,10 +360,11 @@ const schema = [
   .repair-live-hero h1 { max-width: 800px; margin: 0; color: var(--hermes-ink, #0b0d12); font-size: clamp(3.1rem, 7.25vw, 6rem); line-height: .93; letter-spacing: -.058em; text-wrap: balance; }
   .repair-lead { max-width: 720px; margin: 1.3rem 0 0; color: var(--hermes-muted, #666c79); font-size: clamp(1.04rem, 1.8vw, 1.22rem); line-height: 1.68; }
   .repair-actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.7rem; }
-  .repair-primary, .repair-secondary { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 50px; padding: .78rem 1.2rem; border-radius: 999px; text-decoration: none; font-weight: 780; transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease; }
+  .repair-primary, .repair-secondary, .repair-tertiary { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 50px; padding: .78rem 1.2rem; border-radius: 999px; text-decoration: none; font-weight: 780; transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease; }
   .repair-primary { color: #fff; border: 1px solid #1a73e8; background: #1a73e8; box-shadow: 0 12px 30px rgba(26,115,232,.18); }
   .repair-secondary { color: var(--hermes-ink, #0b0d12); border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); background: rgba(255,255,255,.72); }
-  .repair-primary:hover, .repair-secondary:hover { transform: translateY(-1px); }
+  .repair-tertiary { min-height: 44px; padding-inline: .45rem; color: #176fc8; background: transparent; }
+  .repair-primary:hover, .repair-secondary:hover, .repair-tertiary:hover { transform: translateY(-1px); }
   .repair-trust { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; color: #626976; font-size: .78rem; }
   .repair-trust span { display: flex; align-items: center; gap: .4rem; min-height: 34px; padding: .42rem .65rem; border: 1px solid rgba(11,13,18,.08); border-radius: 999px; background: rgba(255,255,255,.58); }
   .repair-trust svg { color: var(--hermes-success, #28b487); }
@@ -425,6 +440,11 @@ const schema = [
   .repair-path-grid strong { color: var(--hermes-ink, #0b0d12); font-size: 1.05rem; line-height: 1.25; }
   .repair-path-grid p { margin: 0; color: var(--hermes-muted, #666c79); font-size: .82rem; line-height: 1.58; }
   .repair-path-grid b { margin-top: auto; padding-top: 1rem; color: #176fc8; font-size: .78rem; }
+  .repair-growth-links { display:grid; gap:.5rem; margin-top:auto; padding-top:1rem; color:#176fc8; font-size:.78rem; font-weight:800; }
+  .repair-growth-links [data-growth-owner-links] { display:none; }
+  .repair-growth-owner-nav { display:flex; flex-wrap:wrap; gap:.55rem .9rem; margin-top:.9rem; }
+  .repair-growth-owner-nav a { color:#176fc8; font-size:.72rem; font-weight:760; text-decoration:none; }
+  .repair-growth-owner-nav a:hover { text-decoration:underline; text-underline-offset:3px; }
   .repair-search-note { max-width: 900px; margin: 1.2rem 0 0; color: #777d88; font-size: .72rem; line-height: 1.55; }\n  .repair-search-note a { color: #176fc8; font-weight: 760; }
 
   .repair-partner-section { padding-top: 2.4rem; }
