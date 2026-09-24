@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-24-verified-repair-prospects",
+  "generated_at": "2026-09-24T09:00:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/businesses/illinois/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/illinois/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/south-dakota/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/south-dakota/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/oklahoma/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/oklahoma/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/iowa/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/iowa/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/california/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/illinois/crystal-lake/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/illinois/crystal-lake/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/south-dakota/mitchell/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/south-dakota/mitchell/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/oklahoma/tulsa/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/oklahoma/tulsa/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/iowa/bedford/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/iowa/bedford/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/california/riverside/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/riverside/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/california/colton/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/colton/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/illinois/crystal-lake/carss-crystal-lake/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/illinois/crystal-lake/carss-crystal-lake/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/south-dakota/mitchell/ag-diesel-mitchell/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/south-dakota/mitchell/ag-diesel-mitchell/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/oklahoma/tulsa/holt-truck-centers-tulsa/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/oklahoma/tulsa/holt-truck-centers-tulsa/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/iowa/bedford/hawhee-truck-repair-bedford/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/iowa/bedford/hawhee-truck-repair-bedford/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/california/riverside/freightfix-riverside-county/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/riverside/freightfix-riverside-county/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/california/colton/westrux-international-colton/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/colton/westrux-international-colton/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 17,
+    "indexable_route_count_added": 17,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

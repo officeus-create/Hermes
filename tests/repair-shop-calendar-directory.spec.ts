@@ -51,8 +51,8 @@ test("Business directory exposes a 50-state coverage map without empty state lin
   await page.goto("/businesses/", { waitUntil:"domcontentloaded" });
   await expect(page.getByRole("heading", { level:2, name:"U.S. repair shop coverage map" })).toBeVisible();
   await expect(page.locator('a[href="/businesses/arkansas/"]')).toBeVisible();
-  await expect(page.locator('a[href="/businesses/california/"]')).toHaveCount(0);
-  await expect(page.locator('.state-tile.pending[aria-label="California: research queue"]')).toBeVisible();
+  await expect(page.locator('a[href="/businesses/california/"]')).toBeVisible();
+  await expect(page.locator('.state-tile.pending[aria-label="Nevada: research queue"]')).toBeVisible();
 });
 
 test("Business directory has a state landing before city and profile routes", async ({ page }) => {
@@ -65,11 +65,11 @@ test("Business directory has a state landing before city and profile routes", as
 });
 
 
-test("Business directory wave 2 exposes only evidence-backed Alaska and Wyoming routes", async ({ page }) => {
+test("Business directory retains wave 2 and exposes verified California routes", async ({ page }) => {
   await page.goto("/businesses/", { waitUntil:"domcontentloaded" });
   await expect(page.locator('a[href="/businesses/alaska/"]')).toBeVisible();
   await expect(page.locator('a[href="/businesses/wyoming/"]')).toBeVisible();
-  await expect(page.locator('a[href="/businesses/california/"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/businesses/california/"]')).toBeVisible();
 
   for (const entry of [
     { path:"/businesses/alaska/palmer/gold-standard-diesel-and-fleet/", name:"Gold Standard Diesel and Fleet LLC", canonical:"https://hermeslogisticsus.com/businesses/alaska/palmer/gold-standard-diesel-and-fleet/" },
