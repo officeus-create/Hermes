@@ -64,7 +64,7 @@ export const repairShopDirectory: RepairShopDirectoryEntry[] = [
       {label:"Legacy Toyota of Dallas — Contact",url:"https://www.legacytoyotadallas.com/contact-us/",observed:"Official contact page confirms main/sales phone (945) 207-3254, service (945) 758-1471, parts (945) 758-1460, collision (945) 758-1822, address, and department hours."},
       {label:"Legacy Toyota of Dallas — South Dallas",url:"https://www.legacytoyotadallas.com/toyota-dealership-south-dallas/",observed:"Official local page states the dealership serves South Dallas, Cedar Hill, DeSoto and Duncanville and describes sales, financing and factory-certified service."},
     ],
-  }
+  },
   {
     slug:"carss-crystal-lake", stateSlug:"illinois", citySlug:"crystal-lake", businessName:"Chris's Auto Repair and Specialty Shop", category:"Auto Repair",
     city:"Crystal Lake", state:"IL", region:"Illinois", country:"US", phone:"(815) 356-0084",
