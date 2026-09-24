@@ -74,4 +74,10 @@ for (const post of registry.filter((item) => item.contentTier === "standalone"))
 }
 const rss = await readFile(new URL("../src/pages/insights/rss.xml.ts", import.meta.url), "utf8");
 assert.ok(rss.includes("application/rss+xml"), "RSS route must emit RSS content type");
+const contentPrWorkflow = await readFile(new URL("../.github/workflows/insights-content-pr.yml", import.meta.url), "utf8");
+assert.match(contentPrWorkflow, /No unpublished Insights delta; PR already merged or no content generated/);
+assert.match(contentPrWorkflow, /has_changes=false/);
+assert.match(contentPrWorkflow, /has_changes=true/);
+assert.equal((contentPrWorkflow.match(/if: steps\.scope\.outputs\.has_changes == 'true'/g) || []).length, 6);
+assert.match(contentPrWorkflow, /Blocked automation change outside generated Insights scope/);
 console.log(`Insights publication contract passed: ${registry.length} reviewed record(s), ${routeKeys.size} unique route(s).`);
