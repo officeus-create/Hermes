@@ -26,12 +26,17 @@ jobs:
         run: git fetch origin main
 
       - name: Enforce generated-content-only scope
+        id: scope
         shell: bash
         run: |
           set -euo pipefail
           allowed='^(src/data/insights\.generated\.json|public/sitemap-insights\.xml|docs/release-manifest-deltas/2026-09-14-hermes-insights-blog\.json)$'
           changed="$(git diff --name-only origin/main...HEAD)"
-          test -n "$changed"
+          if [ -z "$changed" ]; then
+            echo "No unpublished Insights delta; PR already merged or no content generated."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           while IFS= read -r file; do
             if ! [[ "$file" =~ $allowed ]]; then
               echo "Blocked automation change outside generated Insights scope: $file"
@@ -39,20 +44,25 @@ jobs:
             fi
           done <<< "$changed"
           echo "$changed"
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
       - name: Set up Node.js
+        if: steps.scope.outputs.has_changes == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
+        if: steps.scope.outputs.has_changes == 'true'
         run: npm ci
 
       - name: Build and run project gates
+        if: steps.scope.outputs.has_changes == 'true'
         run: npm run build
 
       - name: Validate Insights release gates
+        if: steps.scope.outputs.has_changes == 'true'
         run: |
           node scripts/insights-pipeline.test.mjs
           node scripts/release-manifest.test.mjs
@@ -60,6 +70,7 @@ jobs:
           node scripts/internal-link-audit.test.mjs
 
       - name: Create or find PR
+        if: steps.scope.outputs.has_changes == 'true'
         id: pr
         env:
           GH_TOKEN: ${{ github.token }}
@@ -76,6 +87,7 @@ jobs:
           echo "number=$pr" >> "$GITHUB_OUTPUT"
 
       - name: Queue protected auto-merge when available
+        if: steps.scope.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
