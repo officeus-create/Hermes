@@ -518,6 +518,7 @@ class CarHaulingDeliveryCoordinatorCore {
       const destination = record.destinations.find((item) => item.key === key);
       if (!destination || destination.status === "delivered") return record;
       Object.assign(destination, patch);
+      record.leaseUntil = now + CAR_HAULING_DELIVERY_LEASE_MS;
       record.updatedAt = now;
       await transaction.put("delivery", record);
       return record;
@@ -688,7 +689,18 @@ class CarHaulingDeliveryCoordinatorCore {
       await transaction.put("delivery", current);
       return current;
     });
-    if (claim) await this.run(claim);
+    if (claim) {
+      await this.run(claim);
+      return;
+    }
+    const current = await this.storage.get("delivery");
+    if (current && !current.completedAt) {
+      const pendingTimes = current.destinations
+        .filter((destination) => destination.status === "pending")
+        .map((destination) => destination.nextAttemptAt || now + 60 * 1_000);
+      const nextAlarm = Math.max(current.leaseUntil || 0, Math.min(...pendingTimes), now + 1_000);
+      await this.storage.setAlarm(nextAlarm);
+    }
   }
 }
 
