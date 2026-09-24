@@ -27,6 +27,20 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <button id="setup-next-dismiss" type="button" aria-label="Dismiss this reminder">×</button>
       </aside>
 
+      <section class="panel presence-panel" aria-labelledby="presence-title">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Online presence</p><h2 id="presence-title">Your business online</h2>
+            <p class="muted">Add links to the profiles you own. Automated updates will require a separate secure connection and your authorization.</p></div>
+        </div>
+        <div class="source-cards">
+          <div class="source-card" data-source-card="instagram"><strong>Instagram</strong><span>Link missing</span><a href="#shop-instagram">Add profile link</a></div>
+          <div class="source-card" data-source-card="facebook"><strong>Facebook</strong><span>Link missing</span><a href="#shop-facebook">Add page link</a></div>
+          <div class="source-card" data-source-card="threads"><strong>Threads</strong><span>Link missing</span><a href="#shop-threads">Add profile link</a></div>
+          <div class="source-card" data-source-card="website"><strong>Website</strong><span>Link missing</span><a href="#shop-website">Add website</a></div>
+        </div>
+        <p class="presence-note">Saving a link does not connect an account or import posts. Social feeds stay off until the owner completes provider authorization.</p>
+      </section>
+
       <section class="panel" aria-labelledby="profile-title">
         <div class="panel-heading"><div><p class="eyebrow">Production profile</p><h2 id="profile-title">Shop profile</h2><p class="muted">Your saved profile controls the public booking link and timezone.</p></div><span id="profile-state" class="pill">Not configured</span></div>
         <form id="profile-form" class="grid-form">
@@ -37,6 +51,14 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           <label class="field">State<input id="shop-state" maxlength="2" required placeholder="WI" /></label>
           <label class="field">ZIP<input id="shop-zip" maxlength="16" placeholder="53202" /></label>
           <label class="field">Timezone<select id="shop-timezone" required><option value="America/New_York">Eastern</option><option value="America/Chicago" selected>Central</option><option value="America/Denver">Mountain</option><option value="America/Phoenix">Arizona</option><option value="America/Los_Angeles">Pacific</option><option value="America/Anchorage">Alaska</option><option value="Pacific/Honolulu">Hawaii</option></select></label>
+          <fieldset class="source-fields span-2" id="source-links">
+            <legend>Business profiles and website</legend>
+            <p class="muted">Use your own public profile URLs. We will ask before enabling any automatic sync.</p>
+            <label class="field">Website<input id="shop-website" type="url" maxlength="240" inputmode="url" placeholder="https://yourshop.com" /></label>
+            <label class="field">Instagram<input id="shop-instagram" type="url" maxlength="240" inputmode="url" placeholder="https://www.instagram.com/yourshop/" /></label>
+            <label class="field">Facebook<input id="shop-facebook" type="url" maxlength="240" inputmode="url" placeholder="https://www.facebook.com/yourshop/" /></label>
+            <label class="field">Threads<input id="shop-threads" type="url" maxlength="240" inputmode="url" placeholder="https://www.threads.net/@yourshop" /></label>
+          </fieldset>
           <button id="save-profile-btn" class="primary-btn span-2" type="submit">Save shop profile</button>
         </form>
         <div id="public-link-wrap" class="public-link hidden">
@@ -89,7 +111,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 <script>
   type Service = { id: string; name: string; duration_minutes: number; owner_specialist_id: string };
-  type Shop = { id: string; name: string; slug: string; phone?: string | null; address_line1?: string | null; city: string; state: string; postal_code?: string | null; timezone: string };
+  type Shop = { id: string; name: string; slug: string; phone?: string | null; address_line1?: string | null; city: string; state: string; postal_code?: string | null; timezone: string; website?: string|null; instagram_url?: string|null; facebook_url?: string|null; threads_url?: string|null };
   type BookingHistory = { id: string; booking_id: string; from_status: string | null; to_status: string; changed_at: string };
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
@@ -114,7 +136,21 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     }
     saveProfileButton?.classList.toggle("needs-attention", profileDetails.some((id) => !$<HTMLInputElement>(id)?.value.trim()));
   }
-  profileForm?.addEventListener("input", () => { updateProfilePrompts(); updateSetupNotice(); });
+  let savedPresence: Record<string,string> = {};
+  function updatePresence() {
+    const inputs: Record<string,string> = {website:"shop-website",instagram:"shop-instagram",facebook:"shop-facebook",threads:"shop-threads"};
+    for (const [provider,id] of Object.entries(inputs)) {
+      const card = document.querySelector<HTMLElement>(`[data-source-card="${provider}"]`);
+      const value = $<HTMLInputElement>(id)?.value.trim();
+      if (!card) continue;
+      card.classList.toggle("is-missing", !value);
+      const status = card.querySelector("span");
+      const action = card.querySelector("a");
+      if (status) status.textContent = !value ? "Link missing" : savedPresence[provider] === value ? "Link saved · sync off" : "Ready to save · sync off";
+      if (action) action.textContent = value ? "Edit link" : provider === "website" ? "Add website" : "Add profile link";
+    }
+  }
+  profileForm?.addEventListener("input", () => { updateProfilePrompts(); updatePresence(); updateSetupNotice(); });
   function updateSetupNotice() {
     if (!setupState.profileLoaded || !setupState.servicesLoaded || !setupState.hoursLoaded) return;
     const notice = $("setup-next-step");
@@ -175,13 +211,18 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function fillProfile(shop: Shop | null) {
     const linkWrap = $("public-link-wrap");
-    if (!shop) { $("profile-state")!.textContent = "Not configured"; $("profile-state")!.dataset.ready = "false"; linkWrap?.classList.add("hidden"); setupState.profileLoaded=true; updateProfilePrompts(); updateSetupNotice(); return; }
+    if (!shop) { $("profile-state")!.textContent = "Not configured"; $("profile-state")!.dataset.ready = "false"; linkWrap?.classList.add("hidden"); savedPresence={}; setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice(); return; }
     $("profile-state")!.textContent = "Saved";
     $("profile-state")!.dataset.ready = "true";
     $<HTMLInputElement>("shop-name")!.value = shop.name || ""; $<HTMLInputElement>("shop-phone")!.value = shop.phone || ""; $<HTMLInputElement>("shop-address")!.value = shop.address_line1 || ""; $<HTMLInputElement>("shop-city")!.value = shop.city || ""; $<HTMLInputElement>("shop-state")!.value = shop.state || ""; $<HTMLInputElement>("shop-zip")!.value = shop.postal_code || ""; $<HTMLSelectElement>("shop-timezone")!.value = shop.timezone || "America/Chicago";
+    $<HTMLInputElement>("shop-website")!.value=shop.website||"";
+    $<HTMLInputElement>("shop-instagram")!.value=shop.instagram_url||"";
+    $<HTMLInputElement>("shop-facebook")!.value=shop.facebook_url||"";
+    $<HTMLInputElement>("shop-threads")!.value=shop.threads_url||"";
+    savedPresence={website:shop.website||"",instagram:shop.instagram_url||"",facebook:shop.facebook_url||"",threads:shop.threads_url||""};
     publicBookingUrl = `${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
     $("public-link-text")!.textContent = publicBookingUrl; $<HTMLAnchorElement>("open-link-btn")!.href = publicBookingUrl; linkWrap?.classList.remove("hidden");
-    setupState.profileLoaded=true; updateProfilePrompts(); updateSetupNotice();
+    setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice();
   }
 
   async function loadProfile() { const response = await fetch("/api/repair-shop/profile", { credentials: "same-origin" }); if (response.status === 401) return redirectToAuth(); const data = await readJson(response); if (!response.ok || !data.success) return showAlert(data.error || "Unable to load shop profile."); fillProfile(data.shop || null); }
@@ -189,8 +230,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   profileForm?.addEventListener("submit", async (event) => {
     event.preventDefault(); clearAlert(); if (saveProfileButton) saveProfileButton.disabled = true;
     try {
-      const response = await fetch("/api/repair-shop/profile", { method:"PUT", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name:$<HTMLInputElement>("shop-name")?.value, phone:$<HTMLInputElement>("shop-phone")?.value, address_line1:$<HTMLInputElement>("shop-address")?.value, city:$<HTMLInputElement>("shop-city")?.value, state:$<HTMLInputElement>("shop-state")?.value, postal_code:$<HTMLInputElement>("shop-zip")?.value, timezone:$<HTMLSelectElement>("shop-timezone")?.value }) });
-      const data = await readJson(response); if (!response.ok || !data.success) return showAlert(data.error || "Unable to save shop profile."); fillProfile(data.shop); showAlert("Shop profile saved to production.","success");
+      const response = await fetch("/api/repair-shop/profile", { method:"PUT", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name:$<HTMLInputElement>("shop-name")?.value, phone:$<HTMLInputElement>("shop-phone")?.value, address_line1:$<HTMLInputElement>("shop-address")?.value, city:$<HTMLInputElement>("shop-city")?.value, state:$<HTMLInputElement>("shop-state")?.value, postal_code:$<HTMLInputElement>("shop-zip")?.value, timezone:$<HTMLSelectElement>("shop-timezone")?.value, website:$<HTMLInputElement>("shop-website")?.value, instagram_url:$<HTMLInputElement>("shop-instagram")?.value, facebook_url:$<HTMLInputElement>("shop-facebook")?.value, threads_url:$<HTMLInputElement>("shop-threads")?.value }) });
+      const data = await readJson(response); if (!response.ok || !data.success) return showAlert(data.error === "invalid_social_profile_url" ? "Use an HTTPS link to the matching Instagram, Facebook, or Threads profile." : data.error === "invalid_website" ? "Enter a valid website URL." : data.error || "Unable to save shop profile."); fillProfile(data.shop); showAlert("Shop profile saved to production.","success");
     } catch { showAlert("Network error while saving shop profile."); } finally { if (saveProfileButton) saveProfileButton.disabled = false; }
   });
 
@@ -325,4 +366,35 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   @media(max-width:980px){html.hc-repair-crm .workspace-page .setup-next-step{left:240px;width:calc(100vw - 260px)}}
   @media(max-width:760px){html.hc-repair-crm .workspace-page .setup-next-step{left:12px;bottom:12px;width:calc(100vw - 24px);flex-wrap:wrap}html.hc-repair-crm .workspace-page #services-list .row{padding:12px;gap:10px}html.hc-repair-crm .workspace-page #services-list .row .danger-btn{min-width:64px}}
   @media(prefers-reduced-motion:reduce){html.hc-repair-crm .workspace-page .needs-attention{animation:none;background:#1763b4}}
+</style>
+
+<style is:global>
+  html.hc-repair-crm .workspace-page .source-cards {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
+  html.hc-repair-crm .workspace-page .source-card {
+    display:grid;align-content:start;gap:7px;min-height:120px;padding:15px;
+    border:1px solid #dae5ef;border-radius:14px;background:#f9fbfe;color:#172033
+  }
+  html.hc-repair-crm .workspace-page .source-card strong {font-size:15px}
+  html.hc-repair-crm .workspace-page .source-card span {font-size:12px;color:#66778a}
+  html.hc-repair-crm .workspace-page .source-card a {
+    align-self:end;width:max-content;max-width:100%;margin-top:4px;padding:7px 9px;
+    border:1px solid #c6dbef;border-radius:8px;background:#eff7ff;color:#165ea7;
+    font-size:12px;font-weight:750;text-decoration:none
+  }
+  html.hc-repair-crm .workspace-page .source-card.is-missing a {
+    background:linear-gradient(110deg,#e8f4ff 10%,#fff 45%,#e8f4ff 80%);
+    background-size:250% 100%;animation:repair-setup-shimmer 6s ease-in-out infinite
+  }
+  html.hc-repair-crm .workspace-page .source-card a:focus-visible {outline:2px solid #367fc6;outline-offset:2px}
+  html.hc-repair-crm .workspace-page .presence-note {margin:14px 0 0;color:#647489;font-size:12px;line-height:1.5}
+  html.hc-repair-crm .workspace-page .source-fields {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+    min-width:0;margin:4px 0 0;padding:18px;border:1px solid #dce7f1;border-radius:14px
+  }
+  html.hc-repair-crm .workspace-page .source-fields legend {padding:0 7px;color:#172033;font-size:15px;font-weight:800}
+  html.hc-repair-crm .workspace-page .source-fields p {grid-column:1/-1;margin:0}
+  html.hc-repair-crm .workspace-page .source-fields input {min-width:0}
+  @media(max-width:1100px){html.hc-repair-crm .workspace-page .source-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:600px){html.hc-repair-crm .workspace-page .source-cards,html.hc-repair-crm .workspace-page .source-fields{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){html.hc-repair-crm .workspace-page .source-card.is-missing a{animation:none;background:#e8f4ff}}
 </style>
