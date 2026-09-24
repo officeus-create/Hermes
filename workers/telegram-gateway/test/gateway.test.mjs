@@ -4,10 +4,12 @@ import worker, { deliver, insideGroupWindow } from "../src/index.mjs";
 
 class Db {
   rows = new Map();
+  paused = 0;
   prepare(sql) {
     return {
       bind: (...args) => ({
         run: async () => {
+          if (sql.includes("telegram_gateway_control")) { this.paused = args[0]; return { meta: { changes: 1 } }; }
           if (sql.startsWith("INSERT")) {
             const [id, kind, text, nonce] = args;
             if (this.rows.has(id)) return { meta: { changes: 0 } };
@@ -40,6 +42,7 @@ class Db {
         },
       }),
       first: async () => {
+        if (sql.includes("telegram_gateway_control")) return { paused: this.paused };
         const row = [...this.rows.values()].find(r => r.status === "approved" && r.kind === "client_progress");
         if (!row) return null;
         row.status = "sending";
@@ -128,5 +131,21 @@ test("pause and ambiguous delivery never replay", async () => {
     assert.equal(e.DB.rows.get(proposal.id).status, "ambiguous");
     assert.deepEqual(await deliver(e, noon), { empty: true });
     assert.equal(m.calls.filter(c => c.method === "sendMessage").length, 1);
+  } finally { m.restore(); }
+});
+
+test("private owner command changes persistent pause; other users cannot resume", async () => {
+  const e = env();
+  const m = mockTelegram();
+  const message = (id, text) => ({ message: { from: { id }, chat: { id, type: "private" }, text } });
+  try {
+    const header = { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" };
+    assert.equal((await worker.fetch(req("/telegram/webhook", message(1234567, "/pause"), header), e)).status, 200);
+    assert.equal(e.DB.paused, 1);
+    assert.deepEqual(await deliver(e, noon), { skipped: true });
+    assert.equal((await worker.fetch(req("/telegram/webhook", message(9, "/resume"), header), e)).status, 403);
+    assert.equal(e.DB.paused, 1);
+    assert.equal((await worker.fetch(req("/telegram/webhook", message(1234567, "/resume"), header), e)).status, 200);
+    assert.equal(e.DB.paused, 0);
   } finally { m.restore(); }
 });
