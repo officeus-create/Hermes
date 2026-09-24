@@ -1,8 +1,10 @@
+import { DurableObject } from "cloudflare:workers";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore } from "./index.mjs";
 import { handleLoadBoardInboundEmail } from "./load-board-inbound.mjs";
 
-export class CarHaulingDeliveryCoordinator {
+export class CarHaulingDeliveryCoordinator extends DurableObject {
   constructor(ctx, env) {
+    super(ctx, env);
     this.coordinator = new CarHaulingDeliveryCoordinatorCore(ctx, env);
   }
 
