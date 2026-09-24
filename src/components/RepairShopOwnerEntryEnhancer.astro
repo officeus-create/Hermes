@@ -129,8 +129,8 @@
       }
 
       const hero = document.querySelector(".repair-live-hero");
-      const grid = hero?.querySelector(".repair-live-grid");
-      if (!(grid instanceof HTMLElement)) return false;
+      const heroCopy = hero?.querySelector(".repair-hero-copy");
+      if (!(heroCopy instanceof HTMLElement)) return false;
 
       const entry = document.createElement("section");
       entry.className = "repair-owner-quick-login";
@@ -223,7 +223,7 @@
       });
 
       entry.append(header, toggle, panel);
-      grid.insertAdjacentElement("beforeend", entry);
+      heroCopy.insertAdjacentElement("beforeend", entry);
       hideLowerOwnerCta();
 
       form.addEventListener("submit", async (event) => {
