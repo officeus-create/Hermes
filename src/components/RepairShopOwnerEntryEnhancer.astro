@@ -201,7 +201,7 @@
 
       form.append(emailLabel, passwordLabel, submit);
       entry.append(header, signInLink, form, message, register);
-      grid.insertAdjacentElement("afterbegin", entry);
+      grid.insertAdjacentElement("beforeend", entry);
       hideLowerOwnerCta();
 
       form.addEventListener("submit", async (event) => {
@@ -262,7 +262,7 @@
 <style is:global>
   .repair-owner-quick-login {
     grid-column: 1 / -1;
-    margin: 0 0 6px;
+    margin: 6px 0 0;
     padding: 12px 14px;
     border: 1px solid rgba(124,92,255,.22);
     border-radius: 18px;
