@@ -85,6 +85,19 @@ async function webhook(req, env) {
   }
   let update;
   try { update = await req.json(); } catch { return response(400, { error: "bad_json" }); }
+  const message = update?.message;
+  if (message) {
+    if (String(message.from?.id) !== String(env.OWNER_USER_ID)
+        || String(message.chat?.id) !== String(env.OWNER_USER_ID)
+        || message.chat?.type !== "private") return response(403, { error: "wrong_owner" });
+    const command = String(message.text || "").split("@")[0];
+    if (["/pause", "/resume"].includes(command)) {
+      const paused = command === "/pause" ? 1 : 0;
+      await env.DB.prepare("UPDATE telegram_gateway_control SET paused=? WHERE id=1").bind(paused).run();
+      await telegram(env, "sendMessage", { chat_id: env.OWNER_USER_ID, text: paused ? "Group delivery paused." : "Group delivery enabled (subject to deploy switch and working hours)." });
+    }
+    return response(200, { ok: true });
+  }
   const cb = update?.callback_query;
   if (!cb) return response(200, { ok: true });
   if (String(cb.from?.id) !== String(env.OWNER_USER_ID)
@@ -115,6 +128,8 @@ async function verifyDestination(env) {
 export async function deliver(env, now = new Date()) {
   if (!configured(env) || env.TELEGRAM_SEND_ENABLED !== "true" || env.GROUP_PAUSED !== "false"
       || !env.EXPECTED_BOT_USERNAME || !insideGroupWindow(now)) return { skipped: true };
+  const control = await env.DB.prepare("SELECT paused FROM telegram_gateway_control WHERE id=1").first();
+  if (!control || control.paused !== 0) return { skipped: true };
   // Verify identity and group rights before claiming. Any failure leaves the row approved.
   await verifyDestination(env);
   const row = await env.DB.prepare(
