@@ -1,5 +1,98 @@
 [
   {
+    "id": "truckstop-phishing-security-september-2026",
+    "direction": "logistics",
+    "slug": "truckstop-phishing-load-board-security-september-2026",
+    "title": "Truckstop Phishing Alert: Protect Freight Platform Accounts | Hermes Insights",
+    "description": "Truckstop posted a September 22 security alert warning customers about phishing emails that imitate account, security, or billing verification. Hermes turns the alert into a concise carrier and dispatcher account-safety checklist.",
+    "eyebrow": "Freight Security Update · September 2026",
+    "h1": "Truckstop warned about phishing emails targeting freight-platform users. What should carriers check?",
+    "conciseAnswer": "Truckstop says customers have received phishing emails asking them to click links to verify security or billing information. The company says those messages did not come from Truckstop and that legitimate Truckstop email comes from @truckstop.com or e.truckstop.com. If a user clicked one of the reported phishing links, Truckstop advises changing both the Truckstop and email-account passwords immediately.",
+    "explanation": [
+      "What changed: Truckstop published a September 22, 2026 security alert after reports of phishing emails sent to its customers. The messages asked recipients to click a link to verify information for security or billing purposes. Truckstop states that these emails were phishing attempts and were not sent by Truckstop.",
+      "Why it matters: freight operations depend on trusted access to load boards, email, broker and carrier communications. A compromised platform or email account can turn an ordinary load-search workflow into an account-security and fraud problem. Historical Hermes operating material is used only for the general pattern that verification should happen before an operational action; no private account, contact, load, rate, or credential information is reused here.",
+      "What to do: check the sender domain before opening verification links, navigate to the platform directly instead of relying on an unexpected email link, and treat unusual billing or security requests as a verification event. Truckstop says its legitimate email comes from @truckstop.com or e.truckstop.com. If one of the reported phishing links was clicked, change the Truckstop and email passwords immediately and review the account for suspicious activity.",
+      "Result: the team gets a simple verification rule before acting on account-security messages. That reduces avoidable credential exposure without assuming that every unusual email is fraudulent or that a sender display name proves authenticity. Source/date: Truckstop security alert, September 22, 2026."
+    ],
+    "takeaways": [
+      "Truckstop warned on September 22 about phishing emails requesting security or billing verification",
+      "Truckstop says legitimate company email comes from @truckstop.com or e.truckstop.com",
+      "If a reported phishing link was clicked, Truckstop advises changing both the Truckstop and email passwords immediately",
+      "Verify account-security requests through the platform directly before taking action"
+    ],
+    "faq": [],
+    "related": [
+      {"title": "Hermes Load Board", "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping account verification and fraud checks separate from load selection.", "href": "/load-board/"},
+      {"title": "Hermes Logistics", "body": "Review the canonical Hermes Logistics direction and carrier operations resources.", "href": "/paths/logistics/"},
+      {"title": "Owner-Operator Dispatch Support", "body": "Connect source verification with route and load-review discipline.", "href": "/logistics/owner-operator-dispatch-support/"}
+    ],
+    "primaryAction": {"label": "Explore Hermes Load Board", "href": "/load-board/"},
+    "secondaryAction": {"label": "Review Hermes Logistics", "href": "/paths/logistics/"},
+    "sourceLabel": "Truckstop — Freight Fraud Prevention / Security Alert: Be Aware of Phishing Emails",
+    "sourceUrl": "https://truckstop.com/freight-fraud-prevention/",
+    "sourcePublishedAt": "2026-09-22",
+    "datePublished": "2026-09-24",
+    "dateModified": "2026-09-24",
+    "authorName": "Hermes Editorial Team",
+    "keywords": ["Truckstop phishing", "freight fraud prevention", "load board security", "carrier account security", "truckload phishing", "freight platform fraud"],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
+    "evidence": [
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Truckstop September 22 phishing security alert", "use": "primary", "url": "https://truckstop.com/freight-fraud-prevention/", "observedAt": "2026-09-24", "eventDate": "2026-09-22", "notes": "Primary platform source for the reported phishing pattern, legitimate sender domains, and remediation advice."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Used only for the anonymized operating pattern of verifying source and context before acting. No private accounts, credentials, contacts, loads, rates, or commercial figures are republished."}
+    ],
+    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes operating material repeatedly treated verification before action as part of dispatch and carrier workflow; the current Truckstop alert adds a dated platform-specific security case, while current remediation guidance comes only from Truckstop's public alert.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://truckstop.com/freight-fraud-prevention/"},
+    "publicationScore": {"score": 74, "recommendation": "digest", "reasons": ["+20 freshness", "+18 source authority", "+10 first-party evidence", "+5 historical comparison", "+12 search value", "+9 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+  },
+  {
+    "id": "meta-scam-network-enforcement-september-2026",
+    "direction": "marketing",
+    "slug": "meta-scam-account-brand-safety-september-2026",
+    "title": "Meta Scam Enforcement: What Brands Should Protect | Hermes Insights",
+    "description": "Meta reported new September 2026 scam-network enforcement across Facebook and Instagram, including action against shell pages and e-commerce scam infrastructure. Hermes translates the update into a practical brand-account and admin-security checklist.",
+    "eyebrow": "Social Platform Safety Update · September 2026",
+    "h1": "Meta is removing scam infrastructure at scale. What should legitimate brands protect?",
+    "conciseAnswer": "Meta reported that 2026 information sharing with the Singapore Police Force led to action against more than 113,000 fraud- and scam-connected entities and pages, more than 33,600 e-commerce scam entities, and over 3.6 million shell pages before use. Meta also says it has removed 65 million scam ads so far this year, 94% before user reports. For legitimate businesses, the operational lesson is account security, controlled admin access, consistent owned identities, and rapid verification of suspicious messages or impersonation—not a promise of reach or ranking.",
+    "explanation": [
+      "What changed: Meta published a new September 2026 update describing coordinated scam disruption with the Singapore Police Force. Meta says information sharing in 2026 led to action against more than 113,000 fraud- and scam-connected entities and pages, more than 33,600 e-commerce scam entities, and over 3.6 million shell pages before they could be used. Meta also reports 65 million scam ads removed so far this year, with 94% removed before anyone reported them.",
+      "Why it matters: legitimate brands compete for attention inside the same environment where impersonation, fake promotions, deceptive links, shell pages, and account compromise can erode trust. This is a safety and operating-control issue, not an algorithmic growth claim. Historical Hermes marketing material contributes only the anonymous pattern that owned identity, controlled access, and consistent distribution matter; no private client metrics, credentials, campaign data, or one-to-one messages are reused.",
+      "What to do: enable strong account authentication such as 2FA or passkeys where available, keep admin access limited to people who need it, review unexpected login or business-manager requests, maintain consistent website and social identity, and report impersonation or scam content through the platform. For links and promotions, verify the destination before publishing or approving it. Meta's own public education campaign specifically encourages 2FA and passkeys for Facebook and Instagram.",
+      "Result: a marketing team gets a clearer trust-and-access checklist around organic publishing. The goal is to reduce account takeover, impersonation, and deceptive-link risk while preserving a consistent public identity. It does not imply that using these controls increases reach, rankings, or conversions. Source/date: Meta Newsroom, September 23, 2026."
+    ],
+    "takeaways": [
+      "Meta says 2026 information sharing with Singapore Police Force led to action against more than 113,000 fraud- and scam-connected entities and pages",
+      "Meta reported action against more than 33,600 e-commerce scam entities and over 3.6 million shell pages",
+      "Meta says 65 million scam ads have been removed so far in 2026, 94% before user reports",
+      "For legitimate brands, secure authentication, limited admin access, identity consistency, and impersonation monitoring belong in the organic-social operating system"
+    ],
+    "faq": [],
+    "related": [
+      {"title": "Hermes Marketing", "body": "Connect organic publishing, account governance, search discovery and measurable conversion inside the Hermes Marketing direction.", "href": "/paths/marketing/"},
+      {"title": "SEO services", "body": "Keep owned-site identity and social discovery aligned with the canonical business presence.", "href": "/services/seo/"}
+    ],
+    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
+    "secondaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
+    "sourceLabel": "Meta Newsroom — Meta Takes Action on 3.7 Million Accounts, Pages and Content In Partnership With Singapore Police Force",
+    "sourceUrl": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/",
+    "sourcePublishedAt": "2026-09-23",
+    "datePublished": "2026-09-24",
+    "dateModified": "2026-09-24",
+    "authorName": "Hermes Editorial Team",
+    "keywords": ["Meta scam enforcement", "Facebook brand impersonation", "Instagram account security", "social media scam prevention", "Meta shell pages", "business account security"],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "evidence": [
+      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Meta September 2026 scam-network enforcement update", "use": "primary", "url": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/", "observedAt": "2026-09-24", "eventDate": "2026-09-23", "notes": "Primary Meta source for enforcement counts, shell-page disruption, scam-ad removals, and public security recommendations."},
+      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing operating archive", "use": "context_only", "notes": "Used only for anonymized patterns around owned identity, controlled access, and consistent distribution. No private client metrics, credentials, campaign data, or one-to-one messages are republished."}
+    ],
+    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing operating material", "nowPeriod": "September 2026", "summary": "Hermes historical marketing work treated owned identity and controlled distribution as operating concerns; Meta's current enforcement update shows why account and brand trust controls remain part of social operations, while all current platform claims come from Meta's dated public source.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/"},
+    "publicationScore": {"score": 73, "recommendation": "digest", "reasons": ["+20 freshness", "+20 source authority", "+8 first-party evidence", "+4 historical comparison", "+12 search value", "+9 internal-link fit"]},
+    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+  },
+  {
     "id": "eia-diesel-route-planning-september-2026",
     "direction": "logistics",
     "slug": "diesel-price-route-planning-september-2026",
