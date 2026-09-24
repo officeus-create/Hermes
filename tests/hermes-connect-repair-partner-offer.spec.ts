@@ -1,6 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+async function openPartnerOffer(page: import("@playwright/test").Page) {
+  const disclosure = page.locator(".repair-partner-disclosure");
+  if (!(await disclosure.getAttribute("open"))) {
+    await disclosure.locator(":scope > summary").click();
+  }
+  await expect(page.locator("#partner-contact-name")).toBeVisible();
+}
+
 async function fillPartnerOffer(page: import("@playwright/test").Page, options: { consent?: boolean } = {}) {
+  await openPartnerOffer(page);
   await page.locator("#shop-name").fill("Revenue Test Auto Care");
   await page.locator("#shop-type").selectOption("truck_diesel");
   await page.locator("#city-state").fill("Milwaukee, WI");
@@ -33,6 +42,7 @@ test("repair shop corporate offer is clear, delivered privately and waits for hu
   });
 
   await page.goto("/services/hermes-connect/repair-shops/");
+  await openPartnerOffer(page);
 
   await expect(page.locator("#partner-contact-name")).toBeVisible();
   await expect(page.locator("[data-repair-offer-next-step]")).toContainText("What happens next");
@@ -154,6 +164,7 @@ test("partner offer keeps entered data and exposes prepared email fallback when 
 
 test("Russian Repair Shop partner offer explains service location and next step in Russian", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
+  await openPartnerOffer(page);
 
   await expect(page.locator("label", { has: page.locator("#city-state") })).toContainText("Город / штат обслуживания");
   await expect(page.locator("[data-repair-help='city-state']")).toContainText("Полный адрес улицы здесь не нужен");
