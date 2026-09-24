@@ -28,7 +28,7 @@ entries — append only.
 - PR: #1477 (draft); issue #1293.
 - What was done: Added a Cloudflare Worker proposal/owner-approval/outbox transport for the existing `progressopro1_BOT` Marketing IT group. Durable D1 states, owner-private `/pause` and `/resume`, fixed destination with bot/admin preflight, weekdays 09:00–17:45 Chicago guard, explicit disabled/paused defaults, and ambiguous-send no-retry. This does not migrate the other bots, wire a report producer, or replace TaskNotify owner alerts.
 - Files changed: `workers/telegram-gateway/` and `.github/workflows/telegram-gateway-contract.yml`, this log and Error Register.
-- Tests run: focused Node tests 5/5 on local artifact; exact-head CI pending. Site build/test/e2e not run in this connector-only checkout.
+- Tests run: focused Node tests 6/6 on local artifact; exact-head CI pending. Site build/test/e2e not run in this connector-only checkout.
 - Ecosystem compounding: reusable approved outbound receipt contract for future direction-specific adapters and privacy-safe status reporting; no site/SEO/public copy change, no commercial claim.
 - Risk and blocker: #932 provider-side token rotation, approved Cloudflare worker/D1/secrets, authenticated producer, owner ID/bot/group permission live verification, webhook, release decision, owner/private and group canary with independent readback. Historical Mac state is not live evidence.
 - Next owner: owner/provider performs private rotation/account access and approves release; Telegram technical owner follows README cutover; #1293 tracks other bots and business proof. Rollback: owner `/pause`, disable worker send, reconcile ambiguous rows manually.
