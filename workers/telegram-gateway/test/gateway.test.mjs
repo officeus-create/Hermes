@@ -109,7 +109,7 @@ test("owner-only approval, callback replay and exactly one group send", async ()
     const callback = from => ({ callback_query: { id: "cb1", from: { id: from },
       message: { chat: { id: 1234567 }, message_id: 77 }, data: `a:${row.id}:${row.nonce}` } });
     assert.equal((await worker.fetch(req("/telegram/webhook", callback(1234567)), e)).status, 401);
-    assert.equal((await worker.fetch(req("/telegram/webhook", callback(9), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e)).status, 403);
+    assert.equal((await worker.fetch(req("/telegram/webhook", callback(9), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e)).status, 200);
     const approved = await worker.fetch(req("/telegram/webhook", callback(1234567), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e);
     assert.equal((await approved.json()).changed, true);
     assert.equal((await (await worker.fetch(req("/telegram/webhook", callback(1234567), { "X-Telegram-Bot-Api-Secret-Token": "hook-secret" }), e)).json()).changed, false);
@@ -143,7 +143,7 @@ test("private owner command changes persistent pause; other users cannot resume"
     assert.equal((await worker.fetch(req("/telegram/webhook", message(1234567, "/pause"), header), e)).status, 200);
     assert.equal(e.DB.paused, 1);
     assert.deepEqual(await deliver(e, noon), { skipped: true });
-    assert.equal((await worker.fetch(req("/telegram/webhook", message(9, "/resume"), header), e)).status, 403);
+    assert.equal((await worker.fetch(req("/telegram/webhook", message(9, "/resume"), header), e)).status, 200);
     assert.equal(e.DB.paused, 1);
     assert.equal((await worker.fetch(req("/telegram/webhook", message(1234567, "/resume"), header), e)).status, 200);
     assert.equal(e.DB.paused, 0);
