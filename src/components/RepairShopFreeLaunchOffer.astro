@@ -122,11 +122,8 @@ const { compact = false, showCta = true } = Astro.props;
 
   const placeOffer = (root: HTMLElement) => {
     let anchor: Element | null = null;
-    if (route === repairRoot) {
-      anchor = document.querySelector(".repair-plan-card");
-      root.classList.add("is-landing-secondary");
-    }
-    else if (route === `${repairRoot}/auth`) {
+    if (route === repairRoot) return false;
+    if (route === `${repairRoot}/auth`) {
       if (params.get("mode") !== "register") return false;
       anchor = document.querySelector("#auth-forms .auth-header");
       root.classList.add("is-compact");
