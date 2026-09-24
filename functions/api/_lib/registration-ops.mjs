@@ -31,6 +31,11 @@ export async function ensureRegistrationOpsSchema(db) {
   )`).run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_registration_alerts_status_created ON hermes_registration_alerts(status, created_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_registration_alerts_specialist ON hermes_registration_alerts(specialist_id, created_at DESC)").run();
+  // An independent claim keeps the legacy alert status constraint compatible with existing D1 tables.
+  await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_registration_alert_claims (
+    id TEXT PRIMARY KEY,
+    claimed_at TEXT NOT NULL
+  )`).run();
 }
 
 function configuredSyntheticEmails(env) {
@@ -165,6 +170,14 @@ export async function deliverTelegramRegistrationAlert({ db, env, specialistId, 
     return { ok: false, error: "telegram_not_configured" };
   }
 
+  // Claim before the network call. Concurrent requests and ambiguous responses must not
+  // send the same private registration record twice. Ambiguous claims need human reconciliation.
+  const claim = await db.prepare(`INSERT OR IGNORE INTO hermes_registration_alert_claims (id, claimed_at)
+    VALUES (?, ?)`).bind(id, nowIso()).run();
+  if (Number(claim?.meta?.changes || 0) !== 1) {
+    return { ok: false, error: "delivery_claimed_reconcile_before_retry" };
+  }
+
   try {
     const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
@@ -177,15 +190,21 @@ export async function deliverTelegramRegistrationAlert({ db, env, specialistId, 
     });
     let payload = null;
     try { payload = await response.json(); } catch {}
-    if (!response.ok || !payload?.ok || !payload?.result?.message_id) {
+    if (!response.ok || payload?.ok === false) {
       await updateAlertState(db, id, { status: "failed", attempts: attempts + 1, lastError: `telegram_http_${response.status}` });
+      // Telegram explicitly rejected this request: a later owner retry is safe.
+      await db.prepare("DELETE FROM hermes_registration_alert_claims WHERE id = ?").bind(id).run();
       return { ok: false, error: "telegram_delivery_failed" };
+    }
+    if (!payload?.result?.message_id) {
+      await updateAlertState(db, id, { status: "failed", attempts: attempts + 1, lastError: "delivery_ambiguous_manual_review" });
+      return { ok: false, error: "delivery_ambiguous_manual_review" };
     }
     const sentAt = nowIso();
     await updateAlertState(db, id, { status: "sent", attempts: attempts + 1, sentAt, lastError: null });
     return { ok: true, status: "sent", sent_at: sentAt };
   } catch {
-    await updateAlertState(db, id, { status: "failed", attempts: attempts + 1, lastError: "telegram_network_error" });
-    return { ok: false, error: "telegram_network_error" };
+    await updateAlertState(db, id, { status: "failed", attempts: attempts + 1, lastError: "delivery_ambiguous_manual_review" }).catch(() => {});
+    return { ok: false, error: "delivery_ambiguous_manual_review" };
   }
 }
