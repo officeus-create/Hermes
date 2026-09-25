@@ -1,11 +1,107 @@
 ---
 import RepairShopAnalytics from "./RepairShopAnalytics.astro";
+import type { SiteLocale } from "../data/locales";
 
 interface Props {
   clarityEligible?: boolean;
+  locale?: SiteLocale;
 }
 
-const { clarityEligible = false } = Astro.props;
+const { clarityEligible = false, locale: pageLocale = "en" } = Astro.props;
+const supportedLocales = new Set<SiteLocale>(["en", "ru", "uk", "es", "it", "fr"]);
+const pathLocaleMap: Record<string, SiteLocale> = { ua: "uk", ru: "ru", es: "es", it: "it", fr: "fr" };
+const requestedLocale = Astro.url.searchParams.get("lang");
+const routeLocale = pathLocaleMap[Astro.url.pathname.split("/")[1] || ""] ?? pageLocale;
+const resolvedLocale = requestedLocale && supportedLocales.has(requestedLocale as SiteLocale)
+  ? requestedLocale as SiteLocale
+  : routeLocale;
+
+const trackingConsentCopy: Record<SiteLocale, {
+  eyebrow: string;
+  title: string;
+  repairDetail: string;
+  clarityDetail: string;
+  basicDetail: string;
+  compact: string;
+  allow: string;
+  decline: string;
+  privacyPolicy: string;
+  settings: string;
+}> = {
+  en: {
+    eyebrow: "Privacy settings",
+    title: "Choose whether to allow website analytics.",
+    repairDetail: "Hermes uses Google Analytics 4 and a privacy-limited PostHog product event stream to understand visits and whether core Repair Shop workflows work. Analytics stays off until you choose “Allow analytics.” No names, emails, phones, shop/customer identifiers, VINs, notes, calendar data, or payment identifiers are sent in Repair Shop product events. Advertising storage, ad personalization, and advertising user data remain disabled.",
+    clarityDetail: "Hermes uses Google Analytics 4 and Microsoft Clarity on eligible public pages to understand visits, clicks, scrolling, and usability. Both stay off until you choose “Allow analytics.” Clarity is not loaded on private Hermes Connect, signing, application, or other blocked sensitive routes; form inputs stay masked. Advertising storage, ad personalization, and advertising user data remain disabled.",
+    basicDetail: "Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.",
+    compact: "Analytics is off until you choose. Advertising storage and personalization stay disabled.",
+    allow: "Allow analytics",
+    decline: "Continue without analytics",
+    privacyPolicy: "Privacy Policy",
+    settings: "Privacy settings",
+  },
+  ru: {
+    eyebrow: "Настройки конфиденциальности",
+    title: "Разрешить аналитику сайта?",
+    repairDetail: "Hermes использует Google Analytics 4 и ограниченный с точки зрения конфиденциальности поток продуктовых событий PostHog, чтобы понимать посещения и работу ключевых сценариев СТО. Аналитика остаётся выключенной, пока вы не выберете «Разрешить аналитику». В события Repair Shop не передаются имена, email, телефоны, идентификаторы СТО или клиентов, VIN, заметки, данные календаря или платёжные идентификаторы. Хранилище рекламных данных, персонализация рекламы и рекламные пользовательские данные остаются отключёнными.",
+    clarityDetail: "Hermes использует Google Analytics 4 и Microsoft Clarity на подходящих публичных страницах, чтобы понимать посещения, клики, прокрутку и удобство использования. Оба сервиса остаются выключенными, пока вы не выберете «Разрешить аналитику». Clarity не загружается на приватных страницах Hermes Connect, подписания, заявок и других чувствительных маршрутах; поля форм остаются замаскированными. Хранилище рекламных данных, персонализация рекламы и рекламные пользовательские данные остаются отключёнными.",
+    basicDetail: "Hermes использует Google Analytics 4, чтобы понимать посещения и ограниченные взаимодействия с сайтом. Аналитика остаётся выключенной, пока вы не выберете «Разрешить аналитику». Хранилище рекламных данных, рекламные пользовательские данные и персонализация рекламы остаются отключёнными.",
+    compact: "Аналитика выключена, пока вы не выберете. Рекламное хранилище и персонализация остаются отключёнными.",
+    allow: "Разрешить аналитику",
+    decline: "Продолжить без аналитики",
+    privacyPolicy: "Политика конфиденциальности",
+    settings: "Настройки конфиденциальности",
+  },
+  uk: {
+    eyebrow: "Налаштування конфіденційності",
+    title: "Дозволити аналітику сайту?",
+    repairDetail: "Hermes використовує Google Analytics 4 і обмежений із погляду конфіденційності потік продуктових подій PostHog, щоб розуміти відвідування та роботу ключових сценаріїв СТО. Аналітика залишається вимкненою, доки ви не виберете «Дозволити аналітику». У події Repair Shop не передаються імена, email, телефони, ідентифікатори СТО або клієнтів, VIN, нотатки, дані календаря чи платіжні ідентифікатори. Зберігання рекламних даних, персоналізація реклами та рекламні дані користувачів залишаються вимкненими.",
+    clarityDetail: "Hermes використовує Google Analytics 4 і Microsoft Clarity на придатних публічних сторінках, щоб розуміти відвідування, кліки, прокручування та зручність використання. Обидва сервіси залишаються вимкненими, доки ви не виберете «Дозволити аналітику». Clarity не завантажується на приватних сторінках Hermes Connect, підписання, заявок та інших чутливих маршрутах; поля форм залишаються замаскованими. Зберігання рекламних даних, персоналізація реклами та рекламні дані користувачів залишаються вимкненими.",
+    basicDetail: "Hermes використовує Google Analytics 4, щоб розуміти відвідування та обмежені взаємодії із сайтом. Аналітика залишається вимкненою, доки ви не виберете «Дозволити аналітику». Зберігання рекламних даних, рекламні дані користувачів і персоналізація реклами залишаються вимкненими.",
+    compact: "Аналітика вимкнена, доки ви не виберете. Рекламне зберігання та персоналізація залишаються вимкненими.",
+    allow: "Дозволити аналітику",
+    decline: "Продовжити без аналітики",
+    privacyPolicy: "Політика конфіденційності",
+    settings: "Налаштування конфіденційності",
+  },
+  es: {
+    eyebrow: "Configuración de privacidad",
+    title: "¿Permitir la analítica del sitio web?",
+    repairDetail: "Hermes utiliza Google Analytics 4 y un flujo de eventos de producto de PostHog limitado por privacidad para comprender las visitas y si funcionan los flujos principales de Repair Shop. La analítica permanece desactivada hasta que elijas «Permitir analítica». Los eventos de Repair Shop no envían nombres, correos, teléfonos, identificadores de talleres o clientes, VIN, notas, datos de calendario ni identificadores de pago. El almacenamiento publicitario, la personalización de anuncios y los datos publicitarios de usuario permanecen desactivados.",
+    clarityDetail: "Hermes utiliza Google Analytics 4 y Microsoft Clarity en páginas públicas aptas para comprender visitas, clics, desplazamiento y usabilidad. Ambos permanecen desactivados hasta que elijas «Permitir analítica». Clarity no se carga en rutas privadas de Hermes Connect, firma, solicitudes u otras rutas sensibles bloqueadas; los campos de formularios permanecen enmascarados. El almacenamiento publicitario, la personalización de anuncios y los datos publicitarios de usuario permanecen desactivados.",
+    basicDetail: "Hermes utiliza Google Analytics 4 para comprender las visitas y unas interacciones limitadas con el sitio. La analítica permanece desactivada hasta que elijas «Permitir analítica». El almacenamiento publicitario, los datos publicitarios de usuario y la personalización de anuncios permanecen desactivados.",
+    compact: "La analítica está desactivada hasta que elijas. El almacenamiento publicitario y la personalización siguen desactivados.",
+    allow: "Permitir analítica",
+    decline: "Continuar sin analítica",
+    privacyPolicy: "Política de privacidad",
+    settings: "Configuración de privacidad",
+  },
+  it: {
+    eyebrow: "Impostazioni sulla privacy",
+    title: "Consentire l'analisi del sito web?",
+    repairDetail: "Hermes utilizza Google Analytics 4 e un flusso di eventi di prodotto PostHog limitato per la privacy per comprendere le visite e il funzionamento dei principali flussi Repair Shop. L'analisi resta disattivata finché non scegli «Consenti analisi». Gli eventi Repair Shop non inviano nomi, email, telefoni, identificatori di officine o clienti, VIN, note, dati del calendario o identificatori di pagamento. Archiviazione pubblicitaria, personalizzazione degli annunci e dati pubblicitari degli utenti restano disattivati.",
+    clarityDetail: "Hermes utilizza Google Analytics 4 e Microsoft Clarity sulle pagine pubbliche idonee per comprendere visite, clic, scorrimento e usabilità. Entrambi restano disattivati finché non scegli «Consenti analisi». Clarity non viene caricato sulle route private di Hermes Connect, firma, candidature o altre route sensibili bloccate; i campi dei moduli restano mascherati. Archiviazione pubblicitaria, personalizzazione degli annunci e dati pubblicitari degli utenti restano disattivati.",
+    basicDetail: "Hermes utilizza Google Analytics 4 per comprendere le visite e interazioni limitate con il sito. L'analisi resta disattivata finché non scegli «Consenti analisi». Archiviazione pubblicitaria, dati pubblicitari degli utenti e personalizzazione degli annunci restano disattivati.",
+    compact: "L'analisi è disattivata finché non scegli. Archiviazione pubblicitaria e personalizzazione restano disattivate.",
+    allow: "Consenti analisi",
+    decline: "Continua senza analisi",
+    privacyPolicy: "Informativa sulla privacy",
+    settings: "Impostazioni sulla privacy",
+  },
+  fr: {
+    eyebrow: "Paramètres de confidentialité",
+    title: "Autoriser l’analyse du site web ?",
+    repairDetail: "Hermes utilise Google Analytics 4 et un flux d’événements produit PostHog limité pour la confidentialité afin de comprendre les visites et le fonctionnement des principaux parcours Repair Shop. L’analyse reste désactivée jusqu’à ce que vous choisissiez «Autoriser l’analyse». Les événements Repair Shop n’envoient ni noms, ni e-mails, ni téléphones, ni identifiants d’atelier ou de client, ni VIN, ni notes, ni données de calendrier, ni identifiants de paiement. Le stockage publicitaire, la personnalisation des annonces et les données publicitaires utilisateur restent désactivés.",
+    clarityDetail: "Hermes utilise Google Analytics 4 et Microsoft Clarity sur les pages publiques éligibles afin de comprendre les visites, les clics, le défilement et l’ergonomie. Les deux restent désactivés jusqu’à ce que vous choisissiez «Autoriser l’analyse». Clarity n’est pas chargé sur les routes privées Hermes Connect, de signature, de candidature ou les autres routes sensibles bloquées; les champs de formulaire restent masqués. Le stockage publicitaire, la personnalisation des annonces et les données publicitaires utilisateur restent désactivés.",
+    basicDetail: "Hermes utilise Google Analytics 4 pour comprendre les visites et certaines interactions limitées avec le site. L’analyse reste désactivée jusqu’à ce que vous choisissiez «Autoriser l’analyse». Le stockage publicitaire, les données publicitaires utilisateur et la personnalisation des annonces restent désactivés.",
+    compact: "L’analyse est désactivée jusqu’à votre choix. Le stockage publicitaire et la personnalisation restent désactivés.",
+    allow: "Autoriser l’analyse",
+    decline: "Continuer sans analyse",
+    privacyPolicy: "Politique de confidentialité",
+    settings: "Paramètres de confidentialité",
+  },
+};
+const consentCopy = trackingConsentCopy[resolvedLocale];
 const measurementId = "G-RY26321PVW";
 const clarityProjectId = "yiumce2dne";
 const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-connect");
@@ -15,24 +111,24 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 <div class:list={["tracking-consent", { "tracking-consent-connect": isHermesConnectRoute }]} data-tracking-consent data-measurement-id={measurementId}>
   <div class="tracking-consent-banner" data-consent-banner role="dialog" aria-modal="false" aria-labelledby="tracking-consent-title" hidden>
     <div class="tracking-consent-copy">
-      <p class="tracking-consent-eyebrow">Privacy settings</p>
-      <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
+      <p class="tracking-consent-eyebrow">{consentCopy.eyebrow}</p>
+      <h2 id="tracking-consent-title">{consentCopy.title}</h2>
       <p class="tracking-consent-detail">
         {isRepairShopRoute
-          ? "Hermes uses Google Analytics 4 and a privacy-limited PostHog product event stream to understand visits and whether core Repair Shop workflows work. Analytics stays off until you choose “Allow analytics.” No names, emails, phones, shop/customer identifiers, VINs, notes, calendar data, or payment identifiers are sent in Repair Shop product events. Advertising storage, ad personalization, and advertising user data remain disabled."
+          ? consentCopy.repairDetail
           : clarityEligible
-            ? "Hermes uses Google Analytics 4 and Microsoft Clarity on eligible public pages to understand visits, clicks, scrolling, and usability. Both stay off until you choose “Allow analytics.” Clarity is not loaded on private Hermes Connect, signing, application, or other blocked sensitive routes; form inputs stay masked. Advertising storage, ad personalization, and advertising user data remain disabled."
-            : "Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled."}
+            ? consentCopy.clarityDetail
+            : consentCopy.basicDetail}
       </p>
-      <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>
+      <p class="tracking-consent-compact-copy">{consentCopy.compact} <a href="/privacy/">{consentCopy.privacyPolicy}</a></p>
     </div>
     <div class="tracking-consent-actions">
-      <button type="button" class="button button-primary" data-consent-accept>Allow analytics</button>
-      <button type="button" class="button" data-consent-decline>Continue without analytics</button>
-      <a class="tracking-consent-policy-link" href="/privacy/">Privacy Policy</a>
+      <button type="button" class="button button-primary" data-consent-accept>{consentCopy.allow}</button>
+      <button type="button" class="button" data-consent-decline>{consentCopy.decline}</button>
+      <a class="tracking-consent-policy-link" href="/privacy/">{consentCopy.privacyPolicy}</a>
     </div>
   </div>
-  <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog" hidden>Privacy settings</button>
+  <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog" hidden>{consentCopy.settings}</button>
 </div>
 
 {isRepairShopRoute && <RepairShopAnalytics />}
