@@ -1,7 +1,11 @@
 ---
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { buildCatalogLeadContext, catalogClaimHref, catalogSemanticSignals } from "../lib/catalog-concept-factory.mjs";
 type Props = { business: CatalogBusinessConcept; profileUrl: string; };
 const { business, profileUrl } = Astro.props;
+const claimHref = catalogClaimHref(business, profileUrl);
+const leadContext = buildCatalogLeadContext({ business, profileUrl });
+const semanticSignals = catalogSemanticSignals(business);
 const primaryChannels = business.channels.filter((x)=>x.direction==="primary");
 const secondaryChannels = business.channels.filter((x)=>x.direction==="secondary");
 const mapChannel = business.channels.find((x)=>x.direction==="maps");
