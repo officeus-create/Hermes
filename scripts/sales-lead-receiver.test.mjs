@@ -520,6 +520,37 @@ const setFrozenDate = (iso) => {
   };
 };
 
+const pendingPrimaryStorage = new MemoryDurableStorage();
+const pendingPrimaryEnv = {
+  ...workerEnv,
+  EMAIL: {
+    async send() {
+      const error = new Error("temporary provider outage");
+      error.status = 503;
+      throw error;
+    },
+  },
+};
+const pendingPrimaryCoordinator = new CarHaulingDeliveryCoordinatorCore({ storage: pendingPrimaryStorage }, pendingPrimaryEnv);
+const pendingPrimaryFirst = await pendingPrimaryCoordinator.fetch(durableRequest({
+  ...durablePayload,
+  request_id: "carrier_durable_pending_1296",
+}));
+assert.equal(pendingPrimaryFirst.status, 503);
+const pendingPrimaryFirstBody = await pendingPrimaryFirst.json();
+assert.equal(pendingPrimaryFirstBody.delivery_ledger.primary, "pending");
+assert.equal(pendingPrimaryFirstBody.ok, false);
+
+const pendingPrimaryRetry = await pendingPrimaryCoordinator.fetch(durableRequest({
+  ...durablePayload,
+  request_id: "carrier_durable_pending_1296",
+}));
+assert.equal(pendingPrimaryRetry.status, 503, "Immediate duplicate retry must not promote a pending primary delivery to accepted.");
+const pendingPrimaryRetryBody = await pendingPrimaryRetry.json();
+assert.equal(pendingPrimaryRetryBody.deduplicated, true);
+assert.equal(pendingPrimaryRetryBody.accepted, false);
+assert.equal(pendingPrimaryRetryBody.delivery_ledger.primary, "pending");
+
 const telegramBeforeDurable = telegramMessages.length;
 try {
   setFrozenDate("2026-09-15T22:46:00.000Z");
