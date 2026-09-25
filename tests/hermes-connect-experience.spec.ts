@@ -38,7 +38,7 @@ test("Hermes Connect language switching stays on the equivalent product route", 
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-  await expect(page.getByRole("heading", { name: "Онлайн-запись и расписание для независимых автосервисов." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Программа для СТО: записи, клиенты и доступность в одном месте." })).toBeVisible();
   await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
   await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
 

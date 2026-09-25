@@ -28,7 +28,7 @@ test("Repair public page keeps operational deep links behind auth while preservi
   }
 
   await expect(page.locator('a[href="#repair-capabilities-title"]')).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Start publicly. Continue operations after sign-in." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Choose what your shop needs next." })).toBeVisible();
 });
 
 test("Repair public navigation remains usable at 390px", async ({ page }) => {
