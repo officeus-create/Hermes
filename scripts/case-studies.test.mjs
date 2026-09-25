@@ -61,9 +61,14 @@ for (const required of [
   'data-seo-owner-link',
   'data-service-group="logistics_seo"',
   "Review logistics SEO services",
-  "First finalized GSC baseline recorded",
-  "Visibility confirmed; click outcome not yet proven",
-  "Evidence stage: impressions, not conversion",
+  "Current GSC checkpoint recorded",
+  "Current U.S. desktop checkpoint",
+  "6 impressions, 0 clicks, and an average position of 49.5",
+  "18 impressions at average position 54.56",
+  "4 impressions at 47.25",
+  "Warehousing remains an intent mismatch",
+  "not a like-for-like experiment",
+  "Evidence stage: search discovery, not conversion or revenue",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
 
 assert.match(
@@ -100,4 +105,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies and Appleton intent-boundary checks passed: Home routes to Logistics, Logistics owns the descriptive Appleton crawl path, the Appleton case routes to the canonical Logistics SEO owner, case schema/claims remain bounded, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
+console.log("Case studies and Appleton intent-boundary checks passed: current GSC evidence is dated and filter-scoped, historical and current checkpoints are not blended, Appleton remains the vehicle-transport owner, the case routes to the canonical Logistics SEO owner, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
