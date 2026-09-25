@@ -1,50 +1,233 @@
 [
   {
-    "id": "truckstop-phishing-security-september-2026",
-    "direction": "logistics",
-    "slug": "truckstop-phishing-load-board-security-september-2026",
-    "title": "Truckstop Phishing Alert: Protect Freight Platform Accounts | Hermes Insights",
-    "description": "Truckstop posted a September 22 security alert warning customers about phishing emails that imitate account, security, or billing verification. Hermes turns the alert into a concise carrier and dispatcher account-safety checklist.",
-    "eyebrow": "Freight Security Update · September 2026",
-    "h1": "Truckstop warned about phishing emails targeting freight-platform users. What should carriers check?",
-    "conciseAnswer": "Truckstop says customers have received phishing emails asking them to click links to verify security or billing information. The company says those messages did not come from Truckstop and that legitimate Truckstop email comes from @truckstop.com or e.truckstop.com. If a user clicked one of the reported phishing links, Truckstop advises changing both the Truckstop and email-account passwords immediately.",
+    "id": "google-search-console-multimodal-reporting-september-2026",
+    "direction": "marketing",
+    "slug": "google-search-console-multimodal-reporting-september-2026",
+    "title": "Google Search Console Adds Multimodal Search Reporting | Hermes Insights",
+    "description": "Google added a Search Console multimodal-search filter covering Lens, Circle to Search, image uploads and Chrome image search. Hermes turns the September 24 update into a practical visual-search measurement loop.",
+    "eyebrow": "Search Measurement Update · September 2026",
+    "h1": "Google Search Console can now separate multimodal searches. What should marketers measure?",
+    "conciseAnswer": "Google announced on September 24, 2026 that Search Console is rolling out web multimodal search reporting globally. The filter can show traffic from Google Lens, Circle to Search, image uploads to Google Search and Chrome image search. It provides a measurable visual-discovery signal; it does not promise more traffic or higher rankings.",
     "explanation": [
-      "What changed: Truckstop published a September 22, 2026 security alert after reports of phishing emails sent to its customers. The messages asked recipients to click a link to verify information for security or billing purposes. Truckstop states that these emails were phishing attempts and were not sent by Truckstop.",
-      "Why it matters: freight operations depend on trusted access to load boards, email, broker and carrier communications. A compromised platform or email account can turn an ordinary load-search workflow into an account-security and fraud problem. Historical Hermes operating material is used only for the general pattern that verification should happen before an operational action; no private account, contact, load, rate, or credential information is reused here.",
-      "What to do: check the sender domain before opening verification links, navigate to the platform directly instead of relying on an unexpected email link, and treat unusual billing or security requests as a verification event. Truckstop says its legitimate email comes from @truckstop.com or e.truckstop.com. If one of the reported phishing links was clicked, change the Truckstop and email passwords immediately and review the account for suspicious activity.",
-      "Result: the team gets a simple verification rule before acting on account-security messages. That reduces avoidable credential exposure without assuming that every unusual email is fraudulent or that a sender display name proves authenticity. Source/date: Truckstop security alert, September 22, 2026."
+      "What changed: Google Search Central announced a multimodal search type filter in the Search results Performance report and the Generative AI features report. Google says it covers searches that start with an image through Google Lens, Circle to Search on Android, image uploads to Google Search and Chrome image search. The rollout began globally on September 24, and metrics appear when a site receives traffic from those searches.",
+      "Why it matters: visual discovery can now be separated from ordinary search traffic instead of inferred from generic image impressions. Hermes historical marketing material is used only for an anonymous operating pattern around owned-site visibility, consistent social and visual identity, and measurement. No internal client data is reused, and current Search Console capabilities come only from Google's dated public documentation.",
+      "What to do: apply the multimodal search filter where data is available, export the results, and compare landing pages, image-heavy pages and query themes with ordinary search. Improve visual and page context only where the data supports it, then measure again rather than assuming that more images automatically improve search performance.",
+      "Result: the team gets a measurable loop for image-led discovery: observe multimodal traffic, identify which pages receive it, improve the relevant owned experience, and compare the next period. This is a measurement improvement, not a ranking, lead or revenue guarantee. Source/date: Google Search Central, September 24, 2026."
     ],
     "takeaways": [
-      "Truckstop warned on September 22 about phishing emails requesting security or billing verification",
-      "Truckstop says legitimate company email comes from @truckstop.com or e.truckstop.com",
-      "If a reported phishing link was clicked, Truckstop advises changing both the Truckstop and email passwords immediately",
-      "Verify account-security requests through the platform directly before taking action"
+      "Search Console is rolling out a multimodal search filter globally",
+      "The filter covers Lens, Circle to Search, image uploads and Chrome image search",
+      "Metrics appear when a site receives traffic from those searches",
+      "Measure visual discovery before deciding which pages or assets need improvement"
     ],
     "faq": [],
     "related": [
-      {"title": "Hermes Load Board", "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping account verification and fraud checks separate from load selection.", "href": "/load-board/"},
-      {"title": "Hermes Logistics", "body": "Review the canonical Hermes Logistics direction and carrier operations resources.", "href": "/paths/logistics/"},
-      {"title": "Owner-Operator Dispatch Support", "body": "Connect source verification with route and load-review discipline.", "href": "/logistics/owner-operator-dispatch-support/"}
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect visual discovery, organic social, owned-site conversion and measurement.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO Services",
+        "body": "Review search visibility, content and measurement.",
+        "href": "/services/seo/"
+      },
+      {
+        "title": "Search-to-Inquiry Checklist",
+        "body": "Connect new search signals to a clear next action on the owned website.",
+        "href": "/resources/search-to-inquiry-conversion-checklist/"
+      }
     ],
-    "primaryAction": {"label": "Explore Hermes Load Board", "href": "/load-board/"},
-    "secondaryAction": {"label": "Review Hermes Logistics", "href": "/paths/logistics/"},
-    "sourceLabel": "Truckstop — Freight Fraud Prevention / Security Alert: Be Aware of Phishing Emails",
-    "sourceUrl": "https://truckstop.com/freight-fraud-prevention/",
-    "sourcePublishedAt": "2026-09-22",
-    "datePublished": "2026-09-24",
-    "dateModified": "2026-09-24",
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
+    "sourceLabel": "Google Search Central Blog — Announcing web multimodal Search performance reporting in Search Console",
+    "sourceUrl": "https://developers.google.com/search/blog/2026/09/web-multimodal-in-sc",
+    "sourcePublishedAt": "2026-09-24",
+    "datePublished": "2026-09-25",
+    "dateModified": "2026-09-25",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["Truckstop phishing", "freight fraud prevention", "load board security", "carrier account security", "truckload phishing", "freight platform fraud"],
+    "keywords": [
+      "Search Console multimodal",
+      "Google Lens SEO",
+      "Circle to Search reporting",
+      "visual search analytics",
+      "multimodal search performance",
+      "Search Console"
+    ],
     "contentTier": "digest",
     "currentMarketClaim": true,
-    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Truckstop September 22 phishing security alert", "use": "primary", "url": "https://truckstop.com/freight-fraud-prevention/", "observedAt": "2026-09-24", "eventDate": "2026-09-22", "notes": "Primary platform source for the reported phishing pattern, legitimate sender domains, and remediation advice."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Used only for the anonymized operating pattern of verifying source and context before acting. No private accounts, credentials, contacts, loads, rates, or commercial figures are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Search Central September 24 multimodal Search Console reporting announcement",
+        "use": "primary",
+        "url": "https://developers.google.com/search/blog/2026/09/web-multimodal-in-sc",
+        "observedAt": "2026-09-25",
+        "eventDate": "2026-09-24",
+        "notes": "Primary Google documentation for the new multimodal search filter, covered search experiences, rollout timing and reporting availability."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized operating patterns around owned-site visibility, consistent social and visual identity, and measurement. No identifiable or confidential material is republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes operating material repeatedly treated verification before action as part of dispatch and carrier workflow; the current Truckstop alert adds a dated platform-specific security case, while current remediation guidance comes only from Truckstop's public alert.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://truckstop.com/freight-fraud-prevention/"},
-    "publicationScore": {"score": 74, "recommendation": "digest", "reasons": ["+20 freshness", "+18 source authority", "+10 first-party evidence", "+5 historical comparison", "+12 search value", "+9 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical marketing work treated the owned website, social distribution and visual consistency as connected operating concerns; Google's September 2026 reporting update makes one part of that discovery path measurable as multimodal Search Console traffic. Current feature behavior and limits come only from Google's dated public documentation.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://developers.google.com/search/blog/2026/09/web-multimodal-in-sc"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+14 search value",
+        "+8 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "bts-transborder-truck-freight-september-2026",
+    "direction": "logistics",
+    "slug": "north-american-transborder-truck-freight-september-2026",
+    "title": "North American Truck Freight Value Rose 23.9% YoY | Hermes Insights",
+    "description": "BTS reported trucks moved $108.2 billion of U.S.-Canada/Mexico transborder freight in July 2026, up 23.9% year over year in current-dollar value. Hermes explains what the data can and cannot tell carriers, brokers and shippers.",
+    "eyebrow": "Cross-Border Freight Data · September 2026",
+    "h1": "BTS says trucks moved $108.2 billion in North American transborder freight. What does the signal mean?",
+    "conciseAnswer": "The U.S. Bureau of Transportation Statistics reported $108.2 billion in truck freight between the United States, Canada and Mexico in July 2026, up 23.9% from July 2025 in current-dollar value. Mexico accounted for $74.6 billion and Canada $33.6 billion. The release is useful corridor-level trade context, but it is not a load-count, tonnage, capacity or spot-rate measure and the dollar values are not adjusted for inflation.",
+    "explanation": [
+      "What changed: BTS released July 2026 North American Transborder Freight data on September 23, 2026. The agency reported $157.6 billion across all modes, with trucks carrying $108.2 billion in freight value, up 23.9% year over year. Truck freight with Mexico was $74.6 billion and with Canada $33.6 billion. BTS also identifies major truck gateways including Laredo, El Paso and Otay Mesa for Mexico and Detroit, Port Huron and Buffalo for Canada.",
+      "Why it matters: the release gives carriers, brokers, shippers and training teams an official corridor-scale trade signal, especially where automotive and other cross-border goods matter. Historical Hermes operating material is used only for the anonymous decision pattern that route geography, equipment fit and shipper/dealer context belong in load review. No historical operating details are reused as current commercial facts. The BTS number is freight value in current U.S. dollars, so a 23.9% value increase must not be presented as a 23.9% increase in load count, truck demand, capacity or rates.",
+      "What to do: use the BTS release as one macro input, then verify the current lane with live load, rate, capacity, appointment, border, equipment and compliance information before making an operating decision. If a carrier or shipper works cross-border corridors, compare the relevant gateway and commodity context with its actual route economics rather than treating the national value headline as a price signal.",
+      "Result: the team gets a cleaner way to use a strong public dataset without turning trade-value growth into an unsupported market-boom claim. The practical output is better market context for route research, shipper/dealer conversations and training while preserving the distinction between official aggregate trade value and the lane-level evidence required for a real load decision. Source/date: U.S. Bureau of Transportation Statistics, September 23, 2026."
+    ],
+    "takeaways": [
+      "BTS reported $108.2 billion in U.S.-Canada/Mexico truck freight value for July 2026, up 23.9% year over year",
+      "Truck freight value was $74.6 billion with Mexico and $33.6 billion with Canada",
+      "BTS values are current dollars and do not measure load count, tonnage, capacity or spot rates",
+      "Use the release as corridor context, then verify current lane economics and operating constraints separately"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Hermes Logistics",
+        "body": "Use the Logistics direction for carrier, shipper, dealer and operating resources tied to current route decisions.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Use lane-level load and capacity evidence separately from aggregate trade-value data.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Shippers & Dealers",
+        "body": "Connect route and vehicle-movement context to the shipper/dealer workflow without assuming cross-border capability.",
+        "href": "/paths/logistics/customers/vehicle-transport/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Load Board",
+      "href": "/load-board/"
+    },
+    "sourceLabel": "U.S. Bureau of Transportation Statistics — North American Transborder Freight, July 2026",
+    "sourceUrl": "https://www.bts.gov/newsroom/north-american-transborder-freight-valued-1576-billion-july-2026-188-july-2025",
+    "sourcePublishedAt": "2026-09-23",
+    "datePublished": "2026-09-25",
+    "dateModified": "2026-09-25",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "North American freight",
+      "transborder truck freight",
+      "US Mexico truck freight",
+      "US Canada truck freight",
+      "BTS transborder freight",
+      "cross-border logistics"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "BTS July 2026 North American Transborder Freight release",
+        "use": "primary",
+        "url": "https://www.bts.gov/newsroom/north-american-transborder-freight-valued-1576-billion-july-2026-188-july-2025",
+        "observedAt": "2026-09-25",
+        "eventDate": "2026-09-23",
+        "notes": "Primary U.S. DOT/BTS source for total and truck freight values, country split, gateway context and the current-dollar methodology note."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern that route geography, equipment fit and shipper/dealer context belong in load review. No identifiable operating details or historical commercial claims are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes logistics operating archive",
+      "nowPeriod": "July 2026 data released September 2026",
+      "summary": "Historical Hermes operating material treated route geography, equipment fit and shipper/dealer context as parts of a load decision; the current BTS release adds official corridor-scale trade-value context. It does not turn historical operating records into current benchmarks and does not prove load counts, capacity or pricing.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.bts.gov/newsroom/north-american-transborder-freight-valued-1576-billion-july-2026-188-july-2025"
+    },
+    "publicationScore": {
+      "score": 73,
+      "recommendation": "digest",
+      "reasons": [
+        "+18 freshness",
+        "+20 source authority",
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
     "id": "meta-scam-network-enforcement-september-2026",
@@ -69,82 +252,207 @@
     ],
     "faq": [],
     "related": [
-      {"title": "Hermes Marketing", "body": "Connect organic publishing, account governance, search discovery and measurable conversion inside the Hermes Marketing direction.", "href": "/paths/marketing/"},
-      {"title": "SEO services", "body": "Keep owned-site identity and social discovery aligned with the canonical business presence.", "href": "/services/seo/"}
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect organic publishing, account governance, search discovery and measurable conversion inside the Hermes Marketing direction.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO services",
+        "body": "Keep owned-site identity and social discovery aligned with the canonical business presence.",
+        "href": "/services/seo/"
+      }
     ],
-    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
-    "secondaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
     "sourceLabel": "Meta Newsroom — Meta Takes Action on 3.7 Million Accounts, Pages and Content In Partnership With Singapore Police Force",
     "sourceUrl": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/",
     "sourcePublishedAt": "2026-09-23",
     "datePublished": "2026-09-24",
     "dateModified": "2026-09-24",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["Meta scam enforcement", "Facebook brand impersonation", "Instagram account security", "social media scam prevention", "Meta shell pages", "business account security"],
+    "keywords": [
+      "Meta scam enforcement",
+      "Facebook brand impersonation",
+      "Instagram account security",
+      "social media scam prevention",
+      "Meta shell pages",
+      "business account security"
+    ],
     "contentTier": "digest",
     "currentMarketClaim": true,
-    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Meta September 2026 scam-network enforcement update", "use": "primary", "url": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/", "observedAt": "2026-09-24", "eventDate": "2026-09-23", "notes": "Primary Meta source for enforcement counts, shell-page disruption, scam-ad removals, and public security recommendations."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing operating archive", "use": "context_only", "notes": "Used only for anonymized patterns around owned identity, controlled access, and consistent distribution. No private client metrics, credentials, campaign data, or one-to-one messages are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta September 2026 scam-network enforcement update",
+        "use": "primary",
+        "url": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/",
+        "observedAt": "2026-09-24",
+        "eventDate": "2026-09-23",
+        "notes": "Primary Meta source for enforcement counts, shell-page disruption, scam-ad removals, and public security recommendations."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized patterns around owned identity, controlled access, and consistent distribution. No private client metrics, credentials, campaign data, or one-to-one messages are republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing operating material", "nowPeriod": "September 2026", "summary": "Hermes historical marketing work treated owned identity and controlled distribution as operating concerns; Meta's current enforcement update shows why account and brand trust controls remain part of social operations, while all current platform claims come from Meta's dated public source.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/"},
-    "publicationScore": {"score": 73, "recommendation": "digest", "reasons": ["+20 freshness", "+20 source authority", "+8 first-party evidence", "+4 historical comparison", "+12 search value", "+9 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical marketing work treated owned identity and controlled distribution as operating concerns; Meta's current enforcement update shows why account and brand trust controls remain part of social operations, while all current platform claims come from Meta's dated public source.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://about.fb.com/news/2026/09/meta-spf-scam-efforts/"
+    },
+    "publicationScore": {
+      "score": 73,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+12 search value",
+        "+9 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
-    "id": "eia-diesel-route-planning-september-2026",
+    "id": "truckstop-phishing-security-september-2026",
     "direction": "logistics",
-    "slug": "diesel-price-route-planning-september-2026",
-    "title": "U.S. Diesel at $6.529/Gallon: Carrier Route Planning | Hermes",
-    "description": "EIA reported U.S. on-highway diesel at $6.529 per gallon for September 21, 2026, up $0.244 in one week. Hermes connects the latest fuel move to deadhead control, lane economics, and carrier rate decisions.",
-    "eyebrow": "Logistics Cost Update · September 2026",
-    "h1": "U.S. diesel reached $6.529 per gallon. What changes for carrier route planning?",
-    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.529 per gallon for September 21, 2026, up $0.244 from $6.285 one week earlier and $2.780 above the year-earlier level. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
+    "slug": "truckstop-phishing-load-board-security-september-2026",
+    "title": "Truckstop Phishing Alert: Protect Freight Platform Accounts | Hermes Insights",
+    "description": "Truckstop posted a September 22 security alert warning customers about phishing emails that imitate account, security, or billing verification. Hermes turns the alert into a concise carrier and dispatcher account-safety checklist.",
+    "eyebrow": "Freight Security Update · September 2026",
+    "h1": "Truckstop warned about phishing emails targeting freight-platform users. What should carriers check?",
+    "conciseAnswer": "Truckstop says customers have received phishing emails asking them to click links to verify security or billing information. The company says those messages did not come from Truckstop and that legitimate Truckstop email comes from @truckstop.com or e.truckstop.com. If a user clicked one of the reported phishing links, Truckstop advises changing both the Truckstop and email-account passwords immediately.",
     "explanation": [
-      "What changed: the U.S. Energy Information Administration released its September 22 update with a national on-highway diesel average of $6.529 per gallon for September 21, up from $6.285 on September 14. The one-week increase was $0.244 per gallon, and the national average was $2.780 above the year-earlier level. Regional prices also remained materially different, so one national number should be treated as a cost benchmark rather than a lane quote.",
-      "Why it matters: fuel exposure compounds weak route decisions. Historical Hermes dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. With a higher fuel benchmark, an attractive loaded rate can still produce weak economics if the truck travels too far empty, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The archive contributes the decision pattern only; no old promised rate, commission, earnings level, customer detail, or tool claim is reused as current truth.",
-      "What to do: calculate the movement as a route, not as a headline rate. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Use a current fuel assumption appropriate to the truck and route, then account for tolls, time, equipment fit, appointment risk, payment terms, and the quality of the next move. Where regional fuel prices differ substantially, update the route assumption instead of applying the national average mechanically.",
-      "Result: the carrier or dispatcher gets a repeatable operating decision instead of a reactive fuel rule. A counteroffer can be tied to actual route economics—empty-mile exposure, timing, equipment, destination and current fuel assumptions—rather than simply citing a national diesel headline. That makes the load review more defensible without claiming every broker, lane or customer should absorb the same adjustment.",
-      "Then versus now: Hermes historical operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 21, 2026 EIA data increases the cost of getting those decisions wrong, but it does not change the method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the operating picture, and re-check assumptions when fuel or market conditions move."
+      "What changed: Truckstop published a September 22, 2026 security alert after reports of phishing emails sent to its customers. The messages asked recipients to click a link to verify information for security or billing purposes. Truckstop states that these emails were phishing attempts and were not sent by Truckstop.",
+      "Why it matters: freight operations depend on trusted access to load boards, email, broker and carrier communications. A compromised platform or email account can turn an ordinary load-search workflow into an account-security and fraud problem. Historical Hermes operating material is used only for the general pattern that verification should happen before an operational action; no private account, contact, load, rate, or credential information is reused here.",
+      "What to do: check the sender domain before opening verification links, navigate to the platform directly instead of relying on an unexpected email link, and treat unusual billing or security requests as a verification event. Truckstop says its legitimate email comes from @truckstop.com or e.truckstop.com. If one of the reported phishing links was clicked, change the Truckstop and email passwords immediately and review the account for suspicious activity.",
+      "Result: the team gets a simple verification rule before acting on account-security messages. That reduces avoidable credential exposure without assuming that every unusual email is fraudulent or that a sender display name proves authenticity. Source/date: Truckstop security alert, September 22, 2026."
     ],
     "takeaways": [
-      "EIA put the U.S. on-highway diesel average at $6.529 per gallon for September 21, up $0.244 week over week",
-      "The national average was $2.780 per gallon above the year-earlier level",
-      "High diesel prices increase the importance of deadhead and reload planning; they do not create one universal carrier rate",
-      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load"
+      "Truckstop warned on September 22 about phishing emails requesting security or billing verification",
+      "Truckstop says legitimate company email comes from @truckstop.com or e.truckstop.com",
+      "If a reported phishing link was clicked, Truckstop advises changing both the Truckstop and email passwords immediately",
+      "Verify account-security requests through the platform directly before taking action"
     ],
-    "faq": [
-      {"question": "Does $6.529 diesel mean every load rate should rise by the same amount?", "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."},
-      {"question": "How much did the national diesel average change in one week?", "answer": "EIA reported $6.529 per gallon for September 21, 2026 versus $6.285 on September 14, an increase of $0.244 per gallon."},
-      {"question": "Why does deadhead matter more when fuel is expensive?", "answer": "Empty miles consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."},
-      {"question": "What does the historical Hermes archive add to this update?", "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."}
-    ],
+    "faq": [],
     "related": [
-      {"title": "RPM calculator", "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.", "href": "/logistics/resources/rpm-calculator/"},
-      {"title": "Owner-Operator Dispatch Support", "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.", "href": "/logistics/owner-operator-dispatch-support/"},
-      {"title": "Car Hauler Capacity Checklist", "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.", "href": "/logistics/resources/car-hauler-capacity-checklist/"},
-      {"title": "Hermes Logistics", "body": "Continue to the canonical Hermes Logistics direction and carrier resources.", "href": "/paths/logistics/"}
+      {
+        "title": "Hermes Load Board",
+        "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping account verification and fraud checks separate from load selection.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Review the canonical Hermes Logistics direction and carrier operations resources.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Owner-Operator Dispatch Support",
+        "body": "Connect source verification with route and load-review discipline.",
+        "href": "/logistics/owner-operator-dispatch-support/"
+      }
     ],
-    "primaryAction": {"label": "Review RPM Calculator", "href": "/logistics/resources/rpm-calculator/"},
-    "secondaryAction": {"label": "Explore Owner-Operator Support", "href": "/logistics/owner-operator-dispatch-support/"},
-    "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
-    "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
+    "primaryAction": {
+      "label": "Explore Hermes Load Board",
+      "href": "/load-board/"
+    },
+    "secondaryAction": {
+      "label": "Review Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "Truckstop — Freight Fraud Prevention / Security Alert: Be Aware of Phishing Emails",
+    "sourceUrl": "https://truckstop.com/freight-fraud-prevention/",
     "sourcePublishedAt": "2026-09-22",
-    "datePublished": "2026-09-17",
-    "dateModified": "2026-09-23",
+    "datePublished": "2026-09-24",
+    "dateModified": "2026-09-24",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["diesel price 2026", "truck fuel cost", "carrier route planning", "deadhead reduction", "owner operator load planning", "diesel price per gallon", "freight rate negotiation", "EIA diesel price"],
-    "contentTier": "standalone",
-    "currentMarketClaim": true,
-    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
-    "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "U.S. EIA weekly on-highway diesel price data", "use": "primary", "url": "https://www.eia.gov/petroleum/gasdiesel/", "observedAt": "2026-09-23", "eventDate": "2026-09-21", "notes": "Current dated public source for national and regional diesel prices, released September 22, 2026."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."}
+    "keywords": [
+      "Truckstop phishing",
+      "freight fraud prevention",
+      "load board security",
+      "carrier account security",
+      "truckload phishing",
+      "freight platform fraud"
     ],
-    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"},
-    "publicationScore": {"score": 97, "recommendation": "standalone_historical", "reasons": ["+20 freshness", "+20 source authority", "+19 first-party evidence", "+15 historical comparison", "+13 search value", "+10 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Truckstop September 22 phishing security alert",
+        "use": "primary",
+        "url": "https://truckstop.com/freight-fraud-prevention/",
+        "observedAt": "2026-09-24",
+        "eventDate": "2026-09-22",
+        "notes": "Primary platform source for the reported phishing pattern, legitimate sender domains, and remediation advice."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern of verifying source and context before acting. No private accounts, credentials, contacts, loads, rates, or commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Historical Hermes operating material repeatedly treated verification before action as part of dispatch and carrier workflow; the current Truckstop alert adds a dated platform-specific security case, while current remediation guidance comes only from Truckstop's public alert.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://truckstop.com/freight-fraud-prevention/"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+18 source authority",
+        "+10 first-party evidence",
+        "+5 historical comparison",
+        "+12 search value",
+        "+9 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
     "id": "cloudflare-disallow-ai-training-september-2026",
@@ -169,117 +477,234 @@
       "After any crawler-policy change, verify robots.txt and real search crawl evidence; do not treat the setting as a rankings guarantee"
     ],
     "faq": [
-      {"question": "Does Disallow AI Training block Googlebot or Bingbot from search?", "answer": "Cloudflare says accountable mixed-use crawlers can remain allowed for search under Disallow AI Training while a no-training preference is published. A broader Block setting can stop mixed-use crawlers entirely, including their search use."},
-      {"question": "Does this guarantee that a site will rank better in Google or Bing?", "answer": "No. The setting governs crawler access and training preferences; it does not guarantee rankings, impressions, Discover exposure or traffic."},
-      {"question": "How does Cloudflare express the no-training preference?", "answer": "Cloudflare says Bot Preference Sync publishes the applicable preference in robots.txt and pairs that stated preference with its crawler controls."},
-      {"question": "Should Agent traffic be treated the same as Training traffic?", "answer": "Not automatically. Cloudflare separates Search, Training and Agent controls and says there is not yet a well-established Internet-wide directive for expressing the same Disallow preference to agents."}
+      {
+        "question": "Does Disallow AI Training block Googlebot or Bingbot from search?",
+        "answer": "Cloudflare says accountable mixed-use crawlers can remain allowed for search under Disallow AI Training while a no-training preference is published. A broader Block setting can stop mixed-use crawlers entirely, including their search use."
+      },
+      {
+        "question": "Does this guarantee that a site will rank better in Google or Bing?",
+        "answer": "No. The setting governs crawler access and training preferences; it does not guarantee rankings, impressions, Discover exposure or traffic."
+      },
+      {
+        "question": "How does Cloudflare express the no-training preference?",
+        "answer": "Cloudflare says Bot Preference Sync publishes the applicable preference in robots.txt and pairs that stated preference with its crawler controls."
+      },
+      {
+        "question": "Should Agent traffic be treated the same as Training traffic?",
+        "answer": "Not automatically. Cloudflare separates Search, Training and Agent controls and says there is not yet a well-established Internet-wide directive for expressing the same Disallow preference to agents."
+      }
     ],
     "related": [
-      {"title": "Hermes Marketing", "body": "Connect search discovery, content distribution and measurable conversion inside the Hermes Marketing direction.", "href": "/paths/marketing/"},
-      {"title": "SEO services", "body": "Review the Hermes search visibility path for technical SEO, content, entity discovery and measurement.", "href": "/services/seo/"}
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect search discovery, content distribution and measurable conversion inside the Hermes Marketing direction.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO services",
+        "body": "Review the Hermes search visibility path for technical SEO, content, entity discovery and measurement.",
+        "href": "/services/seo/"
+      }
     ],
-    "primaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
-    "secondaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
+    "primaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
     "sourceLabel": "Cloudflare Blog — Have it both ways: stay discoverable in search while disallowing AI training",
     "sourceUrl": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/",
     "sourcePublishedAt": "2026-09-15",
     "datePublished": "2026-09-23",
     "dateModified": "2026-09-23",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["Cloudflare Disallow AI Training", "AI crawler controls", "Googlebot AI training", "Bingbot AI training", "robots.txt AI training", "search visibility AI crawlers", "AI Crawl Control"],
+    "keywords": [
+      "Cloudflare Disallow AI Training",
+      "AI crawler controls",
+      "Googlebot AI training",
+      "Bingbot AI training",
+      "robots.txt AI training",
+      "search visibility AI crawlers",
+      "AI Crawl Control"
+    ],
     "contentTier": "standalone",
     "currentMarketClaim": true,
-    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Cloudflare mixed-use crawler and Disallow AI Training announcement", "use": "primary", "url": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/", "observedAt": "2026-09-23", "eventDate": "2026-09-15", "notes": "Primary Cloudflare source for Search, Training and Agent control behavior, migration notes and mixed-use crawler implications."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing and search operating archive", "use": "context_only", "notes": "Used only for anonymized operating patterns around discoverability, owned-site control and recurring distribution. No client identities, prices, private metrics or one-to-one content are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Cloudflare mixed-use crawler and Disallow AI Training announcement",
+        "use": "primary",
+        "url": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/",
+        "observedAt": "2026-09-23",
+        "eventDate": "2026-09-15",
+        "notes": "Primary Cloudflare source for Search, Training and Agent control behavior, migration notes and mixed-use crawler implications."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing and search operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized operating patterns around discoverability, owned-site control and recurring distribution. No client identities, prices, private metrics or one-to-one content are republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing/search operating material", "nowPeriod": "September 2026", "summary": "Hermes historical operating work treated discoverability and owned-site control as connected; Cloudflare's September 2026 controls make crawler governance more granular by separating Search, Training and Agent decisions, with current Cloudflare documentation defining the capability and its limits.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/"},
-    "publicationScore": {"score": 86, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+13 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing/search operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical operating work treated discoverability and owned-site control as connected; Cloudflare's September 2026 controls make crawler governance more granular by separating Search, Training and Agent decisions, with current Cloudflare documentation defining the capability and its limits.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://blog.cloudflare.com/accountable-mixed-use-ai-crawlers/"
+    },
+    "publicationScore": {
+      "score": 86,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+13 first-party evidence",
+        "+8 historical comparison",
+        "+15 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
-    "id": "dat-dry-van-rates-september-2026",
-    "direction": "logistics",
-    "slug": "dry-van-spot-rates-september-2026",
-    "title": "Dry Van Spot Rates: $2.17/Mile Carrier Analysis | Hermes",
-    "description": "DAT reported dry-van spot linehaul averaging $2.17 per mile for the week ending September 18, 2026, down slightly week over week but still materially above the year-earlier and seasonal benchmarks.",
-    "eyebrow": "Logistics Market Update · September 2026",
-    "h1": "Dry van spot linehaul eased to $2.17 per mile. What should carriers do now?",
-    "conciseAnswer": "DAT reported U.S. dry-van spot linehaul averaging $2.17 per mile for the week ending September 18, 2026, excluding fuel. That was down $0.03, or 1.2%, week over week, while remaining $0.53, or 32.8%, above a year earlier and $0.36 above DAT's nine-year seasonal average. The useful decision is still lane-specific: compare loaded miles, deadhead, fuel, tolls, timing, equipment fit, payment terms and the likely next move rather than treating a national average as a universal booking target.",
+    "id": "google-search-profile-badge-september-2026",
+    "direction": "marketing",
+    "slug": "google-search-profile-badge-september-2026",
+    "title": "Google Search Profile Badge: Connect Website and Social | Hermes Insights",
+    "description": "Google documented a Search profile badge that lets eligible site owners point visitors to a Search profile combining content from their website and linked social platforms.",
+    "eyebrow": "Search & Social Discovery Update · September 2026",
+    "h1": "Google can now connect a Search profile with your website and social content. What should brands do?",
+    "conciseAnswer": "Google Search Central added documentation on September 16, 2026 for site owners, publishers and creators who have a Search profile. Google says a Search profile brings together content from a website and linked social platforms, and that when readers follow the profile, linked content can be more likely to appear for that audience in Google Discover. A badge can point website visitors to the claimed profile, but it is not a ranking guarantee.",
     "explanation": [
-      "What changed: DAT reported dry-van spot linehaul paid to carriers averaging $2.17 per mile for the week ending September 18, 2026, excluding fuel. The national average fell $0.03 per mile, or 1.2%, from the prior week. At the same time, it remained $0.53 per mile, or 32.8%, above the year-earlier level and $0.36 per mile above DAT's nine-year seasonal average of $1.82. That combination matters because a soft week-over-week move can coexist with a market that is still comparatively firm over a longer horizon.",
-      "Why it matters: a single national number is not a lane quote. DAT's regional data for the same week ranged from $2.66 per mile in the Great Lakes and $2.64 in the Ohio River region to $1.42 in Florida–South Georgia. A carrier can therefore see a strong national or origin-region headline while still accepting a movement that produces weak round-trip economics because of destination demand, deadhead, appointment timing or the quality of the next reload.",
-      "Historical Hermes operating material repeatedly treated route planning, deadhead reduction, broker negotiation and the next reload as one decision chain. The then-versus-now lesson is not that an old internal rate or earnings target should be reused. It is that the same operating discipline becomes more valuable when the market is moving in different directions across time horizons and regions: verify the lane, understand where the truck lands, and price the full movement rather than one loaded segment.",
-      "What to do: use DAT's current market average as an external reference point, then calculate the actual movement. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Add current fuel and toll assumptions, time requirements, equipment constraints and payment terms. Compare realistic reload options in the destination market before negotiating. A counteroffer is more defensible when it is tied to the truck's real operating picture instead of a national headline alone.",
-      "Result: the carrier gets a repeatable decision process instead of a reactive rate rule. The September 21 DAT update says the national dry-van linehaul average eased slightly after a strong year-over-year rise; it does not say every lane is weakening or that every load should target $2.17. The practical outcome is to refresh lane assumptions more often, keep deadhead visible in the calculation, and use current regional context to decide where the national average is useful and where it is misleading."
+      "What changed: Google published a guide for website owners, publishers and creators with a Search profile to add an official Search profile badge to their site. Google describes the Search profile as a destination that can bring together content from a website and linked platforms including Instagram, TikTok, YouTube, X and Facebook. The badge should be added only after the Search profile has been claimed and should follow Google's branding and accessibility guidance.",
+      "Why it matters: social content and the owned website no longer need to be treated as completely separate discovery surfaces. Google says that when people follow a Search profile, content linked on that profile can be more likely to appear for that audience in Discover. That creates a practical identity-and-distribution connection, but it does not mean adding the badge automatically improves rankings, impressions or leads.",
+      "What to do: first verify whether the brand has an eligible Search profile and claim it. Then audit the website and linked social identities for consistent naming, ownership and current URLs. If the profile is claimed, add the official badge or text link in a place where users can understand what it does. Measure Search/Discover visibility and downstream visits separately from social engagement so the team can tell whether the connection changes discovery behavior.",
+      "Result: the website remains the canonical owned destination while the Search profile can act as a Google-facing bridge to verified social content. Historical Hermes marketing work already emphasized consistent original publishing and connecting social activity to an owned business presence; the 2026 Search profile feature adds a new distribution layer to that pattern without validating any old growth guarantee, pricing claim or private client metric."
     ],
     "takeaways": [
-      "$2.17 per mile was DAT's national dry-van spot linehaul average for the week ending September 18; fuel was excluded",
-      "The average fell 1.2% week over week but remained 32.8% above the year-earlier level and 19.7% above the nine-year seasonal average",
-      "Regional averages varied materially, including $2.66 in the Great Lakes versus $1.42 in Florida–South Georgia",
-      "Use the market report to refresh lane assumptions, then calculate the full movement with deadhead, costs, timing and reload options"
+      "Google added the Search profile badge documentation on September 16, 2026",
+      "A Search profile can bring together a website and linked Instagram, TikTok, YouTube, X and Facebook content",
+      "Google says followers can be more likely to see linked content in Discover, but this is not a ranking or traffic guarantee",
+      "Claim the profile first, keep brand identities consistent, then measure discovery separately from social engagement"
     ],
     "faq": [
-      {"question": "Does a $2.17 national average mean a carrier should reject every dry-van load below $2.17 per mile?", "answer": "No. DAT's national average is market context, not a universal floor. A load decision depends on the specific lane, deadhead, fuel, tolls, equipment, timing, payment terms, operating costs and the likely next movement."},
-      {"question": "Did DAT's $2.17 rate include fuel?", "answer": "No. DAT states that the cited dry-van spot linehaul rates exclude fuel costs and surcharges unless otherwise noted."},
-      {"question": "Why does regional data matter if the national rate is current?", "answer": "Because the week ending September 18 showed large regional differences. A national average can describe the broad market while still being a poor proxy for a specific origin, destination or round-trip opportunity."},
-      {"question": "What historical Hermes evidence is being used here?", "answer": "Only an anonymized operating pattern: route planning, deadhead control, negotiation and reload planning were historically treated as connected decisions. No private contact information, old commercial figures, old guarantees or unverified historical claims are used as current facts."}
+      {
+        "question": "Does adding the Search profile badge improve Google rankings?",
+        "answer": "Google's documentation does not promise a ranking increase. The badge helps users find a claimed Search profile, and Google says following that profile can make linked content more likely to appear for that audience in Discover."
+      },
+      {
+        "question": "Which social platforms can appear on a Search profile?",
+        "answer": "Google's guide gives Instagram, TikTok, YouTube, X and Facebook as examples of content that can be linked on a Search profile, along with the website."
+      },
+      {
+        "question": "Can every website add the badge immediately?",
+        "answer": "The guide is for website owners, publishers or creators with a Search profile. Google instructs users to claim the Search profile first, then use the profile URL and official badge assets."
+      }
     ],
     "related": [
-      {"title": "Dry Van Load Board", "body": "Review the Hermes Load Board entry point for dry-van equipment and carrier workflows.", "href": "/load-board/equipment/dry-van/"},
-      {"title": "Load Board", "body": "See how Hermes separates carrier access, providers, equipment, and source-gated market records.", "href": "/load-board/"},
-      {"title": "Owner-operator logistics path", "body": "Review the operating path for owner-operators evaluating dispatch and carrier support.", "href": "/paths/logistics/carriers/owner-operators/"},
-      {"title": "RPM calculator", "body": "Use an internal rate-per-mile calculation as one input to a full load decision.", "href": "/logistics/resources/rpm-calculator/"}
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect search discovery, social publishing and conversion measurement inside one marketing operating model.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO services",
+        "body": "Review the Hermes search visibility path for technical SEO, content and entity discovery.",
+        "href": "/services/seo/"
+      }
     ],
-    "primaryAction": {"label": "Explore Dry Van Load Board", "href": "/load-board/equipment/dry-van/"},
-    "secondaryAction": {"label": "Review Logistics", "href": "/paths/logistics/"},
-    "sourceLabel": "DAT Freight & Analytics — Dry Van Report",
-    "sourceUrl": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record",
-    "sourcePublishedAt": "2026-09-21",
-    "datePublished": "2026-09-14",
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
+    "sourceLabel": "Google Search Central — Add a Search profile badge to your website",
+    "sourceUrl": "https://developers.google.com/search/docs/appearance/search-profiles",
+    "sourcePublishedAt": "2026-09-16",
+    "datePublished": "2026-09-22",
     "dateModified": "2026-09-22",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["dry van spot rates", "dry van rates 2026", "truckload rates", "carrier rate negotiation", "deadhead calculation", "owner operator load planning", "DAT dry van report", "dry van regional rates"],
-    "contentTier": "standalone",
+    "keywords": [
+      "Google Search profile",
+      "Search profile badge",
+      "Google Discover social content",
+      "website social profiles",
+      "social search visibility",
+      "Google creator profile"
+    ],
+    "contentTier": "digest",
     "currentMarketClaim": true,
-    "telegram": {"group": "Hermes Logistics Academy", "messageId": 5188},
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "DAT Dry Van Report — week ending September 18, 2026", "use": "primary", "url": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record", "observedAt": "2026-09-22", "eventDate": "2026-09-18", "notes": "Current dated source for national and regional dry-van spot linehaul rates; rates exclude fuel unless otherwise noted."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for route planning, deadhead control, broker negotiation and reload planning. No private chat details or old commercial figures are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Search Central Search profile badge documentation",
+        "use": "primary",
+        "url": "https://developers.google.com/search/docs/appearance/search-profiles",
+        "observedAt": "2026-09-22",
+        "eventDate": "2026-09-16",
+        "notes": "Primary Google documentation for Search profiles, linked social content, Discover behavior and badge implementation."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized patterns around consistent organic publishing and connecting social activity to an owned business presence. No identities, prices, guarantees or private client metrics are republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Historical Hermes dispatch material treated route planning, deadhead control, negotiation and reload planning as connected decisions; the September 2026 DAT data reinforces the need to model the actual lane because national, year-over-year and regional signals can move differently at the same time.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record"},
-    "publicationScore": {"score": 94, "recommendation": "standalone_historical", "reasons": ["+20 freshness", "+19 source authority", "+17 first-party evidence", "+15 historical comparison", "+13 search value", "+10 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
-  },
-  {
-    "id": "tgcontent_BcDG37_WeFas",
-    "direction": "marketing",
-    "slug": "google-measurement-and-data-strength-updates",
-    "title": "Google measurement and Data Strength updates | Hermes Insights",
-    "description": "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief.",
-    "eyebrow": "Hermes Marketing · Reviewed update",
-    "h1": "Google measurement and Data Strength updates",
-    "conciseAnswer": "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief.",
-    "explanation": ["Hermes keeps this item as a reviewed brief because the source is dated 2026-09-10 and the update is relevant to Hermes Marketing. Hermes interpretation: Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief. Use it as decision context, not as a guarantee of ranking, demand, rates, revenue, employment, or another outcome."],
-    "takeaways": ["Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief."],
-    "faq": [],
-    "related": [
-      {"title": "Marketing", "body": "Review the canonical Hermes Marketing direction.", "href": "/paths/marketing/"},
-      {"title": "SEO services", "body": "Connect the update to search and conversion work.", "href": "/services/seo/"}
-    ],
-    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
-    "secondaryAction": {"label": "Continue in Hermes", "href": "/services/seo/"},
-    "sourceLabel": "blog.google",
-    "sourceUrl": "https://blog.google/products/ads-commerce/data-strength-updates/",
-    "sourcePublishedAt": "2026-09-10",
-    "datePublished": "2026-09-14",
-    "dateModified": "2026-09-14",
-    "authorName": "Hermes Editorial Team",
-    "keywords": ["marketing", "google", "measurement", "data", "strength", "updates"],
-    "contentTier": "brief",
-    "currentMarketClaim": true,
-    "telegram": {"group": "SMM Organic Target", "messageId": 837}
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical marketing work emphasized recurring original social content and building an owned business presence; Google's Search profile adds a new way to connect a claimed Google profile with website and social content, while current Google documentation—not historical internal claims—defines the feature and its limits.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://developers.google.com/search/docs/appearance/search-profiles"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+11 first-party evidence",
+        "+8 historical comparison",
+        "+8 search value",
+        "+7 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
     "id": "fmcsa-fuel-hos-waiver-september-2026",
@@ -304,35 +729,116 @@
       "Dispatch should verify scope and conditions before changing a driver's schedule"
     ],
     "faq": [
-      {"question": "Does the waiver let every truck driver work a 16-hour driving day?", "answer": "No. The waiver is limited to qualifying interstate operations transporting gasoline and diesel fuel, and covered carriers and drivers must comply with its terms and conditions."},
-      {"question": "When does the FMCSA waiver expire?", "answer": "FMCSA states that it expires at 11:59 p.m. on December 16, 2026."},
-      {"question": "What rest is required under the waiver?", "answer": "FMCSA requires at least 6 consecutive hours in the sleeper berth in each 24-hour period, or at least 8 consecutive hours off duty if there is no sleeper berth. Additional 10-hour rest requirements apply in specified circumstances, including when a driver requests immediate rest and when transitioning back to normal operations after reaching the stated threshold."},
-      {"question": "Does the waiver replace CDL, hazmat, insurance, drug-testing or other safety rules?", "answer": "No. FMCSA expressly states that requirements not specifically waived remain in force, including CDL, controlled-substance and alcohol testing, financial responsibility, hazardous-material rules, vehicle size and weight rules, and other applicable Federal and State requirements."}
+      {
+        "question": "Does the waiver let every truck driver work a 16-hour driving day?",
+        "answer": "No. The waiver is limited to qualifying interstate operations transporting gasoline and diesel fuel, and covered carriers and drivers must comply with its terms and conditions."
+      },
+      {
+        "question": "When does the FMCSA waiver expire?",
+        "answer": "FMCSA states that it expires at 11:59 p.m. on December 16, 2026."
+      },
+      {
+        "question": "What rest is required under the waiver?",
+        "answer": "FMCSA requires at least 6 consecutive hours in the sleeper berth in each 24-hour period, or at least 8 consecutive hours off duty if there is no sleeper berth. Additional 10-hour rest requirements apply in specified circumstances, including when a driver requests immediate rest and when transitioning back to normal operations after reaching the stated threshold."
+      },
+      {
+        "question": "Does the waiver replace CDL, hazmat, insurance, drug-testing or other safety rules?",
+        "answer": "No. FMCSA expressly states that requirements not specifically waived remain in force, including CDL, controlled-substance and alcohol testing, financial responsibility, hazardous-material rules, vehicle size and weight rules, and other applicable Federal and State requirements."
+      }
     ],
     "related": [
-      {"title": "Hermes Logistics", "body": "Review the canonical Hermes Logistics direction and carrier operations resources.", "href": "/paths/logistics/"},
-      {"title": "Owner-Operator Dispatch Support", "body": "Connect compliance checks with load review, route context and operating decisions.", "href": "/logistics/owner-operator-dispatch-support/"},
-      {"title": "Load Board", "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping regulatory verification separate from load selection.", "href": "/load-board/"}
+      {
+        "title": "Hermes Logistics",
+        "body": "Review the canonical Hermes Logistics direction and carrier operations resources.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Owner-Operator Dispatch Support",
+        "body": "Connect compliance checks with load review, route context and operating decisions.",
+        "href": "/logistics/owner-operator-dispatch-support/"
+      },
+      {
+        "title": "Load Board",
+        "body": "Use the Hermes Load Board as a carrier-facing entry point while keeping regulatory verification separate from load selection.",
+        "href": "/load-board/"
+      }
     ],
-    "primaryAction": {"label": "Review Hermes Logistics", "href": "/paths/logistics/"},
-    "secondaryAction": {"label": "Explore Load Board", "href": "/load-board/"},
+    "primaryAction": {
+      "label": "Review Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "secondaryAction": {
+      "label": "Explore Load Board",
+      "href": "/load-board/"
+    },
     "sourceLabel": "FMCSA — Hours of Service Waiver for the Transportation of Gasoline and Diesel Fuel",
     "sourceUrl": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel",
     "sourcePublishedAt": "2026-09-16",
     "datePublished": "2026-09-21",
     "dateModified": "2026-09-21",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["FMCSA hours of service waiver", "fuel hauling HOS", "gasoline diesel fuel waiver", "truck driver hours of service 2026", "carrier compliance", "dispatch compliance", "49 CFR 395.3"],
+    "keywords": [
+      "FMCSA hours of service waiver",
+      "fuel hauling HOS",
+      "gasoline diesel fuel waiver",
+      "truck driver hours of service 2026",
+      "carrier compliance",
+      "dispatch compliance",
+      "49 CFR 395.3"
+    ],
     "contentTier": "standalone",
     "currentMarketClaim": true,
-    "telegram": {"group": "Hermes Logistics Academy", "messageId": null},
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "FMCSA fuel transportation HOS waiver", "use": "primary", "url": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel", "observedAt": "2026-09-21", "eventDate": "2026-09-16", "notes": "Primary regulator source for scope, dates, conditions and restrictions."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical logistics operating archive", "use": "context_only", "notes": "Anonymized historical pattern evidence for routing, scheduling and driver communication. No private details or old compliance claims are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "FMCSA fuel transportation HOS waiver",
+        "use": "primary",
+        "url": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel",
+        "observedAt": "2026-09-21",
+        "eventDate": "2026-09-16",
+        "notes": "Primary regulator source for scope, dates, conditions and restrictions."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized historical pattern evidence for routing, scheduling and driver communication. No private details or old compliance claims are republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2021–2026 historical Hermes operating archive", "nowPeriod": "September 2026", "summary": "Hermes historical operating material treated routing, scheduling and communication as connected dispatch decisions; the FMCSA waiver changes the legal operating window only for qualifying fuel movements, so current regulator verification must come before any scheduling change.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel"},
-    "publicationScore": {"score": 88, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+15 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical operating material treated routing, scheduling and communication as connected dispatch decisions; the FMCSA waiver changes the legal operating window only for qualifying fuel movements, so current regulator verification must come before any scheduling change.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.fmcsa.dot.gov/mission/hours-service-waiver-transportation-gasoline-and-diesel-fuel"
+    },
+    "publicationScore": {
+      "score": 88,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+15 first-party evidence",
+        "+8 historical comparison",
+        "+15 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
     "id": "meta-one-business-tools-september-2026",
@@ -357,83 +863,447 @@
       "Use new tools to remove a measured workflow bottleneck rather than treating subscription features as a growth strategy"
     ],
     "faq": [
-      {"question": "Does Meta One replace organic social strategy?", "answer": "No. Meta One adds tools and higher usage limits. Content relevance, audience fit, creative quality, measurement and conversion design still determine whether social activity creates business value."},
-      {"question": "Can every business account use every Meta One feature immediately?", "answer": "No. Meta says plans and features are rolling out and that availability can vary by region, app and account. Teams should verify what is offered inside the specific account before changing a workflow."},
-      {"question": "What is most useful for an organic social team?", "answer": "That depends on the bottleneck. Publishing teams may value scheduling and team access; growth teams may value follow-conversion tools; analysts may value exportable analytics and deeper audience insights. The right test is the one tied to a measurable workflow or conversion problem."},
-      {"question": "Should a team publish more just because scheduling becomes easier?", "answer": "Not automatically. Lower publishing friction is useful only if the additional content remains relevant, differentiated and measurable. A stronger cadence without audience value can create more activity without better business outcomes."}
+      {
+        "question": "Does Meta One replace organic social strategy?",
+        "answer": "No. Meta One adds tools and higher usage limits. Content relevance, audience fit, creative quality, measurement and conversion design still determine whether social activity creates business value."
+      },
+      {
+        "question": "Can every business account use every Meta One feature immediately?",
+        "answer": "No. Meta says plans and features are rolling out and that availability can vary by region, app and account. Teams should verify what is offered inside the specific account before changing a workflow."
+      },
+      {
+        "question": "What is most useful for an organic social team?",
+        "answer": "That depends on the bottleneck. Publishing teams may value scheduling and team access; growth teams may value follow-conversion tools; analysts may value exportable analytics and deeper audience insights. The right test is the one tied to a measurable workflow or conversion problem."
+      },
+      {
+        "question": "Should a team publish more just because scheduling becomes easier?",
+        "answer": "Not automatically. Lower publishing friction is useful only if the additional content remains relevant, differentiated and measurable. A stronger cadence without audience value can create more activity without better business outcomes."
+      }
     ],
     "related": [
-      {"title": "Hermes Marketing", "body": "Review the Hermes Marketing direction for organic social, measurement and growth workflows.", "href": "/paths/marketing/"},
-      {"title": "SEO services", "body": "Connect social discovery with search visibility and measurable conversion paths.", "href": "/services/seo/"}
+      {
+        "title": "Hermes Marketing",
+        "body": "Review the Hermes Marketing direction for organic social, measurement and growth workflows.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO services",
+        "body": "Connect social discovery with search visibility and measurable conversion paths.",
+        "href": "/services/seo/"
+      }
     ],
-    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
-    "secondaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
     "sourceLabel": "Meta Newsroom — Introducing Meta One",
     "sourceUrl": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/",
     "sourcePublishedAt": "2026-09-15",
     "datePublished": "2026-09-21",
     "dateModified": "2026-09-21",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["Meta One business", "Instagram business tools 2026", "organic social media workflow", "Instagram Story scheduling", "organic post links", "social media analytics", "Meta Business Agent"],
+    "keywords": [
+      "Meta One business",
+      "Instagram business tools 2026",
+      "organic social media workflow",
+      "Instagram Story scheduling",
+      "organic post links",
+      "social media analytics",
+      "Meta Business Agent"
+    ],
     "contentTier": "standalone",
     "currentMarketClaim": true,
-    "telegram": {"group": "SMM Organic Target", "messageId": null},
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
     "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Meta One creator and business plan announcement", "use": "primary", "url": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/", "observedAt": "2026-09-21", "eventDate": "2026-09-15", "notes": "Primary Meta announcement for rollout, creator/business tooling and availability caveats."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing operating archive", "use": "context_only", "notes": "Used only for anonymized operating patterns around recurring organic publishing and audience interaction. No client identities, prices, private metrics or one-to-one content are republished."}
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta One creator and business plan announcement",
+        "use": "primary",
+        "url": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/",
+        "observedAt": "2026-09-21",
+        "eventDate": "2026-09-15",
+        "notes": "Primary Meta announcement for rollout, creator/business tooling and availability caveats."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized operating patterns around recurring organic publishing and audience interaction. No client identities, prices, private metrics or one-to-one content are republished."
+      }
     ],
-    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing operating material", "nowPeriod": "September 2026", "summary": "Hermes historical marketing work emphasized recurring organic publishing and audience interaction; Meta One moves more publishing, profile-conversion, analytics and team-access controls into Meta's paid professional tooling, changing execution friction rather than the need for useful content and measurable audience fit.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/"},
-    "publicationScore": {"score": 88, "recommendation": "standalone", "reasons": ["+20 freshness", "+20 source authority", "+15 first-party evidence", "+8 historical comparison", "+15 search value", "+10 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical marketing work emphasized recurring organic publishing and audience interaction; Meta One moves more publishing, profile-conversion, analytics and team-access controls into Meta's paid professional tooling, changing execution friction rather than the need for useful content and measurable audience fit.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://about.fb.com/es/news/2026/09/presentamos-meta-one-un-servicio-de-suscripcion-con-mas-funciones-e-inteligencia-artificial-para-crear-conectar-y-destacar/"
+    },
+    "publicationScore": {
+      "score": 88,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+15 first-party evidence",
+        "+8 historical comparison",
+        "+15 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
   },
   {
-    "id": "google-search-profile-badge-september-2026",
-    "direction": "marketing",
-    "slug": "google-search-profile-badge-september-2026",
-    "title": "Google Search Profile Badge: Connect Website and Social | Hermes Insights",
-    "description": "Google documented a Search profile badge that lets eligible site owners point visitors to a Search profile combining content from their website and linked social platforms.",
-    "eyebrow": "Search & Social Discovery Update · September 2026",
-    "h1": "Google can now connect a Search profile with your website and social content. What should brands do?",
-    "conciseAnswer": "Google Search Central added documentation on September 16, 2026 for site owners, publishers and creators who have a Search profile. Google says a Search profile brings together content from a website and linked social platforms, and that when readers follow the profile, linked content can be more likely to appear for that audience in Google Discover. A badge can point website visitors to the claimed profile, but it is not a ranking guarantee.",
+    "id": "eia-diesel-route-planning-september-2026",
+    "direction": "logistics",
+    "slug": "diesel-price-route-planning-september-2026",
+    "title": "U.S. Diesel at $6.529/Gallon: Carrier Route Planning | Hermes",
+    "description": "EIA reported U.S. on-highway diesel at $6.529 per gallon for September 21, 2026, up $0.244 in one week. Hermes connects the latest fuel move to deadhead control, lane economics, and carrier rate decisions.",
+    "eyebrow": "Logistics Cost Update · September 2026",
+    "h1": "U.S. diesel reached $6.529 per gallon. What changes for carrier route planning?",
+    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.529 per gallon for September 21, 2026, up $0.244 from $6.285 one week earlier and $2.780 above the year-earlier level. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
     "explanation": [
-      "What changed: Google published a guide for website owners, publishers and creators with a Search profile to add an official Search profile badge to their site. Google describes the Search profile as a destination that can bring together content from a website and linked platforms including Instagram, TikTok, YouTube, X and Facebook. The badge should be added only after the Search profile has been claimed and should follow Google's branding and accessibility guidance.",
-      "Why it matters: social content and the owned website no longer need to be treated as completely separate discovery surfaces. Google says that when people follow a Search profile, content linked on that profile can be more likely to appear for that audience in Discover. That creates a practical identity-and-distribution connection, but it does not mean adding the badge automatically improves rankings, impressions or leads.",
-      "What to do: first verify whether the brand has an eligible Search profile and claim it. Then audit the website and linked social identities for consistent naming, ownership and current URLs. If the profile is claimed, add the official badge or text link in a place where users can understand what it does. Measure Search/Discover visibility and downstream visits separately from social engagement so the team can tell whether the connection changes discovery behavior.",
-      "Result: the website remains the canonical owned destination while the Search profile can act as a Google-facing bridge to verified social content. Historical Hermes marketing work already emphasized consistent original publishing and connecting social activity to an owned business presence; the 2026 Search profile feature adds a new distribution layer to that pattern without validating any old growth guarantee, pricing claim or private client metric."
+      "What changed: the U.S. Energy Information Administration released its September 22 update with a national on-highway diesel average of $6.529 per gallon for September 21, up from $6.285 on September 14. The one-week increase was $0.244 per gallon, and the national average was $2.780 above the year-earlier level. Regional prices also remained materially different, so one national number should be treated as a cost benchmark rather than a lane quote.",
+      "Why it matters: fuel exposure compounds weak route decisions. Historical Hermes dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. With a higher fuel benchmark, an attractive loaded rate can still produce weak economics if the truck travels too far empty, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The archive contributes the decision pattern only; no old promised rate, commission, earnings level, customer detail, or tool claim is reused as current truth.",
+      "What to do: calculate the movement as a route, not as a headline rate. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Use a current fuel assumption appropriate to the truck and route, then account for tolls, time, equipment fit, appointment risk, payment terms, and the quality of the next move. Where regional fuel prices differ substantially, update the route assumption instead of applying the national average mechanically.",
+      "Result: the carrier or dispatcher gets a repeatable operating decision instead of a reactive fuel rule. A counteroffer can be tied to actual route economics—empty-mile exposure, timing, equipment, destination and current fuel assumptions—rather than simply citing a national diesel headline. That makes the load review more defensible without claiming every broker, lane or customer should absorb the same adjustment.",
+      "Then versus now: Hermes historical operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 21, 2026 EIA data increases the cost of getting those decisions wrong, but it does not change the method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the operating picture, and re-check assumptions when fuel or market conditions move."
     ],
     "takeaways": [
-      "Google added the Search profile badge documentation on September 16, 2026",
-      "A Search profile can bring together a website and linked Instagram, TikTok, YouTube, X and Facebook content",
-      "Google says followers can be more likely to see linked content in Discover, but this is not a ranking or traffic guarantee",
-      "Claim the profile first, keep brand identities consistent, then measure discovery separately from social engagement"
+      "EIA put the U.S. on-highway diesel average at $6.529 per gallon for September 21, up $0.244 week over week",
+      "The national average was $2.780 per gallon above the year-earlier level",
+      "High diesel prices increase the importance of deadhead and reload planning; they do not create one universal carrier rate",
+      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load"
     ],
     "faq": [
-      {"question": "Does adding the Search profile badge improve Google rankings?", "answer": "Google's documentation does not promise a ranking increase. The badge helps users find a claimed Search profile, and Google says following that profile can make linked content more likely to appear for that audience in Discover."},
-      {"question": "Which social platforms can appear on a Search profile?", "answer": "Google's guide gives Instagram, TikTok, YouTube, X and Facebook as examples of content that can be linked on a Search profile, along with the website."},
-      {"question": "Can every website add the badge immediately?", "answer": "The guide is for website owners, publishers or creators with a Search profile. Google instructs users to claim the Search profile first, then use the profile URL and official badge assets."}
+      {
+        "question": "Does $6.529 diesel mean every load rate should rise by the same amount?",
+        "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."
+      },
+      {
+        "question": "How much did the national diesel average change in one week?",
+        "answer": "EIA reported $6.529 per gallon for September 21, 2026 versus $6.285 on September 14, an increase of $0.244 per gallon."
+      },
+      {
+        "question": "Why does deadhead matter more when fuel is expensive?",
+        "answer": "Empty miles consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."
+      },
+      {
+        "question": "What does the historical Hermes archive add to this update?",
+        "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."
+      }
     ],
     "related": [
-      {"title": "Hermes Marketing", "body": "Connect search discovery, social publishing and conversion measurement inside one marketing operating model.", "href": "/paths/marketing/"},
-      {"title": "SEO services", "body": "Review the Hermes search visibility path for technical SEO, content and entity discovery.", "href": "/services/seo/"}
+      {
+        "title": "RPM calculator",
+        "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.",
+        "href": "/logistics/resources/rpm-calculator/"
+      },
+      {
+        "title": "Owner-Operator Dispatch Support",
+        "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.",
+        "href": "/logistics/owner-operator-dispatch-support/"
+      },
+      {
+        "title": "Car Hauler Capacity Checklist",
+        "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.",
+        "href": "/logistics/resources/car-hauler-capacity-checklist/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Continue to the canonical Hermes Logistics direction and carrier resources.",
+        "href": "/paths/logistics/"
+      }
     ],
-    "primaryAction": {"label": "Explore Hermes Marketing", "href": "/paths/marketing/"},
-    "secondaryAction": {"label": "Review SEO Services", "href": "/services/seo/"},
-    "sourceLabel": "Google Search Central — Add a Search profile badge to your website",
-    "sourceUrl": "https://developers.google.com/search/docs/appearance/search-profiles",
-    "sourcePublishedAt": "2026-09-16",
-    "datePublished": "2026-09-22",
+    "primaryAction": {
+      "label": "Review RPM Calculator",
+      "href": "/logistics/resources/rpm-calculator/"
+    },
+    "secondaryAction": {
+      "label": "Explore Owner-Operator Support",
+      "href": "/logistics/owner-operator-dispatch-support/"
+    },
+    "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
+    "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
+    "sourcePublishedAt": "2026-09-22",
+    "datePublished": "2026-09-17",
+    "dateModified": "2026-09-23",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "diesel price 2026",
+      "truck fuel cost",
+      "carrier route planning",
+      "deadhead reduction",
+      "owner operator load planning",
+      "diesel price per gallon",
+      "freight rate negotiation",
+      "EIA diesel price"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "U.S. EIA weekly on-highway diesel price data",
+        "use": "primary",
+        "url": "https://www.eia.gov/petroleum/gasdiesel/",
+        "observedAt": "2026-09-23",
+        "eventDate": "2026-09-21",
+        "notes": "Current dated public source for national and regional diesel prices, released September 22, 2026."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"
+    },
+    "publicationScore": {
+      "score": 97,
+      "recommendation": "standalone_historical",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+19 first-party evidence",
+        "+15 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "dat-dry-van-rates-september-2026",
+    "direction": "logistics",
+    "slug": "dry-van-spot-rates-september-2026",
+    "title": "Dry Van Spot Rates: $2.17/Mile Carrier Analysis | Hermes",
+    "description": "DAT reported dry-van spot linehaul averaging $2.17 per mile for the week ending September 18, 2026, down slightly week over week but still materially above the year-earlier and seasonal benchmarks.",
+    "eyebrow": "Logistics Market Update · September 2026",
+    "h1": "Dry van spot linehaul eased to $2.17 per mile. What should carriers do now?",
+    "conciseAnswer": "DAT reported U.S. dry-van spot linehaul averaging $2.17 per mile for the week ending September 18, 2026, excluding fuel. That was down $0.03, or 1.2%, week over week, while remaining $0.53, or 32.8%, above a year earlier and $0.36 above DAT's nine-year seasonal average. The useful decision is still lane-specific: compare loaded miles, deadhead, fuel, tolls, timing, equipment fit, payment terms and the likely next move rather than treating a national average as a universal booking target.",
+    "explanation": [
+      "What changed: DAT reported dry-van spot linehaul paid to carriers averaging $2.17 per mile for the week ending September 18, 2026, excluding fuel. The national average fell $0.03 per mile, or 1.2%, from the prior week. At the same time, it remained $0.53 per mile, or 32.8%, above the year-earlier level and $0.36 per mile above DAT's nine-year seasonal average of $1.82. That combination matters because a soft week-over-week move can coexist with a market that is still comparatively firm over a longer horizon.",
+      "Why it matters: a single national number is not a lane quote. DAT's regional data for the same week ranged from $2.66 per mile in the Great Lakes and $2.64 in the Ohio River region to $1.42 in Florida–South Georgia. A carrier can therefore see a strong national or origin-region headline while still accepting a movement that produces weak round-trip economics because of destination demand, deadhead, appointment timing or the quality of the next reload.",
+      "Historical Hermes operating material repeatedly treated route planning, deadhead reduction, broker negotiation and the next reload as one decision chain. The then-versus-now lesson is not that an old internal rate or earnings target should be reused. It is that the same operating discipline becomes more valuable when the market is moving in different directions across time horizons and regions: verify the lane, understand where the truck lands, and price the full movement rather than one loaded segment.",
+      "What to do: use DAT's current market average as an external reference point, then calculate the actual movement. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Add current fuel and toll assumptions, time requirements, equipment constraints and payment terms. Compare realistic reload options in the destination market before negotiating. A counteroffer is more defensible when it is tied to the truck's real operating picture instead of a national headline alone.",
+      "Result: the carrier gets a repeatable decision process instead of a reactive rate rule. The September 21 DAT update says the national dry-van linehaul average eased slightly after a strong year-over-year rise; it does not say every lane is weakening or that every load should target $2.17. The practical outcome is to refresh lane assumptions more often, keep deadhead visible in the calculation, and use current regional context to decide where the national average is useful and where it is misleading."
+    ],
+    "takeaways": [
+      "$2.17 per mile was DAT's national dry-van spot linehaul average for the week ending September 18; fuel was excluded",
+      "The average fell 1.2% week over week but remained 32.8% above the year-earlier level and 19.7% above the nine-year seasonal average",
+      "Regional averages varied materially, including $2.66 in the Great Lakes versus $1.42 in Florida–South Georgia",
+      "Use the market report to refresh lane assumptions, then calculate the full movement with deadhead, costs, timing and reload options"
+    ],
+    "faq": [
+      {
+        "question": "Does a $2.17 national average mean a carrier should reject every dry-van load below $2.17 per mile?",
+        "answer": "No. DAT's national average is market context, not a universal floor. A load decision depends on the specific lane, deadhead, fuel, tolls, equipment, timing, payment terms, operating costs and the likely next movement."
+      },
+      {
+        "question": "Did DAT's $2.17 rate include fuel?",
+        "answer": "No. DAT states that the cited dry-van spot linehaul rates exclude fuel costs and surcharges unless otherwise noted."
+      },
+      {
+        "question": "Why does regional data matter if the national rate is current?",
+        "answer": "Because the week ending September 18 showed large regional differences. A national average can describe the broad market while still being a poor proxy for a specific origin, destination or round-trip opportunity."
+      },
+      {
+        "question": "What historical Hermes evidence is being used here?",
+        "answer": "Only an anonymized operating pattern: route planning, deadhead control, negotiation and reload planning were historically treated as connected decisions. No private contact information, old commercial figures, old guarantees or unverified historical claims are used as current facts."
+      }
+    ],
+    "related": [
+      {
+        "title": "Dry Van Load Board",
+        "body": "Review the Hermes Load Board entry point for dry-van equipment and carrier workflows.",
+        "href": "/load-board/equipment/dry-van/"
+      },
+      {
+        "title": "Load Board",
+        "body": "See how Hermes separates carrier access, providers, equipment, and source-gated market records.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Owner-operator logistics path",
+        "body": "Review the operating path for owner-operators evaluating dispatch and carrier support.",
+        "href": "/paths/logistics/carriers/owner-operators/"
+      },
+      {
+        "title": "RPM calculator",
+        "body": "Use an internal rate-per-mile calculation as one input to a full load decision.",
+        "href": "/logistics/resources/rpm-calculator/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Dry Van Load Board",
+      "href": "/load-board/equipment/dry-van/"
+    },
+    "secondaryAction": {
+      "label": "Review Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "DAT Freight & Analytics — Dry Van Report",
+    "sourceUrl": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record",
+    "sourcePublishedAt": "2026-09-21",
+    "datePublished": "2026-09-14",
     "dateModified": "2026-09-22",
     "authorName": "Hermes Editorial Team",
-    "keywords": ["Google Search profile", "Search profile badge", "Google Discover social content", "website social profiles", "social search visibility", "Google creator profile"],
-    "contentTier": "digest",
-    "currentMarketClaim": true,
-    "telegram": {"group": "SMM Organic Target", "messageId": null},
-    "evidence": [
-      {"sourceId": "PUBLIC-WEB-CURRENT", "kind": "public_external", "label": "Google Search Central Search profile badge documentation", "use": "primary", "url": "https://developers.google.com/search/docs/appearance/search-profiles", "observedAt": "2026-09-22", "eventDate": "2026-09-16", "notes": "Primary Google documentation for Search profiles, linked social content, Discover behavior and badge implementation."},
-      {"sourceId": "TG-002", "kind": "first_party_historical", "label": "Hermes historical marketing operating archive", "use": "context_only", "notes": "Used only for anonymized patterns around consistent organic publishing and connecting social activity to an owned business presence. No identities, prices, guarantees or private client metrics are republished."}
+    "keywords": [
+      "dry van spot rates",
+      "dry van rates 2026",
+      "truckload rates",
+      "carrier rate negotiation",
+      "deadhead calculation",
+      "owner operator load planning",
+      "DAT dry van report",
+      "dry van regional rates"
     ],
-    "historicalComparison": {"thenPeriod": "2024–2026 historical Hermes marketing operating material", "nowPeriod": "September 2026", "summary": "Hermes historical marketing work emphasized recurring original social content and building an owned business presence; Google's Search profile adds a new way to connect a claimed Google profile with website and social content, while current Google documentation—not historical internal claims—defines the feature and its limits.", "evidenceSourceIds": ["TG-002", "PUBLIC-WEB-CURRENT"], "currentVerificationUrl": "https://developers.google.com/search/docs/appearance/search-profiles"},
-    "publicationScore": {"score": 74, "recommendation": "digest", "reasons": ["+20 freshness", "+20 source authority", "+11 first-party evidence", "+8 historical comparison", "+8 search value", "+7 internal-link fit"]},
-    "privacyReview": {"piiRemoved": true, "privateFiguresRemoved": true, "historicalClaimsRevalidated": true, "reviewer": "Hermes Editorial Pipeline"}
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": 5188
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "DAT Dry Van Report — week ending September 18, 2026",
+        "use": "primary",
+        "url": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record",
+        "observedAt": "2026-09-22",
+        "eventDate": "2026-09-18",
+        "notes": "Current dated source for national and regional dry-van spot linehaul rates; rates exclude fuel unless otherwise noted."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, broker negotiation and reload planning. No private chat details or old commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Historical Hermes dispatch material treated route planning, deadhead control, negotiation and reload planning as connected decisions; the September 2026 DAT data reinforces the need to model the actual lane because national, year-over-year and regional signals can move differently at the same time.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.dat.com/blog/dry-van-report-cass-shipments-turn-positive-ending-the-longest-freight-downturn-on-record"
+    },
+    "publicationScore": {
+      "score": 94,
+      "recommendation": "standalone_historical",
+      "reasons": [
+        "+20 freshness",
+        "+19 source authority",
+        "+17 first-party evidence",
+        "+15 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "tgcontent_BcDG37_WeFas",
+    "direction": "marketing",
+    "slug": "google-measurement-and-data-strength-updates",
+    "title": "Google measurement and Data Strength updates | Hermes Insights",
+    "description": "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief.",
+    "eyebrow": "Hermes Marketing · Reviewed update",
+    "h1": "Google measurement and Data Strength updates",
+    "conciseAnswer": "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief.",
+    "explanation": [
+      "Hermes keeps this item as a reviewed brief because the source is dated 2026-09-10 and the update is relevant to Hermes Marketing. Hermes interpretation: Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief. Use it as decision context, not as a guarantee of ranking, demand, rates, revenue, employment, or another outcome."
+    ],
+    "takeaways": [
+      "Practical and relevant to marketing measurement, but needs a stronger Hermes-specific case study before becoming a full site brief."
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Marketing",
+        "body": "Review the canonical Hermes Marketing direction.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "SEO services",
+        "body": "Connect the update to search and conversion work.",
+        "href": "/services/seo/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Continue in Hermes",
+      "href": "/services/seo/"
+    },
+    "sourceLabel": "blog.google",
+    "sourceUrl": "https://blog.google/products/ads-commerce/data-strength-updates/",
+    "sourcePublishedAt": "2026-09-10",
+    "datePublished": "2026-09-14",
+    "dateModified": "2026-09-14",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "marketing",
+      "google",
+      "measurement",
+      "data",
+      "strength",
+      "updates"
+    ],
+    "contentTier": "brief",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": 837
+    }
   }
 ]
