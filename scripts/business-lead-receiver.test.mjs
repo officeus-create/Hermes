@@ -132,6 +132,45 @@ const invalidHorizon = await onRequest({
 });
 assert.equal(invalidHorizon.status, 400);
 
+const catalogRequestPayload = {
+  ...validPayload,
+  request_id: "catalog_business_req_12345",
+  interest: "Hermes Catalog",
+  company: "Chayka Store",
+  city_country: "Chaiky, Kyiv region, Ukraine",
+  services: ["Catalog business request"],
+  catalog_business_id: "catalog-ua-chayka-store",
+  catalog_profile: "/businesses/ukraine/chaiky/chayka-store/",
+  catalog_source_ref: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924",
+  attribution: {
+    utm_source: "hermes_catalog",
+    utm_medium: "organic",
+    utm_campaign: "catalog-business-request",
+    utm_content: "website-concept",
+    referrer: "https://www.google.com/",
+  },
+};
+const catalogRequest = await onRequest({
+  request: makeRequest(catalogRequestPayload, { "CF-Connecting-IP": "192.0.2.60" }),
+  env,
+});
+assert.equal(catalogRequest.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [CATALOG]");
+assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-chayka-store/);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog profile: \/businesses\/ukraine\/chaiky\/chayka-store\//);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog source ref: CLIENT-SUPPLIED-CHAYKA-STORE-20260924/);
+assert.match(serviceCalls.at(-1).payload.text, /UTM content: website-concept/);
+
+const catalogRequestMissingTarget = await onRequest({
+  request: makeRequest({
+    ...catalogRequestPayload,
+    request_id: "catalog_business_bad_12345",
+    catalog_business_id: "",
+  }, { "CF-Connecting-IP": "192.0.2.61" }),
+  env,
+});
+assert.equal(catalogRequestMissingTarget.status, 400);
+
 const noMessenger = await onRequest({
   request: makeRequest({ ...validPayload, request_id: "business_no_msg_12345", whatsapp: "", telegram: "" }, { "CF-Connecting-IP": "192.0.2.52" }),
   env,
