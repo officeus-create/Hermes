@@ -20,11 +20,18 @@ const direction = overview.directions.find((item) => item.id === directionId);
 if (!direction) throw new Error(`Missing localized direction ${locale}:${directionId}`);
 const copy = localizedDirectionCopy[locale][directionId];
 const ui = localizedDirectionUi[locale];
+const contactFields = {
+  uk: { company: "Компанія / бізнес", country: "Країна / ринок", problem: "Поточна проблема", result: "Бажаний результат", direction: "Напрям Hermes" },
+  ru: { company: "Компания / бизнес", country: "Страна / рынок", problem: "Текущая проблема", result: "Желаемый результат", direction: "Направление Hermes" },
+  es: { company: "Empresa / negocio", country: "País / mercado", problem: "Problema actual", result: "Resultado deseado", direction: "Área de Hermes" },
+  it: { company: "Azienda / attività", country: "Paese / mercato", problem: "Problema attuale", result: "Risultato desiderato", direction: "Area Hermes" },
+  fr: { company: "Entreprise / activité", country: "Pays / marché", problem: "Problème actuel", result: "Résultat souhaité", direction: "Pôle Hermes" },
+}[locale];
 const homeHref = localeConfig[locale].path;
 const canonicalPath = directionOwnerRoutes[locale][directionId];
 const canonicalUrl = new URL(canonicalPath, Astro.site).toString();
 const alternates = getDirectionAlternates(directionId);
-const mailBody = `${ui.contactBody}\n\nCompany / business:\nCountry / market:\nCurrent problem:\nDesired result:\nHermes direction: ${direction.brand}\n`;
+const mailBody = `${ui.contactBody}\n\n${contactFields.company}:\n${contactFields.country}:\n${contactFields.problem}:\n${contactFields.result}:\n${contactFields.direction}: ${direction.brand}\n`;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${ui.emailSubject} · ${direction.brand}`)}&body=${encodeURIComponent(mailBody)}`;
 const serviceSchema = {
   "@context": "https://schema.org",
