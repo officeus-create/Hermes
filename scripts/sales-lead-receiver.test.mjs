@@ -1,11 +1,37 @@
 import assert from "node:assert/strict";
 import { onRequest } from "../functions/api/logistics-lead.ts";
-import leadEmailWorker, { isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
+import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
   values = new Map();
   async get(key) { return this.values.get(key) ?? null; }
   async put(key, value) { this.values.set(key, value); }
+}
+
+class MemoryDurableStorage {
+  values = new Map();
+  alarmTime = null;
+
+  async get(key) {
+    const value = this.values.get(key);
+    return value === undefined ? undefined : structuredClone(value);
+  }
+
+  async put(key, value) {
+    this.values.set(key, structuredClone(value));
+  }
+
+  async delete(key) {
+    return this.values.delete(key);
+  }
+
+  async setAlarm(timestamp) {
+    this.alarmTime = Number(timestamp);
+  }
+
+  async transaction(callback) {
+    return callback(this);
+  }
 }
 
 const serviceToken = "test-service-token-with-sufficient-length";
@@ -456,6 +482,115 @@ assert.equal(qaEmails[0].to, "officeus@hermeslogisticsus.com");
 assert.equal(qaEmails[0].subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
 assert.match(qaEmails[0].text, /exclude from Sales\/CRM KPI/);
 assert.equal(telegramMessages.length, telegramBeforeQa);
+
+
+const durableEmailMessages = [];
+const durableStorage = new MemoryDurableStorage();
+const durableEnv = {
+  ...workerEnv,
+  EMAIL: {
+    async send(message) {
+      durableEmailMessages.push(message);
+      return { messageId: `durable-message-${durableEmailMessages.length}` };
+    },
+  },
+};
+const durableCoordinator = new CarHaulingDeliveryCoordinatorCore({ storage: durableStorage }, durableEnv);
+const durablePayload = {
+  request_id: "carrier_durable_1296_12345",
+  subject: "[HERMES SALES] [CAR HAULING] [CARRIER]",
+  text: directCarrierBody,
+  reply_to: "carrier@example.com",
+};
+const durableRequest = (payload = durablePayload) => new Request(
+  "https://car-hauling-delivery.internal/internal/car-hauling-delivery",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  },
+);
+const setFrozenDate = (iso) => {
+  const frozen = new NativeDate(iso);
+  globalThis.Date = class extends NativeDate {
+    constructor(...args) {
+      super(...(args.length ? args : [frozen]));
+    }
+    static now() { return frozen.valueOf(); }
+  };
+};
+
+const pendingPrimaryStorage = new MemoryDurableStorage();
+const pendingPrimaryEnv = {
+  ...workerEnv,
+  EMAIL: {
+    async send() {
+      const error = new Error("temporary provider outage");
+      error.status = 503;
+      throw error;
+    },
+  },
+};
+const pendingPrimaryCoordinator = new CarHaulingDeliveryCoordinatorCore({ storage: pendingPrimaryStorage }, pendingPrimaryEnv);
+const pendingPrimaryFirst = await pendingPrimaryCoordinator.fetch(durableRequest({
+  ...durablePayload,
+  request_id: "carrier_durable_pending_1296",
+}));
+assert.equal(pendingPrimaryFirst.status, 503);
+const pendingPrimaryFirstBody = await pendingPrimaryFirst.json();
+assert.equal(pendingPrimaryFirstBody.delivery_ledger.primary, "pending");
+assert.equal(pendingPrimaryFirstBody.ok, false);
+
+const pendingPrimaryRetry = await pendingPrimaryCoordinator.fetch(durableRequest({
+  ...durablePayload,
+  request_id: "carrier_durable_pending_1296",
+}));
+assert.equal(pendingPrimaryRetry.status, 503, "Immediate duplicate retry must not promote a pending primary delivery to accepted.");
+const pendingPrimaryRetryBody = await pendingPrimaryRetry.json();
+assert.equal(pendingPrimaryRetryBody.deduplicated, true);
+assert.equal(pendingPrimaryRetryBody.accepted, false);
+assert.equal(pendingPrimaryRetryBody.delivery_ledger.primary, "pending");
+
+const telegramBeforeDurable = telegramMessages.length;
+try {
+  setFrozenDate("2026-09-15T22:46:00.000Z");
+  const durableAccepted = await durableCoordinator.fetch(durableRequest());
+  assert.equal(durableAccepted.status, 202);
+  const durableAcceptedBody = await durableAccepted.json();
+  assert.equal(durableAcceptedBody.durable, true);
+  assert.equal(durableAcceptedBody.complete, false);
+  assert.equal(durableAcceptedBody.delivery_ledger.primary, "delivered");
+  assert.equal(
+    durableAcceptedBody.delivery_ledger.destinations.find((destination) => destination.channel === "telegram").error,
+    "outside_working_hours",
+  );
+  assert.equal(durableEmailMessages.length, 3);
+  assert.equal(telegramMessages.length, telegramBeforeDurable);
+  assert.ok(durableStorage.alarmTime > new NativeDate("2026-09-15T22:46:00.000Z").valueOf(), "Quiet-hours Telegram delivery must schedule a Durable Object alarm.");
+
+  const durableDuplicate = await durableCoordinator.fetch(durableRequest());
+  assert.equal(durableDuplicate.status, 202);
+  assert.equal((await durableDuplicate.json()).deduplicated, true);
+  assert.equal(durableEmailMessages.length, 3, "A duplicate request ID must not resend delivered email destinations.");
+
+  const durableConflict = await durableCoordinator.fetch(durableRequest({
+    ...durablePayload,
+    text: `${durablePayload.text}\nConflicting payload.`,
+  }));
+  assert.equal(durableConflict.status, 409);
+  assert.deepEqual(await durableConflict.json(), { ok: false, error: "request_id_payload_conflict" });
+
+  setFrozenDate(new NativeDate(durableStorage.alarmTime + 60_000).toISOString());
+  await durableCoordinator.alarm();
+} finally {
+  globalThis.Date = NativeDate;
+}
+assert.equal(durableEmailMessages.length, 3, "Alarm retry must skip already delivered email destinations.");
+assert.equal(telegramMessages.length, telegramBeforeDurable + 1, "Alarm retry must deliver the pending Telegram destination.");
+const durableRecord = await durableStorage.get("delivery");
+assert.ok(durableRecord.completedAt, "The durable delivery must be marked complete after every destination is delivered.");
+assert.equal(durableRecord.text, "", "Completed durable state must purge the lead body.");
+assert.ok(durableRecord.purgeAt > durableRecord.completedAt, "A completed receipt ledger must have a retention deadline.");
 
 globalThis.fetch = originalFetch;
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");

@@ -59,11 +59,34 @@ assert.equal("routes" in emailWorkerExample, false, "The private email Worker mu
 assert.equal("routes" in emailWorkerProduction, false, "The private email Worker must not gain a public HTTP route by default.");
 
 const emailWorkerEntry = read("workers/lead-email/src/entry.mjs");
-assert.match(emailWorkerEntry, /import leadEmailWorker from "\.\/index\.mjs"/);
+assert.match(emailWorkerEntry, /import leadEmailWorker, \{ CarHaulingDeliveryCoordinatorCore \} from "\.\/index\.mjs"/);
 assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\.\/load-board-inbound\.mjs"/);
 assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
 assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
 assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outbound lead-email implementation must remain present.");
+assert.match(emailWorkerEntry, /import \{ DurableObject \} from "cloudflare:workers"/);
+assert.match(emailWorkerEntry, /export class CarHaulingDeliveryCoordinator extends DurableObject/);
+assert.match(emailWorkerEntry, /return this\.coordinator\.alarm\(\)/);
+for (const config of [emailWorkerExample, emailWorkerProduction]) {
+  assert.deepEqual(config.durable_objects?.bindings, [{
+    name: "CAR_HAULING_DELIVERY_COORDINATOR",
+    class_name: "CarHaulingDeliveryCoordinator",
+  }]);
+  assert.deepEqual(config.exports?.CarHaulingDeliveryCoordinator, {
+    type: "durable-object",
+    storage: "sqlite",
+  });
+}
+assert.equal(
+  emailWorkerProduction.vars?.CAR_HAULING_DURABLE_OUTBOX_REQUIRED,
+  "true",
+  "Production must fail closed if the durable Car Hauling outbox binding is unavailable.",
+);
+const leadEmailWorkerSource = read("workers/lead-email/src/index.mjs");
+assert.match(leadEmailWorkerSource, /CAR_HAULING_DELIVERY_COORDINATOR\.getByName\(requestId\)/);
+assert.match(leadEmailWorkerSource, /request_id_payload_conflict/);
+assert.match(leadEmailWorkerSource, /await this\.storage\.setAlarm/);
+assert.match(leadEmailWorkerSource, /delivery_ledger/);
 
 const aiProjectState = JSON.parse(read("docs/ai-project-state.json"));
 const cloudflareReleaseState = aiProjectState.recent_promotions?.cloudflare_release_wiring_pr_1063;
