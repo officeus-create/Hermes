@@ -111,7 +111,16 @@ export function buildCatalogSchema(business, profileUrl) {
       { "@type": "ListItem", position: 4, name: business.name, item: profileUrl },
     ],
   };
-  return [base, service, breadcrumbs];
+  const faq = Array.isArray(business.faq) && business.faq.length ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: business.faq.map((item) => ({
+      "@type": "Question",
+      name: clean(item.question, 500),
+      acceptedAnswer: { "@type": "Answer", text: clean(item.answer, 1500) },
+    })),
+  } : null;
+  return [base, service, breadcrumbs, ...(faq ? [faq] : [])];
 }
 
 export function buildCatalogLeadContext({ business, profileUrl, source = "hermes_catalog", referrer = "", utm = {} }) {
