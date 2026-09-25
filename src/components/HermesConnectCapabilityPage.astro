@@ -45,11 +45,10 @@ const schema = [
     url: canonicalUrl,
     description: `${description} This page documents a Hermes Connect reference capability and is not a claim of current live availability.`,
     isPartOf: {
-      "@type": "WebApplication",
+      "@type": "WebPage",
+      "@id": productHubUrl,
       name: "Hermes Connect",
       url: productHubUrl,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Modern web browser",
     },
     about: {
       "@type": "Thing",

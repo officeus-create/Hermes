@@ -30,6 +30,11 @@ const pages = [
     requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
     requiredCtas: ["Choisir un pôle", "Écrire à l'équipe", "Envoyer la description par email"],
   },
+  { route: "/ua/academy/", path: "ua/academy/index.html", lang: "uk", requiredLabels: ["Академія"], requiredCtas: [] },
+  { route: "/ru/academy/", path: "ru/academy/index.html", lang: "ru", requiredLabels: ["Академия"], requiredCtas: [] },
+  { route: "/es/academia/", path: "es/academia/index.html", lang: "es", requiredLabels: ["Academia"], requiredCtas: [] },
+  { route: "/it/academy/", path: "it/academy/index.html", lang: "it", requiredLabels: ["Academy"], requiredCtas: [] },
+  { route: "/fr/academie/", path: "fr/academie/index.html", lang: "fr", requiredLabels: ["Académie"], requiredCtas: [] },
   {
     route: "/ru/business-growth/", path: "ru/business-growth/index.html", lang: "ru",
     requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
@@ -66,12 +71,34 @@ const knownEnglishLeakage = [
   "Discuss the system you want to build.",
   "Return to Hermes",
   "Page not found",
-];
-const russianOnlyEnglishLeakage = [
+  "Hermes account",
+  "Signed in",
+  "Your workspaces",
+  "Loading account…",
+  "Log out",
   "Repair Shops · current live pilot",
-  "Open Hermes Connect Product Hub",
+  "Repair Shops is the current live pilot",
+  "Open product",
   "Current product",
 ];
+const russianOnlyEnglishLeakage = [
+  "Open Hermes Connect Product Hub",
+];
+const localizedConsentLabels = {
+  uk: ["Налаштування конфіденційності", "Дозволити аналітику", "Продовжити без аналітики", "Політика конфіденційності"],
+  ru: ["Настройки конфиденциальности", "Разрешить аналитику", "Продолжить без аналитики", "Политика конфиденциальности"],
+  es: ["Configuración de privacidad", "Permitir analítica", "Continuar sin analítica", "Política de privacidad"],
+  it: ["Impostazioni sulla privacy", "Consenti analisi", "Continua senza analisi", "Informativa sulla privacy"],
+  fr: ["Paramètres de confidentialité", "Autoriser l’analyse", "Continuer sans analyse", "Politique de confidentialité"],
+};
+const localizedOwnerMailFields = {
+  "/ua/academy/": ["Компанія / бізнес", "Країна / ринок", "Поточна проблема", "Бажаний результат", "Напрям Hermes"],
+  "/ru/academy/": ["Компания / бизнес", "Страна / рынок", "Текущая проблема", "Желаемый результат", "Направление Hermes"],
+  "/es/academia/": ["Empresa / negocio", "País / mercado", "Problema actual", "Resultado deseado", "Área de Hermes"],
+  "/it/academy/": ["Azienda / attività", "Paese / mercato", "Problema attuale", "Risultato desiderato", "Area Hermes"],
+  "/fr/academie/": ["Entreprise / activité", "Pays / marché", "Problème actuel", "Résultat souhaité", "Pôle Hermes"],
+};
+const legacyEnglishMailFields = ["Company / business:", "Country / market:", "Current problem:", "Desired result:", "Hermes direction:"];
 const errors = [];
 const titles = new Map();
 const descriptions = new Map();
@@ -115,6 +142,23 @@ for (const page of pages) {
   for (const href of page.requiredHrefs ?? []) {
     if (!html.includes(`href="${href}"`)) errors.push(`${page.route}: required locale-safe href is missing: ${href}`);
   }
+  const consentLabels = localizedConsentLabels[page.lang];
+  for (const label of consentLabels ?? []) {
+    if (!visible.includes(label)) errors.push(`${page.route}: localized privacy-consent label is missing: ${label}`);
+  }
+
+  const expectedMailFields = localizedOwnerMailFields[page.route];
+  if (expectedMailFields) {
+    const decodedMailto = [...html.matchAll(/href="(mailto:[^"]+)"/gi)]
+      .map((match) => decodeURIComponent(match[1].replaceAll("&amp;", "&")))
+      .join("\n");
+    for (const label of expectedMailFields) {
+      if (!decodedMailto.includes(`${label}:`)) errors.push(`${page.route}: localized mailto field is missing: ${label}`);
+    }
+    for (const label of legacyEnglishMailFields) {
+      if (decodedMailto.includes(label)) errors.push(`${page.route}: legacy English mailto field found: ${label}`);
+    }
+  }
 
   const title = getTagText(html, "title");
   const description = getMetaDescription(html);
@@ -137,6 +181,18 @@ for (const page of pages) {
 // ownership lives in the shared secondary i18n runtime; the demo bootstrap owns only
 // synthetic-data isolation and demo/preview query propagation. Audit both owners so
 // future polish cannot silently move translations back into the demo data layer.
+const trackingConsentSource = await readFile(join(root, "src/components/TrackingConsent.astro"), "utf8");
+const baseLayoutSource = await readFile(join(root, "src/layouts/BaseLayout.astro"), "utf8");
+for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) {
+  if (!trackingConsentSource.includes(`${locale}: {`)) errors.push(`Tracking consent: locale copy is missing: ${locale}`);
+}
+if (!trackingConsentSource.includes('Astro.url.searchParams.get("lang")')) {
+  errors.push("Tracking consent: query-locale resolution is missing");
+}
+if (!baseLayoutSource.includes("<TrackingConsent clarityEligible={clarityEligible} locale={locale} />")) {
+  errors.push("Tracking consent: BaseLayout must pass the resolved page locale");
+}
+
 const repairShopI18n = await readFile(join(root, "public/hermes-connect-repair-owner-secondary-i18n.js"), "utf8");
 const repairOwnerCurrent = await readFile(join(root, "public/hermes-connect-repair-owner-p0-current.js"), "utf8");
 const repairOwnerPolish = await readFile(join(root, "public/repair-owner-runtime-fixes.js"), "utf8");
@@ -191,4 +247,4 @@ if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages, multilingual shared Connect chrome/mailto fields, plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);

@@ -122,8 +122,8 @@ const { compact = false, showCta = true } = Astro.props;
 
   const placeOffer = (root: HTMLElement) => {
     let anchor: Element | null = null;
-    if (route === repairRoot) anchor = document.querySelector(".repair-live-hero .repair-lead");
-    else if (route === `${repairRoot}/auth`) {
+    if (route === repairRoot) return false;
+    if (route === `${repairRoot}/auth`) {
       if (params.get("mode") !== "register") return false;
       anchor = document.querySelector("#auth-forms .auth-header");
       root.classList.add("is-compact");
@@ -217,5 +217,4 @@ const { compact = false, showCta = true } = Astro.props;
   .repair-free-launch.is-compact{grid-template-columns:auto 1fr;margin:.8rem 0;padding:.85rem}
   .repair-free-launch.is-compact .launch-catalog{display:none}
   @media(max-width:820px){.repair-free-launch{grid-template-columns:auto 1fr}.launch-actions{grid-column:1/-1;flex-direction:row;min-width:0}.launch-actions>a{flex:1}}
-  @media(max-width:520px){.repair-free-launch{grid-template-columns:1fr}.launch-icon{display:none}.launch-actions{flex-direction:column}.launch-actions>a{width:100%;box-sizing:border-box}}
 </style>

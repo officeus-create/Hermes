@@ -1,6 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+async function openPartnerOffer(page: import("@playwright/test").Page) {
+  const disclosure = page.locator(".repair-partner-disclosure");
+  if ((await disclosure.getAttribute("open")) === null) {
+    await disclosure.locator(":scope > summary").click();
+  }
+  await expect(page.locator("#partner-beta-form #partner-contact-name")).toBeVisible();
+}
+
 async function fillPartnerOffer(page: import("@playwright/test").Page, options: { consent?: boolean } = {}) {
+  await openPartnerOffer(page);
   await page.locator("#shop-name").fill("Revenue Test Auto Care");
   await page.locator("#shop-type").selectOption("truck_diesel");
   await page.locator("#city-state").fill("Milwaukee, WI");
@@ -10,10 +19,10 @@ async function fillPartnerOffer(page: import("@playwright/test").Page, options: 
   await page.locator('input[name="equipment"][value="car_hauler"]').check();
   await page.locator('input[name="equipment"][value="dry_van"]').check();
   await page.locator("#turnaround").fill("24");
-  await page.locator("#partner-contact-name").fill("Taylor Partner Test");
-  await page.locator("#partner-contact-email").fill("taylor.partner@example.com");
-  await page.locator("#partner-contact-phone").fill("+1 414 555 0188");
-  if (options.consent !== false) await page.locator("#partner-contact-consent").check();
+  await page.locator("#partner-beta-form #partner-contact-name").fill("Taylor Partner Test");
+  await page.locator("#partner-beta-form #partner-contact-email").fill("taylor.partner@example.com");
+  await page.locator("#partner-beta-form #partner-contact-phone").fill("+1 414 555 0188");
+  if (options.consent !== false) await page.locator("#partner-beta-form #partner-contact-consent").check();
 }
 
 test("repair shop corporate offer is clear, delivered privately and waits for human review", async ({ page }) => {
@@ -33,8 +42,9 @@ test("repair shop corporate offer is clear, delivered privately and waits for hu
   });
 
   await page.goto("/services/hermes-connect/repair-shops/");
+  await openPartnerOffer(page);
 
-  await expect(page.locator("#partner-contact-name")).toBeVisible();
+  await expect(page.locator("#partner-beta-form #partner-contact-name")).toBeVisible();
   await expect(page.locator("[data-repair-offer-next-step]")).toContainText("What happens next");
   await expect(page.locator("[data-repair-help='city-state']")).toContainText("street address is not required");
   await expect(page.locator("[data-repair-equipment-help]")).toContainText("actually service");
@@ -117,7 +127,7 @@ test("review step sends nothing and consent is required only for the real submis
   await expect(page.locator("[data-repair-partner-delivery-status]")).toContainText("confirm consent");
   expect(leadRequests).toBe(0);
 
-  await page.locator("#partner-contact-consent").check();
+  await page.locator("#partner-beta-form #partner-contact-consent").check();
   await page.locator("#submit-btn").click();
   await expect(page.locator("#status-label")).toContainText("OFFER_SUBMITTED");
   expect(leadRequests).toBe(1);
@@ -145,7 +155,7 @@ test("partner offer keeps entered data and exposes prepared email fallback when 
   await expect(fallback).toBeVisible();
   await expect(fallback).toHaveAttribute("href", /^mailto:officeus@hermeslogisticsus\.com/);
   await expect(page.locator("#shop-name")).toHaveValue("Revenue Test Auto Care");
-  await expect(page.locator("#partner-contact-email")).toHaveValue("taylor.partner@example.com");
+  await expect(page.locator("#partner-beta-form #partner-contact-email")).toHaveValue("taylor.partner@example.com");
 
   await page.locator("#submit-btn").click();
   expect(requestIds).toHaveLength(2);
@@ -154,6 +164,7 @@ test("partner offer keeps entered data and exposes prepared email fallback when 
 
 test("Russian Repair Shop partner offer explains service location and next step in Russian", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
+  await openPartnerOffer(page);
 
   await expect(page.locator("label", { has: page.locator("#city-state") })).toContainText("Город / штат обслуживания");
   await expect(page.locator("[data-repair-help='city-state']")).toContainText("Полный адрес улицы здесь не нужен");
