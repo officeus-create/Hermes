@@ -149,9 +149,10 @@ const languageLinks = siteLocales.map((language) => {
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
+      locale={activeLocale}
     />
-    {privateWorkspace && <HermesConnectAccountSwitcher current={privateWorkspace} mode="menu" />}
-    {!privateWorkspace && <HermesConnectAccountSwitcher current={publicWorkspace} mode="menu" publicSafe />}
+    {privateWorkspace && <HermesConnectAccountSwitcher current={privateWorkspace} mode="menu" locale={activeLocale} />}
+    {!privateWorkspace && <HermesConnectAccountSwitcher current={publicWorkspace} mode="menu" publicSafe locale={activeLocale} />}
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
         <Languages size={16} aria-hidden="true" />
@@ -185,9 +186,10 @@ const languageLinks = siteLocales.map((language) => {
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
+      locale={activeLocale}
     />
-    {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
-    {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe /></div>}
+    {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
+    {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
     <a href="#contact">{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
       <strong>{localeConfig[activeLocale].name}</strong>
