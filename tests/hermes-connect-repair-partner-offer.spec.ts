@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 async function openPartnerOffer(page: import("@playwright/test").Page) {
   const disclosure = page.locator(".repair-partner-disclosure");
-  if (!(await disclosure.getAttribute("open"))) {
+  if ((await disclosure.getAttribute("open")) === null) {
     await disclosure.locator(":scope > summary").click();
   }
   await expect(page.locator("#partner-beta-form #partner-contact-name")).toBeVisible();
