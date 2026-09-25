@@ -30,6 +30,11 @@ const pages = [
     requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
     requiredCtas: ["Choisir un pôle", "Écrire à l'équipe", "Envoyer la description par email"],
   },
+  { route: "/ua/academy/", path: "ua/academy/index.html", lang: "uk", requiredLabels: ["Академія"], requiredCtas: [] },
+  { route: "/ru/academy/", path: "ru/academy/index.html", lang: "ru", requiredLabels: ["Академия"], requiredCtas: [] },
+  { route: "/es/academia/", path: "es/academia/index.html", lang: "es", requiredLabels: ["Academia"], requiredCtas: [] },
+  { route: "/it/academy/", path: "it/academy/index.html", lang: "it", requiredLabels: ["Academy"], requiredCtas: [] },
+  { route: "/fr/academie/", path: "fr/academie/index.html", lang: "fr", requiredLabels: ["Académie"], requiredCtas: [] },
   {
     route: "/ru/business-growth/", path: "ru/business-growth/index.html", lang: "ru",
     requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
@@ -66,12 +71,27 @@ const knownEnglishLeakage = [
   "Discuss the system you want to build.",
   "Return to Hermes",
   "Page not found",
-];
-const russianOnlyEnglishLeakage = [
+  "Hermes account",
+  "Signed in",
+  "Your workspaces",
+  "Loading account…",
+  "Log out",
   "Repair Shops · current live pilot",
-  "Open Hermes Connect Product Hub",
+  "Repair Shops is the current live pilot",
+  "Open product",
   "Current product",
 ];
+const russianOnlyEnglishLeakage = [
+  "Open Hermes Connect Product Hub",
+];
+const localizedOwnerMailFields = {
+  "/ua/academy/": ["Компанія / бізнес", "Країна / ринок", "Поточна проблема", "Бажаний результат", "Напрям Hermes"],
+  "/ru/academy/": ["Компания / бизнес", "Страна / рынок", "Текущая проблема", "Желаемый результат", "Направление Hermes"],
+  "/es/academia/": ["Empresa / negocio", "País / mercado", "Problema actual", "Resultado deseado", "Área de Hermes"],
+  "/it/academy/": ["Azienda / attività", "Paese / mercato", "Problema attuale", "Risultato desiderato", "Area Hermes"],
+  "/fr/academie/": ["Entreprise / activité", "Pays / marché", "Problème actuel", "Résultat souhaité", "Pôle Hermes"],
+};
+const legacyEnglishMailFields = ["Company / business:", "Country / market:", "Current problem:", "Desired result:", "Hermes direction:"];
 const errors = [];
 const titles = new Map();
 const descriptions = new Map();
@@ -114,6 +134,19 @@ for (const page of pages) {
   }
   for (const href of page.requiredHrefs ?? []) {
     if (!html.includes(`href="${href}"`)) errors.push(`${page.route}: required locale-safe href is missing: ${href}`);
+  }
+
+  const expectedMailFields = localizedOwnerMailFields[page.route];
+  if (expectedMailFields) {
+    const decodedMailto = [...html.matchAll(/href="(mailto:[^"]+)"/gi)]
+      .map((match) => decodeURIComponent(match[1].replaceAll("&amp;", "&")))
+      .join("\n");
+    for (const label of expectedMailFields) {
+      if (!decodedMailto.includes(`${label}:`)) errors.push(`${page.route}: localized mailto field is missing: ${label}`);
+    }
+    for (const label of legacyEnglishMailFields) {
+      if (decodedMailto.includes(label)) errors.push(`${page.route}: legacy English mailto field found: ${label}`);
+    }
   }
 
   const title = getTagText(html, "title");
@@ -191,4 +224,4 @@ if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages, multilingual shared Connect chrome/mailto fields, plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);

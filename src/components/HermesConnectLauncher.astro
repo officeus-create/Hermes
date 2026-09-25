@@ -3,6 +3,8 @@ import { ArrowUpRight } from "@lucide/astro";
 import "../styles/hermes-connect-knot-core.css";
 import AcademyLocaleRuntime from "./AcademyLocaleRuntime.astro";
 
+type LauncherLocale = "en" | "ru" | "uk" | "es" | "it" | "fr";
+
 export interface Props {
   variant?: "header" | "mobile" | "footer" | "banner" | "inline";
   label?: string;
@@ -10,6 +12,7 @@ export interface Props {
   context?: "logistics" | "marketing" | "academy" | "technology" | "beauty" | "general";
   href?: string;
   class?: string;
+  locale?: LauncherLocale;
 }
 
 const {
@@ -19,13 +22,20 @@ const {
   context = "general",
   href,
   class: className = "",
+  locale: requestedPropLocale,
 } = Astro.props;
 
 const path = Astro.url.pathname;
 const isHermesConnectRoute = path.startsWith("/services/hermes-connect");
+const supportedLocales = new Set<LauncherLocale>(["en", "ru", "uk", "es", "it", "fr"]);
 const requestedLocale = Astro.url.searchParams.get("lang");
-const routeLocale = path === "/ru" || path.startsWith("/ru/") ? "ru" : "en";
-const activeLocale = isHermesConnectRoute && requestedLocale === "ru" ? "ru" : routeLocale;
+const pathLocaleMap: Record<string, LauncherLocale> = { ua: "uk", ru: "ru", es: "es", it: "it", fr: "fr" };
+const routeLocale = pathLocaleMap[path.split("/")[1] || ""] ?? "en";
+const queryLocale = requestedLocale && supportedLocales.has(requestedLocale as LauncherLocale)
+  ? requestedLocale as LauncherLocale
+  : null;
+const activeLocale: LauncherLocale = requestedPropLocale
+  ?? (isHermesConnectRoute && queryLocale ? queryLocale : routeLocale);
 
 const copy = {
   en: {
@@ -66,12 +76,96 @@ const copy = {
     bannerSuffix: "Устаревшие рабочие пространства и исторические цены не показываются как текущий продукт.",
     crm: "CRM",
   },
+  uk: {
+    context: {
+      general: "СТО — поточний робочий пілот",
+      logistics: "СТО вже працює; логістичні модулі поки що показані як довідкові можливості",
+      marketing: "СТО вже працює; модулі зростання поки що показані як довідкові можливості",
+      academy: "СТО вже працює; навчальні модулі поки що показані як довідкові можливості",
+      technology: "СТО вже працює; модулі автоматизації поки що показані як довідкові можливості",
+      beauty: "СТО вже працює; beauty-модулі поки що показані як довідкові можливості",
+    },
+    openProduct: "Відкрити продукт",
+    currentProduct: "Поточний продукт",
+    footerBody: "Єдина лінійка продуктів. СТО — поточний робочий пілот; інші модулі залишаються довідковими можливостями до перевірки в production.",
+    openHub: "Відкрити центр Hermes Connect",
+    openLive: "СТО · працює",
+    currentFamily: "Hermes Connect · поточна лінійка продуктів",
+    explore: "Відкрити Hermes Connect",
+    bannerSuffix: "Застарілі робочі простори та історичні ціни не подаються як поточний продукт.",
+    crm: "CRM",
+  },
+  es: {
+    context: {
+      general: "Talleres es el piloto actualmente activo",
+      logistics: "Talleres ya está activo; los módulos de logística se muestran como capacidades de referencia",
+      marketing: "Talleres ya está activo; los módulos de crecimiento se muestran como capacidades de referencia",
+      academy: "Talleres ya está activo; los módulos de formación se muestran como capacidades de referencia",
+      technology: "Talleres ya está activo; los módulos de automatización se muestran como capacidades de referencia",
+      beauty: "Talleres ya está activo; los módulos de beauty se muestran como capacidades de referencia",
+    },
+    openProduct: "Abrir producto",
+    currentProduct: "Producto actual",
+    footerBody: "Una sola familia de productos. Talleres es el piloto actualmente activo; los demás módulos son capacidades de referencia hasta su verificación en producción.",
+    openHub: "Abrir el centro Hermes Connect",
+    openLive: "Talleres · activo",
+    currentFamily: "Hermes Connect · familia de productos actual",
+    explore: "Explorar Hermes Connect",
+    bannerSuffix: "Los espacios heredados y los precios históricos no se presentan como el producto actual.",
+    crm: "CRM",
+  },
+  it: {
+    context: {
+      general: "Officine è il pilota attualmente attivo",
+      logistics: "Officine è attivo; i moduli logistici sono mostrati come funzionalità di riferimento",
+      marketing: "Officine è attivo; i moduli di crescita sono mostrati come funzionalità di riferimento",
+      academy: "Officine è attivo; i moduli formativi sono mostrati come funzionalità di riferimento",
+      technology: "Officine è attivo; i moduli di automazione sono mostrati come funzionalità di riferimento",
+      beauty: "Officine è attivo; i moduli beauty sono mostrati come funzionalità di riferimento",
+    },
+    openProduct: "Apri prodotto",
+    currentProduct: "Prodotto attuale",
+    footerBody: "Un'unica famiglia di prodotti. Officine è il pilota attualmente attivo; gli altri moduli restano funzionalità di riferimento fino alla verifica in produzione.",
+    openHub: "Apri il centro Hermes Connect",
+    openLive: "Officine · attivo",
+    currentFamily: "Hermes Connect · famiglia di prodotti attuale",
+    explore: "Esplora Hermes Connect",
+    bannerSuffix: "Gli spazi legacy e i prezzi storici non vengono presentati come prodotto attuale.",
+    crm: "CRM",
+  },
+  fr: {
+    context: {
+      general: "Ateliers est le pilote actuellement actif",
+      logistics: "Ateliers est actif ; les modules logistiques sont présentés comme des capacités de référence",
+      marketing: "Ateliers est actif ; les modules de croissance sont présentés comme des capacités de référence",
+      academy: "Ateliers est actif ; les modules de formation sont présentés comme des capacités de référence",
+      technology: "Ateliers est actif ; les modules d’automatisation sont présentés comme des capacités de référence",
+      beauty: "Ateliers est actif ; les modules beauty sont présentés comme des capacités de référence",
+    },
+    openProduct: "Ouvrir le produit",
+    currentProduct: "Produit actuel",
+    footerBody: "Une seule famille de produits. Ateliers est le pilote actuellement actif ; les autres modules restent des capacités de référence jusqu’à leur vérification en production.",
+    openHub: "Ouvrir le centre Hermes Connect",
+    openLive: "Ateliers · actif",
+    currentFamily: "Hermes Connect · famille de produits actuelle",
+    explore: "Explorer Hermes Connect",
+    bannerSuffix: "Les anciens espaces de travail et les tarifs historiques ne sont pas présentés comme le produit actuel.",
+    crm: "CRM",
+  },
 } as const;
 
 const localeCopy = copy[activeLocale];
 const displayTitle = label || "Hermes Connect";
-const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · current live pilot"
-  ? "СТО · текущий рабочий пилот"
+const localizedPilotSublabel: Record<LauncherLocale, string> = {
+  en: "Repair Shops · current live pilot",
+  ru: "СТО · текущий рабочий пилот",
+  uk: "СТО · поточний робочий пілот",
+  es: "Talleres · piloto actualmente activo",
+  it: "Officine · pilota attualmente attivo",
+  fr: "Ateliers · pilote actuellement actif",
+};
+const providedSublabel = sublabel === "Repair Shops · current live pilot"
+  ? localizedPilotSublabel[activeLocale]
   : sublabel;
 const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
 /* Product Hub remains the canonical default. Header/mobile always use it; contextual launchers may keep an explicit live-product href. */
@@ -79,9 +173,9 @@ const computedHref = href || "/services/hermes-connect/";
 const hubFirstVariant = variant === "header" || variant === "mobile";
 const effectiveHref = hubFirstVariant ? "/services/hermes-connect/" : computedHref;
 const localizeConnectHref = (value: string) => {
-  if (activeLocale !== "ru" || !value.startsWith("/services/hermes-connect/")) return value;
+  if (activeLocale === "en" || !value.startsWith("/services/hermes-connect/")) return value;
   const url = new URL(value, "https://hermeslogisticsus.com");
-  url.searchParams.set("lang", "ru");
+  url.searchParams.set("lang", activeLocale);
   return `${url.pathname}${url.search}${url.hash}`;
 };
 const localizedHref = localizeConnectHref(effectiveHref);
