@@ -70,6 +70,7 @@ export type CatalogBusinessConcept = {
   ownerApproval: { required: boolean; approvedAt: string | null; approvedBy: string | null };
   attributionLinks: { label: string; url: string; relationship: string; reciprocalRequired: false }[];
   copy: Record<CatalogConceptLocale, CatalogConceptCopy>;
+  faq: { question: string; answer: string }[];
   seo: { title: string; description: string };
   sourceRef: string;
 };
@@ -187,6 +188,16 @@ export const chaykaStoreConcept = Object.freeze({
       seoTitle: "SEO / GEO foundation",
     },
   },
+  faq: [
+    {
+      question: "Чи можна уточнити ремонт телефону через цю сторінку?",
+      answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом.",
+    },
+    {
+      question: "Це офіційний сайт Чайка Store?",
+      answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes.",
+    },
+  ],
   seo: {
     title: "Ремонт телефонів у Чайках | Чайка Store — Hermes Catalog",
     description: "Hermes Catalog website concept for Чайка Store in Чайки: phone repair discovery, verified contact channels and a separate More Chay tea direction.",
