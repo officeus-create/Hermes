@@ -6,14 +6,15 @@ const { business, profileUrl } = Astro.props;
 const claimHref = catalogClaimHref(business, profileUrl);
 const leadContext = buildCatalogLeadContext({ business, profileUrl });
 const semanticSignals = catalogSemanticSignals(business);
+const copy = business.copy.uk;
 const primaryChannels = business.channels.filter((x)=>x.direction==="primary");
 const secondaryChannels = business.channels.filter((x)=>x.direction==="secondary");
 const mapChannel = business.channels.find((x)=>x.direction==="maps");
 ---
 <section class="catalog-concept" data-business-id={business.id}>
-  <div class="concept-disclosure"><strong>Hermes Catalog · Website Concept</strong><span>Verified/public business data + Hermes presentation concept</span></div>
+  <div class="concept-disclosure"><strong>Hermes Catalog · Website Concept</strong><span data-uk={business.copy.uk.disclosure} data-en={business.copy.en.disclosure}>{copy.disclosure}</span><nav class="locale-switch" aria-label="Concept language"><a href="?lang=uk" lang="uk">UA</a><a href="?lang=en" lang="en">EN</a></nav></div>
   <section class="concept-hero">
-    <div><p class="kicker">{business.primaryIntent} · {business.locality}</p><h1>{business.name}</h1><p>This is a Hermes presentation of how the business could be structured online. Owner-confirmed facts remain separate from proposed website and growth features.</p><div class="actions"><a class="primary" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>{mapChannel && <a href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}<a href="#catalog-request">Request contact</a></div>{business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}</div>
+    <div><p class="kicker" data-uk={business.copy.uk.heroKicker} data-en={business.copy.en.heroKicker}>{copy.heroKicker}</p><h1 data-uk={business.copy.uk.heroTitle} data-en={business.copy.en.heroTitle}>{copy.heroTitle}</h1><p data-uk={business.copy.uk.heroLead} data-en={business.copy.en.heroLead}>{copy.heroLead}</p><div class="actions"><a class="primary" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>{mapChannel && <a href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}<a href="#catalog-request" data-uk={business.copy.uk.requestLabel} data-en={business.copy.en.requestLabel}>{copy.requestLabel}</a>{business.status==="unclaimed" && <a href={claimHref} data-uk={business.copy.uk.claimLabel} data-en={business.copy.en.claimLabel}>{copy.claimLabel}</a>}</div>{business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}</div>
     <aside><small>HERMES CONCEPT</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} → CLAIMED → CLIENT</span></aside>
   </section>
   <section class="concept-grid"><article><p class="kicker">PRIMARY INTENT</p><h2>{business.primaryIntent}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>{business.secondaryIntent && <article class="secondary"><p class="kicker">SECONDARY DIRECTION</p><h2>{business.secondaryIntent}</h2><div class="channel-list">{secondaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>}</section>
