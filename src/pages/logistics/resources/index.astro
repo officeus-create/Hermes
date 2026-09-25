@@ -133,11 +133,30 @@ const schema = [
       { "@type": "Thing", name: "Rate per mile calculation" },
       { "@type": "Thing", name: "Carrier payment timing" },
     ],
-    hasPart: coreGuides.map((guide) => ({
-      "@type": guide.href.includes("calculator") ? "WebApplication" : "Article",
-      name: guide.title,
-      url: new URL(guide.href, Astro.site).toString(),
-    })),
+    hasPart: coreGuides.map((guide) => {
+      const url = new URL(guide.href, Astro.site).toString();
+      if (guide.href.includes("calculator")) {
+        return {
+          "@type": "WebApplication",
+          name: guide.title,
+          url,
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Modern web browser",
+          offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+            url,
+          },
+        };
+      }
+
+      return {
+        "@type": "Article",
+        name: guide.title,
+        url,
+      };
+    }),
   },
   {
     "@context": "https://schema.org",

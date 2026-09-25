@@ -45,13 +45,14 @@ assert.equal(calculateTripEconomics({ ...canonicalRpmInputs, targetNet: 900 }).r
 assert.equal(calculateTripEconomics({ ...canonicalRpmInputs, grossPay: 400 }).recommendation, "BAD");
 assert.equal(validateTripInputs({ ...canonicalRpmInputs, servicePercent: 70, paymentFeePercent: 30 }).valid, false);
 
-const [appSource, legacyPageSource, hubSource, loadAnalyzerPage, loadAnalyzerApp, capabilityPage] = await Promise.all([
+const [appSource, legacyPageSource, hubSource, loadAnalyzerPage, loadAnalyzerApp, capabilityPage, resourceHubSource] = await Promise.all([
   readFile(new URL("../public/demos/hermes-connect/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/index.html", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/load-analyzer/index.html", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/load-analyzer/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../src/components/HermesConnectCapabilityPage.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/logistics/resources/index.astro", import.meta.url), "utf8"),
 ]);
 
 // Preserved demos keep explicit no-side-effect boundaries.
@@ -92,5 +93,12 @@ assert.match(hubSource, /\$99\/month after setup if you continue/);
 assert.doesNotMatch(hubSource, /\$299|\$799/);
 assert.match(capabilityPage, /Reference capability · not current live pilot/);
 assert.match(capabilityPage, /Open current Repair Shop product/);
+
+// Public WebApplication entities include truthful offers, while informational capability pages use a WebPage parent.
+assert.match(hubSource, /offers:\s*\{[\s\S]*price: "0"[\s\S]*priceCurrency: "USD"/);
+assert.match(hubSource, /Repair Shop registration and software access are \$0 during setup/);
+assert.match(capabilityPage, /isPartOf:\s*\{[\s\S]*"@type": "WebPage"[\s\S]*"@id": productHubUrl/);
+assert.doesNotMatch(capabilityPage, /isPartOf:\s*\{[\s\S]*"@type": "WebApplication"/);
+assert.match(resourceHubSource, /guide\.href\.includes\("calculator"\)[\s\S]*"@type": "WebApplication"[\s\S]*offers:\s*\{[\s\S]*price: "0"[\s\S]*priceCurrency: "USD"/);
 
 console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, private Academy and Beauty entries with bounded scope, Load Analyzer demo boundary, and one canonical Repair Shop public live product.`);
