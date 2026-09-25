@@ -22,6 +22,16 @@ entries — append only.
 
 ## Log
 
+## 2026-09-25 — Codex — Semrush structured-data repair
+
+- Branch: `fix/semrush-schema-20260925`.
+- Evidence: Authenticated Semrush Site Audit campaign `30612020`, updated 2026-09-04, reported 17 invalid structured-data items. Direct issue inspection showed Software App entities missing an eligible Offer/review/rating field across the Hermes Connect hub, its reference capability pages, and the carrier resource hub. The same audit also reported 165 unminified resource instances, which reduce to the repeated global `design-owner-polish.css` and `design-owner-polish.js` pair; 78 external-link warnings were dominated by Threads HTTP 429 responses and are not treated as proven broken links.
+- What was done: the canonical Hermes Connect WebApplication now carries a truthful zero-price Repair Shop setup Offer; capability references use a WebPage parent because those pages explicitly describe unreleased reference capabilities; the two free logistics calculators receive zero-price Offers. Static contract coverage locks each schema boundary.
+- Files changed: `src/pages/services/hermes-connect/index.astro`, `src/components/HermesConnectCapabilityPage.astro`, `src/pages/logistics/resources/index.astro`, `scripts/hermes-connect-product.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
+- Scope boundary: `src/pages/services/hermes-connect/repair-shops.astro` is excluded because active PR #1476 owns that file. The nonstandard `Content-Signal` robots directive remains unchanged because repository policy tests deliberately require it. No ratings, reviews, paid price, product availability, ranking, traffic, lead, or revenue result is claimed.
+- Verification: source replacements and focused static assertions were checked before commit. Exact-head CI, production deployment, and a post-deploy Semrush rerun remain required.
+- Next step: independent review, owner-approved merge/deploy, then rerun Site Audit issue 45 against production and route the Repair Shops Offer correction through the active file owner.
+
 ## 2026-09-24 — Codex — Prospect demo handoff and first-run cues
 
 - Branch: `fix/repair-first-login-setup-prompts-20260924`
