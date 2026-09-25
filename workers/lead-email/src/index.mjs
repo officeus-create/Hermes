@@ -659,7 +659,12 @@ class CarHaulingDeliveryCoordinatorCore {
     const claim = await this.claim(payload, payloadHash, Date.now());
     if (claim.conflict) return json(409, { ok: false, error: "request_id_payload_conflict" });
     if (!claim.claimed) {
-      return json(202, durableDeliverySummary(claim.record, { accepted: true, deduplicated: true }));
+      const primary = claim.record.destinations.find((destination) => destination.role === "primary");
+      const primaryDelivered = primary?.status === "delivered";
+      return json(
+        primaryDelivered ? 202 : 503,
+        durableDeliverySummary(claim.record, { accepted: primaryDelivered, deduplicated: true }),
+      );
     }
 
     const record = await this.run(claim.record);
