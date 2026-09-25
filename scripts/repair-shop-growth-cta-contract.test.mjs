@@ -51,6 +51,12 @@ assert.match(repairLanding, /Auto repair shop software for bookings, customers, 
 assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
 assert.match(repairLanding, /\$0 during setup · \$99\/month after setup/);
 assert.match(repairLanding, /standard Founding Shop price after setup/);
+assert.match(repairLanding, /offers:\s*\{/);
+assert.match(repairLanding, /name:\s*"Hermes Connect Repair Shop setup access"/);
+assert.match(repairLanding, /price:\s*"0"/);
+assert.match(repairLanding, /priceCurrency:\s*"USD"/);
+assert.match(repairLanding, /repair-shops\/auth\/\?mode=register/);
+assert.match(repairLanding, /standard \$99 monthly Founding Shop continuation is confirmed separately before billing/);
 assert.doesNotMatch(repairLanding, /Current live pilot/);
 
 assert.match(offerContract, /REPAIR_SHOP_OFFER_STATUS\s*=\s*"current-public-offer"/);
