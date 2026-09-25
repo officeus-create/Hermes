@@ -91,6 +91,7 @@ The “best,” “free,” and “open source” modifiers require explicit evi
 - The 165 unminified-resource rows are repeated occurrences of the global `design-owner-polish.css` and `design-owner-polish.js` pair, not 165 distinct resources.
 - The 78 broken-external-link warnings are dominated by Threads responses with HTTP 429. They are not accepted as proof that the profile URL is broken.
 - The robots format warning is caused by the deliberate nonstandard `Content-Signal` directive required by repository policy. It is not removed solely to satisfy Semrush.
+- The same 2026-09-04 snapshot labels 99/100 crawled URLs as blocked for `Google-Extended`. That snapshot predates the current robots value `Content-Signal: search=yes, ai-input=yes` and reflects the former `ai-train=no` policy. Current code has no Google-Extended disallow rule; verify the count in the next crawl instead of adding another robots exception.
 - Eleven “content optimization” notices expose a low-readability recommendation. They justify focused sentence and scan-structure improvements, not automated rewriting of every page.
 - Eight pages have only one incoming internal link. The affected set includes the carrier resource hub and several specialized carrier/location pages; add links only from contextually related owners.
 
