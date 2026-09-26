@@ -131,9 +131,9 @@ const visibleRoutes = selectedContactInterest
   const contactDirections = new Set(["Hermes Logistics", "ProgressoPro", "Hermes Business Academy", "IT Development"]);
 
   const trackDeliveredContact = (interest: string) => {
-    // This confirms endpoint delivery, not human qualification or a commercial outcome.
-    // GA4 session source/medium remains the source of acquisition; the receiver keeps
-    // the matching request ID and UTM-bearing landing path outside analytics.
+    // Call only with an explicit terminal receiver receipt, never provider acceptance.
+    // Qualification remains a separate human state. The receiver keeps request ID and
+    // approved UTM context privately; only controlled route/presence reaches analytics.
     trackEvent("contact_request_delivered", {
       direction: contactDirections.has(interest) ? interest : "other",
       landing_path: window.location.pathname,
