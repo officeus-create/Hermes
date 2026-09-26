@@ -31,7 +31,7 @@ test("relative live endpoint sends once and reports success only after 2xx", asy
     expect(request.method()).toBe("POST");
     expect(request.headers()["idempotency-key"]).toBeTruthy();
     expect(request.postDataJSON().source_path).toBe("/paths/logistics/");
-    await route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true}' });
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, request_id: request.postDataJSON().request_id }) });
   });
 
   const form = await fillSyntheticRequest(page);
@@ -67,4 +67,33 @@ test("insecure external endpoint is rejected before sending", async ({ page }) =
   await form.locator('button[type="submit"]').click();
   await expect(form.locator("[data-form-alert]")).toContainText("temporarily unavailable");
   expect(posts).toBe(0);
+});
+
+test("duplicate receipt confirms prior delivery without a second analytics outcome", async ({ page }) => {
+  await page.evaluate(() => {
+    (window as unknown as { __deliveredEvents: number }).__deliveredEvents = 0;
+    window.addEventListener("hermes:analytics", (event) => {
+      if ((event as CustomEvent).detail?.name === "contact_request_delivered") {
+        (window as unknown as { __deliveredEvents: number }).__deliveredEvents += 1;
+      }
+    });
+  });
+  await page.route("**/api/logistics-lead", async (route) => {
+    const requestId = route.request().postDataJSON().request_id;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, duplicate: true, request_id: requestId }) });
+  });
+  const form = await fillSyntheticRequest(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(form.locator("[data-form-status]")).toContainText("already received");
+  expect(await page.evaluate(() => (window as unknown as { __deliveredEvents: number }).__deliveredEvents)).toBe(0);
+});
+
+test("ambiguous 2xx without a matching receiver receipt stays unconfirmed", async ({ page }) => {
+  await page.route("**/api/logistics-lead", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: '{"success":true,"request_id":"wrong-request"}' }),
+  );
+  const form = await fillSyntheticRequest(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(form.locator("[data-form-alert]")).toContainText("not confirmed as received");
+  await expect(form.locator('[name="message"]')).toHaveValue("Synthetic request for local delivery testing only.");
 });
