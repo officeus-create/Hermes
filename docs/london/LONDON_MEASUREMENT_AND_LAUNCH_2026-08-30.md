@@ -1,5 +1,7 @@
 # London Measurement & Launch
 
+> Current 2026-09-26 measurement correction: the August items below are a plan, not proof of a production conversion. The legacy `ProductionContactMode` status observer previously emitted `london_lead_submitted` / `london_academy_application_submitted` after generic send acceptance and copied user-controlled campaign values into browser analytics. Review-only #1500 removes that path. Approved London UTMs remain in the PRIVATE intake path; public `london_page_view` / `london_cta_clicked` are engagement only. A delivered inquiry requires terminal receiver evidence; human qualification and opportunity/revenue require separate dispositions. Existing GA4 OAuth and authenticated property readback remain open.
+
 ## 61–70 Conversion and analytics
 61. Acquisition source convention: `source=london` plus a specific `service` or `track` parameter on London CTAs.
 62. BusinessLeadForm attribution: service pages route to `/business-growth/` with an existing supported service alias so `CampaignLeadPrefill` can pre-select the service.
