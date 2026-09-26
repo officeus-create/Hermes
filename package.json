@@ -7,6 +7,7 @@
     "node": ">=20 <25"
   },
   "scripts": {
+    "pretest": "node --experimental-strip-types scripts/contact-delivery-dedupe.test.mjs",
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
