@@ -87,7 +87,10 @@ test("public GA4 config strips referrer query and current query", async ({ page,
   await page.route("https://www.googletagmanager.com/**", (route) =>
     route.fulfill({ status: 200, contentType: "application/javascript", body: "" }),
   );
-  await page.addInitScript(() => sessionStorage.setItem("hermes-intro-seen", "true"));
+  await page.addInitScript(({ referrer }) => {
+    sessionStorage.setItem("hermes-intro-seen", "true");
+    Object.defineProperty(document, "referrer", { configurable: true, get: () => referrer });
+  }, { referrer: `https://hermeslogisticsus.com/?private=${referrerSentinel}` });
   await page.goto(`https://hermeslogisticsus.com/?private=${referrerSentinel}`, { waitUntil: "domcontentloaded" });
   await page.goto(`https://hermeslogisticsus.com/paths/logistics/?private=${querySentinel}&_hermes_ga4_smoke=1`, { waitUntil: "domcontentloaded", referer: `https://hermeslogisticsus.com/?private=${referrerSentinel}` });
   await page.getByRole("button", { name: "Allow analytics" }).click();
