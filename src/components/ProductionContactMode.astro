@@ -1,6 +1,4 @@
 <script>
-  import { trackEvent } from "../lib/analytics";
-
   const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
   const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "service", "track", "program", "language"] as const;
 
@@ -23,9 +21,6 @@
     const attribution = safeAttribution();
     if (!attribution) return;
 
-    const status = form.querySelector<HTMLElement>("[data-form-status]");
-    if (!status) return;
-
     for (const [key, value] of Object.entries(attribution)) {
       const name = `hermes_attribution_${key}`;
       const existing = form.elements.namedItem(name);
@@ -38,36 +33,10 @@
       input.value = value;
     }
 
-    // London keeps its existing explicit conversion events. Other attributed
-    // sources (including Telegram) are preserved in the private intake source
-    // path and can rely on normal session/source analytics without adding raw
-    // user-controlled campaign values as custom public analytics parameters.
-    if (attribution.utm_source !== "london") return;
+    // The private receiver retains approved UTM values. A provider-accepted
+    // 2xx is not a human lead or final mail-server delivery; do not emit a
+    // London conversion from status copy or user-controlled campaign values.
 
-    let pendingConversion = false;
-    form.addEventListener("submit", () => {
-      pendingConversion = true;
-    });
-
-    const observer = new MutationObserver(() => {
-      if (!pendingConversion || !status.textContent?.includes("sent successfully")) return;
-      pendingConversion = false;
-
-      const path = form.elements.namedItem("path");
-      const direction = path instanceof HTMLSelectElement ? path.value : "";
-      const academy = direction === "Hermes Business Academy";
-      trackEvent(academy ? "london_academy_application_submitted" : "london_lead_submitted", {
-        market: "london",
-        direction,
-        campaign: attribution.utm_campaign,
-        content: attribution.utm_content,
-        service: attribution.service,
-        track: attribution.track,
-        program: attribution.program,
-        language: attribution.language,
-      });
-    });
-    observer.observe(status, { childList: true, characterData: true, subtree: true });
   };
 
   const activateProductionContact = () => {

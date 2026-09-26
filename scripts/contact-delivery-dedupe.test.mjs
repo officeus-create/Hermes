@@ -70,6 +70,9 @@ assert.equal(contactFingerprints.length, 1);
 assert.match(contactFingerprints[0][0], /^lead:contact:[a-f0-9]{64}$/);
 assert.doesNotMatch(contactFingerprints[0][0], /applicant|example\.com/i);
 assert.equal(contactFingerprints[0][1].options.expirationTtl, 10 * 60);
+assert.equal(contactFingerprints[0][1].value, "accepted", "Provider acceptance must not be stored as final delivery.");
+const acceptedRequestKeys = [...env.LEAD_LIMITS.values.entries()].filter(([key]) => key.startsWith("lead:id:"));
+assert.equal(acceptedRequestKeys[0][1].value, "accepted");
 
 const semanticRetry = await onRequest({
   request: contactRequest({
@@ -103,6 +106,7 @@ const contactSource = await readFile(new URL("../src/components/ContactCTA.astro
 assert.match(contactSource, /let pendingLiveRequestId = "";/);
 assert.match(contactSource, /pendingLiveRequestId = payload\.request_id;/);
 assert.match(contactSource, /pendingLiveRequestId \? pendingLiveRequestId : undefined/);
-assert.match(contactSource, /if \(!response\.ok\) throw new Error\("delivery_failed"\);\s*pendingLiveRequestId = "";/);
+assert.match(contactSource, /receipt\?\.success !== true \|\| receipt\?\.request_id !== payload\.request_id/);
+assert.match(contactSource, /if \(receipt\.duplicate !== true && receipt\.delivery_status === "delivered"\) trackDeliveredContact\(payload\.interest\)/);
 
 console.log("Contact delivery dedupe contract passed.");
