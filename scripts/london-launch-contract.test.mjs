@@ -163,7 +163,7 @@ for(const required of ["trackEvent","/gb/london/","/ru/gb/london/","/ua/gb/londo
 if(/email|phone|message|name\s*:/i.test(analytics.replace(/london_contact_clicked/g,""))) errors.push("LondonAnalytics: possible PII field detected");
 
 const productionContact=await readFile(join(root,"src/components/ProductionContactMode.astro"),"utf8");
-for(const required of ["utm_source","london","hermes_attribution_","type = \"hidden\""]){
+for(const required of ["utm_source","utm_campaign","hermes_attribution_","type = \"hidden\""]){
   if(!productionContact.includes(required)) errors.push(`ProductionContactMode private London attribution: missing ${required}`);
 }
 if(/london_lead_submitted|london_academy_application_submitted|pendingConversion|trackEvent|sent successfully/.test(productionContact)) errors.push("ProductionContactMode: accepted handoff must not emit a London lead/application conversion or depend on status copy");
