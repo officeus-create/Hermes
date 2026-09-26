@@ -66,6 +66,27 @@ assert.equal(reply.decision, "ALLOW");
 assert.equal(reply.reason, "narrow_same_thread_reply");
 
 assert.equal(decision({
+  contact: { emailEligibility: "REPLY_ONLY" },
+  message: {
+    classification: "REPLY",
+    freshInboundNeed: true,
+    providerThreadId: "thread-1",
+    replyToMessageId: "message-1",
+    containsPromotion: true,
+  },
+}).reason, "reply_cross_sell_blocked");
+
+assert.equal(decision({
+  message: {
+    classification: "REPLY",
+    freshInboundNeed: true,
+    providerThreadId: "thread-2",
+    replyToMessageId: "message-2",
+    containsPromotion: true,
+  },
+}).reason, "reply_cross_sell_blocked");
+
+assert.equal(decision({
   contact: { emailEligibility: "TRANSACTIONAL_ONLY" },
   message: { classification: "TRANSACTIONAL", authorizedTransaction: true, containsPromotion: true },
 }).reason, "transactional_cross_sell_blocked");
