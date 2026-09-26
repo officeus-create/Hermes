@@ -151,6 +151,63 @@ import "../../styles/features/case.css";
           <article><Link2 size={24} aria-hidden="true" /><span>Comparable query evidence</span><h3>Relevant intent ranks better while exposure shrank.</h3><p>“appleton logistics services” moved from 18 impressions at average position 54.56 in the prior comparable window to 4 impressions at 47.25. “appleton warehousing services” moved from 23 impressions at 56 to 2 impressions at 54. Warehousing remains an intent mismatch and does not justify a warehouse landing page without real service truth and distinct demand.</p><strong>Decision: keep the vehicle-transport owner; do not expand by keyword alone</strong></article>
           <article><SearchCheck size={24} aria-hidden="true" /><span>Historical context</span><h3>The first broader baseline is preserved, not blended.</h3><p>The earlier exact-URL checkpoint for August 16–September 12 recorded 33 impressions, 0 clicks, and average position 45.33. Its scope differs from the current U.S. desktop filter, so it is not a like-for-like experiment and must not be used to claim a causal decline or improvement.</p><strong>Evidence stage: search discovery, not conversion or revenue</strong></article>
         </div>
+        <figure class="evidence-figure" id="query-comparison" itemscope itemtype="https://schema.org/Dataset">
+          <meta itemprop="creator" content="Hermes" />
+          <div class="evidence-figure-header">
+            <div>
+              <p class="eyebrow">Comparable query exposure</p>
+              <h3 itemprop="name">Relevant Appleton query families lost impressions while average position improved modestly.</h3>
+            </div>
+            <p itemprop="description">The bars compare impressions for the same U.S. desktop query families. Average position is reported in the table because lower values are better and should not share the impression scale.</p>
+          </div>
+          <svg class="evidence-chart" viewBox="0 0 1200 560" role="img" aria-label="Comparable Appleton query impressions" aria-describedby="appleton-query-chart-desc">
+            <desc id="appleton-query-chart-desc">Appleton logistics services fell from 18 prior impressions to 4 current impressions. Appleton warehousing services fell from 23 prior impressions to 2 current impressions. The warehousing query remains an intent mismatch.</desc>
+            <g class="evidence-chart-grid" aria-hidden="true">
+              <line x1="360" y1="108" x2="360" y2="468" />
+              <line x1="565" y1="108" x2="565" y2="468" />
+              <line x1="770" y1="108" x2="770" y2="468" />
+              <line x1="975" y1="108" x2="975" y2="468" />
+            </g>
+            <g class="evidence-chart-axis" aria-hidden="true">
+              <text x="360" y="88">0</text>
+              <text x="565" y="88">8</text>
+              <text x="770" y="88">16</text>
+              <text x="975" y="88">24 impressions</text>
+            </g>
+            <g class="evidence-chart-legend" aria-hidden="true">
+              <rect class="evidence-bar-prior" x="360" y="28" width="22" height="22" rx="5" />
+              <text x="392" y="46">Prior comparable window</text>
+              <rect class="evidence-bar-current" x="650" y="28" width="22" height="22" rx="5" />
+              <text x="682" y="46">Aug 26–Sep 22, 2026</text>
+            </g>
+            <g class="evidence-chart-row">
+              <text class="evidence-chart-label" x="0" y="190">appleton logistics services</text>
+              <rect class="evidence-bar-prior" x="360" y="140" width="615" height="48" rx="8" />
+              <text class="evidence-bar-value evidence-bar-value-light" x="948" y="172">18</text>
+              <rect class="evidence-bar-current" x="360" y="204" width="137" height="48" rx="8" />
+              <text class="evidence-bar-value" x="511" y="236">4</text>
+            </g>
+            <g class="evidence-chart-row">
+              <text class="evidence-chart-label" x="0" y="374">appleton warehousing services</text>
+              <rect class="evidence-bar-prior" x="360" y="324" width="786" height="48" rx="8" />
+              <text class="evidence-bar-value evidence-bar-value-light" x="1119" y="356">23</text>
+              <rect class="evidence-bar-current" x="360" y="388" width="68" height="48" rx="8" />
+              <text class="evidence-bar-value" x="442" y="420">2</text>
+              <text class="evidence-chart-annotation" x="360" y="482">Intent mismatch — no warehouse page justified</text>
+            </g>
+          </svg>
+          <div class="evidence-table-wrap">
+            <table class="evidence-table">
+              <caption>Search Console query comparison with impressions and average position.</caption>
+              <thead><tr><th scope="col">Query family</th><th scope="col">Prior impressions</th><th scope="col">Current impressions</th><th scope="col">Prior avg. position</th><th scope="col">Current avg. position</th><th scope="col">Decision</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">appleton logistics services</th><td>18</td><td>4</td><td>54.56</td><td>47.25</td><td>Keep vehicle-transport owner</td></tr>
+                <tr><th scope="row">appleton warehousing services</th><td>23</td><td>2</td><td>56</td><td>54</td><td>Intent mismatch; no warehouse page</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption>Source: authenticated Google Search Console, Country = United States, Device = Desktop. Query-level rows are descriptive visibility evidence, not proof of a lead, opportunity, customer, or revenue outcome.</figcaption>
+        </figure>
         <p class="measurement-note">Source: authenticated Google Search Console finalized performance data. Current checkpoint: August 26–September 22, 2026, Country = United States, Device = Desktop. Search Console is delayed by approximately three days. No GA4, qualified-lead, opportunity, customer, or revenue result is inferred from these search rows.</p>
       </div>
     </section>
