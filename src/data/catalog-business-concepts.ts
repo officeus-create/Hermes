@@ -7,6 +7,11 @@ export type CatalogBusinessConcept = {
   status: "unclaimed" | "claimed" | "client";
   primaryIntent: string;
   secondaryIntent?: string;
+  lifecycle: "discovered" | "researched" | "concept_draft" | "reviewed" | "published_unclaimed" | "claimed" | "client" | "own_domain_live";
+  publication: "preview_noindex" | "public_indexable";
+  locales: { default: "uk" | "en"; supported: ("uk" | "en")[] };
+  semanticCore: { primary: string[]; secondary: string[]; geography: string[] };
+  factLabels: { verified: string[]; proposed: string[]; ownerConfirmation: string[] };
   phone: string;
   address: string;
   locality: string;
@@ -27,6 +32,19 @@ export const chaykaStoreConcept = Object.freeze({
   localitySlug: "chaiky",
   name: "Чайка Store",
   status: "unclaimed",
+  lifecycle: "published_unclaimed",
+  publication: "public_indexable",
+  locales: { default: "uk", supported: ["uk","en"] },
+  semanticCore: {
+    primary: ["ремонт телефонів Чайки","ремонт смартфонів Чайки"],
+    secondary: ["аксесуари для телефонів Чайки","чай Чайки"],
+    geography: ["Чайки","Київська область"]
+  },
+  factLabels: {
+    verified: ["business name","phone","address","hours","public social channels","Google rating/review count"],
+    proposed: ["website design","conversion structure","SEO/GEO architecture","Hermes CRM/SMM/automation"],
+    ownerConfirmation: ["exact services","prices","turnaround","warranty","supported models","inventory"]
+  },
   primaryIntent: "Phone repair & accessories",
   secondaryIntent: "More Chay — tea",
   phone: "+380 63 924 22 22",
