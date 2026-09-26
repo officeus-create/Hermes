@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-26",
+  "status": "EVIDENCE_DESIGN_READY_PUBLICATION_GATED",
+  "assets": [
+    {
+      "id": "OE-001",
+      "name": "Carrier and load opportunity fit index",
+      "existing_owner": "/load-board/",
+      "business_question": "Which opportunities are operationally usable after equipment lane deadhead timing source and paperwork gates?",
+      "source_gate": "APPROVED_PUBLIC_LOAD_FEED_OR_PERMISSIONED_ANONYMIZED_AGGREGATE",
+      "minimum_sample": "30 eligible observations across at least 4 settled weeks",
+      "privacy": [
+        "no carrier/customer identity",
+        "no exact live route or location",
+        "no private rate or document",
+        "k-anonymity threshold before breakout"
+      ],
+      "publication_state": "PENDING_DATA",
+      "retrieval": [
+        "methodology page section",
+        "charts and annotated image",
+        "short video",
+        "verbatim transcript",
+        "internal links to load board and carrier CTA",
+        "targeted industry/editorial outreach",
+        "AI-citation summary table"
+      ]
+    },
+    {
+      "id": "OE-002",
+      "name": "RPM and deadhead efficiency study",
+      "existing_owner": "/logistics/car-hauling-dispatch/",
+      "business_question": "How do deadhead and complete-trip economics change the apparent value of a car-hauling load?",
+      "source_gate": "COMPLETED_OR_PERMISSIONED_RECORDS_ONLY",
+      "minimum_sample": "50 normalized completed or explicitly approved records with outlier policy",
+      "privacy": [
+        "aggregate bands only",
+        "no shipper carrier VIN address or exact route",
+        "no current availability",
+        "no customer-identifiable small cells"
+      ],
+      "publication_state": "PENDING_PERMISSIONED_SAMPLE",
+      "retrieval": [
+        "first-party study",
+        "distribution charts",
+        "explainer video",
+        "transcript",
+        "dispatch and load-board internal links",
+        "expert contribution pitch",
+        "AI-readable methodology and limitations"
+      ]
+    },
+    {
+      "id": "OE-003",
+      "name": "Car-hauler workflow failure-mode study",
+      "existing_owner": "/logistics/resources/car-hauler-capacity-checklist/",
+      "business_question": "Which information gaps most often block a safe carrier-load match before dispatch?",
+      "source_gate": "ANONYMIZED_PROCESS_REVIEW_AND_PERMISSIONED_TEAM_INTERVIEWS",
+      "minimum_sample": "3 role interviews plus 30 anonymized workflow observations",
+      "privacy": [
+        "failure categories not case narratives",
+        "no employee scoring",
+        "no shipment or customer identifiers",
+        "human approval before examples"
+      ],
+      "publication_state": "DESIGN_READY_DATA_PENDING",
+      "retrieval": [
+        "expanded checklist",
+        "workflow diagram image",
+        "training video",
+        "transcript",
+        "links to dispatch and Academy",
+        "association/editorial contribution",
+        "FAQ and structured methodology"
+      ]
+    },
+    {
+      "id": "OE-004",
+      "name": "Repair-shop digital booking and CRM gap study",
+      "existing_owner": "/services/hermes-connect/repair-shops/",
+      "business_question": "Where do real repair shops lose booking follow-up review and customer-history continuity?",
+      "source_gate": "FIRST_10_PERMISSIONED_SHOPS_OR_PUBLIC_SITE_AUDIT_ONLY",
+      "minimum_sample": "10 permissioned shops or a clearly separated public-surface audit cohort",
+      "privacy": [
+        "shop names only with written permission",
+        "aggregate issue counts",
+        "no customer vehicle booking or contact data",
+        "no invented adoption outcome"
+      ],
+      "publication_state": "PENDING_FIRST_10_EVIDENCE",
+      "retrieval": [
+        "research page section",
+        "gap-frequency charts",
+        "demo video with synthetic data",
+        "transcript",
+        "links to Repair Shops CTA",
+        "repair-industry outreach",
+        "AI-readable findings with sample limits"
+      ]
+    },
+    {
+      "id": "OE-005",
+      "name": "Search and AI visibility survival experiment",
+      "existing_owner": "/case/appleton-vehicle-transport-seo/",
+      "business_question": "Which owner evidence and retrieval formats improve useful discovery without multiplying URLs?",
+      "source_gate": "AUTHENTICATED_AGGREGATED_GSC_BING_GA4_AND_GOVERNED_AI_OBSERVATIONS",
+      "minimum_sample": "settled 28-day windows plus predeclared observation set",
+      "privacy": [
+        "aggregate search data only",
+        "no user-level analytics",
+        "UNKNOWN is not zero",
+        "no causal claim from non-comparable windows"
+      ],
+      "publication_state": "ACTIVE_BASELINE_NEXT_WINDOW_PENDING",
+      "retrieval": [
+        "dated case update",
+        "query and page charts",
+        "video walkthrough",
+        "transcript",
+        "links to SEO owner and source pages",
+        "methodology outreach",
+        "AI-citation-ready tables and definitions"
+      ]
+    }
+  ]
+}
