@@ -14,6 +14,7 @@ const isGoogleAnalyticsRequest = (url: string) => {
 
 test("SEO intake keeps submitted detail out of analytics payloads", async ({ page }) => {
   const sensitiveSentinel = "SENSITIVE_SENTINEL_93817";
+  const querySentinel = "RAW_QUERY_SENTINEL_93817";
   const analyticsTraffic: string[] = [];
 
   page.on("request", (request) => {
@@ -25,7 +26,7 @@ test("SEO intake keeps submitted detail out of analytics payloads", async ({ pag
     sessionStorage.setItem("hermes-intro-seen", "true");
   });
 
-  await page.goto("/paths/marketing/?service=seo", { waitUntil: "domcontentloaded" });
+  await page.goto(`/paths/marketing/?service=seo&private=${querySentinel}`, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
 
@@ -62,8 +63,36 @@ test("SEO intake keeps submitted detail out of analytics payloads", async ({ pag
   expect(unexpectedKeys).toEqual([]);
 
   const serializedDataLayer = await page.evaluate(() => JSON.stringify(window.dataLayer ?? []));
+  const ga4Config = await page.evaluate(() => {
+    const configCall = (window.dataLayer ?? []).find((entry: any) => entry?.[0] === "config" && entry?.[1] === "G-RY26321PVW") as any;
+    return configCall?.[2];
+  });
+  expect(ga4Config).toMatchObject({
+    page_location: new URL(page.url()).origin + "/paths/marketing/",
+    page_referrer: "",
+  });
+  expect(serializedDataLayer).not.toContain(querySentinel);
   expect(serializedDataLayer).not.toContain(sensitiveSentinel);
 
   await page.waitForTimeout(500);
   expect(analyticsTraffic.join("\n")).not.toContain(sensitiveSentinel);
+});
+
+
+test("public GA4 config strips referrer query and current query", async ({ page }) => {
+  const referrerSentinel = "PRIVATE_REFERRER_SENTINEL_71821";
+  const querySentinel = "PRIVATE_QUERY_SENTINEL_71821";
+  await page.goto(`/?private=${referrerSentinel}`, { waitUntil: "domcontentloaded" });
+  await page.goto(`/paths/logistics/?private=${querySentinel}`, { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Allow analytics" }).click();
+  const config = await page.evaluate(() => {
+    const call = (window.dataLayer ?? []).find((entry: any) => entry?.[0] === "config" && entry?.[1] === "G-RY26321PVW") as any;
+    return call?.[2];
+  });
+  expect(config).toMatchObject({
+    page_location: new URL(page.url()).origin + "/paths/logistics/",
+    page_referrer: new URL(page.url()).origin + "/",
+  });
+  expect(JSON.stringify(config)).not.toContain(querySentinel);
+  expect(JSON.stringify(config)).not.toContain(referrerSentinel);
 });
