@@ -104,4 +104,19 @@ test("public GA4 config strips referrer query and current query", async ({ page,
   });
   expect(JSON.stringify(config)).not.toContain(querySentinel);
   expect(JSON.stringify(config)).not.toContain(referrerSentinel);
+
+  // London attribution remains private. Even legacy success wording must not
+  // transform a provider handoff into a lead event with user-controlled UTMs.
+  await page.goto("https://hermeslogisticsus.com/academy/apply/?utm_source=london&utm_campaign=london-academy&_hermes_ga4_smoke=1", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('input[name="hermes_attribution_utm_source"]')).toHaveValue("london");
+  await page.evaluate(() => {
+    const status = document.querySelector("[data-contact-form] [data-form-status]");
+    if (status) status.textContent = "sent successfully";
+  });
+  const prematureLondonEvents = await page.evaluate(() =>
+    (window.dataLayer ?? []).filter((entry: any) =>
+      entry?.event === "london_lead_submitted" || entry?.event === "london_academy_application_submitted",
+    ).length,
+  );
+  expect(prematureLondonEvents).toBe(0);
 });
