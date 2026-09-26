@@ -163,10 +163,10 @@ for(const required of ["trackEvent","/gb/london/","/ru/gb/london/","/ua/gb/londo
 if(/email|phone|message|name\s*:/i.test(analytics.replace(/london_contact_clicked/g,""))) errors.push("LondonAnalytics: possible PII field detected");
 
 const productionContact=await readFile(join(root,"src/components/ProductionContactMode.astro"),"utf8");
-for(const required of ["utm_source","london","hermes_attribution_","type = \"hidden\"","london_lead_submitted","london_academy_application_submitted","trackEvent"]){
-  if(!productionContact.includes(required)) errors.push(`ProductionContactMode London bridge: missing ${required}`);
+for(const required of ["utm_source","london","hermes_attribution_","type = \"hidden\""]){
+  if(!productionContact.includes(required)) errors.push(`ProductionContactMode private London attribution: missing ${required}`);
 }
-if(!productionContact.includes("pendingConversion = false")) errors.push("ProductionContactMode London bridge: exact-once success guard missing");
+if(/london_lead_submitted|london_academy_application_submitted|pendingConversion|trackEvent|sent successfully/.test(productionContact)) errors.push("ProductionContactMode: accepted handoff must not emit a London lead/application conversion or depend on status copy");
 if(/London attribution:\\n|message\.value|queueMicrotask/.test(productionContact)) errors.push("ProductionContactMode London bridge: attribution must not mutate visitor message text");
 
 const contactLib=await readFile(join(root,"src/lib/contact.ts"),"utf8");
@@ -185,4 +185,4 @@ for(const relative of [
 
 if(expectedRoutes.length!==52) errors.push(`route inventory invariant changed unexpectedly: ${expectedRoutes.length}`);
 if(errors.length) throw new Error(`London launch contract failed with ${errors.length} error(s):\n${errors.map((e)=>`- ${e}`).join("\n")}`);
-console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/indexing-recovery/conversion/artifact checks green.`);
+console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/indexing-recovery/privacy-safe attribution/artifact checks green.`);
