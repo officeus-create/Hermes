@@ -186,3 +186,20 @@ WORKING_APPROACH: Use one conditional write whose predicates are evaluated again
 EVIDENCE: A deterministic SQLite interleave claims the queued task after the cancel read but before the cancel update, then proves the response and stored row are either terminal cancelled or running with `cancel_requested=true`. Running and terminal replays remain idempotent and create no duplicate audit event.
 
 REUSE_RULE: A successful control-plane response must describe the post-write row, never the state inferred from a pre-write read. Cover claim/cancel and other state-machine races with deterministic interleaving tests.
+
+
+## 2026-09-26 — Contact analytics promoted provider acceptance to final recipient delivery
+
+PROBLEM: Production `contact_request_delivered` could fire after a 2xx duplicate or initial Email Service send acceptance without a terminal recipient-server delivery signal.
+
+ROOT_CAUSE: The public Pages endpoint treats a successful private Email Worker `env.EMAIL.send()` call as successful handoff. Cloudflare distinguishes queued `Sent` from terminal `Delivered`, but the browser previously tracked either 2xx as delivered.
+
+FAILED_APPROACH: Treating a matching request ID and `success:true` receipt alone as final delivery proof. That receipt proves an accepted handoff, and a duplicate response can acknowledge an earlier attempt without a new receiver outcome.
+
+WORKING_APPROACH: Review-only #1500 validates the matching accepted receipt, acknowledges duplicates without a second event, describes the UI outcome as accepted for delivery, and suppresses `contact_request_delivered` unless a non-duplicate receipt explicitly has `delivery_status:delivered`. The current endpoint does not return that field, so the event fails closed.
+
+EVIDENCE: Cloudflare Email Service lifecycle/logs separate `Sent` (accepted/queued) and `Delivered` (recipient server accepted); its `message.delivered` event subscription is the documented terminal signal. Production QA proved one actual inbox delivery and zero duplicate receiver emails, but that single example does not validate future accepted sends. Exact-head CI on #1500 is required after this change.
+
+LESSON: A provider's synchronous send acceptance cannot name an analytics event after a later delivery state.
+
+REUSE_RULE: Correlate provider message/terminal event to a private request ledger, dedupe on the private key, keep request ID/PII out of GA4, and emit delivered only after terminal receiver evidence and consent. Cloudflare live subscription setup and existing GA4 OAuth reconnect require owner action; never infer status from a generic 2xx.
