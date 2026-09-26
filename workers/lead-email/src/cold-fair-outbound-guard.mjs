@@ -3,7 +3,11 @@ const MESSAGE_CLASSES = new Set(["FIRST_TOUCH", "PROMOTIONAL_FOLLOW_UP", "REPLY"
 
 const clean = (value) => typeof value === "string" ? value.trim() : "";
 const normalizedEmail = (value) => clean(value).toLowerCase();
-const nonNegativeInt = (value) => Number.isInteger(Number(value)) && Number(value) >= 0 ? Number(value) : null;
+const nonNegativeInt = (value) => {
+  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) return null;
+  const number = Number(value);
+  return Number.isInteger(number) && number >= 0 ? number : null;
+};
 
 export const COLD_FAIR_MESSAGE_CLASSES = Object.freeze([...MESSAGE_CLASSES]);
 
@@ -69,10 +73,11 @@ export function evaluateColdFairPreSend(snapshot = {}) {
     return block("missing_required_facts", { planned_action_key: plannedActionKey });
   }
 
-  if (provider.state === "AMBIGUOUS") {
+  const providerState = clean(provider.state).toUpperCase();
+  if (providerState === "AMBIGUOUS") {
     return reconcile("ambiguous_provider_state", { planned_action_key: plannedActionKey });
   }
-  if (provider.state === "DELIVERED" && provider.plannedActionKey === plannedActionKey) {
+  if (providerState === "DELIVERED" && clean(provider.plannedActionKey).toLowerCase() === plannedActionKey) {
     return block("already_delivered", { planned_action_key: plannedActionKey });
   }
 
