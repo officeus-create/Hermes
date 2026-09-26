@@ -69,6 +69,13 @@ for (const required of [
   "Warehousing remains an intent mismatch",
   "not a like-for-like experiment",
   "Evidence stage: search discovery, not conversion or revenue",
+  'id="query-comparison"',
+  'itemtype="https://schema.org/Dataset"',
+  'aria-labelledby="appleton-query-chart-title appleton-query-chart-desc"',
+  "Comparable query exposure",
+  "Prior comparable window",
+  "Intent mismatch; no warehouse page",
+  "<table",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
 
 assert.match(
@@ -105,4 +112,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies and Appleton intent-boundary checks passed: current GSC evidence is dated and filter-scoped, historical and current checkpoints are not blended, Appleton remains the vehicle-transport owner, the case routes to the canonical Logistics SEO owner, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
+console.log("Case studies and Appleton intent-boundary checks passed: current GSC evidence is dated and filter-scoped, the comparable-query chart and accessible data table preserve the same facts, historical and current checkpoints are not blended, Appleton remains the vehicle-transport owner, the case routes to the canonical Logistics SEO owner, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
