@@ -492,11 +492,12 @@ const visibleRoutes = selectedContactInterest
           throw new Error("delivery_unconfirmed");
         }
         pendingLiveRequestId = "";
-        if (receipt.duplicate !== true) trackDeliveredContact(payload.interest);
+        // Email Service send acceptance is not final recipient delivery. Keep this event off until a verified final receipt exists.
+        if (receipt.duplicate !== true && receipt.delivery_status === "delivered") trackDeliveredContact(payload.interest);
         form.reset();
         if (status) status.textContent = receipt.duplicate === true
-          ? "Thank you. Your request was already received."
-          : "Thank you. Your request was sent successfully.";
+          ? "Thank you. Your request was already accepted for delivery."
+          : "Thank you. Your request was accepted for delivery.";
       })
       .catch(() => setAlert("We could not send the request. Your details were not confirmed as received. Please try again later."))
       .finally(() => {
