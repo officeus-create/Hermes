@@ -20,9 +20,11 @@ test.describe("Case studies release", () => {
       "href",
       "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
     );
-    await expect(page.getByText("First finalized GSC baseline recorded", { exact: true })).toBeVisible();
-    await expect(page.getByText(/33 impressions, 0 clicks, and an average position of 45\.33/i)).toBeVisible();
-    await expect(page.getByText(/does not prove stable rankings, qualified traffic, inquiries, customers, or revenue/i)).toBeVisible();
+    await expect(page.getByText("Current GSC checkpoint recorded", { exact: true })).toBeVisible();
+    await expect(page.getByText(/6 impressions, 0 clicks, and an average position of 49\.5/i)).toBeVisible();
+    await expect(page.getByText(/Warehousing remains an intent mismatch/i)).toBeVisible();
+    await expect(page.getByText(/not a like-for-like experiment/i)).toBeVisible();
+    await expect(page.getByText(/No GA4, qualified-lead, opportunity, customer, or revenue result is inferred/i)).toBeVisible();
     for (const href of [
       "/logistics/appleton-wi-vehicle-transport/",
       "/logistics/resources/auction-vehicle-pickup-checklist/",
