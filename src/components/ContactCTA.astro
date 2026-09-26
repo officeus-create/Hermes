@@ -129,6 +129,7 @@ const visibleRoutes = selectedContactInterest
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
 
   let activeSummary = "";
+  let pendingLiveRequestId = "";
 
   const setAlert = (message = "") => {
     if (!alert) return;
@@ -366,6 +367,9 @@ const visibleRoutes = selectedContactInterest
   const formIsValid = () => Boolean(form?.checkValidity());
 
   form?.addEventListener("input", (event) => {
+    if (!(event.target instanceof HTMLInputElement && event.target.name === "website")) {
+      pendingLiveRequestId = "";
+    }
     if (!formIsValid()) {
       clearHandoff();
       return;
@@ -379,6 +383,7 @@ const visibleRoutes = selectedContactInterest
 
   form?.addEventListener("change", (event) => {
     const target = event.target;
+    pendingLiveRequestId = "";
     if (target instanceof HTMLSelectElement && target.name === "path") {
       clearHandoff();
       renderDirectionFields(target.value);
@@ -420,7 +425,11 @@ const visibleRoutes = selectedContactInterest
     const data = new FormData(form);
     if (String(data.get("website") ?? "")) return;
 
-    const payload = buildContactPayload(data, window.location.pathname);
+    const payload = buildContactPayload(
+      data,
+      window.location.pathname,
+      form.dataset.contactMode === "live" && pendingLiveRequestId ? pendingLiveRequestId : undefined,
+    );
     if (!payload.consent) {
       clearHandoff();
       return;
@@ -452,6 +461,7 @@ const visibleRoutes = selectedContactInterest
     }
 
     clearHandoff();
+    pendingLiveRequestId = payload.request_id;
     setSubmitting(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10000);
@@ -464,6 +474,7 @@ const visibleRoutes = selectedContactInterest
     })
       .then((response) => {
         if (!response.ok) throw new Error("delivery_failed");
+        pendingLiveRequestId = "";
         form.reset();
         if (status) status.textContent = "Thank you. Your request was sent successfully.";
       })

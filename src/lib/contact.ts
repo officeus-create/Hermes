@@ -175,7 +175,7 @@ function academyQualificationLines(form: FormData): string[] {
   });
 }
 
-export function buildContactPayload(form: FormData, sourcePath: string, requestId = crypto.randomUUID()): ContactPayload {
+export function buildContactPayload(form: FormData, sourcePath: string, requestId: string = crypto.randomUUID()): ContactPayload {
   const rawInterest = sanitizeContactField(String(form.get("path") ?? ""), 120);
   const interest = normalizeContactInterest(rawInterest) ?? rawInterest;
 

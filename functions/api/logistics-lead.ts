@@ -54,6 +54,7 @@ const MAX_BODY_BYTES = 16_000;
 const MAX_EMAIL_BODY = 8_000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
+const GENERAL_CONTACT_DEDUPE_SECONDS = 10 * 60;
 const DELIVERY_TIMEOUT_MS = 8_000;
 
 const responseHeaders = (origin: string) => ({
@@ -282,6 +283,17 @@ export async function onRequestPost({ request, env }: Context) {
     return json(allowedOrigin, 200, { success: true, duplicate: true, request_id: requestId });
   }
 
+  // A browser retry after an ambiguous response can carry a fresh request ID.
+  // Keep a short, privacy-safe fingerprint so one inquiry is not counted or
+  // delivered twice while still allowing a deliberate later resubmission.
+  const contactFingerprintKey = generalContact
+    ? `lead:contact:${await hash(`${subject}\n${generalContact.emailBody}`)}`
+    : "";
+  if (contactFingerprintKey && await env.LEAD_LIMITS.get(contactFingerprintKey)) {
+    await env.LEAD_LIMITS.put(requestKey, "duplicate", { expirationTtl: GENERAL_CONTACT_DEDUPE_SECONDS });
+    return json(allowedOrigin, 200, { success: true, duplicate: true, request_id: requestId });
+  }
+
   const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
   const rateKey = `lead:rate:${await hash(clientAddress)}`;
   const currentRate = Number(await env.LEAD_LIMITS.get(rateKey) || "0");
@@ -342,6 +354,9 @@ export async function onRequestPost({ request, env }: Context) {
     await Promise.all([
       env.LEAD_LIMITS.put(requestKey, "delivered", { expirationTtl: 24 * 60 * 60 }),
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
+      ...(contactFingerprintKey
+        ? [env.LEAD_LIMITS.put(contactFingerprintKey, "delivered", { expirationTtl: GENERAL_CONTACT_DEDUPE_SECONDS })]
+        : []),
     ]);
     return json(allowedOrigin, 200, { success: true, request_id: requestId });
   } catch (error) {
