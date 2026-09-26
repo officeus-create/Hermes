@@ -80,6 +80,8 @@ assert.equal(decision({ message: { requiredFactsPresent: false } }).reason, "mis
 assert.equal(decision({ promotionalSendGate: "BLOCKED" }).reason, "global_promotional_gate_blocked");
 assert.equal(decision({ counters: { firstTouch24h: 5 } }).reason, "first_touch_cap_reached");
 assert.equal(decision({ counters: { nonReplyPromotional24h: 10 } }).reason, "non_reply_promotional_cap_reached");
+assert.equal(decision({ counters: { firstTouch24h: "" } }).reason, "counter_state_missing");
+assert.equal(decision({ counters: { nonReplyPromotionalCap24h: null } }).reason, "counter_state_missing");
 
 const key1 = coldFairPlannedActionKey({
   contactId: "CT-1",
@@ -97,7 +99,7 @@ const key2 = coldFairPlannedActionKey({
 });
 assert.equal(key1, key2, "idempotency identity must be deterministic across casing/spacing");
 
-const ambiguous = decision({ provider: { state: "AMBIGUOUS" } });
+const ambiguous = decision({ provider: { state: "ambiguous" } });
 assert.equal(ambiguous.decision, "RECONCILE");
 assert.equal(ambiguous.would_send, false);
 
