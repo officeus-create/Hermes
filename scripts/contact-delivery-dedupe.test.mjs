@@ -104,6 +104,6 @@ assert.match(contactSource, /let pendingLiveRequestId = "";/);
 assert.match(contactSource, /pendingLiveRequestId = payload\.request_id;/);
 assert.match(contactSource, /pendingLiveRequestId \? pendingLiveRequestId : undefined/);
 assert.match(contactSource, /receipt\?\.success !== true \|\| receipt\?\.request_id !== payload\.request_id/);
-assert.match(contactSource, /if \(receipt\.duplicate !== true\) trackDeliveredContact\(payload\.interest\)/);
+assert.match(contactSource, /if \(receipt\.duplicate !== true && receipt\.delivery_status === "delivered"\) trackDeliveredContact\(payload\.interest\)/);
 
 console.log("Contact delivery dedupe contract passed.");
