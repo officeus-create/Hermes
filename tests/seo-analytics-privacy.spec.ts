@@ -63,14 +63,6 @@ test("SEO intake keeps submitted detail out of analytics payloads", async ({ pag
   expect(unexpectedKeys).toEqual([]);
 
   const serializedDataLayer = await page.evaluate(() => JSON.stringify(window.dataLayer ?? []));
-  const ga4Config = await page.evaluate(() => {
-    const configCall = (window.dataLayer ?? []).find((entry: any) => entry?.[0] === "config" && entry?.[1] === "G-RY26321PVW") as any;
-    return configCall?.[2];
-  });
-  expect(ga4Config).toMatchObject({
-    page_location: new URL(page.url()).origin + "/paths/marketing/",
-    page_referrer: "",
-  });
   expect(serializedDataLayer).not.toContain(querySentinel);
   expect(serializedDataLayer).not.toContain(sensitiveSentinel);
 
@@ -79,19 +71,33 @@ test("SEO intake keeps submitted detail out of analytics payloads", async ({ pag
 });
 
 
-test("public GA4 config strips referrer query and current query", async ({ page }) => {
+test("public GA4 config strips referrer query and current query", async ({ page, baseURL }) => {
   const referrerSentinel = "PRIVATE_REFERRER_SENTINEL_71821";
   const querySentinel = "PRIVATE_QUERY_SENTINEL_71821";
-  await page.goto(`/?private=${referrerSentinel}`, { waitUntil: "domcontentloaded" });
-  await page.goto(`/paths/logistics/?private=${querySentinel}`, { waitUntil: "domcontentloaded" });
+  if (!baseURL) throw new Error("preview base URL required");
+
+  // Exercise the production-host guard against the branch preview bytes without
+  // loading Google or submitting any live request.
+  await page.route("https://hermeslogisticsus.com/**", async (route) => {
+    const requested = new URL(route.request().url());
+    const preview = new URL(requested.pathname + requested.search, baseURL);
+    const response = await page.request.get(preview.toString());
+    await route.fulfill({ response });
+  });
+  await page.route("https://www.googletagmanager.com/**", (route) =>
+    route.fulfill({ status: 200, contentType: "application/javascript", body: "" }),
+  );
+  await page.addInitScript(() => sessionStorage.setItem("hermes-intro-seen", "true"));
+  await page.goto(`https://hermeslogisticsus.com/?private=${referrerSentinel}`, { waitUntil: "domcontentloaded" });
+  await page.goto(`https://hermeslogisticsus.com/paths/logistics/?private=${querySentinel}&_hermes_ga4_smoke=1`, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Allow analytics" }).click();
   const config = await page.evaluate(() => {
     const call = (window.dataLayer ?? []).find((entry: any) => entry?.[0] === "config" && entry?.[1] === "G-RY26321PVW") as any;
     return call?.[2];
   });
   expect(config).toMatchObject({
-    page_location: new URL(page.url()).origin + "/paths/logistics/",
-    page_referrer: new URL(page.url()).origin + "/",
+    page_location: "https://hermeslogisticsus.com/paths/logistics/",
+    page_referrer: "https://hermeslogisticsus.com/",
   });
   expect(JSON.stringify(config)).not.toContain(querySentinel);
   expect(JSON.stringify(config)).not.toContain(referrerSentinel);
