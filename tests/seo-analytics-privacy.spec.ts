@@ -89,7 +89,7 @@ test("public GA4 config strips referrer query and current query", async ({ page,
   );
   await page.addInitScript(() => sessionStorage.setItem("hermes-intro-seen", "true"));
   await page.goto(`https://hermeslogisticsus.com/?private=${referrerSentinel}`, { waitUntil: "domcontentloaded" });
-  await page.goto(`https://hermeslogisticsus.com/paths/logistics/?private=${querySentinel}&_hermes_ga4_smoke=1`, { waitUntil: "domcontentloaded" });
+  await page.goto(`https://hermeslogisticsus.com/paths/logistics/?private=${querySentinel}&_hermes_ga4_smoke=1`, { waitUntil: "domcontentloaded", referer: `https://hermeslogisticsus.com/?private=${referrerSentinel}` });
   await page.getByRole("button", { name: "Allow analytics" }).click();
   const config = await page.evaluate(() => {
     const call = (window.dataLayer ?? []).find((entry: any) => entry?.[0] === "config" && entry?.[1] === "G-RY26321PVW") as any;
