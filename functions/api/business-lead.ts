@@ -32,6 +32,12 @@ type AttributionInput = {
   referrer?: unknown;
 };
 
+type CatalogContextInput = {
+  business_id?: unknown;
+  profile?: unknown;
+  source?: unknown;
+};
+
 type BusinessLeadInput = {
   request_id?: unknown;
   submitted_at?: unknown;
@@ -52,6 +58,7 @@ type BusinessLeadInput = {
   message?: unknown;
   consent?: unknown;
   attribution?: unknown;
+  catalog_context?: unknown;
 };
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
@@ -77,6 +84,7 @@ const allowedServices = new Set([
   "Catalog claim / verification",
   "Catalog business listing",
   "Catalog SEO / GEO",
+  "Catalog customer request",
 ]);
 
 const allowedBudgets = new Set([
@@ -138,6 +146,16 @@ const getAttribution = (value: unknown) => {
     gbraid: clean(input.gbraid, 240),
     wbraid: clean(input.wbraid, 240),
     referrer: clean(input.referrer, 500),
+  };
+};
+
+const getCatalogContext = (value: unknown) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {} as Record<string, string>;
+  const input = value as CatalogContextInput;
+  return {
+    business_id: clean(input.business_id, 180),
+    profile: clean(input.profile, 500),
+    source: clean(input.source, 120),
   };
 };
 
@@ -208,6 +226,7 @@ export async function onRequestPost({ request, env }: Context) {
   const sourcePath = sourcePathRaw.startsWith("/") ? sourcePathRaw : "/business-growth/";
   const submittedAt = clean(input.submitted_at, 40);
   const attribution = getAttribution(input.attribution);
+  const catalogContext = getCatalogContext(input.catalog_context);
 
   const invalid =
     !isRequestId(requestId) ||
@@ -253,6 +272,12 @@ export async function onRequestPost({ request, env }: Context) {
     attribution.referrer ? `Referrer: ${attribution.referrer}` : "",
   ].filter(Boolean);
 
+  const catalogLines = [
+    catalogContext.business_id ? `Catalog business ID: ${catalogContext.business_id}` : "",
+    catalogContext.profile ? `Catalog profile: ${catalogContext.profile}` : "",
+    catalogContext.source ? `Catalog source: ${catalogContext.source}` : "",
+  ].filter(Boolean);
+
   const emailBody = [
     "Hermes Business Lead",
     "--------------------",
@@ -271,6 +296,7 @@ export async function onRequestPost({ request, env }: Context) {
     `Services: ${services.join(", ")}`,
     "Goal:",
     message,
+    ...(catalogLines.length ? ["", "Catalog context:", ...catalogLines] : []),
     ...(attributionLines.length ? ["", "Attribution:", ...attributionLines] : []),
     "",
     ...(submittedAt ? [`Submitted at: ${submittedAt}`] : []),
