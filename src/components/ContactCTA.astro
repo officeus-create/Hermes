@@ -485,12 +485,18 @@ const visibleRoutes = selectedContactInterest
       body: JSON.stringify(payload),
       signal: controller.signal,
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) throw new Error("delivery_failed");
+        const receipt = await response.json().catch(() => null);
+        if (receipt?.success !== true || receipt?.request_id !== payload.request_id) {
+          throw new Error("delivery_unconfirmed");
+        }
         pendingLiveRequestId = "";
-        trackDeliveredContact(payload.interest);
+        if (receipt.duplicate !== true) trackDeliveredContact(payload.interest);
         form.reset();
-        if (status) status.textContent = "Thank you. Your request was sent successfully.";
+        if (status) status.textContent = receipt.duplicate === true
+          ? "Thank you. Your request was already received."
+          : "Thank you. Your request was sent successfully.";
       })
       .catch(() => setAlert("We could not send the request. Your details were not confirmed as received. Please try again later."))
       .finally(() => {
