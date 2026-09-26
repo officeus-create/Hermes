@@ -19,6 +19,18 @@ assert.match(productionContactMode, /installAttributionBridge/);
 assert.doesNotMatch(productionContactMode, /params\.get\("utm_source"\) !== "london"/);
 assert.match(productionContactMode, /attribution\.utm_source !== "london"\) return/);
 
+const contactCta = await readFile(
+  new URL("../src/components/ContactCTA.astro", import.meta.url),
+  "utf8",
+);
+assert.match(contactCta, /import \{ trackEvent \} from "\.\.\/lib\/analytics"/);
+assert.match(contactCta, /trackEvent\("contact_request_delivered", \{/);
+assert.match(contactCta, /direction: contactDirections\.has\(interest\) \? interest : "other"/);
+assert.match(contactCta, /landing_path: window\.location\.pathname/);
+assert.match(contactCta, /has_campaign_attribution: Boolean\(new URLSearchParams\(window\.location\.search\)\.get\("utm_source"\)\)/);
+assert.doesNotMatch(contactCta, /contact_request_delivered[\s\S]{0,500}request_id/);
+assert.doesNotMatch(contactCta, /contact_request_delivered[\s\S]{0,500}(?:payload\.email|payload\.name)/);
+
 const logisticsForm = new FormData();
 logisticsForm.set("name", "Test User");
 logisticsForm.set("email", "test@example.com");
