@@ -36,8 +36,46 @@ test("relative live endpoint sends once and reports success only after 2xx", asy
 
   const form = await fillSyntheticRequest(page);
   await form.locator('button[type="submit"]').click();
-  await expect(form.locator("[data-form-status]")).toContainText("sent successfully");
+  await expect(form.locator("[data-form-status]")).toContainText("accepted for delivery");
   expect(posts).toBe(1);
+});
+
+test("provider accepted receipt does not report final recipient delivery", async ({ page }) => {
+  await page.evaluate(() => {
+    (window as unknown as { __deliveredEvents: number }).__deliveredEvents = 0;
+    window.addEventListener("hermes:analytics", (event) => {
+      if ((event as CustomEvent).detail?.name === "contact_request_delivered") {
+        (window as unknown as { __deliveredEvents: number }).__deliveredEvents += 1;
+      }
+    });
+  });
+  await page.route("**/api/logistics-lead", async (route) => {
+    const requestId = route.request().postDataJSON().request_id;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, request_id: requestId }) });
+  });
+  const form = await fillSyntheticRequest(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(form.locator("[data-form-status]")).toContainText("accepted for delivery");
+  expect(await page.evaluate(() => (window as unknown as { __deliveredEvents: number }).__deliveredEvents)).toBe(0);
+});
+
+test("explicit final delivered receipt emits one local analytics event", async ({ page }) => {
+  await page.evaluate(() => {
+    (window as unknown as { __deliveredEvents: number }).__deliveredEvents = 0;
+    window.addEventListener("hermes:analytics", (event) => {
+      if ((event as CustomEvent).detail?.name === "contact_request_delivered") {
+        (window as unknown as { __deliveredEvents: number }).__deliveredEvents += 1;
+      }
+    });
+  });
+  await page.route("**/api/logistics-lead", async (route) => {
+    const requestId = route.request().postDataJSON().request_id;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, delivery_status: "delivered", request_id: requestId }) });
+  });
+  const form = await fillSyntheticRequest(page);
+  await form.locator('button[type="submit"]').click();
+  await expect(form.locator("[data-form-status]")).toContainText("accepted for delivery");
+  expect(await page.evaluate(() => (window as unknown as { __deliveredEvents: number }).__deliveredEvents)).toBe(1);
 });
 
 test("failed live delivery keeps the request and never reports success", async ({ page }) => {
@@ -48,7 +86,7 @@ test("failed live delivery keeps the request and never reports success", async (
   const form = await fillSyntheticRequest(page);
   await form.locator('button[type="submit"]').click();
   await expect(form.locator("[data-form-alert]")).toContainText("not confirmed as received");
-  await expect(form.locator("[data-form-status]")).not.toContainText("sent successfully");
+  await expect(form.locator("[data-form-status]")).not.toContainText("accepted for delivery");
   await expect(form.locator('[name="message"]')).toHaveValue("Synthetic request for local delivery testing only.");
 });
 
@@ -84,7 +122,7 @@ test("duplicate receipt confirms prior delivery without a second analytics outco
   });
   const form = await fillSyntheticRequest(page);
   await form.locator('button[type="submit"]').click();
-  await expect(form.locator("[data-form-status]")).toContainText("already received");
+  await expect(form.locator("[data-form-status]")).toContainText("already accepted for delivery");
   expect(await page.evaluate(() => (window as unknown as { __deliveredEvents: number }).__deliveredEvents)).toBe(0);
 });
 
