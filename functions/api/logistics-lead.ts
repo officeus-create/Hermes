@@ -351,11 +351,12 @@ export async function onRequestPost({ request, env }: Context) {
       return json(allowedOrigin, 502, { success: false, error: "delivery_failed" });
     }
 
+    // The Email Worker accepted the handoff; final recipient delivery is asynchronous.
     await Promise.all([
-      env.LEAD_LIMITS.put(requestKey, "delivered", { expirationTtl: 24 * 60 * 60 }),
+      env.LEAD_LIMITS.put(requestKey, "accepted", { expirationTtl: 24 * 60 * 60 }),
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
       ...(contactFingerprintKey
-        ? [env.LEAD_LIMITS.put(contactFingerprintKey, "delivered", { expirationTtl: GENERAL_CONTACT_DEDUPE_SECONDS })]
+        ? [env.LEAD_LIMITS.put(contactFingerprintKey, "accepted", { expirationTtl: GENERAL_CONTACT_DEDUPE_SECONDS })]
         : []),
     ]);
     return json(allowedOrigin, 200, { success: true, request_id: requestId });
