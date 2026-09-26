@@ -115,10 +115,11 @@ test("Services is a private owner workspace using the existing service API", asy
   await expectLayout(page);
 
   await page.locator("#service-name").fill("Wheel alignment");
-  await page.locator("#service-duration").selectOption("90");
+  await page.locator("#service-duration").selectOption("720");
   await page.locator("#service-submit").click();
   await expect(page.locator(".service-card")).toHaveCount(3);
   await expect(page.locator("#page-alert")).toContainText("Service added.");
+  await expect(page.locator(".service-card").filter({ hasText: "Wheel alignment" })).toContainText("720 min");
 
   await page.getByRole("button", { name: "Delete: Oil change" }).click();
   await expect(page.locator(".service-card")).toHaveCount(2);
