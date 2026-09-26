@@ -203,3 +203,14 @@ EVIDENCE: Cloudflare Email Service lifecycle/logs separate `Sent` (accepted/queu
 LESSON: A provider's synchronous send acceptance cannot name an analytics event after a later delivery state.
 
 REUSE_RULE: Correlate provider message/terminal event to a private request ledger, dedupe on the private key, keep request ID/PII out of GA4, and emit delivered only after terminal receiver evidence and consent. Cloudflare live subscription setup and existing GA4 OAuth reconnect require owner action; never infer status from a generic 2xx.
+
+
+## 2026-09-26 — Public GA4 tag inherited raw document URL/referrer
+
+PROBLEM: The public-site Google tag config omitted page_location and page_referrer, so default GA4 page_view could inherit the full URL and document.referrer including query strings, despite contact_request_delivered passing only a route and UTM-presence boolean.
+
+ROOT_CAUSE: The separate Hermes Connect analytics path had explicit route-only page_location, but the public TrackingConsent config still relied on default Google fields.
+
+WORKING_APPROACH: Review-only #1500 explicitly supplies current origin plus pathname and referrer origin only before loading gtag. A browser test adds private sentinels in current and referring queries and asserts they do not enter the config. Do not treat a green source test as an authenticated GA4 payload/readback; keep GA4 OAuth/production network verification open.
+
+REUSE_RULE: Review default SDK-collected page_location/referrer and campaign fields whenever promising that a custom event payload is privacy safe. A clean event object does not sanitize automatic page_view fields.
