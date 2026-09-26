@@ -17,7 +17,7 @@ const productionContactMode = await readFile(
 assert.match(productionContactMode, /const attributionKeys = \[/);
 assert.match(productionContactMode, /installAttributionBridge/);
 assert.doesNotMatch(productionContactMode, /params\.get\("utm_source"\) !== "london"/);
-assert.match(productionContactMode, /attribution\.utm_source !== "london"\) return/);
+assert.doesNotMatch(productionContactMode, /london_lead_submitted|london_academy_application_submitted|pendingConversion|sent successfully/);
 
 const contactCta = await readFile(
   new URL("../src/components/ContactCTA.astro", import.meta.url),
