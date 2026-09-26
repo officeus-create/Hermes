@@ -87,6 +87,7 @@ export function evaluateColdFairPreSend(snapshot = {}) {
 
   if (eligibility === "REPLY_ONLY") {
     if (messageClass !== "REPLY") return block("reply_only_contact", { planned_action_key: plannedActionKey });
+    if (message.containsPromotion === true) return block("reply_cross_sell_blocked", { planned_action_key: plannedActionKey });
     if (message.freshInboundNeed !== true || !clean(message.providerThreadId) || !clean(message.replyToMessageId)) {
       return block("reply_requires_fresh_inbound_thread", { planned_action_key: plannedActionKey });
     }
@@ -104,6 +105,7 @@ export function evaluateColdFairPreSend(snapshot = {}) {
   }
 
   if (messageClass === "REPLY") {
+    if (message.containsPromotion === true) return block("reply_cross_sell_blocked", { planned_action_key: plannedActionKey });
     if (message.freshInboundNeed !== true || !clean(message.providerThreadId) || !clean(message.replyToMessageId)) {
       return block("reply_requires_fresh_inbound_thread", { planned_action_key: plannedActionKey });
     }
