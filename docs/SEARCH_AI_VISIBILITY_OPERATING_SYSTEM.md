@@ -138,3 +138,28 @@ Weekly: query discovery, page groups, positions 10-30 / 30-50, gaining/losing ow
 ## Evidence boundary
 
 Repository CI, sitemap submission, IndexNow acceptance, public search sampling and deployment success are not proof of Google indexing, Bing reporting, GA4 receipt, human qualification, opportunity or revenue. Keep each evidence stage separate.
+
+
+## Current refresh — 2026-09-26
+
+Authenticated GSC SEO Planner comparison:
+
+- 2026-08-27..2026-09-23: 7 clicks / 305 impressions / 2.30% CTR / avg position 46.56.
+- 2026-07-30..2026-08-26: 31 clicks / 1,660 impressions / 1.87% CTR / avg position 40.29.
+- Delta: -24 clicks and -1,355 impressions. CTR increased while average position worsened, so the diagnosis remains `VISIBILITY_LOSS_NOT_PRIMARY_CTR_COLLAPSE`.
+- United States: 224 vs 1,034 impressions; desktop: 271 vs 1,284; mobile: 33 vs 373. These are separately authenticated filters, not a synthetic country-device join.
+- The full sitemap surface contains 292 unique URLs across 11 sitemap files. 32 URLs are present in the returned GSC top-page or query×page rows; 260 remain `SITEMAP_ONLY_GSC_TOP_ROWS_UNKNOWN`, not zero.
+- Destructive survival actions remain blocked without a full page export, URL Inspection, or an adequate observation window. The canonical registry therefore remains `11 KEEP / 2 IMPROVE / 279 PENDING_EVIDENCE`, with zero `MERGE / NOINDEX / DELETE` decisions at this checkpoint.
+- The sole mutable row-level source is the Drive `HERMES FORENSIC PAGE PASSPORT REGISTRY — CURRENT` sheet. The repository CSV is a dated immutable export snapshot for review and CI, never a second registry.
+- Logistics SEO remains `KEEP / OBSERVATION FREEZE`; Load Board remains `IMPROVE / DO NOT MULTIPLY OWNERS`; Appleton remains `PENDING_EVIDENCE / KEEP VEHICLE-TRANSPORT OWNER`.
+- GSC Wizard is subscription-blocked, but the separately authorized GSC SEO Planner produced the current finalized evidence. GA4, Bing, Copilot, qualification, opportunity and revenue remain separately gated.
+
+Machine-readable evidence:
+
+- `docs/page-survival-inventory-2026-09-26.csv` — dated immutable export snapshot of the canonical Drive registry
+- `docs/visibility-loss-forensic-2026-09-26.json`
+- `docs/original-evidence-asset-plan-2026-09-26.json`
+
+## Original-evidence execution gate
+
+The next five candidate assets reuse existing canonical owners. No new public URL is authorized by this plan. Publication requires the stated sample, permission, anonymization and privacy gates. Each approved asset must be packaged as page evidence, chart/image, video, transcript, internal links, relevant authority outreach and an AI-readable methodology/limitations block.

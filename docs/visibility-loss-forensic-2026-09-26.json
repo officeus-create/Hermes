@@ -1,0 +1,1176 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-26",
+  "evidence_class": "AUTHENTICATED_GSC_SEO_PLANNER",
+  "property": "sc-domain:hermeslogisticsus.com",
+  "source_freshness": "finalized_through_2026-09-23",
+  "current_range": {
+    "startDate": "2026-08-27",
+    "endDate": "2026-09-23"
+  },
+  "comparison_range": {
+    "startDate": "2026-07-30",
+    "endDate": "2026-08-26"
+  },
+  "current": {
+    "clicks": 7,
+    "impressions": 305,
+    "ctr": 0.022950819672131147,
+    "position": 46.56393442622951
+  },
+  "comparison": {
+    "clicks": 31,
+    "impressions": 1660,
+    "ctr": 0.018674698795180723,
+    "position": 40.28734939759036
+  },
+  "changes": {
+    "clicks": -24,
+    "impressions": -1355,
+    "ctr": 0.004276120876950423,
+    "position": -6.276585028639147
+  },
+  "diagnosis": "VISIBILITY_LOSS_NOT_PRIMARY_CTR_COLLAPSE",
+  "device_segments": {
+    "desktop": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 5,
+        "impressions": 271,
+        "ctr": 0.01845018450184502,
+        "position": 49.78228782287823
+      },
+      "previous": {
+        "clicks": 17,
+        "impressions": 1284,
+        "ctr": 0.0132398753894081,
+        "position": 44.11214953271028
+      },
+      "changes": {
+        "clicks": -12,
+        "impressions": -1013,
+        "ctr": 0.005210309112436919,
+        "position": -5.670138290167948
+      },
+      "filters": {
+        "device": "DESKTOP"
+      }
+    },
+    "mobile": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 2,
+        "impressions": 33,
+        "ctr": 0.06060606060606061,
+        "position": 20.333333333333332
+      },
+      "previous": {
+        "clicks": 13,
+        "impressions": 373,
+        "ctr": 0.03485254691689008,
+        "position": 27.34048257372654
+      },
+      "changes": {
+        "clicks": -11,
+        "impressions": -340,
+        "ctr": 0.025753513689170525,
+        "position": 7.007149240393208
+      },
+      "filters": {
+        "device": "MOBILE"
+      }
+    },
+    "tablet": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 40
+      },
+      "previous": {
+        "clicks": 1,
+        "impressions": 3,
+        "ctr": 0.3333333333333333,
+        "position": 13
+      },
+      "changes": {
+        "clicks": -1,
+        "impressions": -2,
+        "ctr": -0.3333333333333333,
+        "position": -27
+      },
+      "filters": {
+        "device": "TABLET"
+      }
+    }
+  },
+  "country_segments": {
+    "usa": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 1,
+        "impressions": 224,
+        "ctr": 0.004464285714285714,
+        "position": 49.513392857142854
+      },
+      "previous": {
+        "clicks": 7,
+        "impressions": 1034,
+        "ctr": 0.006769825918762089,
+        "position": 41.795938104448744
+      },
+      "changes": {
+        "clicks": -6,
+        "impressions": -810,
+        "ctr": -0.002305540204476375,
+        "position": -7.71745475269411
+      },
+      "filters": {
+        "country": "usa"
+      }
+    },
+    "gbr": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0,
+        "position": 56.6
+      },
+      "previous": {
+        "clicks": 0,
+        "impressions": 91,
+        "ctr": 0,
+        "position": 48.94505494505494
+      },
+      "changes": {
+        "clicks": 0,
+        "impressions": -86,
+        "ctr": 0,
+        "position": -7.65494505494506
+      },
+      "filters": {
+        "country": "gbr"
+      }
+    },
+    "ukr": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 4,
+        "impressions": 14,
+        "ctr": 0.2857142857142857,
+        "position": 8.571428571428571
+      },
+      "previous": {
+        "clicks": 17,
+        "impressions": 94,
+        "ctr": 0.18085106382978725,
+        "position": 13.457446808510639
+      },
+      "changes": {
+        "clicks": -13,
+        "impressions": -80,
+        "ctr": 0.10486322188449845,
+        "position": 4.886018237082068
+      },
+      "filters": {
+        "country": "ukr"
+      }
+    },
+    "deu": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 0,
+        "impressions": 9,
+        "ctr": 0,
+        "position": 54.77777777777778
+      },
+      "previous": {
+        "clicks": 0,
+        "impressions": 21,
+        "ctr": 0,
+        "position": 43.285714285714285
+      },
+      "changes": {
+        "clicks": 0,
+        "impressions": -12,
+        "ctr": 0,
+        "position": -11.492063492063494
+      },
+      "filters": {
+        "country": "deu"
+      }
+    },
+    "ind": {
+      "range": {
+        "startDate": "2026-08-27",
+        "endDate": "2026-09-23"
+      },
+      "totals": {
+        "clicks": 0,
+        "impressions": 11,
+        "ctr": 0,
+        "position": 51.09090909090909
+      },
+      "previous": {
+        "clicks": 1,
+        "impressions": 113,
+        "ctr": 0.008849557522123894,
+        "position": 55.0353982300885
+      },
+      "changes": {
+        "clicks": -1,
+        "impressions": -102,
+        "ctr": -0.008849557522123894,
+        "position": 3.944489139179403
+      },
+      "filters": {
+        "country": "ind"
+      }
+    }
+  },
+  "returned_falling_family_aggregate": {
+    "brand_ambiguity": {
+      "queries": 6,
+      "previous": 181,
+      "current": 57,
+      "delta": -124
+    },
+    "commercial_logistics_seo": {
+      "queries": 8,
+      "previous": 152,
+      "current": 12,
+      "delta": -140
+    },
+    "commercial_local_geo": {
+      "queries": 6,
+      "previous": 86,
+      "current": 3,
+      "delta": -83
+    },
+    "other_or_accidental": {
+      "queries": 4,
+      "previous": 43,
+      "current": 0,
+      "delta": -43
+    },
+    "commercial_dispatch": {
+      "queries": 1,
+      "previous": 10,
+      "current": 1,
+      "delta": -9
+    }
+  },
+  "falling_queries": [
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes logistics",
+      "current": {
+        "query": "hermes logistics",
+        "clicks": 0,
+        "impressions": 57,
+        "ctr": 0,
+        "position": 65.15789473684211
+      },
+      "previous": {
+        "query": "hermes logistics",
+        "clicks": 7,
+        "impressions": 125,
+        "ctr": 0.056,
+        "position": 25.336
+      },
+      "impressions_change": -68,
+      "position_change": -39.82189473684211
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistics seo agency",
+      "current": {
+        "query": "logistics seo agency",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 51
+      },
+      "previous": {
+        "query": "logistics seo agency",
+        "clicks": 0,
+        "impressions": 36,
+        "ctr": 0,
+        "position": 61.27777777777778
+      },
+      "impressions_change": -34,
+      "position_change": 10.277777777777779
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistics seo",
+      "current": {
+        "query": "logistics seo",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 43
+      },
+      "previous": {
+        "query": "logistics seo",
+        "clicks": 0,
+        "impressions": 34,
+        "ctr": 0,
+        "position": 69.41176470588235
+      },
+      "impressions_change": -33,
+      "position_change": 26.411764705882348
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes logistics llc",
+      "current": null,
+      "previous": {
+        "query": "hermes logistics llc",
+        "clicks": 2,
+        "impressions": 24,
+        "ctr": 0.08333333333333333,
+        "position": 12.5
+      },
+      "impressions_change": -24,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "appleton warehousing services",
+      "current": {
+        "query": "appleton warehousing services",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 54
+      },
+      "previous": {
+        "query": "appleton warehousing services",
+        "clicks": 0,
+        "impressions": 24,
+        "ctr": 0,
+        "position": 55.916666666666664
+      },
+      "impressions_change": -23,
+      "position_change": 1.9166666666666643
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "appleton logistics services",
+      "current": {
+        "query": "appleton logistics services",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 43.5
+      },
+      "previous": {
+        "query": "appleton logistics services",
+        "clicks": 0,
+        "impressions": 20,
+        "ctr": 0,
+        "position": 54.2
+      },
+      "impressions_change": -18,
+      "position_change": 10.700000000000003
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistics seo consultants",
+      "current": {
+        "query": "logistics seo consultants",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 39.5
+      },
+      "previous": {
+        "query": "logistics seo consultants",
+        "clicks": 0,
+        "impressions": 20,
+        "ctr": 0,
+        "position": 53
+      },
+      "impressions_change": -18,
+      "position_change": 13.5
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "seo consultants in logistics sector",
+      "current": {
+        "query": "seo consultants in logistics sector",
+        "clicks": 0,
+        "impressions": 3,
+        "ctr": 0,
+        "position": 51
+      },
+      "previous": {
+        "query": "seo consultants in logistics sector",
+        "clicks": 0,
+        "impressions": 20,
+        "ctr": 0,
+        "position": 65.55
+      },
+      "impressions_change": -17,
+      "position_change": 14.549999999999997
+    },
+    {
+      "family": "other_or_accidental",
+      "value": "unknown_or_accidental",
+      "query": "logistics training systems",
+      "current": null,
+      "previous": {
+        "query": "logistics training systems",
+        "clicks": 0,
+        "impressions": 16,
+        "ctr": 0,
+        "position": 55.1875
+      },
+      "impressions_change": -16,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "carrier services for businesses near me in waukesha",
+      "current": null,
+      "previous": {
+        "query": "carrier services for businesses near me in waukesha",
+        "clicks": 0,
+        "impressions": 15,
+        "ctr": 0,
+        "position": 53
+      },
+      "impressions_change": -15,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistics seo services",
+      "current": {
+        "query": "logistics seo services",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 40
+      },
+      "previous": {
+        "query": "logistics seo services",
+        "clicks": 0,
+        "impressions": 15,
+        "ctr": 0,
+        "position": 52.2
+      },
+      "impressions_change": -13,
+      "position_change": 12.200000000000003
+    },
+    {
+      "family": "other_or_accidental",
+      "value": "unknown_or_accidental",
+      "query": "international multi-car transport services",
+      "current": null,
+      "previous": {
+        "query": "international multi-car transport services",
+        "clicks": 0,
+        "impressions": 13,
+        "ctr": 0,
+        "position": 54.15384615384615
+      },
+      "impressions_change": -13,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistics seo company",
+      "current": {
+        "query": "logistics seo company",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 39
+      },
+      "previous": {
+        "query": "logistics seo company",
+        "clicks": 0,
+        "impressions": 13,
+        "ctr": 0,
+        "position": 58.84615384615385
+      },
+      "impressions_change": -12,
+      "position_change": 19.846153846153847
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "auto transport services eau claire wi",
+      "current": null,
+      "previous": {
+        "query": "auto transport services eau claire wi",
+        "clicks": 0,
+        "impressions": 11,
+        "ctr": 0,
+        "position": 48.36363636363637
+      },
+      "impressions_change": -11,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes syspro integration",
+      "current": null,
+      "previous": {
+        "query": "hermes syspro integration",
+        "clicks": 0,
+        "impressions": 11,
+        "ctr": 0,
+        "position": 68.18181818181819
+      },
+      "impressions_change": -11,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "carrier services near me in waukesha",
+      "current": null,
+      "previous": {
+        "query": "carrier services near me in waukesha",
+        "clicks": 0,
+        "impressions": 10,
+        "ctr": 0,
+        "position": 63.1
+      },
+      "impressions_change": -10,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_dispatch",
+      "value": "useful_commercial",
+      "query": "car hauler dispatch",
+      "current": {
+        "query": "car hauler dispatch",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 39
+      },
+      "previous": {
+        "query": "car hauler dispatch",
+        "clicks": 0,
+        "impressions": 10,
+        "ctr": 0,
+        "position": 46.4
+      },
+      "impressions_change": -9,
+      "position_change": 7.399999999999999
+    },
+    {
+      "family": "other_or_accidental",
+      "value": "unknown_or_accidental",
+      "query": "multi-car transport services",
+      "current": null,
+      "previous": {
+        "query": "multi-car transport services",
+        "clicks": 0,
+        "impressions": 9,
+        "ctr": 0,
+        "position": 75
+      },
+      "impressions_change": -9,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes epicor integration",
+      "current": null,
+      "previous": {
+        "query": "hermes epicor integration",
+        "clicks": 0,
+        "impressions": 8,
+        "ctr": 0,
+        "position": 79.75
+      },
+      "impressions_change": -8,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes logistica",
+      "current": null,
+      "previous": {
+        "query": "hermes logistica",
+        "clicks": 0,
+        "impressions": 8,
+        "ctr": 0,
+        "position": 19.875
+      },
+      "impressions_change": -8,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "industrial transport seo services",
+      "current": null,
+      "previous": {
+        "query": "industrial transport seo services",
+        "clicks": 0,
+        "impressions": 7,
+        "ctr": 0,
+        "position": 64
+      },
+      "impressions_change": -7,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "logistic seo services",
+      "current": {
+        "query": "logistic seo services",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 30
+      },
+      "previous": {
+        "query": "logistic seo services",
+        "clicks": 0,
+        "impressions": 7,
+        "ctr": 0,
+        "position": 60.285714285714285
+      },
+      "impressions_change": -6,
+      "position_change": 30.285714285714285
+    },
+    {
+      "family": "commercial_local_geo",
+      "value": "mixed_requires_service_truth",
+      "query": "enclosed auto transport wi",
+      "current": null,
+      "previous": {
+        "query": "enclosed auto transport wi",
+        "clicks": 0,
+        "impressions": 6,
+        "ctr": 0,
+        "position": 43.166666666666664
+      },
+      "impressions_change": -6,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes transport",
+      "current": null,
+      "previous": {
+        "query": "hermes transport",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0,
+        "position": 47.6
+      },
+      "impressions_change": -5,
+      "position_change": 0
+    },
+    {
+      "family": "other_or_accidental",
+      "value": "unknown_or_accidental",
+      "query": "moxie transport",
+      "current": null,
+      "previous": {
+        "query": "moxie transport",
+        "clicks": 0,
+        "impressions": 5,
+        "ctr": 0,
+        "position": 44.6
+      },
+      "impressions_change": -5,
+      "position_change": 0
+    }
+  ],
+  "rising_queries": [
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes logistik",
+      "current": {
+        "query": "hermes logistik",
+        "clicks": 0,
+        "impressions": 50,
+        "ctr": 0,
+        "position": 46.48
+      },
+      "previous": {
+        "query": "hermes logistik",
+        "clicks": 0,
+        "impressions": 11,
+        "ctr": 0,
+        "position": 39.36363636363637
+      },
+      "impressions_change": 39,
+      "position_change": -7.11636363636363
+    },
+    {
+      "family": "commercial_load_board",
+      "value": "useful_commercial",
+      "query": "auto transport load board",
+      "current": {
+        "query": "auto transport load board",
+        "clicks": 0,
+        "impressions": 15,
+        "ctr": 0,
+        "position": 76.66666666666667
+      },
+      "previous": {
+        "query": "auto transport load board",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 60.5
+      },
+      "impressions_change": 13,
+      "position_change": -16.16666666666667
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "seo for logistics companies",
+      "current": {
+        "query": "seo for logistics companies",
+        "clicks": 0,
+        "impressions": 10,
+        "ctr": 0,
+        "position": 43.7
+      },
+      "previous": null,
+      "impressions_change": 10,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "trucking seo agency",
+      "current": {
+        "query": "trucking seo agency",
+        "clicks": 0,
+        "impressions": 6,
+        "ctr": 0,
+        "position": 41.833333333333336
+      },
+      "previous": null,
+      "impressions_change": 6,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_load_board",
+      "value": "useful_commercial",
+      "query": "car hauler load board",
+      "current": {
+        "query": "car hauler load board",
+        "clicks": 0,
+        "impressions": 8,
+        "ctr": 0,
+        "position": 80.375
+      },
+      "previous": {
+        "query": "car hauler load board",
+        "clicks": 0,
+        "impressions": 3,
+        "ctr": 0,
+        "position": 61.666666666666664
+      },
+      "impressions_change": 5,
+      "position_change": -18.708333333333336
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "seo for warehousing companies",
+      "current": {
+        "query": "seo for warehousing companies",
+        "clicks": 0,
+        "impressions": 4,
+        "ctr": 0,
+        "position": 53.25
+      },
+      "previous": null,
+      "impressions_change": 4,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "trucking seo company",
+      "current": {
+        "query": "trucking seo company",
+        "clicks": 0,
+        "impressions": 4,
+        "ctr": 0,
+        "position": 43.75
+      },
+      "previous": null,
+      "impressions_change": 4,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "transportation seo company",
+      "current": {
+        "query": "transportation seo company",
+        "clicks": 0,
+        "impressions": 3,
+        "ctr": 0,
+        "position": 47
+      },
+      "previous": null,
+      "impressions_change": 3,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes parcel pick up",
+      "current": {
+        "query": "hermes parcel pick up",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 74.5
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "seo for transportation companies",
+      "current": {
+        "query": "seo for transportation companies",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 50.5
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "seo logistikunternehmen",
+      "current": {
+        "query": "seo logistikunternehmen",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 64
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "supply chain seo",
+      "current": {
+        "query": "supply chain seo",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 80.5
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "trucking seo",
+      "current": {
+        "query": "trucking seo",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 43
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "other_or_accidental",
+      "value": "unknown_or_accidental",
+      "query": "where can i find car hauling loads",
+      "current": {
+        "query": "where can i find car hauling loads",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 26.5
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_logistics_seo",
+      "value": "useful_commercial",
+      "query": "運送業 seo対策",
+      "current": {
+        "query": "運送業 seo対策",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 69
+      },
+      "previous": null,
+      "impressions_change": 2,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_load_board",
+      "value": "useful_commercial",
+      "query": "auto hauler load board",
+      "current": {
+        "query": "auto hauler load board",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 79
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_load_board",
+      "value": "useful_commercial",
+      "query": "car hauling load board",
+      "current": {
+        "query": "car hauling load board",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 82
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "commercial_load_board",
+      "value": "useful_commercial",
+      "query": "car hauling load boards",
+      "current": {
+        "query": "car hauling load boards",
+        "clicks": 0,
+        "impressions": 2,
+        "ctr": 0,
+        "position": 65.5
+      },
+      "previous": {
+        "query": "car hauling load boards",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 47
+      },
+      "impressions_change": 1,
+      "position_change": -18.5
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes agente",
+      "current": {
+        "query": "hermes agente",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 2
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes delivery service",
+      "current": {
+        "query": "hermes delivery service",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 59
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes development",
+      "current": {
+        "query": "hermes development",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 2
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes engineering",
+      "current": {
+        "query": "hermes engineering",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 86
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes international logistics inc",
+      "current": {
+        "query": "hermes international logistics inc",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 8
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes saas",
+      "current": {
+        "query": "hermes saas",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 7
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    },
+    {
+      "family": "brand_ambiguity",
+      "value": "mixed_brand_entity",
+      "query": "hermes transportation",
+      "current": {
+        "query": "hermes transportation",
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 48
+      },
+      "previous": null,
+      "impressions_change": 1,
+      "position_change": 0
+    }
+  ],
+  "owner_findings": [
+    {
+      "owner": "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
+      "classification": "POSITION_OPPORTUNITY_AUTHORITY_DEFECT",
+      "current_returned_impressions": 57,
+      "current_query_diversity": 25,
+      "average_position": 48.386,
+      "decision": "KEEP_OBSERVATION_FREEZE"
+    },
+    {
+      "owner": "https://hermeslogisticsus.com/load-board/",
+      "classification": "POSITION_OPPORTUNITY_RETRIEVAL_FORMAT_GAP",
+      "current_impressions": 33,
+      "current_query_diversity": 8,
+      "average_position": 77.7879,
+      "decision": "IMPROVE_WITH_EVIDENCE_NOT_NEW_OWNERS"
+    },
+    {
+      "owner": "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+      "classification": "INTENT_MISMATCH_ON_WAREHOUSING_PLUS_WEAK_RELEVANT_VISIBILITY",
+      "current_returned_impressions": 3,
+      "current_query_diversity": 2,
+      "average_position": 47,
+      "decision": "PENDING_EVIDENCE_KEEP_VEHICLE_OWNER"
+    },
+    {
+      "owner": "https://hermeslogisticsus.com/",
+      "classification": "ENTITY_DEFECT_EXTERNAL_CORROBORATION",
+      "current_impressions": 139,
+      "current_clicks": 3,
+      "average_position": 49.9712,
+      "decision": "KEEP_OWNED_SITE_STABLE_FIX_EXTERNAL_ENTITY_SOURCES"
+    }
+  ],
+  "limitations": [
+    "Top page and query-page rows are returned subsets; absence is UNKNOWN, not zero.",
+    "Sitemap membership does not prove Google indexation.",
+    "Country and device filters are platform-authenticated segments; no synthetic country-device join was made.",
+    "GA4, qualification, opportunity and revenue are not inferred from Search Console."
+  ],
+  "next_actions": [
+    "Preserve Logistics SEO and Load Board titles/H1 until evidence class changes.",
+    "Request/obtain full page export or URL Inspection for PENDING_EVIDENCE URLs.",
+    "Continue #204/#515 external entity correction propagation readback.",
+    "Continue #368 with original evidence and legitimate editorial/partner citations; exclude paid distribution from earned authority."
+  ]
+}
