@@ -109,6 +109,7 @@ const visibleRoutes = selectedContactInterest
     buildRequestSummary,
     getContactHandoffRoute,
   } from "../lib/contact";
+  import { trackEvent } from "../lib/analytics";
   import { site } from "../data/site";
 
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
@@ -127,6 +128,18 @@ const visibleRoutes = selectedContactInterest
   const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+  const contactDirections = new Set(["Hermes Logistics", "ProgressoPro", "Hermes Business Academy", "IT Development"]);
+
+  const trackDeliveredContact = (interest: string) => {
+    // This confirms endpoint delivery, not human qualification or a commercial outcome.
+    // GA4 session source/medium remains the source of acquisition; the receiver keeps
+    // the matching request ID and UTM-bearing landing path outside analytics.
+    trackEvent("contact_request_delivered", {
+      direction: contactDirections.has(interest) ? interest : "other",
+      landing_path: window.location.pathname,
+      has_campaign_attribution: Boolean(new URLSearchParams(window.location.search).get("utm_source")),
+    });
+  };
 
   let activeSummary = "";
   let pendingLiveRequestId = "";
@@ -475,6 +488,7 @@ const visibleRoutes = selectedContactInterest
       .then((response) => {
         if (!response.ok) throw new Error("delivery_failed");
         pendingLiveRequestId = "";
+        trackDeliveredContact(payload.interest);
         form.reset();
         if (status) status.textContent = "Thank you. Your request was sent successfully.";
       })
