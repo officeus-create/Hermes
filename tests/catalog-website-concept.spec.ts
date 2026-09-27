@@ -5,6 +5,8 @@ const conceptPath = "/businesses/ukraine/chaiky/chayka-store/";
 test("Catalog Website Concept keeps opportunity details in a reusable dialog", async ({ page }) => {
   await page.goto(conceptPath);
 
+  await expect(page.locator('form[action="/businesses/request/"] input[name="requested_service"]')).toHaveValue("Phone repair & accessories");
+
   const offer = page.getByRole("button", { name: "Сайт / редизайн" });
   await expect(offer).toBeVisible();
   await offer.click();
