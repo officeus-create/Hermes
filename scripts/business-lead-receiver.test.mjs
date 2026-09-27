@@ -172,6 +172,22 @@ assert.match(serviceCalls.at(-1).payload.text, /verified business contact path/)
 assert.match(serviceCalls.at(-1).payload.text, /Lead fee to the listed business: \$0/);
 assert.match(serviceCalls.at(-1).payload.text, /optional and separate from this lead/);
 
+const catalogEmailOnly = await onRequest({
+  request: makeRequest({
+    ...catalogCustomerPayload,
+    request_id: "catalog_customer_email_only_12345",
+    whatsapp: "",
+    telegram: "",
+  }, { "CF-Connecting-IP": "192.0.2.63" }),
+  env,
+});
+assert.equal(catalogEmailOnly.status, 200);
+assert.match(serviceCalls.at(-1).payload.text, /Email: owner@example.com/);
+assert.match(serviceCalls.at(-1).payload.text, /WhatsApp: not provided/);
+assert.match(serviceCalls.at(-1).payload.text, /Telegram: not provided/);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-chayka-store/);
+
+
 const catalogCustomerMissingTarget = await onRequest({
   request: makeRequest({
     ...catalogCustomerPayload,
