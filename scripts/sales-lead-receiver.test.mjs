@@ -589,7 +589,7 @@ try {
     pendingRecord.destinations.find((destination) => destination.channel === "telegram").status,
     "pending",
   );
-  assert.ok(pendingRecord.expiresAt > NativeDate.now());
+  assert.ok(pendingRecord.expiresAt > new NativeDate("2026-09-15T14:00:00.000Z").valueOf());
 
   setFrozenDate(new NativeDate(pendingRecord.expiresAt + 1_000).toISOString());
   await expiryCoordinator.alarm();
