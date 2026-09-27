@@ -1,17 +1,18 @@
 ---
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 import { buildCatalogLeadContext, catalogClaimHref, catalogSemanticSignals } from "../lib/catalog-concept-factory.mjs";
-type Props = { business: CatalogBusinessConcept; profileUrl: string; };
-const { business, profileUrl } = Astro.props;
+type ConceptLocale = "uk" | "en";
+type Props = { business: CatalogBusinessConcept; profileUrl: string; defaultLocale?: ConceptLocale; };
+const { business, profileUrl, defaultLocale = "uk" } = Astro.props;
 const claimHref = catalogClaimHref(business, profileUrl);
 const leadContext = buildCatalogLeadContext({ business, profileUrl });
 const semanticSignals = catalogSemanticSignals(business);
-const copy = business.copy.uk;
+const copy = business.copy[defaultLocale];
 const primaryChannels = business.channels.filter((x)=>x.direction==="primary");
 const secondaryChannels = business.channels.filter((x)=>x.direction==="secondary");
 const mapChannel = business.channels.find((x)=>x.direction==="maps");
 ---
-<section class="catalog-concept" data-business-id={business.id}>
+<section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
   <div class="concept-disclosure"><strong>Hermes Catalog · Website Concept</strong><span data-uk={business.copy.uk.disclosure} data-en={business.copy.en.disclosure}>{copy.disclosure}</span><nav class="locale-switch" aria-label="Concept language"><a href="?lang=uk" lang="uk">UA</a><a href="?lang=en" lang="en">EN</a></nav></div>
   <section class="concept-hero">
     <div><p class="kicker" data-uk={business.copy.uk.heroKicker} data-en={business.copy.en.heroKicker}>{copy.heroKicker}</p><h1 data-uk={business.copy.uk.heroTitle} data-en={business.copy.en.heroTitle}>{copy.heroTitle}</h1><p data-uk={business.copy.uk.heroLead} data-en={business.copy.en.heroLead}>{copy.heroLead}</p><div class="actions"><a class="primary" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>{mapChannel && <a href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}<a href="#catalog-request" data-uk={business.copy.uk.requestLabel} data-en={business.copy.en.requestLabel}>{copy.requestLabel}</a>{business.status==="unclaimed" && <a href={claimHref} data-uk={business.copy.uk.claimLabel} data-en={business.copy.en.claimLabel}>{copy.claimLabel}</a>}</div>{business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}</div>
@@ -28,7 +29,9 @@ const mapChannel = business.channels.find((x)=>x.direction==="maps");
 <script>
   const conceptRoot = document.querySelector("[data-business-id]");
   if (conceptRoot) {
-    const locale = new URLSearchParams(window.location.search).get("lang") === "en" ? "en" : "uk";
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    const fallback = conceptRoot.getAttribute("data-default-locale") === "en" ? "en" : "uk";
+    const locale = requested === "en" || requested === "uk" ? requested : fallback;
     conceptRoot.querySelectorAll("[data-uk][data-en]").forEach((node) => {
       const next = locale === "en" ? node.getAttribute("data-en") : node.getAttribute("data-uk");
       if (next) node.textContent = next;
