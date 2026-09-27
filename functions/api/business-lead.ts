@@ -280,6 +280,15 @@ export async function onRequestPost({ request, env }: Context) {
     catalogContext.source ? `Catalog source: ${catalogContext.source}` : "",
   ].filter(Boolean);
 
+  const catalogHandoffLines = catalogBusinessRequest ? [
+    "Catalog customer-request handoff:",
+    "Hermes receipt does not mean delivery to the listed business.",
+    "Forward only through a verified business contact path.",
+    "Tell the business: a potential customer requested contact through Hermes Catalog.",
+    "Lead fee to the listed business: $0.",
+    "Any Hermes website, SEO/GEO, CRM, SMM or automation offer is optional and separate from this lead.",
+  ] : [];
+
   const emailBody = [
     "Hermes Business Lead",
     "--------------------",
@@ -299,6 +308,7 @@ export async function onRequestPost({ request, env }: Context) {
     "Goal:",
     message,
     ...(catalogLines.length ? ["", "Catalog context:", ...catalogLines] : []),
+    ...(catalogHandoffLines.length ? ["", ...catalogHandoffLines] : []),
     ...(attributionLines.length ? ["", "Attribution:", ...attributionLines] : []),
     "",
     ...(submittedAt ? [`Submitted at: ${submittedAt}`] : []),
