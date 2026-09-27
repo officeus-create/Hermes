@@ -28,6 +28,8 @@ jobs:
           node-version: "22"
       - name: Validate VideoJob provider and governance contract
         run: node video-factory/tests/video-factory-contract.test.mjs
+      - name: Validate queue, storage and provider state contract
+        run: node video-factory/tests/video-queue-state.test.mjs
       - name: Validate HyperFrames template/provider contract
         run: node video-factory/tests/hyperframes-template-contract.test.mjs
 
