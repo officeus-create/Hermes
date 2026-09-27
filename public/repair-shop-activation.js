@@ -281,6 +281,7 @@
     if (!profileData?.success) {
       window.hermesRepairBookingReadiness = { slug: "", ready: false };
       document.dispatchEvent(new CustomEvent("hermes:repair-booking-readiness", { detail: window.hermesRepairBookingReadiness }));
+      $("[data-repair-booking-sharebar]")?.remove();
       return;
     }
 
@@ -348,7 +349,7 @@
 
     const copy = $("[data-repair-copy-booking]", bar);
     copy?.addEventListener("click", async () => {
-      if (!bookingUrl) return;
+      if (!bookingUrl || window.hermesRepairBookingReadiness?.slug !== slug || !window.hermesRepairBookingReadiness.ready) return;
       if (await copyBookingUrl(fullBookingUrl)) {
         storeShared(slug);
         copy.textContent = "✓";
@@ -357,7 +358,7 @@
       }
     });
     $("[data-repair-share-booking]", bar)?.addEventListener("click", async () => {
-      if (!fullBookingUrl) return;
+      if (!fullBookingUrl || window.hermesRepairBookingReadiness?.slug !== slug || !window.hermesRepairBookingReadiness.ready) return;
       try {
         if (typeof navigator.share === "function") await navigator.share({ title: t.customerLinkTitle, url: fullBookingUrl });
         else await copyBookingUrl(fullBookingUrl);
