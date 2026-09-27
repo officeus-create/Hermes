@@ -73,6 +73,8 @@ test("non-US Catalog locality hub uses generic business semantics", async ({ pag
 
 test("Catalog customer request keeps target context fixed and accepts email-only contact", async ({ page }) => {
   await page.goto(conceptPath);
+  const analyticsDecline = page.locator("[data-consent-decline]");
+  if (await analyticsDecline.isVisible()) await analyticsDecline.click();
   await page.locator("#catalog-request form button[type=submit]").click();
   await expect(page).toHaveURL(/\/businesses\/request\/\?/);
 
