@@ -5,6 +5,12 @@ const conceptPath = "/businesses/ukraine/chaiky/chayka-store/";
 test("Catalog Website Concept keeps opportunity details in a reusable dialog", async ({ page }) => {
   await page.goto(conceptPath);
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow");
+  const schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
+  expect(schemaText).toContain('"LocalBusiness"');
+  expect(schemaText).toContain('"FAQPage"');
+  expect(schemaText).not.toContain('"AutoRepair"');
 
   await expect(page.locator('form[action="/businesses/request/"] input[name="requested_service"]')).toHaveValue("Phone repair & accessories");
 
