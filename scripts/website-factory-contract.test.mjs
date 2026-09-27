@@ -91,6 +91,9 @@ assert.match(item, /notification_status:\s*"pending"/, "delivery not configured 
 assert.match(item, /notification_status:\s*"failed"/, "delivery failures must be observable without losing the brief");
 assert.match(item, /retry:\s*true/, "reposting an already submitted brief must be able to retry a non-sent notification");
 assert.match(item, /build_started:\s*false/, "brief creation must never claim an automated website build started");
+assert.match(item, /websiteFactoryToCatalogConceptDraft/, "submitted Website Factory briefs must map into the Catalog concept-draft contract");
+assert.match(item, /catalog_concept_draft/, "submitted/readback responses must expose the deterministic Catalog concept draft");
+assert.match(item, /Catalog publication:/, "operations handoff must show the CONCEPT_DRAFT publication boundary");
 assert.match(item, /No automated production build has been started/, "handoff copy must state the production boundary");
 
 console.log("Hermes Connect Website Factory Design 4 contract: PASS");
