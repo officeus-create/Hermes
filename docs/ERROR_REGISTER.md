@@ -271,3 +271,5 @@ WORKING_APPROACH: Consume the readiness event's explicit `{slug, ready}` payload
 EVIDENCE: Authenticated production Office synthetic shop had 147 services and `data-ready=true` in the share bar, while Company Copy stayed disabled and Appointments share stayed hidden. Separate exact-head CI and post-deploy browser check are pending.
 
 REUSE_RULE: After shipping a shared readiness signal, verify every consumer in a real authenticated session. A passing mocked browser test does not prove cross-script timing in production.
+
+FOLLOW_UP: PR #1516 passed exact-head CI and the approved-main deployment workflow reported the exact commit live. Browser comparison then found the compiled Company script had the same content-addressed `_astro` URL as the #1516 preview, while the unversioned `/repair-shop-activation.js` still rendered a share bar without the new `data-shop-slug`. This is evidence of a stale unversioned public asset in that browser path; it does not prove whether browser or edge cache retained it. Version the changed public script URLs in the rendered HTML, then recheck authenticated production. Bump those query versions whenever the scripts change.
