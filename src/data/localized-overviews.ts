@@ -61,10 +61,10 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
         image: "/images/path-academy-system.jpg", imageAlt: "Архітектурне середовище практичного навчання",
       },
       {
-        id: "technology", number: "04", brand: "Hermes IT Development", title: "Цифрові продукти навколо того, як працює ваш бізнес.",
+        id: "technology", number: "04", brand: "Hermes Technology", title: "Цифрові продукти навколо того, як працює ваш бізнес.",
         body: "Сайти, застосунки, CRM, системи запису й оплати, автоматизація, аналітика, інтеграції та AI-асистенти для клієнтських і внутрішніх процесів.",
         points: ["Сайти, портали та застосунки", "CRM й операційні системи", "AI-асистенти та інтеграції"], cta: "Описати IT-проєкт",
-        image: "/images/path-technology-portal.jpg", imageAlt: "Цифровий портал Hermes IT Development",
+        image: "/images/path-technology-portal.jpg", imageAlt: "Цифровий портал Hermes Technology",
       },
     ],
     partnership: {
@@ -134,10 +134,10 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
         image: "/images/path-academy-system.jpg", imageAlt: "Архитектурная среда практического обучения",
       },
       {
-        id: "technology", number: "04", brand: "Hermes IT Development", title: "Цифровые продукты вокруг того, как работает ваш бизнес.",
+        id: "technology", number: "04", brand: "Hermes Technology", title: "Цифровые продукты вокруг того, как работает ваш бизнес.",
         body: "Сайты, приложения, CRM, системы записи и оплаты, автоматизация, аналитика, интеграции и AI-ассистенты для клиентских и внутренних процессов.",
         points: ["Сайты, порталы и приложения", "CRM и операционные системы", "AI-ассистенты и интеграции"], cta: "Описать IT-проект",
-        image: "/images/path-technology-portal.jpg", imageAlt: "Цифровой портал Hermes IT Development",
+        image: "/images/path-technology-portal.jpg", imageAlt: "Цифровой портал Hermes Technology",
       },
     ],
     partnership: {
@@ -207,10 +207,10 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
         image: "/images/path-academy-system.jpg", imageAlt: "Entorno de formación empresarial práctica",
       },
       {
-        id: "technology", number: "04", brand: "Hermes IT Development", title: "Productos digitales diseñados alrededor de su empresa.",
+        id: "technology", number: "04", brand: "Hermes Technology", title: "Productos digitales diseñados alrededor de su empresa.",
         body: "Sitios web, aplicaciones, CRM, reservas y pagos, automatización, analítica, integraciones y asistentes con AI para procesos internos y de clientes.",
         points: ["Sitios, portales y aplicaciones", "CRM y sistemas operativos", "Asistentes con AI e integraciones"], cta: "Describir un proyecto IT",
-        image: "/images/path-technology-portal.jpg", imageAlt: "Portal digital de Hermes IT Development",
+        image: "/images/path-technology-portal.jpg", imageAlt: "Portal digital de Hermes Technology",
       },
     ],
     partnership: {
@@ -280,10 +280,10 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
         image: "/images/path-academy-system.jpg", imageAlt: "Ambiente di formazione aziendale pratica",
       },
       {
-        id: "technology", number: "04", brand: "Hermes IT Development", title: "Prodotti digitali progettati intorno alla vostra azienda.",
+        id: "technology", number: "04", brand: "Hermes Technology", title: "Prodotti digitali progettati intorno alla vostra azienda.",
         body: "Siti, applicazioni, CRM, prenotazioni e pagamenti, automazione, analisi, integrazioni e assistenti AI per processi interni e clienti.",
         points: ["Siti, portali e applicazioni", "CRM e sistemi operativi", "Assistenti AI e integrazioni"], cta: "Descrivi un progetto IT",
-        image: "/images/path-technology-portal.jpg", imageAlt: "Portale digitale Hermes IT Development",
+        image: "/images/path-technology-portal.jpg", imageAlt: "Portale digitale Hermes Technology",
       },
     ],
     partnership: {
@@ -353,10 +353,10 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
         image: "/images/path-academy-system.jpg", imageAlt: "Environnement de formation professionnelle pratique",
       },
       {
-        id: "technology", number: "04", brand: "Hermes IT Development", title: "Des produits numériques conçus autour de votre entreprise.",
+        id: "technology", number: "04", brand: "Hermes Technology", title: "Des produits numériques conçus autour de votre entreprise.",
         body: "Sites, applications, CRM, réservation et paiement, automatisation, analyse, intégrations et assistants AI pour les processus internes et clients.",
         points: ["Sites, portails et applications", "CRM et systèmes opérationnels", "Assistants AI et intégrations"], cta: "Décrire un projet IT",
-        image: "/images/path-technology-portal.jpg", imageAlt: "Portail numérique Hermes IT Development",
+        image: "/images/path-technology-portal.jpg", imageAlt: "Portail numérique Hermes Technology",
       },
     ],
     partnership: {
