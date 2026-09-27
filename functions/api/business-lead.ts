@@ -32,6 +32,13 @@ type AttributionInput = {
   referrer?: unknown;
 };
 
+type CatalogContextInput = {
+  business_id?: unknown;
+  profile?: unknown;
+  source?: unknown;
+  requested_service?: unknown;
+};
+
 type BusinessLeadInput = {
   request_id?: unknown;
   submitted_at?: unknown;
@@ -52,6 +59,7 @@ type BusinessLeadInput = {
   message?: unknown;
   consent?: unknown;
   attribution?: unknown;
+  catalog_context?: unknown;
 };
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
@@ -77,6 +85,7 @@ const allowedServices = new Set([
   "Catalog claim / verification",
   "Catalog business listing",
   "Catalog SEO / GEO",
+  "Catalog customer request",
 ]);
 
 const allowedBudgets = new Set([
@@ -138,6 +147,17 @@ const getAttribution = (value: unknown) => {
     gbraid: clean(input.gbraid, 240),
     wbraid: clean(input.wbraid, 240),
     referrer: clean(input.referrer, 500),
+  };
+};
+
+const getCatalogContext = (value: unknown) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {} as Record<string, string>;
+  const input = value as CatalogContextInput;
+  return {
+    business_id: clean(input.business_id, 180),
+    profile: clean(input.profile, 500),
+    source: clean(input.source, 120),
+    requested_service: clean(input.requested_service, 300),
   };
 };
 
@@ -208,6 +228,8 @@ export async function onRequestPost({ request, env }: Context) {
   const sourcePath = sourcePathRaw.startsWith("/") ? sourcePathRaw : "/business-growth/";
   const submittedAt = clean(input.submitted_at, 40);
   const attribution = getAttribution(input.attribution);
+  const catalogContext = getCatalogContext(input.catalog_context);
+  const catalogBusinessRequest = services.includes("Catalog customer request");
 
   const invalid =
     !isRequestId(requestId) ||
@@ -225,6 +247,7 @@ export async function onRequestPost({ request, env }: Context) {
     !allowedLanguages.has(preferredLanguage) ||
     preferredContactTime.length < 2 ||
     services.length < 1 ||
+    (catalogBusinessRequest && (!catalogContext.business_id || !catalogContext.profile || !catalogContext.requested_service)) ||
     message.length < 10;
 
   if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
@@ -253,6 +276,22 @@ export async function onRequestPost({ request, env }: Context) {
     attribution.referrer ? `Referrer: ${attribution.referrer}` : "",
   ].filter(Boolean);
 
+  const catalogLines = [
+    catalogContext.business_id ? `Catalog business ID: ${catalogContext.business_id}` : "",
+    catalogContext.profile ? `Catalog profile: ${catalogContext.profile}` : "",
+    catalogContext.source ? `Catalog source: ${catalogContext.source}` : "",
+    catalogContext.requested_service ? `Requested service: ${catalogContext.requested_service}` : "",
+  ].filter(Boolean);
+
+  const catalogHandoffLines = catalogBusinessRequest ? [
+    "Catalog customer-request handoff:",
+    "Hermes receipt does not mean delivery to the listed business.",
+    "Forward only through a verified business contact path.",
+    "Tell the business: a potential customer requested contact through Hermes Catalog.",
+    "Lead fee to the listed business: $0.",
+    "Any Hermes website, SEO/GEO, CRM, SMM or automation offer is optional and separate from this lead.",
+  ] : [];
+
   const emailBody = [
     "Hermes Business Lead",
     "--------------------",
@@ -271,6 +310,8 @@ export async function onRequestPost({ request, env }: Context) {
     `Services: ${services.join(", ")}`,
     "Goal:",
     message,
+    ...(catalogLines.length ? ["", "Catalog context:", ...catalogLines] : []),
+    ...(catalogHandoffLines.length ? ["", ...catalogHandoffLines] : []),
     ...(attributionLines.length ? ["", "Attribution:", ...attributionLines] : []),
     "",
     ...(submittedAt ? [`Submitted at: ${submittedAt}`] : []),

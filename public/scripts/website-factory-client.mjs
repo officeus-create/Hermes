@@ -260,12 +260,16 @@ function renderSources() {
     const copy = document.createElement("div");
     const strong = document.createElement("strong");
     strong.textContent = source.type || "website";
+    const status = document.createElement("span");
+    status.className = "source-status";
+    status.textContent = `import: ${source.status || "pending"}`;
+    status.dataset.sourceImportStatus = source.status || "pending";
     const link = document.createElement("a");
     link.href = source.url;
     link.target = "_blank";
     link.rel = "noopener";
     link.textContent = source.url;
-    copy.append(strong, link);
+    copy.append(strong, status, link);
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "factory-icon-button";
@@ -308,7 +312,8 @@ function hydrateForm() {
   setValue("[data-brief-tone]", payload.brief?.tone);
   setValue("[data-brief-constraints]", Array.isArray(payload.brief?.constraints) ? payload.brief.constraints.join("\n") : "");
   for (const role of ["visual", "functionality", "structure"]) {
-    const reference = (payload.references || []).find((item) => item.role === role);
+    const canonicalRole = role === "structure" ? "structure-conversion" : role;
+    const reference = (payload.references || []).find((item) => item.role === canonicalRole || item.role === role);
     setValue(`[data-ref-url="${role}"]`, reference?.url || "");
     setValue(`[data-ref-note="${role}"]`, reference?.note || "");
   }
@@ -544,7 +549,7 @@ $("[data-source-form]")?.addEventListener("submit", (event) => {
   const url = secureUrl(input?.value || "");
   if (!url) return setAlert("Use a public HTTPS URL without embedded credentials.");
   const sources = Array.isArray(draft.payload.sources) ? draft.payload.sources : [];
-  if (!sources.some((item) => item.url === url)) sources.push({ url, type: "website", note: "", status: "saved" });
+  if (!sources.some((item) => item.url === url)) sources.push({ url, type: "website", note: "", status: "pending" });
   draft.payload.sources = sources;
   if (input) input.value = "";
   renderSources();

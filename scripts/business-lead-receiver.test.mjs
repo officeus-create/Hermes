@@ -132,6 +132,66 @@ const invalidHorizon = await onRequest({
 });
 assert.equal(invalidHorizon.status, 400);
 
+
+const catalogCustomerPayload = {
+  ...validPayload,
+  request_id: "catalog_customer_req_12345",
+  interest: "Hermes Catalog",
+  company: "Chayka Store",
+  city_country: "Chaiky, Kyiv region, Ukraine",
+  website_or_social: "/businesses/ukraine/chaiky/chayka-store/",
+  services: ["Catalog customer request"],
+  catalog_context: {
+    business_id: "catalog-ua-chayka-store",
+    profile: "/businesses/ukraine/chaiky/chayka-store/",
+    source: "hermes_catalog",
+    requested_service: "Phone repair & accessories",
+  },
+  attribution: {
+    utm_source: "hermes_catalog",
+    utm_medium: "internal",
+    utm_campaign: "catalog-business-request",
+    utm_content: "website-concept",
+    referrer: "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/",
+  },
+};
+const catalogCustomer = await onRequest({
+  request: makeRequest(catalogCustomerPayload, { "CF-Connecting-IP": "192.0.2.60" }),
+  env,
+});
+assert.equal(catalogCustomer.status, 200);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [CATALOG]");
+assert.match(serviceCalls.at(-1).payload.text, /Catalog context:/);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-chayka-store/);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog profile: \/businesses\/ukraine\/chaiky\/chayka-store\//);
+assert.match(serviceCalls.at(-1).payload.text, /Catalog source: hermes_catalog/);
+assert.match(serviceCalls.at(-1).payload.text, /Requested service: Phone repair & accessories/);
+assert.match(serviceCalls.at(-1).payload.text, /UTM content: website-concept/);
+assert.match(serviceCalls.at(-1).payload.text, /Hermes receipt does not mean delivery to the listed business/);
+assert.match(serviceCalls.at(-1).payload.text, /verified business contact path/);
+assert.match(serviceCalls.at(-1).payload.text, /Lead fee to the listed business: \$0/);
+assert.match(serviceCalls.at(-1).payload.text, /optional and separate from this lead/);
+
+const catalogCustomerMissingTarget = await onRequest({
+  request: makeRequest({
+    ...catalogCustomerPayload,
+    request_id: "catalog_customer_bad_12345",
+    catalog_context: { ...catalogCustomerPayload.catalog_context, business_id: "" },
+  }, { "CF-Connecting-IP": "192.0.2.61" }),
+  env,
+});
+assert.equal(catalogCustomerMissingTarget.status, 400);
+
+const catalogCustomerMissingService = await onRequest({
+  request: makeRequest({
+    ...catalogCustomerPayload,
+    request_id: "catalog_customer_no_service_12345",
+    catalog_context: { ...catalogCustomerPayload.catalog_context, requested_service: "" },
+  }, { "CF-Connecting-IP": "192.0.2.62" }),
+  env,
+});
+assert.equal(catalogCustomerMissingService.status, 400);
+
 const noMessenger = await onRequest({
   request: makeRequest({ ...validPayload, request_id: "business_no_msg_12345", whatsapp: "", telegram: "" }, { "CF-Connecting-IP": "192.0.2.52" }),
   env,

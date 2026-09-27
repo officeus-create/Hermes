@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import CatalogWebsiteConcept from "./CatalogWebsiteConcept.astro";
+import type { CatalogBusinessConcept, CatalogConceptLocale } from "../data/catalog-business-concepts";
+import { buildCatalogSchema, catalogConceptPath } from "../lib/catalog-concept-factory.mjs";
+
+interface Props { business: CatalogBusinessConcept; }
+const { business } = Astro.props;
+const path = catalogConceptPath(business);
+const profileUrl = new URL(path, Astro.site).toString();
+const schema = buildCatalogSchema(business, profileUrl);
+const defaultLocale: CatalogConceptLocale = business.countryCode === "UA" ? "uk" : "en";
+const countryLabel = business.countryNameEn || business.countrySlug.replace(/(^|-)([a-z])/g, (_match, prefix, letter) => `${prefix === "-" ? " " : ""}${letter.toUpperCase()}`);
+const faqHeading = defaultLocale === "uk" ? "Перед зверненням" : "Before contacting";
+---
+<BaseLayout
+  title={business.seo.title}
+  description={business.seo.description}
+  schema={schema}
+  locale={defaultLocale}
+  htmlLang={defaultLocale}
+>
+  <SiteHeader theme="light" activePath="/businesses/" locale={defaultLocale} />
+  <main class="concept-page">
+    <div class="shell">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/businesses/">Hermes Catalog</a><span>→</span>
+        <a href={`/businesses/${business.countrySlug}/`}>{countryLabel}</a><span>→</span>
+        <a href={`/businesses/${business.countrySlug}/${business.localitySlug}/`}>{business.locality}</a><span>→</span>
+        <span>{business.name}</span>
+      </nav>
+      <CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale={defaultLocale} />
+      <section class="faq" aria-labelledby="catalog-concept-faq">
+        <p class="eyebrow">FAQ</p>
+        <h2 id="catalog-concept-faq">{faqHeading}</h2>
+        {business.faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}
+      </section>
+    </div>
+  </main>
+  <SiteFooter locale={defaultLocale} />
+</BaseLayout>
+<style>
+  .concept-page{min-height:70vh;background:#f5f6f3;color:#17211e}
+  .shell{width:min(1160px,calc(100% - 2rem));margin:auto;padding:108px 0 80px}
+  .breadcrumbs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;color:#68746f;font-size:12px}
+  .breadcrumbs a{color:#315e50;text-decoration:none;font-weight:800}
+  .faq{margin-top:16px;padding:28px;border:1px solid #dde3df;border-radius:22px;background:#fff}
+  .faq .eyebrow{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#477568}
+  .faq h2{font-size:clamp(28px,4vw,42px);margin:8px 0 16px}
+  .faq article{padding:14px 0;border-top:1px solid #edf0ee}
+  .faq h3{margin:0 0 6px}.faq p{margin:0;color:#64706b;line-height:1.6}
+</style>

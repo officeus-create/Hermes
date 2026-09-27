@@ -1,5 +1,7 @@
 export const WEBSITE_FACTORY_STATES = ["draft", "brief_ready", "submitted"];
-export const WEBSITE_FACTORY_REFERENCE_ROLES = ["visual", "functionality", "structure"];
+export const WEBSITE_FACTORY_REFERENCE_INPUT_ROLES = ["visual", "functionality", "structure"];
+export const WEBSITE_FACTORY_REFERENCE_ROLES = ["visual", "functionality", "structure-conversion"];
+export const WEBSITE_FACTORY_SOURCE_IMPORT_STATES = ["pending", "verified", "failed"];
 export const WEBSITE_FACTORY_MAX_PAYLOAD_BYTES = 60_000;
 
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
@@ -69,7 +71,7 @@ export function normalizeWebsiteFactoryPayload(input) {
       url,
       type: detectWebsiteFactorySourceType(url),
       note: cleanWebsiteFactoryText(item.note, 500),
-      status: "saved",
+      status: "pending",
     }];
   }) : [];
 
@@ -79,10 +81,12 @@ export function normalizeWebsiteFactoryPayload(input) {
 
   const references = Array.isArray(source.references) ? source.references.slice(0, 6).flatMap((item) => {
     if (!item || typeof item !== "object") return [];
-    const role = WEBSITE_FACTORY_REFERENCE_ROLES.includes(String(item.role || "")) ? String(item.role) : null;
+    const inputRole = String(item.role || "");
+    const role = inputRole === "structure" ? "structure-conversion" : inputRole;
+    const normalizedRole = WEBSITE_FACTORY_REFERENCE_ROLES.includes(role) ? role : null;
     const url = cleanWebsiteFactoryUrl(item.url);
-    if (!role || !url) return [];
-    return [{ role, url, principles: cleanStringArray(item.principles, 12, 120), note: cleanWebsiteFactoryText(item.note, 800) }];
+    if (!normalizedRole || !url) return [];
+    return [{ role: normalizedRole, url, principles: cleanStringArray(item.principles, 12, 120), note: cleanWebsiteFactoryText(item.note, 800) }];
   }) : [];
 
   const capabilities = Array.isArray(source.capabilities) ? source.capabilities.slice(0, 30).flatMap((item) => {
@@ -104,6 +108,8 @@ export function normalizeWebsiteFactoryPayload(input) {
       geography: cleanWebsiteFactoryText(rawGoals.geography, 500),
       languages: cleanStringArray(rawGoals.languages, 12, 80),
       primary_action: cleanWebsiteFactoryText(rawGoals.primary_action, 300),
+      semantic_core: cleanStringArray(rawGoals.semantic_core, 30, 180),
+      local_intents: cleanStringArray(rawGoals.local_intents, 30, 180),
     },
     brief: {
       text: cleanWebsiteFactoryText(rawBrief.text, 12000),
@@ -140,6 +146,75 @@ export function websiteFactoryReadiness(payload) {
   }
   if (payload?.unresolved_critical?.length) reasons.push("critical_conflicts_unresolved");
   return { ready: reasons.length === 0, reasons };
+}
+
+export function transitionWebsiteFactorySourceImport(source, nextStatus) {
+  if (!source || !WEBSITE_FACTORY_SOURCE_IMPORT_STATES.includes(nextStatus)) throw new Error("source_import_state_invalid");
+  const allowed = {
+    pending: ["verified", "failed"],
+    verified: [],
+    failed: ["pending"],
+  };
+  if (!allowed[source.status]?.includes(nextStatus)) throw new Error("source_import_transition_invalid");
+  return { ...source, status: nextStatus };
+}
+
+const slugifyCatalogPart = (value, fallback) => {
+  const slug = cleanWebsiteFactoryText(value, 160)
+    .normalize("NFKD")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+  return slug || fallback;
+};
+
+export function websiteFactoryToCatalogConceptDraft(payload, { draftId = "website-factory-draft", title = "Website concept draft" } = {}) {
+  const normalized = normalizeWebsiteFactoryPayload(payload);
+  const facts = normalized.facts || {};
+  const businessName = cleanWebsiteFactoryText(facts.business_name || title, 180) || "Business concept";
+  const locality = cleanWebsiteFactoryText(facts.city || facts.locality || normalized.goals.geography, 160) || "Local market";
+  const country = cleanWebsiteFactoryText(facts.country || facts.country_code, 120) || "Unknown";
+  const semanticCore = normalized.goals.semantic_core.length
+    ? normalized.goals.semantic_core
+    : cleanStringArray([...(Array.isArray(facts.services) ? facts.services : []), normalized.goals.primary], 30, 180);
+  const localIntents = normalized.goals.local_intents.length
+    ? normalized.goals.local_intents
+    : cleanStringArray(semanticCore.map((term) => locality ? `${term} ${locality}` : term), 30, 180);
+  return {
+    id: `catalog-draft-${slugifyCatalogPart(draftId, "draft")}`,
+    slug: slugifyCatalogPart(businessName, "business"),
+    countrySlug: slugifyCatalogPart(country, "unknown"),
+    localitySlug: slugifyCatalogPart(locality, "local"),
+    name: businessName,
+    lifecycleState: "CONCEPT_DRAFT",
+    publication: {
+      state: "concept_preview",
+      indexable: false,
+      owner_approval: "required",
+      verified_source_review: "required",
+    },
+    facts,
+    goals: normalized.goals,
+    sourceImports: normalized.sources.map((source) => ({ ...source, status: source.status || "pending" })),
+    competitorReferences: normalized.references,
+    semanticCore,
+    localIntents,
+    ownerApproval: { required: true, approved: false, approvedAt: null },
+    source: "website_factory",
+  };
+}
+
+export function websiteFactoryCatalogPublicationGate(conceptDraft, { ownerApproved = false } = {}) {
+  const sources = Array.isArray(conceptDraft?.sourceImports) ? conceptDraft.sourceImports : [];
+  const checks = {
+    concept_preview: conceptDraft?.publication?.state === "concept_preview",
+    owner_approved: ownerApproved === true,
+    sources_present: sources.length > 0,
+    sources_verified: sources.length > 0 && sources.every((source) => source.status === "verified"),
+    semantic_core: Array.isArray(conceptDraft?.semanticCore) && conceptDraft.semanticCore.length > 0,
+    local_intents: Array.isArray(conceptDraft?.localIntents) && conceptDraft.localIntents.length > 0,
+  };
+  return { ready: Object.values(checks).every(Boolean), checks };
 }
 
 export async function ensureWebsiteFactorySchema(db) {

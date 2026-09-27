@@ -4,6 +4,7 @@ import { join } from "node:path";
 // Website Factory is a private Hermes Connect workspace and must pass its source/backend
 // contract whenever the canonical Hermes Connect workspace gate runs in npm test.
 await import("./website-factory-contract.test.mjs");
+await import("./catalog-website-factory-contract.test.mjs");
 
 const root = new URL("../", import.meta.url).pathname;
 const distRoot = join(root, "dist", "demos", "hermes-connect");
