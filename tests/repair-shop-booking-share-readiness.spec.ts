@@ -80,7 +80,7 @@ test("booking sharing waits for a real service and saved open hours", async ({ p
   await expect(page.locator("[data-booking-share]")).toBeVisible();
   await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#copy-booking-link")).toBeEnabled();
-  await expect(page.locator("#open-booking-link")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.locator("#open-booking-link")).toHaveAttribute("href", /booking\/\?shop=preview-garage/);
   await page.route("**/api/repair-shop/profile", (route) => route.fulfill({ status: 503, contentType: "application/json", body: '{"success":false}' }));
   await page.evaluate(() => document.dispatchEvent(new Event("hermes:repair-setup-changed")));
   await expect(page.locator("[data-repair-booking-sharebar]")).toHaveCount(0);
