@@ -24,7 +24,12 @@ assert.doesNotMatch(catalogOwnerApi, /load_board_access|hermes_company_profiles/
 assert.match(publicCatalogApi, /vertical_key='repair_shop'/);
 assert.match(publicCatalogApi, /profileUrl: `\/businesses\/connect\/repair-shop\//);
 assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointment/);
-assert.match(publicProfile, /Customer records, appointments, private contacts and authentication data are never published/);
+assert.match(publicProfile, /No private customer records, appointments or account details appear on this page/);
+assert.match(publicProfile, /does not indicate a Hermes customer relationship/);
+assert.match(publicProfile, /type=claim&business=/);
+assert.match(publicProfile, /type=catalog-growth&business=/);
+assert.match(publicProfile, /indexing, rankings, or customer inquiries/);
+assert.doesNotMatch(publicProfile, /the next scheduled checkpoint is/);
 assert.match(publicProfile, /address_line1/);
 assert.match(publicProfile, /postal_code/);
 assert.match(publicProfile, /streetAddress/);

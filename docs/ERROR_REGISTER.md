@@ -231,3 +231,19 @@ EVIDENCE: 2026-09-27 authenticated production showed 147 items; locally build/st
 LESSON: Evaluate owner screens against realistic high-volume tenants, not only two-item fixtures.
 
 REUSE_RULE: When lists can grow substantially, test at least 40 items, search the whole collection, and ensure create/delete and empty states remain discoverable.
+
+## 2026-09-27 — Dynamic Repair Shop Catalog profile had an isolated outdated presentation
+
+PROBLEM: The public Kittle's Garage Catalog profile returned HTTP 200 with canonical and AutoRepair schema, but rendered through a compact dynamic template separate from the fuller Catalog profiles. Its most prominent internal block discussed SEO reporting dates and timelines, while the actual owner claim/correction route was not directly available.
+
+ROOT_CAUSE: `functions/businesses/connect/repair-shop/[slug].ts` had an old single-line page template; later static Catalog design and the structured claim request form did not update this dynamic route.
+
+FAILED_APPROACH: Counting an indexable URL and JSON-LD as a finished, easy-to-use business page.
+
+WORKING_APPROACH: Keep the existing database-backed profile, schema, URL, and owner publication toggle. Render a responsive light business page with clear owner-review status, factual service/hour sections, listed website, a structured claim/correction handoff, and a separate growth request. Remove promised SEO reporting dates and make indexing/outcomes explicitly unverified. Add a route-level mock proving escaped business data, safe public fields, CTA routes, canonical and no-index behavior for invalid profiles.
+
+EVIDENCE: Production baseline returned 200 with self-canonical on 2026-09-27. Local build, full static tests and the route-level test passed on the review branch. Browser/CI and exact-production readback remain separate release gates.
+
+LESSON: A technically indexable profile can still leave both visitor and business owner without the right next action.
+
+REUSE_RULE: For any public business page, test one real user action and the owner correction path alongside canonical/schema. Do not turn draft growth operations into a customer-facing ranking promise.
