@@ -70,6 +70,17 @@ async function mockOwnerApis(page: Page) {
     }
     return route.fulfill(json({ success: true, shop }));
   });
+  // This legacy Company-workspace test represents a shop that is already safe to share.
+  // Dedicated booking-readiness coverage separately owns the unconfigured and fail-closed states.
+  await page.route("**/api/services", (route) => route.fulfill(json({
+    success: true,
+    services: [{ id: "svc-settings-ready", name: "Brake inspection", duration_minutes: 60 }],
+  })));
+  await page.route("**/api/repair-shop/availability", (route) => route.fulfill(json({
+    success: true,
+    timezone: shop.timezone,
+    days: [{ day_of_week: 1, is_open: true, start_time: "09:00", end_time: "17:00" }],
+  })));
   await page.route("**/api/repair-shop/staff", async (route) => {
     const method = route.request().method();
     const body = method === "GET" ? {} : JSON.parse(route.request().postData() || "{}");
