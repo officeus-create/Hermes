@@ -127,15 +127,17 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   let staff:Staff[] = [];
   let publicBookingUrl = "";
   let bookingSlug = "";
+  let bookingReadinessEvent:{slug:string;ready:boolean}|null=null;
   const updateBookingSharing=()=>{
-    const readiness=(window as any).hermesRepairBookingReadiness;
+    const bar=document.querySelector<HTMLElement>("[data-repair-booking-sharebar]");
+    const readiness=bookingReadinessEvent??{slug:bar?.dataset.shopSlug||"",ready:bar?.dataset.ready==="true"};
     const ready=Boolean(bookingSlug && readiness?.slug===bookingSlug && readiness?.ready);
     const code=$("#public-booking-link");if(code)code.textContent=ready?publicBookingUrl:t.bookingCopy;
     const copy=$<HTMLButtonElement>("#copy-booking-link");if(copy)copy.disabled=!ready;
     const open=$<HTMLAnchorElement>("#open-booking-link");
     if(open){if(ready)open.href=publicBookingUrl;else open.removeAttribute("href");open.setAttribute("aria-disabled",String(!ready));open.tabIndex=ready?0:-1;}
   };
-  document.addEventListener("hermes:repair-booking-readiness",updateBookingSharing);
+  document.addEventListener("hermes:repair-booking-readiness",(event)=>{bookingReadinessEvent=(event as CustomEvent<{slug:string;ready:boolean}>).detail;updateBookingSharing();});
   let calendarStatusData:any = { configuration:"configuration_required", state:"configuration_required", connections:[] };
 
   document.documentElement.lang = locale;

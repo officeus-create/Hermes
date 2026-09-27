@@ -6,6 +6,10 @@ const closedWeek = () => Array.from({ length: 7 }, (_, day_of_week) => ({
 }));
 
 test("booking sharing waits for a real service and saved open hours", async ({ page }) => {
+  // Independent screens must work from the verified event/DOM, even if an incidental global is unavailable.
+  await page.addInitScript(() => Object.defineProperty(window, "hermesRepairBookingReadiness", {
+    configurable: true, get: () => undefined, set: () => {},
+  }));
   let services: Array<{ id: string; name: string; duration_minutes: number }> = [];
   let days = closedWeek();
   await page.route("**/api/auth/me", (route) => route.fulfill(ok({
