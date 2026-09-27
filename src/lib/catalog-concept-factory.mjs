@@ -129,6 +129,7 @@ export function buildCatalogLeadContext({ business, profileUrl, source = "hermes
     business: clean(business.name, 180),
     profile: clean(profileUrl, 500),
     source: clean(source, 120) || "hermes_catalog",
+    requested_service: clean(business.primaryIntent, 300),
     referrer: clean(referrer, 500),
     utm_source: clean(utm.utm_source, 120) || "hermes_catalog",
     utm_medium: clean(utm.utm_medium, 120) || "internal",
