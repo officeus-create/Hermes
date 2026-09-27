@@ -785,7 +785,7 @@ test("technology solution pre-fills the project brief", async ({ page }) => {
 
 test("company operating system starts the full project brief", async ({ page }) => {
   await page.goto("/paths/technology/");
-  await expect(page.getByRole("heading", { name: "Hermes IT Development" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hermes Technology" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Quality assurance" })).toBeVisible();
   await page.getByRole("link", { name: "Add Company Digital Operating System to your project brief" }).click();
   await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Company Digital Operating System");
