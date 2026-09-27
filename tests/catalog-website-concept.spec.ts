@@ -13,6 +13,12 @@ test("Catalog Website Concept keeps opportunity details in a reusable dialog", a
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).not.toContain('"AutoRepair"');
 
+  await expect(page.locator('a[href^="tel:+380639242222"]')).toBeVisible();
+  await expect(page.locator('a[href^="https://maps.app.goo.gl/"]')).toBeVisible();
+  await expect(page.locator('a[href="https://www.instagram.com/chayka_store1"]')).toBeVisible();
+  await expect(page.locator('a[href="https://t.me/more_chay"]')).toBeVisible();
+  await expect(page.locator('a[href^="https://vt.tiktok.com/"]')).toHaveCount(2);
+
   await expect(page.locator('form[action="/businesses/request/"] input[name="requested_service"]')).toHaveValue("Phone repair & accessories");
 
   const offer = page.getByRole("button", { name: "Сайт / редизайн" });
