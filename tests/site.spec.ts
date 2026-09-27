@@ -651,7 +651,7 @@ test("each non-logistics direction exposes a working direct contact route", asyn
   const cases = [
     { slug: "marketing", link: "Email Marketing", subject: "ProgressoPro%20Marketing%20Inquiry" },
     { slug: "academy", link: "Email the Academy", subject: "Hermes%20Business%20Academy%20Inquiry" },
-    { slug: "technology", link: "Email IT Development", subject: "IT%20Development%20Inquiry" },
+    { slug: "technology", link: "Email IT Development", subject: "Hermes%20Technology%20Inquiry" },
   ];
 
   for (const item of cases) {
