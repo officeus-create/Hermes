@@ -235,6 +235,16 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       document.head.appendChild(script);
     };
 
+    const analyticsPageLocation = () => `${window.location.origin}${window.location.pathname}`;
+    const analyticsReferrer = () => {
+      try {
+        const referrer = new URL(document.referrer);
+        return referrer.protocol === "https:" || referrer.protocol === "http:" ? `${referrer.origin}/` : "";
+      } catch {
+        return "";
+      }
+    };
+
     const loadAnalytics = () => {
       loadClarity();
       if (document.querySelector('script[data-hermes-ga4]')) return;
@@ -264,6 +274,8 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       document.documentElement.dataset.analyticsTransport = "ga4";
       window.gtag('js', new Date());
       window.gtag('config', measurementId, {
+        page_location: analyticsPageLocation(),
+        page_referrer: analyticsReferrer(),
         allow_google_signals: false,
         allow_ad_personalization_signals: false
       });

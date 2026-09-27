@@ -1,5 +1,13 @@
 # GSC indexing triage — 2026-09-11
 
+## Authenticated reconciliation — 2026-09-27
+
+- GSC Pages aggregate (last updated September 20): 134 indexed / 249 excluded: 61 alternate canonical, 55 `noindex`, 119 discovered not indexed, 6 crawled not indexed, 7 not found (404), 1 redirect. These are historical report buckets, not 249 live defects or a current count of unindexed canonical owners.
+- Individual URL Inspection now reports **indexed** for five of the six `crawled, currently not indexed` examples: `/it/marketing/`, `/paths/academy/`, `/insights/logistics/dry-van-spot-rates-september-2026/`, `/fr/academie/`, `/it/academy/`. The sixth, `/business-growth/`, currently returns 200 with `noindex,follow` by design. Do not request indexing or edit those six from the stale aggregate alone.
+- The sampled 404s include retired paths and malformed requests (`/academy/` redirects to `/paths/academy/` on production; `/dashboard/` intentionally has no public owner). Review exact canonical owners before creating redirects. The canonical sitemap index reported success with 267 discovered URLs on September 18; a separate `/sitemap.xml` report showed success with 76 on September 26. Their dates and scopes differ. The current repository build contains 292 distinct canonical sitemap owners.
+- The built-site internal-link audit found two **indexable sitemap owners without any inbound internal link**: `/careers/car-hauling-dispatcher/` and `/services/hermes-connect/load-analyzer/`. This review branch adds a clearly expired-role overview link from the car-hauler guide and a clearly labeled concept link from the existing Hermes Connect labs. The dispatcher role title now changes when its governed vacancy is expired; it does not imply a current opening or issue `JobPosting` schema. This is a source-level correction pending exact-head CI, owner-approved merge and production readback.
+- Cloudflare account dashboard required human verification; Bing Webmaster sign-in was not completed. Their current account-level error reports are unknown. Do not present old Bing evidence as a fresh result. No bulk `Validate Fix`, indexing request, rewrite or new page follows from this snapshot.
+
 Scope: classify Search Console indexing exclusions before any request-indexing or Validate Fix action.
 
 ## Current live snapshot supplied by the owner

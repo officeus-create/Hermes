@@ -10,7 +10,9 @@ if (!vacancy) throw new Error("Car Hauling Dispatcher vacancy record is missing 
 const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
 
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
-const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
+const title = vacancyIsCurrent
+  ? "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics"
+  : "Car Hauling Dispatcher Role Overview | Hermes Logistics";
 const metaDescription = vacancyIsCurrent
   ? "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply."
   : "Review the Car Hauling Dispatcher role scope and Hermes recruiting process. The vacancy is not currently published as a verified-open JobPosting pending a fresh owner review.";

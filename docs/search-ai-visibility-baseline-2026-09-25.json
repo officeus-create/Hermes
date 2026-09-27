@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-09-25",
+  "evidence_class": "AUTHENTICATED_GSC_CONNECTOR",
+  "property": "sc-domain:hermeslogisticsus.com",
+  "current_range": {
+    "start": "2026-08-26",
+    "end": "2026-09-22"
+  },
+  "comparison_range": {
+    "start": "2026-07-29",
+    "end": "2026-08-25"
+  },
+  "current": {
+    "clicks": 8,
+    "impressions": 395,
+    "ctr": 0.020253164556962026,
+    "average_position": 43.924050632911396
+  },
+  "comparison": {
+    "clicks": 31,
+    "impressions": 1581,
+    "ctr": 0.0196078431372549,
+    "average_position": 40.30550284629981
+  },
+  "delta": {
+    "clicks": -23,
+    "impressions": -1186,
+    "clicks_pct": -74.19,
+    "impressions_pct": -75.02,
+    "ctr_points": 0.000645321419707124,
+    "average_position_delta": 3.618547786611586
+  },
+  "diagnosis": "VISIBILITY_LOSS_NOT_PRIMARY_CTR_COLLAPSE",
+  "material_falling_queries": [
+    {
+      "query": "seo for logistics",
+      "current_impressions": 2,
+      "previous_impressions": 43,
+      "current_position": 47.5,
+      "previous_position": 66.0930232558
+    },
+    {
+      "query": "hermes logistics",
+      "current_impressions": 61,
+      "previous_impressions": 96,
+      "current_position": 61.7868852459,
+      "previous_position": 34.71875
+    },
+    {
+      "query": "trucking seo company",
+      "current_impressions": 5,
+      "previous_impressions": 28,
+      "current_position": 43.8,
+      "previous_position": 54.6428571429
+    },
+    {
+      "query": "appleton warehousing services",
+      "current_impressions": 2,
+      "previous_impressions": 23,
+      "current_position": 54,
+      "previous_position": 56
+    },
+    {
+      "query": "logistics seo",
+      "current_impressions": 1,
+      "previous_impressions": 21,
+      "current_position": 43,
+      "previous_position": 72.2857142857
+    }
+  ],
+  "material_rising_queries": [
+    {
+      "query": "hermes logistik",
+      "current_impressions": 50,
+      "previous_impressions": 11,
+      "current_position": 46.48
+    },
+    {
+      "query": "seo for logistics companies",
+      "current_impressions": 15,
+      "previous_impressions": 0,
+      "current_position": 44.7333333333
+    },
+    {
+      "query": "auto transport load board",
+      "current_impressions": 15,
+      "previous_impressions": 2,
+      "current_position": 76.6666666667
+    },
+    {
+      "query": "trucking seo agency",
+      "current_impressions": 6,
+      "previous_impressions": 0,
+      "current_position": 41.8333333333
+    }
+  ],
+  "immediate_controls": [
+    "freeze_bulk_seo_geo_url_creation",
+    "keep_logistics_seo_owner_observation_freeze",
+    "page_survival_pipeline_required_for_indexable_growth",
+    "raise_entity_204_and_authority_368",
+    "measure_search_to_qualified_to_opportunity_to_revenue"
+  ],
+  "source_notes": [
+    "Search Console finalized data has an approximate three-day delay.",
+    "Rows are from authenticated finalized Search Console planning data; no synthetic intersection was manufactured."
+  ]
+}
