@@ -6,7 +6,7 @@ test("Catalog Website Concept keeps opportunity details in a reusable dialog", a
   await page.goto(conceptPath);
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/");
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
   const schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
   expect(schemaText).toContain('"LocalBusiness"');
   expect(schemaText).toContain('"FAQPage"');
@@ -74,7 +74,7 @@ test("Catalog customer request keeps target context fixed and accepts email-only
 
   await expect(company).toHaveValue("Чайка Store");
   await expect(company).toHaveJSProperty("readOnly", true);
-  await expect(cityCountry).toHaveValue("Chaiky, UA");
+  await expect(cityCountry).toHaveValue("Чайки, UA");
   await expect(cityCountry).toHaveJSProperty("readOnly", true);
   await expect(profile).toHaveJSProperty("readOnly", true);
   await expect(profile).toHaveValue(/businesses\/ukraine\/chaiky\/chayka-store\//);
