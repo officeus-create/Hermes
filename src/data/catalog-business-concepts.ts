@@ -54,7 +54,10 @@ export type CatalogBusinessConcept = {
   phone: string;
   address: string;
   locality: string;
+  localityEn?: string;
   region: string;
+  regionEn?: string;
+  countryNameEn?: string;
   postalCode: string;
   countryCode: string;
   hours: string[];
@@ -89,7 +92,10 @@ export const chaykaStoreConcept = Object.freeze({
   phone: "+380 63 924 22 22",
   address: "вул. Валерія Лобановського, 21/3",
   locality: "Чайки",
+  localityEn: "Chaiky",
   region: "Київська область",
+  regionEn: "Kyiv region",
+  countryNameEn: "Ukraine",
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Пн–Сб 10:00–19:00", "Нд 10:00–18:30"],
