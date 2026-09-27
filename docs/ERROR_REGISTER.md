@@ -215,3 +215,19 @@ ROOT_CAUSE: The separate Hermes Connect analytics path had explicit route-only p
 WORKING_APPROACH: Review-only #1500 explicitly supplies current origin plus pathname and referrer origin only before loading gtag. A browser test adds private sentinels in current and referring queries and asserts they do not enter the config. Do not treat a green source test as an authenticated GA4 payload/readback; keep GA4 OAuth/production network verification open.
 
 REUSE_RULE: Review default SDK-collected page_location/referrer and campaign fields whenever promising that a custom event payload is privacy safe. A clean event object does not sanitize automatic page_view fields.
+
+## 2026-09-27 — Repair Shop Services renders every service in one long list
+
+PROBLEM: Authenticated Office QA shop had 147 services; the Services page displayed all 147 cards and Delete actions on one scroll. Search worked, but owners had to traverse an excessively long list.
+
+ROOT_CAUSE: The renderer iterated over every fetched service without a visible limit. The private API returned the expected tenant-scoped catalog.
+
+FAILED_APPROACH: Treating a readable individual card and a search field as proof that a 147-item list is manageable.
+
+WORKING_APPROACH: Review branch `fix/repair-owner-service-availability-layout-20260927` limits the initial view to 20, loads 20 more on demand, searches the complete in-memory catalog, shows visible/total counts and no-match state, and surfaces newly added items. A 45-item browser mock covers paging and search.
+
+EVIDENCE: 2026-09-27 authenticated production showed 147 items; locally build/static checks and exact-head CI are tracked in the PR. Production release and readback are pending.
+
+LESSON: Evaluate owner screens against realistic high-volume tenants, not only two-item fixtures.
+
+REUSE_RULE: When lists can grow substantially, test at least 40 items, search the whole collection, and ensure create/delete and empty states remain discoverable.
