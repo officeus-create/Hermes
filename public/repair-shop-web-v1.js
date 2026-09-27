@@ -210,7 +210,11 @@
     if (linkActions && linkWrap && !document.querySelector("[data-web-v1-share]")) {
       const share = button(copy.share);
       share.dataset.webV1Share = "true";
+      const refreshShare = () => { share.disabled = linkWrap.dataset.bookingReady !== "true"; };
+      new MutationObserver(refreshShare).observe(linkWrap, { attributes: true, attributeFilter: ["data-booking-ready"] });
+      refreshShare();
       share.addEventListener("click", async () => {
+        if (linkWrap.dataset.bookingReady !== "true") return;
         const url = document.getElementById("public-link-text")?.textContent?.trim() || "";
         if (!url) return;
         emit("connect_shop_share_link", { method: navigator.share ? "web_share" : "clipboard" });

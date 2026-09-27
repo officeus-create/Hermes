@@ -247,3 +247,15 @@ EVIDENCE: Production baseline returned 200 with self-canonical on 2026-09-27. Lo
 LESSON: A technically indexable profile can still leave both visitor and business owner without the right next action.
 
 REUSE_RULE: For any public business page, test one real user action and the owner correction path alongside canonical/schema. Do not turn draft growth operations into a customer-facing ranking promise.
+
+## 2026-09-27 — Repair Shop offered a customer booking link before a bookable service and hours existed
+
+PROBLEM: A saved shop profile immediately exposed customer-facing Copy/Share actions in both the dashboard and the workspace share bar. Seven prospect CRM profiles have no saved services or open hours, so these buttons suggested sending an unusable link.
+
+ROOT_CAUSE: Link presentation was tied to the presence of a shop slug; it did not check service and weekly availability records even though the activation tracker checked them separately.
+
+WORKING_APPROACH: On review branch `fix/repair-booking-share-readiness-20260927`, leave an internal preview link visible, but disable or omit Copy/Share/QR export until the saved name/location, at least one saved service and one open day with valid times are read successfully. Update the state when a service is created/deleted or availability is saved; fail closed when a readiness read fails. A browser regression covers the incomplete, completed and read-error paths.
+
+EVIDENCE: 2026-09-27 production public HOLT Tulsa profile explicitly says booking is off pending owner verification; private CRM technical QA found zero saved services and open days. Local build and static suite passed. Local Playwright did not start because the preview process exited before accepting connections; exact-head CI and production readback remain release gates.
+
+REUSE_RULE: A generated URL is a preview artifact, not proof the downstream action works. Enable customer-sharing controls only after the required underlying records have been read successfully.
