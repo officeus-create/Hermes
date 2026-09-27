@@ -603,7 +603,8 @@ try {
   );
   assert.equal(
     expiredRecord.destinations.find((destination) => destination.channel === "telegram").lastError,
-    "delivery_expired",
+    "not_configured",
+    "Expired receipt must preserve the final provider/root-cause error while status records terminal expiry.",
   );
   assert.ok(expiredRecord.purgeAt > expiredRecord.completedAt);
 
