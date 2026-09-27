@@ -6,6 +6,7 @@ test("Catalog Website Concept keeps opportunity details in a reusable dialog", a
   await page.goto(conceptPath);
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/");
+  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
   const schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
   expect(schemaText).toContain('"LocalBusiness"');
@@ -38,6 +39,8 @@ test("Catalog Website Concept keeps opportunity details in a reusable dialog", a
 test("Catalog Website Concept opportunity dialog follows English locale", async ({ page }) => {
   await page.goto(`${conceptPath}?lang=en`);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/");
+  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
 
   const offer = page.getByRole("button", { name: "Website / redesign" });
   await expect(offer).toBeVisible();
