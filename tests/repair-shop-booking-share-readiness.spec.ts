@@ -34,6 +34,15 @@ test("booking sharing waits for a real service and saved open hours", async ({ p
   });
   await page.route("**/api/repair-shop/bookings", (route) => route.fulfill(ok({ success: true, bookings: [] })));
   await page.route("**/api/repair-shop/feedback", (route) => route.fulfill(ok({ success: true, feedback: [] })));
+  await page.route("**/api/repair-shop/staff", (route) => route.fulfill(ok({ success: true, staff: [] })));
+
+  await page.goto("/services/hermes-connect/repair-shops/appointments/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-repair-booking-sharebar]")).toHaveAttribute("data-ready", "false");
+  await expect(page.locator("[data-booking-share]")).toBeHidden();
+  await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#copy-booking-link")).toBeDisabled();
+  await expect(page.locator("#open-booking-link")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.locator("#public-booking-link")).not.toContainText("?shop=");
 
   await page.goto("/services/hermes-connect/repair-shops/dashboard/", { waitUntil: "domcontentloaded" });
   const bar = page.locator("[data-repair-booking-sharebar]");
@@ -67,6 +76,11 @@ test("booking sharing waits for a real service and saved open hours", async ({ p
   await expect(native.locator("#copy-link-btn")).toBeEnabled();
   await expect(page.locator("[data-web-v1-share]")).toBeEnabled();
   await expect(page.locator("[data-repair-qr-toggle]")).toBeEnabled();
+  await page.goto("/services/hermes-connect/repair-shops/appointments/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-booking-share]")).toBeVisible();
+  await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#copy-booking-link")).toBeEnabled();
+  await expect(page.locator("#open-booking-link")).toHaveAttribute("aria-disabled", "false");
 });
 
 test("booking share fails closed if the services read fails", async ({ page }) => {

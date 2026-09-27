@@ -252,9 +252,9 @@ REUSE_RULE: For any public business page, test one real user action and the owne
 
 PROBLEM: A saved shop profile immediately exposed customer-facing Copy/Share actions in both the dashboard and the workspace share bar. Seven prospect CRM profiles have no saved services or open hours, so these buttons suggested sending an unusable link.
 
-ROOT_CAUSE: Link presentation was tied to the presence of a shop slug; it did not check service and weekly availability records even though the activation tracker checked them separately.
+ROOT_CAUSE: Link presentation was tied to the presence of a shop slug; it did not check service and weekly availability records even though the activation tracker checked them separately. Subsequent audit found the same slug-only exposure in Appointments calendar and Company settings.
 
-WORKING_APPROACH: On review branch `fix/repair-booking-share-readiness-20260927`, leave an internal preview link visible, but disable or omit Copy/Share/QR export until the saved name/location, at least one saved service and one open day with valid times are read successfully. Update the state when a service is created/deleted in either the dashboard or Services page, or availability is saved; fail closed when a readiness read fails. A browser regression covers the incomplete, completed and read-error paths.
+WORKING_APPROACH: On review branch `fix/repair-booking-share-readiness-20260927`, leave an internal preview link visible, but disable or omit Copy/Share/QR export until the saved name/location, at least one saved service and one open day with valid times are read successfully. Reuse that verified readiness for the Appointments and Company share controls, with closed defaults before async results and on read failures. Update the state when a service is created/deleted in either the dashboard or Services page, or availability is saved. A browser regression covers the incomplete, completed and read-error paths.
 
 EVIDENCE: 2026-09-27 production public HOLT Tulsa profile explicitly says booking is off pending owner verification; private CRM technical QA found zero saved services and open days. Local build and static suite passed. Local Playwright did not start because the preview process exited before accepting connections; exact-head CI and production readback remain release gates.
 

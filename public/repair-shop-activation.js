@@ -278,13 +278,19 @@
       readJson("/api/repair-shop/profile"), readJson("/api/services"), readJson("/api/repair-shop/availability"),
     ]);
     if (loadId !== bookingBarLoadId) return;
-    if (!profileData?.success) return;
+    if (!profileData?.success) {
+      window.hermesRepairBookingReadiness = { slug: "", ready: false };
+      document.dispatchEvent(new CustomEvent("hermes:repair-booking-readiness", { detail: window.hermesRepairBookingReadiness }));
+      return;
+    }
 
     const slug = profileData?.shop?.slug ? String(profileData.shop.slug) : "";
     const profileReady = Boolean(slug && profileData.shop.name && profileData.shop.city && profileData.shop.state && profileData.shop.timezone);
     const serviceReady = Boolean(servicesData?.success && Array.isArray(servicesData.services) && servicesData.services.length);
     const hoursReady = Boolean(availabilityData?.success && Array.isArray(availabilityData.days) && availabilityData.days.some((day) => day?.is_open && day?.start_time && day?.end_time));
     const ready = Boolean(profileReady && serviceReady && hoursReady);
+    window.hermesRepairBookingReadiness = { slug, ready };
+    document.dispatchEvent(new CustomEvent("hermes:repair-booking-readiness", { detail: window.hermesRepairBookingReadiness }));
     const bookingUrl = slug ? `${ROOT}/booking/?shop=${encodeURIComponent(slug)}` : "";
     const fullBookingUrl = bookingUrl ? `${window.location.origin}${bookingUrl}` : "";
     $("[data-repair-booking-sharebar]")?.remove();
