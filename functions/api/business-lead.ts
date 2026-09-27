@@ -240,7 +240,7 @@ export async function onRequestPost({ request, env }: Context) {
     !isEmail(email) ||
     company.length < 2 ||
     cityCountry.length < 2 ||
-    (!whatsapp && !telegram) ||
+    (!catalogBusinessRequest && !whatsapp && !telegram) ||
     websiteOrSocial.length < 2 ||
     (planningBudget && !allowedBudgets.has(planningBudget)) ||
     (planningHorizon && !allowedHorizons.has(planningHorizon)) ||
