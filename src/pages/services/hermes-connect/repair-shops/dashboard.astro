@@ -222,7 +222,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       const response = await fetch("/api/repair-shop/availability", { credentials:"same-origin" });
       const data = await readJson(response);
       if (!response.ok || !data.success || !Array.isArray(data.days)) return;
-      setupState.openDays = data.days.filter((day: {is_open:boolean}) => day.is_open).length;
+      setupState.openDays = data.days.filter((day: {is_open:boolean;start_time?:string|null;end_time?:string|null}) => day.is_open && day.start_time && day.end_time).length;
       setupState.hoursLoaded = true; updateSetupNotice(); updateBookingShareState();
     } catch { /* Hide setup hints when schedule truth is unavailable. */ }
   }
