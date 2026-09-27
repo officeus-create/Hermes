@@ -44,3 +44,11 @@ test("Catalog Website Concept opportunity dialog follows English locale", async 
   expect(requestUrl.searchParams.get("interest")).toBe("Website / redesign");
   expect(requestUrl.searchParams.get("profile")).toContain("?lang=en");
 });
+
+
+test("non-US Catalog locality hub uses generic business semantics", async ({ page }) => {
+  await page.goto("/businesses/ukraine/chaiky/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Businesses in Chaiky");
+  await expect(page.getByText("Business categories", { exact: true })).toBeVisible();
+  await expect(page.getByText("Repair categories", { exact: true })).toHaveCount(0);
+});
