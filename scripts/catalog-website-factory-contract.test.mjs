@@ -26,7 +26,7 @@ assert.equal(schema[0]["@type"],"LocalBusiness");
 assert.equal(schema.some((x)=>x["@type"]==="AutoRepair"),false);
 assert.equal(schema.some((x)=>x["@type"]==="FAQPage"),true);
 const lead=buildCatalogLeadContext({business:fixture,profileUrl:"https://hermeslogisticsus.com/businesses/ukraine/chaiky/fixture/",source:"catalog",utm:{utm_content:"hero",utm_term:"repair"}});
-assert.equal(lead.business_id,"catalog-fixture"); assert.equal(lead.utm_content,"hero"); assert.equal(lead.utm_term,"repair");
+assert.equal(lead.business_id,"catalog-fixture"); assert.equal(lead.requested_service,"Phone repair"); assert.equal(lead.utm_content,"hero"); assert.equal(lead.utm_term,"repair");
 assert.match(catalogClaimHref(fixture,lead.profile),/business_id=catalog-fixture/);
 assert.match(buildBusinessOwnerFreeLeadNotification({business:fixture,profileUrl:lead.profile,request:{}}),/optional and separate decisions/i);
 assert.equal(normalizeConceptSourceImports([{url:"https://example.com"}])[0].status,"pending");
@@ -46,5 +46,5 @@ const verified={...draft,sourceImports:draft.sourceImports.map((x)=>transitionWe
 assert.equal(websiteFactoryCatalogPublicationGate(verified,{ownerApproved:true}).ready,true);
 
 const sources=["src/data/catalog-business-concepts.ts","src/components/CatalogWebsiteConcept.astro","src/pages/businesses/ukraine/chaiky/chayka-store.astro","src/pages/businesses/[state]/index.astro","src/pages/businesses/[state]/[city]/index.astro","src/pages/businesses/request/index.astro","functions/api/business-lead.ts"].map(read).join("\n");
-for(const marker of ["lifecycleState","schemaType","verifiedFacts","proposedConcepts","ownerApproval","semanticCore","localIntents","data-fact-state=\"verified\"","CatalogWebsiteConcept","isUsMarket","catalog-business-request","business_id","utm_content","Catalog context:","claim/customer status changes only after verification","catalog_business_request_submitted","not delivery to the listed business","data-catalog-opportunity-dialog","data-catalog-offer","showModal"]) assert.ok(sources.includes(marker),marker);
+for(const marker of ["lifecycleState","schemaType","verifiedFacts","proposedConcepts","ownerApproval","semanticCore","localIntents","data-fact-state=\"verified\"","CatalogWebsiteConcept","isUsMarket","catalog-business-request","business_id","utm_content","Catalog context:","claim/customer status changes only after verification","catalog_business_request_submitted","not delivery to the listed business","data-catalog-opportunity-dialog","data-catalog-offer","showModal","requested_service"]) assert.ok(sources.includes(marker),marker);
 console.log("Catalog Website Factory 12-30 contract: PASS");
