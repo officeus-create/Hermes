@@ -1,11 +1,14 @@
+import { catalogBusinessConcepts, type CatalogBusinessConcept } from "./catalog-business-concepts";
+
 export type RepairShopDirectorySource = { label: string; url: string; observed: string };
 export type RepairShopDirectoryEntry = {
+  conceptId?:string;
   slug:string; stateSlug:string; citySlug:string; businessName:string; category:string; city:string; state:string; region:string; country:string; phone:string;
   serviceArea:string[]; services:string[]; claimState:"unclaimed"|"claimed"; hermesCustomer:boolean; bookingEnabled:boolean; googleBusinessStatus:"not_confirmed"|"confirmed";
   verificationNote:string; verifiedAt:string; sourceRef:string; sources:RepairShopDirectorySource[]; seoSummary:string;
 };
 
-export const repairShopDirectory: RepairShopDirectoryEntry[] = [
+const legacyRepairShopDirectory: RepairShopDirectoryEntry[] = [
   {
     slug:"seans-autopro-mobile", stateSlug:"arkansas", citySlug:"sherwood", businessName:"Sean's AutoPro Mobile", category:"Mobile Auto Repair",
     city:"Sherwood", state:"AR", region:"Arkansas", country:"US", phone:"(904) 864-6183",
@@ -153,21 +156,52 @@ export const repairShopDirectory: RepairShopDirectoryEntry[] = [
     seoSummary:"Unclaimed public-source listing for the Colton Westrux International commercial truck dealership and service location in the Inland Empire, California. No Hermes booking is active.",
     sources:[{"label":"Westrux — Locations","url":"https://www.westrux.com/map-hours-directions-trucks-dealership--locations","observed":"Official site lists 2200 East Steel Road, Colton and (909) 825-5121."},{"label":"Westrux — Service","url":"https://www.westrux.com/service-repair-trucks-dealership--service","observed":"Official service page describes scheduled and mobile truck service, DOT inspections and repairs."}],
   },
-  {
-    slug:"chayka-store", stateSlug:"ukraine", citySlug:"chaiky", businessName:"Чайка Store", category:"Phone Repair & Accessories",
-    city:"Chaiky", state:"Kyiv region", region:"Ukraine", country:"UA", phone:"+380 63 924 22 22",
-    serviceArea:["Чайки, Київська область","Kyiv region, Ukraine"],
-    services:["Phone repair — owner confirmation required for exact service menu","Phone accessories — current inventory requires owner confirmation","Separate tea direction: More Chay"],
-    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"confirmed",
-    verificationNote:"Client-supplied Google Maps and social links identify the Chaiky business and its phone-repair/accessories and separate tea directions. Exact repair menu, prices, turnaround, warranty, supported models and tea inventory require owner confirmation before publication as facts.",
-    verifiedAt:"2026-09-24", sourceRef:"CLIENT-SUPPLIED-CHAYKA-STORE-20260924",
-    seoSummary:"Hermes Catalog website concept for Чайка Store in Chaiky, Kyiv region, with phone-repair discovery, verified contact channels and a separately presented More Chay tea direction. The profile remains unclaimed until owner verification.",
-    sources:[
-      {label:"Instagram — Chayka Store",url:"https://www.instagram.com/chayka_store1",observed:"Client-supplied repair/accessories social profile."},
-      {label:"Instagram — More Chay",url:"https://www.instagram.com/more_chau",observed:"Client-supplied tea-direction social profile."},
-      {label:"Telegram — More Chay",url:"https://t.me/more_chay",observed:"Client-supplied tea-direction Telegram channel."}
-    ],
-  },
+];
+
+const publicConceptStates = new Set(["PUBLISHED_UNCLAIMED","CLAIMED","CLIENT","OWN_DOMAIN_LIVE"]);
+
+export function catalogConceptToDirectoryEntry(business: CatalogBusinessConcept): RepairShopDirectoryEntry {
+  const locality = business.localityEn || business.locality;
+  const state = business.regionEn || business.region;
+  const region = business.countryNameEn || business.countrySlug.replace(/(^|-)([a-z])/g, (_match, prefix, letter) => `${prefix === "-" ? " " : ""}${letter.toUpperCase()}`);
+  const verifiedSources = business.sourceImports.filter((source)=>source.status==="verified");
+  return {
+    conceptId: business.id,
+    slug: business.slug,
+    stateSlug: business.countrySlug,
+    citySlug: business.localitySlug,
+    businessName: business.name,
+    category: business.primaryIntent,
+    city: locality,
+    state,
+    region,
+    country: business.countryCode,
+    phone: business.phone,
+    serviceArea: [...new Set([`${locality}, ${state}`, `${state}, ${region}`])],
+    services: [business.primaryIntent, ...(business.secondaryIntent ? [business.secondaryIntent] : [])],
+    claimState: business.status === "unclaimed" ? "unclaimed" : "claimed",
+    hermesCustomer: business.status === "client",
+    bookingEnabled: false,
+    googleBusinessStatus: verifiedSources.some((source)=>source.type==="google_business") ? "confirmed" : "not_confirmed",
+    verificationNote: `${business.copy.en.disclosure}. Owner confirmation is still required for: ${business.factsRequiringOwnerConfirmation.join(", ") || "none listed"}.`,
+    verifiedAt: business.trust?.observedAt || business.ownerApproval?.approvedAt?.slice(0,10) || "not independently dated",
+    sourceRef: business.sourceRef,
+    seoSummary: business.seo.description,
+    sources: verifiedSources.map((source)=>({
+      label: source.type.replaceAll("_"," "),
+      url: source.url,
+      observed: source.note || "Verified Catalog concept source.",
+    })),
+  };
+}
+
+export const catalogConceptDirectoryEntries: RepairShopDirectoryEntry[] = catalogBusinessConcepts
+  .filter((business)=>publicConceptStates.has(business.lifecycleState))
+  .map(catalogConceptToDirectoryEntry);
+
+export const repairShopDirectory: RepairShopDirectoryEntry[] = [
+  ...legacyRepairShopDirectory,
+  ...catalogConceptDirectoryEntries,
 ];
 
 export const directoryStates = [...new Map(repairShopDirectory.map((entry)=>[entry.stateSlug,{slug:entry.stateSlug,name:entry.region}])).values()];
