@@ -10,7 +10,7 @@ const {city}=Astro.props as { city: DirectoryCity };
 const rows: RepairShopDirectoryEntry[] = repairShopDirectory.filter((b: RepairShopDirectoryEntry)=>b.stateSlug===city.stateSlug&&b.citySlug===city.citySlug);
 const cityUrl=`https://hermeslogisticsus.com/businesses/${city.stateSlug}/${city.citySlug}/`;
 const isUsMarket = rows.every((business)=>business.country==="US");
-const collectionName = isUsMarket ? `Auto repair businesses in ${city.city}, ${city.state}` : `Businesses in ${city.city}, ${city.region}`;
+const collectionName = isUsMarket ? `Vehicle repair businesses in ${city.city}, ${city.state}` : `Businesses in ${city.city}, ${city.region}`;
 const pageTitle = isUsMarket ? `Vehicle Repair Businesses in ${city.city}, ${city.state} | Hermes Catalog` : `Businesses in ${city.city}, ${city.region} | Hermes Catalog`;
 const pageDescription = isUsMarket
   ? `Evidence-backed vehicle repair and service business profiles for ${city.city}, ${city.state}, with claim state, service context, and public-source verification.`
