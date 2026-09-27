@@ -165,6 +165,10 @@ assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-
 assert.match(serviceCalls.at(-1).payload.text, /Catalog profile: \/businesses\/ukraine\/chaiky\/chayka-store\//);
 assert.match(serviceCalls.at(-1).payload.text, /Catalog source: hermes_catalog/);
 assert.match(serviceCalls.at(-1).payload.text, /UTM content: website-concept/);
+assert.match(serviceCalls.at(-1).payload.text, /Hermes receipt does not mean delivery to the listed business/);
+assert.match(serviceCalls.at(-1).payload.text, /verified business contact path/);
+assert.match(serviceCalls.at(-1).payload.text, /Lead fee to the listed business: \$0/);
+assert.match(serviceCalls.at(-1).payload.text, /optional and separate from this lead/);
 
 const catalogCustomerMissingTarget = await onRequest({
   request: makeRequest({
