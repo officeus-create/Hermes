@@ -229,8 +229,10 @@
     document.getElementById("appointment-search")?.addEventListener("input",render);
     document.getElementById("appointment-status")?.addEventListener("change",render);
     techLabel.querySelector("select")?.addEventListener("change",render);
+    let bookingReadinessEvent=null;
     const refreshBookingShare=()=>{
-      const readiness=window.hermesRepairBookingReadiness;
+      const bar=document.querySelector("[data-repair-booking-sharebar]");
+      const readiness=bookingReadinessEvent??{slug:bar?.dataset.shopSlug||"",ready:bar?.dataset.ready==="true"};
       const ready=Boolean(shop?.slug && readiness?.slug===shop.slug && readiness?.ready);
       share.hidden=!ready;
       if(!ready){share.querySelector("[data-booking-url]").textContent="";share.querySelector("[data-open-booking]").removeAttribute("href");return;}
@@ -239,12 +241,12 @@
       share.querySelector("[data-open-booking]").href=url;
     };
     share.querySelector("[data-copy-booking]").addEventListener("click",async(e)=>{
-      if(share.hidden || !shop?.slug || window.hermesRepairBookingReadiness?.slug!==shop.slug || !window.hermesRepairBookingReadiness.ready)return;
+      if(share.hidden || !shop?.slug)return;
       const url=share.querySelector("[data-booking-url]").textContent;
       await navigator.clipboard.writeText(url);
       const b=e.currentTarget,old=b.textContent;b.textContent=copy.copied;setTimeout(()=>b.textContent=old,1400);
     });
-    document.addEventListener("hermes:repair-booking-readiness",refreshBookingShare);
+    document.addEventListener("hermes:repair-booking-readiness",(event)=>{bookingReadinessEvent=event.detail;refreshBookingShare();});
     try { const r=await fetch("/api/repair-shop/profile",{credentials:"same-origin"}); const d=await r.json(); if(r.ok&&d.success&&d.shop){shop=d.shop;refreshBookingShare();}} catch {}
     render();
   }

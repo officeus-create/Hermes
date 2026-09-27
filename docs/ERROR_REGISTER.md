@@ -259,3 +259,15 @@ WORKING_APPROACH: On review branch `fix/repair-booking-share-readiness-20260927`
 EVIDENCE: 2026-09-27 production public HOLT Tulsa profile explicitly says booking is off pending owner verification; private CRM technical QA found zero saved services and open days. Local build and static suite passed. Local Playwright did not start because the preview process exited before accepting connections. A first full CI run exposed a brittle ready-state test that expected a literal `aria-disabled="false"` even when a second script legitimately removed the attribute from an active booking link; the assertion now checks the usable destination. Exact-head CI and production readback remain release gates.
 
 REUSE_RULE: A generated URL is a preview artifact, not proof the downstream action works. Enable customer-sharing controls only after the required underlying records have been read successfully.
+
+## 2026-09-27 — Ready shop still had closed share controls in Company and Appointments
+
+PROBLEM: Post-release browser readback on a configured synthetic shop found the workspace share bar ready, but Company Copy disabled and the Appointments share card hidden. Incomplete-shop controls correctly remained closed.
+
+ROOT_CAUSE: Those screens depended on reading a transient JavaScript global at their own initialization. The exact cause of the production mismatch is not yet proven; relying only on that global left no fallback when the readiness event had already fired or a page loaded asynchronously.
+
+WORKING_APPROACH: Consume the readiness event's explicit `{slug, ready}` payload, and use the same verified share bar's DOM state as a fallback if the event preceded the screen's initialization. Compare the bar slug to the local shop before enabling controls. Keep the service/hour/profile checks in one owner bar.
+
+EVIDENCE: Authenticated production Office synthetic shop had 147 services and `data-ready=true` in the share bar, while Company Copy stayed disabled and Appointments share stayed hidden. Separate exact-head CI and post-deploy browser check are pending.
+
+REUSE_RULE: After shipping a shared readiness signal, verify every consumer in a real authenticated session. A passing mocked browser test does not prove cross-script timing in production.
