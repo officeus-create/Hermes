@@ -227,6 +227,7 @@ export async function onRequestPost({ request, env }: Context) {
   const submittedAt = clean(input.submitted_at, 40);
   const attribution = getAttribution(input.attribution);
   const catalogContext = getCatalogContext(input.catalog_context);
+  const catalogBusinessRequest = services.includes("Catalog customer request");
 
   const invalid =
     !isRequestId(requestId) ||
@@ -244,6 +245,7 @@ export async function onRequestPost({ request, env }: Context) {
     !allowedLanguages.has(preferredLanguage) ||
     preferredContactTime.length < 2 ||
     services.length < 1 ||
+    (catalogBusinessRequest && (!catalogContext.business_id || !catalogContext.profile)) ||
     message.length < 10;
 
   if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
