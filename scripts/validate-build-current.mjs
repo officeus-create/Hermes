@@ -3,8 +3,6 @@ import { readFile, unlink, writeFile } from "node:fs/promises";
 
 const legacyValidatorUrl = new URL("./validate-build.mjs", import.meta.url);
 const temporaryValidatorUrl = new URL("./.validate-build-current.generated.mjs", import.meta.url);
-const legacyHomepageTechnologyLabel = "Hermes IT Development";
-const canonicalHomepageTechnologyLabel = "Hermes Technology";
 const technologyExpectationReplacements = new Map([
   ["Hermes Connect · Prototype work started", "Hermes Connect · Repair Shops live pilot"],
   ["Prototype brief", "Repair Shops owner workflow"],
@@ -20,18 +18,7 @@ const loadBoardExpectationReplacements = new Map([
 ]);
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
-const homepageExpectationCount = legacySource.split(`  "${legacyHomepageTechnologyLabel}",\n];`).length - 1;
-assert.equal(
-  homepageExpectationCount,
-  1,
-  `Expected exactly one legacy homepage Technology direction assertion, found ${homepageExpectationCount}.`,
-);
-
-let currentSource = legacySource
-  .replace(
-    `  "${legacyHomepageTechnologyLabel}",\n];`,
-    `  "${canonicalHomepageTechnologyLabel}",\n];`,
-  );
+let currentSource = legacySource;
 
 for (const [legacyExpectation, currentExpectation] of technologyExpectationReplacements) {
   const count = currentSource.split(legacyExpectation).length - 1;
