@@ -48,6 +48,7 @@ const opportunityOffers = [
     const requested = new URLSearchParams(window.location.search).get("lang");
     const fallback = conceptRoot.getAttribute("data-default-locale") === "en" ? "en" : "uk";
     const locale = requested === "en" || requested === "uk" ? requested : fallback;
+    document.documentElement.lang = locale;
     conceptRoot.querySelectorAll("[data-uk][data-en]").forEach((node) => {
       const next = locale === "en" ? node.getAttribute("data-en") : node.getAttribute("data-uk");
       if (next) node.textContent = next;
