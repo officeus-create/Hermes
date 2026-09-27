@@ -75,6 +75,7 @@ jobs:
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Config: \`workers/lead-email/wrangler.production.jsonc\`"
             echo "- Outbound account route: \`/v1/send-account\`"
-            echo "- Inbound Load Board target: \`loads@hermeslogisticsus.com\`"
+            echo "- Car Hauling delivery: SQLite Durable Object outbox with per-destination receipts and alarms"
+            echo "- Inbound Load Board target: \`loads@loadboard.hermeslogisticsus.com\`"
             echo "- Inbound activation still requires the approved Cloudflare Email Routing rule and runtime source/token configuration."
           } >> "$GITHUB_STEP_SUMMARY"
