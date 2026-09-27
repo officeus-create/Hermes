@@ -26,6 +26,18 @@ const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-ap
 const ownerCurrentJs = await readFile(join(root, "public", "hermes-connect-repair-owner-p0-current.js"), "utf8");
 const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
 
+const repairServiceApi = await readFile(join(root, "functions", "api", "services", "index.ts"), "utf8");
+const durationLimit = Number(repairServiceApi.match(/durationMinutes\s*>\s*(\d+)/)?.[1]);
+assert(Number.isInteger(durationLimit) && durationLimit >= 5, "Repair service API must expose a bounded duration maximum.");
+for (const route of ["services", "dashboard"]) {
+  const source = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", `${route}.astro`), "utf8");
+  const select = source.match(/<select\s+id="service-duration"[^>]*>([\s\S]*?)<\/select>/)?.[1];
+  assert(select, `${route}: service duration selector is missing.`);
+  const values = [...select.matchAll(/<option\s+value="(\d+)"/g)].map((match) => Number(match[1]));
+  assert(values.length > 0 && values.every((value) => value >= 5 && value <= durationLimit), `${route}: duration options must fit the service API.`);
+  assert(Math.max(...values) === durationLimit, `${route}: longest API-supported repair must be selectable.`);
+}
+
 for (const [name, html] of [["workspace.html", workspace], ["review.html", review]]) {
   assert(/name=["']robots["'][^>]*noindex/i.test(html), `${name}: must remain noindex.`);
   assert(/nofollow/i.test(html), `${name}: must remain nofollow.`);
