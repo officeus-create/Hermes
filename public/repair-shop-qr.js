@@ -83,8 +83,18 @@
 
     const getBookingUrl = () => document.getElementById("public-link-text")?.textContent?.trim() || "";
     const image = panel.querySelector("[data-repair-qr-image]");
+    const ready = () => linkWrap.dataset.bookingReady === "true";
+    const refresh = () => {
+      toggle.disabled = !ready();
+      downloadButton.disabled = !ready();
+      printButton.disabled = !ready();
+      if (!ready()) { panel.classList.add("hidden"); toggle.textContent = copy.show; }
+    };
+    new MutationObserver(refresh).observe(linkWrap, { attributes: true, attributeFilter: ["data-booking-ready"] });
+    refresh();
 
     toggle.addEventListener("click", () => {
+      if (!ready()) return;
       if (!panel.classList.contains("hidden")) {
         panel.classList.add("hidden");
         toggle.textContent = copy.show;
@@ -103,6 +113,7 @@
     });
 
     panel.querySelector("[data-repair-qr-download]")?.addEventListener("click", async () => {
+      if (!ready()) return;
       const bookingUrl = getBookingUrl();
       if (!bookingUrl) return;
       const qrUrl = buildQrUrl(bookingUrl);
@@ -125,6 +136,7 @@
     });
 
     panel.querySelector("[data-repair-qr-print]")?.addEventListener("click", () => {
+      if (!ready()) return;
       const bookingUrl = getBookingUrl();
       if (!bookingUrl) return;
       const qrUrl = buildQrUrl(bookingUrl);

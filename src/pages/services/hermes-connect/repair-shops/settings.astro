@@ -54,7 +54,7 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
 
       <section id="public-booking-card" class="company-card hidden">
         <div class="card-head"><p class="eyebrow" data-i18n="bookingEyebrow">Customer access</p><h2 data-i18n="bookingTitle">Public booking link</h2><p class="muted" data-i18n="bookingCopy">Share this stable link after services and availability are ready.</p></div>
-        <div class="booking-row"><code id="public-booking-link"></code><div class="booking-actions"><button id="copy-booking-link" class="secondary-action" type="button" data-i18n="copy">Copy</button><a id="open-booking-link" class="secondary-action" href="#" target="_blank" rel="noopener" data-i18n="open">Open</a></div></div>
+        <div class="booking-row"><code id="public-booking-link"></code><div class="booking-actions"><button id="copy-booking-link" class="secondary-action" type="button" data-i18n="copy" disabled>Copy</button><a id="open-booking-link" class="secondary-action" aria-disabled="true" tabindex="-1" target="_blank" rel="noopener" data-i18n="open">Open</a></div></div>
       </section>
 
       <section id="team" class="company-card">
@@ -126,6 +126,16 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   const alertBox = $("#page-alert");
   let staff:Staff[] = [];
   let publicBookingUrl = "";
+  let bookingSlug = "";
+  const updateBookingSharing=()=>{
+    const readiness=(window as any).hermesRepairBookingReadiness;
+    const ready=Boolean(bookingSlug && readiness?.slug===bookingSlug && readiness?.ready);
+    const code=$("#public-booking-link");if(code)code.textContent=ready?publicBookingUrl:t.bookingCopy;
+    const copy=$<HTMLButtonElement>("#copy-booking-link");if(copy)copy.disabled=!ready;
+    const open=$<HTMLAnchorElement>("#open-booking-link");
+    if(open){if(ready)open.href=publicBookingUrl;else open.removeAttribute("href");open.setAttribute("aria-disabled",String(!ready));open.tabIndex=ready?0:-1;}
+  };
+  document.addEventListener("hermes:repair-booking-readiness",updateBookingSharing);
   let calendarStatusData:any = { configuration:"configuration_required", state:"configuration_required", connections:[] };
 
   document.documentElement.lang = locale;
@@ -135,10 +145,10 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   const authRedirect=()=>{const url=new URL("/services/hermes-connect/repair-shops/auth/",location.origin);if(locale!=="en")url.searchParams.set("lang",locale);location.assign(`${url.pathname}${url.search}`);};
   const requestJson=async(url:string,init?:RequestInit)=>{const response=await fetch(url,{credentials:"same-origin",...init,headers:{"Content-Type":"application/json",...(init?.headers||{})}});if(response.status===401){authRedirect();throw new Error("not_authenticated");}const data=await response.json().catch(()=>({success:false,error:"invalid_response"}));if(!response.ok||!data?.success)throw new Error(String(data?.error||"request_failed"));return data;};
 
-  const fillProfile=(shop:any)=>{if(!shop)return;($<HTMLInputElement>("#shop-name")!).value=shop.name||"";($<HTMLInputElement>("#shop-phone")!).value=shop.phone||"";($<HTMLInputElement>("#shop-address")!).value=shop.address_line1||"";($<HTMLInputElement>("#shop-city")!).value=shop.city||"";($<HTMLInputElement>("#shop-region")!).value=shop.region||shop.state||"";($<HTMLInputElement>("#shop-country")!).value=shop.country_code||"US";($<HTMLInputElement>("#shop-postal")!).value=shop.postal_code||"";($<HTMLInputElement>("#shop-timezone")!).value=shop.timezone||"";const state=$("#profile-state");if(state)state.textContent=t.saved;$("#public-booking-card")?.classList.remove("hidden");const url=new URL(`/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`,location.origin);if(locale!=="en")url.searchParams.set("lang",locale);publicBookingUrl=url.href;const code=$("#public-booking-link");if(code)code.textContent=publicBookingUrl;const open=$("#open-booking-link") as HTMLAnchorElement|null;if(open)open.href=publicBookingUrl;};
-  $("#profile-form")?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();try{const body={name:$<HTMLInputElement>("#shop-name")?.value.trim(),phone:$<HTMLInputElement>("#shop-phone")?.value.trim(),address_line1:$<HTMLInputElement>("#shop-address")?.value.trim(),city:$<HTMLInputElement>("#shop-city")?.value.trim(),region:$<HTMLInputElement>("#shop-region")?.value.trim(),country_code:$<HTMLInputElement>("#shop-country")?.value.trim().toUpperCase(),postal_code:$<HTMLInputElement>("#shop-postal")?.value.trim(),timezone:$<HTMLInputElement>("#shop-timezone")?.value.trim()};const data=await requestJson("/api/repair-shop/profile",{method:"PUT",body:JSON.stringify(body)});fillProfile(data.shop);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
+  const fillProfile=(shop:any)=>{if(!shop)return;($<HTMLInputElement>("#shop-name")!).value=shop.name||"";($<HTMLInputElement>("#shop-phone")!).value=shop.phone||"";($<HTMLInputElement>("#shop-address")!).value=shop.address_line1||"";($<HTMLInputElement>("#shop-city")!).value=shop.city||"";($<HTMLInputElement>("#shop-region")!).value=shop.region||shop.state||"";($<HTMLInputElement>("#shop-country")!).value=shop.country_code||"US";($<HTMLInputElement>("#shop-postal")!).value=shop.postal_code||"";($<HTMLInputElement>("#shop-timezone")!).value=shop.timezone||"";const state=$("#profile-state");if(state)state.textContent=t.saved;$("#public-booking-card")?.classList.remove("hidden");bookingSlug=String(shop.slug||"");if(!bookingSlug)return;const url=new URL(`/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(bookingSlug)}`,location.origin);if(locale!=="en")url.searchParams.set("lang",locale);publicBookingUrl=url.href;updateBookingSharing();};
+  $("#profile-form")?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();try{const body={name:$<HTMLInputElement>("#shop-name")?.value.trim(),phone:$<HTMLInputElement>("#shop-phone")?.value.trim(),address_line1:$<HTMLInputElement>("#shop-address")?.value.trim(),city:$<HTMLInputElement>("#shop-city")?.value.trim(),region:$<HTMLInputElement>("#shop-region")?.value.trim(),country_code:$<HTMLInputElement>("#shop-country")?.value.trim().toUpperCase(),postal_code:$<HTMLInputElement>("#shop-postal")?.value.trim(),timezone:$<HTMLInputElement>("#shop-timezone")?.value.trim()};const data=await requestJson("/api/repair-shop/profile",{method:"PUT",body:JSON.stringify(body)});fillProfile(data.shop);document.dispatchEvent(new Event("hermes:repair-setup-changed"));setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
   $("#detect-timezone")?.addEventListener("click",()=>{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;const input=$<HTMLInputElement>("#shop-timezone");if(tz&&input)input.value=tz;});
-  $("#copy-booking-link")?.addEventListener("click",async()=>{if(!publicBookingUrl)return;try{await navigator.clipboard.writeText(publicBookingUrl);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
+  $("#copy-booking-link")?.addEventListener("click",async()=>{if(!publicBookingUrl || $<HTMLButtonElement>("#copy-booking-link")?.disabled !== false)return;try{await navigator.clipboard.writeText(publicBookingUrl);setAlert(t.savedMessage,"success");}catch{setAlert(t.saveFailed);}});
 
   const staffForm=$("#staff-form") as HTMLFormElement|null;
   const showStaffForm=(member?:Staff)=>{staffForm?.classList.remove("hidden");($<HTMLInputElement>("#staff-id")!).value=member?.id||"";($<HTMLInputElement>("#staff-name")!).value=member?.name||"";($<HTMLInputElement>("#staff-role")!).value=member?.role||"Technician";($<HTMLInputElement>("#staff-specialties")!).value=(member?.specialties||[]).join(", ");($<HTMLInputElement>("#staff-active")!).checked=member?.active??true;$<HTMLInputElement>("#staff-name")?.focus();};
