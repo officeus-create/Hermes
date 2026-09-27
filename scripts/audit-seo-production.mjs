@@ -206,14 +206,15 @@ for (const r of results) {
 
 const csvContent = csvLines.join('\n');
 
-// Write to AI_WORKSPACE locations
-const targetDir1 = '/Users/progressopro/Documents/AI_WORKSPACE/15_Active_Tasks';
-const targetDir2 = '/Users/progressopro/Documents/AI_WORKSPACE/13_AI_Handoffs/To_Codex';
+// Keep generated audit output portable. The repository-local artifacts/ directory
+// is intentionally gitignored; an explicit output directory may be supplied by an
+// authorized runner that wants to hand the result to One Brain or another system.
+const outputDir = process.env.HERMES_SEO_AUDIT_OUTPUT_DIR
+  ? path.resolve(process.env.HERMES_SEO_AUDIT_OUTPUT_DIR)
+  : path.join(root, 'artifacts', 'seo');
+const outputPath = path.join(outputDir, 'SEO_TECHNICAL_CRAWL_LATEST.csv');
 
-if (!fs.existsSync(targetDir1)) fs.mkdirSync(targetDir1, { recursive: true });
-if (!fs.existsSync(targetDir2)) fs.mkdirSync(targetDir2, { recursive: true });
+if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+fs.writeFileSync(outputPath, csvContent);
 
-fs.writeFileSync(path.join(targetDir1, 'SEO_TECHNICAL_CRAWL_2026-08-13.csv'), csvContent);
-fs.writeFileSync(path.join(targetDir2, 'ANTIGRAVITY_SEO_CRAWL_AUDIT_2026-08-13.csv'), csvContent);
-
-console.log(`Successfully generated audit for ${results.length} URLs!`);
+console.log(`Successfully generated audit for ${results.length} URLs: ${outputPath}`);

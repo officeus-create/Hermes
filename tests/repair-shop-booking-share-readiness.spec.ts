@@ -47,10 +47,12 @@ test("booking sharing waits for a real service and saved open hours", async ({ p
   await expect(page.locator("[data-repair-qr-toggle]")).toBeDisabled();
   await expect(bar.getByRole("link", { name: "Preview booking page" })).toBeVisible();
 
+  await page.goto("/services/hermes-connect/repair-shops/services/", { waitUntil: "domcontentloaded" });
+  await expect(bar).toHaveAttribute("data-ready", "false");
   await page.locator("#service-name").fill("Brake inspection");
-  await page.locator("#add-service-btn").click();
+  await page.locator("#service-submit").click();
   await expect(bar).toContainText("Save opening hours");
-  await expect(native.locator("#copy-link-btn")).toBeDisabled();
+  await expect(bar.locator("[data-repair-share-booking]")).toHaveCount(0);
 
   await page.goto("/services/hermes-connect/repair-shops/availability/", { waitUntil: "domcontentloaded" });
   await expect(bar).toHaveAttribute("data-ready", "false");

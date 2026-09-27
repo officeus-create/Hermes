@@ -191,6 +191,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           services = services.filter((item) => item.id !== service.id);
           setAlert(t.deleted, "success");
           render();
+          document.dispatchEvent(new Event("hermes:repair-setup-changed"));
         } catch { setAlert(t.deleteFailed); }
         finally { remove.disabled = false; }
       });
@@ -241,6 +242,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       if (search && services.length > visibleLimit) { search.value = name; visibleLimit = pageSize; }
       setAlert(t.created, "success");
       render();
+      document.dispatchEvent(new Event("hermes:repair-setup-changed"));
     } catch { setAlert(t.createFailed); }
     finally { if (submitButton) submitButton.disabled = false; }
   });
