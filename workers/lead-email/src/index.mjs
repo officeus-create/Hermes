@@ -15,6 +15,7 @@ const GMAIL_REQUEST_TIMEOUT_MS = 8_000;
 const CAR_HAULING_TELEGRAM_TIME_ZONE = "America/Chicago";
 const CAR_HAULING_TELEGRAM_START_MINUTE = 9 * 60;
 const CAR_HAULING_TELEGRAM_END_MINUTE = 17 * 60 + 45;
+const CAR_HAULING_PENDING_LIFETIME_MS = 7 * 24 * 60 * 60 * 1_000;
 const CAR_HAULING_OUTBOX_RETENTION_MS = 7 * 24 * 60 * 60 * 1_000;
 const CAR_HAULING_DELIVERY_LEASE_MS = 60 * 1_000;
 const encoder = new TextEncoder();
@@ -423,6 +424,7 @@ const createDurableDeliveryRecord = ({ requestId, payloadHash, subject, text, re
   updatedAt: now,
   leaseUntil: 0,
   completedAt: null,
+  expiresAt: now + CAR_HAULING_PENDING_LIFETIME_MS,
   purgeAt: null,
   destinations: [
     ...recipients.map((recipient, index) => ({
@@ -477,6 +479,7 @@ const durableDeliverySummary = (record, { accepted = false, deduplicated = false
     accepted,
     deduplicated,
     complete: destinations.every((destination) => destination.status === "delivered"),
+    terminal: destinations.every((destination) => ["delivered", "expired"].includes(destination.status)),
     recipient_count: destinations.filter((destination) => destination.channel === "email" && destination.status === "delivered").length,
     delivery_ledger: {
       primary: primary?.status || "pending",
@@ -501,7 +504,7 @@ class CarHaulingDeliveryCoordinatorCore {
       const hasReadyDestination = record.destinations.some(
         (destination) => destination.status === "pending" && destination.nextAttemptAt <= now,
       );
-      if (record.completedAt || record.leaseUntil > now || !hasReadyDestination) {
+      if (record.completedAt || record.expiresAt <= now || record.leaseUntil > now || !hasReadyDestination) {
         return { conflict: false, claimed: false, record };
       }
       record.leaseUntil = now + CAR_HAULING_DELIVERY_LEASE_MS;
@@ -597,7 +600,19 @@ class CarHaulingDeliveryCoordinatorCore {
       if (!current) return null;
       current.leaseUntil = 0;
       current.updatedAt = now;
-      if (current.destinations.every((destination) => destination.status === "delivered")) {
+      if (!current.completedAt && current.expiresAt <= now) {
+        for (const destination of current.destinations) {
+          if (destination.status !== "delivered") {
+            destination.status = "expired";
+            destination.lastError ||= "delivery_expired";
+            destination.nextAttemptAt = null;
+          }
+        }
+        current.completedAt = now;
+        current.purgeAt ||= now + CAR_HAULING_OUTBOX_RETENTION_MS;
+        current.text = "";
+        current.replyTo = "";
+      } else if (current.destinations.every((destination) => destination.status === "delivered")) {
         current.completedAt ||= now;
         current.purgeAt ||= now + CAR_HAULING_OUTBOX_RETENTION_MS;
         current.text = "";
@@ -611,7 +626,10 @@ class CarHaulingDeliveryCoordinatorCore {
     const pendingTimes = record.destinations
       .filter((destination) => destination.status === "pending")
       .map((destination) => destination.nextAttemptAt || now + 60 * 1_000);
-    const nextAlarm = pendingTimes.length ? Math.min(...pendingTimes) : record.purgeAt;
+    const pendingAlarm = pendingTimes.length ? Math.min(...pendingTimes) : null;
+    const nextAlarm = pendingAlarm
+      ? Math.min(pendingAlarm, record.expiresAt)
+      : record.purgeAt;
     if (nextAlarm) await this.storage.setAlarm(Math.max(nextAlarm, now + 1_000));
     return record;
   }
@@ -659,7 +677,10 @@ class CarHaulingDeliveryCoordinatorCore {
     const claim = await this.claim(payload, payloadHash, Date.now());
     if (claim.conflict) return json(409, { ok: false, error: "request_id_payload_conflict" });
     if (!claim.claimed) {
-      return json(202, durableDeliverySummary(claim.record, { accepted: true, deduplicated: true }));
+      const current = !claim.record.completedAt && claim.record.expiresAt <= Date.now()
+        ? await this.finalize(claim.record)
+        : claim.record;
+      return json(202, durableDeliverySummary(current, { accepted: true, deduplicated: true }));
     }
 
     const record = await this.run(claim.record);
@@ -681,6 +702,10 @@ class CarHaulingDeliveryCoordinatorCore {
       await this.storage.setAlarm(record.purgeAt);
       return;
     }
+    if (record.expiresAt <= now) {
+      await this.finalize(record);
+      return;
+    }
     const claim = await this.storage.transaction(async (transaction) => {
       const current = await transaction.get("delivery");
       if (!current || current.completedAt || current.leaseUntil > now) return null;
@@ -698,7 +723,8 @@ class CarHaulingDeliveryCoordinatorCore {
       const pendingTimes = current.destinations
         .filter((destination) => destination.status === "pending")
         .map((destination) => destination.nextAttemptAt || now + 60 * 1_000);
-      const nextAlarm = Math.max(current.leaseUntil || 0, Math.min(...pendingTimes), now + 1_000);
+      const nextPending = pendingTimes.length ? Math.min(...pendingTimes) : current.expiresAt;
+      const nextAlarm = Math.max(current.leaseUntil || 0, Math.min(nextPending, current.expiresAt), now + 1_000);
       await this.storage.setAlarm(nextAlarm);
     }
   }
