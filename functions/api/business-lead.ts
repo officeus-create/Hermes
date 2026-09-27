@@ -50,6 +50,9 @@ type BusinessLeadInput = {
   preferred_contact_time?: unknown;
   services?: unknown;
   message?: unknown;
+  catalog_business_id?: unknown;
+  catalog_profile?: unknown;
+  catalog_source_ref?: unknown;
   consent?: unknown;
   attribution?: unknown;
 };
@@ -77,6 +80,7 @@ const allowedServices = new Set([
   "Catalog claim / verification",
   "Catalog business listing",
   "Catalog SEO / GEO",
+  "Catalog business request",
 ]);
 
 const allowedBudgets = new Set([
@@ -204,10 +208,14 @@ export async function onRequestPost({ request, env }: Context) {
   const preferredContactTime = clean(input.preferred_contact_time, 120);
   const services = getServices(input.services);
   const message = clean(input.message, 2_000);
+  const catalogBusinessId = clean(input.catalog_business_id, 180);
+  const catalogProfile = clean(input.catalog_profile, 240);
+  const catalogSourceRef = clean(input.catalog_source_ref, 180);
   const sourcePathRaw = clean(input.source_path, 160);
   const sourcePath = sourcePathRaw.startsWith("/") ? sourcePathRaw : "/business-growth/";
   const submittedAt = clean(input.submitted_at, 40);
   const attribution = getAttribution(input.attribution);
+  const catalogBusinessRequest = services.includes("Catalog business request");
 
   const invalid =
     !isRequestId(requestId) ||
@@ -225,6 +233,7 @@ export async function onRequestPost({ request, env }: Context) {
     !allowedLanguages.has(preferredLanguage) ||
     preferredContactTime.length < 2 ||
     services.length < 1 ||
+    (catalogBusinessRequest && (!catalogBusinessId || !catalogProfile)) ||
     message.length < 10;
 
   if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
@@ -264,6 +273,9 @@ export async function onRequestPost({ request, env }: Context) {
     `WhatsApp: ${whatsapp || "not provided"}`,
     `Telegram: ${telegram || "not provided"}`,
     `Website / social: ${websiteOrSocial}`,
+    ...(catalogBusinessId ? [`Catalog business ID: ${catalogBusinessId}`] : []),
+    ...(catalogProfile ? [`Catalog profile: ${catalogProfile}`] : []),
+    ...(catalogSourceRef ? [`Catalog source ref: ${catalogSourceRef}`] : []),
     `Planning budget: ${planningBudget || "not provided"}`,
     `Roadmap horizon: ${planningHorizon || "not provided"}`,
     `Preferred language: ${preferredLanguage}`,
