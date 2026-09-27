@@ -248,7 +248,7 @@ export const site = {
       imageAlt: "Sculptural glass ribbon with blue light accents",
       tone: "teal",
       audience: "For service businesses that need software shaped around their actual customer and internal workflows.",
-      overview: "IT Development turns a defined business process into custom software. Work can begin with a website, portal, CRM module, workflow automation, business assistant, or industry-specific product, then expand through tested stages.",
+      overview: "Hermes Technology turns a defined business process into custom software. Work can begin with a website, portal, CRM module, workflow automation, business assistant, or industry-specific product, then expand through tested stages.",
       seoTitle: "AI Automation, CRM and Custom Software Development | Hermes Technology",
       seoDescription: "Hermes develops AI assistants, Telegram bots, CRM systems, logistics technology, recruiting automation, API integrations, and business dashboards.",
       seoServiceName: "Custom software, CRM, automation, and web development",
@@ -269,12 +269,12 @@ export const site = {
         { title: "Automation and platforms", items: ["Notifications and reminders", "Google Workspace workflows", "API integrations", "Business assistants", "Industry-specific products"] },
       ],
       faq: [
-        { question: "Who is IT Development for?", answer: "Initial solutions are designed for service businesses such as fitness clubs, trainers, coaches, salons, cosmetologists, logistics teams, and professional services." },
+        { question: "Who is Hermes Technology for?", answer: "Initial solutions are designed for service businesses such as fitness clubs, trainers, coaches, salons, cosmetologists, logistics teams, and professional services." },
         { question: "Do we have to build a large platform first?", answer: "No. Work begins with the smallest useful version of the customer or internal workflow, followed by real testing." },
         { question: "Can existing tools be connected?", answer: "Where suitable, the system can connect Google Workspace, CRM, booking, payment, communication, and reporting tools through supported integrations." },
       ],
       directContacts: [
-        { label: "IT Development Inquiries", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com?subject=IT%20Development%20Inquiry", note: "Email-only coordination · Milan · Berlin · Paris · Miami · California · New York · England" },
+        { label: "Hermes Technology Inquiries", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Technology%20Inquiry", note: "Email-only coordination · Milan · Berlin · Paris · Miami · California · New York · England" },
       ],
     },
   ] satisfies PathDetail[],

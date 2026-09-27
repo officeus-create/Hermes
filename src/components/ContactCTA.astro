@@ -109,6 +109,7 @@ const visibleRoutes = selectedContactInterest
     buildRequestSummary,
     getContactHandoffRoute,
   } from "../lib/contact";
+  import { trackEvent } from "../lib/analytics";
   import { site } from "../data/site";
 
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
@@ -127,8 +128,21 @@ const visibleRoutes = selectedContactInterest
   const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+  const contactDirections = new Set(["Hermes Logistics", "ProgressoPro", "Hermes Business Academy", "IT Development"]);
+
+  const trackDeliveredContact = (interest: string) => {
+    // Call only with an explicit terminal receiver receipt, never provider acceptance.
+    // Qualification remains a separate human state. The receiver keeps request ID and
+    // approved UTM context privately; only controlled route/presence reaches analytics.
+    trackEvent("contact_request_delivered", {
+      direction: contactDirections.has(interest) ? interest : "other",
+      landing_path: window.location.pathname,
+      has_campaign_attribution: Boolean(new URLSearchParams(window.location.search).get("utm_source")),
+    });
+  };
 
   let activeSummary = "";
+  let pendingLiveRequestId = "";
 
   const setAlert = (message = "") => {
     if (!alert) return;
@@ -366,6 +380,9 @@ const visibleRoutes = selectedContactInterest
   const formIsValid = () => Boolean(form?.checkValidity());
 
   form?.addEventListener("input", (event) => {
+    if (!(event.target instanceof HTMLInputElement && event.target.name === "website")) {
+      pendingLiveRequestId = "";
+    }
     if (!formIsValid()) {
       clearHandoff();
       return;
@@ -379,6 +396,7 @@ const visibleRoutes = selectedContactInterest
 
   form?.addEventListener("change", (event) => {
     const target = event.target;
+    pendingLiveRequestId = "";
     if (target instanceof HTMLSelectElement && target.name === "path") {
       clearHandoff();
       renderDirectionFields(target.value);
@@ -420,7 +438,11 @@ const visibleRoutes = selectedContactInterest
     const data = new FormData(form);
     if (String(data.get("website") ?? "")) return;
 
-    const payload = buildContactPayload(data, window.location.pathname);
+    const payload = buildContactPayload(
+      data,
+      window.location.pathname,
+      form.dataset.contactMode === "live" && pendingLiveRequestId ? pendingLiveRequestId : undefined,
+    );
     if (!payload.consent) {
       clearHandoff();
       return;
@@ -452,6 +474,7 @@ const visibleRoutes = selectedContactInterest
     }
 
     clearHandoff();
+    pendingLiveRequestId = payload.request_id;
     setSubmitting(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10000);
@@ -462,10 +485,19 @@ const visibleRoutes = selectedContactInterest
       body: JSON.stringify(payload),
       signal: controller.signal,
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) throw new Error("delivery_failed");
+        const receipt = await response.json().catch(() => null);
+        if (receipt?.success !== true || receipt?.request_id !== payload.request_id) {
+          throw new Error("delivery_unconfirmed");
+        }
+        pendingLiveRequestId = "";
+        // Email Service send acceptance is not final recipient delivery. Keep this event off until a verified final receipt exists.
+        if (receipt.duplicate !== true && receipt.delivery_status === "delivered") trackDeliveredContact(payload.interest);
         form.reset();
-        if (status) status.textContent = "Thank you. Your request was sent successfully.";
+        if (status) status.textContent = receipt.duplicate === true
+          ? "Thank you. Your request was already accepted for delivery."
+          : "Thank you. Your request was accepted for delivery.";
       })
       .catch(() => setAlert("We could not send the request. Your details were not confirmed as received. Please try again later."))
       .finally(() => {

@@ -11,7 +11,7 @@ async function mockDashboard(page: any) {
   await page.route("**/api/auth/me", (route: any) => route.fulfill(ok(owner)));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill(ok({ success: true, shop })));
   await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success: true, access: { state: "trialing", plan_id: "repair_shop_founding", plan_name: "Founding Shop Plan", current_period_end: null, next_action: "choose_plan" } })));
-  await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success: true, timezone: "America/Chicago", days: emptyAvailability })));
+  await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success: true, timezone: "America/Chicago", days: emptyAvailability.map((day) => day.day_of_week === 1 ? { day_of_week: 1, is_open: true, start_time: "08:00", end_time: "17:00" } : day) })));
   await page.route("**/api/services", async (route: any) => {
     if (route.request().method() === "POST") {
       const input = route.request().postDataJSON();

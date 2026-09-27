@@ -44,3 +44,13 @@ This registry tracks legitimate authority/referral opportunities only. It is not
 5. **Transport Topics** — only when there is a timely industry angle or genuinely newsworthy Hermes product/resource update.
 
 These are not approved outreach messages yet. Before contact, re-check the target page, confirm Hermes public identity wording under #204, and map the exact pitch to one canonical public destination.
+
+
+## Current reconciliation — 2026-09-26
+
+This section updates the existing registry; it does not create a second authority queue.
+
+- Staff.am, Work.ua, JobFinder.am and CareerCenter.am correction requests were sent through existing owner/support paths on 2026-09-25. Public stale/conflicting fields still remain visible. Status: `CORRECTION_REQUESTS_SENT / PROPAGATION_PENDING / NOT_EARNED_AUTHORITY / DO_NOT_ADD_TO_sameAs`.
+- NIADA explicitly declined the selective 3–5 dealer pilot. It offered paid event/advertising reach instead. Status: `SELECTIVE_PILOT_DECLINED / PAID_DISTRIBUTION_AVAILABLE / EARNED_AUTHORITY_NOT_ESTABLISHED`. Do not buy placement for backlink optics; any spend belongs to a separate dealer-acquisition ROI decision.
+- United States partnership/backlink outbound remains on hold. International work may continue only as small asynchronous resource-first outreach with no required reciprocal link.
+- Current authority priority is independent same-entity corroboration, relevant association/partner/editorial citations and publishable first-party evidence. Raw backlink count, profile count, email count and meeting count are not outcomes.

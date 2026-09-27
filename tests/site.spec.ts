@@ -651,7 +651,7 @@ test("each non-logistics direction exposes a working direct contact route", asyn
   const cases = [
     { slug: "marketing", link: "Email Marketing", subject: "ProgressoPro%20Marketing%20Inquiry" },
     { slug: "academy", link: "Email the Academy", subject: "Hermes%20Business%20Academy%20Inquiry" },
-    { slug: "technology", link: "Email IT Development", subject: "IT%20Development%20Inquiry" },
+    { slug: "technology", link: "Email IT Development", subject: "Hermes%20Technology%20Inquiry" },
   ];
 
   for (const item of cases) {
@@ -785,7 +785,7 @@ test("technology solution pre-fills the project brief", async ({ page }) => {
 
 test("company operating system starts the full project brief", async ({ page }) => {
   await page.goto("/paths/technology/");
-  await expect(page.getByRole("heading", { name: "Hermes IT Development" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hermes Technology" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Quality assurance" })).toBeVisible();
   await page.getByRole("link", { name: "Add Company Digital Operating System to your project brief" }).click();
   await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Company Digital Operating System");

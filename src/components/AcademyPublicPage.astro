@@ -85,7 +85,8 @@ const academyEntity = {
 const mainSchema = content.schemaType === "Course"
   ? {
       "@context": "https://schema.org",
-      "@type": "Course",
+      "@type": "LearningResource",
+      learningResourceType: "Course curriculum",
       name: content.h1,
       description: content.description,
       url: canonicalUrl,

@@ -1,6 +1,6 @@
 # Hermes Error Register
 
-Reviewed: 2026-08-15
+Reviewed: 2026-09-25
 
 Purpose: give every human or AI agent one place to distinguish active blockers, owner/account actions, resolved defects, superseded branches, historical conditions, and items that require monitoring. This file must not contain passwords, one-time codes, private customer data, raw security-alert details, or unverified legal/profile facts.
 
@@ -21,6 +21,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 | --- | --- | --- | --- | --- | --- |
 | ERR-EXT-001 | ACTIVE | Google Search Console / SEO measurement | Authenticated GSC access is confirmed. Latest reviewed evidence reports a successful sitemap with 48 discovered pages, homepage URL Inspection as `URL is on Google`, and a current three-month property snapshot of 10 clicks / 217 impressions / 4.6% CTR / average position 32. Priority-page 7/28-day query and page baselines remain incomplete. | Continue only in #206: inspect the canonical money-page set, collect sanitized 7/28-day page/query metrics, and build the query-to-page opportunity map before expanding page count. | Do not revert this item to `ownership unconfirmed`; do not infer per-page ranking, conversion, or revenue from property-level totals. |
 | ERR-EXT-002 | ACTIVE | Bing Webmaster Tools | Authenticated Hermes site access was verified on 2026-08-28. The sitemap index was successful with 110 URLs and zero errors/warnings; three priority URLs were indexed, while `/services/seo-for-logistics-companies/` remained `Discovered but not crawled`. | Preserve the successful sitemap; continue the existing-site performance baseline and review the one remaining priority crawl gap in #206. | Do not create a replacement site/account or repeatedly resubmit a healthy sitemap. |
+| ERR-SEO-005 | ACTIVE | GSC canonical discovery / internal links | Authenticated GSC September 20 aggregate has stale exclusions: individual inspection now indexes five of six sampled crawled-not-indexed URLs; the sixth is intentionally noindexed. A current build audit nevertheless found two indexable sitemap owners with no inbound internal link: `/careers/car-hauling-dispatcher/` and `/services/hermes-connect/load-analyzer/`. A bounded correction is in review: an expired-role overview link from the existing car-hauler guide and a labeled concept link from the existing Hermes Connect hub. | Verify exact-head build, tests, built-site link audit and PR CI, then owner-approved merge/deploy and public HTML readback of both links; recheck GSC after a settled crawl interval. | Do not mark old GSC buckets as current defects, advertise the expired vacancy, promise that a concept is live, create new pages, or claim production/search recovery from source-only changes. |
 | ERR-EXT-003 | OWNER_ACTION | Google account security | Historical reviewed mail contained sign-in and third-party application-access alerts for company/recovery accounts. Some may be legitimate, but they were not independently verified in this repository workflow. | Review devices, recovery accounts, OAuth grants, administrator access and MFA in Google Account Security; revoke only entries the owner confirms are unauthorized; record the review privately. | Do not paste alert codes, cookies, tokens, recovery data, or account lists into GitHub or an AI prompt. |
 | ERR-EXT-004 | OWNER_ACTION | Entity truth and profiles | External entity inventory is complete, but canonical owner-approved identity facts and authenticated profile corrections remain incomplete. Fresh 2026-08-11 public sampling also found same-name Hermes search ambiguity and conflicting third-party Milwaukee address data. | Continue only in #204: approve canonical facts privately, correct only authenticated/owner-controlled profiles, then rerun dated branded Google/Bing/AI checks. | Do not copy directory estimates or choose a conflicting directory value merely because it appears in search. |
 | ERR-EXT-005 | OWNER_ACTION | Local profiles / GBP | Real storefront or eligible service-area status has not been verified for every direction. | Confirm the actual U.S. customer-facing/service-area model before creating or editing Google Business Profile, Apple Maps, Bing Places, Yelp, Chamber or local citations. | Do not use virtual offices or create separate online-only local entities to simulate presence. |
@@ -32,6 +33,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 | ERR-SEO-001 | ACTIVE | Revenue SEO measurement | Fourteen audited money pages have current canonical/intake/handoff architecture and are classified `READY_TO_MEASURE`; current bottleneck is evidence, not another generic funnel rebuild. | Execute #206, then use actual impressions/query ownership to choose CTR/content/internal-link changes. | Do not mass-publish city/equipment permutations or revive stale SEO score-raising branches before measurement. |
 | ERR-SEO-002 | ACTIVE | SEO 11 execution router | Issue #346 is the single revenue-first backlog: measurement → optimize existing demand → proof → entity authority → controlled scale. | Keep one source-of-truth issue per investigation; update #346 when a major block closes or changes priority. | Do not reopen historical parent audits or duplicate active work into new handoff issues. |
 | ERR-SEO-003 | ACTIVE | GSC crawl/index quality | On 2026-08-28, 28 sitemap URLs were `Discovered - currently not indexed`. Production metadata was valid, but nine guided equipment variants were near-template pages; eight shared variants had 0.895–0.939 maximum pairwise word-set similarity. | Review the bounded `SEO-GSC-INDEXATION-2026-08-28` branch: keep the user routes, set the nine low-evidence variants to `noindex,follow`, remove them from the sitemap, and preserve 19 distinct public owners. | Do not bulk-request indexing or add superficial text to make thin variants look unique. |
+| ERR-SEO-004 | RESOLVED_IN_REVIEW | Structured data eligibility | Authenticated Semrush Site Audit dated 2026-09-04 reported 17 invalid structured-data items. Sixteen were `WebApplication` entities without an eligible offer/review/rating signal; the remaining Academy page declared `Course` before any approved cohort, date or price existed. | Review the bounded schema branch: add truthful zero-price Offers to the live setup offer and free calculators, model informational capability ownership as `WebPage`, and expose pre-offer Academy curricula as `LearningResource`. After merge/deploy and quota reset, rerun the audit and verify the affected URLs. | Do not invent ratings, reviews, paid prices, availability, course instances or offers, or treat an informational preview as a released application. |
 | ERR-EXT-007 | RESOLVED | `www` custom domain | Fresh GitHub-hosted production reconciliation on 2026-09-19 returned `301` for both `https://www.hermeslogisticsus.com/` and `http://www.hermeslogisticsus.com/`, with `Location: https://hermeslogisticsus.com/`. The earlier Cloudflare `520` state is no longer current. | Preserve the apex as canonical. Repository middleware now also carries a fail-closed `www`/production-Pages → apex redirect contract so a future routing change cannot create a second indexable host when requests reach Pages. | Do not reopen DNS/custom-domain work without fresh production regression evidence; do not treat historical GSC blocked rows as current Cloudflare failure after the redirect is proven live. |
 | ERR-HC-RS-001 | RESOLVED_IN_REVIEW | Hermes Connect Repair Shops cabinet | The Customers heading inherited the public-site dark hero rule, while dynamically rendered customer and availability cards did not receive scoped page styles. The result was low contrast and crowded fields in the real route. | The pending review branch isolates the cabinet header, supplies durable CRM card styles and replaces improvised navigation glyphs with SVG icons. Verify the exact PR head and a deployed authenticated view before closing as production-resolved. | Do not treat the local synthetic demo as proof of a live booking, customer, or availability integration. |
 | ERR-HC-RS-002 | ACTIVE | First-run Repair Shop setup | A new owner's availability endpoint can return `shop_profile_required` before a shop exists. The dashboard hid its setup notice until that endpoint succeeded, so the owner lost the next-step cue. Optional contact fields also kept the Save button animated after required name/city/state were filled. | Review the focused first-run fix, test both desktop and mobile with a new owner, then deploy and verify in production. | Do not call a manager-prepared login an owner-verified shop or connect it to an unclaimed public listing automatically. |
@@ -185,3 +187,87 @@ WORKING_APPROACH: Use one conditional write whose predicates are evaluated again
 EVIDENCE: A deterministic SQLite interleave claims the queued task after the cancel read but before the cancel update, then proves the response and stored row are either terminal cancelled or running with `cancel_requested=true`. Running and terminal replays remain idempotent and create no duplicate audit event.
 
 REUSE_RULE: A successful control-plane response must describe the post-write row, never the state inferred from a pre-write read. Cover claim/cancel and other state-machine races with deterministic interleaving tests.
+
+
+## 2026-09-26 — Contact analytics promoted provider acceptance to final recipient delivery
+
+PROBLEM: Production `contact_request_delivered` could fire after a 2xx duplicate or initial Email Service send acceptance without a terminal recipient-server delivery signal.
+
+ROOT_CAUSE: The public Pages endpoint treats a successful private Email Worker `env.EMAIL.send()` call as successful handoff. Cloudflare distinguishes queued `Sent` from terminal `Delivered`, but the browser previously tracked either 2xx as delivered.
+
+FAILED_APPROACH: Treating a matching request ID and `success:true` receipt alone as final delivery proof. That receipt proves an accepted handoff, and a duplicate response can acknowledge an earlier attempt without a new receiver outcome.
+
+WORKING_APPROACH: Review-only #1500 validates the matching accepted receipt, acknowledges duplicates without a second event, describes the UI outcome as accepted for delivery, and suppresses `contact_request_delivered` unless a non-duplicate receipt explicitly has `delivery_status:delivered`. The current endpoint does not return that field, so the event fails closed.
+
+EVIDENCE: Cloudflare Email Service lifecycle/logs separate `Sent` (accepted/queued) and `Delivered` (recipient server accepted); its `message.delivered` event subscription is the documented terminal signal. Production QA proved one actual inbox delivery and zero duplicate receiver emails, but that single example does not validate future accepted sends. Exact-head CI on #1500 is required after this change.
+
+LESSON: A provider's synchronous send acceptance cannot name an analytics event after a later delivery state.
+
+REUSE_RULE: Correlate provider message/terminal event to a private request ledger, dedupe on the private key, keep request ID/PII out of GA4, and emit delivered only after terminal receiver evidence and consent. Cloudflare live subscription setup and existing GA4 OAuth reconnect require owner action; never infer status from a generic 2xx.
+
+
+## 2026-09-26 — Public GA4 tag inherited raw document URL/referrer
+
+PROBLEM: The public-site Google tag config omitted page_location and page_referrer, so default GA4 page_view could inherit the full URL and document.referrer including query strings, despite contact_request_delivered passing only a route and UTM-presence boolean.
+
+ROOT_CAUSE: The separate Hermes Connect analytics path had explicit route-only page_location, but the public TrackingConsent config still relied on default Google fields.
+
+WORKING_APPROACH: Review-only #1500 explicitly supplies current origin plus pathname and referrer origin only before loading gtag. A browser test adds private sentinels in current and referring queries and asserts they do not enter the config. Do not treat a green source test as an authenticated GA4 payload/readback; keep GA4 OAuth/production network verification open.
+
+REUSE_RULE: Review default SDK-collected page_location/referrer and campaign fields whenever promising that a custom event payload is privacy safe. A clean event object does not sanitize automatic page_view fields.
+
+## 2026-09-27 — Repair Shop Services renders every service in one long list
+
+PROBLEM: Authenticated Office QA shop had 147 services; the Services page displayed all 147 cards and Delete actions on one scroll. Search worked, but owners had to traverse an excessively long list.
+
+ROOT_CAUSE: The renderer iterated over every fetched service without a visible limit. The private API returned the expected tenant-scoped catalog.
+
+FAILED_APPROACH: Treating a readable individual card and a search field as proof that a 147-item list is manageable.
+
+WORKING_APPROACH: Review branch `fix/repair-owner-service-availability-layout-20260927` limits the initial view to 20, loads 20 more on demand, searches the complete in-memory catalog, shows visible/total counts and no-match state, and surfaces newly added items. A 45-item browser mock covers paging and search.
+
+EVIDENCE: 2026-09-27 authenticated production showed 147 items; locally build/static checks and exact-head CI are tracked in the PR. Production release and readback are pending.
+
+LESSON: Evaluate owner screens against realistic high-volume tenants, not only two-item fixtures.
+
+REUSE_RULE: When lists can grow substantially, test at least 40 items, search the whole collection, and ensure create/delete and empty states remain discoverable.
+
+## 2026-09-27 — Dynamic Repair Shop Catalog profile had an isolated outdated presentation
+
+PROBLEM: The public Kittle's Garage Catalog profile returned HTTP 200 with canonical and AutoRepair schema, but rendered through a compact dynamic template separate from the fuller Catalog profiles. Its most prominent internal block discussed SEO reporting dates and timelines, while the actual owner claim/correction route was not directly available.
+
+ROOT_CAUSE: `functions/businesses/connect/repair-shop/[slug].ts` had an old single-line page template; later static Catalog design and the structured claim request form did not update this dynamic route.
+
+FAILED_APPROACH: Counting an indexable URL and JSON-LD as a finished, easy-to-use business page.
+
+WORKING_APPROACH: Keep the existing database-backed profile, schema, URL, and owner publication toggle. Render a responsive light business page with clear owner-review status, factual service/hour sections, listed website, a structured claim/correction handoff, and a separate growth request. Remove promised SEO reporting dates and make indexing/outcomes explicitly unverified. Add a route-level mock proving escaped business data, safe public fields, CTA routes, canonical and no-index behavior for invalid profiles.
+
+EVIDENCE: Production baseline returned 200 with self-canonical on 2026-09-27. Local build, full static tests and the route-level test passed on the review branch. Browser/CI and exact-production readback remain separate release gates.
+
+LESSON: A technically indexable profile can still leave both visitor and business owner without the right next action.
+
+REUSE_RULE: For any public business page, test one real user action and the owner correction path alongside canonical/schema. Do not turn draft growth operations into a customer-facing ranking promise.
+
+## 2026-09-27 — Repair Shop offered a customer booking link before a bookable service and hours existed
+
+PROBLEM: A saved shop profile immediately exposed customer-facing Copy/Share actions in both the dashboard and the workspace share bar. Seven prospect CRM profiles have no saved services or open hours, so these buttons suggested sending an unusable link.
+
+ROOT_CAUSE: Link presentation was tied to the presence of a shop slug; it did not check service and weekly availability records even though the activation tracker checked them separately. Subsequent audit found the same slug-only exposure in Appointments calendar and Company settings.
+
+WORKING_APPROACH: On review branch `fix/repair-booking-share-readiness-20260927`, leave an internal preview link visible, but disable or omit Copy/Share/QR export until the saved name/location, at least one saved service and one open day with valid times are read successfully. Reuse that verified readiness for the Appointments and Company share controls, with closed defaults before async results and on read failures. Update the state when a service is created/deleted in either the dashboard or Services page, or availability is saved. A browser regression covers the incomplete, completed and read-error paths.
+
+EVIDENCE: 2026-09-27 production public HOLT Tulsa profile explicitly says booking is off pending owner verification; private CRM technical QA found zero saved services and open days. Local build and static suite passed. Local Playwright did not start because the preview process exited before accepting connections. A first full CI run exposed a brittle ready-state test that expected a literal `aria-disabled="false"` even when a second script legitimately removed the attribute from an active booking link; the assertion now checks the usable destination. Exact-head CI and production readback remain release gates.
+
+REUSE_RULE: A generated URL is a preview artifact, not proof the downstream action works. Enable customer-sharing controls only after the required underlying records have been read successfully.
+
+## 2026-09-27 — Ready shop still had closed share controls in Company and Appointments
+
+PROBLEM: Post-release browser readback on a configured synthetic shop found the workspace share bar ready, but Company Copy disabled and the Appointments share card hidden. Incomplete-shop controls correctly remained closed.
+
+ROOT_CAUSE: Those screens depended on reading a transient JavaScript global at their own initialization. The exact cause of the production mismatch is not yet proven; relying only on that global left no fallback when the readiness event had already fired or a page loaded asynchronously.
+
+WORKING_APPROACH: Consume the readiness event's explicit `{slug, ready}` payload, and use the same verified share bar's DOM state as a fallback if the event preceded the screen's initialization. Compare the bar slug to the local shop before enabling controls. Keep the service/hour/profile checks in one owner bar.
+
+EVIDENCE: Authenticated production Office synthetic shop had 147 services and `data-ready=true` in the share bar, while Company Copy stayed disabled and Appointments share stayed hidden. Separate exact-head CI and post-deploy browser check are pending.
+
+REUSE_RULE: After shipping a shared readiness signal, verify every consumer in a real authenticated session. A passing mocked browser test does not prove cross-script timing in production.

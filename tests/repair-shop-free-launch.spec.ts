@@ -55,20 +55,14 @@ test("built Repair Shop HTML exposes the current free-setup offer", async ({ req
   expect(html).not.toContain("Free repair shop registration ended September 15.");
 });
 
-test("Repair Shop landing shows Russian free setup on mobile", async ({ page }) => {
+test("Repair Shop landing keeps free setup visible without duplicating the launch promo", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru", { waitUntil: "domcontentloaded" });
 
-  const offer = page.locator(visibleOffer);
-  await expect(offer).toBeVisible();
-  await expect(offer).toHaveAttribute("data-launch-state", "open");
-  await expect(offer).toContainText("Пользуйтесь Hermes Connect бесплатно, пока мы настраиваем систему под ваше СТО.");
-  await expect(offer).toContainText("Стандартная цена Founding Shop — $99 в месяц.");
-  await expect(offer).toContainText("Hermes Catalog");
-  await expect(offer.getByRole("link", { name: "Начать бесплатную настройку" })).toHaveAttribute(
-    "href",
-    "/services/hermes-connect/repair-shops/auth/?mode=register&lang=ru",
-  );
+  await expect(page.locator(visibleOffer)).toHaveCount(0);
+  await expect(page.locator(".repair-live-hero")).toContainText("$0 во время настройки · затем $99/месяц");
+  await expect(page.locator(".repair-plan-card")).toContainText("$99");
+  await expect(page.locator(".repair-plan-card").getByRole("link", { name: /Начать бесплатную настройку/ })).toBeVisible();
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
@@ -114,7 +108,7 @@ test("Founding Plan page presents free setup as the lower-friction first step", 
 
 test("free setup does not silently expire on a future clock date", async ({ page }) => {
   await freezeNow(page, "2030-01-01T12:00:00.000Z");
-  await page.goto("/services/hermes-connect/repair-shops/?lang=en", { waitUntil: "domcontentloaded" });
+  await page.goto("/services/hermes-connect/repair-shops/plan/?lang=en", { waitUntil: "domcontentloaded" });
   const offer = page.locator(visibleOffer);
   await expect(offer).toHaveAttribute("data-launch-state", "open");
   await expect(offer.getByRole("link", { name: "Start free setup" })).toHaveAttribute(

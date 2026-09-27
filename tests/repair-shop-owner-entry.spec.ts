@@ -11,12 +11,20 @@ test("existing Repair Shop owner sees a prominent sign-in action on the first sc
 
   await page.goto(root);
 
-  const login = page.getByRole("link", { name: "Sign in to my shop" });
-  await expect(login).toBeVisible();
-  await expect(login).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?mode=login");
-  await expect(page.getByRole("link", { name: "View current plan", exact: true })).toHaveAttribute(
+  const owner = page.locator("[data-repair-owner-quick-login]");
+  const toggle = owner.locator("[data-repair-owner-login-toggle]");
+  await expect(owner).toBeVisible();
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveText("Sign in to my shop");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("link", { name: "See pricing & plans", exact: true })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/plan/",
+  );
+  await toggle.click();
+  await expect(owner.getByRole("link", { name: "Sign in to my shop" })).toHaveAttribute(
+    "href",
+    "/services/hermes-connect/repair-shops/auth/?mode=login",
   );
 });
 
@@ -29,9 +37,17 @@ test("Russian first screen exposes the owner login without scrolling to workspac
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${root}?lang=ru`);
 
-  const login = page.getByRole("link", { name: "Войти в кабинет СТО" });
-  await expect(login).toBeVisible();
-  await expect(login).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru");
+  const owner = page.locator("[data-repair-owner-quick-login]");
+  const toggle = owner.locator("[data-repair-owner-login-toggle]");
+  await expect(owner).toBeVisible();
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveText("Войти в кабинет СТО");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(owner.getByRole("link", { name: "Войти в кабинет СТО" })).toHaveAttribute(
+    "href",
+    "/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru",
+  );
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
 });

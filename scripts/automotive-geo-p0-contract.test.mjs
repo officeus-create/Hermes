@@ -69,7 +69,7 @@ assert.match(dealerPage, /\/services\/website-development\//);
 assert.match(dealerPage, /not claims of local Hermes offices/);
 
 assert.match(repairPage, /title="Auto Repair Shop Software & Scheduling \| Hermes Connect"/);
-assert.match(repairPage, /Auto repair shop software for scheduling, bookings, and customer workflow\./);
+assert.match(repairPage, /Auto repair shop software for bookings, customers, and availability\./);
 assert.match(repairPage, /Is Hermes Connect an auto repair CRM\?/);
 assert.match(repairPage, /includes limited CRM capabilities/);
 assert.match(repairPage, /not presented as a full repair-order, inventory, accounting, payroll, or payment-processing suite/);

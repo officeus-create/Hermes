@@ -208,6 +208,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       days = data.days;
       renderDays();
       showAlert("Weekly availability saved.", "success");
+      document.dispatchEvent(new Event("hermes:repair-setup-changed"));
     } catch {
       showAlert("Network error while saving weekly availability.");
     } finally {

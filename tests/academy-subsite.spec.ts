@@ -32,7 +32,9 @@ test("Academy program pages own distinct curriculum intent and structured data",
   );
 
   let schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
-  expect(schemaText).toContain('"Course"');
+  expect(schemaText).toContain('"LearningResource"');
+  expect(schemaText).toContain('"Course curriculum"');
+  expect(schemaText).not.toContain('"@type":"Course"');
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"BreadcrumbList"');
   expect(schemaText).toContain("Hermes Academy");
@@ -49,7 +51,9 @@ test("Academy program pages own distinct curriculum intent and structured data",
   await expect(page.locator('a[href^="/academy/apply/?program=marketing"]')).toHaveCount(3);
 
   schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
-  expect(schemaText).toContain('"Course"');
+  expect(schemaText).toContain('"LearningResource"');
+  expect(schemaText).toContain('"Course curriculum"');
+  expect(schemaText).not.toContain('"@type":"Course"');
   expect(schemaText).toContain('"FAQPage"');
 });
 

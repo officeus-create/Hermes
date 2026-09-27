@@ -82,10 +82,11 @@ test("Repair Shop owner dashboard exposes real actions instead of visible dead c
   await expect(page.locator("#workspace-alert")).toContainText(/saved|сохранён/i);
 
   await page.locator("#service-name").fill("Brake inspection");
-  await page.locator("#service-duration").selectOption("45");
+  await page.locator("#service-duration").selectOption("720");
   await page.locator("#add-service-btn").click();
   await expect.poll(() => serviceWrites).toBe(1);
   await expect(page.locator("#services-list")).toContainText("Brake inspection");
+  await expect(page.locator("#services-list")).toContainText(/720 (?:min|мин)/);
 
   await page.locator("#feedback-message").fill("The dashboard controls are now usable on mobile.");
   await page.locator("#submit-feedback-btn").click();

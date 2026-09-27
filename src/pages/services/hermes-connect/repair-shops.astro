@@ -5,12 +5,31 @@ import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
 const liveCapabilities = [
-  { title: "One booking link", body: "Give customers a simple public path to choose a service and request an appointment from your real availability." },
-  { title: "Shop profile & services", body: "Keep the business identity, service catalog, hours, and customer-facing details in one place." },
-  { title: "Online scheduling & availability", body: "Set weekly hours once and let customers request real open times instead of repeating the same scheduling conversation by phone or message." },
-  { title: "Booking & customer workflow", body: "Process appointment requests through clear statuses and keep the history attached to each booking." },
-  { title: "Customers & vehicles", body: "Keep customer and vehicle context connected to booking activity so the next interaction starts with useful history." },
-  { title: "Owner feedback", body: "Tell the Hermes product team what saves time, what is confusing, and what your shop needs next." },
+  {
+    title: "One booking link",
+    preview: "Customers see services and request a real available time.",
+    body: "Give customers a simple public path to choose a service and request an appointment from your real availability.",
+  },
+  {
+    title: "Shop profile & services",
+    preview: "Keep the public business facts customers actually need in one place.",
+    body: "Keep the business identity, service catalog, hours, and customer-facing details in one place.",
+  },
+  {
+    title: "Online scheduling & availability",
+    preview: "Set weekly hours once instead of repeating the same scheduling conversation.",
+    body: "Set weekly hours once and let customers request real open times instead of repeating the same scheduling conversation by phone or message.",
+  },
+  {
+    title: "Booking & customer workflow",
+    preview: "Move requests through clear statuses with history attached.",
+    body: "Process appointment requests through clear statuses and keep the history attached to each booking.",
+  },
+  {
+    title: "Customers & vehicles",
+    preview: "Start the next interaction with useful customer and vehicle context.",
+    body: "Keep customer and vehicle context connected to booking activity so the next interaction starts with useful history.",
+  },
 ];
 
 const faqs = [
@@ -32,6 +51,14 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
+    offers: {
+      "@type": "Offer",
+      name: "Hermes Connect Repair Shop setup access",
+      price: "0",
+      priceCurrency: "USD",
+      url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/?mode=register",
+      description: "Repair Shop registration and software access are $0 during setup; the standard $99 monthly Founding Shop continuation is confirmed separately before billing.",
+    },
     description: "Auto repair shop software for online booking, scheduling, services, availability, booking operations, customers, and vehicle context.",
     featureList: [
       "Repair shop profile and services",
@@ -66,42 +93,97 @@ const schema = [
 >
   <SiteHeader activePath="/paths/technology/" />
 
-  <main id="main-content" class="repair-pilot-page">
+  <main id="main-content" class="repair-pilot-page" data-hermes-vertical="repair">
     <section class="repair-live-hero">
       <div class="repair-shell repair-live-grid">
-        <div>
+        <div class="repair-hero-copy">
           <p class="repair-kicker">Hermes Connect · Auto Repair Shop Software</p>
-          <h1>Auto repair shop software for scheduling, bookings, and customer workflow.</h1>
-          <p class="repair-lead">Hermes Connect repair shop software helps independent shops publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, and separate notes.</p>
+          <h1>Auto repair shop software for bookings, customers, and availability.</h1>
+          <p class="repair-lead">Hermes Connect gives independent repair shops one clear path from customer service request to organized follow-up. Keep services, weekly availability, bookings, customer history, and vehicle context connected instead of scattered across calls, messages, and notes.</p>
+
           <div class="repair-actions">
             <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">See pricing after setup</a>
+            <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">See pricing & plans</a>
+            <a class="repair-tertiary" href="#repair-capabilities-title">Explore workflow ↓</a>
           </div>
-          <div class="repair-trust">
-            <span><CheckCircle2 size={16} aria-hidden="true" />Works from a modern phone or computer</span>
-            <span><CheckCircle2 size={16} aria-hidden="true" />Real booking, customer, and availability data</span>
-            <span><DollarSign size={16} aria-hidden="true" />$0 during setup · standard Founding Shop price $99/month after setup</span>
+
+          <div class="repair-trust" aria-label="Hermes Connect Repair Shops facts">
+            <span><CheckCircle2 size={16} aria-hidden="true" />Browser-first · phone or computer</span>
+            <span><CheckCircle2 size={16} aria-hidden="true" />Real booking and availability workflow</span>
+            <span><DollarSign size={16} aria-hidden="true" />$0 during setup · $99/month after setup</span>
           </div>
         </div>
-        <aside class="repair-live-card" aria-label="How to start with Hermes Connect Repair Shops">
-          <div class="repair-live-card-head"><Wrench size={24} aria-hidden="true" /><span>From setup to first booking</span></div>
-          <ol>
-            <li><strong>1</strong><span>Create the owner account</span></li>
-            <li><strong>2</strong><span>Add shop details and services</span></li>
-            <li><strong>3</strong><span>Set weekly availability</span></li>
-            <li><strong>4</strong><span>Share your booking link</span></li>
-            <li><strong>5</strong><span>Manage bookings and customers</span></li>
-          </ol>
+
+        <aside class="repair-live-card" aria-label="Hermes Connect repair shop workflow preview">
+          <div class="repair-live-card-head">
+            <div>
+              <small>WORKFLOW PREVIEW</small>
+              <strong>From request to customer history</strong>
+            </div>
+            <span class="repair-live-dot">Live product</span>
+          </div>
+
+          <div class="repair-workflow-preview">
+            <div class="repair-preview-step is-active">
+              <span>01</span>
+              <div><strong>Customer requests service</strong><small>Public booking link</small></div>
+              <em>New</em>
+            </div>
+            <div class="repair-preview-line"></div>
+            <div class="repair-preview-step">
+              <span>02</span>
+              <div><strong>Match real availability</strong><small>Your weekly schedule</small></div>
+              <em>Open</em>
+            </div>
+            <div class="repair-preview-line"></div>
+            <div class="repair-preview-step">
+              <span>03</span>
+              <div><strong>Keep the relationship</strong><small>Booking · customer · vehicle</small></div>
+              <em>Saved</em>
+            </div>
+          </div>
+
+          <div class="repair-preview-footer">
+            <Wrench size={17} aria-hidden="true" />
+            <span>Everything shown here reflects the current Repair Shops workflow available today.</span>
+          </div>
         </aside>
+      </div>
+    </section>
+
+    <section class="repair-section repair-outcome-band" aria-label="Repair shop product outcomes">
+      <div class="repair-shell repair-outcome-grid">
+        <div><strong>Book</strong><span>One public path from service choice to appointment request.</span></div>
+        <div><strong>Operate</strong><span>Services, hours, bookings, customers, and vehicles stay connected.</span></div>
+        <div><strong>Discover</strong><span>Approve public business facts for Hermes Catalog and search discovery.</span></div>
       </div>
     </section>
 
     <section class="repair-section" aria-labelledby="repair-capabilities-title">
       <div class="repair-shell">
-        <div class="repair-heading"><p class="repair-kicker">Online booking & repair shop workflow</p><h2 id="repair-capabilities-title">Manage scheduling, bookings, customers, and vehicle context in one place.</h2><p>Start with the tasks that immediately reduce coordination: publish what you do, show when you are available, let customers request a time, and keep the relationship attached to the booking.</p></div>
-        <div class="repair-capability-grid">
-          {liveCapabilities.map((capability) => (
-            <article><CheckCircle2 size={21} aria-hidden="true" /><h3>{capability.title}</h3><p>{capability.body}</p></article>
+        <div class="repair-heading repair-heading-row">
+          <div>
+            <p class="repair-kicker">Core workflow</p>
+            <h2 id="repair-capabilities-title">Move from service request to organized follow-up without scattered tools.</h2>
+          </div>
+          <p>See the five essentials at a glance. Open details only when you want the deeper workflow.</p>
+        </div>
+
+        <div class="repair-disclosure-grid">
+          {liveCapabilities.map((capability, index) => (
+            <details class="repair-disclosure-card" data-repair-disclosure-analytics data-analytics-section="capability" data-analytics-label={capability.title}>
+              <summary>
+                <span class="repair-capability-number">{String(index + 1).padStart(2, "0")}</span>
+                <span class="repair-capability-copy">
+                  <strong>{capability.title}</strong>
+                  <small>{capability.preview}</small>
+                </span>
+                <span class="repair-disclosure-plus" aria-hidden="true">+</span>
+              </summary>
+              <div class="repair-disclosure-body">
+                <p>{capability.body}</p>
+              </div>
+            </details>
           ))}
         </div>
       </div>
@@ -109,12 +191,21 @@ const schema = [
 
     <section class="repair-section repair-plan-section" aria-labelledby="repair-plan-title">
       <div class="repair-shell repair-plan-card">
-        <div>
+        <div class="repair-plan-copy">
           <p class="repair-kicker">Free setup → Founding Shop Plan</p>
-          <h2 id="repair-plan-title">Use Hermes Connect free while we configure it around your shop.</h2>
-          <p>During setup, the software fee is $0 while you build the real shop profile, services, availability, booking flow, customer history, and CRM. When setup is complete, the standard Founding Shop price is $99/month per location if you choose to continue.</p>
+          <h2 id="repair-plan-title">Build the real workflow first. Decide about paid activation after.</h2>
+          <p>During setup, the software fee is $0 while you configure the real shop profile, services, availability, booking flow, customer history, and CRM. When setup is complete, the standard Founding Shop price is $99/month per location if you choose to continue.</p>
+          <a class="repair-plan-detail" href="/services/hermes-connect/repair-shops/plan/">Read the full pricing and activation terms <ArrowRight size={16} aria-hidden="true" /></a>
         </div>
-        <div class="repair-plan-price"><span>$</span><strong>0</strong><small>during setup · $99/month after setup</small></div>
+
+        <div class="repair-plan-price" aria-label="$0 during setup, $99 per month after setup">
+          <div><span>$</span><strong>0</strong></div>
+          <small>during setup</small>
+          <hr />
+          <b>$99 / month</b>
+          <small>standard Founding Shop price after setup</small>
+        </div>
+
         <div class="repair-plan-actions">
           <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Start free setup <ArrowRight size={18} aria-hidden="true" /></a>
           <small>No card is charged during setup. Paid activation is confirmed with you before invoicing.</small>
@@ -122,95 +213,360 @@ const schema = [
       </div>
     </section>
 
-    <section class="repair-section repair-quick-links" aria-labelledby="repair-workspace-title">
+    <section class="repair-section repair-paths-section" aria-labelledby="repair-next-title">
       <div class="repair-shell">
-        <div class="repair-heading"><p class="repair-kicker">Owner access</p><h2 id="repair-workspace-title">Start publicly. Continue operations after sign-in.</h2><p>The public product page explains the workflow and launch offer. Shop dashboard, scheduling, customers, and other operational tools stay inside the authenticated Hermes workspace.</p></div>
-        <div class="repair-link-grid">
-          <a href="/services/hermes-connect/repair-shops/auth/"><UsersRound size={20} aria-hidden="true" /><strong>Login / Register</strong><span>Create your shop or securely return to your owner workspace.</span></a>
-          <a href="/services/hermes-connect/repair-shops/plan/"><DollarSign size={20} aria-hidden="true" /><strong>Free setup → $99/month</strong><span>See what stays free during setup and how paid activation works after your workspace is configured.</span></a>
-          <a href="#repair-capabilities-title"><CalendarDays size={20} aria-hidden="true" /><strong>How online booking works</strong><span>Review the public booking, availability, customer, and vehicle workflow before signing in.</span></a>
+        <div class="repair-heading">
+          <p class="repair-kicker">Choose your next action</p>
+          <h2 id="repair-next-title">Choose what your shop needs next.</h2>
+          <p>Open your workspace, publish approved business facts, or add search growth when that becomes the priority.</p>
         </div>
+
+        <div class="repair-path-grid">
+          <a href="/services/hermes-connect/repair-shops/auth/">
+            <UsersRound size={21} aria-hidden="true" />
+            <span>OWNER ACCESS</span>
+            <strong>Login or create your shop</strong>
+            <p>Set up the real workspace, services, hours, booking flow, customers, and vehicles.</p>
+            <b>Open workspace →</b>
+          </a>
+          <a href="/businesses/">
+            <CheckCircle2 size={21} aria-hidden="true" />
+            <span>CATALOG</span>
+            <strong>Publish approved business facts</strong>
+            <p>After registration, approve one public profile for Hermes Catalog at no listing fee.</p>
+            <b>Explore Catalog →</b>
+          </a>
+          <a href="/services/seo-for-auto-repair-shops/">
+            <CalendarDays size={21} aria-hidden="true" />
+            <span>GROWTH</span>
+            <strong>Go deeper on SEO & local discovery</strong>
+            <p>Add service-page, technical SEO, GEO, local search, and conversion work when a broader growth scope is useful.</p>
+            <b>See repair SEO →</b>
+          </a>
+        </div>
+
+        <p class="repair-search-note">Hermes develops Catalog and related search surfaces for SEO, GEO, local search, and AI discovery. <a href="/services/local-seo/">Explore Local SEO & AI discovery</a> when location visibility becomes the priority. Search engines control crawling, indexing, rankings, and traffic; results are not guaranteed.</p>
+        <nav class="repair-growth-owner-nav" aria-label="Related repair shop growth services">
+          <a href="/services/auto-repair-website-design/">Repair shop website</a>
+          <a href="/services/website-development/">Website development</a>
+          <a href="/services/seo/">SEO services</a>
+        </nav>
       </div>
     </section>
 
-    <section class="repair-section repair-quick-links" aria-labelledby="repair-growth-title">
+    <section class="repair-section repair-partner-section" aria-labelledby="partner-offer-title">
       <div class="repair-shell">
-        <div class="repair-heading"><p class="repair-kicker">Catalog + search discovery</p><h2 id="repair-growth-title">Build a public discovery asset while we configure your CRM.</h2><p>After registration, complete your real business profile and approve publication to Hermes Catalog. The listing has no listing fee. Hermes develops the directory for SEO, GEO, local search, and AI discovery while keeping customers, appointments, private contacts, and authentication data out of the public profile.</p></div>
-        <div class="repair-link-grid">
-          <a href="/businesses/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Free Hermes Catalog listing</strong><span>Publish one owner-approved business profile with real services and location facts. Search engines control crawling, indexing, and rankings; results are not guaranteed.</span></a>
-          <a href="/services/seo-for-auto-repair-shops/"><CheckCircle2 size={20} aria-hidden="true" /><strong>SEO for auto repair shops</strong><span>Use the Catalog as a discovery layer, then add deeper service-page, technical SEO, and conversion work when a broader growth scope is useful.</span></a>
-          <a href="/services/local-seo/"><CheckCircle2 size={20} aria-hidden="true" /><strong>Local SEO & AI discovery</strong><span>Keep location and service facts consistent across eligible local profiles and search surfaces without fake-location or ranking-guarantee tactics.</span></a>
-        </div>
-      </div>
-    </section>
-
-    <section class="repair-section" aria-labelledby="partner-offer-title">
-      <div class="repair-shell repair-offer-grid">
-        <div class="repair-offer-copy">
-          <p class="repair-kicker">For repair partners</p>
-          <h2 id="partner-offer-title">Want your shop reviewed as a Hermes Logistics repair partner too?</h2>
-          <p>This is separate from the $99 Hermes Connect software plan. Submit a real corporate service offer if your shop wants Hermes Logistics to review its roadside, labor, parts, equipment, and turnaround terms.</p>
-          <div class="repair-offer-boundary"><ShieldCheck size={19} aria-hidden="true" /><span>Submitting a partner offer does not automatically create approval, payment, contract execution, or preferred-provider status.</span></div>
-        </div>
-
-        <div class="repair-offer-card">
-          <div class="repair-lifecycle" data-lifecycle-tracker aria-label="Partner offer lifecycle">
-            <div class="step-item active"><span>1</span><small>REGISTERED</small></div>
-            <div class="step-item"><span>2</span><small>OFFER_DRAFT</small></div>
-            <div class="step-item"><span>3</span><small>OFFER_SUBMITTED</small></div>
-            <div class="step-item"><span>4</span><small>HUMAN REVIEW</small></div>
-          </div>
-          <p class="repair-status">Status: <strong id="status-label">REGISTERED</strong></p>
-
-          <form id="partner-beta-form" class="repair-offer-form">
-            <label>Shop name<input id="shop-name" type="text" maxlength="120" required placeholder="Business name" /></label>
-            <label>Shop type
-              <select id="shop-type" required>
-                <option value="">Select shop type</option>
-                <option value="auto_repair">Auto repair</option>
-                <option value="truck_diesel">Truck / diesel repair</option>
-                <option value="mobile_mechanic">Mobile mechanic</option>
-                <option value="tire_service">Tire service</option>
-                <option value="body_shop">Body shop</option>
-              </select>
-            </label>
-            <label>City / state<input id="city-state" type="text" maxlength="120" required placeholder="Milwaukee, WI" /></label>
-            <div class="repair-form-grid">
-              <label>Emergency roadside hourly <span>optional</span><input id="roadside-rate" type="number" min="0" max="10000" inputmode="decimal" /></label>
-              <label>Labor discount % <span>optional</span><input id="labor-discount" type="number" min="0" max="100" inputmode="decimal" /></label>
-              <label>Parts discount % <span>optional</span><input id="parts-discount" type="number" min="0" max="100" inputmode="decimal" /></label>
-              <label>Minimum turnaround hours <span>optional</span><input id="turnaround" type="number" min="0" max="10000" inputmode="numeric" /></label>
+        <details class="repair-partner-disclosure" data-repair-disclosure-analytics data-analytics-section="partner_opportunity" data-analytics-label="Hermes Logistics repair partner">
+          <summary>
+            <div>
+              <p class="repair-kicker">Additional opportunity · Hermes Logistics</p>
+              <h2 id="partner-offer-title">Want Hermes Logistics to review your shop as a repair partner?</h2>
+              <span>This does not change your Hermes Connect plan. Open the corporate offer only if you want Hermes Logistics to review roadside, labor, parts, equipment, and turnaround terms.</span>
             </div>
-            <fieldset>
-              <legend>Equipment supported <span>optional</span></legend>
-              <div class="repair-checkbox-grid">
-                <label><input type="checkbox" name="equipment" value="car_hauler" />Car hauler</label>
-                <label><input type="checkbox" name="equipment" value="dry_van" />Dry van</label>
-                <label><input type="checkbox" name="equipment" value="reefer" />Reefer</label>
-                <label><input type="checkbox" name="equipment" value="flatbed" />Flatbed</label>
-                <label><input type="checkbox" name="equipment" value="hotshot" />Hotshot</label>
-                <label><input type="checkbox" name="equipment" value="box_truck" />Box truck</label>
+            <span class="repair-partner-open" aria-hidden="true">Open partner offer +</span>
+          </summary>
+
+          <div class="repair-offer-grid">
+            <div class="repair-offer-copy">
+              <p class="repair-kicker">For repair partners</p>
+              <h3>Submit a real corporate service offer.</h3>
+              <p>This is separate from the $99 Hermes Connect software plan. Submit a real corporate service offer if your shop wants Hermes Logistics to review its roadside, labor, parts, equipment, and turnaround terms.</p>
+              <div class="repair-offer-boundary"><ShieldCheck size={19} aria-hidden="true" /><span>Submitting a partner offer does not automatically create approval, payment, contract execution, or preferred-provider status.</span></div>
+            </div>
+
+            <div class="repair-offer-card">
+              <div class="repair-lifecycle" data-lifecycle-tracker aria-label="Partner offer lifecycle">
+                <div class="step-item active"><span>1</span><small>REGISTERED</small></div>
+                <div class="step-item"><span>2</span><small>OFFER_DRAFT</small></div>
+                <div class="step-item"><span>3</span><small>OFFER_SUBMITTED</small></div>
+                <div class="step-item"><span>4</span><small>HUMAN REVIEW</small></div>
               </div>
-            </fieldset>
-            <button id="submit-btn" class="repair-submit" type="submit"><span>✦ Prepare Corporate Offer</span><ArrowRight size={17} aria-hidden="true" /></button>
-          </form>
-        </div>
+              <p class="repair-status">Status: <strong id="status-label">REGISTERED</strong></p>
+
+              <form id="partner-beta-form" class="repair-offer-form">
+                <label>Shop name<input id="shop-name" type="text" maxlength="120" required placeholder="Business name" /></label>
+                <label>Shop type
+                  <select id="shop-type" required>
+                    <option value="">Select shop type</option>
+                    <option value="auto_repair">Auto repair</option>
+                    <option value="truck_diesel">Truck / diesel repair</option>
+                    <option value="mobile_mechanic">Mobile mechanic</option>
+                    <option value="tire_service">Tire service</option>
+                    <option value="body_shop">Body shop</option>
+                  </select>
+                </label>
+                <label>City / state<input id="city-state" type="text" maxlength="120" required placeholder="Milwaukee, WI" /></label>
+                <div class="repair-form-grid">
+                  <label>Emergency roadside hourly <span>optional</span><input id="roadside-rate" type="number" min="0" max="10000" inputmode="decimal" /></label>
+                  <label>Labor discount % <span>optional</span><input id="labor-discount" type="number" min="0" max="100" inputmode="decimal" /></label>
+                  <label>Parts discount % <span>optional</span><input id="parts-discount" type="number" min="0" max="100" inputmode="decimal" /></label>
+                  <label>Minimum turnaround hours <span>optional</span><input id="turnaround" type="number" min="0" max="10000" inputmode="numeric" /></label>
+                </div>
+                <fieldset>
+                  <legend>Equipment supported <span>optional</span></legend>
+                  <div class="repair-checkbox-grid">
+                    <label><input type="checkbox" name="equipment" value="car_hauler" />Car hauler</label>
+                    <label><input type="checkbox" name="equipment" value="dry_van" />Dry van</label>
+                    <label><input type="checkbox" name="equipment" value="reefer" />Reefer</label>
+                    <label><input type="checkbox" name="equipment" value="flatbed" />Flatbed</label>
+                    <label><input type="checkbox" name="equipment" value="hotshot" />Hotshot</label>
+                    <label><input type="checkbox" name="equipment" value="box_truck" />Box truck</label>
+                  </div>
+                </fieldset>
+                <button id="submit-btn" class="repair-submit" type="submit"><span>✦ Prepare Corporate Offer</span><ArrowRight size={17} aria-hidden="true" /></button>
+              </form>
+            </div>
+          </div>
+        </details>
       </div>
     </section>
 
     <section class="repair-section repair-faq" aria-labelledby="repair-faq-title">
-      <div class="repair-shell">
-        <div class="repair-heading"><p class="repair-kicker">Repair shop software questions</p><h2 id="repair-faq-title">Frequently asked questions</h2></div>
-        <div class="repair-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
+      <div class="repair-shell repair-faq-layout">
+        <div class="repair-heading repair-faq-heading">
+          <p class="repair-kicker">Repair shop software questions</p>
+          <h2 id="repair-faq-title">Questions before you start?</h2>
+          <p>Open any answer for pricing, CRM scope, booking, Catalog, or setup details.</p>
+        </div>
+        <div class="repair-faq-grid">
+          {faqs.map((faq) => (
+            <details class="repair-faq-item" data-repair-disclosure-analytics data-analytics-section="faq" data-analytics-label={faq.question}>
+              <summary><span>{faq.question}</span><b aria-hidden="true">+</b></summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   </main>
+
+  <script>
+    const bindRepairDisclosureAnalytics = () => {
+      document.querySelectorAll<HTMLDetailsElement>("[data-repair-disclosure-analytics]").forEach((details) => {
+        if (details.dataset.analyticsBound === "true") return;
+        details.dataset.analyticsBound = "true";
+        details.addEventListener("toggle", () => {
+          if (!details.open) return;
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "repair_disclosure_open",
+            product: "repair_shops",
+            section: details.dataset.analyticsSection || "detail",
+            label: details.dataset.analyticsLabel || "detail",
+          });
+        });
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bindRepairDisclosureAnalytics, { once: true });
+    } else {
+      bindRepairDisclosureAnalytics();
+    }
+  </script>
 
   <SiteFooter />
 </BaseLayout>
 
 <style>
-  .repair-pilot-page{min-height:70vh;color:#f8fafc;background:radial-gradient(circle at 12% 4%,rgba(90,200,250,.08),transparent 30rem),radial-gradient(circle at 88% 8%,rgba(157,136,255,.1),transparent 32rem),#090d16}.repair-shell{width:min(1120px,calc(100% - 2rem));margin:0 auto}.repair-live-hero{padding:clamp(3.5rem,8vw,6.5rem) 0 4rem}.repair-live-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2.2rem;align-items:center}.repair-kicker{margin:0 0 .65rem;color:#9d88ff;font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.repair-live-hero h1{max-width:760px;margin:0;font-size:clamp(2.7rem,7vw,5.4rem);line-height:.99;letter-spacing:-.05em}.repair-lead{max-width:730px;margin:1.2rem 0 0;color:#a9b5c8;font-size:clamp(1.02rem,2vw,1.18rem);line-height:1.7}.repair-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem}.repair-primary,.repair-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:46px;padding:.75rem 1rem;border-radius:11px;text-decoration:none;font-weight:750}.repair-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.repair-secondary{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#fff}.repair-trust{display:grid;gap:.5rem;margin-top:1.3rem;color:#aeb9cb;font-size:.82rem}.repair-trust span{display:flex;align-items:center;gap:.45rem}.repair-trust svg{color:#34d399}.repair-live-card{padding:1.35rem;border:1px solid rgba(52,211,153,.24);border-radius:20px;background:linear-gradient(160deg,rgba(52,211,153,.07),rgba(255,255,255,.018));box-shadow:0 24px 70px rgba(0,0,0,.22)}.repair-live-card-head{display:flex;align-items:center;gap:.55rem;color:#6ee7b7;font-weight:800}.repair-live-card ol{display:grid;gap:.7rem;list-style:none;margin:1rem 0 0;padding:0}.repair-live-card li{display:flex;align-items:center;gap:.75rem;padding:.72rem .8rem;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.025);color:#b9c5d7}.repair-live-card li strong{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:rgba(157,136,255,.12);color:#c4b5fd}.repair-section{padding:3.4rem 0}.repair-heading{max-width:780px;margin-bottom:1.3rem}.repair-heading h2,.repair-offer-copy h2,.repair-plan-card h2{margin:0;font-size:clamp(1.7rem,4vw,2.65rem);letter-spacing:-.035em}.repair-heading>p:not(.repair-kicker){margin:.8rem 0 0;color:#98a6bb;line-height:1.65}.repair-capability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.repair-capability-grid article,.repair-link-grid a,.repair-faq-grid article{padding:1.2rem;border:1px solid rgba(255,255,255,.09);border-radius:17px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 18px 55px rgba(0,0,0,.15)}.repair-capability-grid svg,.repair-link-grid svg{color:#5ac8fa}.repair-capability-grid h3{margin:.7rem 0 .45rem}.repair-capability-grid p,.repair-link-grid span,.repair-faq-grid p,.repair-offer-copy>p,.repair-plan-card>div>p{margin:0;color:#98a6bb;line-height:1.62;font-size:.9rem}.repair-plan-section{padding-top:1.2rem}.repair-plan-card{display:grid;grid-template-columns:1fr auto minmax(240px,.5fr);gap:1.5rem;align-items:center;padding:1.5rem;border:1px solid rgba(52,211,153,.24);border-radius:22px;background:linear-gradient(135deg,rgba(52,211,153,.07),rgba(90,200,250,.045),rgba(157,136,255,.055));box-shadow:0 24px 70px rgba(0,0,0,.18)}.repair-plan-price{display:flex;align-items:flex-end;gap:.15rem;white-space:nowrap}.repair-plan-price span{font-size:1.25rem;font-weight:800;padding-bottom:.55rem}.repair-plan-price strong{font-size:3.8rem;line-height:1;letter-spacing:-.055em}.repair-plan-price small{color:#a9b5c8;padding-bottom:.55rem}.repair-plan-actions{display:grid;gap:.55rem}.repair-plan-actions small{color:#8390a4;line-height:1.45}.repair-link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem}.repair-link-grid a{display:grid;gap:.45rem;color:#fff;text-decoration:none}.repair-link-grid strong{font-size:1rem}.repair-offer-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:2rem;align-items:start}.repair-offer-boundary{display:flex;gap:.55rem;margin-top:1rem;padding:.85rem;border:1px solid rgba(251,191,36,.22);border-radius:12px;background:rgba(251,191,36,.055);color:#d6c68f;font-size:.82rem;line-height:1.5}.repair-offer-boundary svg{flex:0 0 auto;color:#fbbf24}.repair-offer-card{padding:1.3rem;border:1px solid rgba(157,136,255,.2);border-radius:20px;background:rgba(13,17,27,.86);box-shadow:0 24px 70px rgba(0,0,0,.2)}.repair-lifecycle{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem}.step-item{display:grid;gap:.3rem;padding:.65rem;border:1px solid rgba(255,255,255,.07);border-radius:10px;color:#778397}.step-item.active{border-color:rgba(52,211,153,.24);background:rgba(52,211,153,.055);color:#c8f6df}.step-item span{font-weight:850}.step-item small{font-size:.62rem}.repair-status{margin:.85rem 0;color:#9aa7ba;font-size:.82rem}.repair-status strong{color:#fff}.repair-offer-form{display:grid;gap:.9rem}.repair-offer-form>label,.repair-form-grid label{display:grid;gap:.42rem;color:#dfe5ef;font-size:.78rem;font-weight:750}.repair-offer-form label span,.repair-offer-form legend span{color:#78859a;font-size:.68rem}.repair-offer-form input,.repair-offer-form select{width:100%;box-sizing:border-box;padding:.72rem .78rem;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#0d111b;color:#fff;font:inherit}.repair-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.repair-offer-form fieldset{margin:0;padding:.85rem;border:1px solid rgba(255,255,255,.08);border-radius:12px}.repair-offer-form legend{padding:0 .35rem;color:#dfe5ef;font-size:.78rem;font-weight:750}.repair-checkbox-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}.repair-checkbox-grid label{display:flex;align-items:center;gap:.4rem;color:#b9c5d7;font-size:.78rem}.repair-checkbox-grid input{width:auto}.repair-submit{display:flex;align-items:center;justify-content:center;gap:.4rem;min-height:46px;border:0;border-radius:11px;background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c;font-weight:850;cursor:pointer}.repair-submit:disabled{opacity:.65;cursor:wait}.repair-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.repair-faq-grid h3{margin:0 0 .45rem;font-size:1rem}
-  @media(max-width:900px){.repair-live-grid,.repair-offer-grid,.repair-plan-card{grid-template-columns:1fr}.repair-capability-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.repair-plan-price{justify-self:start}}
-  @media(max-width:620px){.repair-shell{width:min(100% - 1rem,1120px)}.repair-capability-grid,.repair-faq-grid,.repair-form-grid{grid-template-columns:1fr}.repair-checkbox-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}.repair-actions{flex-direction:column}.repair-primary,.repair-secondary{width:100%;box-sizing:border-box}.repair-lifecycle{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  .repair-pilot-page {
+    --repair-action: #1a73e8;
+    --repair-link: #176fc8;
+    --repair-focus: #172033;
+    --repair-focus-muted: #aeb9ca;
+    min-height: 70vh;
+    color: var(--hermes-ink, #0b0d12);
+    background:
+      radial-gradient(circle at 82% 4%, rgba(30,136,255,.08), transparent 28rem),
+      radial-gradient(circle at 12% 2%, rgba(124,92,255,.07), transparent 26rem),
+      var(--hermes-pearl, #f7f6f3);
+  }
+
+  .repair-shell { width: min(1160px, calc(100% - 2rem)); margin: 0 auto; }
+  .repair-live-hero { padding: clamp(4rem, 8vw, 7rem) 0 clamp(3.5rem, 7vw, 5.5rem); border-bottom: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); }
+  .repair-live-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .repair-kicker { margin: 0 0 .75rem; color: var(--repair-link); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+  .repair-live-hero h1 { max-width: 800px; margin: 0; color: var(--hermes-ink, #0b0d12); font-size: clamp(3.1rem, 7.25vw, 6rem); line-height: .93; letter-spacing: -.058em; text-wrap: balance; }
+  .repair-lead { max-width: 720px; margin: 1.3rem 0 0; color: var(--hermes-muted, #666c79); font-size: clamp(1.04rem, 1.8vw, 1.22rem); line-height: 1.68; }
+  .repair-actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.7rem; }
+  .repair-primary, .repair-secondary, .repair-tertiary { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 50px; padding: .78rem 1.2rem; border-radius: 999px; text-decoration: none; font-weight: 780; transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease; }
+  .repair-primary { color: #fff; border: 1px solid var(--repair-action); background: var(--repair-action); box-shadow: 0 12px 30px rgba(26,115,232,.18); }
+  .repair-secondary { color: var(--hermes-ink, #0b0d12); border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); background: rgba(255,255,255,.72); }
+  .repair-tertiary { min-height: 44px; padding-inline: .45rem; color: var(--repair-link); background: transparent; }
+  .repair-primary:hover, .repair-secondary:hover, .repair-tertiary:hover { transform: translateY(-1px); }
+  .repair-primary:focus-visible, .repair-secondary:focus-visible, .repair-tertiary:focus-visible,
+  .repair-path-grid a:focus-visible, .repair-growth-owner-nav a:focus-visible,
+  .repair-disclosure-card summary:focus-visible, .repair-faq-item summary:focus-visible,
+  .repair-partner-disclosure > summary:focus-visible {
+    outline: 3px solid rgba(26,115,232,.42);
+    outline-offset: 3px;
+  }
+  .repair-trust { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; color: #626976; font-size: .875rem; }
+  .repair-trust span { display: flex; align-items: center; gap: .4rem; min-height: 34px; padding: .42rem .65rem; border: 1px solid rgba(11,13,18,.08); border-radius: 999px; background: rgba(255,255,255,.58); }
+  .repair-trust svg { color: var(--hermes-success, #28b487); }
+
+  .repair-live-card { padding: 1.35rem; color: #f7f6f3; border: 1px solid rgba(255,255,255,.08); border-radius: 28px; background: radial-gradient(circle at 90% 0%, rgba(30,136,255,.18), transparent 16rem), radial-gradient(circle at 20% 100%, rgba(124,92,255,.15), transparent 18rem), var(--repair-focus); box-shadow: 0 32px 90px rgba(23,32,51,.20); }
+  .repair-live-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .repair-live-card-head > div { display: grid; gap: .25rem; }
+  .repair-live-card-head small { color: #96a9c9; font-size: .64rem; font-weight: 850; letter-spacing: .13em; }
+  .repair-live-card-head strong { color: #fff; font-size: 1.05rem; }
+  .repair-live-dot { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; color: #a9f1d7; font-size: .68rem; font-weight: 800; }
+  .repair-live-dot::before { width: 7px; height: 7px; border-radius: 50%; background: #42d5a0; box-shadow: 0 0 0 4px rgba(66,213,160,.10); content: ""; }
+  .repair-workflow-preview { padding: 1.2rem 0 .4rem; }
+  .repair-preview-step { display: grid; grid-template-columns: 34px 1fr auto; gap: .75rem; align-items: center; padding: .7rem .75rem; border: 1px solid rgba(255,255,255,.07); border-radius: 14px; background: rgba(255,255,255,.035); }
+  .repair-preview-step > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #a9cfff; background: rgba(30,136,255,.12); font-size: .7rem; font-weight: 850; }
+  .repair-preview-step > div { display: grid; gap: .15rem; }
+  .repair-preview-step strong { color: #f7f8fb; font-size: .86rem; }
+  .repair-preview-step small { color: #9eabc0; font-size: .7rem; }
+  .repair-preview-step em { color: #a9f1d7; font-size: .66rem; font-style: normal; font-weight: 800; }
+  .repair-preview-step.is-active { border-color: rgba(30,136,255,.24); background: rgba(30,136,255,.07); }
+  .repair-preview-line { width: 1px; height: 16px; margin-left: 28px; background: linear-gradient(#4b91dc, rgba(124,92,255,.32)); }
+  .repair-preview-footer { display: flex; align-items: flex-start; gap: .55rem; margin-top: .75rem; padding: .8rem .85rem; border-radius: 13px; color: #aeb8c9; background: rgba(255,255,255,.04); font-size: .72rem; line-height: 1.45; }
+  .repair-preview-footer svg { flex: 0 0 auto; color: #9fc7ff; }
+
+  .repair-section { padding: clamp(3.6rem, 7vw, 6rem) 0; }
+  .repair-outcome-band { padding: 1.15rem 0; border-bottom: 1px solid var(--hermes-line-light-soft, rgba(11,13,18,.07)); background: rgba(255,255,255,.46); }
+  .repair-outcome-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .repair-outcome-grid > div { display: grid; gap: .25rem; padding: .45rem 1.35rem; border-right: 1px solid var(--hermes-line-light-soft, rgba(11,13,18,.07)); }
+  .repair-outcome-grid > div:first-child { padding-left: 0; }
+  .repair-outcome-grid > div:last-child { border-right: 0; }
+  .repair-outcome-grid strong { color: var(--hermes-ink, #0b0d12); font-size: 1rem; }
+  .repair-outcome-grid span { color: var(--hermes-muted, #666c79); font-size: 1rem; line-height: 1.55; }
+
+  .repair-heading { max-width: 800px; margin-bottom: clamp(1.6rem, 3vw, 2.3rem); }
+  .repair-heading-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .62fr); gap: 2rem; max-width: none; align-items: end; }
+  .repair-heading h2, .repair-plan-card h2, .repair-partner-disclosure > summary h2 { margin: 0; color: var(--hermes-ink, #0b0d12); font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1; letter-spacing: -.048em; text-wrap: balance; }
+  .repair-heading > p:not(.repair-kicker), .repair-heading-row > p, .repair-plan-copy > p, .repair-partner-disclosure > summary span { margin: .9rem 0 0; color: var(--hermes-muted, #666c79); line-height: 1.65; }
+
+  .repair-disclosure-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .85rem; }
+  .repair-disclosure-card { border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); border-radius: 18px; background: rgba(255,255,255,.72); box-shadow: 0 14px 42px rgba(31,36,51,.045); overflow: hidden; }
+  .repair-disclosure-card[open] { border-color: rgba(30,136,255,.22); background: rgba(255,255,255,.94); box-shadow: 0 18px 48px rgba(31,36,51,.07); }
+  .repair-disclosure-card summary { display: grid; grid-template-columns: 38px 1fr auto; gap: .8rem; align-items: center; min-height: 106px; padding: 1rem 1.05rem; list-style: none; cursor: pointer; }
+  .repair-disclosure-card summary::-webkit-details-marker, .repair-faq-item summary::-webkit-details-marker, .repair-partner-disclosure > summary::-webkit-details-marker { display: none; }
+  .repair-capability-number { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: var(--repair-link); background: rgba(30,136,255,.075); font-size: .7rem; font-weight: 850; }
+  .repair-capability-copy { display: grid; gap: .28rem; }
+  .repair-capability-copy strong { color: var(--hermes-ink, #0b0d12); font-size: 1rem; }
+  .repair-capability-copy small { max-width: 48ch; color: var(--hermes-muted, #666c79); font-size: 1rem; line-height: 1.55; }
+  .repair-disclosure-plus { color: var(--repair-link); font-size: 1.25rem; transition: transform 180ms ease; }
+  .repair-disclosure-card[open] .repair-disclosure-plus { transform: rotate(45deg); }
+  .repair-disclosure-body { padding: 0 1.05rem 1.05rem 4.85rem; }
+  .repair-disclosure-body p { margin: 0; padding-top: .9rem; color: var(--hermes-muted, #666c79); border-top: 1px solid var(--hermes-line-light-soft, rgba(11,13,18,.07)); font-size: 1rem; line-height: 1.65; }
+
+  .repair-plan-section { padding-top: 1.2rem; }
+  .repair-plan-card { display: grid; grid-template-columns: minmax(0,1fr) 220px minmax(230px,.42fr); gap: clamp(1.4rem, 3vw, 2.5rem); align-items: center; padding: clamp(1.4rem, 3vw, 2.1rem); border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); border-radius: 28px; background: radial-gradient(circle at 86% 8%, rgba(30,136,255,.08), transparent 18rem), rgba(255,255,255,.84); box-shadow: 0 22px 65px rgba(31,36,51,.065); }
+  .repair-plan-card h2 { font-size: clamp(1.9rem, 3.7vw, 3rem); }
+  .repair-plan-copy > p { max-width: 68ch; font-size: 1rem; }
+  .repair-plan-detail { display: inline-flex; align-items: center; gap: .35rem; margin-top: 1rem; color: var(--repair-link); font-size: .875rem; font-weight: 800; text-decoration: none; }
+  .repair-plan-price { display: grid; gap: .2rem; padding: 1.1rem 1.2rem; color: #fff; border-radius: 20px; background: var(--repair-focus); box-shadow: 0 18px 45px rgba(23,32,51,.14); }
+  .repair-plan-price > div { display: flex; align-items: flex-start; gap: .1rem; }
+  .repair-plan-price span { padding-top: .42rem; color: #b5c7e2; font-size: 1.1rem; font-weight: 850; }
+  .repair-plan-price strong { font-size: 3.65rem; line-height: .9; letter-spacing: -.065em; }
+  .repair-plan-price small { color: var(--repair-focus-muted); font-size: .68rem; line-height: 1.4; }
+  .repair-plan-price hr { width: 100%; margin: .65rem 0; border: 0; border-top: 1px solid rgba(255,255,255,.08); }
+  .repair-plan-price b { color: #fff; font-size: 1rem; }
+  .repair-plan-actions { display: grid; gap: .55rem; }
+  .repair-plan-actions small { color: var(--hermes-muted, #666c79); font-size: .875rem; line-height: 1.5; }
+
+  .repair-paths-section { border-block: 1px solid var(--hermes-line-light-soft, rgba(11,13,18,.07)); background: rgba(255,255,255,.46); }
+  .repair-path-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .9rem; }
+  .repair-path-grid a { display: grid; align-content: start; gap: .45rem; min-height: 230px; padding: 1.35rem; color: inherit; border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); border-radius: 20px; background: rgba(255,255,255,.82); text-decoration: none; box-shadow: 0 15px 46px rgba(31,36,51,.045); transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  .repair-path-grid a:hover { transform: translateY(-2px); border-color: rgba(30,136,255,.22); box-shadow: 0 20px 55px rgba(31,36,51,.075); }
+  .repair-path-grid svg { width: 40px; height: 40px; padding: 9px; color: var(--repair-link); border: 1px solid rgba(30,136,255,.13); border-radius: 12px; background: rgba(30,136,255,.06); }
+  .repair-path-grid a > span { margin-top: .5rem; color: var(--repair-link); font-size: .63rem; font-weight: 850; letter-spacing: .12em; }
+  .repair-path-grid strong { color: var(--hermes-ink, #0b0d12); font-size: 1.05rem; line-height: 1.25; }
+  .repair-path-grid p { margin: 0; color: var(--hermes-muted, #666c79); font-size: 1rem; line-height: 1.6; }
+  .repair-path-grid b { margin-top: auto; padding-top: 1rem; color: var(--repair-link); font-size: .875rem; }
+  .repair-growth-owner-nav { display:flex; flex-wrap:wrap; gap:.55rem .9rem; margin-top:.9rem; }
+  .repair-growth-owner-nav a { display:inline-flex; align-items:center; min-height:44px; color:var(--repair-link); font-size:.875rem; font-weight:760; text-decoration:none; }
+  .repair-growth-owner-nav a:hover { text-decoration:underline; text-underline-offset:3px; }
+  .repair-search-note { max-width: 900px; margin: 1.2rem 0 0; color: #777d88; font-size: .875rem; line-height: 1.55; }
+  .repair-search-note a { color: var(--repair-link); font-weight: 760; }
+
+  .repair-partner-section { padding-top: 2.4rem; }
+  .repair-partner-disclosure { color: #f8fafc; border: 1px solid rgba(255,255,255,.08); border-radius: 28px; background: radial-gradient(circle at 90% 0%, rgba(30,136,255,.13), transparent 22rem), var(--repair-focus); box-shadow: 0 26px 75px rgba(23,32,51,.16); overflow: hidden; }
+  .repair-partner-disclosure > summary { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2rem; align-items: center; padding: clamp(1.3rem, 3vw, 1.8rem); list-style: none; cursor: pointer; }
+  .repair-partner-disclosure > summary .repair-kicker { color: #9fc7ff; }
+  .repair-partner-disclosure > summary h2 { max-width: 820px; color: #fff; font-size: clamp(1.5rem, 3vw, 2.5rem); }
+  .repair-partner-disclosure > summary span:not(.repair-partner-open) { display: block; max-width: 800px; color: var(--repair-focus-muted); font-size: 1rem; line-height: 1.55; }
+  .repair-partner-open { white-space: nowrap; color: #cbd9ee; font-size: .875rem; font-weight: 800; }
+  .repair-partner-disclosure[open] .repair-partner-open { visibility: hidden; }
+  .repair-offer-grid { display: grid; grid-template-columns: .72fr 1.28fr; gap: 2rem; align-items: start; padding: 0 clamp(1.3rem, 3vw, 1.8rem) clamp(1.3rem, 3vw, 1.8rem); }
+  .repair-offer-copy h3 { margin: 0; color: #fff; font-size: clamp(1.6rem, 3vw, 2.25rem); letter-spacing: -.035em; }
+  .repair-offer-copy > p { margin: .8rem 0 0; color: var(--repair-focus-muted); font-size: 1rem; line-height: 1.62; }
+  .repair-offer-boundary { display: flex; gap: .55rem; margin-top: 1rem; padding: .85rem; color: #c2ccda; border: 1px solid rgba(255,255,255,.09); border-radius: 12px; background: rgba(255,255,255,.04); font-size: .875rem; line-height: 1.5; }
+  .repair-offer-boundary svg { flex: 0 0 auto; color: #f4ca76; }
+  .repair-offer-card { padding: 1.2rem; border: 1px solid rgba(255,255,255,.09); border-radius: 19px; background: rgba(255,255,255,.035); }
+  .repair-lifecycle { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .45rem; }
+  .step-item { display: grid; gap: .3rem; padding: .65rem; color: #8390a5; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; }
+  .step-item.active { color: #c8f6df; border-color: rgba(52,211,153,.22); background: rgba(52,211,153,.055); }
+  .step-item span { font-weight: 850; }
+  .step-item small { font-size: .62rem; }
+  .repair-status { margin: .85rem 0; color: #9aa7ba; font-size: .875rem; }
+  .repair-status strong { color: #fff; }
+  .repair-offer-form { display: grid; gap: .9rem; }
+  .repair-offer-form > label, .repair-form-grid label { display: grid; gap: .42rem; color: #e7ebf2; font-size: .875rem; font-weight: 750; }
+  .repair-offer-form label span, .repair-offer-form legend span { color: #8592a6; font-size: .68rem; }
+  .repair-offer-form input, .repair-offer-form select { width: 100%; box-sizing: border-box; min-height: 46px; padding: .72rem .78rem; color: #fff; border: 1px solid rgba(255,255,255,.11); border-radius: 10px; background: rgba(255,255,255,.045); font: inherit; }
+  .repair-offer-form input:focus, .repair-offer-form select:focus { outline: none; border-color: rgba(143,220,255,.45); box-shadow: 0 0 0 3px rgba(90,200,250,.08); }
+  .repair-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; }
+  .repair-offer-form fieldset { margin: 0; padding: .85rem; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; }
+  .repair-offer-form legend { padding: 0 .35rem; color: #e7ebf2; font-size: .875rem; font-weight: 750; }
+  .repair-checkbox-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .55rem; }
+  .repair-checkbox-grid label { display: flex; align-items: center; gap: .4rem; color: #b9c5d7; font-size: .875rem; }
+  .repair-checkbox-grid input { width: auto; min-height: auto; }
+  .repair-submit { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: 48px; border: 0; border-radius: 999px; color: var(--repair-focus); background: linear-gradient(135deg,#c9c0ff,#8fdcff); font-weight: 850; cursor: pointer; }
+  .repair-submit:disabled { opacity: .65; cursor: wait; }
+
+  .repair-faq { padding-top: 4.5rem; }
+  .repair-faq-layout { display: grid; grid-template-columns: minmax(250px,.55fr) minmax(0,1.45fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+  .repair-faq-heading { position: sticky; top: 8rem; margin: 0; }
+  .repair-faq-grid { display: grid; gap: .65rem; }
+  .repair-faq-item { border: 1px solid var(--hermes-line-light, rgba(11,13,18,.10)); border-radius: 16px; background: rgba(255,255,255,.76); overflow: hidden; }
+  .repair-faq-item[open] { background: rgba(255,255,255,.96); }
+  .repair-faq-item summary { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; min-height: 68px; padding: .9rem 1rem; list-style: none; cursor: pointer; }
+  .repair-faq-item summary span { color: var(--hermes-ink, #0b0d12); font-size: 1rem; font-weight: 780; line-height: 1.4; }
+  .repair-faq-item summary b { color: var(--repair-link); font-size: 1.15rem; transition: transform 180ms ease; }
+  .repair-faq-item[open] summary b { transform: rotate(45deg); }
+  .repair-faq-item p { margin: 0; padding: 0 1rem 1rem; color: var(--hermes-muted, #666c79); font-size: 1rem; line-height: 1.65; }
+
+  @media (max-width: 960px) {
+    .repair-live-grid, .repair-plan-card, .repair-offer-grid, .repair-faq-layout { grid-template-columns: 1fr; }
+    .repair-heading-row { grid-template-columns: 1fr; gap: .4rem; }
+    .repair-path-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .repair-plan-price { max-width: 260px; }
+    .repair-faq-heading { position: static; }
+  }
+
+  @media (max-width: 700px) {
+    .repair-shell { width: min(100% - 1rem, 1160px); }
+    .repair-live-hero { padding-top: 2.8rem; }
+    .repair-live-grid { grid-template-columns: minmax(0,1fr); gap: 2rem; }
+    .repair-live-hero h1 { font-size: clamp(2.7rem, 14vw, 4.5rem); }
+    .repair-actions { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); }
+    .repair-primary, .repair-secondary { width: auto; box-sizing: border-box; padding-inline: .72rem; font-size: .875rem; }
+    .repair-trust { display: grid; }
+    .repair-trust span { border-radius: 14px; }
+    .repair-outcome-grid, .repair-disclosure-grid, .repair-path-grid, .repair-form-grid { grid-template-columns: 1fr; }
+    .repair-outcome-grid > div { padding: .65rem 0; border-right: 0; border-bottom: 1px solid var(--hermes-line-light-soft, rgba(11,13,18,.07)); }
+    .repair-outcome-grid > div:last-child { border-bottom: 0; }
+    .repair-disclosure-card summary { min-height: 0; grid-template-columns: 34px 1fr auto; padding: .9rem; }
+    .repair-capability-number { width: 34px; height: 34px; }
+    .repair-disclosure-body { padding: 0 .9rem .9rem 4rem; }
+    .repair-plan-card { border-radius: 22px; }
+    .repair-plan-price { max-width: none; }
+    .repair-path-grid a { min-height: 0; }
+    .repair-partner-disclosure { border-radius: 22px; }
+    .repair-partner-disclosure > summary { grid-template-columns: 1fr; gap: .8rem; }
+    .repair-partner-open { white-space: normal; }
+    .repair-lifecycle { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .repair-checkbox-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  }
+
+  @media (max-width: 360px) {
+    .repair-actions { grid-template-columns: 1fr; }
+    .repair-primary, .repair-secondary { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .repair-primary, .repair-secondary, .repair-path-grid a, .repair-disclosure-plus, .repair-faq-item summary b { transition: none; }
+  }
 </style>

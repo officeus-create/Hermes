@@ -62,7 +62,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           <button id="save-profile-btn" class="primary-btn span-2" type="submit">Save shop profile</button>
         </form>
         <div id="public-link-wrap" class="public-link hidden">
-          <div><span class="mini-label">Public booking link</span><strong id="public-link-text"></strong></div>
+          <div><span class="mini-label">Booking link preview</span><strong id="public-link-text"></strong><p id="booking-readiness-hint" class="muted small" role="status">Checking services and opening hours…</p></div>
           <div class="link-actions"><button id="copy-link-btn" class="secondary-btn" type="button"><Copy size={15} /> Copy</button><a id="open-link-btn" class="secondary-btn" href="#" target="_blank" rel="noopener"><ExternalLink size={15} /> Open</a></div>
         </div>
       </section>
@@ -71,7 +71,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <div class="panel-heading"><div><p class="eyebrow">Real D1 data</p><h2 id="services-title">Services</h2><p class="muted">These are the same services customers see on your public booking page.</p></div><span id="service-count" class="pill">0 services</span></div>
         <form id="service-form" class="service-form">
           <label class="field grow">Service name<input id="service-name" minlength="2" maxlength="120" required placeholder="Brake inspection" /></label>
-          <label class="field duration">Duration<select id="service-duration" required><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option><option value="180">180 min</option><option value="240">240 min</option></select></label>
+          <label class="field duration">Duration<select id="service-duration" required><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option><option value="180">180 min</option><option value="240">240 min</option><option value="360">360 min</option><option value="480">480 min</option><option value="600">600 min</option><option value="720">720 min</option></select></label>
           <button id="add-service-btn" class="primary-btn" type="submit"><Plus size={17} /> Add service</button>
         </form>
         <div id="services-loading" class="state-card">Loading services…</div>
@@ -128,6 +128,33 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const activeLocale = new URLSearchParams(window.location.search).get("lang") || "en";
   let publicBookingUrl = "";
   const setupState = { profileLoaded:false, servicesLoaded:false, hoursLoaded:false, serviceCount:0, openDays:0 };
+  const bookingHints: Record<string, [string,string,string,string,string]> = {
+    en:["Checking services and opening hours…","Add a real service before sharing this link.","Save opening hours before sharing this link.","Services and hours are set. Review details before sharing.","Complete and save the shop name and location first."],
+    ru:["Проверяем услуги и часы работы…","Добавьте настоящую услугу перед отправкой ссылки.","Сохраните часы работы перед отправкой ссылки.","Услуги и часы настроены. Проверьте данные перед отправкой.","Сначала сохраните название и адрес СТО."],
+    uk:["Перевіряємо послуги й години роботи…","Додайте справжню послугу перед надсиланням посилання.","Збережіть години роботи перед надсиланням посилання.","Послуги й години налаштовано. Перевірте дані перед надсиланням.","Спочатку збережіть назву й адресу СТО."],
+    es:["Comprobando servicios y horarios…","Añade un servicio real antes de compartir el enlace.","Guarda el horario antes de compartir el enlace.","Servicios y horario configurados. Revisa los datos antes de compartir.","Completa y guarda el nombre y la ubicación del taller."],
+    it:["Verifica di servizi e orari…","Aggiungi un servizio reale prima di condividere il link.","Salva gli orari prima di condividere il link.","Servizi e orari configurati. Controlla i dettagli prima di condividere.","Completa e salva il nome e la sede dell’officina."],
+    fr:["Vérification des services et des horaires…","Ajoutez un service réel avant de partager le lien.","Enregistrez les horaires avant de partager le lien.","Services et horaires configurés. Vérifiez les détails avant de partager.","Complétez et enregistrez le nom et l’adresse de l’atelier."],
+  };
+  function updateBookingShareState() {
+    const wrap = $("public-link-wrap");
+    if (!wrap) return;
+    const profileReady = Boolean(publicBookingUrl && $("profile-state")?.dataset.ready === "true" && requiredProfileDetails.every((id) => $<HTMLInputElement>(id)?.value.trim()));
+    const signal = [profileReady,setupState.servicesLoaded,setupState.hoursLoaded,setupState.serviceCount>0,setupState.openDays>0].join(":");
+    const ready = Boolean(profileReady && setupState.servicesLoaded && setupState.hoursLoaded && setupState.serviceCount>0 && setupState.openDays>0);
+    wrap.dataset.bookingReady = String(ready);
+    const hints = bookingHints[activeLocale] || bookingHints.en;
+    const hint = $("booking-readiness-hint");
+    if (hint) hint.textContent = !profileReady ? hints[4] : !setupState.servicesLoaded || !setupState.hoursLoaded ? hints[0] : !setupState.serviceCount ? hints[1] : !setupState.openDays ? hints[2] : hints[3];
+    const copyButton = $<HTMLButtonElement>("copy-link-btn");
+    if (copyButton) copyButton.disabled = !ready;
+    const label = wrap.querySelector(".mini-label");
+    if (label) label.textContent = ready ? "Customer booking link" : "Booking link preview";
+    if (wrap.dataset.bookingSignal !== signal) {
+      wrap.dataset.bookingSignal = signal;
+      document.dispatchEvent(new Event("hermes:repair-setup-changed"));
+    }
+  }
   const requiredProfileDetails = ["shop-name","shop-city","shop-state"];
   const recommendedProfileDetails = ["shop-phone","shop-address","shop-zip"];
   function updateProfilePrompts() {
@@ -195,8 +222,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       const response = await fetch("/api/repair-shop/availability", { credentials:"same-origin" });
       const data = await readJson(response);
       if (!response.ok || !data.success || !Array.isArray(data.days)) return;
-      setupState.openDays = data.days.filter((day: {is_open:boolean}) => day.is_open).length;
-      setupState.hoursLoaded = true; updateSetupNotice();
+      setupState.openDays = data.days.filter((day: {is_open:boolean;start_time?:string|null;end_time?:string|null}) => day.is_open && day.start_time && day.end_time).length;
+      setupState.hoursLoaded = true; updateSetupNotice(); updateBookingShareState();
     } catch { /* Hide setup hints when schedule truth is unavailable. */ }
   }
 
@@ -220,7 +247,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   function fillProfile(shop: Shop | null) {
     const linkWrap = $("public-link-wrap");
-    if (!shop) { $("profile-state")!.textContent = "Not configured"; $("profile-state")!.dataset.ready = "false"; linkWrap?.classList.add("hidden"); savedPresence={}; setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice(); return; }
+    if (!shop) { publicBookingUrl=""; $("profile-state")!.textContent = "Not configured"; $("profile-state")!.dataset.ready = "false"; linkWrap?.classList.add("hidden"); savedPresence={}; setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice(); updateBookingShareState(); return; }
     $("profile-state")!.textContent = "Saved";
     $("profile-state")!.dataset.ready = "true";
     $<HTMLInputElement>("shop-name")!.value = shop.name || ""; $<HTMLInputElement>("shop-phone")!.value = shop.phone || ""; $<HTMLInputElement>("shop-address")!.value = shop.address_line1 || ""; $<HTMLInputElement>("shop-city")!.value = shop.city || ""; $<HTMLInputElement>("shop-state")!.value = shop.state || ""; $<HTMLInputElement>("shop-zip")!.value = shop.postal_code || ""; $<HTMLSelectElement>("shop-timezone")!.value = shop.timezone || "America/Chicago";
@@ -231,7 +258,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     savedPresence={website:shop.website||"",instagram:shop.instagram_url||"",facebook:shop.facebook_url||"",threads:shop.threads_url||""};
     publicBookingUrl = `${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
     $("public-link-text")!.textContent = publicBookingUrl; $<HTMLAnchorElement>("open-link-btn")!.href = publicBookingUrl; linkWrap?.classList.remove("hidden");
-    setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice();
+    setupState.profileLoaded=true; updateProfilePrompts(); updatePresence(); updateSetupNotice(); updateBookingShareState();
   }
 
   async function loadProfile() { const response = await fetch("/api/repair-shop/profile", { credentials: "same-origin" }); if (response.status === 401) return redirectToAuth(); const data = await readJson(response); if (!response.ok || !data.success) return showAlert(data.error || "Unable to load shop profile."); fillProfile(data.shop || null); }
@@ -244,11 +271,11 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     } catch { showAlert("Network error while saving shop profile."); } finally { if (saveProfileButton) saveProfileButton.disabled = false; }
   });
 
-  $("copy-link-btn")?.addEventListener("click", async () => { if (!publicBookingUrl) return; try { await navigator.clipboard.writeText(publicBookingUrl); showAlert("Public booking link copied.","success"); } catch { showAlert("Could not copy the link. Select it manually."); } });
+  $("copy-link-btn")?.addEventListener("click", async () => { if (!publicBookingUrl || $("public-link-wrap")?.dataset.bookingReady !== "true") return; try { await navigator.clipboard.writeText(publicBookingUrl); showAlert("Public booking link copied.","success"); } catch { showAlert("Could not copy the link. Select it manually."); } });
 
   function renderServices(items: Service[]) {
     $("services-loading")?.classList.add("hidden"); $("service-count")!.textContent = `${items.length} ${items.length === 1 ? "service" : "services"}`;
-    setupState.serviceCount=items.length; setupState.servicesLoaded=true; updateSetupNotice();
+    setupState.serviceCount=items.length; setupState.servicesLoaded=true; updateSetupNotice(); updateBookingShareState();
     const list = $("services-list")!; const empty = $("services-empty")!; list.replaceChildren();
     if (!items.length) { list.classList.add("hidden"); empty.classList.remove("hidden"); return; }
     empty.classList.add("hidden"); list.classList.remove("hidden");

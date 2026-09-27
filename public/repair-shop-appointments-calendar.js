@@ -229,7 +229,25 @@
     document.getElementById("appointment-search")?.addEventListener("input",render);
     document.getElementById("appointment-status")?.addEventListener("change",render);
     techLabel.querySelector("select")?.addEventListener("change",render);
-    try { const r=await fetch("/api/repair-shop/profile",{credentials:"same-origin"}); const d=await r.json(); if(r.ok&&d.success&&d.shop){shop=d.shop; const url=`${location.origin}${ROOT}/booking/?shop=${encodeURIComponent(shop.slug)}${locale==="en"?"":`&lang=${locale}`}`; const share=calendar.querySelector("[data-booking-share]");share.hidden=false;share.querySelector("[data-booking-url]").textContent=url;share.querySelector("[data-open-booking]").href=url;share.querySelector("[data-copy-booking]").addEventListener("click",async(e)=>{await navigator.clipboard.writeText(url);const b=e.currentTarget,old=b.textContent;b.textContent=copy.copied;setTimeout(()=>b.textContent=old,1400);});}} catch {}
+    let bookingReadinessEvent=null;
+    const refreshBookingShare=()=>{
+      const bar=document.querySelector("[data-repair-booking-sharebar]");
+      const readiness=bookingReadinessEvent??{slug:bar?.dataset.shopSlug||"",ready:bar?.dataset.ready==="true"};
+      const ready=Boolean(shop?.slug && readiness?.slug===shop.slug && readiness?.ready);
+      share.hidden=!ready;
+      if(!ready){share.querySelector("[data-booking-url]").textContent="";share.querySelector("[data-open-booking]").removeAttribute("href");return;}
+      const url=`${location.origin}${ROOT}/booking/?shop=${encodeURIComponent(shop.slug)}${locale==="en"?"":`&lang=${locale}`}`;
+      share.querySelector("[data-booking-url]").textContent=url;
+      share.querySelector("[data-open-booking]").href=url;
+    };
+    share.querySelector("[data-copy-booking]").addEventListener("click",async(e)=>{
+      if(share.hidden || !shop?.slug)return;
+      const url=share.querySelector("[data-booking-url]").textContent;
+      await navigator.clipboard.writeText(url);
+      const b=e.currentTarget,old=b.textContent;b.textContent=copy.copied;setTimeout(()=>b.textContent=old,1400);
+    });
+    document.addEventListener("hermes:repair-booking-readiness",(event)=>{bookingReadinessEvent=event.detail;refreshBookingShare();});
+    try { const r=await fetch("/api/repair-shop/profile",{credentials:"same-origin"}); const d=await r.json(); if(r.ok&&d.success&&d.shop){shop=d.shop;refreshBookingShare();}} catch {}
     render();
   }
 

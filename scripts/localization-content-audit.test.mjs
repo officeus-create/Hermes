@@ -84,6 +84,13 @@ const knownEnglishLeakage = [
 const russianOnlyEnglishLeakage = [
   "Open Hermes Connect Product Hub",
 ];
+const localizedConsentLabels = {
+  uk: ["Налаштування конфіденційності", "Дозволити аналітику", "Продовжити без аналітики", "Політика конфіденційності"],
+  ru: ["Настройки конфиденциальности", "Разрешить аналитику", "Продолжить без аналитики", "Политика конфиденциальности"],
+  es: ["Configuración de privacidad", "Permitir analítica", "Continuar sin analítica", "Política de privacidad"],
+  it: ["Impostazioni sulla privacy", "Consenti analisi", "Continua senza analisi", "Informativa sulla privacy"],
+  fr: ["Paramètres de confidentialité", "Autoriser l’analyse", "Continuer sans analyse", "Politique de confidentialité"],
+};
 const localizedOwnerMailFields = {
   "/ua/academy/": ["Компанія / бізнес", "Країна / ринок", "Поточна проблема", "Бажаний результат", "Напрям Hermes"],
   "/ru/academy/": ["Компания / бизнес", "Страна / рынок", "Текущая проблема", "Желаемый результат", "Направление Hermes"],
@@ -135,6 +142,10 @@ for (const page of pages) {
   for (const href of page.requiredHrefs ?? []) {
     if (!html.includes(`href="${href}"`)) errors.push(`${page.route}: required locale-safe href is missing: ${href}`);
   }
+  const consentLabels = localizedConsentLabels[page.lang];
+  for (const label of consentLabels ?? []) {
+    if (!visible.includes(label)) errors.push(`${page.route}: localized privacy-consent label is missing: ${label}`);
+  }
 
   const expectedMailFields = localizedOwnerMailFields[page.route];
   if (expectedMailFields) {
@@ -170,6 +181,18 @@ for (const page of pages) {
 // ownership lives in the shared secondary i18n runtime; the demo bootstrap owns only
 // synthetic-data isolation and demo/preview query propagation. Audit both owners so
 // future polish cannot silently move translations back into the demo data layer.
+const trackingConsentSource = await readFile(join(root, "src/components/TrackingConsent.astro"), "utf8");
+const baseLayoutSource = await readFile(join(root, "src/layouts/BaseLayout.astro"), "utf8");
+for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) {
+  if (!trackingConsentSource.includes(`${locale}: {`)) errors.push(`Tracking consent: locale copy is missing: ${locale}`);
+}
+if (!trackingConsentSource.includes('Astro.url.searchParams.get("lang")')) {
+  errors.push("Tracking consent: query-locale resolution is missing");
+}
+if (!baseLayoutSource.includes("<TrackingConsent clarityEligible={clarityEligible} locale={locale} />")) {
+  errors.push("Tracking consent: BaseLayout must pass the resolved page locale");
+}
+
 const repairShopI18n = await readFile(join(root, "public/hermes-connect-repair-owner-secondary-i18n.js"), "utf8");
 const repairOwnerCurrent = await readFile(join(root, "public/hermes-connect-repair-owner-p0-current.js"), "utf8");
 const repairOwnerPolish = await readFile(join(root, "public/repair-owner-runtime-fixes.js"), "utf8");

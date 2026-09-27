@@ -44,6 +44,12 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
                 <option value="60">60 min</option>
                 <option value="90">90 min</option>
                 <option value="120">120 min</option>
+                <option value="180">180 min</option>
+                <option value="240">240 min</option>
+                <option value="360">360 min</option>
+                <option value="480">480 min</option>
+                <option value="600">600 min</option>
+                <option value="720">720 min</option>
               </select>
             </label>
             <button id="service-submit" type="submit" class="primary-action" data-i18n="addButton">Add service</button>
@@ -54,10 +60,12 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           <input id="service-search" type="search" autocomplete="off" placeholder="Search services" data-i18n-placeholder="searchPlaceholder" />
           <p class="muted" data-i18n="deleteRule">Services already used by bookings stay protected from deletion.</p>
         </section>
+        <p id="service-results" class="service-results hidden" role="status" aria-live="polite"></p>
 
         <div id="services-loading" class="state-card" data-i18n="loading">Loading services…</div>
         <div id="services-empty" class="state-card hidden"><strong data-i18n="emptyTitle">No services yet</strong><span data-i18n="emptyCopy">Add the first service to make it available in booking.</span></div>
         <div id="service-list" class="service-list hidden"></div>
+        <button id="show-more-services" class="show-more-services hidden" type="button" data-i18n="showMore">Show 20 more</button>
       </section>
     </div>
   </main>
@@ -71,15 +79,25 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const requested = (params.get("lang") || "en").toLowerCase();
   const locale = supported.has(requested) ? requested : "en";
   const copy: Record<string, Record<string,string>> = {
-    en:{eyebrow:"Repair Shop CRM",servicesTitle:"Services",servicesSubtitle:"Manage the same service catalog customers see on your public booking page.",catalog:"Catalog",addService:"Add service",addServiceCopy:"New services become available to the existing Repair Shop booking flow.",serviceName:"Service name",servicePlaceholder:"Brake inspection",duration:"Duration",addButton:"Add service",searchPlaceholder:"Search services",deleteRule:"Services already used by bookings stay protected from deletion.",loading:"Loading services…",emptyTitle:"No services yet",emptyCopy:"Add the first service to make it available in booking.",service:"service",services:"services",minutes:"min",delete:"Delete",duplicate:"A service with this name already exists.",locked:"This service already has bookings and cannot be deleted.",createFailed:"Unable to add service.",deleteFailed:"Unable to delete service.",loadFailed:"Unable to load services.",sessionFailed:"Unable to verify your secure session.",created:"Service added.",deleted:"Service deleted."},
+    en:{eyebrow:"Repair Shop CRM",servicesTitle:"Services",servicesSubtitle:"Manage the same service catalog customers see on your public booking page.",catalog:"Catalog",addService:"Add service",addServiceCopy:"New services become available to the existing Repair Shop booking flow.",serviceName:"Service name",servicePlaceholder:"Brake inspection",duration:"Duration",addButton:"Add service",searchPlaceholder:"Search services",deleteRule:"Services already used by bookings stay protected from deletion.",loading:"Loading services…",emptyTitle:"No services yet",emptyCopy:"Add the first service to make it available in booking.",service:"service",services:"services",minutes:"min",delete:"Delete",duplicate:"A service with this name already exists.",locked:"This service already has bookings and cannot be deleted.",createFailed:"Unable to add service.",deleteFailed:"Unable to delete service.",loadFailed:"Unable to load services.",sessionFailed:"Unable to verify your secure session.",created:"Service added.",deleted:"Service deleted.",showMore:"Show 20 more",noMatches:"No matching services",showing:"Showing"},
     ru:{eyebrow:"CRM СТО",servicesTitle:"Услуги",servicesSubtitle:"Управляйте тем же каталогом услуг, который клиенты видят на публичной странице записи.",catalog:"Каталог",addService:"Добавить услугу",addServiceCopy:"Новая услуга сразу становится доступна существующему процессу записи СТО.",serviceName:"Название услуги",servicePlaceholder:"Диагностика тормозов",duration:"Длительность",addButton:"Добавить услугу",searchPlaceholder:"Поиск услуг",deleteRule:"Услуги, которые уже использовались в записях, защищены от удаления.",loading:"Загружаем услуги…",emptyTitle:"Услуг пока нет",emptyCopy:"Добавьте первую услугу, чтобы она появилась в записи.",service:"услуга",services:"услуг",minutes:"мин",delete:"Удалить",duplicate:"Услуга с таким названием уже существует.",locked:"У этой услуги уже есть записи, поэтому её нельзя удалить.",createFailed:"Не удалось добавить услугу.",deleteFailed:"Не удалось удалить услугу.",loadFailed:"Не удалось загрузить услуги.",sessionFailed:"Не удалось проверить защищённую сессию.",created:"Услуга добавлена.",deleted:"Услуга удалена."},
     uk:{eyebrow:"CRM СТО",servicesTitle:"Послуги",servicesSubtitle:"Керуйте тим самим каталогом послуг, який клієнти бачать на публічній сторінці запису.",catalog:"Каталог",addService:"Додати послугу",addServiceCopy:"Нова послуга стає доступною в чинному процесі запису СТО.",serviceName:"Назва послуги",servicePlaceholder:"Діагностика гальм",duration:"Тривалість",addButton:"Додати послугу",searchPlaceholder:"Пошук послуг",deleteRule:"Послуги, які вже використовувались у записах, захищені від видалення.",loading:"Завантажуємо послуги…",emptyTitle:"Послуг поки немає",emptyCopy:"Додайте першу послугу, щоб вона з’явилася в записі.",service:"послуга",services:"послуг",minutes:"хв",delete:"Видалити",duplicate:"Послуга з такою назвою вже існує.",locked:"Для цієї послуги вже є записи, тому її не можна видалити.",createFailed:"Не вдалося додати послугу.",deleteFailed:"Не вдалося видалити послугу.",loadFailed:"Не вдалося завантажити послуги.",sessionFailed:"Не вдалося перевірити захищену сесію.",created:"Послугу додано.",deleted:"Послугу видалено."},
     es:{eyebrow:"CRM del taller",servicesTitle:"Servicios",servicesSubtitle:"Gestiona el mismo catálogo de servicios que los clientes ven en la reserva pública.",catalog:"Catálogo",addService:"Añadir servicio",addServiceCopy:"Los nuevos servicios quedan disponibles en el flujo de reservas existente.",serviceName:"Nombre del servicio",servicePlaceholder:"Inspección de frenos",duration:"Duración",addButton:"Añadir servicio",searchPlaceholder:"Buscar servicios",deleteRule:"Los servicios ya usados en reservas permanecen protegidos contra eliminación.",loading:"Cargando servicios…",emptyTitle:"Aún no hay servicios",emptyCopy:"Añade el primer servicio para ofrecerlo en reservas.",service:"servicio",services:"servicios",minutes:"min",delete:"Eliminar",duplicate:"Ya existe un servicio con este nombre.",locked:"Este servicio ya tiene reservas y no se puede eliminar.",createFailed:"No se pudo añadir el servicio.",deleteFailed:"No se pudo eliminar el servicio.",loadFailed:"No se pudieron cargar los servicios.",sessionFailed:"No se pudo verificar tu sesión segura.",created:"Servicio añadido.",deleted:"Servicio eliminado."},
     it:{eyebrow:"CRM officina",servicesTitle:"Servizi",servicesSubtitle:"Gestisci lo stesso catalogo servizi visibile ai clienti nella prenotazione pubblica.",catalog:"Catalogo",addService:"Aggiungi servizio",addServiceCopy:"I nuovi servizi diventano disponibili nel flusso di prenotazione esistente.",serviceName:"Nome servizio",servicePlaceholder:"Controllo freni",duration:"Durata",addButton:"Aggiungi servizio",searchPlaceholder:"Cerca servizi",deleteRule:"I servizi già usati nelle prenotazioni restano protetti dalla cancellazione.",loading:"Caricamento servizi…",emptyTitle:"Nessun servizio per ora",emptyCopy:"Aggiungi il primo servizio per renderlo disponibile nelle prenotazioni.",service:"servizio",services:"servizi",minutes:"min",delete:"Elimina",duplicate:"Esiste già un servizio con questo nome.",locked:"Questo servizio ha già prenotazioni e non può essere eliminato.",createFailed:"Impossibile aggiungere il servizio.",deleteFailed:"Impossibile eliminare il servizio.",loadFailed:"Impossibile caricare i servizi.",sessionFailed:"Impossibile verificare la sessione sicura.",created:"Servizio aggiunto.",deleted:"Servizio eliminato."},
     fr:{eyebrow:"CRM atelier",servicesTitle:"Services",servicesSubtitle:"Gérez le même catalogue de services que les clients voient sur la réservation publique.",catalog:"Catalogue",addService:"Ajouter un service",addServiceCopy:"Les nouveaux services deviennent disponibles dans le parcours de réservation existant.",serviceName:"Nom du service",servicePlaceholder:"Inspection des freins",duration:"Durée",addButton:"Ajouter",searchPlaceholder:"Rechercher des services",deleteRule:"Les services déjà utilisés dans des rendez-vous restent protégés contre la suppression.",loading:"Chargement des services…",emptyTitle:"Aucun service pour le moment",emptyCopy:"Ajoutez le premier service pour le proposer à la réservation.",service:"service",services:"services",minutes:"min",delete:"Supprimer",duplicate:"Un service portant ce nom existe déjà.",locked:"Ce service a déjà des rendez-vous et ne peut pas être supprimé.",createFailed:"Impossible d’ajouter le service.",deleteFailed:"Impossible de supprimer le service.",loadFailed:"Impossible de charger les services.",sessionFailed:"Impossible de vérifier votre session sécurisée.",created:"Service ajouté.",deleted:"Service supprimé."},
   };
-  const t = copy[locale] || copy.en;
+  const listingCopy: Record<string, Record<string,string>> = {
+    en:{showMore:"Show 20 more",noMatches:"No matching services",showing:"Showing",matching:"matching"},
+    ru:{showMore:"Показать ещё 20",noMatches:"Услуги не найдены",showing:"Показано",matching:"по запросу"},
+    uk:{showMore:"Показати ще 20",noMatches:"Послуг не знайдено",showing:"Показано",matching:"за запитом"},
+    es:{showMore:"Mostrar 20 más",noMatches:"No hay servicios coincidentes",showing:"Mostrando",matching:"coincidentes"},
+    it:{showMore:"Mostra altri 20",noMatches:"Nessun servizio corrispondente",showing:"Visualizzati",matching:"corrispondenti"},
+    fr:{showMore:"Afficher 20 de plus",noMatches:"Aucun service correspondant",showing:"Affichage",matching:"correspondants"},
+  };
+  const t = { ...(copy[locale] || copy.en), ...listingCopy[locale] };
   let services: Service[] = [];
+  const pageSize = 20;
+  let visibleLimit = pageSize;
 
   const $ = <T extends HTMLElement>(selector:string) => document.querySelector(selector) as T | null;
   const alertBox = $("#page-alert");
@@ -87,6 +105,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const loading = $("#services-loading");
   const empty = $("#services-empty");
   const count = $("#service-count");
+  const results = $("#service-results");
+  const showMore = $("#show-more-services") as HTMLButtonElement | null;
   const search = $("#service-search") as HTMLInputElement | null;
   const form = $("#service-form") as HTMLFormElement | null;
   const nameInput = $("#service-name") as HTMLInputElement | null;
@@ -126,8 +146,14 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     if (!list || !empty || !count || !loading) return;
     const term = (search?.value || "").trim().toLowerCase();
     const filtered = services.filter((service) => !term || service.name.toLowerCase().includes(term));
+    const visible = filtered.slice(0, visibleLimit);
     loading.classList.add("hidden");
     count.textContent = `${services.length} ${services.length === 1 ? t.service : t.services}`;
+    if (results) {
+      results.textContent = `${t.showing} ${visible.length} / ${filtered.length} ${t.services}${term ? ` · ${t.matching}` : ""}`;
+      results.classList.toggle("hidden", !services.length);
+    }
+    if (showMore) showMore.classList.toggle("hidden", visible.length >= filtered.length);
     list.replaceChildren();
     if (!services.length) {
       list.classList.add("hidden");
@@ -136,7 +162,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     }
     empty.classList.add("hidden");
     list.classList.remove("hidden");
-    for (const service of filtered) {
+    for (const service of visible) {
       const card = document.createElement("article");
       card.className = "service-card";
       const info = document.createElement("div");
@@ -165,6 +191,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           services = services.filter((item) => item.id !== service.id);
           setAlert(t.deleted, "success");
           render();
+          document.dispatchEvent(new Event("hermes:repair-setup-changed"));
         } catch { setAlert(t.deleteFailed); }
         finally { remove.disabled = false; }
       });
@@ -174,7 +201,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     if (!filtered.length) {
       const state = document.createElement("div");
       state.className = "state-card";
-      state.textContent = t.emptyTitle;
+      state.textContent = t.noMatches;
       list.append(state);
     }
   };
@@ -190,7 +217,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   };
 
   applyI18n();
-  search?.addEventListener("input", render);
+  search?.addEventListener("input", () => { visibleLimit = pageSize; render(); });
+  showMore?.addEventListener("click", () => { visibleLimit += pageSize; render(); });
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearAlert();
@@ -211,8 +239,10 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       }
       if (data.service) services = [...services, data.service].sort((a,b) => a.name.localeCompare(b.name));
       if (nameInput) nameInput.value = "";
+      if (search && services.length > visibleLimit) { search.value = name; visibleLimit = pageSize; }
       setAlert(t.created, "success");
       render();
+      document.dispatchEvent(new Event("hermes:repair-setup-changed"));
     } catch { setAlert(t.createFailed); }
     finally { if (submitButton) submitButton.disabled = false; }
   });
@@ -239,6 +269,9 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   html.hc-repair-crm .services-page .service-toolbar{display:grid;grid-template-columns:minmax(220px,420px) 1fr;gap:18px;align-items:center;margin:20px 0 12px}
   html.hc-repair-crm .services-page .service-toolbar .muted{text-align:right;font-size:12px}
   html.hc-repair-crm .services-page .service-list{display:grid;gap:10px}
+  html.hc-repair-crm .services-page .service-results{margin:0 0 12px;color:#687487;font-size:12px;font-weight:750}
+  html.hc-repair-crm .services-page .show-more-services{display:block;margin:18px auto 0;min-height:44px;padding:0 20px;border:1px solid #cbd9e8;border-radius:11px;background:#fff;color:#225e9f;font:inherit;font-weight:800;cursor:pointer}
+  html.hc-repair-crm .services-page .show-more-services:hover,html.hc-repair-crm .services-page .show-more-services:focus-visible{border-color:#78ade2;box-shadow:0 0 0 3px #e9f4ff}
   html.hc-repair-crm .services-page .service-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;min-height:76px;padding:14px 16px;border:1px solid #e2e7ee;border-radius:14px;background:#fff}
   html.hc-repair-crm .services-page .service-card-info{display:grid;gap:5px;min-width:0}
   html.hc-repair-crm .services-page .service-card-info strong{overflow:hidden;color:#172033;font-size:15px;text-overflow:ellipsis;white-space:nowrap}

@@ -7,11 +7,13 @@ let services = [
   { id: "svc-oil", name: "Oil change", duration_minutes: 30 },
 ];
 
-async function mockOwnerApis(page: Page) {
-  services = [
+async function mockOwnerApis(page: Page, serviceCount = 2) {
+  services = serviceCount === 2 ? [
     { id: "svc-brake", name: "Brake inspection", duration_minutes: 60 },
     { id: "svc-oil", name: "Oil change", duration_minutes: 30 },
-  ];
+  ] : Array.from({ length: serviceCount }, (_, i) => ({
+    id: `svc-${i + 1}`, name: `Service ${String(i + 1).padStart(3, "0")}`, duration_minutes: 60,
+  }));
   await page.route("**/api/auth/me", async (route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ authenticated: true, account: { role: "Shop Owner" } }) });
   });
@@ -115,10 +117,11 @@ test("Services is a private owner workspace using the existing service API", asy
   await expectLayout(page);
 
   await page.locator("#service-name").fill("Wheel alignment");
-  await page.locator("#service-duration").selectOption("90");
+  await page.locator("#service-duration").selectOption("720");
   await page.locator("#service-submit").click();
   await expect(page.locator(".service-card")).toHaveCount(3);
   await expect(page.locator("#page-alert")).toContainText("Service added.");
+  await expect(page.locator(".service-card").filter({ hasText: "Wheel alignment" })).toContainText("720 min");
 
   await page.getByRole("button", { name: "Delete: Oil change" }).click();
   await expect(page.locator(".service-card")).toHaveCount(2);
@@ -147,4 +150,22 @@ test("Services preserves Russian UX and mobile CRM navigation", async ({ page },
     await expect(page.locator(".repair-crm-sidebar")).toBeVisible();
     await captureEvidence(page, testInfo, "services-ru-mobile-drawer", false);
   }
+});
+
+test("Large service catalogs stay navigable while search covers the full catalog", async ({ page }) => {
+  await mockOwnerApis(page, 45);
+  await page.goto("/services/hermes-connect/repair-shops/services/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".service-card")).toHaveCount(20);
+  await expect(page.locator("#service-results")).toHaveText("Showing 20 / 45 services");
+
+  await page.getByRole("button", { name: "Show 20 more" }).click();
+  await expect(page.locator(".service-card")).toHaveCount(40);
+  await expect(page.locator("#service-results")).toHaveText("Showing 40 / 45 services");
+
+  await page.getByRole("searchbox", { name: "Search services" }).fill("Service 045");
+  await expect(page.locator(".service-card")).toHaveCount(1);
+  await expect(page.locator(".service-card")).toContainText("Service 045");
+  await expect(page.locator("#show-more-services")).toBeHidden();
+  await page.getByRole("searchbox", { name: "Search services" }).fill("no such service");
+  await expect(page.locator("#service-list")).toContainText("No matching services");
 });

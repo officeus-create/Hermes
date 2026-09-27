@@ -10,8 +10,20 @@ test("registered Repair Shop owner gets a usable login form on the first mobile 
   await page.goto(repairRoot);
 
   const card = page.locator("[data-repair-owner-quick-login]");
+  const toggle = page.locator("[data-repair-owner-login-toggle]");
   const form = page.locator("[data-repair-owner-login-form]");
   await expect(card).toBeVisible();
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(form).toBeHidden();
+
+  const box = await card.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y).toBeLessThan(844);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(form).toBeVisible();
   await expect(page.locator("[data-repair-owner-login-email]")).toBeVisible();
   await expect(page.locator("[data-repair-owner-login-password]")).toBeVisible();
@@ -20,13 +32,6 @@ test("registered Repair Shop owner gets a usable login form on the first mobile 
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=login",
   );
-
-  const box = await card.boundingBox();
-  expect(box).not.toBeNull();
-  expect(box!.y).toBeLessThan(844);
-  expect(box!.y + box!.height).toBeLessThanOrEqual(844);
-
-  await expect(page.locator("[data-repair-free-launch] [data-owner-cta]")).toBeHidden();
   await expect(page.getByRole("link", { name: "Register free" }).first()).toBeVisible();
 });
 
@@ -43,6 +48,7 @@ test("landing login submits through canonical auth API and opens dashboard", asy
   });
 
   await page.goto(repairRoot);
+  await page.locator("[data-repair-owner-login-toggle]").click();
   await page.locator("[data-repair-owner-login-email]").fill("owner@example.com");
   await page.locator("[data-repair-owner-login-password]").fill("password123");
   await page.locator("[data-repair-owner-login-submit]").click();
@@ -57,8 +63,13 @@ test("Russian first-screen login form preserves locale", async ({ page }) => {
   await page.goto(`${repairRoot}?lang=ru`);
 
   const card = page.locator("[data-repair-owner-quick-login]");
+  const toggle = page.locator("[data-repair-owner-login-toggle]");
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading", { name: "Войдите в кабинет СТО" })).toBeVisible();
+  await expect(toggle).toHaveText("Войти в кабинет СТО");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("link", { name: "Войти в кабинет СТО" })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru",

@@ -1,13 +1,16 @@
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
 const websiteRoot = new URL("..", import.meta.url).pathname;
-const crmRoot = join(homedir(), "Documents", "Database Carrier", "prototypes", "crm-validation-pipeline", "demo");
+const externalCrmRoot = process.env.HERMES_CRM_VALIDATION_SOURCE_DIR
+  ? resolve(process.env.HERMES_CRM_VALIDATION_SOURCE_DIR)
+  : null;
 const externalConnectRoot = process.env.HERMES_CONNECT_SOURCE_DIR
   ? resolve(process.env.HERMES_CONNECT_SOURCE_DIR)
   : null;
-const auditRoot = join(homedir(), "Documents", "Отдел маркетинга", "website-audit", "reports", "hermes-site-audit-2026-07-28");
+const externalAuditRoot = process.env.HERMES_WEBSITE_AUDIT_SOURCE_DIR
+  ? resolve(process.env.HERMES_WEBSITE_AUDIT_SOURCE_DIR)
+  : null;
 
 const crmTarget = join(websiteRoot, "public", "demos", "crm-validation");
 const connectTarget = join(websiteRoot, "public", "demos", "hermes-connect");
@@ -27,9 +30,15 @@ await mkdir(connectTarget, { recursive: true });
 await mkdir(auditTarget, { recursive: true });
 
 const crmIndex = join(crmTarget, "index.html");
-await cp(join(crmRoot, "index.html"), crmIndex);
-await preserveDemoNoindex(crmIndex);
-await cp(join(crmRoot, "dashboard.json"), join(crmTarget, "dashboard.json"));
+if (externalCrmRoot) {
+  await cp(join(externalCrmRoot, "index.html"), crmIndex);
+  await preserveDemoNoindex(crmIndex);
+  await cp(join(externalCrmRoot, "dashboard.json"), join(crmTarget, "dashboard.json"));
+  console.log(`Synced CRM Validation from explicit external source: ${externalCrmRoot}`);
+} else {
+  await preserveDemoNoindex(crmIndex);
+  console.log("Preserved repository-managed CRM Validation demo. Set HERMES_CRM_VALIDATION_SOURCE_DIR only for an intentional reviewed import.");
+}
 
 const connectIndex = join(connectTarget, "index.html");
 if (externalConnectRoot) {
@@ -51,8 +60,14 @@ if (externalConnectRoot) {
 }
 
 const auditIndex = join(auditTarget, "index.html");
-await cp(join(auditRoot, "index-after.html"), auditIndex);
-await preserveDemoNoindex(auditIndex);
-await cp(join(auditRoot, "report-after.json"), join(auditTarget, "report.json"));
+if (externalAuditRoot) {
+  await cp(join(externalAuditRoot, "index-after.html"), auditIndex);
+  await preserveDemoNoindex(auditIndex);
+  await cp(join(externalAuditRoot, "report-after.json"), join(auditTarget, "report.json"));
+  console.log(`Synced Website Audit from explicit external source: ${externalAuditRoot}`);
+} else {
+  await preserveDemoNoindex(auditIndex);
+  console.log("Preserved repository-managed Website Audit demo. Set HERMES_WEBSITE_AUDIT_SOURCE_DIR only for an intentional reviewed import.");
+}
 
-console.log("Synced CRM Validation and Website Audit public demos with noindex metadata.");
+console.log("Product demo sync complete with repository-safe defaults and noindex metadata.");
