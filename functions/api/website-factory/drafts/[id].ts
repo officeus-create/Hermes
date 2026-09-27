@@ -5,6 +5,7 @@ import {
   normalizeWebsiteFactoryPayload,
   parseWebsiteFactoryDraft,
   websiteFactoryReadiness,
+  websiteFactoryToCatalogConceptDraft,
 } from "../../_lib/website-factory.mjs";
 
 type ServiceFetcher = { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> };
@@ -13,6 +14,11 @@ type Context = { request: Request; env: Env; params: { id?: string } };
 const sameOriginMutation = (request: Request) => request.headers.get("Sec-Fetch-Site") !== "cross-site" && (!request.headers.get("Origin") || request.headers.get("Origin") === new URL(request.url).origin);
 const cleanId = (value: unknown) => String(value || "").trim().slice(0, 180);
 const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
+
+const catalogConceptDraftFor = (draft: any, payload: any) => websiteFactoryToCatalogConceptDraft(payload, {
+  draftId: draft.id,
+  title: draft.title,
+});
 
 async function ownDraft(db: any, specialistId: string, id: string) {
   return db.prepare(`
@@ -50,6 +56,7 @@ function handoffEmailText(draft: any, specialist: any, payload: any) {
   const references = Array.isArray(payload?.references) ? payload.references : [];
   const capabilities = Array.isArray(payload?.capabilities) ? payload.capabilities.filter((item: any) => item?.included).map((item: any) => item.id) : [];
   const sources = Array.isArray(payload?.sources) ? payload.sources.map((item: any) => item.url).filter(Boolean) : [];
+  const catalogConceptDraft = catalogConceptDraftFor(draft, payload);
   return [
     "Hermes Website Factory Brief",
     "----------------------------",
@@ -62,6 +69,11 @@ function handoffEmailText(draft: any, specialist: any, payload: any) {
     `Primary goal: ${cleanWebsiteFactoryText(goals.primary, 160) || "Not provided"}`,
     `Target market: ${cleanWebsiteFactoryText(goals.geography, 300) || "Not provided"}`,
     `Primary action: ${cleanWebsiteFactoryText(goals.primary_action, 300) || "Not provided"}`,
+    `Catalog concept draft: ${catalogConceptDraft.id}`,
+    `Catalog lifecycle: ${catalogConceptDraft.lifecycleState}`,
+    `Catalog publication: ${catalogConceptDraft.publication.state}; indexable=${catalogConceptDraft.publication.indexable}`,
+    `Semantic core: ${catalogConceptDraft.semanticCore.join(", ") || "Not provided"}`,
+    `Local intents: ${catalogConceptDraft.localIntents.join(", ") || "Not provided"}`,
     `Pages: ${Array.isArray(payload?.pages) ? payload.pages.join(", ") : "Not provided"}`,
     `Capabilities: ${capabilities.join(", ") || "None selected"}`,
     "",
@@ -144,10 +156,13 @@ async function handoffState(env: Env, specialist: any, draft: any, payload: any,
 export async function onRequestGet({ request, env, params }: Context) {
   const context = await authContext(request, env, params.id);
   if (context.response) return context.response;
+  const parsedDraft = parseWebsiteFactoryDraft(context.row);
   const handoff = context.row.state === "submitted" ? await ownHandoff(env.DB, context.specialist.id, context.id) : null;
+  const catalogConceptDraft = context.row.state === "submitted" ? catalogConceptDraftFor(parsedDraft, parsedDraft.payload) : null;
   return jsonResponse(200, {
     success: true,
-    draft: parseWebsiteFactoryDraft(context.row),
+    draft: parsedDraft,
+    catalog_concept_draft: catalogConceptDraft,
     handoff: handoff ? { notification_status: handoff.notification_status, notification_error: handoff.notification_error || null } : null,
   }, { "Cache-Control": "no-store" });
 }
@@ -205,6 +220,7 @@ export async function onRequestPost({ request, env, params }: Context) {
     return jsonResponse(200, {
       success: true,
       draft: parseWebsiteFactoryDraft(context.row),
+      catalog_concept_draft: catalogConceptDraftFor(parseWebsiteFactoryDraft(context.row), payload),
       already_submitted: true,
       handoff: {
         state: "brief_created",
@@ -229,6 +245,7 @@ export async function onRequestPost({ request, env, params }: Context) {
   return jsonResponse(200, {
     success: true,
     draft: parseWebsiteFactoryDraft(row),
+    catalog_concept_draft: catalogConceptDraftFor(parseWebsiteFactoryDraft(row), payload),
     handoff: {
       state: "brief_created",
       build_started: false,
