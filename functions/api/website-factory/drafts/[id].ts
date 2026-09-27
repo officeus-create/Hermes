@@ -157,6 +157,7 @@ export async function onRequestGet({ request, env, params }: Context) {
   const context = await authContext(request, env, params.id);
   if (context.response) return context.response;
   const parsedDraft = parseWebsiteFactoryDraft(context.row);
+  if (!parsedDraft) return jsonResponse(409, { success: false, error: "stored_draft_invalid" });
   const handoff = context.row.state === "submitted" ? await ownHandoff(env.DB, context.specialist.id, context.id) : null;
   const catalogConceptDraft = context.row.state === "submitted" ? catalogConceptDraftFor(parsedDraft, parsedDraft.payload) : null;
   return jsonResponse(200, {
@@ -216,11 +217,13 @@ export async function onRequestPost({ request, env, params }: Context) {
   catch { return jsonResponse(409, { success: false, error: "stored_draft_invalid" }); }
 
   if (context.row.state === "submitted") {
+    const parsedSubmittedDraft = parseWebsiteFactoryDraft(context.row);
+    if (!parsedSubmittedDraft) return jsonResponse(409, { success: false, error: "stored_draft_invalid" });
     const notification = await handoffState(env, context.specialist, context.row, payload, { retry: true });
     return jsonResponse(200, {
       success: true,
-      draft: parseWebsiteFactoryDraft(context.row),
-      catalog_concept_draft: catalogConceptDraftFor(parseWebsiteFactoryDraft(context.row), payload),
+      draft: parsedSubmittedDraft,
+      catalog_concept_draft: catalogConceptDraftFor(parsedSubmittedDraft, payload),
       already_submitted: true,
       handoff: {
         state: "brief_created",
@@ -241,11 +244,13 @@ export async function onRequestPost({ request, env, params }: Context) {
     WHERE id = ? AND specialist_id = ?
   `).bind(now, now, context.id, context.specialist.id).run();
   const row = await ownDraft(env.DB, context.specialist.id, context.id);
+  const parsedSubmittedDraft = parseWebsiteFactoryDraft(row);
+  if (!parsedSubmittedDraft) return jsonResponse(409, { success: false, error: "stored_draft_invalid" });
   const notification = await handoffState(env, context.specialist, row, payload, { retry: true });
   return jsonResponse(200, {
     success: true,
-    draft: parseWebsiteFactoryDraft(row),
-    catalog_concept_draft: catalogConceptDraftFor(parseWebsiteFactoryDraft(row), payload),
+    draft: parsedSubmittedDraft,
+    catalog_concept_draft: catalogConceptDraftFor(parsedSubmittedDraft, payload),
     handoff: {
       state: "brief_created",
       build_started: false,
