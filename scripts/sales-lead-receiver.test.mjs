@@ -561,5 +561,64 @@ assert.ok(durableRecord.completedAt, "The durable delivery must be marked comple
 assert.equal(durableRecord.text, "", "Completed durable state must purge the lead body.");
 assert.ok(durableRecord.purgeAt > durableRecord.completedAt, "A completed receipt ledger must have a retention deadline.");
 
+// A permanently unavailable optional destination must not retain lead PII or retry forever.
+const expiryStorage = new MemoryDurableStorage();
+const expiryEmails = [];
+const expiryEnv = {
+  ...workerEnv,
+  CAR_HAULING_TELEGRAM_BOT_TOKEN: "",
+  CAR_HAULING_TELEGRAM_SALES_CHAT_ID: "",
+  EMAIL: {
+    async send(message) {
+      expiryEmails.push(message);
+      return { messageId: `expiry-message-${expiryEmails.length}` };
+    },
+  },
+};
+const expiryCoordinator = new CarHaulingDeliveryCoordinatorCore({ storage: expiryStorage }, expiryEnv);
+try {
+  setFrozenDate("2026-09-15T14:00:00.000Z");
+  const first = await expiryCoordinator.fetch(durableRequest({
+    ...durablePayload,
+    request_id: "carrier_expiry_1296_12345",
+  }));
+  assert.equal(first.status, 202);
+  assert.equal(expiryEmails.length, 3);
+  let pendingRecord = await expiryStorage.get("delivery");
+  assert.equal(
+    pendingRecord.destinations.find((destination) => destination.channel === "telegram").status,
+    "pending",
+  );
+  assert.ok(pendingRecord.expiresAt > NativeDate.now());
+
+  setFrozenDate(new NativeDate(pendingRecord.expiresAt + 1_000).toISOString());
+  await expiryCoordinator.alarm();
+  const expiredRecord = await expiryStorage.get("delivery");
+  assert.ok(expiredRecord.completedAt, "Expired durable state must become terminal.");
+  assert.equal(expiredRecord.text, "", "Expired durable state must purge the lead body.");
+  assert.equal(expiredRecord.replyTo, "", "Expired durable state must purge reply-to PII.");
+  assert.equal(
+    expiredRecord.destinations.find((destination) => destination.channel === "telegram").status,
+    "expired",
+  );
+  assert.equal(
+    expiredRecord.destinations.find((destination) => destination.channel === "telegram").lastError,
+    "delivery_expired",
+  );
+  assert.ok(expiredRecord.purgeAt > expiredRecord.completedAt);
+
+  const duplicateAfterExpiry = await expiryCoordinator.fetch(durableRequest({
+    ...durablePayload,
+    request_id: "carrier_expiry_1296_12345",
+  }));
+  assert.equal(duplicateAfterExpiry.status, 202);
+  const duplicateAfterExpiryBody = await duplicateAfterExpiry.json();
+  assert.equal(duplicateAfterExpiryBody.deduplicated, true);
+  assert.equal(duplicateAfterExpiryBody.terminal, true);
+  assert.equal(expiryEmails.length, 3, "Expired tombstone must prevent replayed email sends.");
+} finally {
+  globalThis.Date = NativeDate;
+}
+
 globalThis.fetch = originalFetch;
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
