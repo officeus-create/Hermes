@@ -36,6 +36,7 @@ type CatalogContextInput = {
   business_id?: unknown;
   profile?: unknown;
   source?: unknown;
+  requested_service?: unknown;
 };
 
 type BusinessLeadInput = {
@@ -156,6 +157,7 @@ const getCatalogContext = (value: unknown) => {
     business_id: clean(input.business_id, 180),
     profile: clean(input.profile, 500),
     source: clean(input.source, 120),
+    requested_service: clean(input.requested_service, 300),
   };
 };
 
@@ -245,7 +247,7 @@ export async function onRequestPost({ request, env }: Context) {
     !allowedLanguages.has(preferredLanguage) ||
     preferredContactTime.length < 2 ||
     services.length < 1 ||
-    (catalogBusinessRequest && (!catalogContext.business_id || !catalogContext.profile)) ||
+    (catalogBusinessRequest && (!catalogContext.business_id || !catalogContext.profile || !catalogContext.requested_service)) ||
     message.length < 10;
 
   if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
@@ -278,6 +280,7 @@ export async function onRequestPost({ request, env }: Context) {
     catalogContext.business_id ? `Catalog business ID: ${catalogContext.business_id}` : "",
     catalogContext.profile ? `Catalog profile: ${catalogContext.profile}` : "",
     catalogContext.source ? `Catalog source: ${catalogContext.source}` : "",
+    catalogContext.requested_service ? `Requested service: ${catalogContext.requested_service}` : "",
   ].filter(Boolean);
 
   const catalogHandoffLines = catalogBusinessRequest ? [
