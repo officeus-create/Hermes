@@ -60,3 +60,48 @@ test("non-US Catalog locality hub uses generic business semantics", async ({ pag
   await expect(page.getByText("Business categories", { exact: true })).toBeVisible();
   await expect(page.getByText("Repair categories", { exact: true })).toHaveCount(0);
 });
+
+
+test("Catalog customer request keeps target context fixed and accepts email-only contact", async ({ page }) => {
+  await page.goto(conceptPath);
+  await page.locator("#catalog-request form button[type=submit]").click();
+  await expect(page).toHaveURL(/\/businesses\/request\/\?/);
+
+  const company = page.locator('input[name="company"]');
+  const cityCountry = page.locator('input[name="city_country"]');
+  const profile = page.locator('input[name="website_or_social"]');
+  const requestedService = page.locator('input[name="requested_service"]');
+
+  await expect(company).toHaveValue("Чайка Store");
+  await expect(company).toHaveJSProperty("readOnly", true);
+  await expect(cityCountry).toHaveValue("Chaiky, UA");
+  await expect(cityCountry).toHaveJSProperty("readOnly", true);
+  await expect(profile).toHaveJSProperty("readOnly", true);
+  await expect(profile).toHaveValue(/businesses\/ukraine\/chaiky\/chayka-store\//);
+  await expect(requestedService).toHaveValue("Phone repair & accessories");
+  await expect(requestedService).toHaveAttribute("required", "");
+
+  let deliveredPayload: Record<string, unknown> | undefined;
+  await page.route("**/api/business-lead", async (route) => {
+    deliveredPayload = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true }),
+    });
+  });
+
+  await page.locator('input[name="name"]').fill("Catalog QA");
+  await page.locator('input[name="email"]').fill("catalog.qa@example.com");
+  await page.locator('input[name="preferred_contact_time"]').fill("10:00–13:00 EET");
+  await page.locator('input[name="consent"]').check();
+  await page.getByRole("button", { name: "Send request" }).click();
+
+  await expect(page.getByRole("heading", { name: "Request received." })).toBeVisible();
+  expect(deliveredPayload).toBeDefined();
+  expect(deliveredPayload?.services).toEqual(["Catalog customer request"]);
+  expect((deliveredPayload?.catalog_context as Record<string, unknown>)?.business_id).toBe("catalog-ua-chayka-store");
+  expect((deliveredPayload?.catalog_context as Record<string, unknown>)?.requested_service).toBe("Phone repair & accessories");
+  expect(deliveredPayload?.whatsapp).toBe("");
+  expect(deliveredPayload?.telegram).toBe("");
+});
