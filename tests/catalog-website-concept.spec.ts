@@ -4,6 +4,7 @@ const conceptPath = "/businesses/ukraine/chaiky/chayka-store/";
 
 test("Catalog Website Concept keeps opportunity details in a reusable dialog", async ({ page }) => {
   await page.goto(conceptPath);
+  await expect(page.locator("html")).toHaveAttribute("lang", "uk");
 
   await expect(page.locator('form[action="/businesses/request/"] input[name="requested_service"]')).toHaveValue("Phone repair & accessories");
 
@@ -30,6 +31,7 @@ test("Catalog Website Concept keeps opportunity details in a reusable dialog", a
 
 test("Catalog Website Concept opportunity dialog follows English locale", async ({ page }) => {
   await page.goto(`${conceptPath}?lang=en`);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
 
   const offer = page.getByRole("button", { name: "Website / redesign" });
   await expect(offer).toBeVisible();
