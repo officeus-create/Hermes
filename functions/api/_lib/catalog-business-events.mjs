@@ -4,6 +4,7 @@ export const CATALOG_EVENT_TYPES = new Set([
   "maps_click",
   "website_click",
   "request_start",
+  "booking_start",
 ]);
 
 export async function ensureCatalogBusinessEventSchema(db) {
