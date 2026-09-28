@@ -16,7 +16,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/",
@@ -29,7 +32,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/businesses/arkansas/guy/",
@@ -42,7 +48,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/businesses/arkansas/guy/clendenins-auto-repair/",
@@ -55,12 +64,47 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/arkansas/cedarville/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/arkansas/cedarville/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/data/repair-shop-directory.ts",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/arkansas/cedarville/the-dapper-wrench/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/arkansas/cedarville/the-dapper-wrench/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/data/repair-shop-directory.ts",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 4,
-    "indexable_route_count_added": 4,
+    "route_count_added": 6,
+    "indexable_route_count_added": 6,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
