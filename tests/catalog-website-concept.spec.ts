@@ -105,8 +105,8 @@ test("Catalog customer request keeps target context fixed and accepts email-only
   await page.locator('input[name="name"]').fill("Catalog QA");
   await page.locator('input[name="email"]').fill("catalog.qa@example.com");
   await page.locator('input[name="preferred_contact_time"]').fill("10:00–13:00 EET");
-  const consent = page.locator('input[name="consent"]');
-  await page.locator("label.consent").click();
+  const consent = page.getByRole("checkbox", { name: /I agree that Hermes may use these details to respond to this request/ });
+  await consent.check();
   await expect(consent).toBeChecked();
   await page.getByRole("button", { name: "Send request" }).click();
 
