@@ -304,3 +304,14 @@ EVIDENCE: 2026-09-28 structured Cloudflare HTTP 403 on the first production regi
 LESSON: Prospect identified, public listing prepared, API reachable, account registered, and account tested are separate facts.
 
 REUSE_RULE: Never populate login/password cells based on intent or source code. Require production success evidence and a repeat authenticated login before manager handoff. Preserve the specific HTTP edge category and attempt scope so a future operator can resolve the rule without guessing.
+
+
+## 2026-09-28 — Resolution — Cloudflare 403 was not the durable provisioning blocker
+
+STATUS: RESOLVED FOR THE THREE ARKANSAS PROSPECTS.
+
+RESOLUTION: The earlier direct signup attempt from the execution workspace did receive a real Cloudflare 403, but that edge refusal did not prove the production application or the customer emails were unusable. The approved live browser registration flow subsequently created Shop Owner accounts for Smart Bubble Mobile Auto/Body Repair Shop, Clendenin's Auto Repair, and The Dapper Wrench and saved their profiles, services, and hours.
+
+CORRECTED_ROOT_CAUSE: The confirmed failure was path/environment-specific edge rejection of that direct request. Treating it as a company/account blocker was too broad. Production state must be established by the approved user-facing flow and a fresh authenticated readback, not by one blocked automation request.
+
+PREVENTION: Record transport/edge failure and account state separately. A 403 on one provisioning path must not be upgraded to "account cannot be created." Conversely, successful registration is not complete until a new session can sign in and read back the expected company, services, hours, and share/booking route. Do not publish credentials in GitHub or public Catalog data.
