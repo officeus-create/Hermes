@@ -116,6 +116,7 @@ assert.equal(catalogWorkerResponse.status, 202);
 assert.equal(emailMessages.length, catalogEmailCountBefore + 1);
 assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG]");
 assert.equal(emailMessages.at(-1).to, "officeus@hermeslogisticsus.com");
+emailMessages.length = catalogEmailCountBefore;
 
 const validPayload = {
   request_id: "release_test_12345",
