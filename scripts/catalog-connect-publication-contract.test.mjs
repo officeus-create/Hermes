@@ -64,6 +64,7 @@ assert.doesNotMatch(staticDealerProfile, /(?:^|[^-])\.hero\b/);
 for (const [route, shopName] of [
   ["arkansas/little-rock/smart-bubble-mobile-auto-body-repair", "Smart Bubble Mobile Auto/Body Repair Shop"],
   ["arkansas/guy/clendenins-auto-repair", "Clendenin&#39;s Auto Repair"],
+  ["arkansas/cedarville/the-dapper-wrench", "The Dapper Wrench"],
 ]) {
   const html = read(`dist/businesses/${route}/index.html`);
   assert.match(html, new RegExp(shopName.replaceAll("/", "\\/")));
@@ -71,6 +72,8 @@ for (const [route, shopName] of [
   assert.match(html, /Not a Hermes customer/);
   assert.match(html, /Off until owner verification/);
   assert.match(html, /application\/ld\+json/);
-  assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com/);
+  assert.match(html, /Website concept · Hermes preview/);
+  assert.match(html, /Concept preview only/);
+  assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com|hello@thedapperwrench\.com/);
 }
 console.log("Catalog Connect publication contract OK");
