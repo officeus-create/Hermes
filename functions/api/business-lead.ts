@@ -133,7 +133,7 @@ const normalizeCatalogProfilePath = (value: string) => {
   try {
     const url = new URL(value, DEFAULT_ORIGIN);
     if (url.origin !== DEFAULT_ORIGIN) return "";
-    const path = url.pathname.replace(/\\/{2,}/g, "/");
+    const path = url.pathname.replace(/\/{2,}/g, "/");
     return path.endsWith("/") ? path : path + "/";
   } catch {
     return "";
@@ -172,7 +172,7 @@ async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, cata
     };
   }
 
-  const dynamic = path.match(/^\\/businesses\\/connect\\/repair-shop\\/([a-z0-9-]+)\\/$/);
+  const dynamic = path.match(/^\/businesses\/connect\/repair-shop\/([a-z0-9-]+)\/$/);
   if (dynamic) {
     const result = await db.prepare(`
       SELECT id, owner_specialist_id, name
