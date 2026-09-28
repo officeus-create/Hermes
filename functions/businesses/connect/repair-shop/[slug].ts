@@ -122,7 +122,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ? `<ul>${hours.map((item: any) => `<li>${esc(dayNames[item.day])}: ${item.isOpen && item.opens && item.closes ? `${esc(item.opens)}–${esc(item.closes)}` : "Closed"}</li>`).join("")}</ul>`
     : '<p class="muted">Hours will appear here after the business saves them in Hermes Connect.</p>';
   const booking = bookingReady
-    ? `<a class="button primary" href="${esc(bookingHref)}">Book an appointment</a>`
+    ? `<a class="button primary" data-catalog-action="booking_click" href="${esc(bookingHref)}">Book an appointment</a>`
     : "";
   const phone = phoneDial
     ? `<a class="button" data-catalog-action="call_click" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
