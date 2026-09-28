@@ -1,0 +1,31 @@
+name: Threads Growth Engine CI
+
+on:
+  pull_request:
+    paths:
+      - "src/lib/threads-growth-engine.ts"
+      - "functions/api/social/threads/**"
+      - "scripts/threads-growth-engine.test.mjs"
+      - ".github/workflows/threads-growth-engine*.yml"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Threads contract
+        run: npm run test:threads-growth-engine
+      - name: Type / Astro check
+        run: npm run check
