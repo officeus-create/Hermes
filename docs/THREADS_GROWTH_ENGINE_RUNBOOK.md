@@ -86,3 +86,37 @@ The engine should optimize for useful replies and qualified conversations rather
 ## Current blocker
 
 Metricool is installed in ChatGPT, but the connected Metricool brand currently has **no social network connected**. Threads must be connected there (or through the Meta app used for direct API publishing) before live scheduling/analytics can be used.
+
+
+## Official Threads API contract verified 2026-09-29
+
+Before activation, the implementation was checked against current Meta Threads developer documentation.
+
+Current verified API base:
+`https://graph.threads.com/v1.0/`
+
+Required permissions for this engine:
+- `threads_basic`
+- `threads_content_publish`
+- `threads_read_replies`
+- `threads_manage_replies`
+- `threads_manage_insights`
+
+The reply reader uses the owned root post's `/{media-id}/conversation` endpoint so nested conversation replies can also be discovered. Text posts and text replies use the current `auto_publish_text` capability.
+
+## Performance feedback loop
+
+Every four hours the engine refreshes media-level Threads insights for recent published posts:
+- views
+- likes
+- replies
+- reposts
+- quotes
+- shares
+
+Performance is stored by content theme. Once a theme has at least two measured samples, 70% of future slots may exploit the highest-performing measured theme while 30% remain exploratory. This is a lightweight bandit-style loop, not a guarantee that past winners will keep winning.
+
+Primary success hierarchy:
+`views → useful replies → profile/link clicks → qualified business inquiry → opportunity → revenue`
+
+Views are an optimization signal, not the final business KPI.
