@@ -107,15 +107,15 @@ async function aiDecision(env: Env, comment: string, postText: string, username:
 
 async function publishReply(env: Env, replyToId: string, text: string) {
   const userId = clean(env.THREADS_USER_ID, 120);
-  const create = await graphPost(env, `${userId}/threads`, {
+  const published = await graphPost(env, `${userId}/threads`, {
     media_type: "TEXT",
     text,
     reply_to_id: replyToId,
+    auto_publish_text: "true",
   });
-  const creationId = clean(create?.id, 160);
-  if (!creationId) throw new Error("threads_creation_id_missing");
-  const published = await graphPost(env, `${userId}/threads_publish`, { creation_id: creationId });
-  return clean(published?.id, 160) || creationId;
+  const providerId = clean(published?.id, 160);
+  if (!providerId) throw new Error("threads_reply_id_missing");
+  return providerId;
 }
 
 async function saveState(env: Env, input: {
