@@ -32,6 +32,21 @@ jobs:
         run: |
           curl --fail-with-body --silent --show-error             --retry 2 --retry-delay 5             -X POST             -H "Authorization: Bearer $HERMES_THREADS_AUTOMATION_TOKEN"             https://hermeslogisticsus.com/api/social/threads/run
 
+      - name: Refresh Threads post insights every four hours
+        if: steps.secret.outputs.configured == 'true'
+        shell: bash
+        run: |
+          hour="$(date -u +%H)"
+          if [ $((10#$hour % 4)) -ne 0 ]; then
+            echo "Not a four-hour insight slot."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error \
+            --retry 2 --retry-delay 5 \
+            -X POST \
+            -H "Authorization: Bearer $HERMES_THREADS_AUTOMATION_TOKEN" \
+            https://hermeslogisticsus.com/api/social/threads/insights
+
       - name: Publish one content slot every three hours
         if: steps.secret.outputs.configured == 'true'
         shell: bash
