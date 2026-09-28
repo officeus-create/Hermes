@@ -40,7 +40,7 @@
     const target = event.target instanceof Element ? event.target.closest("[data-catalog-action]") : null;
     if (!(target instanceof HTMLElement)) return;
     const action = target.dataset.catalogAction || "";
-    if (["call_click", "maps_click", "website_click"].includes(action)) send(action);
+    if (["call_click", "maps_click", "website_click", "booking_click"].includes(action)) send(action);
   }, { capture: true });
 
   sendView();
