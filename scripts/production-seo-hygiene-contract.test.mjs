@@ -62,8 +62,8 @@ const indexedChildSitemapFiles = [
 // stays noindex and is intentionally absent from every sitemap.
 // The September 24 verified repair prospect wave adds 17 static owners. Two additional
 // source-bounded profiles add five owners: Alabama, Brookwood, East Dundee and both profiles.\n// The Chayka Store pilot adds three intentional Ukraine Catalog owners: country, locality and business concept.
-// September 28 adds Little Rock and Guy locality pages plus two unclaimed Arkansas profiles.
-const nonInsightsExpectedPageUrlCount = 290;
+// September 28 adds Little Rock, Guy and Cedarville locality pages plus three unclaimed Arkansas profiles.
+const nonInsightsExpectedPageUrlCount = 292;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
