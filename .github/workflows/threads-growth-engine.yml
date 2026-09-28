@@ -1,0 +1,44 @@
+name: Threads Growth Engine
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  threads-growth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      HERMES_THREADS_AUTOMATION_TOKEN: ${{ secrets.HERMES_THREADS_AUTOMATION_TOKEN }}
+    steps:
+      - name: Check scheduler secret
+        id: secret
+        shell: bash
+        run: |
+          if [ -z "$HERMES_THREADS_AUTOMATION_TOKEN" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "Threads scheduler secret is not configured; leaving workflow inert."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Process new Threads replies
+        if: steps.secret.outputs.configured == 'true'
+        shell: bash
+        run: |
+          curl --fail-with-body --silent --show-error             --retry 2 --retry-delay 5             -X POST             -H "Authorization: Bearer $HERMES_THREADS_AUTOMATION_TOKEN"             https://hermeslogisticsus.com/api/social/threads/run
+
+      - name: Publish one content slot every three hours
+        if: steps.secret.outputs.configured == 'true'
+        shell: bash
+        run: |
+          hour="$(date -u +%H)"
+          if [ $((10#$hour % 3)) -ne 0 ]; then
+            echo "Not a three-hour content slot; replies only."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error             --retry 2 --retry-delay 5             -X POST             -H "Authorization: Bearer $HERMES_THREADS_AUTOMATION_TOKEN"             https://hermeslogisticsus.com/api/social/threads/content
