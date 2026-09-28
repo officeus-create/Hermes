@@ -130,7 +130,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
   type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; created_at:string; updated_at:string };
-  type CatalogReport = { shop_id:string; shop_name:string; catalog_profile:string; period:{start:string;end:string;timezone:string}; metrics:{profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;inquiries_received:number;bookings_created:number} };
+  type CatalogReport = { shop_id:string; shop_name:string; catalog_profile:string; period:{start:string;end:string;timezone:string}; metrics:{profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;booking_clicks:number;inquiries_received:number;bookings_created:number} };
   type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
@@ -320,6 +320,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       ["Call clicks",report.metrics.call_clicks],
       ["Maps clicks",report.metrics.maps_clicks],
       ["Website clicks",report.metrics.website_clicks],
+      ["Booking clicks",report.metrics.booking_clicks],
       ["Real inquiries",report.metrics.inquiries_received],
       ["Bookings created",report.metrics.bookings_created],
     ];
