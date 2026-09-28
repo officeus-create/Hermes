@@ -61,8 +61,7 @@ async function ensureSchema(db: any) {
 }
 
 async function graphGet(env: Env, path: string) {
-  const base = clean(env.THREADS_GRAPH_BASE, 200);
-  if (!base) throw new Error("threads_graph_base_missing");
+  const base = clean(env.THREADS_GRAPH_BASE, 200) || "https://graph.threads.com/v1.0/";
   const url = new URL(path, base.endsWith("/") ? base : `${base}/`);
   url.searchParams.set("access_token", String(env.THREADS_ACCESS_TOKEN || ""));
   const response = await fetch(url, { headers: { "Accept": "application/json" } });
@@ -151,7 +150,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const mode = env.THREADS_AUTOMATION_MODE === "live" ? "live" : "dry_run";
-  if (!env.THREADS_ACCESS_TOKEN || !env.THREADS_USER_ID || !env.THREADS_GRAPH_BASE || !env.OPENAI_API_KEY) {
+  if (!env.THREADS_ACCESS_TOKEN || !env.THREADS_USER_ID || !env.OPENAI_API_KEY) {
     return json(503, { success: false, error: "threads_growth_not_configured", mode });
   }
 
@@ -173,7 +172,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const postId = clean(post?.id, 160);
     if (!postId) continue;
     postsScanned += 1;
-    const replyPayload = await graphGet(env, `${postId}/replies?fields=id,text,username,timestamp&limit=50`);
+    const replyPayload = await graphGet(env, `${postId}/conversation?fields=id,text,username,timestamp,is_reply_owned_by_me&limit=50`);
     const replies = Array.isArray(replyPayload?.data) ? replyPayload.data : [];
 
     for (const reply of replies) {
@@ -182,6 +181,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       const username = clean(reply?.username, 120);
       const commentText = clean(reply?.text, 1200);
       if (!replyId || !commentText) continue;
+      if (reply?.is_reply_owned_by_me === true) continue;
       if (ownUsername && username.toLowerCase() === ownUsername) continue;
 
       const existing = await env.DB.prepare(
