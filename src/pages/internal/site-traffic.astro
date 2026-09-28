@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+---
+<BaseLayout
+  title="Site Traffic | Hermes Internal"
+  description="Private owner dashboard for privacy-safe first-party website traffic."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/" />
+  <main id="main-content" class="traffic-page">
+    <div class="shell">
+      <header class="hero">
+        <p class="eyebrow">Hermes Internal · Owner only</p>
+        <h1>Site traffic</h1>
+        <p class="lede">Privacy-safe, consented first-party page views. Private routes, query strings, PII and automated browser traffic are excluded.</p>
+        <p id="traffic-status" class="status" role="status">Loading current traffic…</p>
+      </header>
+
+      <section class="metrics" aria-label="Traffic summary">
+        <article class="metric"><span>Today</span><strong id="metric-today">—</strong></article>
+        <article class="metric"><span>Last 7 days</span><strong id="metric-7d">—</strong></article>
+        <article class="metric"><span>Last 28 days</span><strong id="metric-28d">—</strong></article>
+        <article class="metric"><span>Since counter launch</span><strong id="metric-total">—</strong></article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">Last 28 days</p><h2>Traffic by site area</h2></div>
+          <a href="/services/hermes-connect/repair-shops/auth/" class="text-link">Internal sign in</a>
+        </div>
+        <div id="group-list" class="group-list"><p class="muted">Waiting for data…</p></div>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">Measurement contract</p>
+        <h2>What this counter means</h2>
+        <p class="muted">This is a first-party operational counter, not a replacement for GA4, Search Console or Cloudflare analytics. It records only aggregate page-view counts after analytics consent. It stores no visitor identity, IP address, email, phone, referrer, query string or form value.</p>
+      </section>
+    </div>
+  </main>
+
+  <script is:inline>
+    (() => {
+      const status = document.getElementById("traffic-status");
+      const groupList = document.getElementById("group-list");
+      const ids = {
+        today: document.getElementById("metric-today"),
+        last_7d: document.getElementById("metric-7d"),
+        last_28d: document.getElementById("metric-28d"),
+        all_time: document.getElementById("metric-total")
+      };
+      const names = {
+        home: "Homepage",
+        catalog: "Catalog",
+        catalog_crm_profile: "CRM-synced Catalog profiles",
+        repair_shop_booking: "Repair Shop booking",
+        repair_shop_public: "Repair Shop public pages",
+        hermes_connect: "Hermes Connect",
+        logistics: "Logistics",
+        marketing: "Marketing",
+        academy: "Academy",
+        technology: "Technology",
+        insights: "Insights",
+        services: "Other services",
+        other_public: "Other public pages"
+      };
+      const fmt = new Intl.NumberFormat("en-US");
+
+      const render = (data) => {
+        for (const [key, node] of Object.entries(ids)) {
+          if (node) node.textContent = fmt.format(Number(data.summary?.[key] || 0));
+        }
+        if (status) status.textContent = "Live counter loaded · UTC day boundary";
+        if (!groupList) return;
+        const groups = Array.isArray(data.groups) ? data.groups : [];
+        if (!groups.length) {
+          groupList.innerHTML = '<p class="muted">No consented page views recorded yet.</p>';
+          return;
+        }
+        groupList.replaceChildren(...groups.map((group) => {
+          const row = document.createElement("div");
+          row.className = "group-row";
+          const label = document.createElement("span");
+          label.textContent = names[group.route_group] || group.route_group;
+          const value = document.createElement("strong");
+          value.textContent = fmt.format(Number(group.page_views || 0));
+          row.append(label, value);
+          return row;
+        }));
+      };
+
+      fetch("/api/site-traffic", { credentials: "same-origin", cache: "no-store" })
+        .then(async (response) => {
+          const data = await response.json().catch(() => ({}));
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("Sign in with the authorized Hermes internal owner account to view traffic.");
+          }
+          if (!response.ok || !data.success) throw new Error("Traffic summary is unavailable.");
+          render(data);
+        })
+        .catch((error) => {
+          if (status) {
+            status.textContent = error instanceof Error ? error.message : "Traffic summary is unavailable.";
+            status.classList.add("error");
+          }
+        });
+    })();
+  </script>
+
+  <style>
+    .traffic-page{min-height:100vh;padding:116px 24px 80px;background:#f6f8fb;color:#142033}
+    .shell{width:min(1060px,100%);margin:auto}.hero{padding:32px;border:1px solid #dce5ef;border-radius:24px;background:#fff;box-shadow:0 18px 48px rgba(24,62,107,.06)}
+    .eyebrow{margin:0 0 8px;color:#2672b1;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+    h1{margin:0;font-size:clamp(40px,7vw,72px);letter-spacing:-.045em;line-height:1}h2{margin:4px 0 12px;font-size:26px}
+    .lede,.muted{color:#61748a;line-height:1.65}.lede{max-width:760px;margin:18px 0 0}.status{margin:18px 0 0;font-weight:750;color:#24639b}.status.error{color:#9c3434}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.metric,.panel{border:1px solid #dce5ef;border-radius:18px;background:#fff}
+    .metric{padding:22px}.metric span{display:block;color:#61748a;font-size:12px;font-weight:750}.metric strong{display:block;margin-top:8px;font-size:34px;letter-spacing:-.04em}
+    .panel{padding:26px;margin-top:14px}.panel-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.text-link{color:#1767b5;font-weight:750;text-underline-offset:3px}
+    .group-list{display:grid;gap:0;margin-top:12px}.group-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-top:1px solid #edf1f5}.group-row span{color:#52677c}.group-row strong{font-variant-numeric:tabular-nums}
+    @media(max-width:760px){.traffic-page{padding:96px 16px 56px}.hero{padding:24px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-head{display:block}.text-link{display:inline-block;margin-top:8px}}
+  </style>
+</BaseLayout>
