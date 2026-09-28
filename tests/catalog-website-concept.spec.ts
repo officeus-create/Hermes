@@ -109,7 +109,9 @@ test("Catalog customer request keeps target context fixed and accepts email-only
   await consent.focus();
   await page.keyboard.press("Space");
   await expect(consent).toBeChecked();
-  await page.getByRole("button", { name: "Send request" }).click();
+  const submit = page.getByRole("button", { name: "Send request" });
+  await submit.focus();
+  await page.keyboard.press("Enter");
 
   await expect(page.getByRole("heading", { name: "Request received." })).toBeVisible();
   expect(deliveredPayload).toBeDefined();
