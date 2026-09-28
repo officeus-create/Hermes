@@ -84,6 +84,13 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <a class="primary-btn" href="/services/hermes-connect/repair-shops/availability/"><CalendarClock size={17} /> Manage availability</a>
       </section>
 
+      <section class="panel" aria-labelledby="catalog-report-title">
+        <div class="panel-heading"><div><p class="eyebrow">Catalog performance</p><h2 id="catalog-report-title">Last 7 days</h2><p class="muted">Consented profile activity plus real inquiries and bookings. Clicks are not presented as customers.</p></div><span class="pill">Rolling 7 days</span></div>
+        <div id="catalog-report-loading" class="state-card">Loading Catalog report…</div>
+        <div id="catalog-report-empty" class="state-card hidden"><strong>No Catalog report yet</strong><span>Complete the shop profile and publish the Catalog listing to start collecting business-level activity.</span></div>
+        <div id="catalog-report-grid" class="report-grid hidden"></div>
+      </section>
+
       <section class="panel" aria-labelledby="catalog-inquiries-title">
         <div class="panel-heading"><div><p class="eyebrow">Catalog customer intake</p><h2 id="catalog-inquiries-title">Catalog inquiries</h2><p class="muted">Customer requests from a matched Hermes Catalog profile appear here separately from scheduled appointments.</p></div><span id="inquiry-count" class="pill">0 inquiries</span></div>
         <div id="inquiries-loading" class="state-card">Loading Catalog inquiries…</div>
@@ -123,6 +130,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
   type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; created_at:string; updated_at:string };
+  type CatalogReport = { shop_id:string; shop_name:string; catalog_profile:string; period:{start:string;end:string;timezone:string}; metrics:{profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;inquiries_received:number;bookings_created:number} };
   type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
@@ -300,6 +308,37 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   serviceForm?.addEventListener("submit", async (event) => { event.preventDefault(); clearAlert(); if(addServiceButton)addServiceButton.disabled=true; try { const response=await fetch("/api/services",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$<HTMLInputElement>("service-name")?.value,duration_minutes:Number($<HTMLSelectElement>("service-duration")?.value)})}); const data=await readJson(response); if(!response.ok||!data.success)return showAlert(data.error==="service_already_exists"?"A service with this name already exists.":data.error||"Unable to add service."); serviceForm.reset(); $<HTMLSelectElement>("service-duration")!.value="30"; showAlert(`${data.service.name} added.`,"success"); await loadServices(); } catch { showAlert("Network error while adding service."); } finally { if(addServiceButton)addServiceButton.disabled=false; } });
 
+  function renderCatalogReport(reports: CatalogReport[]) {
+    $("catalog-report-loading")?.classList.add("hidden");
+    const grid=$("catalog-report-grid")!, empty=$("catalog-report-empty")!;
+    grid.replaceChildren();
+    const report=reports[0];
+    if(!report){grid.classList.add("hidden");empty.classList.remove("hidden");return;}
+    empty.classList.add("hidden");grid.classList.remove("hidden");
+    const metrics:[string,number][]=[
+      ["Profile views",report.metrics.profile_views],
+      ["Call clicks",report.metrics.call_clicks],
+      ["Maps clicks",report.metrics.maps_clicks],
+      ["Website clicks",report.metrics.website_clicks],
+      ["Real inquiries",report.metrics.inquiries_received],
+      ["Bookings created",report.metrics.bookings_created],
+    ];
+    for(const [label,value] of metrics){
+      const card=document.createElement("div");card.className="report-card";
+      const strong=document.createElement("strong");strong.textContent=String(value);
+      const span=document.createElement("span");span.textContent=label;
+      card.append(strong,span);grid.append(card);
+    }
+  }
+
+  async function loadCatalogReport(){
+    const response=await fetch("/api/repair-shop/catalog-report",{credentials:"same-origin",cache:"no-store"});
+    if(response.status===401)return redirectToAuth();
+    const data=await readJson(response);
+    if(!response.ok||!data.success){$("catalog-report-loading")?.classList.add("hidden");return showAlert(data.error||"Unable to load Catalog report.");}
+    renderCatalogReport(Array.isArray(data.reports)?data.reports:[]);
+  }
+
   function renderInquiries(items: CatalogInquiry[]) {
     $("inquiries-loading")?.classList.add("hidden");
     $("inquiry-count")!.textContent = `${items.length} ${items.length === 1 ? "inquiry" : "inquiries"}`;
@@ -393,7 +432,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   feedbackForm?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();if(submitFeedbackButton)submitFeedbackButton.disabled=true;try{const response=await fetch("/api/repair-shop/feedback",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({category:$<HTMLSelectElement>("feedback-category")?.value,rating:Number($<HTMLSelectElement>("feedback-rating")?.value),message:$<HTMLTextAreaElement>("feedback-message")?.value})});const data=await readJson(response);if(!response.ok||!data.success)return showAlert(data.error||"Unable to save private feedback.");feedbackForm.reset();$<HTMLSelectElement>("feedback-rating")!.value="5";showAlert("Private feedback saved. Thank you.","success");await loadFeedback();}catch{showAlert("Network error while saving private feedback.");}finally{if(submitFeedbackButton)submitFeedbackButton.disabled=false;}});
 
   $("logout-btn")?.addEventListener("click",async()=>{const response=await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});if(response.ok)redirectToAuth();else showAlert("Logout failed.");});
-  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadInquiries(),loadBookings(),loadFeedback(),loadHoursSignal()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
+  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadCatalogReport(),loadInquiries(),loadBookings(),loadFeedback(),loadHoursSignal()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
   initialize();
 </script>
 
@@ -473,4 +512,9 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   @media(max-width:1100px){html.hc-repair-crm .workspace-page .source-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:600px){html.hc-repair-crm .workspace-page .source-cards,html.hc-repair-crm .workspace-page .source-fields{grid-template-columns:1fr}}
   @media(prefers-reduced-motion:reduce){html.hc-repair-crm .workspace-page .source-card.is-missing a{animation:none;background:#e8f4ff}}
+
+  .report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .report-card{display:grid;gap:4px;min-width:0;padding:14px;border:1px solid #e4e9ef;border-radius:12px;background:#f8fafc}
+  .report-card strong{font-size:24px;line-height:1;color:#172033}.report-card span{font-size:11px;color:#6f7d8e;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  @media(max-width:760px){.report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
