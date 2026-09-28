@@ -98,6 +98,25 @@ const env = {
   LEAD_EMAIL_SERVICE: serviceBinding(),
 };
 
+const catalogEmailCountBefore = emailMessages.length;
+const catalogWorkerResponse = await leadEmailWorker.fetch(new Request("https://lead-email.internal/v1/send", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${serviceToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_id: "catalog_mail_1296_12345",
+    subject: "[HERMES INQUIRY] [CATALOG]",
+    text: "Hermes Catalog inquiry transport regression check. This bounded synthetic message verifies the approved Catalog subject reaches the existing internal destination without widening recipient control.",
+    reply_to: "visitor@example.com",
+  }),
+}), workerEnv);
+assert.equal(catalogWorkerResponse.status, 202);
+assert.equal(emailMessages.length, catalogEmailCountBefore + 1);
+assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG]");
+assert.equal(emailMessages.at(-1).to, "officeus@hermeslogisticsus.com");
+
 const validPayload = {
   request_id: "release_test_12345",
   lead_type: "posted_load",
