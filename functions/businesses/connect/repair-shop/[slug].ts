@@ -68,6 +68,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const services = await servicesForShop(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
   const hours = await hoursForShop(env.DB, String(row.id || ""));
   const canonical = `https://hermeslogisticsus.com/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug))}/`;
+  const catalogBusinessId = `repair-shop-crm:${String(row.id)}`;
   const location = [row.city, row.region || row.state].filter(Boolean).join(", ");
   const addressText = [row.address_line1, row.city, row.region || row.state, row.postal_code].filter(Boolean).join(", ");
   const phoneText = String(row.phone || "").trim();
@@ -113,6 +114,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ...(services.length ? { knowsAbout: services } : {}),
     ...(openingHoursSpecification.length ? { openingHoursSpecification } : {}),
     ...(phoneText ? { telephone: phoneText } : {}),
+    ...(mapsHref ? { hasMap: mapsHref } : {}),
     ...(socialUrls.length ? { sameAs: socialUrls } : {}),
   };
   const serviceList = services.length
@@ -122,19 +124,28 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ? `<ul>${hours.map((item: any) => `<li>${esc(dayNames[item.day])}: ${item.isOpen && item.opens && item.closes ? `${esc(item.opens)}–${esc(item.closes)}` : "Closed"}</li>`).join("")}</ul>`
     : '<p class="muted">Hours will appear here after the business saves them in Hermes Connect.</p>';
   const booking = bookingReady
-    ? `<a class="button primary" href="${esc(bookingHref)}">Book an appointment</a>`
+    ? `<a class="button primary" data-catalog-event="booking_start" href="${esc(bookingHref)}">Book an appointment</a>`
     : "";
   const phone = phoneDial
-    ? `<a class="button" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
+    ? `<a class="button" data-catalog-event="call_click" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
     : "";
   const maps = mapsHref
-    ? `<a class="button" href="${esc(mapsHref)}" rel="noopener" target="_blank">Directions on Google Maps <span aria-hidden="true">↗</span></a>`
+    ? `<a class="button" data-catalog-event="maps_click" href="${esc(mapsHref)}" rel="noopener" target="_blank">Directions on Google Maps <span aria-hidden="true">↗</span></a>`
     : "";
   const website = websiteUrl
-    ? `<a class="button" href="${esc(websiteUrl)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
+    ? `<a class="button" data-catalog-event="website_click" href="${esc(websiteUrl)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
     : "";
   const claimHref = `/businesses/request/?type=claim&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
   const growthHref = `/businesses/request/?type=catalog-growth&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
+  const businessRequestHref = `/businesses/request/?${new URLSearchParams({
+    type: "catalog-business-request",
+    business: String(row.name || ""),
+    business_id: catalogBusinessId,
+    profile: canonical,
+    city: String(row.city || ""),
+    country: String(row.country_code || "US"),
+    source_ref: `repair_shop_crm:${String(row.id)}`,
+  }).toString()}`;
 
   const css = `
     :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:#172033;background:#f4f7fa}
@@ -178,12 +189,12 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <article><header class="hero"><p class="eyebrow">Auto repair · ${esc(location)}</p><span class="status">Profile details awaiting owner review</span>
 <h1>${esc(row.name)}</h1><p class="location">${esc(addressText || location)}</p>
 <p class="intro">Explore the services and hours listed for this business. Please confirm current details with the shop before visiting or requesting service. This listing does not indicate a Hermes customer relationship.</p>
-<div class="actions">${booking}${phone}${maps}${website}<a class="button" href="${claimHref}">Claim or correct this profile</a><a class="button" href="${growthHref}">Discuss online growth</a></div></header>
+<div class="actions">${booking}${phone}${maps}${website}<a class="button" data-catalog-event="request_start" href="${esc(businessRequestHref)}">Request service / contact</a><a class="button" href="${claimHref}">Claim or correct this profile</a><a class="button" href="${growthHref}">Discuss online growth</a></div></header>
 <div class="content"><section class="panel services" aria-labelledby="services-heading"><p class="eyebrow">What the shop offers</p><h2 id="services-heading">Services</h2>${serviceList}</section>
 <section class="panel hours" aria-labelledby="hours-heading"><p class="eyebrow">Plan a visit</p><h2 id="hours-heading">Business hours</h2>${hoursList}</section>
 <aside class="panel review" aria-label="Profile status"><strong>About this listing</strong><p>Published in Hermes Catalog from business profile information. The business can request corrections or verify its ownership. Public availability does not establish search engine indexing, rankings, or customer inquiries.</p><a class="button" href="${claimHref}">Request verification</a></aside></div>
 <p class="notice">Services, hours and address are subject to business confirmation. No private customer records, appointments or account details appear on this page.</p>
-</article></main></body></html>`;
+</article></main><script src="/catalog-business-telemetry.js" data-catalog-business-id="${esc(catalogBusinessId)}" defer></script></body></html>`;
 
   return new Response(html, {
     status: 200,
