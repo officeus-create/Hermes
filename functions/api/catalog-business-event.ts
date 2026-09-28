@@ -1,4 +1,4 @@
-import { repairShopDirectory } from "../../src/data/repair-shop-directory";
+import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { CATALOG_EVENT_TYPES, recordCatalogBusinessEvent } from "./_lib/catalog-business-events.mjs";
 import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
 import { jsonResponse } from "./_lib/session.mjs";
