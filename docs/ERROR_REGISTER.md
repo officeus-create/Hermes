@@ -273,3 +273,19 @@ EVIDENCE: Authenticated production Office synthetic shop had 147 services and `d
 REUSE_RULE: After shipping a shared readiness signal, verify every consumer in a real authenticated session. A passing mocked browser test does not prove cross-script timing in production.
 
 FOLLOW_UP: PR #1516 passed exact-head CI and the approved-main deployment workflow reported the exact commit live. Browser comparison then found the compiled Company script had the same content-addressed `_astro` URL as the #1516 preview, while the unversioned `/repair-shop-activation.js` still rendered a share bar without the new `data-shop-slug`. This is evidence of a stale unversioned public asset in that browser path; it does not prove whether browser or edge cache retained it. Version the changed public script URLs in the rendered HTML, then recheck authenticated production. Bump those query versions whenever the scripts change.
+
+## 2026-09-28 — Prospect access email bypassed the manager handoff gate
+
+PROBLEM: The first Repair Shop prospect received an invitation and a separate password email on September 24 while the manager's fact/booking QA, call, client-email approval and handoff timestamps were unrecorded. The private working Sheet still showed its client-email-sent cell blank until September 28. There was no client reply in the company mailbox as of that reconciliation.
+
+ROOT_CAUSE: Technical account readiness and customer outreach were treated as the same milestone. The send path did not reconcile the manager QA/approval cells or check Sent mail against the working Sheet before reporting progress.
+
+FAILED_APPROACH: Inferring that a verified login, populated services/hours and a published Catalog profile authorize a customer email or prove the owner reviewed the facts. Leaving an actual send unrecorded made another send look eligible.
+
+WORKING_APPROACH: Reconcile the two sent-message receipts into the private Sheet (`CRM ACCESS — DEMOS`, row 2, columns C/I/P/R) with their actual Central Time and keep manager QA/approval blank. The public profile and claim/correction form were checked in production; this proves the page path, not owner consent or first booking. Assign the manager a single next action: confirm owner identity and reception, review services/hours/address, traverse the booking flow, and record the call/outcome. Suppress duplicate client mail until an explicit manager-approved follow-up is recorded.
+
+EVIDENCE: Corporate Gmail Sent has two messages to the prospect at 2026-09-24 03:48 CT; a September 28 search found no reply from the prospect. The private Sheet readback confirms the send timestamp, manager QA still pending, and no approval inferred. Production Catalog page displays 18 services, seven-day hours, a truthful owner-review status and a prefilled claim/correction form. This evidence does not establish delivery to the inbox, account use, booking, or a qualified lead.
+
+LESSON: A code release, a ready demo and a customer relationship are three different claims. A send receipt is an outreach event that must be reconciled into the canonical operating row even when it violated the intended sequence.
+
+REUSE_RULE: Before any client access email, read the manager row and Sent history for that exact prospect. Require completed manager fact/booking QA, a recorded handoff and call, explicit send approval, and the agreed following-day timing. After send, record the actual message/time and monitor a real reply or call outcome. If an earlier send already exists, reconcile it and avoid a duplicate; never backfill an approval that is not evidenced.
