@@ -1,4 +1,4 @@
-import { repairShopDirectory } from "../../src/data/repair-shop-directory";
+import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
 import { saveCatalogBusinessInquiry, markCatalogBusinessInquiryInternalDelivery } from "./_lib/catalog-business-inquiries.mjs";
 
