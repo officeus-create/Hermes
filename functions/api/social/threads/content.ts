@@ -149,11 +149,38 @@ async function generatePost(env: Env, theme: typeof themes[number], contentId: s
 
 async function publishPost(env: Env, text: string) {
   const userId = clean(env.THREADS_USER_ID, 120);
-  const create = await graphPost(env, `${userId}/threads`, { media_type: "TEXT", text });
-  const creationId = clean(create?.id, 160);
-  if (!creationId) throw new Error("threads_creation_id_missing");
-  const published = await graphPost(env, `${userId}/threads_publish`, { creation_id: creationId });
-  return clean(published?.id, 160) || creationId;
+  const published = await graphPost(env, `${userId}/threads`, {
+    media_type: "TEXT",
+    text,
+    auto_publish_text: "true",
+  });
+  const providerId = clean(published?.id, 160);
+  if (!providerId) throw new Error("threads_post_id_missing");
+  return providerId;
+}
+
+async function chooseTheme(db: any, slot: number) {
+  const exploration = themes[slot % themes.length];
+  if (slot % 10 >= 7) return exploration;
+  try {
+    const winner = await db.prepare(`
+      SELECT
+        theme_id,
+        COUNT(*) AS samples,
+        AVG(views) AS avg_views,
+        AVG(replies) AS avg_replies,
+        AVG(likes) AS avg_likes
+      FROM threads_growth_insights
+      GROUP BY theme_id
+      HAVING COUNT(*) >= 2
+      ORDER BY (AVG(views) + AVG(replies) * 25 + AVG(likes) * 5) DESC, theme_id ASC
+      LIMIT 1
+    `).first();
+    const matched = themes.find((theme) => theme.id === clean(winner?.theme_id, 100));
+    return matched || exploration;
+  } catch {
+    return exploration;
+  }
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
@@ -169,7 +196,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   await ensureSchema(env.DB);
   const slot = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
-  const theme = themes[slot % themes.length];
+  const theme = await chooseTheme(env.DB, slot);
   const id = `threads-content-${theme.id}-${slot}`;
 
   const existing = await env.DB.prepare("SELECT status, post_text, provider_post_id FROM threads_growth_content WHERE id = ?").bind(id).first();
