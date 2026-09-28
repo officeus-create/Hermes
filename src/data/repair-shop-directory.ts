@@ -3,9 +3,81 @@ export type RepairShopDirectoryEntry = {
   slug:string; stateSlug:string; citySlug:string; businessName:string; category:string; city:string; state:string; region:string; country:string; phone:string;
   serviceArea:string[]; services:string[]; claimState:"unclaimed"|"claimed"; hermesCustomer:boolean; bookingEnabled:boolean; googleBusinessStatus:"not_confirmed"|"confirmed";
   verificationNote:string; verifiedAt:string; sourceRef:string; sources:RepairShopDirectorySource[]; seoSummary:string;
+  website?:string; streetAddress?:string; hours?:string[];
+  websiteConcept?:{ eyebrow:string; headline:string; lead:string; searchThemes:string[] };
 };
 
 export const repairShopDirectory: RepairShopDirectoryEntry[] = [
+  {
+    slug:"smart-bubble-mobile-auto-body-repair", stateSlug:"arkansas", citySlug:"little-rock", businessName:"Smart Bubble Mobile Auto/Body Repair Shop", category:"Mobile Auto and Body Repair",
+    city:"Little Rock", state:"AR", region:"Arkansas", country:"US", phone:"(833) 501-7771",
+    website:"https://smartbubbleautorepairshop.simplybook.me/v2/",
+    hours:["Open 24 hours daily in current public listings"],
+    websiteConcept:{
+      eyebrow:"Website concept · Hermes preview",
+      headline:"Mobile auto and body repair built around Little Rock search intent",
+      lead:"A sample service-first website direction that makes mobile repair, body repair, service coverage and a fast call path easy to understand. This concept is not Smart Bubble's current official website.",
+      searchThemes:["mobile auto repair in Little Rock","auto body repair in Little Rock","mobile mechanic in Central Arkansas","car detailing and window tinting in Little Rock"],
+    },
+    serviceArea:["Little Rock, Arkansas","Central Arkansas"],
+    services:["Mobile auto repair","Automotive body repair","Vehicle diagnostics","Suspension repair","Car detailing","Window tinting"],
+    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"not_confirmed",
+    verificationNote:"A public business listing identifies Smart Bubble and its Little Rock phone number; its separate public booking site identifies the mobile-mechanic service area. Public sources disagree on the street address, so this profile intentionally does not publish one. Services, current coverage and ownership have not been confirmed by the business for Hermes. Its existing booking site is separate from Hermes Connect.",
+    verifiedAt:"2026-09-28", sourceRef:"PUBLIC-WEB-SMART-BUBBLE-LITTLE-ROCK-20260928",
+    seoSummary:"Unclaimed public-source profile for Smart Bubble Mobile Auto/Body Repair Shop in Little Rock, Arkansas, covering mobile auto repair, body repair, diagnostics, suspension work, detailing and window tinting. This is not a Hermes customer profile and Hermes Connect booking is inactive.",
+    sources:[
+      {label:"Smart Bubble — public booking site",url:"https://smartbubbleautorepairshop.simplybook.me/v2/",observed:"Business-branded public booking site describes mobile mechanic repairs serving Central Arkansas and beyond; this is not Hermes booking."},
+      {label:"Chamber of Commerce — Smart Bubble",url:"https://www.chamberofcommerce.com/business-directory/arkansas/little-rock/auto-repair-shop/2014355567-smart-bubble-mobile-auto-body-repair-shop",observed:"Public listing identifies the Little Rock business and phone (833) 501-7771. Its address conflicts with another public listing and is withheld here."},
+      {label:"AutoRepairScore — Smart Bubble",url:"https://autorepairscore.com/ar/little-rock/smart-bubble-mobile-autobody-repair-shop-little-rock-arkansas",observed:"Public repair directory describes auto-body repair, suspension/minor mechanical work, car detailing and window tinting for the Little Rock business."},
+    ],
+  },
+  {
+    slug:"clendenins-auto-repair", stateSlug:"arkansas", citySlug:"guy", businessName:"Clendenin's Auto Repair", category:"Auto Repair and Tire Service",
+    city:"Guy", state:"AR", region:"Arkansas", country:"US", phone:"(501) 679-6367",
+    website:"https://www.autorepairshopgreenbrierar.com/", streetAddress:"450 Hwy 25 N",
+    hours:["Monday–Friday · 8:00 AM–5:00 PM"],
+    websiteConcept:{
+      eyebrow:"Website concept · Hermes preview",
+      headline:"A local repair website that turns service depth into clear search ownership",
+      lead:"A sample website direction built around Guy and Greenbrier-area repair demand, with dedicated paths for diagnostics, brakes, engines, transmissions, tires and alignment. This is a Hermes concept preview, not a replacement of the current business website.",
+      searchThemes:["auto repair near Greenbrier Arkansas","engine and transmission repair in Guy Arkansas","brake tire and alignment service near Greenbrier"],
+    },
+    serviceArea:["Guy, Arkansas","Greenbrier, Arkansas","Surrounding communities"],
+    services:["General auto repair","Vehicle diagnostics","Brake repair","Suspension repair","Engine repair","Transmission repair","Tire service","Wheel alignment"],
+    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"not_confirmed",
+    verificationNote:"The business's official website confirms the Clendenin's name, 450 Hwy 25 N in Guy, phone, Greenbrier-area service, repair categories and Monday–Friday hours. The business must confirm its identity, contacts and current service menu before claiming the Hermes listing. Its own booking/contact form is separate from Hermes Connect.",
+    verifiedAt:"2026-09-28", sourceRef:"PUBLIC-OWNER-SITE-CLENDENINS-GUY-20260928",
+    seoSummary:"Unclaimed public-source profile for Clendenin's Auto Repair in Guy, Arkansas, serving Greenbrier-area drivers with general repairs, diagnostics and tire service. Hermes Connect booking is inactive.",
+    sources:[
+      {label:"Clendenin's Auto Repair — official site",url:"https://www.autorepairshopgreenbrierar.com/",observed:"Official website confirms shop name, 450 Hwy 25 N, Guy, phone (501) 679-6367, Greenbrier service area, Monday–Friday hours and general repair categories."},
+      {label:"Clendenin's Auto Repair — services",url:"https://www.autorepairshopgreenbrierar.com/our-services",observed:"Official service page describes diagnostics, brakes, suspension, engines, transmissions, tires and alignment."},
+    ],
+  },
+  {
+    slug:"the-dapper-wrench", stateSlug:"arkansas", citySlug:"cedarville", businessName:"The Dapper Wrench", category:"European Auto Repair",
+    city:"Cedarville", state:"AR", region:"Arkansas", country:"US", phone:"(479) 474-2971",
+    website:"https://thedapperwrench.com/", streetAddress:"10638 N Highway 59",
+    hours:["Monday–Thursday · 7:00 AM–5:30 PM","Friday–Sunday · closed in current public hours"],
+    serviceArea:["Cedarville, Arkansas","Van Buren, Arkansas","Fort Smith metro area"],
+    services:["European auto repair","Volkswagen service","Audi service","Porsche service","Land Rover service","Wheel alignment","Suspension service","Maintenance service","Engine diagnostics and repair","Brake service"],
+    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"not_confirmed",
+    verificationNote:"The Dapper Wrench's official website confirms its Cedarville address, phone, Monday–Thursday hours, European-vehicle focus and repair categories. Independent specialty directories separately list the shop for Volkswagen, Audi, Porsche and Land Rover repair. A labor rate mentioned in a manager call is intentionally not published because it has not been independently verified as a current public price.",
+    verifiedAt:"2026-09-28", sourceRef:"PUBLIC-OWNER-SITE-DAPPER-WRENCH-CEDARVILLE-20260928",
+    seoSummary:"Unclaimed public-source profile for The Dapper Wrench in Cedarville, Arkansas, focused on European auto repair including Volkswagen, Audi, Porsche and Land Rover service. Hermes Connect booking is inactive.",
+    websiteConcept:{
+      eyebrow:"Website concept · Hermes preview",
+      headline:"European-car expertise presented as a premium Cedarville service destination",
+      lead:"A sample website direction that groups European makes, diagnostics, maintenance, suspension, alignment and brake work into a cleaner customer journey for Cedarville and Fort Smith-area search demand. This is a Hermes concept preview, not The Dapper Wrench's current official website.",
+      searchThemes:["European auto repair near Fort Smith Arkansas","Volkswagen Audi Porsche repair in Cedarville","Land Rover service near Fort Smith Arkansas"],
+    },
+    sources:[
+      {label:"The Dapper Wrench — official site",url:"https://thedapperwrench.com/",observed:"Official site confirms the Cedarville location, phone, European-car positioning, current published hours and repair categories."},
+      {label:"VCarShops — The Dapper Wrench",url:"https://www.vcarshops.com/arkansas/cedarville-car-clinic-cedarville-ar",observed:"Independent Volkswagen specialty directory lists The Dapper Wrench in Cedarville and names Volkswagen plus multiple European makes in its repair coverage."},
+      {label:"FourRingsRepair — The Dapper Wrench",url:"https://www.fourringsrepair.com/arkansas/cedarville-car-clinic-cedarville-ar",observed:"Independent Audi specialty directory lists The Dapper Wrench as an Audi repair shop in Cedarville."},
+      {label:"PCarShops — Arkansas",url:"https://www.pcarshops.com/porscheshops/arkansas/",observed:"Independent Porsche specialty directory includes The Dapper Wrench / European Car Clinic in Cedarville."},
+      {label:"LRShops — The Dapper Wrench",url:"https://www.lrshops.com/near/cedarville-ar/",observed:"Independent Land Rover specialty directory identifies The Dapper Wrench in Cedarville and includes customer evidence mentioning Porsche, Audi and Land Rover service."},
+    ],
+  },
   {
     slug:"seans-autopro-mobile", stateSlug:"arkansas", citySlug:"sherwood", businessName:"Sean's AutoPro Mobile", category:"Mobile Auto Repair",
     city:"Sherwood", state:"AR", region:"Arkansas", country:"US", phone:"(904) 864-6183",
