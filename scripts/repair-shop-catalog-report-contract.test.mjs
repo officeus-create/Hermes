@@ -12,6 +12,7 @@ assert.match(api, /profile_views/);
 assert.match(api, /call_clicks/);
 assert.match(api, /maps_clicks/);
 assert.match(api, /website_clicks/);
+assert.match(api, /booking_clicks/);
 assert.match(api, /inquiries_received/);
 assert.match(api, /bookings_created/);
 assert.doesNotMatch(api, /client_email|client_phone|contact_email|CF-Connecting-IP|User-Agent|Referer/);
