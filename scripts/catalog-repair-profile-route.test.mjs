@@ -11,7 +11,11 @@ const shop = {
   state: "AR",
   region: "AR",
   postal_code: "72201",
+  phone: "(501) 555-0147",
   website: "https://example.com/repair",
+  instagram_url: "https://instagram.com/example-repair",
+  facebook_url: "https://facebook.com/example-repair",
+  threads_url: "",
 };
 const db = {
   prepare(sql) {
@@ -24,10 +28,14 @@ const db = {
         if (query.includes("FROM repair_shop_availability")) {
           return { results: [{ day_of_week: 1, is_open: 1, start_time: "08:00", end_time: "17:00" }] };
         }
+        if (query.includes("FROM services s")) {
+          return { results: [{ id: "service-qa", name: "Brake Repair", duration_minutes: 60, owner_specialist_id: shop.owner_specialist_id }] };
+        }
         return { results: [] };
       },
       async first() {
         if (query.includes("FROM repair_shops")) return shop;
+        if (query.includes("FROM hermes_business_contexts")) return { id: "ctx-qa", is_default: 1 };
         return null;
       },
     };
@@ -44,11 +52,21 @@ assert.match(html, /type=claim&amp;business=|type=claim&business=/);
 assert.match(html, /type=catalog-growth&amp;business=|type=catalog-growth&business=/);
 assert.match(html, /Business hours/);
 assert.match(html, /Monday: 08:00–17:00/);
+assert.match(html, /Book an appointment/);
+assert.match(html, /\/services\/hermes-connect\/repair-shops\/booking\/\?shop=example-repair-qa/);
+assert.match(html, /href="tel:\+?5015550147"/);
+assert.match(html, /Directions on Google Maps/);
+assert.match(html, /google\.com\/maps\/search\/\?api=1&amp;query=10%20Example%20St%2C%20Example%20City%2C%20AR%2C%2072201/);
+assert.match(html, /"telephone":"\(501\) 555-0147"/);
+assert.match(html, /https:\/\/instagram\.com\/example-repair/);
+assert.match(html, /https:\/\/facebook\.com\/example-repair/);
+assert.match(html, /property="og:url" content="https:\/\/hermeslogisticsus\.com\/businesses\/connect\/repair-shop\/example-repair-qa\/"/);
 assert.match(html, /does not indicate a Hermes customer relationship/);
 assert.match(html, /Public availability does not establish search engine indexing/);
 assert.doesNotMatch(html, /<script>alert\("x"\)<\/script>/);
 assert.match(html, /Example &amp; &lt;script&gt;/);
 assert.doesNotMatch(html, /client_email|client_phone|next scheduled checkpoint is/);
+assert.doesNotMatch(html, /client_name|vin|mileage/);
 
 assert.equal((await onRequestGet({ env: {}, params: { slug: shop.slug } })).status, 503);
 assert.equal((await onRequestGet({ env: { DB: db }, params: { slug: "bad/slug" } })).status, 404);
