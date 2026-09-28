@@ -1,3 +1,7 @@
+import { repairShopDirectory } from "../../src/data/repair-shop-directory";
+import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
+import { saveCatalogBusinessInquiry, markCatalogBusinessInquiryInternalDelivery } from "./_lib/catalog-business-inquiries.mjs";
+
 type KvNamespace = {
   get(key: string): Promise<string | null>;
   put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
@@ -8,6 +12,7 @@ type ServiceFetcher = {
 };
 
 type Env = {
+  DB?: any;
   LEAD_EMAIL_SERVICE?: ServiceFetcher;
   LEAD_LIMITS?: KvNamespace;
   LEAD_SERVICE_TOKEN?: string;
@@ -41,6 +46,7 @@ type BusinessLeadInput = {
   email?: unknown;
   company?: unknown;
   city_country?: unknown;
+  phone?: unknown;
   whatsapp?: unknown;
   telegram?: unknown;
   website_or_social?: unknown;
@@ -63,6 +69,7 @@ const MAX_BODY_BYTES = 16_000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
 const DELIVERY_TIMEOUT_MS = 8_000;
+const CATALOG_INQUIRY_RETENTION_MS = 365 * 24 * 60 * 60 * 1000;
 
 const allowedServices = new Set([
   "Website development",
@@ -120,6 +127,76 @@ const hash = async (value: string) => {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((item) => item.toString(16).padStart(2, "0")).join("");
 };
+
+const normalizeCatalogProfilePath = (value: string) => {
+  if (!value) return "";
+  try {
+    const url = new URL(value, DEFAULT_ORIGIN);
+    if (url.origin !== DEFAULT_ORIGIN) return "";
+    const path = url.pathname.replace(/\\/{2,}/g, "/");
+    return path.endsWith("/") ? path : path + "/";
+  } catch {
+    return "";
+  }
+};
+
+async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, catalogProfile: string, catalogSourceRef: string) {
+  const path = normalizeCatalogProfilePath(catalogProfile);
+  if (!path) return { linked: false, trusted: false, businessName: "" };
+  await ensureRepairShopProfileSchema(db);
+
+  const staticEntry = repairShopDirectory.find((entry) =>
+    path === `/businesses/${entry.stateSlug}/${entry.citySlug}/${entry.slug}/`
+  );
+  if (staticEntry) {
+    const expectedBusinessId = `repair-shop:${staticEntry.stateSlug}/${staticEntry.citySlug}/${staticEntry.slug}`;
+    if (catalogBusinessId !== expectedBusinessId || (catalogSourceRef && catalogSourceRef !== staticEntry.sourceRef)) {
+      return { linked: false, trusted: false, businessName: staticEntry.businessName };
+    }
+    const result = await db.prepare(`
+      SELECT id, owner_specialist_id, name
+      FROM repair_shops
+      WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))
+        AND LOWER(TRIM(city)) = LOWER(TRIM(?))
+        AND UPPER(TRIM(state)) = UPPER(TRIM(?))
+      LIMIT 2
+    `).bind(staticEntry.businessName, staticEntry.city, staticEntry.state).all();
+    const rows = result?.results || [];
+    if (rows.length !== 1) return { linked: false, trusted: true, businessName: staticEntry.businessName };
+    return {
+      linked: true,
+      trusted: true,
+      businessName: staticEntry.businessName,
+      shopId: String(rows[0].id || ""),
+      ownerSpecialistId: String(rows[0].owner_specialist_id || ""),
+    };
+  }
+
+  const dynamic = path.match(/^\\/businesses\\/connect\\/repair-shop\\/([a-z0-9-]+)\\/$/);
+  if (dynamic) {
+    const result = await db.prepare(`
+      SELECT id, owner_specialist_id, name
+      FROM repair_shops
+      WHERE slug = ? AND catalog_opt_in = 1
+      LIMIT 2
+    `).bind(dynamic[1]).all();
+    const rows = result?.results || [];
+    if (rows.length !== 1) return { linked: false, trusted: false, businessName: "" };
+    const row = rows[0];
+    if (catalogBusinessId !== `repair-shop-crm:${String(row.id || "")}`) {
+      return { linked: false, trusted: false, businessName: String(row.name || "") };
+    }
+    return {
+      linked: true,
+      trusted: true,
+      businessName: String(row.name || ""),
+      shopId: String(row.id || ""),
+      ownerSpecialistId: String(row.owner_specialist_id || ""),
+    };
+  }
+
+  return { linked: false, trusted: false, businessName: "" };
+}
 
 const getServices = (value: unknown) => {
   if (!Array.isArray(value)) return [];
@@ -199,6 +276,7 @@ export async function onRequestPost({ request, env }: Context) {
   const email = clean(input.email, 160).toLowerCase();
   const company = clean(input.company, 140);
   const cityCountry = clean(input.city_country, 120);
+  const phone = clean(input.phone, 120);
   const whatsapp = clean(input.whatsapp, 120);
   const telegram = clean(input.telegram, 120);
   const websiteOrSocial = clean(input.website_or_social, 240);
@@ -226,7 +304,7 @@ export async function onRequestPost({ request, env }: Context) {
     !isEmail(email) ||
     company.length < 2 ||
     cityCountry.length < 2 ||
-    (!whatsapp && !telegram) ||
+    (catalogBusinessRequest ? (phone.replace(/\\D/g, "").length < 7 && !whatsapp && !telegram) : (!whatsapp && !telegram)) ||
     websiteOrSocial.length < 2 ||
     (planningBudget && !allowedBudgets.has(planningBudget)) ||
     (planningHorizon && !allowedHorizons.has(planningHorizon)) ||
@@ -239,8 +317,54 @@ export async function onRequestPost({ request, env }: Context) {
   if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
 
   const requestKey = `business-lead:id:${await hash(requestId)}`;
-  if (await env.LEAD_LIMITS.get(requestKey)) {
-    return json(allowedOrigin, 200, { success: true, duplicate: true, request_id: requestId });
+  const alreadyDelivered = await env.LEAD_LIMITS.get(requestKey);
+  let catalogRecord: { linked: boolean } | null = null;
+  if (catalogBusinessRequest) {
+    if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "catalog_crm_not_configured" });
+    try {
+      const repairShop = await resolveCatalogRepairShop(env.DB, catalogBusinessId, catalogProfile, catalogSourceRef);
+      const payloadHash = await hash(JSON.stringify({
+        catalogBusinessId, catalogProfile: normalizeCatalogProfilePath(catalogProfile), catalogSourceRef,
+        name, email, phone, whatsapp, telegram, message, services,
+      }));
+      const createdAt = new Date().toISOString();
+      const retentionUntil = new Date(Date.now() + CATALOG_INQUIRY_RETENTION_MS).toISOString();
+      const saved = await saveCatalogBusinessInquiry(env.DB, {
+        requestId,
+        payloadHash,
+        catalogBusinessId,
+        catalogProfile: normalizeCatalogProfilePath(catalogProfile) || catalogProfile,
+        catalogSourceRef,
+        shopId: repairShop.linked ? repairShop.shopId : "",
+        ownerSpecialistId: repairShop.linked ? repairShop.ownerSpecialistId : "",
+        businessName: repairShop.businessName || company,
+        contactName: name,
+        contactEmail: email,
+        contactPhone: phone,
+        contactWhatsapp: whatsapp,
+        contactTelegram: telegram,
+        preferredLanguage,
+        preferredContactTime,
+        message,
+        services,
+        attribution,
+        retentionUntil,
+        createdAt,
+      });
+      if (saved.conflict) return json(allowedOrigin, 409, { success: false, error: "request_id_payload_conflict" });
+      catalogRecord = { linked: Boolean(repairShop.linked) };
+    } catch (error) {
+      console.error("catalog_inquiry_persist_failed", { request_id: requestId, error: error instanceof Error ? error.message : "unknown_error" });
+      return json(allowedOrigin, 503, { success: false, error: "catalog_crm_temporarily_unavailable" });
+    }
+  }
+  if (alreadyDelivered) {
+    return json(allowedOrigin, 200, {
+      success: true,
+      duplicate: true,
+      request_id: requestId,
+      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
+    });
   }
 
   const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
@@ -270,6 +394,7 @@ export async function onRequestPost({ request, env }: Context) {
     `Company / project: ${company}`,
     `City / country: ${cityCountry}`,
     `Email: ${email}`,
+    `Phone: ${phone || "not provided"}`,
     `WhatsApp: ${whatsapp || "not provided"}`,
     `Telegram: ${telegram || "not provided"}`,
     `Website / social: ${websiteOrSocial}`,
@@ -310,6 +435,7 @@ export async function onRequestPost({ request, env }: Context) {
     });
 
     if (!serviceResponse.ok) {
+      if (catalogRecord && env.DB) await markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "failed").catch(() => undefined);
       if ([429, 503, 504].includes(serviceResponse.status)) {
         return json(allowedOrigin, 503, { success: false, error: "delivery_temporarily_unavailable" });
       }
@@ -319,10 +445,16 @@ export async function onRequestPost({ request, env }: Context) {
     await Promise.all([
       env.LEAD_LIMITS.put(requestKey, "delivered", { expirationTtl: 24 * 60 * 60 }),
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
+      ...(catalogRecord && env.DB ? [markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "delivered")] : []),
     ]);
 
-    return json(allowedOrigin, 200, { success: true, request_id: requestId });
+    return json(allowedOrigin, 200, {
+      success: true,
+      request_id: requestId,
+      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
+    });
   } catch (error) {
+    if (catalogRecord && env.DB) await markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "failed").catch(() => undefined);
     if (error instanceof DOMException && error.name === "AbortError") {
       return json(allowedOrigin, 503, { success: false, error: "delivery_temporarily_unavailable" });
     }
