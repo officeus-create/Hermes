@@ -65,7 +65,8 @@ assert.match(html, /does not indicate a Hermes customer relationship/);
 assert.match(html, /Public availability does not establish search engine indexing/);
 assert.doesNotMatch(html, /<script>alert\("x"\)<\/script>/);
 assert.match(html, /Example &amp; &lt;script&gt;/);
-assert.doesNotMatch(html, /client_email|client_phone|next scheduled checkpoint is/);\nassert.doesNotMatch(html, /client_name|vin|mileage/);
+assert.doesNotMatch(html, /client_email|client_phone|next scheduled checkpoint is/);
+assert.doesNotMatch(html, /client_name|vin|mileage/);
 
 assert.equal((await onRequestGet({ env: {}, params: { slug: shop.slug } })).status, 503);
 assert.equal((await onRequestGet({ env: { DB: db }, params: { slug: "bad/slug" } })).status, 404);
