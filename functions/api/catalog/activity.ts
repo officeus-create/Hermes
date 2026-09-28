@@ -2,7 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 
 type Env = { DB?: any };
 
-const ACTIONS = new Set(["profile_view", "call_click", "maps_click", "website_click"]);
+const ACTIONS = new Set(["profile_view", "call_click", "maps_click", "website_click", "booking_click"]);
 const ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9:_/.\-]{2,179}$/;
 
 async function ensureCatalogActivitySchema(db: any) {
