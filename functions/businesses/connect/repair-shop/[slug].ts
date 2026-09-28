@@ -8,6 +8,14 @@ const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) =
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 }[char] || char));
 const jsonLd = (value: unknown) => JSON.stringify(value).replace(/</g, "\\u003c");
+const safeHttpUrl = (value: unknown) => {
+  try {
+    const url = new URL(String(value ?? "").trim());
+    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : "";
+  } catch {
+    return "";
+  }
+};
 
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -49,8 +57,8 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   if (!/^[a-z0-9-]+$/i.test(slug)) return new Response("Not found", { status: 404 });
 
   const row = await env.DB.prepare(`
-    SELECT id,owner_specialist_id,name,slug,address_line1,city,state,region,country_code,postal_code,website,
-           catalog_published_at,seo_geo_started_at,next_seo_report_at,updated_at
+    SELECT id,owner_specialist_id,name,slug,address_line1,city,state,region,country_code,postal_code,phone,website,
+           instagram_url,facebook_url,threads_url,catalog_published_at,seo_geo_started_at,next_seo_report_at,updated_at
     FROM repair_shops
     WHERE slug=? AND catalog_opt_in=1
     LIMIT 1
@@ -62,6 +70,16 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const canonical = `https://hermeslogisticsus.com/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug))}/`;
   const location = [row.city, row.region || row.state].filter(Boolean).join(", ");
   const addressText = [row.address_line1, row.city, row.region || row.state, row.postal_code].filter(Boolean).join(", ");
+  const phoneText = String(row.phone || "").trim();
+  const phoneDial = phoneText.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
+  const websiteUrl = safeHttpUrl(row.website);
+  const socialUrls = [websiteUrl, safeHttpUrl(row.instagram_url), safeHttpUrl(row.facebook_url), safeHttpUrl(row.threads_url)].filter(Boolean);
+  const hasOpenHours = hours.some((item: any) => item.isOpen && item.opens && item.closes);
+  const bookingReady = services.length > 0 && hasOpenHours;
+  const bookingHref = `/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(String(row.slug))}`;
+  const mapsHref = addressText
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}`
+    : "";
   const serviceSummary = services.slice(0, 3).join(", ");
   const description = [
     `${row.name} in ${location}.`,
@@ -94,7 +112,8 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ...(location ? { areaServed: { "@type": "City", name: location } } : {}),
     ...(services.length ? { knowsAbout: services } : {}),
     ...(openingHoursSpecification.length ? { openingHoursSpecification } : {}),
-    ...(row.website ? { sameAs: [row.website] } : {}),
+    ...(phoneText ? { telephone: phoneText } : {}),
+    ...(socialUrls.length ? { sameAs: socialUrls } : {}),
   };
   const serviceList = services.length
     ? `<ul>${services.map((service: string) => `<li>${esc(service)}</li>`).join("")}</ul>`
@@ -102,8 +121,17 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const hoursList = hours.length
     ? `<ul>${hours.map((item: any) => `<li>${esc(dayNames[item.day])}: ${item.isOpen && item.opens && item.closes ? `${esc(item.opens)}–${esc(item.closes)}` : "Closed"}</li>`).join("")}</ul>`
     : '<p class="muted">Hours will appear here after the business saves them in Hermes Connect.</p>';
-  const website = row.website
-    ? `<a class="button primary" href="${esc(row.website)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
+  const booking = bookingReady
+    ? `<a class="button primary" href="${esc(bookingHref)}">Book an appointment</a>`
+    : "";
+  const phone = phoneDial
+    ? `<a class="button" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
+    : "";
+  const maps = mapsHref
+    ? `<a class="button" href="${esc(mapsHref)}" rel="noopener" target="_blank">Directions on Google Maps <span aria-hidden="true">↗</span></a>`
+    : "";
+  const website = websiteUrl
+    ? `<a class="button" href="${esc(websiteUrl)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
     : "";
   const claimHref = `/businesses/request/?type=claim&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
   const growthHref = `/businesses/request/?type=catalog-growth&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
@@ -143,14 +171,14 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(row.name)} | Auto Repair in ${esc(location)} | Hermes Catalog</title>
 <meta name="description" content="${esc(description)}"><link rel="canonical" href="${canonical}">
-<meta name="robots" content="index,follow"><script type="application/ld+json">${jsonLd(schema)}</script><style>${css}</style></head>
+<meta name="robots" content="index,follow"><meta property="og:type" content="website"><meta property="og:title" content="${esc(row.name)} | Auto Repair in ${esc(location)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="${esc(row.name)} | Auto Repair in ${esc(location)}"><meta name="twitter:description" content="${esc(description)}"><script type="application/ld+json">${jsonLd(schema)}</script><style>${css}</style></head>
 <body><a class="skip" href="#main-content">Skip to content</a>
 <header class="site-top"><div class="site-top-inner"><a class="brand" href="/businesses/"><span class="mark" aria-hidden="true">H</span>Hermes <em>Catalog</em></a><a class="top-link" href="/businesses/">Browse businesses</a></div></header>
 <main class="shell" id="main-content"><nav class="crumb" aria-label="Breadcrumb"><a href="/businesses/">Hermes Catalog</a> / ${esc(location)} / ${esc(row.name)}</nav>
 <article><header class="hero"><p class="eyebrow">Auto repair · ${esc(location)}</p><span class="status">Profile details awaiting owner review</span>
 <h1>${esc(row.name)}</h1><p class="location">${esc(addressText || location)}</p>
 <p class="intro">Explore the services and hours listed for this business. Please confirm current details with the shop before visiting or requesting service. This listing does not indicate a Hermes customer relationship.</p>
-<div class="actions">${website}<a class="button" href="${claimHref}">Claim or correct this profile</a><a class="button" href="${growthHref}">Discuss online growth</a></div></header>
+<div class="actions">${booking}${phone}${maps}${website}<a class="button" href="${claimHref}">Claim or correct this profile</a><a class="button" href="${growthHref}">Discuss online growth</a></div></header>
 <div class="content"><section class="panel services" aria-labelledby="services-heading"><p class="eyebrow">What the shop offers</p><h2 id="services-heading">Services</h2>${serviceList}</section>
 <section class="panel hours" aria-labelledby="hours-heading"><p class="eyebrow">Plan a visit</p><h2 id="hours-heading">Business hours</h2>${hoursList}</section>
 <aside class="panel review" aria-label="Profile status"><strong>About this listing</strong><p>Published in Hermes Catalog from business profile information. The business can request corrections or verify its ownership. Public availability does not establish search engine indexing, rankings, or customer inquiries.</p><a class="button" href="${claimHref}">Request verification</a></aside></div>
