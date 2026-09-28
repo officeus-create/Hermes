@@ -90,5 +90,5 @@ assert.doesNotMatch(websiteConcept, />Contact this business\.</);
 assert.match(catalogRequestPage, /catalog-business-request/);
 assert.match(catalogRequestPage, /catalog_business_id/);
 assert.match(catalogRequestPage, /catalog_source_ref/);
-assert.match(catalogRequestPage, /not proof that the listed business has received it/);
+assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 console.log("Catalog Connect publication contract OK");
