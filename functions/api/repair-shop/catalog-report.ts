@@ -1,4 +1,4 @@
-import { repairShopDirectory } from "../../../src/data/repair-shop-directory";
+import { repairShopDirectory } from "../../../src/data/repair-shop-directory.ts";
 import { ensureCatalogBusinessEventSchema, CATALOG_EVENT_TYPES } from "../_lib/catalog-business-events.mjs";
 import { ensureCatalogBusinessInquirySchema } from "../_lib/catalog-business-inquiries.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
