@@ -95,6 +95,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         call_clicks: Number(activity.call_click || 0),
         maps_clicks: Number(activity.maps_click || 0),
         website_clicks: Number(activity.website_click || 0),
+        booking_clicks: Number(activity.booking_click || 0),
         inquiries_received: Number(inquiryResult?.inquiry_count || 0),
         bookings_created: Number(bookingResult?.booking_count || 0),
       },
