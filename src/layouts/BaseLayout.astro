@@ -22,6 +22,7 @@ import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
 import TrackingConsent from "../components/TrackingConsent.astro";
+import SiteTrafficCollector from "../components/SiteTrafficCollector.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
@@ -277,6 +278,7 @@ const safeSchema = schema
     <LoadBoardCapacityEnhancer />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
     <TrackingConsent clarityEligible={clarityEligible} locale={locale} />
+    <SiteTrafficCollector />
     <MoneyPageActionBar />
     <CarrierContractJourney />
     <CarrierContractSafetyEnhancer />
