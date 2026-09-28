@@ -77,4 +77,18 @@ for (const [route, shopName] of [
   assert.match(html, /Concept preview only/);
   assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com|hello@thedapperwrench\.com/);
 }
+const websiteConcept = read("src/components/CatalogWebsiteConcept.astro");
+const catalogRequestHelper = read("src/lib/catalog-request.ts");
+const catalogRequestPage = read("src/pages/businesses/request/index.astro");
+assert.match(catalogRequestHelper, /"catalog-business-request"/);
+assert.match(catalogRequestHelper, /business_id/);
+assert.match(catalogRequestHelper, /source_ref/);
+assert.match(websiteConcept, /Request contact via Hermes/);
+assert.match(websiteConcept, /claim\/customer status changes only after verification/);
+assert.match(websiteConcept, /Request a handoff to this business/);
+assert.doesNotMatch(websiteConcept, />Contact this business\.</);
+assert.match(catalogRequestPage, /catalog-business-request/);
+assert.match(catalogRequestPage, /catalog_business_id/);
+assert.match(catalogRequestPage, /catalog_source_ref/);
+assert.match(catalogRequestPage, /not proof that the listed business has received it/);
 console.log("Catalog Connect publication contract OK");
