@@ -125,13 +125,13 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ? `<a class="button primary" href="${esc(bookingHref)}">Book an appointment</a>`
     : "";
   const phone = phoneDial
-    ? `<a class="button" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
+    ? `<a class="button" data-catalog-action="call_click" href="tel:${esc(phoneDial)}">Call ${esc(phoneText)}</a>`
     : "";
   const maps = mapsHref
-    ? `<a class="button" href="${esc(mapsHref)}" rel="noopener" target="_blank">Directions on Google Maps <span aria-hidden="true">↗</span></a>`
+    ? `<a class="button" data-catalog-action="maps_click" href="${esc(mapsHref)}" rel="noopener" target="_blank">Directions on Google Maps <span aria-hidden="true">↗</span></a>`
     : "";
   const website = websiteUrl
-    ? `<a class="button" href="${esc(websiteUrl)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
+    ? `<a class="button" data-catalog-action="website_click" href="${esc(websiteUrl)}" rel="nofollow noopener" target="_blank">Open listed website <span aria-hidden="true">↗</span></a>`
     : "";
   const requestParams = new URLSearchParams({
     type: "catalog-business-request",
@@ -186,7 +186,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <body><a class="skip" href="#main-content">Skip to content</a>
 <header class="site-top"><div class="site-top-inner"><a class="brand" href="/businesses/"><span class="mark" aria-hidden="true">H</span>Hermes <em>Catalog</em></a><a class="top-link" href="/businesses/">Browse businesses</a></div></header>
 <main class="shell" id="main-content"><nav class="crumb" aria-label="Breadcrumb"><a href="/businesses/">Hermes Catalog</a> / ${esc(location)} / ${esc(row.name)}</nav>
-<article><header class="hero"><p class="eyebrow">Auto repair · ${esc(location)}</p><span class="status">Profile details awaiting owner review</span>
+<article data-catalog-business-id="${esc(`repair-shop-crm:${String(row.id)}`)}"><header class="hero"><p class="eyebrow">Auto repair · ${esc(location)}</p><span class="status">Profile details awaiting owner review</span>
 <h1>${esc(row.name)}</h1><p class="location">${esc(addressText || location)}</p>
 <p class="intro">Explore the services and hours listed for this business. Please confirm current details with the shop before visiting or requesting service. This listing does not indicate a Hermes customer relationship.</p>
 <div class="actions">${booking}${phone}${maps}${website}<a class="button" href="${esc(contactRequestHref)}">Request contact via Hermes</a><a class="button" href="${claimHref}">Claim or correct this profile</a><a class="button" href="${growthHref}">Discuss online growth</a></div></header>
@@ -194,7 +194,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <section class="panel hours" aria-labelledby="hours-heading"><p class="eyebrow">Plan a visit</p><h2 id="hours-heading">Business hours</h2>${hoursList}</section>
 <aside class="panel review" aria-label="Profile status"><strong>About this listing</strong><p>Published in Hermes Catalog from business profile information. The business can request corrections or verify its ownership. Public availability does not establish search engine indexing, rankings, or customer inquiries.</p><a class="button" href="${claimHref}">Request verification</a></aside></div>
 <p class="notice">Services, hours and address are subject to business confirmation. No private customer records, appointments or account details appear on this page.</p>
-</article></main></body></html>`;
+</article></main><script src="/catalog-business-activity.js" defer></script></body></html>`;
 
   return new Response(html, {
     status: 200,
