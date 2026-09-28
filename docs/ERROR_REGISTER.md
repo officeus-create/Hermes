@@ -289,3 +289,18 @@ EVIDENCE: Corporate Gmail Sent has two messages to the prospect at 2026-09-24 03
 LESSON: A code release, a ready demo and a customer relationship are three different claims. A send receipt is an outreach event that must be reconciled into the canonical operating row even when it violated the intended sequence.
 
 REUSE_RULE: Before any client access email, read the manager row and Sent history for that exact prospect. Require completed manager fact/booking QA, a recorded handoff and call, explicit send approval, and the agreed following-day timing. After send, record the actual message/time and monitor a real reply or call outcome. If an earlier send already exists, reconcile it and avoid a duplicate; never backfill an approval that is not evidenced.
+## 2026-09-28 — Prospect registration blocked at Cloudflare before Repair Shop API
+
+PROBLEM: An authorized attempt to provision the first interested Arkansas Repair Shop prospect from the current execution workspace received HTTP 403 from Cloudflare before the production registration handler responded. The second prospect was not attempted from the same blocked environment.
+
+ROOT_CAUSE: The edge refusal is confirmed; the exact Cloudflare rule and whether either email already has a preexisting account are unknown without authorized operator access. The API contract alone cannot prove production account creation or login.
+
+FAILED_APPROACH: Treating a manager spreadsheet row or generated password as evidence of a live CRM account. Retrying the blocked registration through alternative routes would bypass the edge decision and is not an authorized recovery path.
+
+WORKING_APPROACH: Record both prospects as login-unverified in the private working Sheet, with distinct evidence for the attempted and unattempted registrations. Do not write fake credentials, announce client-ready access, or send client messages. Prepare public-source unclaimed Catalog profiles separately. Production operator should review the Cloudflare event and use the approved provisioning flow; verify login, profile, services, availability, booking and manager QA before delivery.
+
+EVIDENCE: 2026-09-28 structured Cloudflare HTTP 403 on the first production registration request; malformed-email request returned an application 400, showing that the endpoint exists. No success response, account ID, profile or verified login was obtained. Catalog change is review-only until exact-head release and production readback.
+
+LESSON: Prospect identified, public listing prepared, API reachable, account registered, and account tested are separate facts.
+
+REUSE_RULE: Never populate login/password cells based on intent or source code. Require production success evidence and a repeat authenticated login before manager handoff. Preserve the specific HTTP edge category and attempt scope so a future operator can resolve the rule without guessing.

@@ -61,4 +61,16 @@ assert.match(staticDealerProfile, /\.catalog-profile-hero\{/);
 assert.match(staticDealerProfile, /@media\(max-width:800px\)\{\.catalog-profile-hero/);
 assert.doesNotMatch(staticDealerProfile, /class="hero"/);
 assert.doesNotMatch(staticDealerProfile, /(?:^|[^-])\.hero\b/);
+for (const [route, shopName] of [
+  ["arkansas/little-rock/smart-bubble-mobile-auto-body-repair", "Smart Bubble Mobile Auto/Body Repair Shop"],
+  ["arkansas/guy/clendenins-auto-repair", "Clendenin&#39;s Auto Repair"],
+]) {
+  const html = read(`dist/businesses/${route}/index.html`);
+  assert.match(html, new RegExp(shopName.replaceAll("/", "\\/")));
+  assert.match(html, /Unclaimed profile/);
+  assert.match(html, /Not a Hermes customer/);
+  assert.match(html, /Off until owner verification/);
+  assert.match(html, /application\/ld\+json/);
+  assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com/);
+}
 console.log("Catalog Connect publication contract OK");

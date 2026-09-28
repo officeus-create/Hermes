@@ -7,6 +7,34 @@ export type RepairShopDirectoryEntry = {
 
 export const repairShopDirectory: RepairShopDirectoryEntry[] = [
   {
+    slug:"smart-bubble-mobile-auto-body-repair", stateSlug:"arkansas", citySlug:"little-rock", businessName:"Smart Bubble Mobile Auto/Body Repair Shop", category:"Mobile Auto and Body Repair",
+    city:"Little Rock", state:"AR", region:"Arkansas", country:"US", phone:"(833) 501-7771",
+    serviceArea:["Little Rock, Arkansas","Central Arkansas"],
+    services:["Mobile auto repair","Automotive body repair"],
+    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"not_confirmed",
+    verificationNote:"A public business listing identifies Smart Bubble and its Little Rock phone number; its separate public booking site identifies the mobile-mechanic service area. Public sources disagree on the street address, so this profile intentionally does not publish one. Services, current coverage and ownership have not been confirmed by the business for Hermes. Its existing booking site is separate from Hermes Connect.",
+    verifiedAt:"2026-09-28", sourceRef:"PUBLIC-WEB-SMART-BUBBLE-LITTLE-ROCK-20260928",
+    seoSummary:"Unclaimed public-source profile for Smart Bubble Mobile Auto/Body Repair Shop in Little Rock, Arkansas, describing mobile auto and body repair. This is not a Hermes customer profile and Hermes Connect booking is inactive.",
+    sources:[
+      {label:"Smart Bubble — public booking site",url:"https://smartbubbleautorepairshop.simplybook.me/v2/",observed:"Business-branded public booking site describes mobile mechanic repairs serving Central Arkansas and beyond; this is not Hermes booking."},
+      {label:"Chamber of Commerce — Smart Bubble",url:"https://www.chamberofcommerce.com/business-directory/arkansas/little-rock/auto-repair-shop/2014355567-smart-bubble-mobile-auto-body-repair-shop",observed:"Public listing identifies the Little Rock business and phone (833) 501-7771. Its address conflicts with another public listing and is withheld here."},
+    ],
+  },
+  {
+    slug:"clendenins-auto-repair", stateSlug:"arkansas", citySlug:"guy", businessName:"Clendenin's Auto Repair", category:"Auto Repair and Tire Service",
+    city:"Guy", state:"AR", region:"Arkansas", country:"US", phone:"(501) 679-6367",
+    serviceArea:["Guy, Arkansas","Greenbrier, Arkansas","Surrounding communities"],
+    services:["General auto repair","Brake and suspension repair","Engine and transmission repair","Tire sales and service","Wheel alignment","Vehicle diagnostics"],
+    claimState:"unclaimed", hermesCustomer:false, bookingEnabled:false, googleBusinessStatus:"not_confirmed",
+    verificationNote:"The business's official website confirms the Clendenin's name, 450 Hwy 25 N in Guy, phone, Greenbrier-area service, repair categories and Monday–Friday hours. The business must confirm its identity, contacts and current service menu before claiming the Hermes listing. Its own booking/contact form is separate from Hermes Connect.",
+    verifiedAt:"2026-09-28", sourceRef:"PUBLIC-OWNER-SITE-CLENDENINS-GUY-20260928",
+    seoSummary:"Unclaimed public-source profile for Clendenin's Auto Repair in Guy, Arkansas, serving Greenbrier-area drivers with general repairs, diagnostics and tire service. Hermes Connect booking is inactive.",
+    sources:[
+      {label:"Clendenin's Auto Repair — official site",url:"https://www.autorepairshopgreenbrierar.com/",observed:"Official website confirms shop name, 450 Hwy 25 N, Guy, phone (501) 679-6367, Greenbrier service area, Monday–Friday hours and general repair categories."},
+      {label:"Clendenin's Auto Repair — services",url:"https://www.autorepairshopgreenbrierar.com/our-services",observed:"Official service page describes diagnostics, brakes, suspension, engines, transmissions, tires and alignment."},
+    ],
+  },
+  {
     slug:"seans-autopro-mobile", stateSlug:"arkansas", citySlug:"sherwood", businessName:"Sean's AutoPro Mobile", category:"Mobile Auto Repair",
     city:"Sherwood", state:"AR", region:"Arkansas", country:"US", phone:"(904) 864-6183",
     serviceArea:["Sherwood, Arkansas","Little Rock, Arkansas","Central Arkansas"],
