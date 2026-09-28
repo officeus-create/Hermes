@@ -87,8 +87,7 @@ async function ensureSchema(db: any) {
 }
 
 async function graphPost(env: Env, path: string, params: Record<string, string>) {
-  const base = clean(env.THREADS_GRAPH_BASE, 200);
-  if (!base) throw new Error("threads_graph_base_missing");
+  const base = clean(env.THREADS_GRAPH_BASE, 200) || "https://graph.threads.com/v1.0/";
   const url = new URL(path, base.endsWith("/") ? base : `${base}/`);
   const body = new URLSearchParams({ ...params, access_token: String(env.THREADS_ACCESS_TOKEN || "") });
   const response = await fetch(url, {
@@ -164,7 +163,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return json(401, { success: false, error: "unauthorized" });
   }
   const mode = env.THREADS_AUTOMATION_MODE === "live" ? "live" : "dry_run";
-  if (!env.THREADS_ACCESS_TOKEN || !env.THREADS_USER_ID || !env.THREADS_GRAPH_BASE || !env.OPENAI_API_KEY) {
+  if (!env.THREADS_ACCESS_TOKEN || !env.THREADS_USER_ID || !env.OPENAI_API_KEY) {
     return json(503, { success: false, error: "threads_growth_not_configured", mode });
   }
 
