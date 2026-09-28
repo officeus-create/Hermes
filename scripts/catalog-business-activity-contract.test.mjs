@@ -13,6 +13,7 @@ assert.match(api, /profile_view/);
 assert.match(api, /call_click/);
 assert.match(api, /maps_click/);
 assert.match(api, /website_click/);
+assert.match(api, /booking_click/);
 assert.doesNotMatch(api, /CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|email|phone/);
 assert.match(tracker, /hermes-analytics-consent/);
 assert.match(tracker, /data-catalog-action/);
