@@ -1,5 +1,233 @@
 [
   {
+    "id": "dat-dry-van-capacity-tightens-september-2026",
+    "direction": "logistics",
+    "slug": "dry-van-capacity-tightens-september-2026",
+    "title": "Dry Van Capacity Tightened Again While Spot Rates Held at $2.17 | Hermes",
+    "description": "DAT's September 28, 2026 dry-van update shows load posts rising, equipment posts falling and the load-to-truck ratio increasing even as national spot linehaul held at $2.17 per mile.",
+    "eyebrow": "Logistics Market Update · September 2026",
+    "h1": "Dry van rates held flat, but capacity tightened. What should carriers watch next?",
+    "conciseAnswer": "DAT reported dry-van spot linehaul averaging $2.17 per mile for the week ending September 25, 2026, excluding fuel and unchanged week over week. Load posts rose 1.9% while equipment posts fell 2.9%, lifting the load-to-truck ratio to 11.40 from 10.86. That makes lane-level capacity and reload conditions more useful than a national average alone.",
+    "explanation": [
+      "What changed: DAT's September 28 market update reported national dry-van spot linehaul at $2.17 per mile for the week ending September 25, excluding fuel and unchanged from the prior week. Load posts increased 1.9% week over week while equipment posts fell 2.9%, and the load-to-truck ratio rose to 11.40 from 10.86. DAT also reported the national linehaul rate 31.9% above the year-earlier level and 18.5% above its nine-year seasonal average.",
+      "Why it matters: a flat national rate can hide a capacity shift. DAT's regional averages ranged from $2.66 per mile in the Great Lakes to $1.43 in Florida–South Georgia. A carrier, dispatcher or load planner should combine the current origin market, deadhead, destination reload quality, equipment fit, fuel and timing rather than treating $2.17 as a universal booking target.",
+      "What to do: compare each load against the current origin market and the truck's next realistic move. Separate loaded miles from deadhead, verify destination reload depth, and identify whether the rate is strong because of a temporary capacity shortage or because the lane itself is structurally attractive. Use a current market benchmark as negotiation context, not as a guaranteed rate.",
+      "Result: the operating decision becomes more resilient to headline noise. If the truck is leaving a market where equipment is tightening, price the cost of giving up that position and negotiate from route economics. If the destination is weak, discount an attractive loaded RPM for the likely cost of repositioning.",
+      "Then versus now: historical Hermes dispatch and training material treated rate negotiation, deadhead control, route planning and the next reload as connected decisions. Current DAT data does not make old private rates or promises current; it shows why the same decision framework matters when visible truck supply is shrinking while national linehaul remains flat."
+    ],
+    "takeaways": [
+      "DAT reported dry-van spot linehaul at $2.17 per mile for the week ending September 25, unchanged week over week and excluding fuel",
+      "Load posts rose 1.9% while equipment posts fell 2.9%, lifting the load-to-truck ratio to 11.40 from 10.86",
+      "Regional rates remained materially different, so a national average should not be used as a universal lane target",
+      "Evaluate origin capacity, deadhead, destination reload quality, fuel, timing and equipment fit before accepting or countering a load"
+    ],
+    "faq": [
+      {
+        "question": "Did dry-van spot rates rise in DAT's September 28 update?",
+        "answer": "No. DAT reported national dry-van spot linehaul at $2.17 per mile, excluding fuel, unchanged from the prior week."
+      },
+      {
+        "question": "What tightened if the national rate was flat?",
+        "answer": "DAT reported load posts up 1.9% week over week and equipment posts down 2.9%, which increased the load-to-truck ratio to 11.40 from 10.86."
+      },
+      {
+        "question": "Can a carrier use $2.17 per mile as a booking target on every lane?",
+        "answer": "No. It is a national linehaul benchmark, and regional figures varied substantially. Lane economics still depend on origin, destination, deadhead, fuel, timing, equipment and reload conditions."
+      }
+    ],
+    "related": [
+      {
+        "title": "RPM calculator",
+        "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.",
+        "href": "/logistics/resources/rpm-calculator/"
+      },
+      {
+        "title": "Owner-Operator Dispatch Support",
+        "body": "Review the Hermes owner-operator path for lane context, load review and route planning.",
+        "href": "/logistics/owner-operator-dispatch-support/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Continue to the canonical Hermes Logistics direction and carrier resources.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review RPM Calculator",
+      "href": "/logistics/resources/rpm-calculator/"
+    },
+    "secondaryAction": {
+      "label": "Explore Owner-Operator Support",
+      "href": "/logistics/owner-operator-dispatch-support/"
+    },
+    "sourceLabel": "DAT Freight & Analytics — Dry Van Report",
+    "sourceUrl": "https://www.dat.com/blog/dry-van-report-falling-tonnage-tighter-market-as-the-supply-story-holds",
+    "sourcePublishedAt": "2026-09-28",
+    "datePublished": "2026-09-29",
+    "dateModified": "2026-09-29",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "dry van spot rates",
+      "dry van capacity 2026",
+      "load to truck ratio",
+      "carrier rate negotiation",
+      "truckload market update",
+      "deadhead planning",
+      "load board market"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "DAT dry-van market update for week ending September 25, 2026",
+        "use": "primary",
+        "url": "https://www.dat.com/blog/dry-van-report-falling-tonnage-tighter-market-as-the-supply-story-holds",
+        "observedAt": "2026-09-29",
+        "eventDate": "2026-09-28",
+        "notes": "Current public source for linehaul, regional rates, load posts, equipment posts and load-to-truck ratio."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized operating patterns around rate negotiation, deadhead control and route planning. No private figures, contacts, loads or old commercial promises are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes operating archive",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical dispatch material linked rate negotiation with deadhead and reload planning; DAT's current capacity data makes that route-level framework relevant without making old private commercial terms current.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.dat.com/blog/dry-van-report-falling-tonnage-tighter-market-as-the-supply-story-holds"
+    },
+    "publicationScore": {
+      "score": 82,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+17 source authority",
+        "+12 first-party evidence",
+        "+8 historical comparison",
+        "+15 search value",
+        "+10 internal-link fit",
+        "-8 duplicate/topic-overlap risk"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "meta-enterprise-platform-business-agents-september-2026",
+    "direction": "marketing",
+    "slug": "meta-enterprise-platform-business-agents-september-2026",
+    "title": "Meta Launches Enterprise Platform for Business AI Agents | Hermes",
+    "description": "Meta announced Meta Enterprise Platform on September 28, 2026, bringing Muse agent, Meta Business Agent, Muse API and related enterprise AI tooling into a new business platform.",
+    "eyebrow": "Marketing Technology Update · September 2026",
+    "h1": "Meta is building an enterprise AI platform around business agents. What should marketing teams do now?",
+    "conciseAnswer": "Meta announced Meta Enterprise Platform on September 28, 2026, saying the new business initiative will bring technology including Muse agent, Meta Business Agent, Muse API and Muse Code to businesses and developers. The practical response is to map one measurable workflow and its permissions before expanding agent access.",
+    "explanation": [
+      "What changed: Meta announced Meta Enterprise Platform as a new business initiative built around its AI models, agents and infrastructure. Meta says the initial technology stack will include Muse agent, Meta Business Agent, Muse API, Muse Code and additional tools for businesses and developers.",
+      "Why it matters: social marketing is moving closer to agent-assisted operations, where customer questions, content workflows, support and optimization can sit inside the same platform ecosystem. That can reduce execution friction, but it increases the need to know which system owns customer data, which actions an agent can take, and how performance is measured outside the platform.",
+      "What to do: inventory one bounded workflow before adopting a new agent—for example FAQ response, lead qualification handoff or content assistance—and define the source data, permitted actions, human review point and success metric. Keep website, CRM and analytics ownership independent enough that a platform feature can be tested without becoming the only source of business truth.",
+      "Result: the team can evaluate Meta's enterprise AI as infrastructure rather than hype. The target is a shorter measurable workflow with controlled access and attributable outcomes, not simply more automation or more AI-generated content."
+    ],
+    "takeaways": [
+      "Meta announced Meta Enterprise Platform on September 28, 2026",
+      "Meta says the initial stack will include Muse agent, Meta Business Agent, Muse API and Muse Code",
+      "Test one bounded workflow with clear permissions and measurement before expanding agent access"
+    ],
+    "faq": [
+      {
+        "question": "Is Meta Enterprise Platform a replacement for a CRM or website?",
+        "answer": "Meta's announcement describes an enterprise AI platform and agent stack, not a universal replacement for a company's owned website, CRM or analytics systems."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Review the Hermes Marketing direction for organic social, measurement and customer acquisition workflows.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Review Hermes Technology for CRM, automation and AI product workflows.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Technology",
+      "href": "/paths/technology/"
+    },
+    "sourceLabel": "Meta Newsroom — Launching Meta Enterprise Platform",
+    "sourceUrl": "https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/",
+    "sourcePublishedAt": "2026-09-28",
+    "datePublished": "2026-09-29",
+    "dateModified": "2026-09-29",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Meta Enterprise Platform",
+      "Meta Business Agent",
+      "Muse API",
+      "AI marketing operations",
+      "business AI agents"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta Enterprise Platform launch announcement",
+        "use": "primary",
+        "url": "https://about.fb.com/news/2026/09/launching-meta-enterprise-platform/",
+        "observedAt": "2026-09-29",
+        "eventDate": "2026-09-28",
+        "notes": "Primary Meta announcement for platform scope and named agent/API components."
+      }
+    ],
+    "publicationScore": {
+      "score": 72,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+6 first-party operating fit",
+        "+12 search value",
+        "+9 internal-link fit",
+        "+10 product relevance",
+        "-5 platform-announcement uncertainty"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
