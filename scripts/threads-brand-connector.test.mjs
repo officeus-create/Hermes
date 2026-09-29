@@ -41,8 +41,9 @@ assert.deepEqual(keywordScopes, ["threads_basic","threads_keyword_search"]);
 assert.equal(threadsBrandScopes({ THREADS_BRAND_SCOPES: "threads_content_publish bogus" })[0], "threads_basic");
 
 assert.equal(threadsBrandPublishEnabled({ THREADS_OFFICE_TEST_PUBLISH_ENABLED:"true" }, "office_test"), true);
-assert.equal(threadsBrandPublishEnabled({ THREADS_PROGRESSOPRO_PUBLISH_ENABLED:"1" }, "progressopro"), true);
-assert.equal(threadsBrandPublishEnabled({ THREADS_BUSINESS_ACADEMY_PUBLISH_ENABLED:"yes" }, "business_academy"), true);
+assert.equal(threadsBrandPublishEnabled({ THREADS_PROGRESSOPRO_PUBLISH_ENABLED:"1" }, "progressopro"), false);
+assert.equal(threadsBrandPublishEnabled({ THREADS_PROGRESSOPRO_PUBLISH_ENABLED:"1", THREADS_SECONDARY_BRAND_PUBLISH_ENABLED:"true" }, "progressopro"), true);
+assert.equal(threadsBrandPublishEnabled({ THREADS_BUSINESS_ACADEMY_PUBLISH_ENABLED:"yes", THREADS_SECONDARY_BRAND_PUBLISH_ENABLED:"true" }, "business_academy"), true);
 assert.equal(threadsBrandPublishEnabled({ THREADS_OFFICE_TEST_PUBLISH_ENABLED:"true" }, "hermes_logistics"), false);
 
 assert.equal(validateThreadsText("").ok, false);
