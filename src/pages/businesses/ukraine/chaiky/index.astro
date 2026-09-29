@@ -1,0 +1,17 @@
+---
+import InternationalBusinessCollection from "../../../../components/InternationalBusinessCollection.astro";
+import { catalogBusinessConcepts } from "../../../../data/catalog-business-concepts";
+const businesses = catalogBusinessConcepts.filter((business) => business.countrySlug === "ukraine" && business.localitySlug === "chaiky");
+---
+<InternationalBusinessCollection
+  title="Businesses in Chaiky, Kyiv Region | Hermes Catalog"
+  description="Selected public business profiles in Chaiky, Kyiv region: source-bounded local discovery for repair, restaurant and grooming verticals."
+  eyebrow="Hermes Catalog · Ukraine · Chaiky"
+  canonical="https://hermeslogisticsus.com/businesses/ukraine/chaiky/"
+  businesses={businesses}
+  breadcrumbs={[
+    { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
+    { name: "Ukraine", item: "https://hermeslogisticsus.com/businesses/ukraine/" },
+    { name: "Chaiky", item: "https://hermeslogisticsus.com/businesses/ukraine/chaiky/" }
+  ]}
+/>
