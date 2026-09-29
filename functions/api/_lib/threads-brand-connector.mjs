@@ -53,7 +53,9 @@ export function threadsBrandLabel(brand) {
 export function threadsBrandPublishEnabled(env, brand) {
   const key = normalizeThreadsBrand(brand);
   if (!key) return false;
-  return enabled(env?.[BRAND_CONFIG[key].publishEnv]);
+  if (!enabled(env?.[BRAND_CONFIG[key].publishEnv])) return false;
+  if (key !== "office_test" && !enabled(env?.THREADS_SECONDARY_BRAND_PUBLISH_ENABLED)) return false;
+  return true;
 }
 
 export function threadsBrandScopes(env) {
@@ -83,6 +85,13 @@ export function threadsBrandRuntimeConfig(env) {
   const redirectUri = clean(env?.THREADS_BRAND_REDIRECT_URI, 1024);
   const tokenKey = clean(env?.THREADS_BRAND_TOKEN_KEY, 1024);
   if (!appId || !appSecret || !redirectUri || !tokenKey) return null;
+  try {
+    if (base64ToBytes(tokenKey).byteLength !== 32) return null;
+    const redirect = new URL(redirectUri);
+    if (redirect.protocol !== "https:") return null;
+  } catch {
+    return null;
+  }
   return { appId, appSecret, redirectUri, tokenKey, scopes: threadsBrandScopes(env) };
 }
 
