@@ -4,6 +4,7 @@ import {
   normalizeThreadsBrand,
   publicThreadsConnection,
   threadsAuthorizationUrl,
+  threadsBrandExpectedUsername,
   threadsBrandPublishEnabled,
   threadsBrandRuntimeConfig,
   threadsBrandScopes,
@@ -16,6 +17,9 @@ assert.equal(normalizeThreadsBrand("progressopro"), "progressopro");
 assert.equal(normalizeThreadsBrand("business_academy"), "business_academy");
 assert.equal(normalizeThreadsBrand("hermes_logistics"), null);
 assert.equal(normalizeThreadsBrand("../hermes_logistics"), null);
+assert.equal(threadsBrandExpectedUsername("progressopro"), "progressopro");
+assert.equal(threadsBrandExpectedUsername("office_test"), null);
+assert.equal(threadsBrandExpectedUsername("business_academy"), null);
 
 assert.equal(threadsBrandRuntimeConfig({}), null);
 const configEnv = {
