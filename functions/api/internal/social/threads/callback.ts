@@ -45,10 +45,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return redirect(request, brand, "owner_context_mismatch");
   }
 
-  const exchange = await exchangeThreadsAuthorizationCode(env, code);
+  const exchange: any = await exchangeThreadsAuthorizationCode(env, code);
   if (!exchange.ok) return redirect(request, brand, exchange.error_class || "authorization_exchange_failed");
 
-  const profile = await fetchThreadsProfile(exchange.payload.access_token, exchange.user_id);
+  const profile: any = await fetchThreadsProfile(exchange.payload.access_token, exchange.user_id);
   if (!profile.ok) return redirect(request, brand, profile.error_class || "profile_readback_failed");
   if (String(profile.profile.id) !== String(exchange.user_id)) {
     return redirect(request, brand, "profile_identity_mismatch");
