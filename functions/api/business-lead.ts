@@ -1,6 +1,6 @@
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
-import { saveCatalogBusinessInquiry, markCatalogBusinessInquiryInternalDelivery } from "./_lib/catalog-business-inquiries.mjs";
+import { saveCatalogBusinessInquiry, markCatalogBusinessInquiryInternalDelivery, markCatalogBusinessInquiryOwnerDelivery } from "./_lib/catalog-business-inquiries.mjs";
 
 type KvNamespace = {
   get(key: string): Promise<string | null>;
@@ -65,6 +65,7 @@ type BusinessLeadInput = {
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
 const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
+const ACCOUNT_EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send-account";
 const MAX_BODY_BYTES = 16_000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
@@ -198,6 +199,51 @@ async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, cata
   return { linked: false, trusted: false, businessName: "" };
 }
 
+async function resolveCatalogOwnerEmail(db: any, ownerSpecialistId: string) {
+  if (!ownerSpecialistId) return "";
+  const row = await db.prepare(`
+    SELECT s.email, s.role, r.catalog_email_notifications_opt_in
+    FROM specialists s
+    JOIN repair_shops r ON r.owner_specialist_id = s.id
+    WHERE s.id = ?
+    LIMIT 1
+  `).bind(ownerSpecialistId).first();
+  const email = clean(row?.email, 320).toLowerCase();
+  return String(row?.role || "") === "Shop Owner"
+    && Number(row?.catalog_email_notifications_opt_in || 0) === 1
+    && isEmail(email)
+    ? email
+    : "";
+}
+
+async function deliverCatalogOwnerInquiry(env: Env, requestId: string, recipientEmail: string, text: string) {
+  if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN || !recipientEmail) return false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT_MS);
+  try {
+    const response = await env.LEAD_EMAIL_SERVICE.fetch(ACCOUNT_EMAIL_SERVICE_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.LEAD_SERVICE_TOKEN}`,
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+      body: JSON.stringify({
+        request_id: `${requestId}_owner`.slice(0, 80),
+        subject: "[HERMES CATALOG] [CUSTOMER INQUIRY]",
+        recipient_email: recipientEmail,
+        text,
+      }),
+      signal: controller.signal,
+    });
+    return response.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 const getServices = (value: unknown) => {
   if (!Array.isArray(value)) return [];
   const services = value
@@ -318,7 +364,7 @@ export async function onRequestPost({ request, env }: Context) {
 
   const requestKey = `business-lead:id:${await hash(requestId)}`;
   const alreadyDelivered = await env.LEAD_LIMITS.get(requestKey);
-  let catalogRecord: { linked: boolean } | null = null;
+  let catalogRecord: { linked: boolean; ownerEmail: string } | null = null;
   if (catalogBusinessRequest) {
     if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "catalog_crm_not_configured" });
     try {
@@ -329,6 +375,7 @@ export async function onRequestPost({ request, env }: Context) {
       }));
       const createdAt = new Date().toISOString();
       const retentionUntil = new Date(Date.now() + CATALOG_INQUIRY_RETENTION_MS).toISOString();
+      const ownerEmail = repairShop.linked ? await resolveCatalogOwnerEmail(env.DB, repairShop.ownerSpecialistId) : "";
       const saved = await saveCatalogBusinessInquiry(env.DB, {
         requestId,
         payloadHash,
@@ -348,11 +395,12 @@ export async function onRequestPost({ request, env }: Context) {
         message,
         services,
         attribution,
+        ownerDeliveryStatus: ownerEmail ? "pending" : "skipped",
         retentionUntil,
         createdAt,
       });
       if (saved.conflict) return json(allowedOrigin, 409, { success: false, error: "request_id_payload_conflict" });
-      catalogRecord = { linked: Boolean(repairShop.linked) };
+      catalogRecord = { linked: Boolean(repairShop.linked), ownerEmail };
     } catch (error) {
       console.error("catalog_inquiry_persist_failed", { request_id: requestId, error: error instanceof Error ? error.message : "unknown_error" });
       return json(allowedOrigin, 503, { success: false, error: "catalog_crm_temporarily_unavailable" });
@@ -447,6 +495,27 @@ export async function onRequestPost({ request, env }: Context) {
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
       ...(catalogRecord && env.DB ? [markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "delivered")] : []),
     ]);
+
+    if (catalogRecord?.ownerEmail && env.DB) {
+      const ownerText = [
+        "New customer inquiry from your Hermes Catalog profile",
+        "-----------------------------------------------------",
+        `Business: ${company}`,
+        `Customer: ${name}`,
+        `Email: ${email}`,
+        `Phone: ${phone || "not provided"}`,
+        `Preferred contact time: ${preferredContactTime}`,
+        `Requested services: ${services.join(", ")}`,
+        "",
+        message,
+        "",
+        `Catalog profile: ${normalizeCatalogProfilePath(catalogProfile) || catalogProfile}`,
+        `Hermes request ID: ${requestId}`,
+        "This message was sent because Catalog email notifications were explicitly enabled in the authenticated shop workspace.",
+      ].join("\n").slice(0, 12_000);
+      const ownerDelivered = await deliverCatalogOwnerInquiry(env, requestId, catalogRecord.ownerEmail, ownerText);
+      await markCatalogBusinessInquiryOwnerDelivery(env.DB, requestId, ownerDelivered ? "delivered" : "failed").catch(() => undefined);
+    }
 
     return json(allowedOrigin, 200, {
       success: true,
