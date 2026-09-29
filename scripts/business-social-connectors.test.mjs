@@ -71,9 +71,12 @@ const threadsCallback = await readFile(new URL("../functions/api/internal/social
 const component = await readFile(new URL("../src/components/BusinessSocialConnectionsWorkspace.astro", import.meta.url), "utf8");
 const repairRoute = await readFile(new URL("../src/pages/services/hermes-connect/repair-shops/social.astro", import.meta.url), "utf8");
 const dealerRoute = await readFile(new URL("../src/pages/services/hermes-connect/dealers/social.astro", import.meta.url), "utf8");
+const beautyRoute = await readFile(new URL("../src/pages/services/hermes-connect/beauty/workspace/social.astro", import.meta.url), "utf8");
+const beautyWorkspace = await readFile(new URL("../src/pages/services/hermes-connect/beauty/workspace/index.astro", import.meta.url), "utf8");
 const repairNav = await readFile(new URL("../src/components/RepairShopOwnerNavEnhancer.astro", import.meta.url), "utf8");
 const repairSettings = await readFile(new URL("../src/pages/services/hermes-connect/repair-shops/settings.astro", import.meta.url), "utf8");
 const dealerWorkspace = await readFile(new URL("../src/pages/services/hermes-connect/dealers/workspace/index.astro", import.meta.url), "utf8");
+const dealerCrm = await readFile(new URL("../src/pages/services/hermes-connect/dealers/workspace/crm.astro", import.meta.url), "utf8");
 const releaseDelta = await readFile(new URL("../docs/release-manifest-deltas/2026-09-30-business-social-connectors.json", import.meta.url), "utf8");
 
 assert.match(core, /AES-GCM/);
@@ -88,6 +91,8 @@ assert.match(core, /media_publish/);
 assert.match(core, /pageId}\/feed/);
 assert.match(core, /publishThreadsText/);
 assert.match(core, /COALESCE\(excluded\.token_ciphertext/);
+assert.match(core, /getOwnedBeautySalon/);
+assert.match(core, /beauty_salon:/);
 
 for (const source of [connections,start,callback,select,disconnect,publish]) {
   assert.match(source, /getAuthenticatedSpecialist/);
@@ -100,6 +105,8 @@ assert.match(publish, /idempotency_key/);
 assert.match(publish, /provider_outcome_unknown/);
 assert.match(threadsCallback, /consumeBusinessSocialOAuthState/);
 assert.match(threadsCallback, /connectBusinessThreadsFromCode/);
+assert.match(threadsCallback, /beauty\/workspace\/social/);
+assert.match(callback, /beauty\/workspace\/social/);
 
 assert.match(component, /Facebook/);
 assert.match(component, /Instagram/);
@@ -110,13 +117,21 @@ assert.match(component, /canonical Hermes Social Publisher/);
 assert.doesNotMatch(component, /setInterval\(/);
 assert.match(repairRoute, /noindex,nofollow,noarchive/);
 assert.match(dealerRoute, /noindex,nofollow,noarchive/);
+assert.match(beautyRoute, /noindex,nofollow,noarchive/);
+assert.match(beautyRoute, /vertical="beauty_salon"/);
 assert.match(repairNav, /\$\{repairShopRoot\}\/social/);
 assert.match(repairNav, /repair-shops\/social\//);
 assert.doesNotMatch(repairNav, /api\/internal\/social\/threads\/connections/);
 assert.match(repairSettings, /repair-shops\/social\//);
+assert.match(beautyWorkspace, /beauty\/workspace\/social\//);
+assert.match(beautyWorkspace, /Open Social Media/);
 assert.match(dealerWorkspace, /dealers\/social\/\?provider=/);
 assert.doesNotMatch(dealerWorkspace, /data-prepare-provider/);
+assert.match(dealerCrm, /dealers\/social\//);
+assert.match(dealerCrm, /Social Media/);
 assert.match(releaseDelta, /repair-shops\/social/);
 assert.match(releaseDelta, /dealers\/social/);
+assert.match(releaseDelta, /beauty\/workspace\/social/);
+assert.match(releaseDelta, /"route_count_added": 3/);
 
 console.log("business social connectors contract: PASS");
