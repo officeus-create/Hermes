@@ -6,7 +6,7 @@ import DirectionProductNav from "../../../../components/DirectionProductNav.astr
 import { catalogBusinessConcepts } from "../../../../data/catalog-business-concepts";
 const businesses=catalogBusinessConcepts.filter((business)=>business.countrySlug==="ukraine"&&business.localitySlug==="chaiky");
 const url="https://hermeslogisticsus.com/businesses/ukraine/chaiky/";
-const schema=[{"@context":"https://schema.org","@type":"CollectionPage",name:"Businesses in Chaiky | Hermes Catalog",url,mainEntity:{"@type":"ItemList",itemListElement:businesses.map((business,index)=>({"@type":"ListItem",position:index+1,name:business.name,url:`${url}${business.slug}/`}))}}];
+const schema=[{"@context":"https://schema.org","@type":"CollectionPage",name:"Businesses in Chaiky | Hermes Catalog",url,mainEntity:{"@type":"ItemList",itemListElement:businesses.map((business,index)=>({"@type":"ListItem",position:index+1,name:business.name,url:`${url}${business.slug}/`}))}},{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},{"@type":"ListItem",position:2,name:"International",item:"https://hermeslogisticsus.com/businesses/international/"},{"@type":"ListItem",position:3,name:"Ukraine",item:"https://hermeslogisticsus.com/businesses/ukraine/"},{"@type":"ListItem",position:4,name:"Чайки",item:url}]}];
 ---
 <BaseLayout title="Businesses in Чайки | Hermes Catalog" description="Evidence-backed business profiles in Чайки, Kyiv region: retail, restaurant and barber verticals in the secondary international Hermes Catalog." schema={schema}>
   <SiteHeader theme="light" activePath="/businesses/" /><DirectionProductNav direction="catalog" theme="light" />
