@@ -118,6 +118,26 @@ assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG]");
 assert.equal(emailMessages.at(-1).to, "officeus@hermeslogisticsus.com");
 emailMessages.length = catalogEmailCountBefore;
 
+const ownerCatalogEmailCountBefore = emailMessages.length;
+const ownerCatalogWorkerResponse = await leadEmailWorker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${serviceToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_id: "catalog_owner_1296_12345",
+    subject: "[HERMES CATALOG] [CUSTOMER INQUIRY]",
+    recipient_email: "verified-shop-owner@example.com",
+    text: "A verified, opted-in Hermes Connect shop owner receives this bounded Catalog inquiry notification from the authenticated internal account-mail path only.",
+  }),
+}), workerEnv);
+assert.equal(ownerCatalogWorkerResponse.status, 202);
+assert.equal(emailMessages.length, ownerCatalogEmailCountBefore + 1);
+assert.equal(emailMessages.at(-1).to, "verified-shop-owner@example.com");
+assert.equal(emailMessages.at(-1).subject, "[HERMES CATALOG] [CUSTOMER INQUIRY]");
+emailMessages.length = ownerCatalogEmailCountBefore;
+
 const validPayload = {
   request_id: "release_test_12345",
   lead_type: "posted_load",
