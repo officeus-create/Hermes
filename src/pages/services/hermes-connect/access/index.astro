@@ -1,0 +1,116 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+---
+<BaseLayout
+  title="Hermes Account Access | Hermes Connect"
+  description="Sign in to your shared Hermes identity and open the workspaces available to your account."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" theme="light" />
+  <main id="main-content" class="access-page">
+    <div class="access-shell">
+      <section class="access-copy">
+        <p class="eyebrow">Hermes Connect · Shared identity</p>
+        <h1>One account across Hermes.</h1>
+        <p>Sign in once, then open the workspaces your account is authorized to use. Repair Shop, Academy, Beauty, Load Board and internal capabilities remain permission-gated.</p>
+        <ul>
+          <li>No second password store per product.</li>
+          <li>No workspace is exposed unless the backend authorizes it.</li>
+          <li>Business activation and public Catalog claim state remain separate from account login.</li>
+        </ul>
+      </section>
+
+      <section class="access-card" aria-labelledby="access-title">
+        <div data-access-loading>
+          <p class="status">Secure session</p>
+          <h2 id="access-title">Checking your Hermes account…</h2>
+        </div>
+
+        <div data-access-active hidden>
+          <p class="status success">Session active</p>
+          <h2>Welcome, <span data-access-name>Hermes user</span>.</h2>
+          <p data-access-email class="muted"></p>
+          <div class="actions">
+            <a class="primary" href="/services/hermes-connect/">Open Hermes Connect</a>
+            <button type="button" data-access-logout>Log out</button>
+          </div>
+        </div>
+
+        <form data-access-form hidden>
+          <p class="status">Account access</p>
+          <h2>Sign in</h2>
+          <p class="muted">Use the email and password attached to your Hermes identity.</p>
+          <p class="alert" data-access-alert role="status"></p>
+          <label>Email<input name="email" type="email" autocomplete="username" required /></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
+          <button class="primary" type="submit">Secure login</button>
+          <div class="secondary-actions">
+            <a href="/services/hermes-connect/repair-shops/auth/?mode=register">Register a Repair Shop</a>
+            <a href="/services/hermes-connect/academy/auth/?mode=register">Create an Academy learner account</a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const loading = document.querySelector<HTMLElement>("[data-access-loading]");
+  const active = document.querySelector<HTMLElement>("[data-access-active]");
+  const form = document.querySelector<HTMLFormElement>("[data-access-form]");
+  const alert = document.querySelector<HTMLElement>("[data-access-alert]");
+  const show = (target: HTMLElement | null) => {
+    [loading, active, form].forEach((node) => { if (node) node.hidden = node !== target; });
+  };
+  const check = async () => {
+    show(loading);
+    try {
+      const response = await fetch("/api/auth/me", { credentials: "same-origin" });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && data?.success && data?.specialist) {
+        document.querySelectorAll<HTMLElement>("[data-access-name]").forEach((node) => { node.textContent = data.specialist.name || "Hermes user"; });
+        document.querySelectorAll<HTMLElement>("[data-access-email]").forEach((node) => { node.textContent = data.specialist.email || ""; });
+        show(active);
+        return;
+      }
+    } catch {}
+    show(form);
+  };
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (alert) alert.textContent = "";
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      const values = new FormData(form);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.get("email"), password: values.get("password") })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data?.success) throw new Error("We could not sign you in. Check your details and try again.");
+      window.location.assign("/services/hermes-connect/");
+    } catch (error) {
+      if (alert) alert.textContent = error instanceof Error ? error.message : "Login failed.";
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+  document.querySelector<HTMLElement>("[data-access-logout]")?.addEventListener("click", async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
+    await check();
+  });
+  check();
+</script>
+
+<style>
+  .access-page{min-height:100vh;padding:132px 24px 82px;background:#f4f6f8;color:#152033}.access-shell{width:min(1050px,100%);margin:auto;display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:start}
+  .access-copy{padding:28px 0}.eyebrow,.status{margin:0 0 10px;color:#6d56d9;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.access-copy h1{max-width:620px;margin:0;font-size:clamp(48px,7vw,82px);line-height:.95;letter-spacing:-.055em}.access-copy>p{max-width:620px;color:#617087;line-height:1.7;font-size:17px}.access-copy ul{padding-left:20px;color:#53657a;line-height:1.8}
+  .access-card{padding:28px;border:1px solid #dce4ed;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(24,40,68,.08)}.access-card h2{margin:0 0 10px;font-size:30px}.muted{color:#68778a;line-height:1.6}.status.success{color:#16815f}.access-card form{display:grid;gap:14px}.access-card label{display:grid;gap:6px;font-size:12px;font-weight:800}.access-card input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #cfd9e4;border-radius:10px;font:inherit}.actions,.secondary-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.access-card button,.secondary-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:800}.primary,.access-card button.primary{border:1px solid #151b27;background:#151b27;color:#fff}.access-card button:not(.primary),.secondary-actions a{border:1px solid #cfd9e4;background:#fff;color:#244c73}.secondary-actions{padding-top:12px;border-top:1px solid #edf1f5}.secondary-actions a{font-size:12px}.alert{min-height:1.4em;margin:0;color:#a33b3b;font-size:12px}
+  @media(max-width:800px){.access-page{padding:105px 16px 60px}.access-shell{grid-template-columns:1fr}.access-copy h1{font-size:clamp(44px,13vw,66px)}}
+</style>
