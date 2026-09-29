@@ -13,15 +13,17 @@ import SiteHeader from "../../components/SiteHeader.astro";
       <header class="hero">
         <p class="eyebrow">Hermes Internal · Owner only</p>
         <h1>Site traffic</h1>
-        <p class="lede">Privacy-safe, consented first-party page views. Private routes, query strings, PII and automated browser traffic are excluded.</p>
+        <p class="lede">Privacy-safe, consented first-party traffic. Page views and browser-session starts are counted without storing visitor identity, IP address, query strings, PII, or automated browser traffic.</p>
         <p id="traffic-status" class="status" role="status">Loading current traffic…</p>
       </header>
 
       <section class="metrics" aria-label="Traffic summary">
-        <article class="metric"><span>Today</span><strong id="metric-today">—</strong></article>
-        <article class="metric"><span>Last 7 days</span><strong id="metric-7d">—</strong></article>
-        <article class="metric"><span>Last 28 days</span><strong id="metric-28d">—</strong></article>
-        <article class="metric"><span>Since counter launch</span><strong id="metric-total">—</strong></article>
+        <article class="metric"><span>Page views · today</span><strong id="metric-today">—</strong></article>
+        <article class="metric"><span>Page views · 7 days</span><strong id="metric-7d">—</strong></article>
+        <article class="metric"><span>Page views · 28 days</span><strong id="metric-28d">—</strong></article>
+        <article class="metric"><span>Browser sessions · 28 days</span><strong id="metric-sessions-28d">—</strong></article>
+        <article class="metric"><span>Browser sessions · today</span><strong id="metric-sessions-today">—</strong></article>
+        <article class="metric"><span>Page views · all time</span><strong id="metric-total">—</strong></article>
       </section>
 
       <section class="panel">
@@ -35,7 +37,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
       <section class="panel">
         <p class="eyebrow">Measurement contract</p>
         <h2>What this counter means</h2>
-        <p class="muted">This is a first-party operational counter, not a replacement for GA4, Search Console or Cloudflare analytics. It records only aggregate page-view counts after analytics consent. It stores no visitor identity, IP address, email, phone, referrer, query string or form value.</p>
+        <p class="muted">This is a first-party operational counter, not a replacement for GA4, Search Console or Cloudflare analytics. “Browser sessions” means consented session starts in the browser and must not be read as unique people. Real Users / Engaged Sessions remain GA4 metrics. The first-party layer stores no visitor identity, IP address, email, phone, referrer, query string or form value.</p>
       </section>
     </div>
   </main>
@@ -48,11 +50,14 @@ import SiteHeader from "../../components/SiteHeader.astro";
         today: document.getElementById("metric-today"),
         last_7d: document.getElementById("metric-7d"),
         last_28d: document.getElementById("metric-28d"),
+        sessions_28d: document.getElementById("metric-sessions-28d"),
+        sessions_today: document.getElementById("metric-sessions-today"),
         all_time: document.getElementById("metric-total")
       };
       const names = {
         home: "Homepage",
-        catalog: "Catalog",
+        catalog: "U.S. Catalog",
+        catalog_international: "International Catalog / SEO-GEO discovery",
         catalog_crm_profile: "CRM-synced Catalog profiles",
         repair_shop_booking: "Repair Shop booking",
         repair_shop_public: "Repair Shop public pages",
@@ -84,7 +89,9 @@ import SiteHeader from "../../components/SiteHeader.astro";
           const label = document.createElement("span");
           label.textContent = names[group.route_group] || group.route_group;
           const value = document.createElement("strong");
-          value.textContent = fmt.format(Number(group.page_views || 0));
+          const pageViews = fmt.format(Number(group.page_views || 0));
+          const sessions = fmt.format(Number(group.sessions || 0));
+          value.textContent = `${pageViews} views · ${sessions} sessions`;
           row.append(label, value);
           return row;
         }));
@@ -114,7 +121,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
     .eyebrow{margin:0 0 8px;color:#2672b1;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
     h1{margin:0;font-size:clamp(40px,7vw,72px);letter-spacing:-.045em;line-height:1}h2{margin:4px 0 12px;font-size:26px}
     .lede,.muted{color:#61748a;line-height:1.65}.lede{max-width:760px;margin:18px 0 0}.status{margin:18px 0 0;font-weight:750;color:#24639b}.status.error{color:#9c3434}
-    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}.metric,.panel{border:1px solid #dce5ef;border-radius:18px;background:#fff}
+    .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}.metric,.panel{border:1px solid #dce5ef;border-radius:18px;background:#fff}
     .metric{padding:22px}.metric span{display:block;color:#61748a;font-size:12px;font-weight:750}.metric strong{display:block;margin-top:8px;font-size:34px;letter-spacing:-.04em}
     .panel{padding:26px;margin-top:14px}.panel-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.text-link{color:#1767b5;font-weight:750;text-underline-offset:3px}
     .group-list{display:grid;gap:0;margin-top:12px}.group-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-top:1px solid #edf1f5}.group-row span{color:#52677c}.group-row strong{font-variant-numeric:tabular-nums}
