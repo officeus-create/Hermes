@@ -85,7 +85,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }, headers);
   }
 
-  const token = await usableThreadsAccessToken(env.DB, env, brand);
+  const token: any = await usableThreadsAccessToken(env.DB, env, brand);
   if (!token.ok) return jsonResponse(409, { success: false, error: token.error_class }, headers);
 
   const fingerprint = await threadsTextFingerprint(validated.text);
@@ -97,7 +97,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     VALUES (?,?,'AUTHORED_POST',?,?,'publishing',NULL,NULL,NULL,NULL,NULL,?,?,?,NULL)`)
     .bind(id, brand, idempotencyKey, fingerprint, String(owner.specialist.id), now, now).run();
 
-  const published = await publishThreadsText(
+  const published: any = await publishThreadsText(
     token.access_token,
     String(token.connection.threads_user_id || ""),
     validated.text,
@@ -124,7 +124,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     SET provider_media_id=?,status='published_readback_pending',updated_at=? WHERE id=?`)
     .bind(published.media_id, new Date().toISOString(), id).run();
 
-  const readback = await readThreadsMedia(token.access_token, published.media_id);
+  const readback: any = await readThreadsMedia(token.access_token, published.media_id);
   if (!readback.ok) {
     await env.DB.prepare(`UPDATE hermes_social_threads_publications
       SET last_error_class=?,updated_at=? WHERE id=?`)
