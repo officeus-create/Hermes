@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("global header separates four primary directions from secondary discovery links", async ({ page }) => {
+test("global header separates four primary directions from secondary discovery links", async ({ page, isMobile }) => {
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill({
     status: 401,
     contentType: "application/json",
@@ -24,12 +24,19 @@ test("global header separates four primary directions from secondary discovery l
     "catalog",
   ]);
 
-  const signIn = page.locator('[data-hermes-sign-in]').first();
-  await expect(signIn).toBeVisible();
-  await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/access/");
+  if (isMobile) {
+    await page.locator("[data-menu-button]").click();
+    const signIn = page.locator('#mobile-menu [data-hermes-sign-in]');
+    await expect(signIn).toBeVisible();
+    await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/access/");
+  } else {
+    const signIn = page.locator('.header-actions > [data-hermes-sign-in]');
+    await expect(signIn).toBeVisible();
+    await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/access/");
+  }
 });
 
-test("authorized account menu replaces the public sign-in fallback", async ({ page }) => {
+test("authorized account menu replaces the public sign-in fallback", async ({ page, isMobile }) => {
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
@@ -51,9 +58,17 @@ test("authorized account menu replaces the public sign-in fallback", async ({ pa
   }));
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  const account = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
-  await expect(account).toBeVisible();
-  await expect(page.locator('header [data-hermes-sign-in]')).toBeHidden();
+
+  if (isMobile) {
+    await page.locator("[data-menu-button]").click();
+    const portfolio = page.locator("#mobile-menu .hc-mobile-account-panel [data-hc-account-switcher]");
+    await expect(portfolio).toBeVisible();
+    await expect(page.locator('#mobile-menu [data-hermes-sign-in]')).toBeHidden();
+  } else {
+    const account = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
+    await expect(account).toBeVisible();
+    await expect(page.locator('.header-actions > [data-hermes-sign-in]')).toBeHidden();
+  }
 });
 
 test("shared Hermes account access is noindex and uses the canonical auth service", async ({ page }) => {
