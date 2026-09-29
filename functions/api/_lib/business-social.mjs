@@ -1,5 +1,6 @@
 import { ensureRepairShopProfileSchema } from "./repair-shop-schema.mjs";
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
+import { getOwnedBeautySalon } from "./beauty-salon-context.mjs";
 import { getOwnedHermesCompany } from "./load-board-market-posts.mjs";
 import { cleanConnectionText, upsertCompanyConnection } from "./company-connections.mjs";
 import {
@@ -192,6 +193,10 @@ async function findHermesCompany(db, ownerId) {
   return getOwnedHermesCompany(db, String(ownerId));
 }
 
+async function findBeautySalon(db, ownerId) {
+  return getOwnedBeautySalon(db, String(ownerId));
+}
+
 export async function resolveOwnedSocialBusiness(db, ownerId, preferredVertical = "") {
   const preferred = clean(preferredVertical, 48).toLowerCase();
   const owner = String(ownerId || "");
@@ -223,6 +228,19 @@ export async function resolveOwnedSocialBusiness(db, ownerId, preferredVertical 
     };
   }
 
+  if (preferred === "beauty_salon" || preferred === "beauty") {
+    const salon = await findBeautySalon(db, owner);
+    if (!salon) return null;
+    return {
+      business_key: `beauty_salon:${salon.id}`,
+      business_id: String(salon.id),
+      vertical_key: "beauty_salon",
+      business_name: String(salon.name || "Beauty Salon"),
+      city: String(salon.city || ""),
+      state: String(salon.region || ""),
+    };
+  }
+
   const shop = await findRepairShop(db, owner);
   if (shop) {
     return {
@@ -232,6 +250,18 @@ export async function resolveOwnedSocialBusiness(db, ownerId, preferredVertical 
       business_name: String(shop.name || "Repair Shop"),
       city: String(shop.city || ""),
       state: String(shop.state || ""),
+    };
+  }
+
+  const salon = await findBeautySalon(db, owner);
+  if (salon) {
+    return {
+      business_key: `beauty_salon:${salon.id}`,
+      business_id: String(salon.id),
+      vertical_key: "beauty_salon",
+      business_name: String(salon.name || "Beauty Salon"),
+      city: String(salon.city || ""),
+      state: String(salon.region || ""),
     };
   }
 
