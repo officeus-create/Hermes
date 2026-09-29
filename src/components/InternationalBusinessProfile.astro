@@ -23,13 +23,12 @@ const schema = [
     telephone:business.phone,
     ...(business.website ? { sameAs:[business.website, ...business.channels.map((x)=>x.url)] } : { sameAs:business.channels.map((x)=>x.url) }),
     address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,postalCode:business.postalCode,addressCountry:business.countryCode},
-    openingHours:business.hours,
+    ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
   {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[
     {"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},
     {"@type":"ListItem",position:2,name:"International",item:"https://hermeslogisticsus.com/businesses/#international-businesses"},
-    {"@type":"ListItem",position:3,name:business.locality,item:`https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/`},
-    {"@type":"ListItem",position:4,name:business.name,item:profileUrl}
+    {"@type":"ListItem",position:3,name:business.name,item:profileUrl}
   ]}
 ];
 ---
