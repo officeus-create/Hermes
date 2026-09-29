@@ -25,50 +25,105 @@ const json = (status: number, payload: Record<string, unknown>) =>
 const clean = (value: unknown, max = 1000) => normalizeThreadsText(value, max);
 
 const forbiddenClaimPattern =
-  /\b(?:guaranteed|guarantee|#1|best in the world|millions? of views|thousands? of leads|double your revenue|triple your revenue|rank #?1|instant results|100% free forever)\b/i;
+  /(?:\b(?:guaranteed|guarantee|#1|best in the world|millions? of views|thousands? of leads|double your revenue|triple your revenue|rank #?1|instant results|100% free forever)\b|ضمان|مضمون|الأفضل في العالم|رقم\s*1)/i;
 
 const themes = [
   {
     id: "free-crm-entry",
     brief: "Invite small-business owners to describe their workflow so Hermes can shape a CRM around real processes. Keep the offer low-friction and do not promise that every requested feature will be built.",
-    destination: "/paths/technology/",
+    category: "technology" as const,
   },
   {
     id: "digitize-before-scale",
     brief: "Explain that a business is easier to scale after customer, sales, operations and follow-up processes are visible in one system. Ask a practical question.",
-    destination: "/paths/technology/",
+    category: "technology" as const,
   },
   {
     id: "website-is-not-the-system",
     brief: "Make the point that a website alone does not fix lost leads. Connect website, search visibility, CRM and follow-up without overselling.",
-    destination: "/business-growth/",
+    category: "technology" as const,
   },
   {
     id: "catalog-mini-site",
     brief: "Explain the Hermes model: connected businesses can have a catalog profile / mini presence that can become another discovery and inquiry surface. Avoid ranking guarantees.",
-    destination: "/businesses/",
+    category: "technology" as const,
   },
   {
     id: "manual-work-automation",
     brief: "Ask business owners which repetitive manual task consumes the most staff time, and explain that this is often the best automation starting point.",
-    destination: "/paths/technology/",
+    category: "technology" as const,
   },
   {
     id: "sales-leakage",
     brief: "Discuss the hidden cost of leads arriving from phone, social, email and web forms without one follow-up process. Ask where leads are currently tracked.",
-    destination: "/business-growth/",
+    category: "marketing" as const,
   },
   {
     id: "local-search",
     brief: "Explain in simple terms that local visibility is about being discoverable when nearby customers search for a service. No ranking or lead guarantees.",
-    destination: "/paths/marketing/",
+    category: "marketing" as const,
   },
   {
     id: "six-month-plan",
     brief: "Ask whether the business has a six-month operating/growth plan and understands customer LTV. Position systems work as staged improvement, not a one-shot project.",
-    destination: "/business-growth/",
+    category: "marketing" as const,
   },
 ];
+
+const markets = [
+  {
+    code: "us-nyc",
+    city: "New York",
+    language: "en",
+    languageInstruction: "Write in natural American English.",
+    technology: "/paths/technology/",
+    marketing: "/paths/marketing/",
+  },
+  {
+    code: "es-madrid",
+    city: "Madrid",
+    language: "es",
+    languageInstruction: "Write in natural Spanish used in Spain.",
+    technology: "/es/tecnologia/",
+    marketing: "/es/marketing/",
+  },
+  {
+    code: "it-milano",
+    city: "Milano",
+    language: "it",
+    languageInstruction: "Write in natural Italian.",
+    technology: "/it/tecnologia/",
+    marketing: "/it/marketing/",
+  },
+  {
+    code: "fr-paris",
+    city: "Paris",
+    language: "fr",
+    languageInstruction: "Write in natural French.",
+    technology: "/fr/technologie/",
+    marketing: "/fr/marketing/",
+  },
+  {
+    code: "ua-kyiv",
+    city: "Київ",
+    language: "uk",
+    languageInstruction: "Write in natural Ukrainian.",
+    technology: "/ua/technology/",
+    marketing: "/ua/marketing/",
+  },
+  {
+    code: "ae-dubai",
+    city: "دبي",
+    language: "ar",
+    languageInstruction: "Write in natural Modern Standard Arabic suitable for business owners in Dubai and the UAE.",
+    technology: "/ar/technology/",
+    marketing: "/ar/marketing/",
+  },
+] as const;
+
+function destinationFor(theme: typeof themes[number], market: typeof markets[number]) {
+  return theme.category === "marketing" ? market.marketing : market.technology;
+}
 
 async function ensureSchema(db: any) {
   await db.prepare(`
@@ -100,28 +155,26 @@ async function graphPost(env: Env, path: string, params: Record<string, string>)
   return payload;
 }
 
-function languageInstruction(value: string) {
-  const language = clean(value, 20).toLowerCase();
-  if (language === "ru" || language === "russian") return "Write in natural Russian.";
-  if (language === "es" || language === "spanish") return "Write in natural Spanish.";
-  if (language === "de" || language === "german") return "Write in natural German.";
-  if (language === "it" || language === "italian") return "Write in natural Italian.";
-  if (language === "pt-br" || language === "portuguese") return "Write in natural Brazilian Portuguese.";
-  return "Write in natural American English.";
-}
-
-async function generatePost(env: Env, theme: typeof themes[number], contentId: string) {
-  const trackedUrl = buildTrackedThreadsUrl(theme.destination, contentId);
-  const includeLink = Number(contentId.split("-").pop() || "0") % 4 === 0;
+async function generatePost(
+  env: Env,
+  theme: typeof themes[number],
+  market: typeof markets[number],
+  contentId: string,
+) {
+  const trackedUrl = buildTrackedThreadsUrl(destinationFor(theme, market), contentId);
   const prompt = [
-    "You write organic Threads posts for ProgressoPro / Hermes Technology.",
-    languageInstruction(env.THREADS_CONTENT_LANGUAGE || "en"),
-    "Write ONE post, maximum 430 characters. It must read like a real operator, not an ad bot.",
-    "Use a strong first sentence. Prefer a concrete observation, question, or useful disagreement.",
+    "You write organic sales-oriented Threads posts for ProgressoPro / Hermes Technology.",
+    "This account covers ONLY websites, CRM, business automation, SEO/GEO, local visibility, social media, marketing, sales systems and related IT. Never mention logistics.",
+    market.languageInstruction,
+    "Write ONE post, maximum 500 characters INCLUDING the URL.",
+    `The first line must be exactly: ${market.city}?`,
+    "Then ask whether the business has the capability/problem described by the theme, or whether the owner wants to add/fix it.",
+    "Make the offer concrete and low-pressure: if they want this capability or want the problem solved, they can contact us / read the detailed page.",
+    "End with the exact URL provided below.",
     "Do not fabricate clients, outcomes, revenue, rankings, view counts, case studies, prices, integrations, offices or guarantees.",
-    "Do not use more than 1 emoji. Do not use more than 2 hashtags. Avoid corporate buzzwords.",
-    "If you ask a question, make it specific enough that a business owner can answer.",
-    includeLink ? `End naturally with this exact URL: ${trackedUrl}` : "Do not include a URL in this post.",
+    "Do not claim a local office or local team in the named city.",
+    "Use no more than 1 emoji and no more than 2 hashtags. Avoid generic AI/corporate phrasing.",
+    `Detailed page: ${trackedUrl}`,
     `Theme: ${theme.brief}`,
     "Return only the post text.",
   ].join("\n");
@@ -197,7 +250,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await ensureSchema(env.DB);
   const slot = Math.floor(Date.now() / (3 * 60 * 60 * 1000));
   const theme = await chooseTheme(env.DB, slot);
-  const id = `threads-content-${theme.id}-${slot}`;
+  const market = markets[slot % markets.length];
+  const id = `threads-content-${market.code}-${theme.id}-${slot}`;
 
   const existing = await env.DB.prepare("SELECT status, post_text, provider_post_id FROM threads_growth_content WHERE id = ?").bind(id).first();
   if (existing) {
@@ -213,7 +267,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   let postText = "";
   try {
-    postText = await generatePost(env, theme, id);
+    postText = await generatePost(env, theme, market, id);
   } catch (error) {
     return json(502, { success: false, error: error instanceof Error ? error.message : "generation_failed", id, mode });
   }
@@ -240,7 +294,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     INSERT INTO threads_growth_content (id, theme_id, language, post_text, status, provider_post_id, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
-    id, theme.id, clean(env.THREADS_CONTENT_LANGUAGE || "en", 20), postText, status, providerPostId, now, now
+    id, theme.id, market.language, postText, status, providerPostId, now, now
   ).run();
 
   return json(200, {
@@ -248,6 +302,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     id,
     mode,
     theme: theme.id,
+    market: market.code,
+    city: market.city,
+    language: market.language,
     status,
     provider_post_id: providerPostId,
     post_text: postText,
