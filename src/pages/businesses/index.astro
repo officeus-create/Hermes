@@ -12,6 +12,7 @@ import { academyCountryRegistry, academyLaunchTracks } from "../../data/academy-
 import { usStateDirectoryTiles } from "../../data/us-state-directory-map";
 
 const directoryUrl = "https://hermeslogisticsus.com/businesses/";
+const businessIdentityKey = (name:string, city:string, state:string) => [name,city,state].map((value)=>value.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-")).join("|");
 const stateCounts = new Map<string, number>();
 for (const business of repairShopDirectory) stateCounts.set(business.stateSlug, (stateCounts.get(business.stateSlug) ?? 0) + 1);
 const categoryCounts = [...new Map(repairShopDirectory.map((business) => [business.category, repairShopDirectory.filter((item) => item.category === business.category).length])).entries()];
@@ -49,7 +50,7 @@ const schema = [
           <span>Try:</span>
           {popularTerms.map((term) => <button type="button" data-catalog-query={term}>{term}</button>)}
         </div>
-        <p class="catalog-search-count" data-catalog-count>{repairShopDirectory.length + hermesCatalogOffers.length} searchable entries</p>
+        <p class="catalog-search-count" data-catalog-count data-service-count={hermesCatalogOffers.length}>{repairShopDirectory.length + hermesCatalogOffers.length} searchable entries</p>
       </header>
 
       <HermesPromoRail context="catalog" />
@@ -57,7 +58,7 @@ const schema = [
       <MarketingPackageSelector />
 
       <section class="catalog-overview" aria-label="Hermes Catalog scope">
-        <article><strong>{repairShopDirectory.length}</strong><span>evidence-backed external business profiles</span></article>
+        <article><strong data-business-profile-count>{repairShopDirectory.length}</strong><span>evidence-backed external business profiles</span></article>
         <article><strong>{hermesCatalogOffers.length}</strong><span>Hermes-owned service entries</span></article>
         <article><strong>110</strong><span>Academy country targets in the expansion registry</span></article>
         <article><strong>{priorityGrowthCities.length}</strong><span>priority global growth cities — not office claims</span></article>
@@ -80,11 +81,11 @@ const schema = [
       <section class="catalog-results" aria-labelledby="catalog-results-title">
         <div class="section-heading">
           <div><p class="eyebrow">Live profiles</p><h2 id="catalog-results-title">Businesses you can discover now</h2></div>
-          <p>{repairShopDirectory.length} published business profiles</p>
+          <p><span data-business-profile-count>{repairShopDirectory.length}</span> published business profiles</p>
         </div>
         <div class="business-grid" data-catalog-grid>
           {repairShopDirectory.map((business) => (
-            <article class="business-card" data-catalog-card data-search-text={[business.businessName, business.category, business.city, business.state, business.region, ...business.services, ...business.serviceArea].join(" ").toLowerCase()}>
+            <article class="business-card" data-catalog-card data-business-key={businessIdentityKey(business.businessName,business.city,business.state)} data-search-text={[business.businessName, business.category, business.city, business.state, business.region, ...business.services, ...business.serviceArea].join(" ").toLowerCase()}>
               <div class="business-card__top"><span>{business.category}</span><span>{business.claimState === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
               <h3>{business.businessName}</h3>
               <p>{business.city}, {business.state} · {business.serviceArea[0]}</p>
