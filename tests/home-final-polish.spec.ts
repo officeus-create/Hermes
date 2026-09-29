@@ -20,6 +20,8 @@ test("homepage keeps a restrained four-pillar entrance and shared direction colo
       imageDisplay: rooms.map((room) => getComputedStyle(room.querySelector<HTMLElement>(".home-room-image")!).display),
       topBorders: rooms.map((room) => getComputedStyle(room).borderTopWidth),
       accents: rooms.map((room) => room.style.getPropertyValue("--room-accent")),
+      scriptColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-script em")!).color,
+      noteColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-ink-note")!).color,
       footerBackground: getComputedStyle(contact).backgroundImage,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
@@ -32,6 +34,8 @@ test("homepage keeps a restrained four-pillar entrance and shared direction colo
   expect(polish!.imageDisplay).toEqual(["none", "none", "none", "none"]);
   expect(polish!.topBorders.every((value) => parseFloat(value) >= 6)).toBe(true);
   expect(new Set(polish!.accents).size).toBe(4);
+  expect(polish!.scriptColor).not.toBe("rgba(255, 255, 255, 0.62)");
+  expect(polish!.noteColor).not.toBe("rgba(255, 255, 255, 0.52)");
   expect(polish!.footerBackground).toContain("gradient");
   expect(polish!.overflow).toBe(false);
 });
