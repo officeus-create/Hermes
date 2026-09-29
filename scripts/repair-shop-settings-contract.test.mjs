@@ -99,7 +99,9 @@ assert.match(page, /Google Calendar/);
 assert.match(page, /privacy-minimal free\/busy/);
 assert.match(page, /Needs authorization/);
 assert.match(page, /Нужна авторизация/);
-assert.match(page, /Instagram · Facebook · Threads · LinkedIn · X/);
+assert.match(page, /Facebook · Instagram · Threads/);
+assert.match(page, /\/services\/hermes-connect\/repair-shops\/social\//);
+assert.match(page, /Open Social Media/);
 assert.match(page, /Website & brandbook/);
 assert.match(page, /Vacancy synchronization/);
 assert.doesNotMatch(page, /<select id="shop-timezone"/, "Timezone must not be restricted to a US-only select");
@@ -110,6 +112,8 @@ assert.doesNotMatch(page, /Google Calendar[^\n]{0,200}>Connected</i, "Calendar m
 assert.match(nav, /`\$\{repairShopRoot\}\/settings`/);
 assert.match(nav, /href:withLocale\(`\$\{repairShopRoot\}\/settings\/`\)/);
 assert.match(nav, /active:normalizedPath === `\$\{repairShopRoot\}\/settings`/);
+assert.match(nav, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
+assert.match(nav, /active:normalizedPath === `\$\{repairShopRoot\}\/social`/);
 assert.doesNotMatch(nav, /settings, href:withLocale\(`\$\{repairShopRoot\}\/dashboard\/`, "#profile-title"\)/);
 
 console.log("Repair Shop Company / Team / Schedules contract OK");
