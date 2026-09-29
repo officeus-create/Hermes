@@ -33,7 +33,7 @@ assert.equal(businessSocialProviderConfigured(metaEnv, "facebook"), true);
 assert.equal(businessSocialProviderConfigured(metaEnv, "instagram"), true);
 assert.equal(businessSocialProviderConfigured(metaEnv, "threads"), false);
 assert.equal(businessSocialProviderConfigured(threadsEnv, "threads"), true);
-assert.deepEqual(businessSocialScopes("facebook"), ["pages_show_list","pages_read_engagement","pages_manage_posts"]);
+assert.deepEqual(businessSocialScopes("facebook"), ["pages_show_list","pages_read_engagement","pages_manage_posts","pages_manage_engagement","pages_read_user_engagement"]);
 assert.ok(businessSocialScopes("instagram").includes("instagram_content_publish"));
 assert.ok(businessSocialScopes("threads").includes("threads_content_publish"));
 
