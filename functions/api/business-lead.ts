@@ -158,7 +158,7 @@ async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, cata
     const result = await db.prepare(`
       SELECT id, owner_specialist_id, name, catalog_opt_in
       FROM repair_shops
-      WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)
+      WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))
         AND LOWER(TRIM(city)) = LOWER(TRIM(?))
         AND UPPER(TRIM(state)) = UPPER(TRIM(?))
       LIMIT 2
