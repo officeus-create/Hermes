@@ -1,0 +1,36 @@
+name: Business social connectors contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/_lib/business-social.mjs"
+      - "functions/api/hermes-connect/social/**"
+      - "functions/api/internal/social/threads/callback.ts"
+      - "src/components/BusinessSocialConnectionsWorkspace.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "src/pages/services/hermes-connect/repair-shops/social.astro"
+      - "src/pages/services/hermes-connect/repair-shops/settings.astro"
+      - "src/pages/services/hermes-connect/dealers/social.astro"
+      - "src/pages/services/hermes-connect/dealers/workspace/index.astro"
+      - "scripts/business-social-connectors.test.mjs"
+      - "scripts/threads-brand-connector.test.mjs"
+      - "docs/release-manifest-deltas/2026-09-30-business-social-connectors.json"
+      - "package.json"
+      - ".github/workflows/business-social-connectors-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: node scripts/business-social-connectors.test.mjs
+      - run: node scripts/threads-brand-connector.test.mjs
+      - run: npm run check
