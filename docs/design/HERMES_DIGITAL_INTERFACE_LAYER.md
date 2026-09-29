@@ -167,6 +167,36 @@ Applies to:
 
 These products are the source of the interface language. They may share HDIL grammar — labels, state markers, pearl/ink hierarchy, compact metadata — but should remain functional product interfaces. Do not skin the entire product as a decorative retro terminal.
 
+
+### Website global navigation contract
+
+The Hermes public website must expose a stable visual hierarchy instead of treating every destination as equally important.
+
+**Primary business directions**
+
+1. Logistics — blue `#1E88FF`
+2. Marketing — green `#00C853`
+3. Technology / IT — orange `#FF7A00`
+4. Academy — violet `#7C5CFF`
+
+Use a small vertical color marker beside each direction label in the global header. The same semantic colors are reused by the four homepage direction pillars. The label remains mandatory: color is a reinforcement signal, never the only source of meaning.
+
+**Secondary discovery and product layer**
+
+Hermes Connect, Catalog and Insights remain visibly secondary to the four business directions. They may use restrained micro-markers, separators, or compact product treatment, but must not read as additional business divisions.
+
+**Utility layer**
+
+Language, account/sign-in and contact actions are utilities. Account access must be directly discoverable from the header. An authenticated account portfolio may replace the public Sign in fallback only after backend authorization succeeds.
+
+**Interaction**
+
+- Keep desktop navigation visible.
+- Use the mobile menu only at mobile breakpoints.
+- Prefer small state changes over animated shimmer, large glow, bouncing, or expanding navigation.
+- Preserve strong text contrast and current-location indication.
+- Keep the header readable before JavaScript executes.
+
 ---
 
 ## 4. Standard content archetypes
