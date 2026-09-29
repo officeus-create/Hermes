@@ -120,7 +120,7 @@ assert.match(dealerRoute, /noindex,nofollow,noarchive/);
 assert.match(beautyRoute, /noindex,nofollow,noarchive/);
 assert.match(beautyRoute, /vertical="beauty_salon"/);
 assert.match(repairNav, /\$\{repairShopRoot\}\/social/);
-assert.match(repairNav, /repair-shops\/social\//);
+assert.match(repairNav, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
 assert.doesNotMatch(repairNav, /api\/internal\/social\/threads\/connections/);
 assert.match(repairSettings, /repair-shops\/social\//);
 assert.match(beautyWorkspace, /beauty\/workspace\/social\//);
