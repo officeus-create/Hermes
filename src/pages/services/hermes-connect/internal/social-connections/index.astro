@@ -1,0 +1,267 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+---
+
+<BaseLayout
+  title="Social Connections | Hermes Connect"
+  description="Private Hermes Connect workspace for owner-authorized social provider connections and controlled Office canary publishing."
+  robots="noindex,nofollow,noarchive"
+>
+  <SiteHeader theme="light" activePath="/paths/technology/" />
+  <main id="main-content" class="social-connections" data-internal-social-connections>
+    <section class="hero">
+      <div class="shell">
+        <p class="eyebrow">Hermes Connect · Growth Bridge #1018</p>
+        <h1>Social connections</h1>
+        <p class="lead">Connect brand-owned Threads profiles through owner OAuth, verify the exact profile returned by Meta, then run one bounded Office canary before any secondary brand publishing is enabled. This page is private, noindex, and available only after the canonical HERMES_INTERNAL_OWNER check succeeds.</p>
+        <div class="boundary">
+          <span>Hermes Logistics stays on Windsor</span>
+          <span>Tokens stay encrypted server-side</span>
+          <span>No second scheduler</span>
+          <span>No publish before identity verification</span>
+        </div>
+        <p class="status" data-page-status aria-live="polite">Checking internal owner access…</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Threads provider</p>
+          <h2>Allowed brand lanes</h2>
+          <p>Office is the first canary. ProgressoPro and Hermes Business Academy can be authorized and verified, but secondary publishing stays separately gated.</p>
+        </div>
+        <div class="brand-grid" data-brand-grid>
+          <article class="brand-card" data-brand="office_test">
+            <div class="brand-top"><div><small>Test lane</small><h3>Office Threads Test</h3></div><span data-state>Loading…</span></div>
+            <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
+            <p class="bio" data-bio></p>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
+          </article>
+
+          <article class="brand-card" data-brand="progressopro">
+            <div class="brand-top"><div><small>Marketing lane</small><h3>ProgressoPro</h3></div><span data-state>Loading…</span></div>
+            <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
+            <p class="bio" data-bio></p>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
+          </article>
+
+          <article class="brand-card" data-brand="business_academy">
+            <div class="brand-top"><div><small>Education lane</small><h3>Hermes Business Academy</h3></div><span data-state>Loading…</span></div>
+            <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
+            <p class="bio" data-bio></p>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section canary">
+      <div class="shell canary-grid">
+        <div>
+          <p class="eyebrow">Office only</p>
+          <h2>Controlled text canary</h2>
+          <p>Publishing requires the Office profile to be OAuth-connected, explicitly verified, and enabled by private runtime configuration. The same idempotency key can never create a second post.</p>
+        </div>
+        <form data-canary-form>
+          <label>Text <span data-byte-count>0 / 500 UTF-8 bytes</span><textarea name="text" rows="7" maxlength="500" placeholder="Office connector canary — provider identity and readback test only."></textarea></label>
+          <label>Idempotency key <input name="idempotency_key" value="office-threads-canary-20260929-01" /></label>
+          <button type="submit">Publish Office canary</button>
+          <p data-canary-status role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">Evidence</p><h2>Office publication receipts</h2></div>
+        <button type="button" data-refresh-metrics>Refresh Office receipts</button>
+        <div class="receipts" data-receipts><p>No receipt readback yet.</p></div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Connection = {
+    brand:string; label:string; state:string; threads_user_id:string|null; username:string|null;
+    biography:string|null; identity_verified:boolean; publish_enabled:boolean; granted_scopes:string[];
+  };
+  const status = document.querySelector<HTMLElement>("[data-page-status]");
+  const cards = [...document.querySelectorAll<HTMLElement>("[data-brand]")];
+  const form = document.querySelector<HTMLFormElement>("[data-canary-form]");
+  const canaryStatus = document.querySelector<HTMLElement>("[data-canary-status]");
+  const byteCount = document.querySelector<HTMLElement>("[data-byte-count]");
+  const receipts = document.querySelector<HTMLElement>("[data-receipts]");
+  const refreshMetrics = document.querySelector<HTMLButtonElement>("[data-refresh-metrics]");
+
+  async function api(url:string, options:RequestInit={}) {
+    const response = await fetch(url, {
+      credentials:"same-origin",
+      cache:"no-store",
+      ...options,
+      headers:{ Accept:"application/json", "Content-Type":"application/json", ...(options.headers||{}) },
+    });
+    const payload = await response.json().catch(()=>({}));
+    if (!response.ok) {
+      const error:any = new Error(payload.error || `request_${response.status}`);
+      error.payload = payload;
+      error.status = response.status;
+      throw error;
+    }
+    return payload;
+  }
+
+  function setStatus(message:string, error=false) {
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.error = error ? "true" : "false";
+  }
+
+  function renderConnection(connection:Connection) {
+    const card = cards.find((node)=>node.dataset.brand===connection.brand);
+    if (!card) return;
+    card.querySelector<HTMLElement>("[data-state]")!.textContent = connection.identity_verified ? "Verified" : connection.state.replaceAll("_"," ");
+    card.querySelector<HTMLElement>("[data-username]")!.textContent = connection.username ? `@${connection.username}` : "Not connected";
+    card.querySelector<HTMLElement>("[data-user-id]")!.textContent = connection.threads_user_id || "—";
+    card.querySelector<HTMLElement>("[data-scopes]")!.textContent = connection.granted_scopes?.length ? connection.granted_scopes.join(", ") : "—";
+    card.querySelector<HTMLElement>("[data-publish]")!.textContent = connection.publish_enabled && connection.identity_verified ? "Enabled" : "Off";
+    card.querySelector<HTMLElement>("[data-bio]")!.textContent = connection.biography || "";
+    const verify = card.querySelector<HTMLButtonElement>("[data-verify]");
+    if (verify) verify.disabled = !connection.username || connection.identity_verified;
+    const disconnect = card.querySelector<HTMLButtonElement>("[data-disconnect]");
+    if (disconnect) disconnect.disabled = !connection.username;
+  }
+
+  async function loadConnections() {
+    try {
+      const payload = await api("/api/internal/social/threads/connections");
+      for (const connection of payload.connections || []) renderConnection(connection);
+      setStatus(payload.runtime_configured
+        ? "Internal owner access verified. Threads app configuration is present."
+        : "Internal owner access verified. Threads app configuration is still required.", !payload.runtime_configured);
+    } catch (error:any) {
+      const message = error?.status === 401 ? "Sign in with the authorized Hermes internal owner account."
+        : error?.status === 403 ? "Hermes internal owner capability is required."
+        : "Unable to load social connection state.";
+      setStatus(message, true);
+    }
+  }
+
+  for (const card of cards) {
+    card.querySelector<HTMLButtonElement>("[data-connect]")?.addEventListener("click", async ()=>{
+      const brand = card.dataset.brand || "";
+      try {
+        setStatus(`Preparing ${brand} OAuth…`);
+        const payload = await api("/api/internal/social/threads/start", { method:"POST", body:JSON.stringify({brand}) });
+        window.location.assign(payload.authorization_url);
+      } catch (error:any) {
+        setStatus(error?.payload?.error || "Unable to start Threads OAuth.", true);
+      }
+    });
+    card.querySelector<HTMLButtonElement>("[data-verify]")?.addEventListener("click", async ()=>{
+      const brand = card.dataset.brand || "";
+      const username = (card.querySelector<HTMLElement>("[data-username]")?.textContent || "").replace(/^@/,"").trim();
+      if (!username || username === "Not connected") return;
+      if (!window.confirm(`Verify that @${username} is the exact Threads profile intended for ${brand}?`)) return;
+      try {
+        const payload = await api("/api/internal/social/threads/verify", {
+          method:"POST",
+          body:JSON.stringify({brand, username, confirm:true}),
+        });
+        renderConnection(payload.connection);
+        setStatus(`Verified @${username} for ${brand}.`);
+      } catch (error:any) {
+        setStatus(error?.payload?.error || "Profile verification failed.", true);
+      }
+    });
+    card.querySelector<HTMLButtonElement>("[data-disconnect]")?.addEventListener("click", async ()=>{
+      const brand = card.dataset.brand || "";
+      const username = (card.querySelector<HTMLElement>("[data-username]")?.textContent || "").trim();
+      if (!username || username === "Not connected") return;
+      if (!window.confirm(`Remove the encrypted Hermes-side Threads connection for ${brand} (${username})? Provider authorization in Meta is not revoked by this action.`)) return;
+      try {
+        await api("/api/internal/social/threads/disconnect", {
+          method:"POST",
+          body:JSON.stringify({brand, confirm:true}),
+        });
+        setStatus(`Disconnected ${brand} locally. Revoke provider authorization in Meta separately if required.`);
+        await loadConnections();
+      } catch (error:any) {
+        setStatus(error?.payload?.error || "Local disconnect failed.", true);
+      }
+    });
+  }
+
+  const canaryText = form?.elements.namedItem("text") as HTMLTextAreaElement | null;
+  const countBytes = () => {
+    const bytes = new TextEncoder().encode(canaryText?.value || "").byteLength;
+    if (byteCount) byteCount.textContent = `${bytes} / 500 UTF-8 bytes`;
+  };
+  canaryText?.addEventListener("input", countBytes);
+  countBytes();
+
+  form?.addEventListener("submit", async (event)=>{
+    event.preventDefault();
+    const text = (form.elements.namedItem("text") as HTMLTextAreaElement).value;
+    const idempotency_key = (form.elements.namedItem("idempotency_key") as HTMLInputElement).value;
+    if (!window.confirm("Publish this single Office Threads canary now?")) return;
+    try {
+      if (canaryStatus) canaryStatus.textContent = "Publishing…";
+      const payload = await api("/api/internal/social/threads/publish", {
+        method:"POST",
+        body:JSON.stringify({brand:"office_test",text,idempotency_key}),
+      });
+      if (canaryStatus) canaryStatus.textContent = payload.permalink
+        ? `Published: ${payload.permalink}`
+        : `Published with media ID ${payload.media_id}; readback pending.`;
+      await loadReceipts();
+    } catch (error:any) {
+      if (canaryStatus) canaryStatus.textContent = error?.payload?.error || "Canary publish failed.";
+    }
+  });
+
+  async function loadReceipts() {
+    if (!receipts) return;
+    try {
+      const payload = await api("/api/internal/social/threads/metrics?brand=office_test");
+      const rows = payload.publications || [];
+      receipts.replaceChildren();
+      if (!rows.length) {
+        const p=document.createElement("p"); p.textContent="No Office publication receipts yet."; receipts.append(p); return;
+      }
+      for (const row of rows) {
+        const article=document.createElement("article");
+        const title=document.createElement("strong");
+        title.textContent=`${row.object_type} · ${row.status}`;
+        const meta=document.createElement("small");
+        meta.textContent=`${row.provider_media_id || "no media id"} · ${row.created_at || ""}`;
+        article.append(title,meta);
+        if (row.permalink) {
+          const link=document.createElement("a"); link.href=row.permalink; link.target="_blank"; link.rel="noreferrer"; link.textContent="Open Threads post"; article.append(link);
+        }
+        if (row.metrics) {
+          const metrics=document.createElement("code"); metrics.textContent=JSON.stringify(row.metrics); article.append(metrics);
+        }
+        receipts.append(article);
+      }
+    } catch {
+      receipts.textContent="Receipt readback unavailable.";
+    }
+  }
+  refreshMetrics?.addEventListener("click", loadReceipts);
+
+  const params = new URLSearchParams(location.search);
+  const result = params.get("result");
+  if (result) setStatus(`Threads OAuth result: ${result}. Verify the exact profile before publishing.`, result !== "connected_unverified");
+
+  loadConnections();
+  loadReceipts();
+</script>
+
+<style>
+  .social-connections{background:#f5f7fb;color:#13203b;min-height:100vh}.hero{padding:8.2rem 0 4rem;background:#071038;color:#fff}.hero h1{font-size:clamp(3rem,7vw,6rem);line-height:.95}.lead{max-width:70ch;color:rgba(255,255,255,.78);font-size:1.12rem;line-height:1.7}.boundary{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.2rem}.boundary span{padding:.55rem .75rem;border:1px solid rgba(255,255,255,.25);border-radius:999px}.status{margin-top:1.2rem;color:#bff7d3}.status[data-error="true"]{color:#ffc6cf}.section{padding:4rem 0}.section-heading{max-width:820px}.brand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.brand-card{padding:1.25rem;border:1px solid #dce2ee;border-radius:16px;background:#fff}.brand-top{display:flex;justify-content:space-between;gap:1rem}.brand-top span{font-size:.78rem;font-weight:800}.brand-card dl{display:grid;gap:.55rem;margin:1.2rem 0}.brand-card dl div{display:grid;grid-template-columns:90px 1fr;gap:.65rem}.brand-card dt{color:#6b7487}.brand-card dd{margin:0;overflow-wrap:anywhere}.bio{min-height:2.5rem;color:#5d687d}.actions{display:flex;flex-wrap:wrap;gap:.6rem}.actions button,.canary button,[data-refresh-metrics]{border:1px solid #cbd3e2;border-radius:9px;background:#fff;padding:.7rem .85rem;font:inherit;font-weight:750;cursor:pointer}.actions button:first-child,.canary button{background:#18265c;color:#fff;border-color:#18265c}.actions button:disabled{opacity:.45;cursor:not-allowed}.canary{background:#fff}.canary-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem}.canary form{display:grid;gap:1rem}.canary label{display:grid;gap:.35rem;font-weight:750}.canary label span{font-size:.78rem;color:#687287}.canary textarea,.canary input{width:100%;box-sizing:border-box;border:1px solid #cbd3e2;border-radius:10px;padding:.8rem;font:inherit}.receipts{display:grid;gap:.7rem;margin-top:1rem}.receipts article{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;padding:.9rem 1rem;border:1px solid #dce2ee;border-radius:10px;background:#fff}.receipts small{color:#687287}.receipts code{font-size:.75rem}@media(max-width:900px){.brand-grid,.canary-grid{grid-template-columns:1fr}}
+</style>
