@@ -42,6 +42,7 @@ const isAllowedSubject = (value) =>
   value === CAR_HAULING_SALES_SUBJECT ||
   value === CAR_HAULING_TEST_SUBJECT ||
   value === "[HERMES CONTRACT] [CARRIER ONBOARDING]" ||
+  value === "[HERMES CATALOG] [WEEKLY REPORT INTERNAL]" ||
   /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
   /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|CATALOG|GENERAL)\]$/.test(value);
 const isAccountSubject = (value) =>
