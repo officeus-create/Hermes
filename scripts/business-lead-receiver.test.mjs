@@ -38,6 +38,7 @@ const env = {
     async fetch(input, init) {
       const request = input instanceof Request ? input : new Request(input, init);
       serviceCalls.push({
+        url: request.url,
         authorization: request.headers.get("Authorization"),
         payload: await request.json(),
       });
@@ -231,7 +232,7 @@ assert.equal(matchedBody.crm_saved, true);
 assert.equal(matchedBody.crm_linked, true);
 assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
 const matchedInquiry = await db.prepare(`
-  SELECT shop_id, owner_specialist_id, business_name, contact_phone, internal_delivery_status
+  SELECT shop_id, owner_specialist_id, business_name, contact_phone, internal_delivery_status, owner_delivery_status
   FROM catalog_business_inquiries
   WHERE request_id = ?
 `).bind("catalog_smart_bubble_12345").first();
@@ -240,6 +241,33 @@ assert.equal(matchedInquiry.owner_specialist_id, "owner-smart-bubble");
 assert.equal(matchedInquiry.business_name, "Smart Bubble Mobile Auto/Body Repair Shop");
 assert.equal(matchedInquiry.contact_phone, "+1 833 501 7771");
 assert.equal(matchedInquiry.internal_delivery_status, "delivered");
+assert.equal(matchedInquiry.owner_delivery_status, "skipped", "Manager-prepared/unconfirmed accounts must not receive automatic Catalog mail.");
+
+await db.prepare("CREATE TABLE specialists (id TEXT PRIMARY KEY, email TEXT NOT NULL, role TEXT NOT NULL)").run();
+await db.prepare("INSERT INTO specialists (id,email,role) VALUES (?,?,?)")
+  .bind("owner-smart-bubble", "verified-owner@example.com", "Shop Owner").run();
+await db.prepare("UPDATE repair_shops SET catalog_email_notifications_opt_in=1, catalog_email_notifications_opt_in_at=? WHERE id=?")
+  .bind("2026-09-29T00:00:00.000Z", "shop-smart-bubble").run();
+
+const optedInPayload = { ...matchedCatalogPayload, request_id: "catalog_smart_owner_mail_12345" };
+const callsBeforeOptedIn = serviceCalls.length;
+const optedInResponse = await onRequest({
+  request: makeRequest(optedInPayload, { "CF-Connecting-IP": "192.0.2.64" }),
+  env,
+});
+assert.equal(optedInResponse.status, 200);
+assert.equal(serviceCalls.length, callsBeforeOptedIn + 2, "Opted-in linked shops receive one internal Hermes delivery and one bounded owner copy.");
+assert.equal(serviceCalls.at(-2).payload.subject, "[HERMES INQUIRY] [CATALOG]");
+assert.equal(serviceCalls.at(-1).url, "https://lead-email.internal/v1/send-account");
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES CATALOG] [CUSTOMER INQUIRY]");
+assert.equal(serviceCalls.at(-1).payload.recipient_email, "verified-owner@example.com");
+assert.equal(serviceCalls.at(-1).payload.reply_to, undefined);
+const optedInInquiry = await db.prepare(
+  "SELECT internal_delivery_status, owner_delivery_status, owner_delivery_at FROM catalog_business_inquiries WHERE request_id=?"
+).bind("catalog_smart_owner_mail_12345").first();
+assert.equal(optedInInquiry.internal_delivery_status, "delivered");
+assert.equal(optedInInquiry.owner_delivery_status, "delivered");
+assert.ok(optedInInquiry.owner_delivery_at);
 
 const matchedDuplicate = await onRequest({
   request: makeRequest(matchedCatalogPayload, { "CF-Connecting-IP": "192.0.2.62" }),
