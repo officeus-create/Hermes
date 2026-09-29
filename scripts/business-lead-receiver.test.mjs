@@ -268,6 +268,7 @@ const optedInInquiry = await db.prepare(
 assert.equal(optedInInquiry.internal_delivery_status, "delivered");
 assert.equal(optedInInquiry.owner_delivery_status, "delivered");
 assert.ok(optedInInquiry.owner_delivery_at);
+const callsAfterOptedIn = serviceCalls.length;
 
 const matchedDuplicate = await onRequest({
   request: makeRequest(matchedCatalogPayload, { "CF-Connecting-IP": "192.0.2.62" }),
@@ -275,14 +276,14 @@ const matchedDuplicate = await onRequest({
 });
 assert.equal(matchedDuplicate.status, 200);
 assert.equal((await matchedDuplicate.json()).duplicate, true);
-assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
+assert.equal(serviceCalls.length, callsAfterOptedIn);
 
 const matchedConflict = await onRequest({
   request: makeRequest({ ...matchedCatalogPayload, message: "Changed payload under the same request id must be rejected." }, { "CF-Connecting-IP": "192.0.2.63" }),
   env,
 });
 assert.equal(matchedConflict.status, 409);
-assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
+assert.equal(serviceCalls.length, callsAfterOptedIn);
 
 const catalogRequestMissingTarget = await onRequest({
   request: makeRequest({
