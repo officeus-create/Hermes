@@ -7,6 +7,21 @@ const schemaTypeFor = (business: CatalogBusinessConcept) => {
   return "LocalBusiness";
 };
 
+export const buildCatalogFaqItems = (business: CatalogBusinessConcept) => [
+  {
+    q: `Is ${business.name} a Hermes customer?`,
+    a: "No. This is an unclaimed public Catalog profile and does not imply a commercial relationship with Hermes.",
+  },
+  {
+    q: "Can the business use Hermes Connect?",
+    a: `Yes after an authorized owner claims the profile. Hermes Connect uses one CRM core with a ${business.vertical.replaceAll("_", " ")} configuration for this business type.`,
+  },
+  {
+    q: "Are prices and every service owner-confirmed?",
+    a: "No. Only bounded public facts are published. Prices, availability and other unverified operating details remain pending owner confirmation.",
+  },
+];
+
 export const buildInternationalCatalogSchema = (business: CatalogBusinessConcept, profileUrl: string) => {
   const countryUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/`;
   const localityUrl = `${countryUrl}${business.localitySlug}/`;
@@ -36,20 +51,7 @@ export const buildInternationalCatalogSchema = (business: CatalogBusinessConcept
   };
   if (business.vertical === "restaurant" && business.website) businessEntity.hasMenu = business.website;
 
-  const faqItems = [
-    {
-      q: `Is ${business.name} a Hermes customer?`,
-      a: "No. This is an unclaimed public Catalog profile and does not imply a commercial relationship with Hermes.",
-    },
-    {
-      q: "Can the business use Hermes Connect?",
-      a: `Yes after an authorized owner claims the profile. Hermes Connect uses one CRM core with a ${business.vertical.replaceAll("_", " ")} configuration for this business type.`,
-    },
-    {
-      q: "Are prices and every service owner-confirmed?",
-      a: "No. Only bounded public facts are published. Prices, availability and other unverified operating details remain pending owner confirmation.",
-    },
-  ];
+  const faqItems = buildCatalogFaqItems(business);
 
   return [
     businessEntity,
