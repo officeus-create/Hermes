@@ -112,6 +112,11 @@ assert.match(coreSource, /th_refresh_token/);
 assert.match(coreSource, /AES-GCM/);
 assert.match(coreSource, /AUTHORED_POST/);
 
+const disconnectSource = await readFile(new URL("../functions/api/internal/social/threads/disconnect.ts", import.meta.url), "utf8");
+assert.match(disconnectSource, /DELETE FROM hermes_social_threads_connections/);
+assert.match(disconnectSource, /provider_access_revoked:\s*false/);
+assert.match(disconnectSource, /explicit_disconnect_confirmation_required/);
+
 const pageSource = await readFile(new URL("../src/pages/services/hermes-connect/social-connections.astro", import.meta.url), "utf8");
 assert.match(pageSource, /noindex,nofollow,noarchive/);
 assert.match(pageSource, /Hermes Logistics stays on Windsor/);
@@ -119,5 +124,6 @@ assert.match(pageSource, /Office Threads Test/);
 assert.match(pageSource, /ProgressoPro/);
 assert.match(pageSource, /Hermes Business Academy/);
 assert.match(pageSource, /Publish Office canary/);
+assert.match(pageSource, /Disconnect locally/);
 
 console.log("threads brand connector contract: PASS");
