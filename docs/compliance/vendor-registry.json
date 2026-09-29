@@ -134,7 +134,7 @@
       "hosting_or_transfer_geography": "Meta/Threads service infrastructure and Cloudflare-hosted Hermes Connect private D1 for encrypted connection state; applicable international transfer requirements remain provider/account obligations.",
       "retention_controls": "OAuth state expires after 10 minutes. Connection records retain only the minimum account metadata and encrypted token needed for the authorized integration. Revocation/disconnect and token expiry require reauthorization; publication receipts retain non-secret evidence for idempotency and audit.",
       "consent_category": "account_authorization",
-      "withdrawal_or_opt_out_behavior": "An authorized owner can disconnect/revoke provider access; expired or revoked tokens move the connector to needs_authorization and publishing fails closed.",
+      "withdrawal_or_opt_out_behavior": "An authorized internal owner can delete the encrypted Hermes-side connection token from the private social-connections workspace, which immediately blocks Hermes-side publishing. Full provider authorization revocation remains a separate Meta/Threads account action; expired or provider-revoked tokens require reauthorization.",
       "privacy_notice_impact": "Internal owner-account connector only; it does not add visitor advertising/analytics tracking. Public privacy copy must be revisited before any expansion into customer DMs, lead forms, or unrelated personal-data processing.",
       "production_verification_owner": "GitHub #1018 Growth Bridge / Hermes internal owner",
       "production_verification_date": null,
