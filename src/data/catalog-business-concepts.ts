@@ -111,7 +111,7 @@ export const trimmoConcept = Object.freeze({
   services: ["Чоловіча стрижка", "Стрижка машинкою", "Стрижка бороди", "Камуфлювання голови", "Камуфлювання бороди"],
   trust: { source: "Google", rating: 5.0, reviewCount: 157, observedAt: "2026-09-29" },
   channels: [
-    { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=TRIMMO+II+%D0%A7%D0%B0%D0%B9%D0%BA%D0%B8", direction: "maps" },
+    { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=TRIMMO%20II%20Chaiky&query_place_id=ChIJMS7DeQA1K0cRK1y1L5Z0iOE", direction: "maps" },
     { label: "MAKEUP HUB", url: "https://hub.makeup.com.ua/salon/trimmo-barbersop", direction: "secondary" }
   ],
   factsRequiringOwnerConfirmation: ["Sunday hours", "current prices", "master roster", "online booking URL", "official social accounts"],
@@ -141,7 +141,7 @@ export const cvitVyshniConcept = Object.freeze({
   services: ["Квіти", "Букети", "Флористична студія"],
   trust: { source: "Google", rating: 5.0, reviewCount: 39, observedAt: "2026-09-29" },
   channels: [
-    { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=%D0%A6%D0%B2%D1%96%D1%82+VYSHNI+%D0%86%D1%80%D0%BF%D1%96%D0%BD%D1%8C", direction: "maps" }
+    { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=Cvit%20VYSHNI%20Irpin&query_place_id=ChIJz2BQqVIzK0cRhKao5k9b71E", direction: "maps" }
   ],
   factsRequiringOwnerConfirmation: ["current bouquet catalog", "delivery area", "current prices", "custom-order terms", "official website and social accounts"],
   sourceRef: "PUBLIC-MAPS-CVIT-VYSHNI-IRPIN-20260929"
