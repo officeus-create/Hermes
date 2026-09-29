@@ -129,5 +129,16 @@ Localized pages are language-specific public overviews or explicitly identified 
 - Do not expose or reconstruct private customer, carrier, shipment, lead, employee, candidate, MC/USDOT, VIN, rate, invoice, payment, document, credential, account, or live-position data.
 - Prototype = prototype. Demo = demo. Not configured = not configured.
 
+## Hermes Catalog market and vertical model
+
+The primary public Hermes Catalog market is the United States. U.S. business discovery stays prominent on /businesses/. Selected businesses outside the United States live in a separate secondary international discovery layer at /businesses/international/. International profiles may remain indexable for useful local SEO/GEO and AI discovery, but their presence does not imply a Hermes office, customer relationship, endorsement, or paid placement.
+
+Hermes Connect uses one shared CRM/product core rather than separate unrelated applications. Repair Shops is the current public live product vertical. Retail Stores, Restaurants, Barber Shops, and Flower Shops currently have explicitly labeled preview configurations that adapt the shared core to business-specific modules. Public Catalog profiles can exist before owner activation; private CRM records and owner-controlled workflows require authorized verification.
+
+- [U.S.-first Hermes Catalog](https://hermeslogisticsus.com/businesses/)
+- [Secondary international directory](https://hermeslogisticsus.com/businesses/international/)
+- [Ukraine international directory](https://hermeslogisticsus.com/businesses/ukraine/)
+- [Hermes Connect](https://hermeslogisticsus.com/services/hermes-connect/)
+
 ## Hermes Business Directory pilot
 - [Sean's AutoPro Mobile — unclaimed directory profile](https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/): Evidence-backed directory profile for Sherwood / Little Rock, Arkansas. Booking remains off until verified owner activation.
