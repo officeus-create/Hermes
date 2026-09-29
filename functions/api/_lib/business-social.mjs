@@ -296,11 +296,11 @@ export async function upsertBusinessSocialCredential(db, env, options) {
       account_name=excluded.account_name,
       username=excluded.username,
       external_account_ref=excluded.external_account_ref,
-      token_ciphertext=excluded.token_ciphertext,
-      token_expires_at=excluded.token_expires_at,
+      token_ciphertext=COALESCE(excluded.token_ciphertext,hermes_business_social_credentials.token_ciphertext),
+      token_expires_at=COALESCE(excluded.token_expires_at,hermes_business_social_credentials.token_expires_at),
       granted_scope=excluded.granted_scope,
       candidate_labels_json=excluded.candidate_labels_json,
-      connected_at=excluded.connected_at,
+      connected_at=COALESCE(excluded.connected_at,hermes_business_social_credentials.connected_at),
       updated_at=excluded.updated_at,
       last_error_class=excluded.last_error_class
   `).bind(
