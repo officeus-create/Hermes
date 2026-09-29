@@ -37,7 +37,7 @@ type ProfileInput = {
 };
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
-const REPORT_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+const REPORT_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function slugify(value: string) {
   const base = value
@@ -127,7 +127,7 @@ function catalogState(shop: any) {
     profile_url: listed && shop?.slug ? `/businesses/connect/repair-shop/${encodeURIComponent(String(shop.slug))}/` : null,
     published_at: listed ? shop?.catalog_published_at || null : null,
     seo_geo_started_at: listed ? shop?.seo_geo_started_at || null : null,
-    reporting_cadence: listed ? "monthly" : null,
+    reporting_cadence: listed ? "weekly" : null,
     next_report_at: listed ? shop?.next_seo_report_at || null : null,
     organic_evaluation_horizon: listed ? "6 months+" : null,
     guarantee: false,
