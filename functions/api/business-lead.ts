@@ -201,19 +201,15 @@ async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, cata
 
 async function resolveCatalogOwnerEmail(db: any, ownerSpecialistId: string) {
   if (!ownerSpecialistId) return "";
-  const row = await db.prepare(`
-    SELECT s.email, s.role, r.catalog_email_notifications_opt_in
-    FROM specialists s
-    JOIN repair_shops r ON r.owner_specialist_id = s.id
-    WHERE s.id = ?
-    LIMIT 1
-  `).bind(ownerSpecialistId).first();
+  const shop = await db.prepare(
+    "SELECT catalog_email_notifications_opt_in FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1"
+  ).bind(ownerSpecialistId).first();
+  if (Number(shop?.catalog_email_notifications_opt_in || 0) !== 1) return "";
+  const row = await db.prepare(
+    "SELECT email, role FROM specialists WHERE id = ? LIMIT 1"
+  ).bind(ownerSpecialistId).first();
   const email = clean(row?.email, 320).toLowerCase();
-  return String(row?.role || "") === "Shop Owner"
-    && Number(row?.catalog_email_notifications_opt_in || 0) === 1
-    && isEmail(email)
-    ? email
-    : "";
+  return String(row?.role || "") === "Shop Owner" && isEmail(email) ? email : "";
 }
 
 async function deliverCatalogOwnerInquiry(env: Env, requestId: string, recipientEmail: string, text: string) {
