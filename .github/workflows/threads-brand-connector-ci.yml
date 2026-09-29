@@ -1,0 +1,31 @@
+name: Threads brand connector contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/_lib/threads-brand-connector.mjs"
+      - "functions/api/internal/social/threads/**"
+      - "src/pages/services/hermes-connect/internal/social-connections/**"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/threads-brand-connector.test.mjs"
+      - "docs/THREADS_BRAND_CONNECTOR_RUNBOOK.md"
+      - "docs/compliance/vendor-registry.json"
+      - "docs/release-manifest-deltas/2026-09-29-hermes-connect-social-connections.json"
+      - "package.json"
+      - ".github/workflows/threads-brand-connector-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: node scripts/threads-brand-connector.test.mjs
+      - run: npm run check
