@@ -15,7 +15,7 @@ export type CatalogBusinessConcept = {
   address: string;
   locality: string;
   region: string;
-  postalCode: string;
+  postalCode?: string;
   countryCode: string;
   hours: string[];
   schemaHours?: string[];
@@ -76,7 +76,6 @@ export const mangalIKazanConcept = Object.freeze({
   address: "вул. Валерія Лобановського, 35, корпус 9",
   locality: "Чайки",
   region: "Київська область",
-  postalCode: "08135",
   countryCode: "UA",
   hours: ["Щодня 10:00–20:00"],
   schemaHours: ["Mo-Su 10:00-20:00"],
