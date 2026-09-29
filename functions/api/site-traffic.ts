@@ -11,6 +11,7 @@ const BLOCKED_PREFIXES = [
   "/privacy-choices",
   "/logistics/apply",
   "/logistics/carrier-onboarding",
+  "/services/hermes-connect/access",
   "/services/hermes-connect/repair-shops/auth",
   "/services/hermes-connect/repair-shops/dashboard",
   "/services/hermes-connect/repair-shops/password",
