@@ -44,7 +44,7 @@ const isAllowedSubject = (value) =>
   value === "[HERMES CONTRACT] [CARRIER ONBOARDING]" ||
   /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
   /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|GENERAL)\]$/.test(value);
-const isAccountSubject = (value) => value === "[HERMES ACCOUNT] [PASSWORD RESET]";
+const isAccountSubject = (value) => value === "[HERMES ACCOUNT] [PASSWORD RESET]" || value === "[HERMES ACCOUNT] [CATALOG INQUIRY]";
 
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
