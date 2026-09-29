@@ -27,7 +27,8 @@ test("homepage keeps a restrained four-pillar entrance and shared direction colo
 
   expect(polish).not.toBeNull();
   expect(polish!.headerRadius).not.toBe("0px");
-  expect(polish!.gridRadius).toBe("32px");
+  const expectedGridRadius = (page.viewportSize()?.width ?? 1280) <= 620 ? "24px" : "32px";
+  expect(polish!.gridRadius).toBe(expectedGridRadius);
   expect(polish!.imageDisplay).toEqual(["none", "none", "none", "none"]);
   expect(polish!.topBorders.every((value) => parseFloat(value) >= 6)).toBe(true);
   expect(new Set(polish!.accents).size).toBe(4);
