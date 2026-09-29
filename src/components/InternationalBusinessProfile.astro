@@ -13,6 +13,16 @@ const verticalLabel = {
   repair_shop: "Repair / retail",
   retail: "Retail"
 }[business.vertical];
+const faq = [
+  {
+    question: "Is this an official Hermes customer profile?",
+    answer: "No. This is a public Hermes Catalog discovery profile unless the business is explicitly marked as claimed or client. Owner verification is required before Hermes presents an active customer relationship."
+  },
+  {
+    question: "Can the business activate Hermes Connect?",
+    answer: "Yes. An authorized owner can claim and verify the profile, then choose which Hermes Connect and growth modules to activate."
+  }
+];
 const schema = [
   {
     "@context":"https://schema.org",
@@ -25,6 +35,16 @@ const schema = [
     address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,postalCode:business.postalCode,addressCountry:business.countryCode},
     ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
+  {
+    "@context":"https://schema.org",
+    "@type":"Service",
+    name:`${business.name} business discovery and activation profile`,
+    provider:{"@id":profileUrl+"#business"},
+    areaServed:{"@type":"Place",name:`${business.locality}, ${business.region}, Ukraine`},
+    serviceType:business.primaryIntent,
+    url:profileUrl
+  },
+  {"@context":"https://schema.org","@type":"FAQPage",mainEntity":faq.map((item)=>({"@type":"Question",name:item.question,acceptedAnswer:{"@type":"Answer",text:item.answer}}))},
   {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[
     {"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},
     {"@type":"ListItem",position:2,name:"International",item:"https://hermeslogisticsus.com/businesses/#international-businesses"},
@@ -54,6 +74,7 @@ const schema = [
   {business.trust && <section class="trust"><strong>{business.trust.rating.toFixed(1)}</strong><span>{business.trust.source} · {business.trust.reviewCount} reviews · observed {business.trust.observedAt}</span></section>}
   <section class="channels"><h2>Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank">{channel.label} ↗</a>)}</div></section>
   <section class="boundary"><h2>Needs owner confirmation</h2><p>Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.</p><ul>{business.factsRequiringOwnerConfirmation.map((fact)=><li>{fact}</li>)}</ul></section>
+  <section class="faq"><p class="eyebrow">FAQ</p><h2>How this profile works</h2>{faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>
   <section class="growth"><div><p class="eyebrow">Hermes growth path</p><h2>From free discovery profile to an operating business system</h2><p>Claim the profile, verify facts, then activate only the modules this business needs: CRM, bookings or requests, customer history, website, local SEO/GEO, reviews and automation.</p></div><div class="actions">
     <a href={`/services/hermes-connect/demos/${business.slug}/`}>Open CRM preview</a>
     <a href={`/businesses/request/?type=claim&business=${encodeURIComponent(business.name)}&profile=${encodeURIComponent(profileUrl)}&city=${encodeURIComponent(business.locality)}&country=Ukraine`}>Claim / verify</a>
@@ -62,5 +83,5 @@ const schema = [
 </div></main><SiteFooter/>
 </BaseLayout>
 <style>
-.page{background:#f6f7f9;color:#172033;min-height:70vh}.shell{width:min(1080px,calc(100% - 2rem));margin:auto;padding:105px 0 76px}.back{font-weight:800;color:#286aa6;text-decoration:none}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;color:#286aa6}header{margin-top:28px}h1{font-size:clamp(42px,7vw,76px);line-height:1;margin:.35rem 0 1rem}.lead{max-width:800px;color:#647286;line-height:1.65;font-size:17px}.badges,.actions,.channels div{display:flex;gap:9px;flex-wrap:wrap}.badges span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #dce4ed;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.grid article,.channels,.boundary,.growth,.trust{padding:22px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.grid h2,.channels h2,.boundary h2,.growth h2{margin-top:0}.grid dl{margin:0}.grid dl div{padding:9px 0;border-top:1px solid #edf1f4}.grid dt{font-size:11px;text-transform:uppercase;color:#788597}.grid dd{margin:3px 0 0}.grid ul,.boundary ul{padding-left:19px;line-height:1.7;color:#5f6e80}.trust{display:flex;align-items:center;gap:12px;margin-top:14px}.trust strong{font-size:30px}.trust span{color:#657286}.channels,.boundary,.growth{margin-top:14px}.channels a,.actions a{padding:10px 13px;border:1px solid #ced9e5;border-radius:11px;text-decoration:none;color:#1b5f9a;font-weight:750}.boundary{background:#fff9e9}.boundary p,.growth p{color:#667386;line-height:1.6}.growth{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.actions{align-content:start}@media(max-width:760px){.grid,.growth{grid-template-columns:1fr}}
+.page{background:#f6f7f9;color:#172033;min-height:70vh}.shell{width:min(1080px,calc(100% - 2rem));margin:auto;padding:105px 0 76px}.back{font-weight:800;color:#286aa6;text-decoration:none}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;color:#286aa6}header{margin-top:28px}h1{font-size:clamp(42px,7vw,76px);line-height:1;margin:.35rem 0 1rem}.lead{max-width:800px;color:#647286;line-height:1.65;font-size:17px}.badges,.actions,.channels div{display:flex;gap:9px;flex-wrap:wrap}.badges span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #dce4ed;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.grid article,.channels,.boundary,.faq,.growth,.trust{padding:22px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.grid h2,.channels h2,.boundary h2,.faq h2,.growth h2{margin-top:0}.grid dl{margin:0}.grid dl div{padding:9px 0;border-top:1px solid #edf1f4}.grid dt{font-size:11px;text-transform:uppercase;color:#788597}.grid dd{margin:3px 0 0}.grid ul,.boundary ul{padding-left:19px;line-height:1.7;color:#5f6e80}.trust{display:flex;align-items:center;gap:12px;margin-top:14px}.trust strong{font-size:30px}.trust span{color:#657286}.channels,.boundary,.faq,.growth{margin-top:14px}.faq article+article{margin-top:18px;padding-top:18px;border-top:1px solid #edf1f4}.faq h3{margin:0 0 6px;font-size:17px}.faq p{margin:0;color:#667386;line-height:1.6}.channels a,.actions a{padding:10px 13px;border:1px solid #ced9e5;border-radius:11px;text-decoration:none;color:#1b5f9a;font-weight:750}.boundary{background:#fff9e9}.boundary p,.growth p{color:#667386;line-height:1.6}.growth{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.actions{align-content:start}@media(max-width:760px){.grid,.growth{grid-template-columns:1fr}}
 </style>
