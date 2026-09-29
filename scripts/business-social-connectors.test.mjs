@@ -110,7 +110,7 @@ assert.match(component, /canonical Hermes Social Publisher/);
 assert.doesNotMatch(component, /setInterval\(/);
 assert.match(repairRoute, /noindex,nofollow,noarchive/);
 assert.match(dealerRoute, /noindex,nofollow,noarchive/);
-assert.match(repairNav, /repairShopRoot}\/"social"/);
+assert.match(repairNav, /\$\{repairShopRoot\}\/social/);
 assert.match(repairNav, /repair-shops\/social\//);
 assert.doesNotMatch(repairNav, /api\/internal\/social\/threads\/connections/);
 assert.match(repairSettings, /repair-shops\/social\//);
