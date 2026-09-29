@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import DirectionProductNav from "../../../../components/DirectionProductNav.astro";
+import CatalogWebsiteConcept from "../../../../components/CatalogWebsiteConcept.astro";
+import { tsvitVyshniConcept as business } from "../../../../data/catalog-business-concepts";
+import { buildInternationalCatalogSchema, catalogProfileDescription } from "../../../../lib/catalog-business-schema";
+
+const profilePath="/businesses/ukraine/irpin/tsvit-vyshni/";
+const profileUrl=`https://hermeslogisticsus.com${profilePath}`;
+const schema=buildInternationalCatalogSchema(business,profileUrl);
+---
+<BaseLayout title="Цвіт VYSHNI в Ірпені | Квіткова студія | Hermes Catalog" description={catalogProfileDescription(business)} schema={schema}>
+  <SiteHeader theme="light" activePath="/businesses/" />
+  <DirectionProductNav direction="catalog" theme="light" />
+  <main class="international-profile"><div class="shell">
+    <nav><a href="/businesses/">Hermes Catalog</a><span>→</span><a href="/businesses/international/">International</a><span>→</span><a href="/businesses/ukraine/">Ukraine</a><span>→</span><a href="/businesses/ukraine/irpin/">Ірпінь</a></nav>
+    <CatalogWebsiteConcept business={business} profileUrl={profileUrl} />
+    <section class="context">
+      <div><p class="eyebrow">LOCAL DISCOVERY</p><h2>Квіткова студія в Ірпені</h2><p>Публічний бізнес-профіль підтверджує студію Цвіт VYSHNI на вул. Українській, 57 А, телефон і щоденний графік. Каталог букетів, ціни, доставка та поточна наявність не публікуються як факти без підтвердження власника.</p></div>
+      <div><p class="eyebrow">HERMES CONNECT</p><h2>Flower Shop CRM preview</h2><p>Спільне CRM-ядро доповнюється каталогом букетів/товарів, замовленнями, налаштуванням самовивозу або доставки, залишками, приводами/нагадуваннями та статусами замовлень.</p><a href="/services/hermes-connect/demos/tsvit-vyshni/">Open flower-shop CRM preview →</a></div>
+    </section>
+  </div></main>
+  <SiteFooter />
+</BaseLayout>
+<style>
+.international-profile{background:#f5f6f3;color:#17211e}.shell{width:min(1160px,calc(100% - 32px));margin:auto;padding:36px 0 78px}.shell>nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;font-size:12px}.shell>nav a{color:#376d9e;text-decoration:none}.shell>nav span{color:#9aa5a1}.context{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.context>div{padding:26px;border:1px solid #dde3df;border-radius:20px;background:#fff}.eyebrow{color:#477568;font-size:11px;font-weight:900;letter-spacing:.12em}.context h2{margin:7px 0 12px;font-size:clamp(26px,3vw,38px)}.context p{color:#65716c;line-height:1.65}.context a{color:#1768af;text-decoration:none;font-weight:850}@media(max-width:760px){.context{grid-template-columns:1fr}}
+</style>
