@@ -371,7 +371,7 @@ export async function onRequestPost({ request, env }: Context) {
       }));
       const createdAt = new Date().toISOString();
       const retentionUntil = new Date(Date.now() + CATALOG_INQUIRY_RETENTION_MS).toISOString();
-      const ownerEmail = repairShop.linked ? await resolveCatalogOwnerEmail(env.DB, repairShop.ownerSpecialistId) : "";
+      const ownerEmail = repairShop.linked ? await resolveCatalogOwnerEmail(env.DB, repairShop.ownerSpecialistId || "") : "";
       const saved = await saveCatalogBusinessInquiry(env.DB, {
         requestId,
         payloadHash,
