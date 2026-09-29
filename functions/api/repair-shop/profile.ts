@@ -34,10 +34,11 @@ type ProfileInput = {
   facebook_url?: unknown;
   threads_url?: unknown;
   catalog_opt_in?: unknown;
+  catalog_email_notifications_opt_in?: unknown;
 };
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
-const REPORT_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+const REPORT_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function slugify(value: string) {
   const base = value
@@ -104,7 +105,7 @@ function normalizeSocialProfile(value: unknown, provider: "instagram" | "faceboo
 async function getProfile(db: any, ownerId: string) {
   return db
     .prepare(
-      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,instagram_url,facebook_url,threads_url,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
+      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,instagram_url,facebook_url,threads_url,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,catalog_email_notifications_opt_in,catalog_email_notifications_opt_in_at,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
     )
     .bind(ownerId)
     .first();
@@ -127,7 +128,7 @@ function catalogState(shop: any) {
     profile_url: listed && shop?.slug ? `/businesses/connect/repair-shop/${encodeURIComponent(String(shop.slug))}/` : null,
     published_at: listed ? shop?.catalog_published_at || null : null,
     seo_geo_started_at: listed ? shop?.seo_geo_started_at || null : null,
-    reporting_cadence: listed ? "monthly" : null,
+    reporting_cadence: listed ? "weekly" : null,
     next_report_at: listed ? shop?.next_seo_report_at || null : null,
     organic_evaluation_horizon: listed ? "6 months+" : null,
     guarantee: false,
@@ -180,6 +181,9 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const catalogOptIn = typeof body.catalog_opt_in === "boolean"
     ? body.catalog_opt_in
     : Number(existing?.catalog_opt_in || 0) === 1;
+  const catalogEmailNotificationsOptIn = typeof body.catalog_email_notifications_opt_in === "boolean"
+    ? body.catalog_email_notifications_opt_in
+    : Number(existing?.catalog_email_notifications_opt_in || 0) === 1;
 
   if (name.length < 2) return jsonResponse(400, { success: false, error: "invalid_shop_name" });
   if (city.length < 2) return jsonResponse(400, { success: false, error: "invalid_city" });
@@ -199,11 +203,14 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const nextSeoReportAt = catalogOptIn
     ? (previouslyListed && existing?.next_seo_report_at ? existing.next_seo_report_at : new Date(Date.now() + REPORT_INTERVAL_MS).toISOString())
     : null;
+  const catalogEmailNotificationsOptInAt = catalogEmailNotificationsOptIn
+    ? (existing?.catalog_email_notifications_opt_in_at || now)
+    : null;
 
   if (existing) {
     await env.DB
       .prepare(
-        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,website=?,catalog_opt_in=?,catalog_opt_in_at=?,catalog_published_at=?,seo_geo_started_at=?,next_seo_report_at=?,updated_at=? WHERE owner_specialist_id=?",
+        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,website=?,catalog_opt_in=?,catalog_opt_in_at=?,catalog_published_at=?,seo_geo_started_at=?,next_seo_report_at=?,catalog_email_notifications_opt_in=?,catalog_email_notifications_opt_in_at=?,updated_at=? WHERE owner_specialist_id=?",
       )
       .bind(
         name,
@@ -221,6 +228,8 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
         catalogPublishedAt,
         seoGeoStartedAt,
         nextSeoReportAt,
+        catalogEmailNotificationsOptIn ? 1 : 0,
+        catalogEmailNotificationsOptInAt,
         now,
         specialist.id,
       )
@@ -238,7 +247,7 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
     const slug = await makeUniqueSlug(env.DB, name);
     await env.DB
       .prepare(
-        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,catalog_email_notifications_opt_in,catalog_email_notifications_opt_in_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       )
       .bind(
         id,
@@ -259,6 +268,8 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
         catalogOptIn ? now : null,
         catalogOptIn ? now : null,
         catalogOptIn ? new Date(Date.now() + REPORT_INTERVAL_MS).toISOString() : null,
+        catalogEmailNotificationsOptIn ? 1 : 0,
+        catalogEmailNotificationsOptIn ? now : null,
         now,
         now,
       )

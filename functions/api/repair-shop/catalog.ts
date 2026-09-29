@@ -2,7 +2,7 @@ import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 
 type Env = { DB?: any };
-const REPORT_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+const REPORT_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function sameOrigin(request: Request) {
   const origin = request.headers.get("Origin");
@@ -35,7 +35,7 @@ function publicState(shop: any) {
     catalog_opt_in_at: shop.catalog_opt_in_at || null,
     catalog_published_at: shop.catalog_published_at || null,
     seo_geo_started_at: shop.seo_geo_started_at || null,
-    reporting_cadence: listed ? "monthly" : null,
+    reporting_cadence: listed ? "weekly" : null,
     next_report_at: listed ? shop.next_seo_report_at || null : null,
     evaluation_horizon: listed ? "6 months+" : null,
     guarantee: false,

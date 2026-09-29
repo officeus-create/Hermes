@@ -54,6 +54,18 @@ async function applyRepairShopProfileSchema(db) {
   await ensureOptionalColumn(db, "catalog_published_at", "catalog_published_at TEXT");
   await ensureOptionalColumn(db, "seo_geo_started_at", "seo_geo_started_at TEXT");
   await ensureOptionalColumn(db, "next_seo_report_at", "next_seo_report_at TEXT");
+  await ensureOptionalColumn(db, "catalog_email_notifications_opt_in", "catalog_email_notifications_opt_in INTEGER NOT NULL DEFAULT 0");
+  await ensureOptionalColumn(db, "catalog_email_notifications_opt_in_at", "catalog_email_notifications_opt_in_at TEXT");
+  await db.prepare(`
+    UPDATE repair_shops
+    SET next_seo_report_at = strftime('%Y-%m-%dT%H:%M:%fZ','now','+7 days')
+    WHERE catalog_opt_in = 1
+      AND (
+        next_seo_report_at IS NULL
+        OR TRIM(next_seo_report_at) = ''
+        OR next_seo_report_at > strftime('%Y-%m-%dT%H:%M:%fZ','now','+7 days')
+      )
+  `).run();
   await db.prepare(
     "UPDATE repair_shops SET region = state WHERE (region IS NULL OR TRIM(region) = '') AND state IS NOT NULL AND TRIM(state) <> ''",
   ).run();
