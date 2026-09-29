@@ -85,6 +85,7 @@ assert.match(core, /OAUTH_STATE_TTL_MS = 10 \* 60 \* 1000/);
 assert.match(core, /INSERT OR IGNORE INTO hermes_business_social_publications/);
 assert.match(core, /selection_required/);
 assert.match(core, /pages_manage_posts/);
+assert.match(core, /"CREATE_CONTENT", "MANAGE", "MODERATE"/);
 assert.match(core, /instagram_content_publish/);
 assert.match(core, /media_type: "CAROUSEL"/);
 assert.match(core, /media_publish/);
