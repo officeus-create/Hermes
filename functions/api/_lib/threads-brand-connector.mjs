@@ -13,9 +13,9 @@ const DEFAULT_SCOPES = [
 ];
 
 const BRAND_CONFIG = Object.freeze({
-  office_test: { label: "Office Threads Test", publishEnv: "THREADS_OFFICE_TEST_PUBLISH_ENABLED" },
-  progressopro: { label: "ProgressoPro", publishEnv: "THREADS_PROGRESSOPRO_PUBLISH_ENABLED" },
-  business_academy: { label: "Hermes Business Academy", publishEnv: "THREADS_BUSINESS_ACADEMY_PUBLISH_ENABLED" },
+  office_test: { label: "Office Threads Test", publishEnv: "THREADS_OFFICE_TEST_PUBLISH_ENABLED", expectedUsername: null },
+  progressopro: { label: "ProgressoPro", publishEnv: "THREADS_PROGRESSOPRO_PUBLISH_ENABLED", expectedUsername: "progressopro" },
+  business_academy: { label: "Hermes Business Academy", publishEnv: "THREADS_BUSINESS_ACADEMY_PUBLISH_ENABLED", expectedUsername: null },
 });
 
 const encoder = new TextEncoder();
@@ -48,6 +48,11 @@ export function normalizeThreadsBrand(value) {
 export function threadsBrandLabel(brand) {
   const key = normalizeThreadsBrand(brand);
   return key ? BRAND_CONFIG[key].label : null;
+}
+
+export function threadsBrandExpectedUsername(brand) {
+  const key = normalizeThreadsBrand(brand);
+  return key ? BRAND_CONFIG[key].expectedUsername : null;
 }
 
 export function threadsBrandPublishEnabled(env, brand) {
