@@ -142,7 +142,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingHistory = { id: string; booking_id: string; from_status: string | null; to_status: string; changed_at: string };
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
-  type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; created_at:string; updated_at:string };
+  type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; owner_delivery_status:string; owner_delivery_at?:string|null; created_at:string; updated_at:string };
   type CatalogReport = { period:{days:number;start_day:string;end_day:string;timezone:string}; metrics:{consented_profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;request_starts:number;booking_starts:number;crm_inquiries:number;crm_bookings_created_all_sources:number} };
   type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
@@ -337,7 +337,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       const contacts=[item.contact_email,item.contact_phone,item.contact_whatsapp,item.contact_telegram].filter(Boolean);
       const contact=document.createElement("p");contact.className="muted small";contact.textContent=contacts.join(" · ");
       const message=document.createElement("p");message.textContent=item.message;
-      const meta=document.createElement("p");meta.className="muted small";meta.textContent=`Received ${formatHistoryTime(item.created_at)} · Hermes notification ${item.internal_delivery_status}${item.preferred_contact_time ? ` · Best time: ${item.preferred_contact_time}` : ""}`;
+      const meta=document.createElement("p");meta.className="muted small";meta.textContent=`Received ${formatHistoryTime(item.created_at)} · Hermes notification ${item.internal_delivery_status} · Owner email ${item.owner_delivery_status}${item.preferred_contact_time ? ` · Best time: ${item.preferred_contact_time}` : ""}`;
       card.append(top,contact,message,meta);
       if(item.catalog_profile.startsWith("/businesses/")){
         const link=document.createElement("a");link.className="secondary-btn";link.href=item.catalog_profile;link.textContent="Open Catalog profile";card.append(link);
