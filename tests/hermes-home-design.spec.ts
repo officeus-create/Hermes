@@ -20,6 +20,8 @@ test("Hermes homepage is a focused four-direction entrance", async ({ page }) =>
     await expect(page.getByRole("link", { name: label })).toHaveAttribute("href", href);
   }
 
+  await expect(page.locator(".home-room-number")).toHaveText(["01", "02", "03", "04"]);
+
   const visual = await page.evaluate(() => {
     const roomGrid = document.querySelector<HTMLElement>(".home-rooms-grid");
     const logistics = document.querySelector<HTMLElement>(".home-room-logistics");
