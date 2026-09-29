@@ -77,7 +77,7 @@ No clean-provider wave has been executed from repository engineering. Therefore:
 - `CORRECT_CANONICAL` = `NOT_MEASURED`
 - `FACTUAL_ERRORS` = `NOT_MEASURED`
 - `COMPETITOR_SHARE` = `NOT_MEASURED`
-- `AI_REFERRALS` = `ATTRIBUTION_UNAVAILABLE` until authenticated attribution evidence exists
+- `AI_REFERRALS` = `OBSERVED_GA4_REFERRAL_SIGNAL`; authenticated GA4 now sees `chatgpt.com / ai-assistant`, but internal/agent traffic is mixed in and this is not recommendation or customer proof
 - `AI_BOOKINGS` = `ATTRIBUTION_UNAVAILABLE` until authenticated attribution evidence exists
 
 `0 completed observations` is a work-count only; it is never evidence of 0% visibility.
@@ -107,6 +107,7 @@ Fresh authenticated Windsor GA4 readback for property `547903956` (`https://herm
 - for the bounded **2026-09-05 through 2026-09-26** window GA4 reports `364 sessions / 103 active users / 262 engaged sessions / 71.98% engagement rate / 1,880 page views`;
 - that bounded window still contains internal/agent/test traffic and is only a cleaner operational baseline, not a verified-human baseline;
 - source/medium counts in that bounded window are: `Direct 179`, `chatgpt.com / ai-assistant 68`, `work.ua / referral 45`, `google / organic 37`, known Cloudflare test sources `17`, `mail.google.com / referral 9`, and `london / organic 4`; these are attribution observations, not customer counts;
+- within the `chatgpt.com / ai-assistant` slice, `/careers/car-hauling-dispatcher` is the strongest external-looking demand candidate at `15 sessions / 15 active users / 12 engaged sessions`; homepage, dashboard, Load Board and internal Connect routes also receive AI-assistant-attributed sessions, so the 68-session total must not be treated as 68 independent prospects or recommendations;
 - GA4 records `0` configured key events in the bounded window. Product events such as `hc_repair_paid_intent_submitted` may exist as instrumentation events but do not prove a qualified lead, receiver delivery, opportunity or revenue;
 - `commercial_cta_click` is present once in the post-Sep-4 bounded window, while the earlier large `commercial_cta_click` / `seo_intake_start` totals were part of the contaminated period;
 - `google / organic` and `chatgpt.com / ai-assistant` classifications are now directly readable through the connected GA4 property, but internal/agent visits are still visible in those channels;
