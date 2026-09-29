@@ -22,9 +22,9 @@ type Env = {
 const clean = (value: unknown, max = 4096) => String(value ?? "").trim().slice(0, max);
 
 function targetPath(vertical: string) {
-  return vertical === "repair_shop"
-    ? "/services/hermes-connect/repair-shops/social/"
-    : "/services/hermes-connect/dealers/social/";
+  if (vertical === "repair_shop") return "/services/hermes-connect/repair-shops/social/";
+  if (vertical === "beauty_salon") return "/services/hermes-connect/beauty/workspace/social/";
+  return "/services/hermes-connect/dealers/social/";
 }
 
 function redirect(request: Request, vertical: string, provider: string, result: string) {
@@ -54,7 +54,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return redirect(request, vertical, provider, "owner_context_mismatch");
   }
 
-  const preferred = vertical === "repair_shop" ? "repair_shop" : "dealer";
+  const preferred = vertical === "repair_shop" ? "repair_shop" : vertical === "beauty_salon" ? "beauty_salon" : "dealer";
   const business = await resolveOwnedSocialBusiness(env.DB, specialist.id, preferred);
   if (!business || business.business_key !== String(state.business_key)) {
     return redirect(request, vertical, provider, "business_context_mismatch");
