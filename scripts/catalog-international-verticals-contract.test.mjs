@@ -43,6 +43,11 @@ for(const path of previews){
   assert.ok(source.includes("HermesConnectVerticalPreview"),`CRM preview must reuse the shared vertical renderer: ${path}`);
 }
 
+const connectLanding=read("src/pages/services/hermes-connect/index.astro");
+for(const vertical of ["Retail Stores","Restaurants","Barber Shops","Flower Shops"]){
+  assert.ok(connectLanding.includes(`name: "${vertical}"`),`Hermes Connect landing missing vertical: ${vertical}`);
+}
+
 const sitemap=read("public/sitemap-business-directory.xml");
 for(const route of [
   "/businesses/international/",
