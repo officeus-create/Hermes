@@ -101,7 +101,11 @@ test("public GA4 config strips referrer query and current query", async ({ page,
   expect(config).toMatchObject({
     page_location: "https://hermeslogisticsus.com/paths/logistics/",
     page_referrer: "https://hermeslogisticsus.com/",
+    campaign_source: "hermes_synthetic",
+    campaign_medium: "qa",
+    campaign_name: "production_smoke",
   });
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTraffic)).toBe("synthetic");
   expect(JSON.stringify(config)).not.toContain(querySentinel);
   expect(JSON.stringify(config)).not.toContain(referrerSentinel);
 
