@@ -64,20 +64,22 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!exchange.ok) return redirect(request, vertical, provider, exchange.error_class || "authorization_exchange_failed");
   const candidates = await fetchMetaBusinessCandidates(env, exchange.access_token, provider);
   if (!candidates.ok) return redirect(request, vertical, provider, candidates.error_class || "account_readback_failed");
+  const candidateRows = Array.isArray(candidates.candidates) ? candidates.candidates : [];
+  if (!candidateRows.length) return redirect(request, vertical, provider, "no_eligible_account");
 
   await upsertBusinessSocialCredential(env.DB, env, {
     business,
     ownerId: specialist.id,
     provider,
     state: "selection_required",
-    tokenPayload: { candidates: candidates.candidates, expires_at: exchange.expires_at },
+    tokenPayload: { candidates: candidateRows, expires_at: exchange.expires_at },
     tokenExpiresAt: exchange.expires_at,
     grantedScope: "",
-    candidateLabels: publicCandidateLabels(provider, candidates.candidates),
+    candidateLabels: publicCandidateLabels(provider, candidateRows),
     lastError: null,
   });
 
-  if (candidates.candidates.length === 1) {
+  if (candidateRows.length === 1) {
     const selected = await saveMetaCandidateSelection(env.DB, env, {
       business,
       ownerId: specialist.id,
