@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-09-14-hermes-insights-blog",
-  "generated_at": "2026-09-23T12:00:00+00:00",
+  "generated_at": "2026-09-29T12:00:00+00:00",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
@@ -16,20 +16,26 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
-      "route": "/insights/logistics/diesel-price-route-planning-september-2026/",
+      "route": "/insights/logistics/dry-van-capacity-tightens-september-2026/",
       "source_state": "current_main",
       "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
-      "canonical": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/dry-van-capacity-tightens-september-2026/",
       "sitemap_owner": "public/sitemap-insights.xml",
       "source_file": "src/pages/insights/[direction]/[slug].astro",
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
@@ -42,20 +48,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
-    },
-    {
-      "route": "/insights/logistics/dry-van-spot-rates-september-2026/",
-      "source_state": "current_main",
-      "indexability": "indexable",
-      "robots": "index,follow,max-image-preview:large",
-      "canonical": "https://hermeslogisticsus.com/insights/logistics/dry-van-spot-rates-september-2026/",
-      "sitemap_owner": "public/sitemap-insights.xml",
-      "source_file": "src/pages/insights/[direction]/[slug].astro",
-      "status": "COMPLETE",
-      "blocker": null,
-      "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/logistics/fmcsa-fuel-hours-of-service-waiver-september-2026/",
@@ -68,7 +64,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/insights/marketing/meta-one-business-creator-tools-september-2026/",
@@ -81,12 +80,47 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production": "pending_deployment", "immutable_release": "missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/diesel-price-route-planning-september-2026/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/insights/logistics/dry-van-spot-rates-september-2026/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/logistics/dry-van-spot-rates-september-2026/",
+      "sitemap_owner": "public/sitemap-insights.xml",
+      "source_file": "src/pages/insights/[direction]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 6,
-    "indexable_route_count_added": 6,
+    "route_count_added": 7,
+    "indexable_route_count_added": 7,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
