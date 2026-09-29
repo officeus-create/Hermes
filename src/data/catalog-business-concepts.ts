@@ -8,7 +8,7 @@ export type CatalogBusinessConcept = {
   market: "us" | "international";
   catalogPriority: "primary" | "secondary";
   vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail";
-  schemaType: "LocalBusiness" | "Restaurant" | "BarberShop" | "Florist" | "Store";
+  schemaType: "LocalBusiness" | "Restaurant" | "HairSalon" | "Florist" | "Store";
   primaryIntent: string;
   secondaryIntent?: string;
   phone: string;
@@ -18,6 +18,7 @@ export type CatalogBusinessConcept = {
   postalCode: string;
   countryCode: string;
   hours: string[];
+  schemaHours?: string[];
   website?: string;
   services: string[];
   trust?: { source: string; rating: number; reviewCount: number; observedAt: string };
@@ -46,6 +47,7 @@ export const chaykaStoreConcept = Object.freeze({
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Пн–Сб 10:00–19:00", "Нд 10:00–18:30"],
+  schemaHours: ["Mo-Sa 10:00-19:00", "Su 10:00-18:30"],
   services: ["Phone repair discovery", "Accessories discovery", "Tea direction"],
   trust: { source: "Google", rating: 5.0, reviewCount: 68, observedAt: "2026-09-24" },
   channels: [
@@ -77,6 +79,7 @@ export const mangalIKazanConcept = Object.freeze({
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Щодня 10:00–20:00"],
+  schemaHours: ["Mo-Su 10:00-20:00"],
   website: "https://mangal-i-kazan.com.ua/",
   services: ["Шашлик", "Люля-кебаб", "Плов", "Манти", "Лагман", "Шурпа", "Доставка по ЖК Чайки"],
   channels: [
@@ -97,7 +100,7 @@ export const trimmoConcept = Object.freeze({
   market: "international",
   catalogPriority: "secondary",
   vertical: "barber_shop",
-  schemaType: "BarberShop",
+  schemaType: "HairSalon",
   primaryIntent: "Barbershop and men's grooming",
   phone: "+380 98 802 09 09",
   address: "вул. Валерія Лобановського, 24",
@@ -106,6 +109,7 @@ export const trimmoConcept = Object.freeze({
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Пн–Сб 10:00–21:00", "Нд · потребує підтвердження"],
+  schemaHours: ["Mo-Sa 10:00-21:00"],
   services: ["Чоловіча стрижка", "Стрижка машинкою", "Стрижка бороди", "Камуфлювання голови", "Камуфлювання бороди"],
   trust: { source: "Google", rating: 5.0, reviewCount: 157, observedAt: "2026-09-29" },
   channels: [
@@ -135,6 +139,7 @@ export const cvitVyshniConcept = Object.freeze({
   postalCode: "08205",
   countryCode: "UA",
   hours: ["Щодня 09:00–20:00"],
+  schemaHours: ["Mo-Su 09:00-20:00"],
   services: ["Квіти", "Букети", "Флористична студія"],
   trust: { source: "Google", rating: 5.0, reviewCount: 39, observedAt: "2026-09-29" },
   channels: [
