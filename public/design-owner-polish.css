@@ -609,3 +609,19 @@
 @media (max-width: 1180px) and (min-width: 901px) {
   .site-header .header-login-link { padding-inline: .55rem !important; }
 }
+
+.site-header + .hc-product-context .hc-family-nav a,
+.hc-experience .hc-family-nav a {
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  padding-left: .76rem !important;
+}
+.site-header + .hc-product-context .hc-family-nav a:hover,
+.site-header + .hc-product-context .hc-family-nav a:focus-visible,
+.site-header + .hc-product-context .hc-family-nav a[aria-current="page"],
+.hc-experience .hc-family-nav a:hover,
+.hc-experience .hc-family-nav a:focus-visible,
+.hc-experience .hc-family-nav a[aria-current="page"] {
+  background: rgba(157,136,255,.09) !important;
+}
