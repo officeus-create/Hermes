@@ -78,7 +78,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       verificationLabel: "Self-submitted · verification pending",
       seoGeo: {
         startedAt: row.seo_geo_started_at || row.catalog_published_at || null,
-        reportingCadence: "monthly",
+        reportingCadence: "weekly",
         nextReportAt: row.next_seo_report_at || null,
         evaluationHorizon: "6 months+",
         guarantee: false,
