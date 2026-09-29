@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import DirectionProductNav from "../../../../components/DirectionProductNav.astro";
+import { catalogBusinessConcepts } from "../../../../data/catalog-business-concepts";
+const businesses=catalogBusinessConcepts.filter((business)=>business.countrySlug==="ukraine"&&business.localitySlug==="irpin");
+const url="https://hermeslogisticsus.com/businesses/ukraine/irpin/";
+const schema=[{"@context":"https://schema.org","@type":"CollectionPage",name:"Businesses in Irpin | Hermes Catalog",url,mainEntity:{"@type":"ItemList",itemListElement:businesses.map((business,index)=>({"@type":"ListItem",position:index+1,name:business.name,url:`${url}${business.slug}/`}))}}];
+---
+<BaseLayout title="Businesses in Ірпінь | Hermes Catalog" description="Evidence-backed business profiles in Ірпінь, Kyiv region, within the secondary international Hermes Catalog." schema={schema}>
+  <SiteHeader theme="light" activePath="/businesses/" /><DirectionProductNav direction="catalog" theme="light" />
+  <main class="hub"><div class="shell"><nav><a href="/businesses/">Catalog</a><span>→</span><a href="/businesses/international/">International</a><span>→</span><a href="/businesses/ukraine/">Ukraine</a></nav><header><p class="eyebrow">Ukraine · Ірпінь</p><h1>Businesses in Ірпінь</h1><p>International profiles remain secondary in the main Catalog interface while staying indexable and useful for local SEO/GEO discovery.</p></header><section class="grid">{businesses.map((business)=><article><span>{business.vertical.replaceAll("_"," ")}</span><h2>{business.name}</h2><p>{business.primaryIntent}</p><a href={`/businesses/ukraine/irpin/${business.slug}/`}>Open profile →</a></article>)}</section></div></main><SiteFooter />
+</BaseLayout>
+<style>.hub{background:#f6f7f9;color:#172033;min-height:70vh}.shell{width:min(1080px,calc(100% - 32px));margin:auto;padding:54px 0 90px}.shell nav{display:flex;gap:8px;flex-wrap:wrap;font-size:12px}.shell nav a{color:#326c9f;text-decoration:none}.shell nav span{color:#9aa5af}.eyebrow{margin-top:32px;color:#2168a6;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}h1{margin:8px 0 16px;font-size:clamp(42px,6vw,72px);letter-spacing:-.05em}.shell header p:last-child{max-width:820px;color:#667589;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px}.grid article{padding:22px;border:1px solid #dfe6ee;border-radius:16px;background:#fff}.grid article>span{font-size:10px;text-transform:uppercase;color:#2168a6;font-weight:900}.grid h2{margin:10px 0 6px}.grid p{color:#718095}.grid a{color:#1768af;text-decoration:none;font-weight:850}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style>
