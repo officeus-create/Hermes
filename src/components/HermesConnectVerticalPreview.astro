@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+interface Props { business: CatalogBusinessConcept; }
+const { business }=Astro.props;
+const catalog=`/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
+const modules={
+  restaurant:["Menu","Orders / requests","Customers","Delivery / pickup","Reviews","Analytics"],
+  barber_shop:["Services","Appointments","Masters","Customers","Reminders","Reviews"],
+  flower_shop:["Products / bouquets","Orders","Customers","Delivery","Occasions / reminders","Reviews"],
+  repair_shop:["Services","Appointments","Customers","Work history","Reviews","Analytics"],
+  retail:["Products","Requests","Customers","Inventory notes","Reviews","Analytics"]
+}[business.vertical];
+---
+<BaseLayout title={`${business.name} | Hermes Connect CRM Preview`} description={`Hermes Connect ${business.vertical} CRM preview for ${business.name}.`} robots="noindex,nofollow">
+<SiteHeader theme="light" activePath="/services/hermes-connect/" />
+<main class="crm"><div class="shell">
+  <header><div><p>HERMES CONNECT · {business.vertical.replace("_"," ").toUpperCase()}</p><h1>{business.name}</h1><span>PREVIEW · OWNER ACCESS PENDING</span></div><div class="actions"><a href={catalog}>Open Catalog profile</a><a href={`/businesses/request/?type=claim&business=${encodeURIComponent(business.name)}&profile=${encodeURIComponent(catalog)}&city=${encodeURIComponent(business.locality)}&country=Ukraine`}>Claim / verify</a></div></header>
+  <section class="stats"><article><small>Market</small><b>International</b><span>Secondary catalog priority</span></article><article><small>Vertical</small><b>{business.vertical.replace("_"," ")}</b><span>Shared Hermes Connect core</span></article><article><small>Lead source</small><b>Hermes Catalog</b><span>Attribution preserved</span></article><article><small>State</small><b>{business.status}</b><span>Activation after owner verification</span></article></section>
+  <section class="workspace"><article><p class="kicker">BUSINESS ENTITY</p><h2>One verified record, reused everywhere.</h2><dl><div><dt>Name</dt><dd>{business.name}</dd></div><div><dt>Location</dt><dd>{business.address}, {business.locality}</dd></div><div><dt>Phone</dt><dd>{business.phone}</dd></div><div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div></dl></article>
+  <article><p class="kicker">VERTICAL MODULES</p><h2>Same CRM core, business-specific workflow.</h2><div class="modules">{modules.map((m)=><span>{m}</span>)}</div><p>Modules shown here define the intended vertical configuration. Transactional actions stay off until the business owner claims and verifies the workspace.</p></article></section>
+  <section class="pipeline"><p class="kicker">PIPELINE</p><h2>Discovery → claim → activation → measurable growth</h2><div><span>Catalog discovery</span><b>→</b><span>Owner verification</span><b>→</b><span>CRM activation</span><b>→</b><span>Website / SEO / GEO</span><b>→</b><span>Lead & retention analytics</span></div></section>
+</div></main><SiteFooter/>
+</BaseLayout>
+<style>
+.crm{min-height:72vh;background:#f4f6f8;color:#172033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:100px 0 76px}header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}header p,.kicker{font-size:11px;letter-spacing:.13em;font-weight:900;color:#2469a3}h1{font-size:clamp(38px,6vw,68px);margin:.3rem 0}header span{font-size:12px;color:#6c7b8e}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions a{padding:10px 12px;border:1px solid #d4dde7;border-radius:10px;background:#fff;text-decoration:none;color:#205f96;font-weight:800}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:28px}.stats article,.workspace article,.pipeline{padding:19px;border:1px solid #dfe5ec;background:#fff;border-radius:15px}.stats small,.stats span{display:block;color:#788697;font-size:11px}.stats b{display:block;font-size:19px;margin:4px 0}.workspace{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.workspace h2,.pipeline h2{margin:.3rem 0 1rem}.workspace dl div{display:grid;grid-template-columns:90px 1fr;gap:10px;padding:8px 0;border-top:1px solid #edf1f4}.workspace dd{margin:0}.modules{display:flex;gap:8px;flex-wrap:wrap}.modules span,.pipeline span{padding:9px 11px;border-radius:999px;background:#eef4f8;font-size:12px}.workspace p{color:#687688;line-height:1.6}.pipeline{margin-top:12px}.pipeline>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}@media(max-width:760px){header,.stats,.workspace{display:grid;grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+</style>
