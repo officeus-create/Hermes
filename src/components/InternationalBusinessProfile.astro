@@ -6,6 +6,9 @@ import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
+const mapChannel = business.channels.find((channel) => channel.direction === "maps");
+const identityChannels = business.channels.filter((channel) => channel.direction !== "maps").map((channel) => channel.url);
+const sameAs = [...new Set([...(business.website ? [business.website] : []), ...identityChannels])];
 const verticalLabel = {
   restaurant: "Restaurant",
   barber_shop: "Barber shop",
@@ -31,17 +34,24 @@ const schema = [
     name:business.name,
     url:profileUrl,
     telephone:business.phone,
-    ...(business.website ? { sameAs:[business.website, ...business.channels.map((x)=>x.url)] } : { sameAs:business.channels.map((x)=>x.url) }),
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(mapChannel ? { hasMap: mapChannel.url } : {}),
+    mainEntityOfPage: profileUrl,
+    additionalProperty: [
+      {"@type":"PropertyValue",name:"Hermes relationship state",value:business.status},
+      {"@type":"PropertyValue",name:"Hermes evidence reference",value:business.sourceRef}
+    ],
     address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,postalCode:business.postalCode,addressCountry:business.countryCode},
     ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
   {
     "@context":"https://schema.org",
     "@type":"Service",
-    name:`${business.name} business discovery and activation profile`,
-    provider:{"@id":profileUrl+"#business"},
+    name:`Hermes Catalog discovery profile for ${business.name}`,
+    provider:{"@id":"https://hermeslogisticsus.com/#organization"},
+    about:{"@id":profileUrl+"#business"},
     areaServed:{"@type":"Place",name:`${business.locality}, ${business.region}, Ukraine`},
-    serviceType:business.primaryIntent,
+    serviceType:"Business discovery, claim and Hermes Connect activation path",
     url:profileUrl
   },
   {
