@@ -19,6 +19,7 @@ test("homepage keeps a restrained four-pillar entrance and shared direction colo
       gridRadius: getComputedStyle(grid).borderRadius,
       imageDisplay: rooms.map((room) => getComputedStyle(room.querySelector<HTMLElement>(".home-room-image")!).display),
       topBorders: rooms.map((room) => getComputedStyle(room).borderTopWidth),
+      leftBorders: rooms.map((room) => getComputedStyle(room).borderLeftWidth),
       accents: rooms.map((room) => room.style.getPropertyValue("--room-accent")),
       scriptColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-script em")!).color,
       noteColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-ink-note")!).color,
@@ -29,10 +30,13 @@ test("homepage keeps a restrained four-pillar entrance and shared direction colo
 
   expect(polish).not.toBeNull();
   expect(polish!.headerRadius).not.toBe("0px");
-  const expectedGridRadius = (page.viewportSize()?.width ?? 1280) <= 620 ? "24px" : "32px";
+  const viewportWidth = page.viewportSize()?.width ?? 1280;
+  const isMobilePillar = viewportWidth <= 620;
+  const expectedGridRadius = isMobilePillar ? "24px" : "32px";
   expect(polish!.gridRadius).toBe(expectedGridRadius);
   expect(polish!.imageDisplay).toEqual(["none", "none", "none", "none"]);
-  expect(polish!.topBorders.every((value) => parseFloat(value) >= 6)).toBe(true);
+  const primaryBorders = isMobilePillar ? polish!.leftBorders : polish!.topBorders;
+  expect(primaryBorders.every((value) => parseFloat(value) >= 6)).toBe(true);
   expect(new Set(polish!.accents).size).toBe(4);
   expect(polish!.scriptColor).not.toBe("rgba(255, 255, 255, 0.62)");
   expect(polish!.noteColor).not.toBe("rgba(255, 255, 255, 0.52)");
