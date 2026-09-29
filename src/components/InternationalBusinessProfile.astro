@@ -41,7 +41,7 @@ const schema = [
       {"@type":"PropertyValue",name:"Hermes relationship state",value:business.status},
       {"@type":"PropertyValue",name:"Hermes evidence reference",value:business.sourceRef}
     ],
-    address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,postalCode:business.postalCode,addressCountry:business.countryCode},
+    address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,...(business.postalCode?{postalCode:business.postalCode}:{}),addressCountry:business.countryCode},
     ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
   {
@@ -86,7 +86,7 @@ const schema = [
   </header>
   <section class="grid">
     <article><h2>Business facts</h2><dl>
-      <div><dt>Address</dt><dd>{business.address}, {business.locality}, {business.region}, {business.postalCode}</dd></div>
+      <div><dt>Address</dt><dd>{[business.address,business.locality,business.region,business.postalCode].filter(Boolean).join(", ")}</dd></div>
       <div><dt>Phone</dt><dd><a href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a></dd></div>
       <div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div>
       {business.website && <div><dt>Website</dt><dd><a href={business.website} rel="noreferrer" target="_blank">{business.website}</a></dd></div>}
