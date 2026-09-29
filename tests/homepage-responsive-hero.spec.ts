@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage entry uses four directional visual scenes and keeps the canonical social preview", async ({ page }) => {
+test("homepage entry uses four restrained direction pillars and keeps the canonical social preview", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -13,15 +13,21 @@ test("homepage entry uses four directional visual scenes and keeps the canonical
   await expect(rooms).toHaveCount(4);
   await expect(roomImages).toHaveCount(4);
 
-  for (let index = 0; index < 4; index += 1) {
-    await rooms.nth(index).scrollIntoViewIfNeeded();
-    if (index > 0) {
-      await expect(rooms.nth(index)).toHaveAttribute("data-image-ready", "true");
-    }
-    await expect.poll(() =>
-      roomImages.nth(index).evaluate((node) => getComputedStyle(node as HTMLElement).backgroundImage),
-    ).toMatch(/^url\(/);
-  }
+  const visual = await rooms.evaluateAll((nodes) => nodes.map((node) => {
+    const element = node as HTMLElement;
+    const image = element.querySelector<HTMLElement>(".home-room-image");
+    const style = getComputedStyle(element);
+    return {
+      accent: element.style.getPropertyValue("--room-accent"),
+      imageDisplay: image ? getComputedStyle(image).display : "",
+      topBorder: parseFloat(style.borderTopWidth),
+      leftBorder: parseFloat(style.borderLeftWidth),
+    };
+  }));
+
+  expect(new Set(visual.map((item) => item.accent)).size).toBe(4);
+  expect(visual.every((item) => item.imageDisplay === "none")).toBe(true);
+  expect(visual.every((item) => Math.max(item.topBorder, item.leftBorder) >= 6)).toBe(true);
 
   await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);
   await expect(page.locator(".hero-media picture")).toHaveCount(0);
