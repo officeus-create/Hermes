@@ -9,6 +9,7 @@ const ownerPaths = new Set([
   `${repairShopRoot}/vehicles`,
   `${repairShopRoot}/services`,
   `${repairShopRoot}/settings`,
+  `${repairShopRoot}/social`,
 ]);
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
@@ -56,6 +57,7 @@ const items = [
   { label:copy.feedback, href:withLocale(`${repairShopRoot}/dashboard/`, "#feedback-title"), active:false, icon:"message" },
   { label:copy.discount, href:withLocale(`${repairShopRoot}/dashboard/`, "#driver-discount"), active:false, icon:"discount" },
   { label:copy.settings, href:withLocale(`${repairShopRoot}/settings/`), active:normalizedPath === `${repairShopRoot}/settings`, icon:"settings" },
+  { label:copy.social, href:withLocale(`${repairShopRoot}/social/`), active:normalizedPath === `${repairShopRoot}/social`, icon:"grid" },
 ];
 const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
   ? copy.appointments
@@ -69,7 +71,9 @@ const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
           ? copy.settings
           : normalizedPath === `${repairShopRoot}/availability`
             ? copy.availability
-            : copy.today;
+            : normalizedPath === `${repairShopRoot}/social`
+              ? copy.social
+              : copy.today;
 const productHubHref = withLocale("/services/hermes-connect/");
 const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 ---
@@ -161,8 +165,10 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
               ? "settings"
               : currentPath === `${ROOT}/availability`
                 ? "availability"
-                : "today";
-    const navKeys = ["today", "appointments", "customers", "vehicles", "services", "availability", "feedback", "discount", "settings"];
+                : currentPath === `${ROOT}/social`
+                  ? "social"
+                  : "today";
+    const navKeys = ["today", "appointments", "customers", "vehicles", "services", "availability", "feedback", "discount", "settings", "social"];
 
     const localizeHref = (href) => {
       const url = new URL(href, window.location.origin);
@@ -239,33 +245,6 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     overlay?.addEventListener("click", () => setOpen(false));
     root.querySelectorAll("[data-repair-crm-link]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
-
-    void (async () => {
-      try {
-        const response = await fetch("/api/internal/social/threads/connections", {
-          credentials:"same-origin",
-          headers:{ Accept:"application/json" },
-        });
-        const payload = await response.json().catch(() => null);
-        if (!response.ok || !payload?.success || root.querySelector("[data-hc-social-connections-link]")) return;
-        const nav = root.querySelector(".repair-crm-nav");
-        if (!nav) return;
-        const link = document.createElement("a");
-        link.className = "repair-crm-nav-item";
-        link.href = localizeHref("/services/hermes-connect/internal/social-connections/");
-        link.setAttribute("data-repair-crm-link", "");
-        link.setAttribute("data-hc-social-connections-link", "");
-        const icon = document.createElement("span");
-        icon.className = "repair-crm-icon";
-        icon.setAttribute("aria-hidden", "true");
-        icon.textContent = "◎";
-        const label = document.createElement("span");
-        label.textContent = copy.social;
-        link.append(icon, label);
-        link.addEventListener("click", () => setOpen(false));
-        nav.append(link);
-      } catch {}
-    })();
 
     const activeLogoutRedirect = localizeHref(`${ROOT}/auth/`) || logoutRedirect;
     const logoutButtons = Array.from(root.querySelectorAll("[data-repair-crm-logout]")).filter((button) => button instanceof HTMLButtonElement);
