@@ -588,7 +588,7 @@
 .site-header .nav-tone-connect.hc-launcher-header::before { display: none !important; }
 .site-header .nav-tone-connect.hc-launcher-header:hover,
 .site-header .nav-tone-connect.hc-launcher-header:focus-visible {
-  border-left-width: 4px !important;
+  border-left-width: 5px !important;
   background: transparent !important;
   transform: none !important;
 }
