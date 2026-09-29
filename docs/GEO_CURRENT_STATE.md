@@ -1,6 +1,6 @@
 # Hermes GEO — Current State
 
-Updated: 2026-09-18
+Updated: 2026-09-29
 
 This file is the single current repository handoff for GEO/public-AI visibility work. Historical GEO stacks remain provenance only and must not be replayed wholesale.
 
@@ -94,12 +94,26 @@ Connected Search Console evidence for `https://hermeslogisticsus.com/`, settled 
 - recruiting owners are currently the strongest search winners, including `/careers/car-hauling-dispatcher/` around position 4.60 and `/logistics/careers/` around position 4.71;
 - the Auction Vehicle Pickup and Car Hauler Capacity checklists are current near-page-one/page-two support assets and should be strengthened before broad new page generation.
 
-Connected GA4 evidence is usable for instrumentation checks but **not yet a clean human-traffic or revenue baseline**:
+Connected GA4 evidence is usable for instrumentation checks but **not yet a clean human-traffic or revenue baseline**.
 
-- the 28-day property contains a very large direct/test/automation footprint, so total sessions must not be presented as audience growth;
-- `google / organic` and `chatgpt.com / ai-assistant` referral classifications are present, but internal/agent visits are also visible in those channels;
-- `commercial_cta_click` and `seo_intake_start` events are present, while no current `seo_intake_preview_ready` / `seo_handoff_ready` outcome receipt or configured key event proves a real qualified conversion;
+### 2026-09-29 GA4 contamination boundary and post-incident baseline
+
+Fresh authenticated Windsor GA4 readback for property `547903956` (`https://hermeslogisticsus.com`) proves that the extreme direct/test footprint was concentrated on **2026-09-01 through 2026-09-04**, rather than continuing at the same rate through the month:
+
+- the repeated anomalous money-page batches were `204 / 41 / 147 / 85` sessions on Sep 1-4 for several owners, with `/paths/marketing` showing approximately double those batch sizes; after Sep 4 those repeated packages disappear;
+- therefore the Sep 1-4 rows must remain excluded from any audience-growth or conversion-rate baseline rather than being averaged into later traffic;
+- for the bounded **2026-09-05 through 2026-09-26** window GA4 reports `364 sessions / 103 active users / 262 engaged sessions / 71.98% engagement rate / 1,880 page views`;
+- that bounded window still contains internal/agent/test traffic and is only a cleaner operational baseline, not a verified-human baseline;
+- source/medium counts in that bounded window are: `Direct 179`, `chatgpt.com / ai-assistant 68`, `work.ua / referral 45`, `google / organic 37`, known Cloudflare test sources `17`, `mail.google.com / referral 9`, and `london / organic 4`; these are attribution observations, not customer counts;
+- GA4 records `0` configured key events in the bounded window. Product events such as `hc_repair_paid_intent_submitted` may exist as instrumentation events but do not prove a qualified lead, receiver delivery, opportunity or revenue;
+- `commercial_cta_click` is present once in the post-Sep-4 bounded window, while the earlier large `commercial_cta_click` / `seo_intake_start` totals were part of the contaminated period;
+- `google / organic` and `chatgpt.com / ai-assistant` classifications are now directly readable through the connected GA4 property, but internal/agent visits are still visible in those channels;
 - therefore `SEARCH_OR_AI_TO_QUALIFIED_LEAD` remains `NOT_PROVEN`, not `0%`.
+
+Current access state on 2026-09-29:
+- Windsor Hermes profile has authenticated GA4 read access to property `547903956`;
+- the current GSC Wizard connection sees `sc-domain:hermeslogisticsus.com` as not verified for its connected Google account, so fresh URL Inspection / Search Console reads must not be claimed from that connector until ownership/access is corrected;
+- GSC Wizard GA4 scope is also not granted; Windsor remains the current authenticated GA4 evidence source.
 
 This checkpoint authorizes ranking/authority/conversion-measurement work on existing owners. It does not authorize a broad Logistics copy rewrite, mass page expansion, or a claim that AI referrals produced customers.
 
