@@ -572,3 +572,40 @@
     color: #646b78 !important;
   }
 }
+
+/* 14. 2026-09-29 global navigation hierarchy — four primary direction pillars,
+   restrained secondary product/content markers, and a direct account entry. */
+.site-header .nav-tone-connect.hc-launcher-header {
+  border: 0 !important;
+  border-left: 3px solid #9D88FF !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: .34rem .42rem .34rem .68rem !important;
+  overflow: visible !important;
+  transform: none !important;
+}
+.site-header .nav-tone-connect.hc-launcher-header::before { display: none !important; }
+.site-header .nav-tone-connect.hc-launcher-header:hover,
+.site-header .nav-tone-connect.hc-launcher-header:focus-visible {
+  border-left-width: 4px !important;
+  background: transparent !important;
+  transform: none !important;
+}
+.site-header .nav-tone-connect .hc-launcher-header-copy small { display: none !important; }
+.site-header .nav-tone-connect .hc-launcher-header-copy > span { color: currentColor !important; }
+.site-header .header-login-link {
+  color: inherit !important;
+  background: transparent !important;
+}
+.site-header .catalog-nav-link span,
+.site-header .mobile-catalog-link span {
+  color: inherit !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  animation: none !important;
+}
+@media (max-width: 1180px) and (min-width: 901px) {
+  .site-header .header-login-link { padding-inline: .55rem !important; }
+}
