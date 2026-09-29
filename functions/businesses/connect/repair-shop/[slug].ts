@@ -68,6 +68,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const services = await servicesForShop(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
   const hours = await hoursForShop(env.DB, String(row.id || ""));
   const canonical = `https://hermeslogisticsus.com/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug))}/`;
+  const catalogBusinessId = `repair-shop-crm:${String(row.id)}`;
   const location = [row.city, row.region || row.state].filter(Boolean).join(", ");
   const addressText = [row.address_line1, row.city, row.region || row.state, row.postal_code].filter(Boolean).join(", ");
   const phoneText = String(row.phone || "").trim();
@@ -113,6 +114,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ...(services.length ? { knowsAbout: services } : {}),
     ...(openingHoursSpecification.length ? { openingHoursSpecification } : {}),
     ...(phoneText ? { telephone: phoneText } : {}),
+    ...(mapsHref ? { hasMap: mapsHref } : {}),
     ...(socialUrls.length ? { sameAs: socialUrls } : {}),
   };
   const serviceList = services.length
