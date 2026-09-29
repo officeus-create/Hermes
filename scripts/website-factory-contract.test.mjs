@@ -14,7 +14,9 @@ import {
   canTransitionCatalogState,
   catalogConceptPreviewGate,
   catalogConceptPublicationQa,
+  catalogConceptSeoReadiness,
   catalogSemanticSignals,
+  ethicalCatalogAttributionLink,
   normalizeConceptSourceImports,
 } from "../src/lib/catalog-concept-governance.mjs";
 
@@ -119,7 +121,13 @@ const verifiedConceptDraft = {
   sourceImports: conceptDraft.sourceImports.map((source) => transitionWebsiteFactorySourceImport(source, "verified")),
 };
 assert.equal(websiteFactoryCatalogPublicationGate(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+assert.equal(catalogConceptSeoReadiness(conceptDraft).ready, false);
+assert.equal(catalogConceptSeoReadiness(verifiedConceptDraft).ready, true);
 assert.equal(catalogConceptPublicationQa(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+const attributionLink = ethicalCatalogAttributionLink({ href: "https://example.com/source", label: "Public source" });
+assert.equal(attributionLink.editoriallyRequired, true);
+assert.equal(attributionLink.reciprocalRequired, false);
+assert.equal(attributionLink.paidLinkRequired, false);
 assert.throws(() => transitionWebsiteFactorySourceImport(verifiedConceptDraft.sourceImports[0], "pending"), /source_import_transition_invalid/);
 
 assert.match(drafts, /getAuthenticatedSpecialist/, "draft collection must require the shared Hermes session");
