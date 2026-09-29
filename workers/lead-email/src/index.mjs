@@ -44,7 +44,18 @@ const isAllowedSubject = (value) =>
   value === "[HERMES CONTRACT] [CARRIER ONBOARDING]" ||
   /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
   /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|GENERAL)\]$/.test(value);
-const isAccountSubject = (value) => value === "[HERMES ACCOUNT] [PASSWORD RESET]" || value === "[HERMES ACCOUNT] [CATALOG INQUIRY]";
+const ACCOUNT_SUBJECTS = new Set([
+  "[HERMES ACCOUNT] [PASSWORD RESET]",
+  "[HERMES ACCOUNT] [CATALOG INQUIRY]",
+  "[HERMES ACCOUNT] [CATALOG WEEKLY REPORT]",
+  "Your Hermes Connect shop is waiting for you",
+  "Ваш кабинет Hermes Connect ждёт вас",
+  "Ваш кабінет Hermes Connect чекає на вас",
+  "Tu taller en Hermes Connect te espera",
+  "La tua officina Hermes Connect ti aspetta",
+  "Votre atelier Hermes Connect vous attend",
+]);
+const isAccountSubject = (value) => ACCOUNT_SUBJECTS.has(value);
 
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
