@@ -2,11 +2,11 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const roomMeta: Record<string, { accent: string; glow: string; label: string }> = {
-  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight" },
-  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand" },
-  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems" },
-  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability" },
+const roomMeta: Record<string, { accent: string; glow: string; label: string; displayNumber: string }> = {
+  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight", displayNumber: "01" },
+  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand", displayNumber: "02" },
+  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems", displayNumber: "03" },
+  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability", displayNumber: "04" },
 };
 ---
 
@@ -38,7 +38,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string }> 
             <span class="home-room-image" aria-hidden="true"></span>
             <span class="home-room-shade" aria-hidden="true"></span>
             <span class="home-room-content">
-              <span class="home-room-number">{path.number}</span>
+              <span class="home-room-number">{meta.displayNumber}</span>
               <span class="home-room-copy">
                 <small>{meta.label}</small>
                 <strong>{path.brandLabel}</strong>
