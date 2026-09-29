@@ -506,7 +506,7 @@ export async function onRequestPost({ request, env }: Context) {
     return json(allowedOrigin, 200, {
       success: true,
       request_id: requestId,
-      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
+      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked, owner_notified: ownerNotified } : {}),
     });
   } catch (error) {
     if (catalogRecord && env.DB) await markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "failed").catch(() => undefined);
