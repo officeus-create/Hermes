@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import HermesConnectVerticalPreview from "../../../../components/HermesConnectVerticalPreview.astro";
+import { tsvitVyshniConcept as business } from "../../../../data/catalog-business-concepts";
+const profilePath="/businesses/ukraine/irpin/tsvit-vyshni/";
+---
+<BaseLayout title="Цвіт VYSHNI | Hermes Connect Flower Shop CRM Preview" description="Noindex Hermes Connect flower-shop CRM preview using the shared business core plus florist-specific modules." robots="noindex,nofollow">
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="preview-page"><div class="shell"><HermesConnectVerticalPreview business={business} profilePath={profilePath} /></div></main>
+  <SiteFooter />
+</BaseLayout>
+<style>.preview-page{background:#f4f6f4;color:#17211e}.shell{width:min(1160px,calc(100% - 32px));margin:auto;padding:40px 0 80px}</style>
