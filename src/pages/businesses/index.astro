@@ -10,11 +10,11 @@ import { directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } f
 import { hermesCatalogOffers, priorityGrowthCities } from "../../data/hermes-catalog-offers";
 import { academyCountryRegistry, academyLaunchTracks } from "../../data/academy-country-registry";
 import { usStateDirectoryTiles } from "../../data/us-state-directory-map";
-import { catalogBusinessConcepts } from "../../data/catalog-business-concepts";
+import { catalogBusinessConcepts, type CatalogBusinessConcept } from "../../data/catalog-business-concepts";
 
 const directoryUrl = "https://hermeslogisticsus.com/businesses/";
 const usBusinesses = repairShopDirectory.filter((business) => business.country === "US");
-const internationalBusinesses = catalogBusinessConcepts.filter((business) => business.market === "international");
+const internationalBusinesses: readonly CatalogBusinessConcept[] = catalogBusinessConcepts.filter((business) => business.market === "international");
 const stateCounts = new Map<string, number>();
 for (const business of usBusinesses) stateCounts.set(business.stateSlug, (stateCounts.get(business.stateSlug) ?? 0) + 1);
 const categoryCounts = [...new Map(usBusinesses.map((business) => [business.category, usBusinesses.filter((item) => item.category === business.category).length])).entries()];
