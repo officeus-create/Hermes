@@ -16,7 +16,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/services/hermes-connect/demos/mangal-i-kazan/",
@@ -29,7 +32,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/businesses/ukraine/chaiky/trimmo-ii/",
@@ -42,7 +48,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/services/hermes-connect/demos/trimmo-ii/",
@@ -55,7 +64,26 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/ukraine/irpin/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/ukraine/irpin/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/ukraine/irpin/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/businesses/ukraine/irpin/cvit-vyshni/",
@@ -68,7 +96,10 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     },
     {
       "route": "/services/hermes-connect/demos/cvit-vyshni/",
@@ -81,12 +112,15 @@
       "status": "COMPLETE",
       "blocker": null,
       "response_status": 200,
-      "comparison": {"production":"pending_deployment","immutable_release":"missing"}
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 6,
-    "indexable_route_count_added": 3,
+    "route_count_added": 7,
+    "indexable_route_count_added": 4,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
