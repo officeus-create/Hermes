@@ -1,10 +1,12 @@
 (() => {
   const grid = document.querySelector('[data-catalog-grid]');
   if (!grid) return;
+  const identityKey = (name, city, state) => [name, city, state].map((value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')).join('|');
   const makeCard = (company) => {
     const article = document.createElement('article');
     article.className = 'business-card';
     article.dataset.catalogCard = '';
+    article.dataset.businessKey = identityKey(company.companyName, company.city, company.state);
     const services = Array.isArray(company.services) ? company.services.slice(0, 4).map(String) : [];
     article.dataset.searchText = [company.companyName, 'Repair Shop', company.city, company.state, ...services].filter(Boolean).join(' ').toLowerCase();
 
@@ -52,13 +54,24 @@
     .then((response) => response.ok ? response.json() : null)
     .then((payload) => {
       if (!payload?.success || !Array.isArray(payload.companies)) return;
-      const existing = new Set([...grid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')));
+      const existingHrefs = new Set([...grid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')));
+      const existingByKey = new Map([...grid.querySelectorAll('[data-business-key]')].map((card) => [card.getAttribute('data-business-key'), card]));
       for (const company of payload.companies) {
         const href = String(company?.profileUrl || '');
-        if (!href || company?.companyType !== 'repair_shop' || existing.has(href)) continue;
-        grid.append(makeCard(company));
-        existing.add(href);
+        if (!href || company?.companyType !== 'repair_shop' || existingHrefs.has(href)) continue;
+        const key = identityKey(company.companyName, company.city, company.state);
+        const card = makeCard(company);
+        const duplicate = key ? existingByKey.get(key) : null;
+        if (duplicate) duplicate.replaceWith(card);
+        else grid.append(card);
+        existingByKey.set(key, card);
+        existingHrefs.add(href);
       }
+      const businessCount = grid.querySelectorAll('[data-catalog-card]').length;
+      document.querySelectorAll('[data-business-profile-count]').forEach((node) => { node.textContent = String(businessCount); });
+      const catalogCount = document.querySelector('[data-catalog-count]');
+      const serviceCount = Number(catalogCount?.getAttribute('data-service-count') || 0);
+      if (catalogCount) catalogCount.textContent = `${businessCount + serviceCount} searchable entries`;
       document.dispatchEvent(new CustomEvent('hermes:catalog-profiles-loaded'));
     })
     .catch(() => {});
