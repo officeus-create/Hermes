@@ -13,12 +13,12 @@ const ownerPaths = new Set([
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
 const strings = {
-  en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", discount:"Driver discount", settings:"Company", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-  ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", discount:"Скидка водителям", settings:"Компания", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-  uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", discount:"Знижка водіям", settings:"Компанія", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-  es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", discount:"Descuento conductores", settings:"Empresa", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-  it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", discount:"Sconto autisti", settings:"Azienda", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-  fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", discount:"Remise conducteurs", settings:"Entreprise", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+  en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", discount:"Driver discount", settings:"Company", products:"Product Hub", social:"Social connections", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+  ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", discount:"Скидка водителям", settings:"Компания", products:"Все продукты", social:"Соцсети", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+  uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", discount:"Знижка водіям", settings:"Компанія", products:"Усі продукти", social:"Соцмережі", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+  es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", discount:"Descuento conductores", settings:"Empresa", products:"Productos", social:"Conexiones sociales", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+  it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", discount:"Sconto autisti", settings:"Azienda", products:"Prodotti", social:"Connessioni social", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+  fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", discount:"Remise conducteurs", settings:"Entreprise", products:"Produits", social:"Connexions sociales", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
 } as const;
 type Locale = keyof typeof strings;
 const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase();
@@ -140,12 +140,12 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     const requested = (params.get("lang") || "en").toLowerCase();
     const locale = supported.has(requested) ? requested : "en";
     const strings = {
-      en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", discount:"Driver discount", settings:"Company", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-      ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", discount:"Скидка водителям", settings:"Компания", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-      uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", discount:"Знижка водіям", settings:"Компанія", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-      es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", discount:"Descuento conductores", settings:"Empresa", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-      it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", discount:"Sconto autisti", settings:"Azienda", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-      fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", discount:"Remise conducteurs", settings:"Entreprise", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+      en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", discount:"Driver discount", settings:"Company", products:"Product Hub", social:"Social connections", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+      ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", discount:"Скидка водителям", settings:"Компания", products:"Все продукты", social:"Соцсети", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+      uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", discount:"Знижка водіям", settings:"Компанія", products:"Усі продукти", social:"Соцмережі", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+      es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", discount:"Descuento conductores", settings:"Empresa", products:"Productos", social:"Conexiones sociales", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+      it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", discount:"Sconto autisti", settings:"Azienda", products:"Prodotti", social:"Connessioni social", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+      fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", discount:"Remise conducteurs", settings:"Entreprise", products:"Produits", social:"Connexions sociales", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
     };
     const copy = strings[locale] || strings.en;
     const currentPath = window.location.pathname.replace(/\/+$/, "");
@@ -239,6 +239,33 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     overlay?.addEventListener("click", () => setOpen(false));
     root.querySelectorAll("[data-repair-crm-link]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
+
+    void (async () => {
+      try {
+        const response = await fetch("/api/internal/social/threads/connections", {
+          credentials:"same-origin",
+          headers:{ Accept:"application/json" },
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok || !payload?.success || root.querySelector("[data-hc-social-connections-link]")) return;
+        const nav = root.querySelector(".repair-crm-nav");
+        if (!nav) return;
+        const link = document.createElement("a");
+        link.className = "repair-crm-nav-item";
+        link.href = localizeHref("/services/hermes-connect/internal/social-connections/");
+        link.setAttribute("data-repair-crm-link", "");
+        link.setAttribute("data-hc-social-connections-link", "");
+        const icon = document.createElement("span");
+        icon.className = "repair-crm-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "◎";
+        const label = document.createElement("span");
+        label.textContent = copy.social;
+        link.append(icon, label);
+        link.addEventListener("click", () => setOpen(false));
+        nav.append(link);
+      } catch {}
+    })();
 
     const activeLogoutRedirect = localizeHref(`${ROOT}/auth/`) || logoutRedirect;
     const logoutButtons = Array.from(root.querySelectorAll("[data-repair-crm-logout]")).filter((button) => button instanceof HTMLButtonElement);
