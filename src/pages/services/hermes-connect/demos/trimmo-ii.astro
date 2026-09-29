@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import HermesConnectVerticalPreview from "../../../../components/HermesConnectVerticalPreview.astro";
+import { trimmoIiConcept as business } from "../../../../data/catalog-business-concepts";
+const profilePath="/businesses/ukraine/chaiky/trimmo-ii/";
+---
+<BaseLayout title="TRIMMO II | Hermes Connect Barber Shop CRM Preview" description="Noindex Hermes Connect barber-shop CRM preview using the shared business core plus barber-specific modules." robots="noindex,nofollow">
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="preview-page"><div class="shell"><HermesConnectVerticalPreview business={business} profilePath={profilePath} /></div></main>
+  <SiteFooter />
+</BaseLayout>
+<style>.preview-page{background:#f4f6f4;color:#17211e}.shell{width:min(1160px,calc(100% - 32px));margin:auto;padding:40px 0 80px}</style>
