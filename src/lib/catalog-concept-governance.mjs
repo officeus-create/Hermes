@@ -57,8 +57,35 @@ export function catalogSemanticSignals(conceptDraft) {
   ]).map((item) => clean(item, 180));
 }
 
+export function catalogConceptSeoReadiness(conceptDraft) {
+  const sources = normalizeConceptSourceImports(conceptDraft?.sourceImports || []);
+  const signals = catalogSemanticSignals(conceptDraft);
+  const checks = {
+    identity: Boolean(conceptDraft?.id && conceptDraft?.name),
+    route: Boolean(conceptDraft?.slug && conceptDraft?.countrySlug && conceptDraft?.localitySlug),
+    source_evidence: sources.some((source) => source.status === "verified"),
+    semantic_core: Array.isArray(conceptDraft?.semanticCore) && conceptDraft.semanticCore.length > 0,
+    local_intents: Array.isArray(conceptDraft?.localIntents) && conceptDraft.localIntents.length > 0,
+    semantic_signals: signals.length > 0,
+    owner_boundary: conceptDraft?.ownerApproval?.required === true,
+  };
+  return { ready: Object.values(checks).every(Boolean), checks };
+}
+
+export function ethicalCatalogAttributionLink({ href, label, relationship = "source" } = {}) {
+  return {
+    href: clean(href, 1000),
+    label: clean(label, 160),
+    relationship: clean(relationship, 80) || "source",
+    editoriallyRequired: true,
+    reciprocalRequired: false,
+    paidLinkRequired: false,
+  };
+}
+
 export function catalogConceptPublicationQa(conceptDraft, { ownerApproved = false } = {}) {
   const sources = normalizeConceptSourceImports(conceptDraft?.sourceImports || []);
+  const seo = catalogConceptSeoReadiness(conceptDraft);
   const checks = {
     lifecycle: conceptDraft?.lifecycleState === "CONCEPT_DRAFT" || conceptDraft?.lifecycleState === "REVIEWED",
     noindex_preview: conceptDraft?.publication?.indexable === false,
@@ -67,6 +94,7 @@ export function catalogConceptPublicationQa(conceptDraft, { ownerApproved = fals
     sources_verified: sources.length > 0 && sources.every((source) => source.status === "verified"),
     semantic_core: Array.isArray(conceptDraft?.semanticCore) && conceptDraft.semanticCore.length > 0,
     local_intents: Array.isArray(conceptDraft?.localIntents) && conceptDraft.localIntents.length > 0,
+    seo_readiness: seo.ready,
   };
   return { ready: Object.values(checks).every(Boolean), checks };
 }
