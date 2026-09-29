@@ -23,7 +23,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     SELECT id, request_id, catalog_business_id, catalog_profile, business_name,
            contact_name, contact_email, contact_phone, contact_whatsapp, contact_telegram,
            preferred_language, preferred_contact_time, message, services_json, status,
-           internal_delivery_status, created_at, updated_at
+           internal_delivery_status, owner_delivery_status, owner_delivery_at, created_at, updated_at
     FROM catalog_business_inquiries
     WHERE owner_specialist_id = ?
     ORDER BY created_at DESC, id DESC
@@ -53,6 +53,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       services,
       status: String(row.status || "new"),
       internal_delivery_status: String(row.internal_delivery_status || "pending"),
+      owner_delivery_status: String(row.owner_delivery_status || "skipped"),
+      owner_delivery_at: row.owner_delivery_at == null ? null : String(row.owner_delivery_at),
       created_at: String(row.created_at || ""),
       updated_at: String(row.updated_at || ""),
     };
