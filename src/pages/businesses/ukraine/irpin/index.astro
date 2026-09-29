@@ -1,0 +1,17 @@
+---
+import InternationalBusinessCollection from "../../../../components/InternationalBusinessCollection.astro";
+import { catalogBusinessConcepts } from "../../../../data/catalog-business-concepts";
+const businesses = catalogBusinessConcepts.filter((business) => business.countrySlug === "ukraine" && business.localitySlug === "irpin");
+---
+<InternationalBusinessCollection
+  title="Businesses in Irpin, Kyiv Region | Hermes Catalog"
+  description="Selected public business profiles in Irpin, Kyiv region, published as a secondary international discovery layer with explicit owner-verification boundaries."
+  eyebrow="Hermes Catalog · Ukraine · Irpin"
+  canonical="https://hermeslogisticsus.com/businesses/ukraine/irpin/"
+  businesses={businesses}
+  breadcrumbs={[
+    { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
+    { name: "Ukraine", item: "https://hermeslogisticsus.com/businesses/ukraine/" },
+    { name: "Irpin", item: "https://hermeslogisticsus.com/businesses/ukraine/irpin/" }
+  ]}
+/>
