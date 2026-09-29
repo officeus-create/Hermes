@@ -385,52 +385,19 @@ const languageLinks = siteLocales.map((language) => {
     font-size: clamp(.78rem, .9vw, .86rem);
   }
   .desktop-nav .catalog-nav-link {
-    margin-left: clamp(.45rem, 1vw, 1rem);
-    padding-left: clamp(.9rem, 1.4vw, 1.35rem);
-  }
-  .desktop-nav .catalog-nav-link::before {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 1px;
-    height: 22px;
-    background: currentColor;
-    content: "";
-    opacity: .22;
-    transform: translateY(-50%);
+    margin-left: 0;
   }
   .desktop-nav .catalog-nav-link span,
   .mobile-nav .mobile-catalog-link span {
-    background: linear-gradient(100deg, currentColor 0%, #8ed8ff 28%, #b6a4ff 50%, #73d7c7 70%, currentColor 100%);
-    background-size: 240% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: hermes-catalog-shimmer 5.5s ease-in-out infinite;
-  }
-  .site-header-light .desktop-nav .catalog-nav-link span,
-  .site-header-light .mobile-nav .mobile-catalog-link span {
-    background-image: linear-gradient(100deg, #111324 0%, #1970b8 30%, #6d51c8 52%, #168b7b 72%, #111324 100%);
+    color: inherit;
   }
   .mobile-nav .mobile-catalog-link {
-    margin-top: .25rem;
-    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-    padding-top: .8rem;
-  }
-  @keyframes hermes-catalog-shimmer {
-    0%, 18% { background-position: 100% 50%; }
-    50%, 68% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    margin-top: 0;
   }
   @media (max-width: 1180px) and (min-width: 901px) {
     .desktop-nav--ecosystem { gap: .68rem; margin-left: 1rem; font-size: .76rem; }
-    .desktop-nav .catalog-nav-link { margin-left: .25rem; padding-left: .72rem; }
     .site-header .header-actions { gap: .55rem; }
     .site-header .header-cta { display: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .desktop-nav .catalog-nav-link span,
-    .mobile-nav .mobile-catalog-link span { animation: none; background-position: 50% 50%; }
   }
 
   /* Hermes Connect safe-polish layer. Scoped so the rest of the site is untouched. */
