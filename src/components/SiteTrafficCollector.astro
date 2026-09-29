@@ -3,6 +3,7 @@
 <script is:inline>
   (() => {
     const CONSENT_KEY = "hermes-analytics-consent";
+    const SESSION_KEY = "hermes-site-traffic-session-counted";
     let sent = false;
 
     const hasConsent = () => {
@@ -14,9 +15,25 @@
       }
     };
 
+    const sessionNeedsCounting = () => {
+      try {
+        return sessionStorage.getItem(SESSION_KEY) !== "1";
+      } catch {
+        return false;
+      }
+    };
+
+    const markSessionCounted = () => {
+      try {
+        sessionStorage.setItem(SESSION_KEY, "1");
+      } catch {}
+    };
+
     const send = () => {
       if (sent || !hasConsent()) return;
       sent = true;
+      const sessionStart = sessionNeedsCounting();
+
       fetch("/api/site-traffic", {
         method: "POST",
         credentials: "same-origin",
@@ -24,8 +41,12 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           path: window.location.pathname,
-          analytics_consent: true
+          analytics_consent: true,
+          session_start: sessionStart
         })
+      }).then((response) => {
+        if (!response.ok && response.status !== 204) throw new Error("traffic_delivery_failed");
+        if (sessionStart) markSessionCounted();
       }).catch(() => {
         sent = false;
       });
