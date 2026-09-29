@@ -372,7 +372,7 @@ export async function onRequestPost({ request, env }: Context) {
       success: true,
       duplicate: true,
       request_id: requestId,
-      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked, owner_notified: ownerNotified } : {}),
+      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
     });
   }
 
