@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-09-15",
+  "reviewed_at": "2026-09-29",
   "principle": "No tracking, advertising, remarketing, or data-processing integration may be activated unless it has an explicit registry record and the required consent, disclosure, contract, transfer, retention, and production-verification review.",
   "vendors": [
     {
@@ -105,6 +105,40 @@
       "consent_category": "advertising",
       "default_state": "denied",
       "advertising_use": true,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
+      "id": "meta-threads-owner-oauth",
+      "vendor": "Meta",
+      "product": "Threads API — owner-authorized organic social connector",
+      "status": "implementation_ready_owner_auth_required",
+      "purpose": "Owner-authorized connection of Hermes-owned Threads profiles for controlled organic publishing, profile/media readback, reply management, and privacy-safe performance measurement under the canonical Growth Bridge.",
+      "pages_or_workflows": [
+        "/services/hermes-connect/social-connections/",
+        "/api/internal/social/threads/*"
+      ],
+      "data_categories": [
+        "Threads app-scoped user ID",
+        "Threads username/display name",
+        "profile biography/profile image URL",
+        "OAuth permission scope",
+        "encrypted Threads user access token",
+        "owned post ID/permalink/timestamp",
+        "owned post aggregate views/likes/replies/reposts/quotes/shares"
+      ],
+      "storage_or_tracking_technology": "OAuth 2.0 owner authorization. Long-lived Threads tokens are AES-GCM encrypted before private D1 storage; OAuth state is hashed and short-lived. No Meta Pixel, advertising cookie, session replay, or visitor tracking is enabled by this connector.",
+      "identifier_or_form_data_access": "Connector is limited to authorized Hermes-owned Threads profiles and bounded public/owned Threads media. It must not ingest customer/candidate private form fields, CRM records, passwords, payment data, VINs, private messages, or unrelated social graph data.",
+      "controller_or_processor_role": "Hermes determines the owned-account organic publishing and measurement purpose; Meta provides Threads OAuth, publishing, media/reply, search where separately approved, and insights APIs.",
+      "contract_or_dpa_status": "Use is subject to Meta Platform Terms, Threads API permissions/App Review requirements, and owner-authorized account access. Public keyword search remains unavailable until the app has the required permission approval.",
+      "hosting_or_transfer_geography": "Meta/Threads service infrastructure and Cloudflare-hosted Hermes Connect private D1 for encrypted connection state; applicable international transfer requirements remain provider/account obligations.",
+      "retention_controls": "OAuth state expires after 10 minutes. Connection records retain only the minimum account metadata and encrypted token needed for the authorized integration. Revocation/disconnect and token expiry require reauthorization; publication receipts retain non-secret evidence for idempotency and audit.",
+      "consent_category": "account_authorization",
+      "withdrawal_or_opt_out_behavior": "An authorized owner can disconnect/revoke provider access; expired or revoked tokens move the connector to needs_authorization and publishing fails closed.",
+      "privacy_notice_impact": "Internal owner-account connector only; it does not add visitor advertising/analytics tracking. Public privacy copy must be revisited before any expansion into customer DMs, lead forms, or unrelated personal-data processing.",
+      "production_verification_owner": "GitHub #1018 Growth Bridge / Hermes internal owner",
+      "production_verification_date": null,
+      "advertising_use": false,
       "private_form_fields_allowed": false,
       "production_verification_required": true
     },
