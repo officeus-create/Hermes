@@ -390,7 +390,7 @@ export async function listThreadsConnections(db, env) {
   });
 }
 
-async function refreshLongLivedToken(env, payload) {
+async function refreshLongLivedToken(payload) {
   const accessToken = clean(payload?.access_token, 4096);
   if (!accessToken) return { ok: false, error_class: "authorization_required" };
   const url = new URL(REFRESH_TOKEN_ENDPOINT);
@@ -426,7 +426,7 @@ export async function usableThreadsAccessToken(db, env, brand) {
   if (payload?.access_token && Number.isFinite(expiresMs) && expiresMs > Date.now() + 7 * 24 * 60 * 60 * 1000) {
     return { ok: true, access_token: String(payload.access_token), connection: row };
   }
-  const refreshed = await refreshLongLivedToken(env, payload);
+  const refreshed = await refreshLongLivedToken(payload);
   if (!refreshed.ok) {
     await db.prepare("UPDATE hermes_social_threads_connections SET state='needs_authorization',last_error_class=?,updated_at=? WHERE brand_key=?")
       .bind(refreshed.error_class, new Date().toISOString(), brandKey).run();
