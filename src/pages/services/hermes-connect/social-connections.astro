@@ -38,21 +38,21 @@ import SiteFooter from "../../../components/SiteFooter.astro";
             <div class="brand-top"><div><small>Test lane</small><h3>Office Threads Test</h3></div><span data-state>Loading…</span></div>
             <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
             <p class="bio" data-bio></p>
-            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button></div>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
           </article>
 
           <article class="brand-card" data-brand="progressopro">
             <div class="brand-top"><div><small>Marketing lane</small><h3>ProgressoPro</h3></div><span data-state>Loading…</span></div>
             <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
             <p class="bio" data-bio></p>
-            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button></div>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
           </article>
 
           <article class="brand-card" data-brand="business_academy">
             <div class="brand-top"><div><small>Education lane</small><h3>Hermes Business Academy</h3></div><span data-state>Loading…</span></div>
             <dl><div><dt>Username</dt><dd data-username>—</dd></div><div><dt>User ID</dt><dd data-user-id>—</dd></div><div><dt>Scopes</dt><dd data-scopes>—</dd></div><div><dt>Publish</dt><dd data-publish>Off</dd></div></dl>
             <p class="bio" data-bio></p>
-            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button></div>
+            <div class="actions"><button type="button" data-connect>Connect / reconnect</button><button type="button" data-verify disabled>Verify exact profile</button><button type="button" data-disconnect disabled>Disconnect locally</button></div>
           </article>
         </div>
       </div>
@@ -132,6 +132,8 @@ import SiteFooter from "../../../components/SiteFooter.astro";
     card.querySelector<HTMLElement>("[data-bio]")!.textContent = connection.biography || "";
     const verify = card.querySelector<HTMLButtonElement>("[data-verify]");
     if (verify) verify.disabled = !connection.username || connection.identity_verified;
+    const disconnect = card.querySelector<HTMLButtonElement>("[data-disconnect]");
+    if (disconnect) disconnect.disabled = !connection.username;
   }
 
   async function loadConnections() {
@@ -174,6 +176,22 @@ import SiteFooter from "../../../components/SiteFooter.astro";
         setStatus(`Verified @${username} for ${brand}.`);
       } catch (error:any) {
         setStatus(error?.payload?.error || "Profile verification failed.", true);
+      }
+    });
+    card.querySelector<HTMLButtonElement>("[data-disconnect]")?.addEventListener("click", async ()=>{
+      const brand = card.dataset.brand || "";
+      const username = (card.querySelector<HTMLElement>("[data-username]")?.textContent || "").trim();
+      if (!username || username === "Not connected") return;
+      if (!window.confirm(`Remove the encrypted Hermes-side Threads connection for ${brand} (${username})? Provider authorization in Meta is not revoked by this action.`)) return;
+      try {
+        await api("/api/internal/social/threads/disconnect", {
+          method:"POST",
+          body:JSON.stringify({brand, confirm:true}),
+        });
+        setStatus(`Disconnected ${brand} locally. Revoke provider authorization in Meta separately if required.`);
+        await loadConnections();
+      } catch (error:any) {
+        setStatus(error?.payload?.error || "Local disconnect failed.", true);
       }
     });
   }
