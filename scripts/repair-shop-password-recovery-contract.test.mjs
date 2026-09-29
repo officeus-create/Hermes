@@ -191,6 +191,34 @@ assert.equal(catalogOwnerResponse.status, 202);
 assert.equal(capturedMessage?.to, "shop-owner@example.com");
 assert.equal(capturedMessage?.subject, "[HERMES ACCOUNT] [CATALOG INQUIRY]");
 
+capturedMessage = null;
+const inactivityReminderResponse = await worker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+  method: "POST",
+  headers: { Authorization: "Bearer unit-secret-token", "Content-Type": "application/json" },
+  body: JSON.stringify({
+    request_id: "weekly_inactivity_owner_1234",
+    subject: "Your Hermes Connect shop is waiting for you",
+    text: "It has been about a week since you last used your Hermes Connect Repair Shop workspace. Open your dashboard to continue managing the shop.",
+    recipient_email: "shop-owner@example.com",
+  }),
+}), env);
+assert.equal(inactivityReminderResponse.status, 202);
+assert.equal(capturedMessage?.subject, "Your Hermes Connect shop is waiting for you");
+
+capturedMessage = null;
+const catalogWeeklyResponse = await worker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+  method: "POST",
+  headers: { Authorization: "Bearer unit-secret-token", "Content-Type": "application/json" },
+  body: JSON.stringify({
+    request_id: "catalog_weekly_owner_1234",
+    subject: "[HERMES ACCOUNT] [CATALOG WEEKLY REPORT]",
+    text: "Hermes Catalog weekly report for your opted-in Repair Shop profile. This message contains aggregate profile activity plus real inquiry and booking counts.",
+    recipient_email: "shop-owner@example.com",
+  }),
+}), env);
+assert.equal(catalogWeeklyResponse.status, 202);
+assert.equal(capturedMessage?.subject, "[HERMES ACCOUNT] [CATALOG WEEKLY REPORT]");
+
 const originalFetch = globalThis.fetch;
 const gmailCalls = [];
 try {
