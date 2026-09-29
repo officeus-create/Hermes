@@ -57,12 +57,5 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   });
   const authorizationUrl = businessSocialAuthorizationUrl(env, provider, state);
   if (!authorizationUrl) return jsonResponse(503, { success: false, error: "provider_runtime_not_configured" }, headers);
-  await upsertBusinessSocialCredential(env.DB, env, {
-    business,
-    ownerId: specialist.id,
-    provider,
-    state: "ready_for_owner_auth",
-    lastError: null,
-  });
   return jsonResponse(200, { success: true, provider, authorization_url: authorizationUrl }, headers);
 }
