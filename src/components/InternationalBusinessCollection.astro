@@ -1,0 +1,82 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  canonical: string;
+  businesses: readonly CatalogBusinessConcept[];
+  breadcrumbs: { name: string; item: string }[];
+}
+
+const { title, description, eyebrow, canonical, businesses, breadcrumbs } = Astro.props;
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    url: canonical,
+    description,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: businesses.map((business, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: business.name,
+        url: `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`,
+      })),
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbs.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.item,
+    })),
+  },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="light" activePath="/businesses/" />
+  <main id="main-content" class="intl-collection">
+    <div class="shell">
+      <a class="back" href="/businesses/#international-businesses">← International businesses</a>
+      <header>
+        <p class="eyebrow">{eyebrow}</p>
+        <h1>{title.replace(" | Hermes Catalog", "")}</h1>
+        <p>{description}</p>
+      </header>
+      <section class="summary" aria-label="International Catalog summary">
+        <article><strong>{businesses.length}</strong><span>published profile{businesses.length === 1 ? "" : "s"}</span></article>
+        <article><strong>{new Set(businesses.map((business) => business.vertical)).size}</strong><span>business vertical{new Set(businesses.map((business) => business.vertical)).size === 1 ? "" : "s"}</span></article>
+        <article><strong>Secondary</strong><span>catalog priority</span></article>
+      </section>
+      <section class="grid">
+        {businesses.map((business) => (
+          <article>
+            <div class="top"><span>{business.vertical.replaceAll("_", " ")}</span><span>{business.status}</span></div>
+            <h2>{business.name}</h2>
+            <p>{business.primaryIntent} · {business.locality}, {business.region}</p>
+            <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
+            <a href={`/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`}>Open profile →</a>
+          </article>
+        ))}
+      </section>
+      <section class="boundary">
+        <h2>How to read these profiles</h2>
+        <p>International Hermes Catalog pages are free public discovery profiles. They support useful local SEO/GEO coverage and a path to claim or activate Hermes services, but they do not imply a Hermes customer relationship unless the profile is explicitly marked claimed or client.</p>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>
+  .intl-collection{min-height:70vh;background:#f6f7f9;color:#172033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:110px 0 80px}.back{color:#2168a6;text-decoration:none;font-weight:800}.eyebrow{margin:28px 0 8px;color:#2168a6;text-transform:uppercase;letter-spacing:.11em;font-size:11px;font-weight:900}header h1{max-width:920px;margin:0;font-size:clamp(38px,5.5vw,66px);line-height:1;letter-spacing:-.045em}header>p:last-child,.boundary p{max-width:850px;color:#657286;line-height:1.65}.summary{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.summary article{min-width:160px;padding:18px;border:1px solid #dfe6ed;border-radius:15px;background:#fff}.summary strong{display:block;font-size:28px}.summary span{color:#718095;font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid article{display:grid;gap:12px;padding:20px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.top{display:flex;justify-content:space-between;gap:8px;color:#607086;font-size:10px;font-weight:850;text-transform:uppercase}.grid h2{margin:0;font-size:24px}.grid p,.grid li{color:#667587;line-height:1.55}.grid ul{margin:0;padding-left:18px}.grid a{color:#1969b5;text-decoration:none;font-weight:850}.boundary{margin-top:20px;padding:22px;border:1px solid #dce5ef;border-radius:16px;background:#eef5fb}.boundary h2{margin-top:0}@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.grid{grid-template-columns:1fr}.summary{display:grid;grid-template-columns:1fr 1fr}.summary article:last-child{grid-column:1/-1}}
+</style>
