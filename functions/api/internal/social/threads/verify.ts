@@ -4,6 +4,7 @@ import {
   ensureThreadsBrandConnectorSchema,
   normalizeThreadsBrand,
   publicThreadsConnection,
+  threadsBrandExpectedUsername,
 } from "../../../_lib/threads-brand-connector.mjs";
 
 type Env = {
@@ -47,6 +48,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(409, {
       success: false,
       error: "username_confirmation_mismatch",
+      connected_username: String(row.username || ""),
+    }, headers);
+  }
+
+  const expectedUsername = threadsBrandExpectedUsername(brand);
+  if (expectedUsername && confirmedUsername.toLowerCase() !== expectedUsername.toLowerCase()) {
+    return jsonResponse(409, {
+      success: false,
+      error: "canonical_brand_username_mismatch",
+      expected_username: expectedUsername,
       connected_username: String(row.username || ""),
     }, headers);
   }
