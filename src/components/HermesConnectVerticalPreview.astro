@@ -1,0 +1,88 @@
+---
+import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { buildCatalogRequestHref } from "../lib/catalog-request";
+
+type Props = { business: CatalogBusinessConcept; profilePath: string };
+const { business, profilePath } = Astro.props;
+const profileUrl = `https://hermeslogisticsus.com${profilePath}`;
+const verticalLabel = business.vertical.replaceAll("_", " ");
+const mapChannel = business.channels.find((channel) => channel.direction === "maps");
+const claimHref = buildCatalogRequestHref("claim", {
+  businessId: business.id,
+  businessName: business.name,
+  profileUrl,
+  city: business.locality,
+  country: business.countryCode,
+  sourceRef: business.sourceRef,
+});
+const addressLine = [business.address, business.locality, business.region, business.postalCode].filter(Boolean).join(", ");
+---
+<div class="vertical-preview" data-business-id={business.id} data-vertical={business.vertical}>
+  <section class="preview-bar">
+    <strong>HERMES CONNECT · {verticalLabel.toUpperCase()}</strong>
+    <span>PREVIEW · OWNER ACCESS PENDING · NO CUSTOMER STATUS IMPLIED</span>
+  </section>
+
+  <header class="preview-hero">
+    <div>
+      <p class="eyebrow">Hermes Connect Core + vertical configuration</p>
+      <h1>{business.name}</h1>
+      <p>The same Hermes Connect CRM core is reused across business types. Only the operating modules, fields and workflows change for this vertical.</p>
+      <div class="actions">
+        <a class="primary" href={profilePath}>Open Catalog profile</a>
+        <a href={claimHref}>Claim / verify</a>
+        {business.website && <a href={business.website} target="_blank" rel="noreferrer noopener">Current website ↗</a>}
+        {mapChannel && <a href={mapChannel.url} target="_blank" rel="noreferrer noopener">Maps ↗</a>}
+      </div>
+    </div>
+    <aside>
+      <span>Vertical</span><strong>{verticalLabel}</strong>
+      <span>Market</span><strong>{business.market}</strong>
+      <span>Catalog priority</span><strong>{business.catalogPriority}</strong>
+    </aside>
+  </header>
+
+  <section class="module-grid">
+    <article>
+      <p class="eyebrow">CORE CRM</p>
+      <h2>Shared by every business</h2>
+      <div class="chips">{business.crmModules.core.map((module)=><span>{module}</span>)}</div>
+    </article>
+    <article class="vertical">
+      <p class="eyebrow">VERTICAL MODULES</p>
+      <h2>Adapted for {verticalLabel}</h2>
+      <div class="chips">{business.crmModules.vertical.map((module)=><span>{module}</span>)}</div>
+    </article>
+  </section>
+
+  <section class="truth">
+    <div>
+      <p class="eyebrow">BUSINESS ENTITY</p>
+      <h2>One record. Catalog + CRM + SEO/GEO.</h2>
+      <p>Public discovery facts remain separate from private owner-controlled CRM data. An unclaimed Catalog profile does not create a customer account or expose private records.</p>
+    </div>
+    <dl>
+      <div><dt>Name</dt><dd>{business.name}</dd></div>
+      <div><dt>Address</dt><dd>{addressLine}</dd></div>
+      <div><dt>Phone</dt><dd>{business.phone}</dd></div>
+      <div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div>
+      <div><dt>Status</dt><dd>{business.status.toUpperCase()}</dd></div>
+      <div><dt>Source</dt><dd>{business.sourceRef}</dd></div>
+    </dl>
+  </section>
+
+  <section class="activation">
+    <p class="eyebrow">ACTIVATION GATE</p>
+    <h2>Public profile first. Private CRM only after authorization.</h2>
+    <ol>
+      <li><strong>1</strong><span>Reconcile public business identity and evidence.</span></li>
+      <li><strong>2</strong><span>Publish the bounded, unclaimed Catalog profile.</span></li>
+      <li><strong>3</strong><span>Authorized owner claims and corrects business facts.</span></li>
+      <li><strong>4</strong><span>Activate owner login, private CRM data and vertical workflows.</span></li>
+    </ol>
+  </section>
+</div>
+
+<style>
+.vertical-preview{display:grid;gap:16px}.preview-bar,.preview-hero,.module-grid article,.truth,.activation{border:1px solid #dce4e1;border-radius:22px;background:#fff}.preview-bar{display:flex;gap:18px;justify-content:space-between;padding:14px 18px;background:#17211e;color:#fff}.preview-bar span{opacity:.62;font-size:11px}.preview-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:34px;padding:36px}.preview-hero h1{margin:8px 0 16px;font-size:clamp(42px,6vw,74px);line-height:.98;letter-spacing:-.05em}.preview-hero p{max-width:720px;color:#65716c;line-height:1.65}.preview-hero aside{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:24px;border-radius:18px;background:#f2f6f4}.preview-hero aside span{color:#748079;font-size:11px;text-transform:uppercase}.preview-hero aside strong{text-align:right}.eyebrow{margin:0;color:#477568;font-size:11px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}.actions,.chips{display:flex;gap:8px;flex-wrap:wrap}.actions{margin-top:22px}.actions a{display:inline-flex;align-items:center;min-height:42px;padding:0 13px;border:1px solid #ccd5d1;border-radius:11px;color:#20302b;text-decoration:none;font-size:12px;font-weight:850}.actions .primary{background:#17211e;color:#fff}.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.module-grid article,.truth,.activation{padding:26px}.module-grid h2,.truth h2,.activation h2{margin:8px 0 15px;font-size:clamp(26px,3vw,38px)}.module-grid .vertical{background:#f5f1e9}.chips span{padding:8px 10px;border:1px solid #dce4e1;border-radius:999px;background:#fff;font-size:11px}.truth{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px}.truth p{color:#66736e;line-height:1.65}.truth dl{margin:0}.truth dl div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:9px 0;border-top:1px solid #edf0ee}.truth dt{color:#7b8782;font-size:11px}.truth dd{margin:0;font-size:12px;font-weight:750}.activation ol{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0;list-style:none}.activation li{display:grid;gap:9px;padding:15px;border-radius:14px;background:#f7f9f8}.activation li strong{font-size:24px}.activation li span{color:#66736e;font-size:12px;line-height:1.5}@media(max-width:760px){.preview-bar{flex-direction:column}.preview-hero,.module-grid,.truth{grid-template-columns:1fr}.preview-hero{padding:24px}.activation ol{grid-template-columns:1fr 1fr}}@media(max-width:480px){.activation ol{grid-template-columns:1fr}}
+</style>
