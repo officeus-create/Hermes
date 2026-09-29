@@ -261,6 +261,8 @@ assert.equal(serviceCalls.at(-2).payload.subject, "[HERMES INQUIRY] [CATALOG]");
 assert.equal(serviceCalls.at(-1).url, "https://lead-email.internal/v1/send-account");
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES CATALOG] [CUSTOMER INQUIRY]");
 assert.equal(serviceCalls.at(-1).payload.recipient_email, "verified-owner@example.com");
+assert.match(serviceCalls.at(-1).payload.text, /not charging your business for this Catalog lead/i);
+assert.match(serviceCalls.at(-1).payload.text, /purchasing Hermes services is optional/i);
 assert.equal(serviceCalls.at(-1).payload.reply_to, undefined);
 const optedInInquiry = await db.prepare(
   "SELECT internal_delivery_status, owner_delivery_status, owner_delivery_at FROM catalog_business_inquiries WHERE request_id=?"
