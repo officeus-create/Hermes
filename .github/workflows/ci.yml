@@ -6,11 +6,15 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
-  build-and-test:
+  contracts:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -118,5 +122,48 @@ jobs:
       - name: Validate carrier onboarding browser flow
         run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
 
-      - name: Run browser workflow tests
-        run: npm run test:e2e
+  browser-regression:
+    name: browser-regression (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full browser regression shard
+        run: npx playwright test --shard=${{ matrix.shard }}/4
+
+  build-and-test:
+    if: ${{ always() }}
+    needs:
+      - contracts
+      - browser-regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every Website checks gate
+        env:
+          CONTRACTS_RESULT: ${{ needs.contracts.result }}
+          BROWSER_RESULT: ${{ needs.browser-regression.result }}
+        run: |
+          echo "contracts=${CONTRACTS_RESULT}"
+          echo "browser-regression=${BROWSER_RESULT}"
+          test "${CONTRACTS_RESULT}" = "success"
+          test "${BROWSER_RESULT}" = "success"

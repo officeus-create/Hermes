@@ -11,6 +11,7 @@ const BLOCKED_PREFIXES = [
   "/privacy-choices",
   "/logistics/apply",
   "/logistics/carrier-onboarding",
+  "/services/hermes-connect/access",
   "/services/hermes-connect/repair-shops/auth",
   "/services/hermes-connect/repair-shops/dashboard",
   "/services/hermes-connect/repair-shops/password",
@@ -29,6 +30,7 @@ export function siteTrafficRouteGroup(value: unknown) {
   if (BLOCKED_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix))) return null;
   if (path === "/") return "home";
   if (path.startsWith("/businesses/connect/repair-shop/")) return "catalog_crm_profile";
+  if (path.startsWith("/businesses/ukraine/")) return "catalog_international";
   if (path.startsWith("/businesses/")) return "catalog";
   if (path.startsWith("/services/hermes-connect/repair-shops/booking")) return "repair_shop_booking";
   if (path.startsWith("/services/hermes-connect/repair-shops/")) return "repair_shop_public";
@@ -48,10 +50,16 @@ async function ensureSiteTrafficSchema(db: any) {
       day TEXT NOT NULL,
       route_group TEXT NOT NULL,
       page_views INTEGER NOT NULL DEFAULT 0,
+      sessions INTEGER NOT NULL DEFAULT 0,
       updated_at TEXT NOT NULL,
       PRIMARY KEY(day, route_group)
     )
   `).run();
+  const columns = await db.prepare("PRAGMA table_info(hermes_site_traffic_daily)").all();
+  const hasSessions = (columns?.results || []).some((column: any) => String(column?.name || "") === "sessions");
+  if (!hasSessions) {
+    await db.prepare("ALTER TABLE hermes_site_traffic_daily ADD COLUMN sessions INTEGER NOT NULL DEFAULT 0").run();
+  }
   await db.prepare(
     "CREATE INDEX IF NOT EXISTS idx_hermes_site_traffic_day ON hermes_site_traffic_daily(day)"
   ).run();
@@ -86,13 +94,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   await ensureSiteTrafficSchema(env.DB);
   const now = new Date().toISOString();
+  const sessionStart = body.session_start === true ? 1 : 0;
   await env.DB.prepare(`
-    INSERT INTO hermes_site_traffic_daily (day, route_group, page_views, updated_at)
-    VALUES (?, ?, 1, ?)
+    INSERT INTO hermes_site_traffic_daily (day, route_group, page_views, sessions, updated_at)
+    VALUES (?, ?, 1, ?, ?)
     ON CONFLICT(day, route_group) DO UPDATE SET
       page_views = hermes_site_traffic_daily.page_views + 1,
+      sessions = hermes_site_traffic_daily.sessions + excluded.sessions,
       updated_at = excluded.updated_at
-  `).bind(utcDay(), routeGroup, now).run();
+  `).bind(utcDay(), routeGroup, sessionStart, now).run();
 
   return jsonResponse(202, { success: true }, { "Cache-Control": "no-store" });
 }
@@ -112,18 +122,22 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         COALESCE(SUM(CASE WHEN day = ? THEN page_views ELSE 0 END), 0) AS today,
         COALESCE(SUM(CASE WHEN day >= ? THEN page_views ELSE 0 END), 0) AS last_7d,
         COALESCE(SUM(CASE WHEN day >= ? THEN page_views ELSE 0 END), 0) AS last_28d,
-        COALESCE(SUM(page_views), 0) AS all_time
+        COALESCE(SUM(page_views), 0) AS all_time,
+        COALESCE(SUM(CASE WHEN day = ? THEN sessions ELSE 0 END), 0) AS sessions_today,
+        COALESCE(SUM(CASE WHEN day >= ? THEN sessions ELSE 0 END), 0) AS sessions_7d,
+        COALESCE(SUM(CASE WHEN day >= ? THEN sessions ELSE 0 END), 0) AS sessions_28d,
+        COALESCE(SUM(sessions), 0) AS sessions_all_time
       FROM hermes_site_traffic_daily
-    `).bind(today, start7, start28).first(),
+    `).bind(today, start7, start28, today, start7, start28).first(),
     env.DB.prepare(`
-      SELECT route_group, SUM(page_views) AS page_views
+      SELECT route_group, SUM(page_views) AS page_views, SUM(sessions) AS sessions
       FROM hermes_site_traffic_daily
       WHERE day >= ?
       GROUP BY route_group
       ORDER BY page_views DESC, route_group ASC
     `).bind(start28).all(),
     env.DB.prepare(`
-      SELECT day, SUM(page_views) AS page_views
+      SELECT day, SUM(page_views) AS page_views, SUM(sessions) AS sessions
       FROM hermes_site_traffic_daily
       WHERE day >= ?
       GROUP BY day
@@ -133,21 +147,27 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   return jsonResponse(200, {
     success: true,
-    metric: "consented_first_party_page_views",
+    metric: "consented_first_party_traffic",
     timezone: "UTC",
     summary: {
       today: Number(summary?.today || 0),
       last_7d: Number(summary?.last_7d || 0),
       last_28d: Number(summary?.last_28d || 0),
       all_time: Number(summary?.all_time || 0),
+      sessions_today: Number(summary?.sessions_today || 0),
+      sessions_7d: Number(summary?.sessions_7d || 0),
+      sessions_28d: Number(summary?.sessions_28d || 0),
+      sessions_all_time: Number(summary?.sessions_all_time || 0),
     },
     groups: (groups?.results || []).map((row: any) => ({
       route_group: String(row.route_group || ""),
       page_views: Number(row.page_views || 0),
+      sessions: Number(row.sessions || 0),
     })),
     daily: (daily?.results || []).map((row: any) => ({
       day: String(row.day || ""),
       page_views: Number(row.page_views || 0),
+      sessions: Number(row.sessions || 0),
     })),
   }, { "Cache-Control": "no-store" });
 }

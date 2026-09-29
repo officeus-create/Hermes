@@ -1,0 +1,16 @@
+---
+import InternationalBusinessCollection from "../../../components/InternationalBusinessCollection.astro";
+import { catalogBusinessConcepts } from "../../../data/catalog-business-concepts";
+const businesses = catalogBusinessConcepts.filter((business) => business.countrySlug === "ukraine");
+---
+<InternationalBusinessCollection
+  title="Selected Businesses in Ukraine | Hermes Catalog"
+  description="Secondary Hermes Catalog discovery profiles in Ukraine, published only where source-bounded business evidence supports a useful local profile."
+  eyebrow="Hermes Catalog · International · Ukraine"
+  canonical="https://hermeslogisticsus.com/businesses/ukraine/"
+  businesses={businesses}
+  breadcrumbs={[
+    { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
+    { name: "Ukraine", item: "https://hermeslogisticsus.com/businesses/ukraine/" }
+  ]}
+/>
