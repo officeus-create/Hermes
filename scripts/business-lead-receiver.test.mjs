@@ -38,6 +38,7 @@ const env = {
     async fetch(input, init) {
       const request = input instanceof Request ? input : new Request(input, init);
       serviceCalls.push({
+        url: request.url,
         authorization: request.headers.get("Authorization"),
         payload: await request.json(),
       });
@@ -231,7 +232,7 @@ assert.equal(matchedBody.crm_saved, true);
 assert.equal(matchedBody.crm_linked, true);
 assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
 const matchedInquiry = await db.prepare(`
-  SELECT shop_id, owner_specialist_id, business_name, contact_phone, internal_delivery_status
+  SELECT shop_id, owner_specialist_id, business_name, contact_phone, internal_delivery_status, owner_delivery_status
   FROM catalog_business_inquiries
   WHERE request_id = ?
 `).bind("catalog_smart_bubble_12345").first();
@@ -240,6 +241,70 @@ assert.equal(matchedInquiry.owner_specialist_id, "owner-smart-bubble");
 assert.equal(matchedInquiry.business_name, "Smart Bubble Mobile Auto/Body Repair Shop");
 assert.equal(matchedInquiry.contact_phone, "+1 833 501 7771");
 assert.equal(matchedInquiry.internal_delivery_status, "delivered");
+assert.equal(matchedInquiry.owner_delivery_status, "skipped");
+
+
+await db.prepare(`
+  CREATE TABLE IF NOT EXISTS specialists (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    role TEXT NOT NULL
+  )
+`).run();
+await db.prepare("INSERT INTO specialists (id,email,role) VALUES (?,?,?)")
+  .bind("owner-kittles", "kittles-owner@example.com", "Shop Owner").run();
+await db.prepare(`
+  INSERT INTO repair_shops
+    (id, owner_specialist_id, name, slug, phone, city, state, timezone, catalog_opt_in, created_at, updated_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`).bind(
+  "shop-kittles",
+  "owner-kittles",
+  "Kittle's Garage",
+  "kittles-garage",
+  "(918) 555-0100",
+  "Tulsa",
+  "OK",
+  "America/Chicago",
+  1,
+  "2026-09-29T00:00:00.000Z",
+  "2026-09-29T00:00:00.000Z",
+).run();
+
+const dynamicCatalogPayload = {
+  ...catalogRequestPayload,
+  request_id: "catalog_kittles_dynamic_12345",
+  company: "Kittle's Garage",
+  city_country: "Tulsa, OK, US",
+  phone: "+1 918 555 0100",
+  catalog_business_id: "repair-shop-crm:shop-kittles",
+  catalog_profile: "/businesses/connect/repair-shop/kittles-garage/",
+  catalog_source_ref: "repair_shop_crm",
+  message: "Please ask Kittle's Garage to contact me about a repair estimate this week.",
+};
+const callsBeforeDynamic = serviceCalls.length;
+const dynamicCatalog = await onRequest({
+  request: makeRequest(dynamicCatalogPayload, { "CF-Connecting-IP": "192.0.2.64" }),
+  env,
+});
+assert.equal(dynamicCatalog.status, 200);
+const dynamicBody = await dynamicCatalog.json();
+assert.equal(dynamicBody.crm_saved, true);
+assert.equal(dynamicBody.crm_linked, true);
+assert.equal(dynamicBody.owner_notified, true);
+assert.equal(serviceCalls.length, callsBeforeDynamic + 2);
+assert.match(serviceCalls.at(-2).url, /\/v1\/send$/);
+assert.match(serviceCalls.at(-1).url, /\/v1\/send-account$/);
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES ACCOUNT] [CATALOG INQUIRY]");
+assert.equal(serviceCalls.at(-1).payload.recipient_email, "kittles-owner@example.com");
+assert.equal(serviceCalls.at(-1).payload.reply_to, undefined);
+const dynamicInquiry = await db.prepare(
+  "SELECT shop_id, owner_specialist_id, internal_delivery_status, owner_delivery_status FROM catalog_business_inquiries WHERE request_id = ?"
+).bind("catalog_kittles_dynamic_12345").first();
+assert.equal(dynamicInquiry.shop_id, "shop-kittles");
+assert.equal(dynamicInquiry.owner_specialist_id, "owner-kittles");
+assert.equal(dynamicInquiry.internal_delivery_status, "delivered");
+assert.equal(dynamicInquiry.owner_delivery_status, "delivered");
 
 const matchedDuplicate = await onRequest({
   request: makeRequest(matchedCatalogPayload, { "CF-Connecting-IP": "192.0.2.62" }),
