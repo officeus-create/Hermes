@@ -83,8 +83,7 @@ export const mangalIKazanConcept = Object.freeze({
   website: "https://mangal-i-kazan.com.ua/",
   services: ["Шашлик", "Люля-кебаб", "Плов", "Манти", "Лагман", "Шурпа", "Доставка по ЖК Чайки"],
   channels: [
-    { label: "Official website", url: "https://mangal-i-kazan.com.ua/", direction: "primary" },
-    { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=%D0%9C%D0%B0%D0%BD%D0%B3%D0%B0%D0%BB+%D1%96+%D0%9A%D0%B0%D0%B7%D0%B0%D0%BD+%D0%A7%D0%B0%D0%B9%D0%BA%D0%B8", direction: "maps" }
+    { label: "Official website", url: "https://mangal-i-kazan.com.ua/", direction: "primary" }
   ],
   factsRequiringOwnerConfirmation: ["current full menu", "current prices", "delivery radius beyond ЖК Чайки", "official social accounts", "Google Business Profile ownership"],
   sourceRef: "PUBLIC-OWNER-SITE-MANGAL-I-KAZAN-20260929"
