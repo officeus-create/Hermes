@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("final homepage polish keeps the focused entrance and adds living Hermes effects", async ({ page }) => {
+test("homepage keeps a restrained four-pillar entrance and shared direction colors", async ({ page }) => {
   await page.goto("/");
 
   const heading = page.getByRole("heading", { name: /Four directions\. Choose yours\./ });
@@ -9,19 +9,20 @@ test("final homepage polish keeps the focused entrance and adds living Hermes ef
 
   const polish = await page.evaluate(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
-    const title = document.querySelector<HTMLElement>(".home-rooms-intro h1");
-    const handwritten = document.querySelector<HTMLElement>(".home-rooms-intro h1 em");
-    const note = document.querySelector<HTMLElement>(".home-rooms-intro > p:last-child");
-    const action = document.querySelector<HTMLElement>(".home-room-arrow");
+    const grid = document.querySelector<HTMLElement>(".home-rooms-grid");
+    const rooms = [...document.querySelectorAll<HTMLElement>(".home-room")];
     const contact = document.querySelector<HTMLElement>("#contact.home-contact-shell");
-    if (!header || !title || !handwritten || !note || !action || !contact) return null;
+    if (!header || !grid || rooms.length !== 4 || !contact) return null;
 
     return {
       headerRadius: getComputedStyle(header).borderRadius,
-      titleBackground: getComputedStyle(title).backgroundImage,
-      handwrittenAnimation: getComputedStyle(handwritten).animationName,
-      noteAnimation: getComputedStyle(note).animationName,
-      actionMark: getComputedStyle(action, "::before").backgroundImage,
+      gridRadius: getComputedStyle(grid).borderRadius,
+      imageDisplay: rooms.map((room) => getComputedStyle(room.querySelector<HTMLElement>(".home-room-image")!).display),
+      topBorders: rooms.map((room) => getComputedStyle(room).borderTopWidth),
+      leftBorders: rooms.map((room) => getComputedStyle(room).borderLeftWidth),
+      accents: rooms.map((room) => room.style.getPropertyValue("--room-accent")),
+      scriptColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-script em")!).color,
+      noteColor: getComputedStyle(document.querySelector<HTMLElement>(".home-rooms-ink-note")!).color,
       footerBackground: getComputedStyle(contact).backgroundImage,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
@@ -29,10 +30,16 @@ test("final homepage polish keeps the focused entrance and adds living Hermes ef
 
   expect(polish).not.toBeNull();
   expect(polish!.headerRadius).not.toBe("0px");
-  expect(polish!.titleBackground).toContain("linear-gradient");
-  expect(polish!.handwrittenAnimation).toContain("handwritten-reveal");
-  expect(polish!.noteAnimation).toContain("home-ink-write");
-  expect(polish!.actionMark).toContain("icon-192.svg");
+  const viewportWidth = page.viewportSize()?.width ?? 1280;
+  const isMobilePillar = viewportWidth <= 620;
+  const expectedGridRadius = isMobilePillar ? "24px" : "32px";
+  expect(polish!.gridRadius).toBe(expectedGridRadius);
+  expect(polish!.imageDisplay).toEqual(["none", "none", "none", "none"]);
+  const primaryBorders = isMobilePillar ? polish!.leftBorders : polish!.topBorders;
+  expect(primaryBorders.every((value) => parseFloat(value) >= 6)).toBe(true);
+  expect(new Set(polish!.accents).size).toBe(4);
+  expect(polish!.scriptColor).not.toBe("rgba(255, 255, 255, 0.62)");
+  expect(polish!.noteColor).not.toBe("rgba(255, 255, 255, 0.52)");
   expect(polish!.footerBackground).toContain("gradient");
   expect(polish!.overflow).toBe(false);
 });

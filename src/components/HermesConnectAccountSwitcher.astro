@@ -128,6 +128,8 @@ const t = copy[accountLocale];
       return payload;
     })();
 
+    const hideSignInFallback = () => document.querySelectorAll<HTMLElement>("[data-hermes-sign-in]").forEach((node) => { node.hidden = true; });
+
     const roots = document.querySelectorAll<HTMLElement>("[data-hc-account-switcher]");
     roots.forEach((root) => {
       if (root.dataset.ready === "true") return;
@@ -216,6 +218,7 @@ const t = copy[accountLocale];
             return;
           }
           root.hidden = false;
+          hideSignInFallback();
           return;
         }
 
@@ -264,6 +267,7 @@ const t = copy[accountLocale];
         }
 
         root.hidden = false;
+        hideSignInFallback();
       }).catch(() => {
         root.hidden = true;
       });

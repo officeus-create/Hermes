@@ -214,17 +214,7 @@
   filter: drop-shadow(0 0 8px currentColor);
 }
 
-/* 9. Homepage direction hover should feel fluid, not slow. */
-.home-rooms-grid {
-  transition: grid-template-columns 420ms cubic-bezier(.16,1,.3,1) !important;
-}
-.home-room { transition: filter 320ms ease !important; }
-.home-room-image {
-  transition: transform 620ms cubic-bezier(.16,1,.3,1), filter 440ms ease !important;
-}
-.home-room-orbit {
-  transition: transform 520ms cubic-bezier(.16,1,.3,1), opacity 360ms ease !important;
-}
+/* 9. Homepage direction motion is owned by the restrained pillar component itself. */
 
 /* 10. Recovered bouncing-I language. Kept sparse and reduced-motion safe. */
 .hermes-ai-motion-mark {
@@ -390,10 +380,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hermes-bouncing-i > i { animation: none !important; }
   .hc-brand-page .hc-knot { translate: 0 0 !important; scale: 1.08 !important; transition: none !important; }
-  .home-rooms-grid,
   .home-room,
-  .home-room-image,
-  .home-room-orbit,
   :is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
       .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
       .department-technology-card-link, .department-technology-link, .hc-lab-links a) svg {
@@ -571,4 +558,57 @@
   .hc-brand-page .hc-signal-list small {
     color: #646b78 !important;
   }
+}
+
+/* 14. 2026-09-29 global navigation hierarchy — four primary direction pillars,
+   restrained secondary product/content markers, and a direct account entry. */
+.site-header .nav-tone-connect.hc-launcher-header {
+  border: 0 !important;
+  border-left: 3px solid #9D88FF !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: .34rem .42rem .34rem .68rem !important;
+  overflow: visible !important;
+  transform: none !important;
+}
+.site-header .nav-tone-connect.hc-launcher-header::before { display: none !important; }
+.site-header .nav-tone-connect.hc-launcher-header:hover,
+.site-header .nav-tone-connect.hc-launcher-header:focus-visible {
+  border-left-width: 5px !important;
+  background: transparent !important;
+  transform: none !important;
+}
+.site-header .nav-tone-connect .hc-launcher-header-copy small { display: none !important; }
+.site-header .nav-tone-connect .hc-launcher-header-copy > span { color: currentColor !important; }
+.site-header .header-login-link {
+  color: inherit !important;
+  background: transparent !important;
+}
+.site-header .catalog-nav-link span,
+.site-header .mobile-catalog-link span {
+  color: inherit !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  animation: none !important;
+}
+@media (max-width: 1180px) and (min-width: 901px) {
+  .site-header .header-login-link { padding-inline: .55rem !important; }
+}
+
+.site-header + .hc-product-context .hc-family-nav a,
+.hc-experience .hc-family-nav a {
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  padding-left: .76rem !important;
+}
+.site-header + .hc-product-context .hc-family-nav a:hover,
+.site-header + .hc-product-context .hc-family-nav a:focus-visible,
+.site-header + .hc-product-context .hc-family-nav a[aria-current="page"],
+.hc-experience .hc-family-nav a:hover,
+.hc-experience .hc-family-nav a:focus-visible,
+.hc-experience .hc-family-nav a[aria-current="page"] {
+  background: rgba(157,136,255,.09) !important;
 }

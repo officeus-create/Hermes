@@ -387,4 +387,54 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
       clip-path: none;
     }
   }
+
+  /* 2026-09-29 pillar entrance reset: contact/footer recovery remains,
+     but legacy handwritten spectrum and orbit effects no longer override HomeFourRooms. */
+  .hermes-home-recovery .home-rooms-intro h1 {
+    color: #0b0d12 !important;
+    -webkit-text-fill-color: #0b0d12 !important;
+    background: none !important;
+    animation: none !important;
+    filter: none !important;
+  }
+
+  .hermes-home-recovery .home-rooms-intro h1 em {
+    color: #69707d !important;
+    -webkit-text-fill-color: #69707d !important;
+    font-family: inherit !important;
+    font-style: normal !important;
+    font-weight: 520 !important;
+    letter-spacing: -.04em !important;
+    clip-path: none !important;
+    animation: none !important;
+  }
+
+  .hermes-home-recovery .home-rooms-intro h1::after {
+    display: none !important;
+  }
+
+  .hermes-home-recovery .home-rooms-intro > p:last-child {
+    max-width: 420px;
+    padding-left: 0 !important;
+    color: #6b7280 !important;
+    font-family: inherit !important;
+    font-size: clamp(.92rem,1.2vw,1.06rem) !important;
+    font-style: normal !important;
+    line-height: 1.7 !important;
+    letter-spacing: normal !important;
+    clip-path: none !important;
+    animation: none !important;
+  }
+
+  .hermes-home-recovery .home-rooms-intro > p:last-child::before,
+  .hermes-home-recovery .home-room-arrow::before,
+  .hermes-home-recovery .home-room-arrow::after {
+    display: none !important;
+  }
+
+  .hermes-home-recovery .home-room-arrow > svg {
+    position: static !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 </style>

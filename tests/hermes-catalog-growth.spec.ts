@@ -64,17 +64,19 @@ test("Academy promo does not promote an expired vacancy", async ({ page }) => {
   await expect(rail).not.toContainText("Review dispatcher opening");
 });
 
-test("Hermes Connect preserves desktop CRM treatment and the mobile product entry", async ({ page, isMobile }) => {
+test("Hermes Connect stays a secondary product entry in the pillar navigation", async ({ page, isMobile }) => {
   await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
-    await expect(page.locator('[data-hermes-connect-launcher="mobile"]')).toBeVisible();
-    await expect(page.locator('[data-hermes-connect-launcher="mobile"]')).toHaveAttribute("href", "/services/hermes-connect/");
+    const launcher = page.locator('[data-hermes-connect-launcher="mobile"]');
+    await expect(launcher).toBeVisible();
+    await expect(launcher).toHaveAttribute("href", "/services/hermes-connect/");
     return;
   }
   const launcher = page.locator('[data-hermes-connect-launcher="header"]');
   await expect(launcher).toBeVisible();
-  await expect(launcher.getByText("CRM", { exact: true })).toBeVisible();
+  await expect(launcher).toContainText("Hermes Connect");
   await expect(launcher.locator("img")).toHaveCount(0);
-  await expect(launcher).toHaveCSS("border-radius", "9px");
+  await expect(launcher).toHaveCSS("border-radius", "0px");
+  expect(parseFloat(await launcher.evaluate((node) => getComputedStyle(node).borderLeftWidth))).toBeGreaterThanOrEqual(3);
 });
