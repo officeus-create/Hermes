@@ -146,6 +146,7 @@ for (const page of [forgotPage, resetPage]) {
 
 assert.match(workerSource, /"\/v1\/send-account"/);
 assert.match(workerSource, /\[HERMES ACCOUNT\] \[PASSWORD RESET\]/);
+assert.match(workerSource, /\[HERMES ACCOUNT\] \[CATALOG INQUIRY\]/);
 assert.match(workerSource, /recipient_email/);
 assert.match(workerSource, /isAccountSubject/);
 const emailBinding = workerProductionConfig.send_email?.find((binding) => binding.name === "EMAIL");
@@ -174,6 +175,21 @@ const validResponse = await worker.fetch(validRequest, env);
 assert.equal(validResponse.status, 202);
 assert.equal(capturedMessage?.to, "owner@example.com");
 assert.equal(capturedMessage?.subject, PASSWORD_RESET_SUBJECT);
+
+capturedMessage = null;
+const catalogOwnerResponse = await worker.fetch(new Request("https://lead-email.internal/v1/send-account", {
+  method: "POST",
+  headers: { Authorization: "Bearer unit-secret-token", "Content-Type": "application/json" },
+  body: JSON.stringify({
+    request_id: "catalog_owner_12345678",
+    subject: "[HERMES ACCOUNT] [CATALOG INQUIRY]",
+    text: "A customer submitted a new Hermes Catalog inquiry for your opted-in Repair Shop profile. Sign in to Hermes Connect to review the saved request and contact details.",
+    recipient_email: "shop-owner@example.com",
+  }),
+}), env);
+assert.equal(catalogOwnerResponse.status, 202);
+assert.equal(capturedMessage?.to, "shop-owner@example.com");
+assert.equal(capturedMessage?.subject, "[HERMES ACCOUNT] [CATALOG INQUIRY]");
 
 const originalFetch = globalThis.fetch;
 const gmailCalls = [];
