@@ -48,7 +48,7 @@ assert.match(publicProfile, /row\.phone|telephone/);
 assert.doesNotMatch(publicProfile, /client_email|client_phone|client_name|vin|mileage/);
 assert.match(catalogPage, /const cards = \(\) =>/);
 assert.match(catalogPage, /hermes:catalog-profiles-loaded/);
-assert.match(catalogPage, /catalog-connect-live\.js/);
+assert.match(catalogPage, /catalog-connect-live\.v2\.js/);
 assert.match(catalogPage, /data-catalog-business-count/);
 assert.doesNotMatch(read("src/components/CatalogClientBenefit.astro"), /catalog-connect-live/);
 assert.match(loader, /querySelectorAll\('\[data-catalog-business-count\]'\)/);
