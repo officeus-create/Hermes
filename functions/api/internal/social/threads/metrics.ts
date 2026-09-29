@@ -51,11 +51,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     WHERE brand_key=? AND provider_media_id=? LIMIT 1`).bind(brand, mediaId).first();
   if (!row) return jsonResponse(404, { success: false, error: "publication_not_found" }, headers);
 
-  const token = await usableThreadsAccessToken(env.DB, env, brand);
+  const token: any = await usableThreadsAccessToken(env.DB, env, brand);
   if (!token.ok) return jsonResponse(409, { success: false, error: token.error_class }, headers);
 
-  const media = await readThreadsMedia(token.access_token, mediaId);
-  const insights = await readThreadsMediaInsights(token.access_token, mediaId);
+  const media: any = await readThreadsMedia(token.access_token, mediaId);
+  const insights: any = await readThreadsMediaInsights(token.access_token, mediaId);
   const metrics = insights.ok ? insights.metrics : null;
   const now = new Date().toISOString();
 
