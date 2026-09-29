@@ -1,0 +1,326 @@
+---
+interface Props {
+  vertical: "repair_shop" | "dealer";
+  backHref: string;
+  backLabel: string;
+}
+const { vertical, backHref, backLabel } = Astro.props;
+---
+
+<main class:list={["business-social-page", vertical === "repair_shop" && "company-page"]} data-business-social data-vertical={vertical}>
+  <div class="social-shell">
+    <a class="back-link" href={backHref}>← {backLabel}</a>
+    <header class="social-hero">
+      <div>
+        <p class="eyebrow">Hermes Connect · Social Media</p>
+        <h1>Social Media</h1>
+        <p class="lead">Connect the business-owned Facebook Page, Instagram Professional account and Threads profile through provider OAuth. Tokens stay encrypted server-side and no account is marked connected until provider readback succeeds.</p>
+      </div>
+      <div class="truth-card">
+        <strong data-business-name>Loading business…</strong>
+        <span data-business-type>Owner workspace</span>
+        <small>Facebook · Instagram · Threads</small>
+      </div>
+    </header>
+
+    <p class="notice" data-social-status role="status">Checking connection state…</p>
+
+    <section class="provider-grid" aria-label="Social network connections">
+      <article class="provider-card" data-provider-card="facebook">
+        <div class="provider-head">
+          <div><small>Meta</small><h2>Facebook</h2></div>
+          <span class="state" data-provider-state>Loading…</span>
+        </div>
+        <p data-provider-account>Not connected</p>
+        <div class="candidate-wrap hidden" data-candidate-wrap>
+          <label>Choose Page<select data-candidate-select></select></label>
+          <button type="button" class="secondary" data-select-account>Use this Page</button>
+        </div>
+        <div class="actions">
+          <button type="button" data-connect-provider>Connect / reconnect</button>
+          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
+        </div>
+      </article>
+
+      <article class="provider-card" data-provider-card="instagram">
+        <div class="provider-head">
+          <div><small>Meta</small><h2>Instagram</h2></div>
+          <span class="state" data-provider-state>Loading…</span>
+        </div>
+        <p data-provider-account>Not connected</p>
+        <div class="candidate-wrap hidden" data-candidate-wrap>
+          <label>Choose Instagram account<select data-candidate-select></select></label>
+          <button type="button" class="secondary" data-select-account>Use this account</button>
+        </div>
+        <div class="actions">
+          <button type="button" data-connect-provider>Connect / reconnect</button>
+          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
+        </div>
+      </article>
+
+      <article class="provider-card" data-provider-card="threads">
+        <div class="provider-head">
+          <div><small>Meta</small><h2>Threads</h2></div>
+          <span class="state" data-provider-state>Loading…</span>
+        </div>
+        <p data-provider-account>Not connected</p>
+        <div class="actions">
+          <button type="button" data-connect-provider>Connect / reconnect</button>
+          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="publish-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Owner-approved publishing</p>
+          <h2>Create and publish</h2>
+        </div>
+        <p>Manual publishing is available only for a verified connection. Recurring scheduling stays in the canonical Hermes Social Publisher; this CRM does not create a second scheduler.</p>
+      </div>
+
+      <div class="publisher-grid">
+        <form class="publisher-card" data-publish-form="threads">
+          <div><small>Threads</small><h3>Text post</h3></div>
+          <label>Post text<textarea name="text" rows="6" maxlength="500" placeholder="Write a platform-native Threads post."></textarea></label>
+          <button type="submit" disabled>Publish to Threads</button>
+          <p data-publish-result></p>
+        </form>
+
+        <form class="publisher-card" data-publish-form="instagram">
+          <div><small>Instagram</small><h3>Carousel</h3></div>
+          <label>Caption<textarea name="caption" rows="4" maxlength="2200" placeholder="Carousel caption"></textarea></label>
+          <label>Image URLs <span>2–10 HTTPS images, one per line</span><textarea name="image_urls" rows="6" placeholder="https://…/slide-1.jpg&#10;https://…/slide-2.jpg"></textarea></label>
+          <button type="submit" disabled>Publish carousel</button>
+          <p data-publish-result></p>
+        </form>
+
+        <form class="publisher-card" data-publish-form="facebook">
+          <div><small>Facebook Page</small><h3>Page post</h3></div>
+          <label>Post text<textarea name="text" rows="6" maxlength="5000" placeholder="Write the Facebook Page post."></textarea></label>
+          <button type="submit" disabled>Publish to Facebook</button>
+          <p data-publish-result></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="safety-note">
+      <strong>Connection boundary</strong>
+      <p>Saving a public profile URL is not a connection. A network becomes connected only after owner OAuth, provider account readback and encrypted token persistence. Provider failures fail closed and an idempotency key prevents accidental duplicate publishing.</p>
+    </section>
+  </div>
+</main>
+
+<script is:inline define:vars={{ vertical }}>
+(() => {
+  const root = document.querySelector("[data-business-social]");
+  if (!(root instanceof HTMLElement)) return;
+  const status = root.querySelector("[data-social-status]");
+  const cards = new Map(
+    [...root.querySelectorAll("[data-provider-card]")].map((node) => [node.getAttribute("data-provider-card"), node])
+  );
+  const forms = new Map(
+    [...root.querySelectorAll("[data-publish-form]")].map((node) => [node.getAttribute("data-publish-form"), node])
+  );
+
+  const showStatus = (message, error = false) => {
+    if (!status) return;
+    status.textContent = message;
+    status.toggleAttribute("data-error", error);
+  };
+
+  const request = async (url, options = {}) => {
+    const response = await fetch(url, {
+      credentials: "same-origin",
+      cache: "no-store",
+      ...options,
+      headers: { Accept: "application/json", "Content-Type": "application/json", ...(options.headers || {}) },
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(payload.error || `request_${response.status}`);
+      error.payload = payload;
+      throw error;
+    }
+    return payload;
+  };
+
+  const setPublisherEnabled = (provider, enabled) => {
+    const form = forms.get(provider);
+    const button = form?.querySelector('button[type="submit"]');
+    if (button instanceof HTMLButtonElement) button.disabled = !enabled;
+  };
+
+  const renderConnection = (connection) => {
+    const provider = connection?.provider;
+    const card = cards.get(provider);
+    if (!(card instanceof HTMLElement)) return;
+    const state = card.querySelector("[data-provider-state]");
+    const account = card.querySelector("[data-provider-account]");
+    const connect = card.querySelector("[data-connect-provider]");
+    const disconnect = card.querySelector("[data-disconnect-provider]");
+    const candidateWrap = card.querySelector("[data-candidate-wrap]");
+    const candidateSelect = card.querySelector("[data-candidate-select]");
+
+    const stateValue = String(connection?.state || "ready_for_owner_auth");
+    if (state) state.textContent = stateValue.replaceAll("_", " ");
+    const accountLabel = connection?.username
+      ? `@${connection.username}`
+      : connection?.account_name || (stateValue === "connected_write" ? "Connected account" : "Not connected");
+    if (account) account.textContent = accountLabel;
+
+    if (connect instanceof HTMLButtonElement) {
+      connect.disabled = !connection?.configured;
+      connect.textContent = stateValue === "connected_write" ? "Reconnect" : connection?.configured ? "Connect" : "Needs provider app config";
+    }
+    if (disconnect instanceof HTMLElement) disconnect.classList.toggle("hidden", stateValue !== "connected_write");
+
+    const candidates = Array.isArray(connection?.candidates) ? connection.candidates : [];
+    if (candidateWrap instanceof HTMLElement) candidateWrap.classList.toggle("hidden", stateValue !== "selection_required" || candidates.length === 0);
+    if (candidateSelect instanceof HTMLSelectElement) {
+      candidateSelect.replaceChildren();
+      for (const candidate of candidates) {
+        const option = document.createElement("option");
+        option.value = String(candidate.index);
+        option.textContent = String(candidate.label || "Account");
+        candidateSelect.append(option);
+      }
+    }
+    setPublisherEnabled(provider, stateValue === "connected_write");
+  };
+
+  const load = async () => {
+    try {
+      const payload = await request(`/api/hermes-connect/social/connections?vertical=${encodeURIComponent(vertical)}`);
+      const businessName = root.querySelector("[data-business-name]");
+      const businessType = root.querySelector("[data-business-type]");
+      if (businessName) businessName.textContent = payload.business?.name || "Business";
+      if (businessType) businessType.textContent = String(payload.business?.vertical || vertical).replaceAll("_", " ");
+      for (const connection of payload.connections || []) renderConnection(connection);
+      showStatus("Social connections are ready. Connect only the accounts owned by this business.");
+    } catch (error) {
+      showStatus(error?.message === "authentication_required" ? "Sign in to the owner CRM first." : "Unable to load social connections.", true);
+    }
+  };
+
+  for (const [provider, card] of cards) {
+    if (!(card instanceof HTMLElement)) continue;
+    card.querySelector("[data-connect-provider]")?.addEventListener("click", async () => {
+      try {
+        showStatus(`Preparing ${provider} authorization…`);
+        const payload = await request("/api/hermes-connect/social/oauth/start", {
+          method: "POST",
+          body: JSON.stringify({ provider, vertical }),
+        });
+        window.location.assign(payload.authorization_url);
+      } catch (error) {
+        showStatus(`${provider}: ${error.message}`, true);
+      }
+    });
+
+    card.querySelector("[data-select-account]")?.addEventListener("click", async () => {
+      const select = card.querySelector("[data-candidate-select]");
+      if (!(select instanceof HTMLSelectElement)) return;
+      try {
+        const payload = await request("/api/hermes-connect/social/select", {
+          method: "POST",
+          body: JSON.stringify({ provider, vertical, candidate_index: Number(select.value) }),
+        });
+        for (const connection of payload.connections || []) renderConnection(connection);
+        showStatus(`${provider} account connected.`);
+      } catch (error) {
+        showStatus(`${provider}: ${error.message}`, true);
+      }
+    });
+
+    card.querySelector("[data-disconnect-provider]")?.addEventListener("click", async () => {
+      if (!window.confirm(`Disconnect the Hermes-side ${provider} authorization for this business?`)) return;
+      try {
+        const payload = await request("/api/hermes-connect/social/disconnect", {
+          method: "POST",
+          body: JSON.stringify({ provider, vertical, confirm: true }),
+        });
+        for (const connection of payload.connections || []) renderConnection(connection);
+        showStatus(`${provider} disconnected locally. Revoke provider access in Meta separately if required.`);
+      } catch (error) {
+        showStatus(`${provider}: ${error.message}`, true);
+      }
+    });
+  }
+
+  for (const [provider, form] of forms) {
+    if (!(form instanceof HTMLFormElement)) continue;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!window.confirm(`Publish this approved ${provider} content now?`)) return;
+      const result = form.querySelector("[data-publish-result]");
+      const button = form.querySelector('button[type="submit"]');
+      if (button instanceof HTMLButtonElement) button.disabled = true;
+      if (result) result.textContent = "Publishing…";
+      const idempotency = `hc-${provider}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const body = { provider, vertical, idempotency_key: idempotency };
+      if (provider === "instagram") {
+        body.caption = form.elements.namedItem("caption")?.value || "";
+        body.image_urls = String(form.elements.namedItem("image_urls")?.value || "").split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+      } else {
+        body.text = form.elements.namedItem("text")?.value || "";
+      }
+      try {
+        const payload = await request("/api/hermes-connect/social/publish", { method: "POST", body: JSON.stringify(body) });
+        const publication = payload.publication || {};
+        if (result) {
+          result.replaceChildren();
+          const text = document.createElement("span");
+          text.textContent = publication.status || "Published";
+          result.append(text);
+          if (publication.permalink) {
+            const link = document.createElement("a");
+            link.href = publication.permalink;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = " Open post";
+            result.append(link);
+          }
+        }
+      } catch (error) {
+        if (result) result.textContent = error?.payload?.publication?.status || error.message || "Publish failed";
+      } finally {
+        if (button instanceof HTMLButtonElement) button.disabled = false;
+      }
+    });
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const oauthResult = params.get("result");
+  if (oauthResult) {
+    showStatus(oauthResult === "connected" ? "Provider authorization completed." : `Provider authorization: ${oauthResult.replaceAll("_", " ")}`, oauthResult !== "connected" && oauthResult !== "selection_required");
+  }
+  void load();
+})();
+</script>
+
+<style>
+  .business-social-page{min-height:100vh;background:#f4f6f8;color:#172033;padding:7.5rem 0 4rem}
+  .social-shell{width:min(1180px,calc(100% - 32px));margin:0 auto}
+  .back-link{display:inline-flex;margin-bottom:1.2rem;color:#526174;text-decoration:none;font-weight:760}
+  .social-hero{display:grid;grid-template-columns:1.5fr .7fr;gap:1.5rem;align-items:end;padding:2rem;border:1px solid #e1e6ed;border-radius:22px;background:#fff}
+  .eyebrow{margin:0 0 .45rem;color:#69768a;font-size:.76rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+  .social-hero h1{margin:0;font-size:clamp(2.4rem,6vw,5rem);line-height:.95}
+  .lead{max-width:760px;margin:1rem 0 0;color:#617083;line-height:1.65}
+  .truth-card{display:grid;gap:.35rem;padding:1.2rem;border-radius:16px;background:#172033;color:#fff}.truth-card span,.truth-card small{color:#c7d0dd}
+  .notice{margin:1rem 0;padding:.85rem 1rem;border:1px solid #cfe4d5;border-radius:12px;background:#f0f9f3;color:#285f3b}.notice[data-error]{border-color:#f0cbd1;background:#fff3f4;color:#8d2f40}
+  .provider-grid,.publisher-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .provider-card,.publisher-card,.safety-note{padding:1.2rem;border:1px solid #e1e6ed;border-radius:16px;background:#fff}
+  .provider-head{display:flex;justify-content:space-between;gap:1rem}.provider-head h2,.publisher-card h3{margin:.2rem 0 0}.provider-head small,.publisher-card small{color:#7a8698;font-weight:800}
+  .state{padding:.35rem .55rem;border-radius:999px;background:#eef2f7;color:#556274;font-size:.72rem;font-weight:850}
+  .actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+  button{border:1px solid #172033;border-radius:10px;background:#172033;color:#fff;padding:.72rem .9rem;font:inherit;font-weight:800;cursor:pointer}button.secondary{background:#fff;color:#172033;border-color:#d5dce5}button:disabled{opacity:.45;cursor:not-allowed}
+  .hidden{display:none!important}.candidate-wrap{display:grid;gap:.65rem;padding:.8rem;margin-top:.8rem;border-radius:12px;background:#f6f8fb}
+  label{display:grid;gap:.4rem;font-weight:760}label span{font-size:.75rem;color:#7b8798;font-weight:650}
+  select,textarea{width:100%;box-sizing:border-box;border:1px solid #ccd5e0;border-radius:10px;background:#fff;padding:.72rem;font:inherit;color:#172033}
+  .publish-section{margin-top:2rem}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:1rem}.section-heading h2{margin:.2rem 0 0;font-size:2rem}.section-heading>p{max-width:620px;color:#667487;line-height:1.55}
+  .publisher-card{display:grid;gap:1rem}.publisher-card p{min-height:1.25rem;margin:0;color:#536276;font-size:.84rem}.publisher-card p a{color:#1268c4}
+  .safety-note{margin-top:1rem}.safety-note p{margin:.35rem 0 0;color:#667487;line-height:1.55}
+  @media(max-width:900px){.social-hero,.provider-grid,.publisher-grid{grid-template-columns:1fr}.section-heading{display:grid;gap:.4rem}.business-social-page{padding-top:6.5rem}}
+</style>
