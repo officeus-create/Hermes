@@ -541,7 +541,8 @@ export async function fetchMetaBusinessCandidates(env, accessToken, provider) {
     const pageToken = clean(page?.access_token, 4096);
     if (!pageToken) continue;
     const tasks = Array.isArray(page?.tasks) ? page.tasks.map((item) => clean(item, 64)) : [];
-    if (tasks.length && !tasks.includes("CREATE_CONTENT")) continue;
+    if (normalized === "facebook" && tasks.length && !["CREATE_CONTENT", "MANAGE", "MODERATE"].every((task) => tasks.includes(task))) continue;
+    if (normalized === "instagram" && tasks.length && !tasks.includes("CREATE_CONTENT")) continue;
 
     if (normalized === "facebook") {
       candidates.push({
