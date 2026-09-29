@@ -7,8 +7,6 @@ const STATE_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_SCOPES = [
   "threads_basic",
   "threads_content_publish",
-  "threads_read_replies",
-  "threads_manage_replies",
   "threads_manage_insights",
 ];
 
