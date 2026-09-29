@@ -104,7 +104,7 @@ export function businessSocialProviderConfigured(env, provider) {
 export function businessSocialScopes(provider) {
   const normalized = normalizeBusinessSocialProvider(provider);
   if (normalized === "facebook") {
-    return ["pages_show_list", "pages_read_engagement", "pages_manage_posts"];
+    return ["pages_show_list", "pages_read_engagement", "pages_manage_posts", "pages_manage_engagement", "pages_read_user_engagement"];
   }
   if (normalized === "instagram") {
     return ["pages_show_list", "pages_read_engagement", "instagram_basic", "instagram_content_publish"];
@@ -511,7 +511,7 @@ export async function fetchMetaBusinessCandidates(env, accessToken, provider) {
     const pageToken = clean(page?.access_token, 4096);
     if (!pageToken) continue;
     const tasks = Array.isArray(page?.tasks) ? page.tasks.map((item) => clean(item, 64)) : [];
-    if (tasks.length && !tasks.includes("CREATE_CONTENT") && !tasks.includes("MANAGE")) continue;
+    if (tasks.length && !tasks.includes("CREATE_CONTENT")) continue;
 
     if (normalized === "facebook") {
       candidates.push({
