@@ -40,6 +40,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (existing) {
     await env.DB.prepare("DELETE FROM hermes_social_threads_connections WHERE brand_key=?").bind(brand).run();
   }
+  await env.DB.prepare("DELETE FROM hermes_social_threads_oauth_states WHERE brand_key=?").bind(brand).run();
 
   return jsonResponse(200, {
     success: true,
