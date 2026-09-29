@@ -84,6 +84,13 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <a class="primary-btn" href="/services/hermes-connect/repair-shops/availability/"><CalendarClock size={17} /> Manage availability</a>
       </section>
 
+      <section class="panel" aria-labelledby="catalog-inquiries-title">
+        <div class="panel-heading"><div><p class="eyebrow">Catalog customer intake</p><h2 id="catalog-inquiries-title">Catalog inquiries</h2><p class="muted">Customer requests from a matched Hermes Catalog profile appear here separately from scheduled appointments.</p></div><span id="inquiry-count" class="pill">0 inquiries</span></div>
+        <div id="inquiries-loading" class="state-card">Loading Catalog inquiries…</div>
+        <div id="inquiries-empty" class="state-card hidden"><strong>No Catalog inquiries yet</strong><span>Matched service/contact requests will appear here without being converted into fake appointments.</span></div>
+        <div id="inquiries-list" class="booking-list hidden"></div>
+      </section>
+
       <section class="panel" aria-labelledby="bookings-title">
         <div class="panel-heading"><div><p class="eyebrow">Customer intake</p><h2 id="bookings-title">Booking inbox</h2><p class="muted">Appointments from your public link appear here with vehicle details and persisted status history.</p></div><span id="booking-count" class="pill">0 bookings</span></div>
         <div id="bookings-loading" class="state-card">Loading bookings…</div>
@@ -115,6 +122,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingHistory = { id: string; booking_id: string; from_status: string | null; to_status: string; changed_at: string };
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
+  type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; created_at:string; updated_at:string };
   type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
@@ -292,6 +300,38 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   serviceForm?.addEventListener("submit", async (event) => { event.preventDefault(); clearAlert(); if(addServiceButton)addServiceButton.disabled=true; try { const response=await fetch("/api/services",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$<HTMLInputElement>("service-name")?.value,duration_minutes:Number($<HTMLSelectElement>("service-duration")?.value)})}); const data=await readJson(response); if(!response.ok||!data.success)return showAlert(data.error==="service_already_exists"?"A service with this name already exists.":data.error||"Unable to add service."); serviceForm.reset(); $<HTMLSelectElement>("service-duration")!.value="30"; showAlert(`${data.service.name} added.`,"success"); await loadServices(); } catch { showAlert("Network error while adding service."); } finally { if(addServiceButton)addServiceButton.disabled=false; } });
 
+  function renderInquiries(items: CatalogInquiry[]) {
+    $("inquiries-loading")?.classList.add("hidden");
+    $("inquiry-count")!.textContent = `${items.length} ${items.length === 1 ? "inquiry" : "inquiries"}`;
+    const list=$("inquiries-list")!, empty=$("inquiries-empty")!;
+    list.replaceChildren();
+    if(!items.length){list.classList.add("hidden");empty.classList.remove("hidden");return;}
+    empty.classList.add("hidden");list.classList.remove("hidden");
+    for(const item of items){
+      const card=document.createElement("article");card.className="booking-card";card.dataset.inquiryId=item.id;
+      const top=document.createElement("div");top.className="booking-top";
+      const title=document.createElement("strong");title.textContent=`${item.contact_name} → ${item.business_name}`;
+      const state=document.createElement("span");state.className="pill";state.textContent=item.status || "new";top.append(title,state);
+      const contacts=[item.contact_email,item.contact_phone,item.contact_whatsapp,item.contact_telegram].filter(Boolean);
+      const contact=document.createElement("p");contact.className="muted small";contact.textContent=contacts.join(" · ");
+      const message=document.createElement("p");message.textContent=item.message;
+      const meta=document.createElement("p");meta.className="muted small";meta.textContent=`Received ${formatHistoryTime(item.created_at)} · Hermes notification ${item.internal_delivery_status}${item.preferred_contact_time ? ` · Best time: ${item.preferred_contact_time}` : ""}`;
+      card.append(top,contact,message,meta);
+      if(item.catalog_profile.startsWith("/businesses/")){
+        const link=document.createElement("a");link.className="secondary-btn";link.href=item.catalog_profile;link.textContent="Open Catalog profile";card.append(link);
+      }
+      list.append(card);
+    }
+  }
+
+  async function loadInquiries(){
+    const response=await fetch("/api/repair-shop/inquiries",{credentials:"same-origin"});
+    if(response.status===401)return redirectToAuth();
+    const data=await readJson(response);
+    if(!response.ok||!data.success){$("inquiries-loading")?.classList.add("hidden");return showAlert(data.error||"Unable to load Catalog inquiries.");}
+    renderInquiries(Array.isArray(data.inquiries)?data.inquiries:[]);
+  }
+
   function createStatusControl(booking: Booking) {
     const wrap = document.createElement("div"); wrap.className = "status-control";
     const label = document.createElement("span"); label.className = `status-pill status-${booking.status}`; label.textContent = statusLabels[booking.status] || booking.status; wrap.append(label);
@@ -353,7 +393,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   feedbackForm?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();if(submitFeedbackButton)submitFeedbackButton.disabled=true;try{const response=await fetch("/api/repair-shop/feedback",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({category:$<HTMLSelectElement>("feedback-category")?.value,rating:Number($<HTMLSelectElement>("feedback-rating")?.value),message:$<HTMLTextAreaElement>("feedback-message")?.value})});const data=await readJson(response);if(!response.ok||!data.success)return showAlert(data.error||"Unable to save private feedback.");feedbackForm.reset();$<HTMLSelectElement>("feedback-rating")!.value="5";showAlert("Private feedback saved. Thank you.","success");await loadFeedback();}catch{showAlert("Network error while saving private feedback.");}finally{if(submitFeedbackButton)submitFeedbackButton.disabled=false;}});
 
   $("logout-btn")?.addEventListener("click",async()=>{const response=await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});if(response.ok)redirectToAuth();else showAlert("Logout failed.");});
-  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadBookings(),loadFeedback(),loadHoursSignal()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
+  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadInquiries(),loadBookings(),loadFeedback(),loadHoursSignal()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
   initialize();
 </script>
 

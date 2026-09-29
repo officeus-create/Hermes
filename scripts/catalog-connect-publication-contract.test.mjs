@@ -28,6 +28,9 @@ assert.match(publicProfile, /No private customer records, appointments or accoun
 assert.match(publicProfile, /does not indicate a Hermes customer relationship/);
 assert.match(publicProfile, /type=claim&business=/);
 assert.match(publicProfile, /type=catalog-growth&business=/);
+assert.match(publicProfile, /catalog-business-request/);
+assert.match(publicProfile, /repair-shop-crm:/);
+assert.match(publicProfile, /Request contact via Hermes/);
 assert.match(publicProfile, /indexing, rankings, or customer inquiries/);
 assert.doesNotMatch(publicProfile, /the next scheduled checkpoint is/);
 assert.match(publicProfile, /address_line1/);
@@ -90,5 +93,5 @@ assert.doesNotMatch(websiteConcept, />Contact this business\.</);
 assert.match(catalogRequestPage, /catalog-business-request/);
 assert.match(catalogRequestPage, /catalog_business_id/);
 assert.match(catalogRequestPage, /catalog_source_ref/);
-assert.match(catalogRequestPage, /not proof that the listed business has received it/);
+assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 console.log("Catalog Connect publication contract OK");

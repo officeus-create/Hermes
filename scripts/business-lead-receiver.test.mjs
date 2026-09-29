@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
 import { onRequest } from "../functions/api/business-lead.ts";
 
 class MemoryKv {
@@ -7,9 +8,28 @@ class MemoryKv {
   async put(key, value) { this.values.set(key, value); }
 }
 
+class D1Statement {
+  constructor(statement, args = []) { this.statement = statement; this.args = args; }
+  bind(...args) { return new D1Statement(this.statement, args); }
+  async run() { this.statement.run(...this.args); return { success: true }; }
+  async first() { return this.statement.get(...this.args) ?? null; }
+  async all() { return { results: this.statement.all(...this.args) }; }
+}
+class MemoryD1 {
+  constructor() { this.sqlite = new DatabaseSync(":memory:"); }
+  prepare(sql) { return new D1Statement(this.sqlite.prepare(sql)); }
+  async batch(statements) {
+    const results = [];
+    for (const statement of statements) results.push(await statement.run());
+    return results;
+  }
+}
+
 const serviceCalls = [];
+const db = new MemoryD1();
 const serviceToken = "test-service-token-with-sufficient-length";
 const env = {
+  DB: db,
   ALLOWED_ORIGIN: "https://hermeslogisticsus.com",
   LEAD_DELIVERY_MODE: "live",
   LEAD_SERVICE_TOKEN: serviceToken,
@@ -138,6 +158,9 @@ const catalogRequestPayload = {
   interest: "Hermes Catalog",
   company: "Chayka Store",
   city_country: "Chaiky, Kyiv region, Ukraine",
+  phone: "+380 67 555 0101",
+  whatsapp: "",
+  telegram: "",
   services: ["Catalog business request"],
   catalog_business_id: "catalog-ua-chayka-store",
   catalog_profile: "/businesses/ukraine/chaiky/chayka-store/",
@@ -160,6 +183,78 @@ assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-
 assert.match(serviceCalls.at(-1).payload.text, /Catalog profile: \/businesses\/ukraine\/chaiky\/chayka-store\//);
 assert.match(serviceCalls.at(-1).payload.text, /Catalog source ref: CLIENT-SUPPLIED-CHAYKA-STORE-20260924/);
 assert.match(serviceCalls.at(-1).payload.text, /UTM content: website-concept/);
+const catalogRequestBody = await catalogRequest.clone().json().catch(() => null);
+void catalogRequestBody;
+const genericInquiry = await db.prepare(
+  "SELECT owner_specialist_id, internal_delivery_status, contact_phone FROM catalog_business_inquiries WHERE request_id = ?"
+).bind("catalog_business_req_12345").first();
+assert.equal(genericInquiry.owner_specialist_id, null);
+assert.equal(genericInquiry.internal_delivery_status, "delivered");
+assert.equal(genericInquiry.contact_phone, "+380 67 555 0101");
+
+await db.prepare(`
+  INSERT INTO repair_shops
+    (id, owner_specialist_id, name, slug, phone, city, state, timezone, created_at, updated_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`).bind(
+  "shop-smart-bubble",
+  "owner-smart-bubble",
+  "Smart Bubble Mobile Auto/Body Repair Shop",
+  "smart-bubble-mobile-auto-body-repair",
+  "(833) 501-7771",
+  "Little Rock",
+  "AR",
+  "America/Chicago",
+  "2026-09-28T00:00:00.000Z",
+  "2026-09-28T00:00:00.000Z",
+).run();
+
+const matchedCatalogPayload = {
+  ...catalogRequestPayload,
+  request_id: "catalog_smart_bubble_12345",
+  company: "Smart Bubble Mobile Auto/Body Repair Shop",
+  city_country: "Little Rock, AR, US",
+  phone: "+1 833 501 7771",
+  catalog_business_id: "repair-shop:arkansas/little-rock/smart-bubble-mobile-auto-body-repair",
+  catalog_profile: "/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/",
+  catalog_source_ref: "PUBLIC-WEB-SMART-BUBBLE-LITTLE-ROCK-20260928",
+  message: "I need an estimate and would like the repair shop to contact me about service.",
+};
+const serviceCallsBeforeMatched = serviceCalls.length;
+const matchedCatalog = await onRequest({
+  request: makeRequest(matchedCatalogPayload, { "CF-Connecting-IP": "192.0.2.62" }),
+  env,
+});
+assert.equal(matchedCatalog.status, 200);
+const matchedBody = await matchedCatalog.json();
+assert.equal(matchedBody.crm_saved, true);
+assert.equal(matchedBody.crm_linked, true);
+assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
+const matchedInquiry = await db.prepare(`
+  SELECT shop_id, owner_specialist_id, business_name, contact_phone, internal_delivery_status
+  FROM catalog_business_inquiries
+  WHERE request_id = ?
+`).bind("catalog_smart_bubble_12345").first();
+assert.equal(matchedInquiry.shop_id, "shop-smart-bubble");
+assert.equal(matchedInquiry.owner_specialist_id, "owner-smart-bubble");
+assert.equal(matchedInquiry.business_name, "Smart Bubble Mobile Auto/Body Repair Shop");
+assert.equal(matchedInquiry.contact_phone, "+1 833 501 7771");
+assert.equal(matchedInquiry.internal_delivery_status, "delivered");
+
+const matchedDuplicate = await onRequest({
+  request: makeRequest(matchedCatalogPayload, { "CF-Connecting-IP": "192.0.2.62" }),
+  env,
+});
+assert.equal(matchedDuplicate.status, 200);
+assert.equal((await matchedDuplicate.json()).duplicate, true);
+assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
+
+const matchedConflict = await onRequest({
+  request: makeRequest({ ...matchedCatalogPayload, message: "Changed payload under the same request id must be rejected." }, { "CF-Connecting-IP": "192.0.2.63" }),
+  env,
+});
+assert.equal(matchedConflict.status, 409);
+assert.equal(serviceCalls.length, serviceCallsBeforeMatched + 1);
 
 const catalogRequestMissingTarget = await onRequest({
   request: makeRequest({
