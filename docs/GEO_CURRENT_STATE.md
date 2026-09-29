@@ -1,6 +1,6 @@
 # Hermes GEO — Current State
 
-Updated: 2026-09-18
+Updated: 2026-09-29
 
 This file is the single current repository handoff for GEO/public-AI visibility work. Historical GEO stacks remain provenance only and must not be replayed wholesale.
 
@@ -77,7 +77,7 @@ No clean-provider wave has been executed from repository engineering. Therefore:
 - `CORRECT_CANONICAL` = `NOT_MEASURED`
 - `FACTUAL_ERRORS` = `NOT_MEASURED`
 - `COMPETITOR_SHARE` = `NOT_MEASURED`
-- `AI_REFERRALS` = `ATTRIBUTION_UNAVAILABLE` until authenticated attribution evidence exists
+- `AI_REFERRALS` = `OBSERVED_GA4_REFERRAL_SIGNAL`; authenticated GA4 sees `chatgpt.com / ai-assistant`, but internal/agent traffic is mixed in and this is not recommendation or customer proof
 - `AI_BOOKINGS` = `ATTRIBUTION_UNAVAILABLE` until authenticated attribution evidence exists
 
 `0 completed observations` is a work-count only; it is never evidence of 0% visibility.
@@ -94,12 +94,30 @@ Connected Search Console evidence for `https://hermeslogisticsus.com/`, settled 
 - recruiting owners are currently the strongest search winners, including `/careers/car-hauling-dispatcher/` around position 4.60 and `/logistics/careers/` around position 4.71;
 - the Auction Vehicle Pickup and Car Hauler Capacity checklists are current near-page-one/page-two support assets and should be strengthened before broad new page generation.
 
-Connected GA4 evidence is usable for instrumentation checks but **not yet a clean human-traffic or revenue baseline**:
+Connected GA4 evidence is usable for instrumentation checks but **not yet a clean human-traffic or revenue baseline**.
 
-- the 28-day property contains a very large direct/test/automation footprint, so total sessions must not be presented as audience growth;
-- `google / organic` and `chatgpt.com / ai-assistant` referral classifications are present, but internal/agent visits are also visible in those channels;
-- `commercial_cta_click` and `seo_intake_start` events are present, while no current `seo_intake_preview_ready` / `seo_handoff_ready` outcome receipt or configured key event proves a real qualified conversion;
+### 2026-09-29 GA4 contamination boundary and post-incident baseline
+
+Fresh authenticated Windsor GA4 readback for property `547903956` (`https://hermeslogisticsus.com`) proves that the extreme direct/test footprint was concentrated on **2026-09-01 through 2026-09-04**, rather than continuing at the same rate through the month:
+
+- the repeated anomalous money-page batches were approximately `204 / 41 / 147 / 85` sessions on Sep 1-4 for several canonical owners; `/paths/marketing/` showed approximately double-sized batches;
+- the Sep 1-4 rows must remain excluded from audience-growth and conversion-rate baselines;
+- repository history provides a matching technical boundary: the Sep 4 analytics transport change explicitly kept CI/preview traffic out of GA4; this timing strongly supports automation/CI contamination, but it is not client-ID-level forensic proof of every historical session;
+- for the bounded **2026-09-05 through 2026-09-26** window GA4 reports `364 sessions / 103 active users / 262 engaged sessions / 71.98% engagement rate / 1,880 page views / 0 configured key events`;
+- that bounded window still contains internal/agent/test traffic and is a cleaner operational baseline, not a verified-human baseline;
+- source/medium counts in that bounded window include `Direct 179`, `chatgpt.com / ai-assistant 68`, `work.ua / referral 45`, `google / organic 37`, known Cloudflare test sources `17`, `mail.google.com / referral 9`, and `london / organic 4`; these are attribution observations, not customer counts;
+- within the `chatgpt.com / ai-assistant` slice, `/careers/car-hauling-dispatcher/` shows `15 sessions / 15 active users / 12 engaged sessions`, while homepage, dashboard, Load Board and internal Connect routes also receive AI-assistant-attributed sessions; the 68-session total must not be treated as 68 independent prospects or recommendations;
+- `hc_repair_paid_intent_submitted` and `commercial_cta_click` each appear once in the bounded window, but neither is configured as a GA4 key event and neither alone proves receiver delivery, qualification, opportunity or revenue;
 - therefore `SEARCH_OR_AI_TO_QUALIFIED_LEAD` remains `NOT_PROVEN`, not `0%`.
+
+### 2026-09-29 Search Console connector access reconciliation
+
+Current evidence shows an **account mismatch**, not a missing domain verification:
+
+- the office owner mailbox `officeus@hermeslogisticsus.com` received a Google Search Console transactional message on **2026-09-11** stating that the domain property `hermeslogisticsus.com` had recently been verified;
+- the current GSC Wizard MCP session is authenticated as `volkogon.v@gmail.com` and reports `sc-domain:hermeslogisticsus.com` as not verified/readable for that connected account;
+- therefore do **not** repeat DNS/domain verification as the first fix. Reconnect GSC Wizard with the verified office Google account, or explicitly grant the personal Google account access to the already-verified property, then re-run property readback and URL Inspection;
+- GSC Wizard GA4 scope is also not currently granted; Windsor remains the authenticated GA4 evidence source until that scope is connected.
 
 This checkpoint authorizes ranking/authority/conversion-measurement work on existing owners. It does not authorize a broad Logistics copy rewrite, mass page expansion, or a claim that AI referrals produced customers.
 
