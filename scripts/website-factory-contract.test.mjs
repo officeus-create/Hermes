@@ -4,8 +4,19 @@ import { resolve } from "node:path";
 import {
   cleanWebsiteFactoryUrl,
   normalizeWebsiteFactoryPayload,
+  transitionWebsiteFactorySourceImport,
+  websiteFactoryCatalogPublicationGate,
   websiteFactoryReadiness,
+  websiteFactoryToCatalogConceptDraft,
 } from "../functions/api/_lib/website-factory.mjs";
+import {
+  CATALOG_LIFECYCLE_STATES,
+  canTransitionCatalogState,
+  catalogConceptPreviewGate,
+  catalogConceptPublicationQa,
+  catalogSemanticSignals,
+  normalizeConceptSourceImports,
+} from "../src/lib/catalog-concept-governance.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
@@ -74,6 +85,42 @@ const readyPayload = normalizeWebsiteFactoryPayload({
 assert.deepEqual(websiteFactoryReadiness(readyPayload), { ready: true, reasons: [] }, "minimum valid owner brief should reach the handoff gate");
 const blockedPayload = normalizeWebsiteFactoryPayload({ starting_from_zero: false });
 assert.equal(websiteFactoryReadiness(blockedPayload).ready, false, "missing source/goal/brief/references must stay blocked");
+
+const governedPayload = normalizeWebsiteFactoryPayload({
+  sources: [{ url: "https://example.com/business" }],
+  facts: { business_name: "Example Garage", city: "London", country: "UK", services: ["MOT"] },
+  goals: { primary: "Qualified enquiries", semantic_core: ["MOT London"], local_intents: ["garage London"] },
+  brief: { text: "Build a clear local service website." },
+  references: [
+    { role: "visual", url: "https://example.com/v" },
+    { role: "functionality", url: "https://example.com/f" },
+    { role: "structure", url: "https://example.com/s" },
+  ],
+});
+assert.equal(governedPayload.sources[0].status, "pending");
+assert.deepEqual(governedPayload.references.map((item) => item.role), ["visual", "functionality", "structure-conversion"]);
+assert.deepEqual(governedPayload.goals.semantic_core, ["MOT London"]);
+assert.deepEqual(governedPayload.goals.local_intents, ["garage London"]);
+
+const conceptDraft = websiteFactoryToCatalogConceptDraft(governedPayload, { draftId: "wf-1", title: "Example Garage" });
+assert.equal(conceptDraft.lifecycleState, "CONCEPT_DRAFT");
+assert.equal(conceptDraft.publication.indexable, false);
+assert.equal(catalogConceptPreviewGate(conceptDraft).robots, "noindex,nofollow");
+assert.equal(CATALOG_LIFECYCLE_STATES.length, 8);
+assert.equal(canTransitionCatalogState("DISCOVERED", "RESEARCHED"), true);
+assert.equal(canTransitionCatalogState("DISCOVERED", "CLIENT"), false);
+assert.equal(normalizeConceptSourceImports(conceptDraft.sourceImports)[0].status, "pending");
+assert.ok(catalogSemanticSignals(conceptDraft).includes("MOT London"));
+assert.equal(websiteFactoryCatalogPublicationGate(conceptDraft, { ownerApproved: false }).ready, false);
+assert.equal(catalogConceptPublicationQa(conceptDraft, { ownerApproved: false }).ready, false);
+
+const verifiedConceptDraft = {
+  ...conceptDraft,
+  sourceImports: conceptDraft.sourceImports.map((source) => transitionWebsiteFactorySourceImport(source, "verified")),
+};
+assert.equal(websiteFactoryCatalogPublicationGate(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+assert.equal(catalogConceptPublicationQa(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+assert.throws(() => transitionWebsiteFactorySourceImport(verifiedConceptDraft.sourceImports[0], "pending"), /source_import_transition_invalid/);
 
 assert.match(drafts, /getAuthenticatedSpecialist/, "draft collection must require the shared Hermes session");
 assert.match(drafts, /sameOriginMutation/, "draft creation must be same-origin protected");
