@@ -23,7 +23,7 @@ test("homepage presents one clear four-direction choice", async ({ page }) => {
 test("homepage does not expose a second competing routing layer", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByText("One Hermes ecosystem. Four different worlds", { exact: false })).toBeVisible();
+  await expect(page.getByText("One operating architecture.", { exact: false })).toBeVisible();
   await expect(page.locator(".home-role-router")).toHaveCount(0);
   await expect(page.locator(".path-pillars")).toHaveCount(0);
   await expect(page.locator(".product-showcase")).toHaveCount(0);
