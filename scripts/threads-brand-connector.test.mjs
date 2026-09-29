@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
+  decryptThreadsTokenPayload,
+  encryptThreadsTokenPayload,
   normalizeThreadsBrand,
   publicThreadsConnection,
   threadsAuthorizationUrl,
@@ -29,6 +31,19 @@ const configEnv = {
   THREADS_BRAND_TOKEN_KEY: Buffer.alloc(32, 7).toString("base64"),
 };
 assert.ok(threadsBrandRuntimeConfig(configEnv));
+assert.equal(threadsBrandRuntimeConfig({ ...configEnv, THREADS_BRAND_TOKEN_KEY: Buffer.alloc(31, 7).toString("base64") }), null);
+assert.equal(threadsBrandRuntimeConfig({ ...configEnv, THREADS_BRAND_REDIRECT_URI: "http://example.com/callback" }), null);
+
+const encryptedPayload = await encryptThreadsTokenPayload(configEnv, {
+  access_token: "synthetic-access-token",
+  token_type: "bearer",
+  expires_at: "2026-12-01T00:00:00Z",
+});
+assert.match(encryptedPayload, /^v1\./);
+assert.doesNotMatch(encryptedPayload, /synthetic-access-token/);
+const decryptedPayload = await decryptThreadsTokenPayload(configEnv, encryptedPayload);
+assert.equal(decryptedPayload.access_token, "synthetic-access-token");
+assert.equal(decryptedPayload.token_type, "bearer");
 
 const authUrl = new URL(threadsAuthorizationUrl(configEnv, "synthetic.state"));
 assert.equal(authUrl.origin + authUrl.pathname, "https://threads.com/oauth/authorize");
