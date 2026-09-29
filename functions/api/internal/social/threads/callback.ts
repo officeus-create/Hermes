@@ -35,7 +35,9 @@ function internalRedirect(request: Request, brand: string, result: string) {
 function businessRedirect(request: Request, vertical: string, result: string) {
   const path = vertical === "repair_shop"
     ? "/services/hermes-connect/repair-shops/social/"
-    : "/services/hermes-connect/dealers/social/";
+    : vertical === "beauty_salon"
+      ? "/services/hermes-connect/beauty/workspace/social/"
+      : "/services/hermes-connect/dealers/social/";
   const url = new URL(path, request.url);
   url.searchParams.set("provider", "threads");
   url.searchParams.set("result", result);
@@ -87,7 +89,7 @@ async function handleBusinessCallback(request: Request, env: Env, state: any, co
     return businessRedirect(request, vertical, "owner_context_mismatch");
   }
 
-  const preferred = vertical === "repair_shop" ? "repair_shop" : "dealer";
+  const preferred = vertical === "repair_shop" ? "repair_shop" : vertical === "beauty_salon" ? "beauty_salon" : "dealer";
   const business = await resolveOwnedSocialBusiness(env.DB, specialist.id, preferred);
   if (!business || business.business_key !== String(state.business_key)) {
     return businessRedirect(request, vertical, "business_context_mismatch");
