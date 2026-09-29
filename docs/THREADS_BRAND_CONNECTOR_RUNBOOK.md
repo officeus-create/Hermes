@@ -111,6 +111,8 @@ internal owner session
 - App secret is server-side only.
 - Connection/profile metadata can be returned to the private internal-owner workspace.
 - If token refresh fails, the connection moves to `needs_authorization` and publishing fails closed.
+- The private workspace exposes a local disconnect action that deletes the encrypted Hermes-side connection record and immediately blocks publishing for that brand.
+- Local disconnect does not claim to revoke the authorization grant at Meta; use the Meta/Threads account authorization controls when full provider-side revocation is required.
 
 ## Idempotency and ambiguous provider outcomes
 
