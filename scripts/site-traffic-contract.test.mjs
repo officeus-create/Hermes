@@ -4,10 +4,12 @@ import { siteTrafficRouteGroup } from "../functions/api/site-traffic.ts";
 
 assert.equal(siteTrafficRouteGroup("/"), "home");
 assert.equal(siteTrafficRouteGroup("/businesses/arkansas/guy/example/"), "catalog");
+assert.equal(siteTrafficRouteGroup("/businesses/ukraine/chaiky/example/"), "catalog_international");
 assert.equal(siteTrafficRouteGroup("/businesses/connect/repair-shop/example-shop/"), "catalog_crm_profile");
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/booking/"), "repair_shop_booking");
 assert.equal(siteTrafficRouteGroup("/paths/logistics/"), "logistics");
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/dashboard/"), null);
+assert.equal(siteTrafficRouteGroup("/services/hermes-connect/access/"), null);
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/auth/"), null);
 assert.equal(siteTrafficRouteGroup("/internal/site-traffic/"), null);
 assert.equal(siteTrafficRouteGroup("/api/catalog/companies"), null);
@@ -22,16 +24,22 @@ assert.match(api, /requireInternalOwner\(request, env\)/);
 assert.match(api, /analytics_consent !== true/);
 assert.match(api, /hermes_site_traffic_daily/);
 assert.match(api, /PRIMARY KEY\(day, route_group\)/);
+assert.match(api, /sessions INTEGER NOT NULL DEFAULT 0/);
+assert.match(api, /ALTER TABLE hermes_site_traffic_daily ADD COLUMN sessions/);
 assert.doesNotMatch(api, /CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|client_email|client_phone/);
 
 assert.match(collector, /localStorage\.getItem\(CONSENT_KEY\) === "granted"/);
 assert.match(collector, /navigator\.webdriver === true/);
 assert.match(collector, /window\.location\.pathname/);
+assert.match(collector, /sessionStorage\.getItem\(SESSION_KEY\)/);
+assert.match(collector, /session_start: sessionStart/);
 assert.doesNotMatch(collector, /window\.location\.search|document\.referrer|email|phone/);
 
 assert.match(dashboard, /robots="noindex,nofollow"/);
 assert.match(dashboard, /fetch\("\/api\/site-traffic"/);
-assert.match(dashboard, /consented first-party page views/i);
+assert.match(dashboard, /consented first-party traffic/i);
+assert.match(dashboard, /Browser sessions · 28 days/);
+assert.match(dashboard, /International Catalog \/ SEO-GEO discovery/);
 assert.match(layout, /<SiteTrafficCollector \/>/);
 
 console.log("Owner site traffic counter contract OK");
