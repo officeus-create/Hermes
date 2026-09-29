@@ -59,6 +59,10 @@
         grid.append(makeCard(company));
         existing.add(href);
       }
+      const publishedCount = grid.querySelectorAll('[data-catalog-card]').length;
+      document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
+        node.textContent = String(publishedCount);
+      });
       document.dispatchEvent(new CustomEvent('hermes:catalog-profiles-loaded'));
     })
     .catch(() => {});
