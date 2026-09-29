@@ -9,6 +9,7 @@ assert.equal(siteTrafficRouteGroup("/businesses/connect/repair-shop/example-shop
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/booking/"), "repair_shop_booking");
 assert.equal(siteTrafficRouteGroup("/paths/logistics/"), "logistics");
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/dashboard/"), null);
+assert.equal(siteTrafficRouteGroup("/services/hermes-connect/access/"), null);
 assert.equal(siteTrafficRouteGroup("/services/hermes-connect/repair-shops/auth/"), null);
 assert.equal(siteTrafficRouteGroup("/internal/site-traffic/"), null);
 assert.equal(siteTrafficRouteGroup("/api/catalog/companies"), null);
