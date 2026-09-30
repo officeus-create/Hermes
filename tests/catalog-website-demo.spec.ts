@@ -12,12 +12,14 @@ test("concept actions stay with Hermes and dialog works on repeated visits", asy
   await page.goto(concept);
   await expect(page.getByText("Website concept by Hermes / not the official business website", { exact: true })).toBeVisible();
   await expect(page.getByText("Existing free pilot · proposed design", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Order a website like this/ }).first()).toHaveAttribute("href", /type=catalog-growth/);
+  await expect(page.getByRole("button", { name: /Book a visit|Explore payment|Explore booking/ })).toHaveCount(0);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com" + concept);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await mkdir("../evidence", { recursive: true });
   await page.screenshot({ path: `../evidence/kittles-${info.project.name}.png`, fullPage: true, animations: "disabled" });
-  const trigger = page.getByLabel("Concept navigation").getByRole("button", { name: "Book a visit ↗", exact: true });
+  const trigger = page.getByRole("button", { name: /Diagnostics/ });
   await trigger.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
@@ -30,8 +32,8 @@ test("concept actions stay with Hermes and dialog works on repeated visits", asy
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
-  await page.getByRole("button", { name: "Explore payment ↗", exact: true }).click();
-  await expect(dialog.getByRole("heading", { name: "Discuss payment with Hermes" })).toBeVisible();
+  await page.getByRole("button", { name: /Brakes/ }).click();
+  await expect(dialog.getByRole("heading", { name: "Discuss brakes with Hermes" })).toBeVisible();
   await dialog.getByRole("button", { name: "Close development discussion" }).click();
   await trigger.click();
   await page.mouse.click(1, 1);
@@ -78,8 +80,7 @@ test("V4 concept stays readable across breakpoints with static reduced motion", 
 
 const openBrief = async (page: import("@playwright/test").Page) => {
   await page.goto(concept);
-  await page.getByRole("button", { name: "Explore payment ↗", exact: true }).click();
-  await page.getByRole("link", { name: /Open a short/ }).click();
+  await page.getByRole("link", { name: /Order a website like this/ }).first().click();
 };
 const fillBrief = async (page: import("@playwright/test").Page) => {
   await page.locator('input[name="name"]').fill("Synthetic QA");

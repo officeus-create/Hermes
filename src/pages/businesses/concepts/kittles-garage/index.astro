@@ -7,3 +7,8 @@ const profileUrl = "https://hermeslogisticsus.com/businesses/connect/repair-shop
 <BaseLayout title="Kittle’s Garage website concept | Hermes Catalog" description="Proposed website design for an existing Hermes free pilot client, pending owner approval. Demo actions discuss development with Hermes; no booking or payment is created." robots="noindex,nofollow">
   <main id="main-content"><CatalogWebsiteConcept business={kittlesWebsiteConcept} profileUrl={profileUrl} conceptCTA /></main>
 </BaseLayout>
+<style>
+  /* Chromium149 cross-document view transitions stall frame-based actionability.
+     Keep this visual cover's ordinary concept-to-brief handoff direct. */
+  @view-transition { navigation: none; }
+</style>

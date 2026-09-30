@@ -12,7 +12,7 @@ for (const viewport of [{width:1280,height:720},{width:390,height:844}]) {
   await page.addInitScript(()=>localStorage.setItem('hermes-analytics-consent','denied'));
   await page.route(/^https:\/\//,route=>route.abort());
   await page.goto('http://127.0.0.1:4321/businesses/concepts/kittles-garage/');
-  await page.getByRole('button',{name:'Explore payment ↗',exact:true}).click();
+  await page.getByRole('button',{name:/Diagnostics/}).click();
   await page.getByRole('link',{name:/Open a short/}).click();
   await page.waitForLoadState('load');
   const button=page.getByRole('button',{name:'Preview development brief'});
