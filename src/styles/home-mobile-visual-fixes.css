@@ -1,10 +1,10 @@
-/* CEO-approved homepage mobile visual fixes — 2026-08-23.
- * Scope: homepage only. Keep the Four directions heading permanently readable,
- * preserve the restrained light pillar entrance, remove corner leaks around the final
- * contact surface, and force the homepage header into the correct mobile presentation.
+/* Homepage mobile visual contract — V4 Home Master Scene.
+ * Scope: homepage only. Keep the primary statement readable, prevent horizontal
+ * overflow, preserve the mobile header contract, and keep the contact finish sealed.
  */
 
-.hermes-home-recovery .home-rooms-display {
+.hermes-home-recovery .home-master-display,
+.hermes-home-recovery .home-master-script {
   position: relative;
   z-index: 2;
   display: block;
@@ -12,36 +12,26 @@
   visibility: visible !important;
   transform: none !important;
   animation: none !important;
-  color: #0b0d12 !important;
-  -webkit-text-fill-color: #0b0d12 !important;
+  -webkit-text-fill-color: currentColor !important;
   background: none !important;
   filter: none;
 }
 
-/* Safari/iOS can intermittently lose text when an ancestor uses transparent
- * -webkit-text-fill-color + animated background clipping. Give the display line
- * its own opaque paint layer so it can never disappear while the script line animates.
- */
 @supports (-webkit-touch-callout: none) {
-  .hermes-home-recovery .home-rooms-display {
+  .hermes-home-recovery .home-master-display,
+  .hermes-home-recovery .home-master-script {
     -webkit-background-clip: border-box !important;
     background-clip: border-box !important;
-    -webkit-text-fill-color: #0b0d12 !important;
+    -webkit-text-fill-color: currentColor !important;
   }
 }
 
-.hermes-home-recovery .home-rooms-grid {
+.hermes-home-recovery .home-master-stage {
   position: relative;
   isolation: isolate;
-  box-shadow:
-    0 24px 64px rgba(28,35,48,.08);
+  box-shadow: 0 24px 64px rgba(28,35,48,.08);
 }
 
-.hermes-home-recovery .home-rooms-grid::before { display: none; }
-
-/* The full-width shell must stay square. The previous global HomeRecoveryFinish
- * rule rounded this parent, which exposed the light page background at the outer
- * top corners on Android Chrome. Only the inner contact surface is rounded. */
 body:has(.hermes-home-recovery) {
   background-color: #070912;
 }
@@ -92,9 +82,6 @@ body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact:
   background: linear-gradient(180deg, transparent 0%, rgba(8,10,18,.55) 48%, #070912 100%);
 }
 
-/* The screenshot exposed a desktop-header fallback at phone width. Lock the
- * homepage header to the mobile contract through tablet widths; the existing
- * SiteHeader script continues to own panel open/close behavior. */
 @media (max-width: 900px) {
   body:has(.hermes-home-recovery) .site-header {
     width: calc(100% - 16px);
@@ -114,19 +101,18 @@ body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact:
 }
 
 @media (max-width: 800px) {
-  .hermes-home-recovery .home-rooms-intro h1 {
+  .hermes-home-recovery .home-master-intro h1 {
     min-height: 1em;
   }
 
-  .hermes-home-recovery .home-rooms-display {
+  .hermes-home-recovery .home-master-display {
     font-size: clamp(2.8rem, 13vw, 4.7rem);
     line-height: .92;
     letter-spacing: -.055em;
   }
 
-  .hermes-home-recovery .home-rooms-grid {
-    box-shadow:
-      0 20px 50px rgba(28,35,48,.09);
+  .hermes-home-recovery .home-master-stage {
+    box-shadow: 0 20px 50px rgba(28,35,48,.09);
   }
 
   body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
@@ -135,7 +121,8 @@ body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact:
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hermes-home-recovery .home-rooms-display {
+  .hermes-home-recovery .home-master-display,
+  .hermes-home-recovery .home-master-script {
     animation: none !important;
   }
 }
