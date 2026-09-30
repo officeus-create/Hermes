@@ -278,6 +278,7 @@ const { vertical, backHref, backLabel } = Astro.props;
   });
 
   const aiForm=root.querySelector("[data-ai-intake]");
+  let currentIntakeId="";
   aiForm?.addEventListener("submit",async(event)=>{
     event.preventDefault();const result=root.querySelector("[data-ai-result]");if(result)result.textContent="Registering source…";
     try{
@@ -285,13 +286,42 @@ const { vertical, backHref, backLabel } = Astro.props;
         vertical,source_url:aiForm.elements.namedItem("source_url")?.value||"",brief:aiForm.elements.namedItem("brief")?.value||"",
         language:aiForm.elements.namedItem("language")?.value||"en",market:aiForm.elements.namedItem("market")?.value||"",
       })});
-      if(result)result.textContent=`Source registered · ${payload.intake?.status||"ready"} · next: Drive authorization`;
-      const aiState=root.querySelector("[data-ai-state]");if(aiState)aiState.textContent="Source registered · Drive authorization required";
+      currentIntakeId=String(payload.intake?.id||"");
+      if(result)result.textContent=`Source registered · ${payload.intake?.status||"ready"} · next: ${String(payload.next_gate||"review").replaceAll("_"," ")}`;
+      const aiState=root.querySelector("[data-ai-state]");if(aiState)aiState.textContent=String(payload.next_gate||"source registered").replaceAll("_"," ");
+      const generate=root.querySelector("[data-ai-generate]");if(generate instanceof HTMLButtonElement)generate.disabled=payload.next_gate!=="ready_to_generate";
     }catch(error){if(result)result.textContent=error.message||"Unable to register source.";}
   });
 
-  const params=new URLSearchParams(window.location.search);const oauthResult=params.get("result");
+  root.querySelector("[data-drive-connect]")?.addEventListener("click",async()=>{
+    const result=root.querySelector("[data-ai-result]");
+    try{
+      if(result)result.textContent="Preparing Google Drive authorization…";
+      const payload=await request("/api/hermes-connect/social/drive/start",{method:"POST",body:JSON.stringify({vertical})});
+      window.location.assign(payload.authorization_url);
+    }catch(error){if(result)result.textContent=error.message||"Unable to start Google Drive authorization.";}
+  });
+
+  root.querySelector("[data-ai-generate]")?.addEventListener("click",async()=>{
+    const result=root.querySelector("[data-ai-result]");
+    if(!currentIntakeId){if(result)result.textContent="Register a Google Drive source first.";return;}
+    try{
+      if(result)result.textContent="Reading Drive source and generating draft…";
+      const payload=await request("/api/hermes-connect/social/creative-generate",{method:"POST",body:JSON.stringify({vertical,intake_id:currentIntakeId})});
+      const draft=payload.draft||{};
+      if(composer){
+        const caption=composer.elements.namedItem("caption");const threads=composer.elements.namedItem("threads_text");const facebook=composer.elements.namedItem("facebook_text");
+        if(caption)caption.value=draft.master_caption||"";
+        if(threads){threads.value=draft.threads_text||"";threadsTouched=true;}
+        if(facebook){facebook.value=draft.facebook_text||"";facebookTouched=true;}
+      }
+      if(result)result.textContent=`AI draft applied · ${payload.source?.asset_count||0} source asset(s) analyzed. Review before publishing.`;
+    }catch(error){if(result)result.textContent=error.message||"AI draft generation failed.";}
+  });
+
+  const params=new URLSearchParams(window.location.search);const oauthResult=params.get("result");const driveResult=params.get("drive");
   if(oauthResult)showStatus(oauthResult==="connected"?"Provider authorization completed.":`Provider authorization: ${oauthResult.replaceAll("_"," ")}`,oauthResult!=="connected"&&oauthResult!=="selection_required");
+  if(driveResult)showStatus(driveResult==="connected"?"Google Drive connected for Social Studio.":`Google Drive: ${driveResult.replaceAll("_"," ")}`,driveResult!=="connected");
   void loadConnections();void loadFeed();
 })();
 </script>
