@@ -27,6 +27,26 @@ function googleDriveUrl(value:unknown){
     return url.toString();
   }catch{return null;}
 }
+function publicDraft(value:unknown){
+  if(!value)return null;
+  let draft:any=value;
+  if(typeof value==="string"){try{draft=JSON.parse(value);}catch{return null;}}
+  if(!draft||typeof draft!=="object")return null;
+  const carousel=Array.isArray(draft.carousel_plan)?draft.carousel_plan.slice(0,10).map((item:any)=>({
+    headline:clean(item?.headline,120),
+    body:clean(item?.body,320),
+    visual_direction:clean(item?.visual_direction,320),
+  })).filter((item:any)=>item.headline||item.body||item.visual_direction):[];
+  return{
+    master_caption:clean(draft.master_caption,2200),
+    threads_text:clean(draft.threads_text,500),
+    facebook_text:clean(draft.facebook_text,5000),
+    instagram_story_text:clean(draft.instagram_story_text,500),
+    carousel_plan:carousel,
+    source_summary:clean(draft.source_summary,1800),
+    claims_to_verify:Array.isArray(draft.claims_to_verify)?draft.claims_to_verify.slice(0,12).map((item:any)=>clean(item,280)).filter(Boolean):[],
+  };
+}
 function publicIntake(row:any){
   return row?{
     id:String(row.id||""),source_kind:String(row.source_kind||""),
@@ -34,6 +54,7 @@ function publicIntake(row:any){
     language:String(row.language||""),market:row.market?String(row.market):null,
     status:String(row.status||""),created_at:String(row.created_at||""),
     updated_at:String(row.updated_at||""),
+    draft:publicDraft(row.draft_json),
   }:null;
 }
 
