@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import CatalogWebsiteConcept from "../../../../components/CatalogWebsiteConcept.astro";
+import { kittlesWebsiteConcept } from "../../../../data/catalog-business-concepts";
+const profileUrl = "https://hermeslogisticsus.com/businesses/connect/repair-shop/kittle-s-garage-a146544/";
+---
+<BaseLayout title="Kittle’s Garage website concept | Hermes Catalog" description="Proposed website design for an existing Hermes free pilot client, pending owner approval. Demo actions discuss development with Hermes; no booking or payment is created." robots="noindex,nofollow">
+  <main id="main-content"><CatalogWebsiteConcept business={kittlesWebsiteConcept} profileUrl={profileUrl} conceptCTA /></main>
+</BaseLayout>
