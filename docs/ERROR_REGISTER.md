@@ -333,3 +333,8 @@ REUSE_RULE: Preserve native links/text and shared service functionality; inspect
 STATUS: Root cause evidenced; verification pending.
 EVIDENCE: exact-head CI 8753035f / Website run36743152348: returned Home visible=true, focused=true, rAF callback absent after 1s; menu geometry unchanged x315/y18.1875/44x44 with zero animations, repeated identically. Normal locator click and screenshot both wait on absent frames. Parent headed cloud-browser menu→Connect→Back pointer flow passed.
 WORKING_APPROACH: Preserve the full native pointer flow with explicit visible/enabled checks, two equal bounding boxes, in-viewport center and elementFromPoint hit-target assertion before page.mouse.click; retain aria-expanded/menu visibility and actual sign-in URL/Back checks. No forced click, skipped case, increased timeout, product workaround, or local Chromium launch bypass.
+
+## 2026-09-30 — Approved Home light footer / contact group accessibility
+STATUS: bounded fixes implemented; final exact-head verification required.
+EVIDENCE: 3097d25d Website checks passed 1,741 browser cases/12 existing skips; quality audit36744479204 passed advisory workflow, ZAP0 failures/13 warning classes/54 passes; Home Pa11y count36 versus87 on original handed-off PR. Audit explicitly identified new contact div aria-label without permitted group role and inherited pale-green status text on the new light footer.
+WORKING_APPROACH: Add role=group to the already-named native contact actions; scope darker green status foreground to Home footer only. Keep shared service themes, account/product truth and other-route accessibility remediation untouched. No WCAG-clean claim or audit gate changes.

@@ -24,3 +24,5 @@ body:has(.hermes-home-recovery) #contact .footer-meta,body:has(.hermes-home-reco
 
 @media(max-width:1180px){body:has(.hermes-home-recovery) .site-header .mobile-nav:not([hidden]){display:grid}}
 @media(prefers-reduced-motion:reduce){.hermes-home-recovery .home-portal-art,.hermes-home-recovery .home-portal-art::before,.hermes-home-recovery .home-master-route{animation:none!important;transition:none!important}}
+
+body:has(.hermes-home-recovery) #contact .hc-launcher-panel-head>span:last-child{color:#075d45;background:#e0fbef}

@@ -118,6 +118,7 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await page.locator('.header-cta').click();
  await expect(page).toHaveURL(/\/#contact$/);
  await expect(page.getByRole('heading',{name:'Let’s build your next step.'})).toBeInViewport();
+ await expect(page.getByRole('group',{name:'Hermes contact options'})).toBeVisible();
  await expect(page.locator('[data-home-primary-contact]')).toHaveAttribute('href','/contacts/');
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
