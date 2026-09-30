@@ -14,6 +14,7 @@ on:
       - 'public/department-menu.js'
       - 'public/repair-shop-design-polish.css'
       - 'src/components/HermesConnectLauncher.astro'
+      - 'src/components/BusinessSocialConnectionsWorkspace.astro'
       - 'src/components/AcademyScreenFlow.astro'
       - 'src/components/DepartmentMenuEnhancer.astro'
       - 'src/components/DepartmentMenuLocalization.astro'

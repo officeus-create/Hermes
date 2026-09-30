@@ -34,7 +34,10 @@ assert.equal(routeMap.get("carrier-signing"), "/sign/");
 assert.equal(routeMap.get("repair-shops"), "/services/hermes-connect/repair-shops/");
 assert.equal(routeMap.get("repair-shop-auth"), "/services/hermes-connect/repair-shops/auth/");
 assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-shops/plan/");
+assert.equal(routeMap.get("repair-shop-social"), "/services/hermes-connect/repair-shops/social/");
+assert.equal(routeMap.get("dealer-social"), "/services/hermes-connect/dealers/social/");
 assert.equal(routeMap.get("beauty-workspace"), "/services/hermes-connect/beauty/workspace/");
+assert.equal(routeMap.get("beauty-social"), "/services/hermes-connect/beauty/workspace/social/");
 assert.equal(routeMap.get("hermes-connect-workspace"), "/demos/hermes-connect/workspace.html");
 assert.equal(routeMap.get("hermes-connect-mark-preview"), "/demos/hermes-connect/mark-preview.html");
 assert.equal(screenshotFileName("ru-overview", "desktop"), "ru-overview--desktop.png");
@@ -50,7 +53,11 @@ assert.equal(screenshotFileName("carrier-signing", "mobile"), "carrier-signing--
 assert.equal(screenshotFileName("repair-shops", "desktop"), "repair-shops--desktop.png");
 assert.equal(screenshotFileName("repair-shop-auth", "mobile"), "repair-shop-auth--mobile.png");
 assert.equal(screenshotFileName("repair-shop-plan", "desktop"), "repair-shop-plan--desktop.png");
+assert.equal(screenshotFileName("repair-shop-social", "desktop"), "repair-shop-social--desktop.png");
+assert.equal(screenshotFileName("repair-shop-social", "mobile"), "repair-shop-social--mobile.png");
+assert.equal(screenshotFileName("dealer-social", "desktop"), "dealer-social--desktop.png");
 assert.equal(screenshotFileName("beauty-workspace", "mobile"), "beauty-workspace--mobile.png");
+assert.equal(screenshotFileName("beauty-social", "mobile"), "beauty-social--mobile.png");
 assert.equal(screenshotFileName("hermes-connect-workspace", "mobile"), "hermes-connect-workspace--mobile.png");
 assert.equal(screenshotFileName("hermes-connect-mark-preview", "mobile"), "hermes-connect-mark-preview--mobile.png");
 
@@ -60,4 +67,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, Hermes Catalog, the Russian overview, Repair Shops, Beauty private workspace, Option 02 QA stand, and the 390/430/768/1024/1440 visual evidence matrix.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, Hermes Catalog, the Russian overview, Repair Shops, Social Studio across Repair/Dealer/Beauty, Beauty private workspace, Option 02 QA stand, and the 390/430/768/1024/1440 visual evidence matrix.");
