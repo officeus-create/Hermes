@@ -68,6 +68,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
  await expect(page.locator('#hc-title')).toBeVisible();
  await page.waitForLoadState('load');
  await page.goBack();
+ await page.bringToFront();
  await page.waitForLoadState('load');
  await expect(page.getByRole('heading',{name:'Four directions.'})).toBeVisible();
  await page.getByRole('button',{name:'Open navigation'}).click();
@@ -75,6 +76,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
  await expect(page).toHaveURL(/\/services\/hermes-connect\/access\/$/);
  await page.waitForLoadState('load');
  await page.goBack();
+ await page.bringToFront();
  await page.waitForLoadState('load');
  await expect(page.getByRole('heading',{name:'Four directions.'})).toBeVisible();
 });

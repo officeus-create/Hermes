@@ -172,7 +172,7 @@ test("homepage final contact keeps one primary route and one direct fallback", a
   const fallback = block.locator("[data-home-contact-fallback]");
 
   await expect(primary).toHaveAttribute("href", "/contacts/");
-  await expect(primary).toContainText("Choose a contact route");
+  await expect(primary).toContainText("Talk to Hermes");
   await expect(fallback).toHaveAttribute("href", /^mailto:/);
   await expect(block.locator("a.home-final-contact-action")).toHaveCount(2);
   await expect(block.locator('a[href^="tel:"]')).toHaveCount(0);
