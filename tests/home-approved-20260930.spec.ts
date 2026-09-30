@@ -71,6 +71,15 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
  await page.bringToFront();
  await page.waitForLoadState('load');
  await expect(page.getByRole('heading',{name:'Four directions.'})).toBeVisible();
+ const historyState = await page.evaluate(async()=>{
+  const button=document.querySelector('[data-menu-button]')!;
+  const first=button.getBoundingClientRect().toJSON();
+  const frame=await Promise.race([new Promise<boolean>(resolve=>requestAnimationFrame(()=>resolve(true))),new Promise<boolean>(resolve=>setTimeout(()=>resolve(false),1000))]);
+  return {visibility:document.visibilityState,focused:document.hasFocus(),frame,first,last:button.getBoundingClientRect().toJSON(),animations:button.getAnimations().length};
+ });
+ console.log('HOME_HISTORY_RENDER_STATE',JSON.stringify(historyState));
+ await test.info().attach('home-history-return',{body:await page.screenshot(),contentType:'image/png'});
+ console.log('HOME_HISTORY_RENDER_AFTER_CAPTURE',await page.evaluate(()=>Promise.race([new Promise<boolean>(resolve=>requestAnimationFrame(()=>resolve(true))),new Promise<boolean>(resolve=>setTimeout(()=>resolve(false),1000))])));
  await page.getByRole('button',{name:'Open navigation'}).click();
  await page.locator('#mobile-menu [data-hermes-sign-in]').click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/access\/$/);
