@@ -391,6 +391,66 @@ Demo/sample states must be labeled.
 
 A beautiful interface is not evidence that the underlying capability exists.
 
+
+## 19. Public capability showroom
+
+Not every page receives the same visual budget.
+
+Use page intent before choosing media or motion:
+
+- **Identity / Home** — establish one Hermes world and route the visitor; one ecosystem scene, low technical detail.
+- **Service / sales** — explain offer, fit, proof and next action; a signature scene is justified only when it proves the service.
+- **Capability showroom** — sanitized interactive proof is primary material. Web Design, Website Development and selected Technology pages belong here.
+- **Product** — real UI/workflow truth first; effects remain subordinate to usability.
+- **Editorial / Insights / News** — reading, evidence, source context, internal links and discoverability first; motion stays minimal.
+- **Utility / auth / contact / legal** — clarity, trust, accessibility and speed; no spectacle.
+
+Capability-showroom material may include sanitized representations of Website Factory intake/brief logic, responsive component behavior, build/test/visual-QA states, SEO/GEO/entity/internal-link architecture, social distribution/connectors and CRM/lead routing.
+
+Private owner data, credentials, customer records and private Website Factory drafts never become public proof.
+
+## 20. Evidence-state grammar
+
+Any visual that could be mistaken for real operational state must expose an understandable maturity label:
+
+- **LIVE** — current authorized production behavior verified by fresh evidence.
+- **VERIFIED** — capability exists and is proven, while the visual is a sanitized representation rather than a live feed.
+- **DEMO** — working sample using synthetic or sanitized data.
+- **CONCEPT** — design/roadmap explanation, not a current capability.
+
+Animation, pulses, timestamps, counters, maps, social metrics or AI-processing visuals must never imply a stronger maturity state than the evidence supports.
+
+## 21. Connected content-to-client loop
+
+The website, news/Insights layer, social distribution and CRM are one system:
+
+`source fact / result / release → canonical Website/Insights owner → structured media + schema/internal links → channel-native Threads/Instagram/Facebook/Telegram derivative → attributed return path → site action → receiver/CRM → human qualification → opportunity/revenue evidence`
+
+Design implications:
+
+- searchable depth belongs to the canonical website owner;
+- social is adaptation/distribution, not a competing archive;
+- each distributable page should have reusable Open Graph/social assets where useful;
+- attribution/UTM must survive the return path;
+- current authorized connector behavior may become Technology/Marketing proof;
+- thin indexable “news” pages must not be generated merely to create activity.
+
+## 22. Adaptive richness and design measurement
+
+A signature scene has quality tiers:
+
+1. **Desktop rich** — fullest approved interactive/cinematic treatment.
+2. **Tablet/mobile** — simplified composition preserving meaning and CTA priority.
+3. **Reduced-motion / low-power** — static or low-motion equivalent.
+4. **Crawler / no-JS** — complete semantic business truth and internal links.
+
+Where privacy rules permit, existing approved analytics/PostHog may measure meaningful interaction such as scene reached, proof opened, demo engaged, CTA selected and disclosure expanded.
+
+Measurement helps decide whether a treatment improves comprehension or conversion. It does not replace brand judgment.
+
+Approved generated media should be stored under Hermes control where licensing permits. No public route hot-depends on a generation provider.
+
+
 ## Canonical implementation source
 
 Semantic tokens live in `src/styles/hermes-brand-system.css`.
