@@ -2,28 +2,24 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const routeMeta: Record<string, { accent: string; intent: string; detail: string; displayNumber: string }> = {
+const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
-    intent: "Move / operate",
     detail: "Car hauling · dealers · shippers · carriers",
     displayNumber: "01",
   },
   marketing: {
     accent: "var(--hermes-marketing)",
-    intent: "Grow / create demand",
     detail: "Website · SEO/GEO · customer acquisition",
     displayNumber: "02",
   },
   technology: {
     accent: "var(--hermes-technology)",
-    intent: "Build / automate",
     detail: "CRM · automation · custom software",
     displayNumber: "03",
   },
   academy: {
     accent: "var(--hermes-academy)",
-    intent: "Learn / develop",
     detail: "U.S. logistics · sales · marketing · operations",
     displayNumber: "04",
   },
@@ -78,7 +74,7 @@ const routeMeta: Record<string, { accent: string; intent: string; detail: string
             <span class="home-master-route-signal" aria-hidden="true"><i></i></span>
             <span class="home-master-route-number">{meta.displayNumber}</span>
             <span class="home-master-route-copy">
-              <small>{meta.intent}</small>
+              <small>{path.shortValue}</small>
               <strong>{path.brandLabel}</strong>
               <span>{meta.detail}</span>
             </span>
