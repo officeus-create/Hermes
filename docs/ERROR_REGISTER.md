@@ -328,3 +328,8 @@ WORKING_APPROACH: Materialize and inspect exact approved pixels; reuse handed-of
 EVIDENCE: Fresh base main 9f71a9ff, idle-owner handoff at fa191201, viewed 390/430/768/1024/1440 screenshots and local build/full static suite. Exact final CI and production release status must be read from PR1577; no LIVE claim in this preparation entry.
 LESSON: Visual approval, semantic usability, responsive cascade and production evidence are distinct checks.
 REUSE_RULE: Preserve native links/text and shared service functionality; inspect the actual final screenshot at every navigation breakpoint. Update copy-dependent monitors to existing semantic hooks when visual copy changes.
+
+## 2026-09-30 — Home history browser harness frame starvation
+STATUS: Root cause evidenced; verification pending.
+EVIDENCE: exact-head CI 8753035f / Website run36743152348: returned Home visible=true, focused=true, rAF callback absent after 1s; menu geometry unchanged x315/y18.1875/44x44 with zero animations, repeated identically. Normal locator click and screenshot both wait on absent frames. Parent headed cloud-browser menu→Connect→Back pointer flow passed.
+WORKING_APPROACH: Preserve the full native pointer flow with explicit visible/enabled checks, two equal bounding boxes, in-viewport center and elementFromPoint hit-target assertion before page.mouse.click; retain aria-expanded/menu visibility and actual sign-in URL/Back checks. No forced click, skipped case, increased timeout, product workaround, or local Chromium launch bypass.

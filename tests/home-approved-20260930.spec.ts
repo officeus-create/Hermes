@@ -1,4 +1,24 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+
+// CI Chromium can stop rAF after history restoration while the focused document,
+// DOM layout and native input remain available. Preserve pointer/actionability
+// coverage with explicit checks rather than a forced click or an rAF-based wait.
+async function clickHistoryTarget(page: Page, target: Locator) {
+ await expect(target).toBeVisible();
+ await expect(target).toBeEnabled();
+ const first=await target.boundingBox();
+ expect(first).not.toBeNull();
+ await page.waitForTimeout(100);
+ expect(await target.boundingBox()).toEqual(first);
+ const x=first!.x+first!.width/2,y=first!.y+first!.height/2;
+ const viewport=page.viewportSize()!;
+ expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
+ expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
+ expect(await target.evaluate((node,{x,y})=>{
+  const hit=document.elementFromPoint(x,y);return hit===node||node.contains(hit);
+ },{x,y})).toBe(true);
+ await page.mouse.click(x,y);
+}
 
 for (const width of [390, 430, 768, 1024, 1440]) {
  test(`approved Home has readable native portals and navigation at ${width}px`, async ({page}) => {
@@ -78,10 +98,10 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
   return {visibility:document.visibilityState,focused:document.hasFocus(),frame,first,last:button.getBoundingClientRect().toJSON(),animations:button.getAnimations().length};
  });
  console.log('HOME_HISTORY_RENDER_STATE',JSON.stringify(historyState));
- await test.info().attach('home-history-return',{body:await page.screenshot(),contentType:'image/png'});
- console.log('HOME_HISTORY_RENDER_AFTER_CAPTURE',await page.evaluate(()=>Promise.race([new Promise<boolean>(resolve=>requestAnimationFrame(()=>resolve(true))),new Promise<boolean>(resolve=>setTimeout(()=>resolve(false),1000))])));
- await page.getByRole('button',{name:'Open navigation'}).click();
- await page.locator('#mobile-menu [data-hermes-sign-in]').click();
+ await clickHistoryTarget(page,page.getByRole('button',{name:'Open navigation'}));
+ await expect(page.getByRole('button',{name:'Close navigation'})).toHaveAttribute('aria-expanded','true');
+ await expect(page.locator('#mobile-menu')).toBeVisible();
+ await clickHistoryTarget(page,page.locator('#mobile-menu [data-hermes-sign-in]'));
  await expect(page).toHaveURL(/\/services\/hermes-connect\/access\/$/);
  await page.waitForLoadState('load');
  await page.goBack();
