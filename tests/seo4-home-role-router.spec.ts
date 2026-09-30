@@ -1,18 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 const expectedDirections = [
-  ["Open Hermes Logistics", "/paths/logistics/"],
-  ["Open Hermes Marketing", "/paths/marketing/"],
-  ["Open Hermes Academy", "/paths/academy/"],
-  ["Open Hermes Technology", "/paths/technology/"],
+  [/Open Hermes Logistics/i, "/paths/logistics/"],
+  [/Open Hermes Marketing/i, "/paths/marketing/"],
+  [/Open Hermes Technology/i, "/paths/technology/"],
+  [/Open Hermes Academy/i, "/paths/academy/"],
 ] as const;
 
-test("homepage presents one clear four-direction choice", async ({ page }) => {
+test("homepage presents one semantic four-direction system", async ({ page }) => {
   await page.goto("/");
 
-  const rooms = page.locator("#paths.home-rooms-grid");
-  await expect(rooms).toBeVisible();
-  await expect(rooms.locator(".home-room")).toHaveCount(4);
+  const stage = page.locator("#paths.home-master-stage");
+  await expect(stage).toBeVisible();
+  await expect(stage.locator(".home-master-route")).toHaveCount(4);
   await expect(page.locator("[data-home-role-router]")).toHaveCount(0);
 
   for (const [label, href] of expectedDirections) {
