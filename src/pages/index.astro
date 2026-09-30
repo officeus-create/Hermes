@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
-import HomeFourRooms from "../components/HomeFourRooms.astro";
+import HomeMasterScene from "../components/HomeMasterScene.astro";
 import HomePerformanceLayer from "../components/HomePerformanceLayer.astro";
 import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
 import SiteFooter from "../components/SiteFooter.astro";
@@ -9,7 +9,6 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
 import "../styles/home-mobile-visual-fixes.css";
-import "../styles/home-approved-division-colors.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const logisticsOrganizationId = "https://hermeslogisticsus.com/#logistics";
@@ -82,13 +81,13 @@ const websiteSchema = {
 
 <BaseLayout
   title="Hermes | U.S. Logistics, Marketing, Academy & AI Systems"
-  description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
+  description="U.S. car hauling, carrier, dealer and shipper logistics plus website development, SEO/GEO, CRM automation, marketing, and practical business education."
   schema={[organizationSchema, logisticsOrganizationSchema, websiteSchema]}
   alternates={languageAlternates}
 >
   <SiteHeader theme="light" />
   <main id="main-content" class="hermes-home-recovery">
-    <HomeFourRooms />
+    <HomeMasterScene />
   </main>
   <div id="contact" class="home-contact-shell">
     <HomeRecoveryFinish />
