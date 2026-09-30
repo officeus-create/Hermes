@@ -2,11 +2,11 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const roomMeta: Record<string, { accent: string; glow: string; label: string; displayNumber: string }> = {
-  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight", displayNumber: "01" },
-  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand", displayNumber: "02" },
-  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems", displayNumber: "03" },
-  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability", displayNumber: "04" },
+const roomMeta: Record<string, { accent: string; glow: string; label: string; displayNumber: string; detail: string }> = {
+  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight", displayNumber: "01", detail: "Car hauling · dealers · shippers · carriers" },
+  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand", displayNumber: "02", detail: "Website · SEO/GEO · customer acquisition" },
+  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems", displayNumber: "03", detail: "CRM · automation · custom software" },
+  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability", displayNumber: "04", detail: "U.S. logistics · sales · marketing · operations" },
 };
 ---
 
@@ -43,6 +43,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
                 <small>{meta.label}</small>
                 <strong>{path.brandLabel}</strong>
                 <span>{path.programLabel}</span>
+                <span class="home-room-detail">{meta.detail}</span>
               </span>
               <span class="home-room-arrow" aria-hidden="true"><ArrowUpRight size={20} /></span>
             </span>
@@ -232,6 +233,15 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
     font: 800 .65rem/1.2 var(--font-mono);
     letter-spacing: .08em;
     text-transform: uppercase;
+  }
+
+  .home-room-copy .home-room-detail {
+    max-width: 29ch;
+    color: rgba(255,255,255,.82);
+    font-size: .72rem;
+    font-weight: 650;
+    line-height: 1.4;
+    letter-spacing: .015em;
   }
 
   .home-room-copy strong {
