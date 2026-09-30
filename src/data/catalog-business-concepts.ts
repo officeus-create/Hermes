@@ -153,3 +153,21 @@ export const catalogBusinessConcepts = Object.freeze([
   trimmoConcept,
   cvitVyshniConcept
 ]);
+
+// A non-indexable concept snapshot, not a second directory or CRM business record.
+// Public facts: official website/services; address/hours: source-review handoff, 2026-09-30.
+export const kittlesWebsiteConcept = Object.freeze({
+  id: "catalog-concept-kittles-garage",
+  slug: "kittles-garage", countrySlug: "us", localitySlug: "north-little-rock",
+  name: "Kittle’s Garage", status: "client", market: "us", catalogPriority: "primary",
+  vertical: "repair_shop", schemaType: "LocalBusiness",
+  primaryIntent: "American & Asian passenger / light-vehicle repair",
+  phone: "(501) 376-1519", address: "1300 N Poplar St", locality: "North Little Rock",
+  region: "Arkansas", postalCode: "72114", countryCode: "US",
+  hours: ["Monday–Thursday · 7:30 AM–5:30 PM", "Friday · 7:30 AM–2:00 PM", "Saturday & Sunday · closed"],
+  website: "https://www.kittlesgarage.com/",
+  services: ["Diagnostics", "Brakes", "Steering & suspension", "Electrical", "Heating & A/C", "Drivetrain", "Tires", "Wheel alignment", "Routine maintenance"],
+  channels: [{ label: "Official business website", url: "https://www.kittlesgarage.com/", direction: "primary" }],
+  factsRequiringOwnerConfirmation: ["current service scope", "hours and address", "appointment availability", "prices"],
+  sourceRef: "PUBLIC-KITTLES-OFFICIAL-SITE-SERVICES-20260930",
+} satisfies CatalogBusinessConcept);
