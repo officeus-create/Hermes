@@ -11,7 +11,7 @@ await fs.mkdir(outputDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
 const browserChecks = [];
-let fourDirections = null;
+let homeMaster = null;
 let contact = null;
 let connectRussian = null;
 let fatalError = null;
@@ -128,9 +128,11 @@ try {
 
   {
     const { page, response } = await openHome(390);
-    fourDirections = await page.evaluate(() => {
-      const node = document.querySelector(".home-rooms-display");
-      if (!node) return { found: false };
+    homeMaster = await page.evaluate(() => {
+      const node = document.querySelector(".home-master-display");
+      const stage = document.querySelector(".home-master-stage");
+      const routes = Array.from(document.querySelectorAll("[data-home-route]"));
+      if (!node || !stage) return { found: false };
       const style = getComputedStyle(node);
       return {
         found: true,
@@ -140,16 +142,20 @@ try {
         display: style.display,
         color: style.color,
         webkitTextFillColor: style.getPropertyValue("-webkit-text-fill-color"),
+        routeIds: routes.map((route) => route.getAttribute("data-route-id")),
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       };
     });
-    fourDirections.status200 = response?.status() === 200;
-    fourDirections.visible =
-      fourDirections.found &&
-      fourDirections.text === "Four directions." &&
-      fourDirections.opacity === "1" &&
-      fourDirections.visibility !== "hidden" &&
-      fourDirections.display !== "none" &&
-      !fourDirections.webkitTextFillColor.includes("transparent");
+    homeMaster.status200 = response?.status() === 200;
+    homeMaster.visible =
+      homeMaster.found &&
+      homeMaster.text === "One system." &&
+      homeMaster.opacity === "1" &&
+      homeMaster.visibility !== "hidden" &&
+      homeMaster.display !== "none" &&
+      !homeMaster.webkitTextFillColor.includes("transparent") &&
+      homeMaster.overflow === false &&
+      JSON.stringify(homeMaster.routeIds) === JSON.stringify(["logistics", "marketing", "technology", "academy"]);
 
     contact = await page.evaluate(() => {
       const shell = document.querySelector("#contact.home-contact-shell");
@@ -239,7 +245,7 @@ const mobilePass = browserChecks
 const desktopPass = browserChecks
   .filter((item) => item.mode === "desktop")
   .every((item) => item.status200 && item.desktopNavVisible && item.headerActionsVisible && item.menuButtonHidden);
-const headingPass = Boolean(fourDirections?.status200 && fourDirections?.visible);
+const headingPass = Boolean(homeMaster?.status200 && homeMaster?.visible);
 const contactPass = Boolean(contact?.noWhiteCornerLeakContract);
 const russianLocalePass = Boolean(
   connectRussian?.status200 &&
@@ -271,7 +277,7 @@ const result = {
     desktopPass,
     observations: browserChecks,
   },
-  fourDirections,
+  homeMaster,
   contact,
   connectRussian,
   fatalError,
@@ -291,7 +297,7 @@ const lines = [
   "",
   "## Homepage visual regressions",
   "",
-  `- ${headingPass ? "✅" : "❌"} Four directions remains visible and opaque at 390 px`,
+  `- ${headingPass ? "✅" : "❌"} V4 Home Master Scene is visible, ordered, opaque, and overflow-free at 390 px`,
   `- ${contactPass ? "✅" : "❌"} Contact outer shell is square/full-bleed, inner surface remains rounded, page backdrop is non-white`,
   "",
   "## Hermes Connect Russian locale and Hub",
@@ -305,7 +311,7 @@ const lines = [
 if (!live) {
   lines.push("## Failure detail", "", `- Fatal error: ${fatalError ?? "none"}`);
   for (const item of browserChecks) lines.push(`- ${item.mode} ${item.width}px: ${JSON.stringify(item)}`);
-  lines.push(`- Four directions: ${JSON.stringify(fourDirections)}`);
+  lines.push(`- Home Master Scene: ${JSON.stringify(homeMaster)}`);
   lines.push(`- Contact: ${JSON.stringify(contact)}`);
   lines.push(`- Connect RU: ${JSON.stringify(connectRussian)}`, "");
 }
