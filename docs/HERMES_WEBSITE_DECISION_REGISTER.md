@@ -119,8 +119,8 @@ CURRENT decision; extends the existing V4 direction and does not create V5.
 
 This register distinguishes governance from deployed visual implementation.
 
-Current main still uses:
-- `HomeFourRooms.astro`: four separate dark direction cards with strong division color and “Four directions. Choose yours.” This remains useful routing but is PRE-V4 relative to the approved one-world Home Master Scene.
+Current-main reconciliation at `9f71a9ff7a40adf87d341c38a68aaba73ab50882` (#1574):
+- Home now uses `HomeMasterScene.astro`: one connected light-first scene with four direct direction links. `HomeFourRooms` and its duplicate color overrides were replaced with an explicit V4 implementation and regression contract. Do not rebuild that completed slice from the earlier snapshot.
 - `PathDetailPage.astro`: one shared static hero-image/shade/text pattern across Logistics, Marketing, Technology and Academy before later division-specific modules. Direction-specific content exists, but the top-level Spatial / Attention / Digital / Human visual physics are not yet fully implemented.
 - `/services/website-development/`: canonical semantic/commercial `DigitalServicePage` owner with structured schema, CTA and proof link, but no Website Factory Proof Replay or full V4 capability-showroom sequence yet.
 
@@ -141,7 +141,7 @@ Do not call V4 visually LIVE until the representative implementation is merged, 
 
 ## 2026-09-30 — V4 representative release acceptance gate
 
-- Current homepage regression coverage explicitly requires `HomeFourRooms`. The V4 Home Master Scene must replace that superseded visual contract deliberately in the same bounded implementation change while preserving direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
+- #1574 replaced the superseded `HomeFourRooms` regression contract with the implemented Home Master Scene contract. Further V4 slices must preserve those assertions and add coverage for new behavior, including direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
 - `Website checks` success is necessary but not sufficient for a rich signature scene. The current generated-file performance budget is advisory; production Lighthouse is a separate measurement path. Record representative mobile + desktop LCP/CLS/TBT diagnostics before a V4 signature scene is called LIVE_VERIFIED.
 - Reuse the existing analytics owner. Generic public-site behavior uses consent-gated Hermes analytics/GA4 and privacy-safe first-party counting. Repair Shop PostHog remains a separately bounded product stream.
 - Candidate showroom engagement events must enter the approved generic event registry with controlled privacy-safe parameters before production reporting.

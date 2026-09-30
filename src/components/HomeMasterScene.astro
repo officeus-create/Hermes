@@ -45,7 +45,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 
     <span class="home-legacy-anchor" id="journey" aria-hidden="true"></span>
 
-    <div class="home-master-stage" id="paths" aria-label="Hermes operating directions">
+    <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       <span class="home-master-axis home-master-axis-horizontal" aria-hidden="true"></span>
       <span class="home-master-axis home-master-axis-vertical" aria-hidden="true"></span>
 
@@ -67,7 +67,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             class={`home-master-route home-master-route-${path.id}`}
             href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`Open ${path.brandLabel}: ${meta.detail}`}
+            aria-label={`Open ${path.brandLabel}: ${path.shortValue}. ${meta.detail}`}
             data-home-route
             data-route-id={path.id}
           >
@@ -82,10 +82,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
           </a>
         );
       })}
-    </div>
+    </nav>
 
     <p class="home-master-note">
-      Direction color is a navigation signal. The Hermes shell, typography, interaction rules, and product truth stay shared.
+      Choose a direction to explore services and find the right team for your next step.
     </p>
   </div>
 </section>
@@ -296,13 +296,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   .home-master-core-ring-one {
     inset: 17%;
     border-top-color: color-mix(in srgb, var(--hermes-violet) 72%, white);
-    animation: home-master-orbit 18s linear infinite;
+    animation: home-master-orbit 1.6s var(--hermes-ease) 1;
   }
 
   .home-master-core-ring-two {
     inset: 29%;
     border-right-color: color-mix(in srgb, var(--hermes-ocean) 70%, white);
-    animation: home-master-orbit-reverse 13s linear infinite;
+    animation: home-master-orbit-reverse 1.2s var(--hermes-ease) 1;
   }
 
   .home-master-core-mark {
@@ -514,6 +514,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   }
 
   @media (max-width: 980px) {
+    .home-master-core-ring {
+      animation: none;
+    }
+
     .home-master {
       padding-top: 6rem;
     }
