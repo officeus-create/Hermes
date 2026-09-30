@@ -2,11 +2,11 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const roomMeta: Record<string, { accent: string; glow: string; label: string; displayNumber: string }> = {
-  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight", displayNumber: "01" },
-  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand", displayNumber: "02" },
-  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems", displayNumber: "03" },
-  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability", displayNumber: "04" },
+const roomMeta: Record<string, { accent: string; glow: string; label: string; displayNumber: string; detail: string }> = {
+  logistics: { accent: "#1E88FF", glow: "rgba(30,136,255,.24)", label: "Move freight", displayNumber: "01", detail: "Car hauling · dealers · shippers · carriers" },
+  marketing: { accent: "#00C853", glow: "rgba(0,200,83,.20)", label: "Grow demand", displayNumber: "02", detail: "Website · SEO/GEO · customer acquisition" },
+  technology: { accent: "#FF7A00", glow: "rgba(255,122,0,.22)", label: "Build systems", displayNumber: "03", detail: "CRM · automation · custom software" },
+  academy: { accent: "#7C5CFF", glow: "rgba(124,92,255,.22)", label: "Build capability", displayNumber: "04", detail: "U.S. logistics · sales · marketing · operations" },
 };
 ---
 
@@ -19,7 +19,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
         <span class="home-rooms-display">Four directions.</span>
         <span class="home-rooms-script"><em>Choose yours.</em></span>
       </h1>
-      <p class="home-rooms-ink-note"><strong>One Hermes ecosystem. One operating architecture.</strong> Each direction has its own business purpose, color, evidence, and path into the wider Hermes system.</p>
+      <p class="home-rooms-ink-note"><strong>One Hermes ecosystem. One operating architecture.</strong> Choose by the business result you need: Hermes Logistics supports car hauling, carriers, dealers, and shippers; Hermes Marketing connects websites, SEO/GEO, and customer acquisition; Hermes Technology builds CRM, automation, and custom software; Hermes Academy develops practical operating capability.</p>
     </header>
 
     <span class="home-legacy-anchor" id="journey" aria-hidden="true"></span>
@@ -31,7 +31,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
             class={`home-room home-room-${path.id}`}
             href={`/paths/${path.id}/`}
             style={`--room-accent:${meta.accent};--room-glow:${meta.glow};--room-image:url('${path.image}')`}
-            aria-label={`Open ${path.brandLabel}`}
+            aria-label={`Open ${path.brandLabel}: ${meta.detail}`}
             data-home-room
             data-room-id={path.id}
           >
@@ -43,6 +43,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
                 <small>{meta.label}</small>
                 <strong>{path.brandLabel}</strong>
                 <span>{path.programLabel}</span>
+                <span class="home-room-detail">{meta.detail}</span>
               </span>
               <span class="home-room-arrow" aria-hidden="true"><ArrowUpRight size={20} /></span>
             </span>
@@ -232,6 +233,15 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
     font: 800 .65rem/1.2 var(--font-mono);
     letter-spacing: .08em;
     text-transform: uppercase;
+  }
+
+  .home-room-copy .home-room-detail {
+    max-width: 29ch;
+    color: rgba(255,255,255,.82);
+    font-size: .72rem;
+    font-weight: 650;
+    line-height: 1.4;
+    letter-spacing: .015em;
   }
 
   .home-room-copy strong {
