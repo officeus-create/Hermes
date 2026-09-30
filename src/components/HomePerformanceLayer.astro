@@ -5,10 +5,10 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .home-room-copy small,
-    .home-room-copy strong,
-    .home-room-copy > span,
-    .home-room-arrow,
+    .home-master-route-copy small,
+    .home-master-route-copy strong,
+    .home-master-route-copy > span,
+    .home-master-route-arrow,
     .home-contact-shell a {
       transition:
         color 180ms ease,
@@ -18,19 +18,19 @@
         background-color 180ms ease;
     }
 
-    .home-room:hover .home-room-copy small,
-    .home-room:focus-visible .home-room-copy small {
-      color: color-mix(in srgb, var(--room-accent) 76%, white);
+    .home-master-route:hover .home-master-route-copy small,
+    .home-master-route:focus-visible .home-master-route-copy small {
+      color: color-mix(in srgb, var(--route-accent) 82%, var(--hermes-ink));
     }
 
-    .home-room:hover .home-room-copy strong,
-    .home-room:focus-visible .home-room-copy strong {
+    .home-master-route:hover .home-master-route-copy strong,
+    .home-master-route:focus-visible .home-master-route-copy strong {
       transform: translateX(2px);
     }
 
-    .home-room:hover .home-room-copy > span,
-    .home-room:focus-visible .home-room-copy > span {
-      color: rgba(255,255,255,.76);
+    .home-master-route:hover .home-master-route-copy > span,
+    .home-master-route:focus-visible .home-master-route-copy > span {
+      color: color-mix(in srgb, var(--hermes-ink) 72%, var(--hermes-paper));
     }
 
     .home-contact-shell a:hover,
@@ -40,10 +40,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-room-copy small,
-    .home-room-copy strong,
-    .home-room-copy > span,
-    .home-room-arrow,
+    .home-master-route-copy small,
+    .home-master-route-copy strong,
+    .home-master-route-copy > span,
+    .home-master-route-arrow,
     .home-contact-shell a {
       transition: none !important;
       transform: none !important;
