@@ -4,8 +4,17 @@ import {
   ensureBusinessSocialSchema,
   resolveOwnedSocialBusiness,
 } from "../../_lib/business-social.mjs";
+import { readBusinessSocialDriveConnection } from "../../_lib/business-social-drive.mjs";
 
-type Env = { DB?: any };
+type Env = {
+  DB?: any;
+  GOOGLE_SOCIAL_DRIVE_CLIENT_ID?: string;
+  GOOGLE_SOCIAL_DRIVE_CLIENT_SECRET?: string;
+  GOOGLE_SOCIAL_DRIVE_REDIRECT_URI?: string;
+  GOOGLE_SOCIAL_DRIVE_TOKEN_KEY?: string;
+  HERMES_SOCIAL_AI_API_KEY?: string;
+  HERMES_SOCIAL_AI_MODEL?: string;
+};
 const headers={ "Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow" };
 const clean=(value:unknown,max=240)=>String(value??"").trim().slice(0,max);
 
@@ -41,10 +50,21 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
     WHERE business_key=? AND owner_specialist_id=?
     ORDER BY created_at DESC LIMIT 20
   `).bind(business.business_key,String(specialist.id)).all();
+  const drive=await readBusinessSocialDriveConnection(env.DB,env,business,specialist.id);
+  const aiConfigured=Boolean(String(env.HERMES_SOCIAL_AI_API_KEY||"").trim()&&String(env.HERMES_SOCIAL_AI_MODEL||"").trim());
+  const aiState=!drive.configured?"drive_configuration_required":!drive.connected?"drive_authorization_required":!aiConfigured?"ai_configuration_required":"ready";
   return jsonResponse(200,{
     success:true,
     intakes:(rows?.results||[]).map(publicIntake),
-    ai:{state:"drive_authorization_required",auto_generation:false,note:"Source registration is live. Google Drive ingestion and AI generation stay fail-closed until a business-authorized Drive connector and model runtime are configured."},
+    drive,
+    ai:{
+      state:aiState,
+      auto_generation:drive.connected&&aiConfigured,
+      model_configured:aiConfigured,
+      note:aiState==="ready"
+        ?"Drive ingestion and AI draft generation are ready. External publishing still requires human approval."
+        :"Source registration is live. Drive ingestion and AI generation fail closed until both business-scoped Drive OAuth and the approved AI runtime are configured.",
+    },
   },headers);
 }
 
@@ -71,9 +91,13 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
     sourceUrl,clean(body.brief,4000),clean(body.language,40)||"en",clean(body.market,120)||null,now,now
   ).run();
   const row=await env.DB.prepare("SELECT * FROM hermes_business_social_creative_intakes WHERE id=? LIMIT 1").bind(id).first();
+  const drive=await readBusinessSocialDriveConnection(env.DB,env,business,specialist.id);
+  const aiConfigured=Boolean(String(env.HERMES_SOCIAL_AI_API_KEY||"").trim()&&String(env.HERMES_SOCIAL_AI_MODEL||"").trim());
+  const nextGate=!drive.configured?"google_drive_configuration_required":!drive.connected?"google_drive_authorization_required":!aiConfigured?"social_ai_configuration_required":"ready_to_generate";
   return jsonResponse(201,{
-    success:true,intake:publicIntake(row),
-    next_gate:"google_drive_authorization_required",
-    note:"The source is registered. No AI-generated copy, media, or publishing is claimed until Drive ingestion is authorized and generation is explicitly configured.",
+    success:true,intake:publicIntake(row),drive,next_gate:nextGate,
+    note:nextGate==="ready_to_generate"
+      ?"Source registered. Drive and AI runtime are ready for owner-requested draft generation."
+      :"The source is registered. No AI-generated copy, media, or publishing is claimed until the remaining authorization/configuration gate is complete.",
   },headers);
 }
