@@ -94,3 +94,23 @@ Updated: 2026-07-22
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.
+
+
+## 2026-09-30 — V4 Deep Design OS extension
+
+CURRENT decision; extends the existing V4 direction and does not create V5.
+
+- Public technology “wow” should normally use **SANITIZED PROOF REPLAY**: `INPUT → TRANSFORMATION → PROOF → BUSINESS OUTCOME → NEXT ACTION`, with LIVE / VERIFIED / DEMO / CONCEPT truth labels.
+- Every rich map/canvas/video/animation/system graph requires a **SEMANTIC TWIN** in normal HTML carrying the business meaning, internal links, evidence state and CTA.
+- Web Design and Website Development are separate capability-showroom stories:
+  - Web Design proves business DNA → visual direction → tokens/components → responsive/accessibility QA → design system.
+  - Website Development proves approved design → semantic build → components/tests → performance/SEO → deployment evidence → measurement.
+- Reusable **SCENE KIT** replaces page-by-page visual reinvention: semantic layer → shared Hermes shell → direction engine → one signature scene → evidence state → analytics → fallbacks.
+- All new visual ideas/tools use the lifecycle `INBOX/REFERENCE → PROTOTYPE → SELECTED → IMPLEMENTED → LIVE_VERIFIED → MEASURED → RETAIN/ITERATE/RETIRE`. New inspiration cannot silently replace selected unfinished work.
+- Current site runtime remains native-first. Main website package uses Astro/Tailwind and already contains native View Transitions. HyperFrames/GSAP exists in Video Factory but is not currently a website runtime dependency.
+- Open-source candidates are adoption-time decisions, not automatic dependencies. Current verified license baseline: MapLibre permissive BSD-style; deck.gl/Motion/Rive WASM/dotLottie Web/Three.js MIT; ComfyUI GPL-3.0 application; LTX-Video repository code Apache-2.0 with separate model/weight/output checks.
+- Evidence freshness is mandatory: stale authorization/readback downgrades LIVE to VERIFIED/DEMO/CONCEPT.
+- Production media requires source/license/rights/approval/canonical-copy provenance where applicable.
+- Evidence must compound: `FACT/RESULT → EVIDENCE → WEBSITE/CASE STUDY/INSIGHT → SOCIAL DERIVATIVES → ATTRIBUTED RETURN → NEW BUSINESS EVIDENCE`.
+- Home remains one Hermes world, with optional goal routing that preserves semantic links: MOVE/OPERATE → Logistics; GROW/GET DEMAND → Marketing; BUILD/AUTOMATE → Technology; LEARN/WORK/DEVELOP → Academy.
+- Execution order remains unchanged: Home Master Scene + Logistics Master Scene first; verify exact-head/mobile/performance/SEO/accessibility; only then derive other directions and commercial showrooms.
