@@ -13,6 +13,12 @@ import {
   resolveOwnedSocialBusiness,
   validBusinessSocialIdempotencyKey,
 } from "../../_lib/business-social.mjs";
+import {
+  publishInstagramSingleImage,
+  publishInstagramStoryImage,
+  publishThreadsCarousel,
+  publishThreadsImage,
+} from "../../_lib/business-social-studio.mjs";
 
 type Env = {
   DB?: any;
@@ -38,10 +44,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const business = await resolveOwnedSocialBusiness(env.DB, specialist.id, String(body.vertical || ""));
   if (!business) return jsonResponse(409, { success: false, error: "business_profile_required" }, headers);
 
+  const surface = String(body.surface || "feed").trim().toLowerCase();
+  if (surface !== "feed" && !(provider === "instagram" && surface === "story")) {
+    return jsonResponse(400, { success: false, error: "social_surface_invalid" }, headers);
+  }
+  const imageUrls = Array.isArray(body.image_urls) ? body.image_urls : [];
+  const caption = String(body.caption || "");
+  const text = String(body.text || "");
   const payload = provider === "instagram"
-    ? { caption: String(body.caption || ""), image_urls: Array.isArray(body.image_urls) ? body.image_urls : [] }
-    : { text: String(body.text || "") };
-  const objectType = provider === "instagram" ? "INSTAGRAM_CAROUSEL" : provider === "threads" ? "THREADS_TEXT" : "FACEBOOK_PAGE_POST";
+    ? { surface, caption, image_urls: imageUrls }
+    : provider === "threads"
+      ? { surface, text, image_urls: imageUrls }
+      : { surface, text };
+  const objectType = provider === "instagram"
+    ? (surface === "story" ? "INSTAGRAM_STORY" : imageUrls.length <= 1 ? "INSTAGRAM_IMAGE" : "INSTAGRAM_CAROUSEL")
+    : provider === "threads"
+      ? (imageUrls.length === 0 ? "THREADS_TEXT" : imageUrls.length === 1 ? "THREADS_IMAGE" : "THREADS_CAROUSEL")
+      : "FACEBOOK_PAGE_POST";
   const fingerprint = await businessSocialPayloadFingerprint(provider, payload);
   const reservation = await reserveBusinessSocialPublication(env.DB, {
     business,
@@ -65,9 +84,19 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   let published: any;
-  if (provider === "threads") published = await publishBusinessThreadsText(credential.payload, payload.text);
-  else if (provider === "facebook") published = await publishFacebookPagePost(env, credential.payload, payload.text);
-  else published = await publishInstagramCarousel(env, credential.payload, payload.caption, payload.image_urls);
+  if (provider === "threads") {
+    if (imageUrls.length === 0) published = await publishBusinessThreadsText(credential.payload, text);
+    else if (imageUrls.length === 1) published = await publishThreadsImage(credential.payload, text, imageUrls[0]);
+    else published = await publishThreadsCarousel(credential.payload, text, imageUrls);
+  } else if (provider === "facebook") {
+    published = await publishFacebookPagePost(env, credential.payload, text);
+  } else if (surface === "story") {
+    published = await publishInstagramStoryImage(env, credential.payload, imageUrls[0]);
+  } else if (imageUrls.length === 1) {
+    published = await publishInstagramSingleImage(env, credential.payload, caption, imageUrls[0]);
+  } else {
+    published = await publishInstagramCarousel(env, credential.payload, caption, imageUrls);
+  }
 
   if (!published.ok) {
     const status = published.error_class === "provider_outcome_unknown" ? "unknown_outcome" : "provider_rejected";
