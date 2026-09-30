@@ -95,7 +95,7 @@ assert.match(core, /instagram_content_publish/);
 assert.match(core, /media_type: "CAROUSEL"/);
 assert.match(core, /media_publish/);
 assert.match(core, /pageId}\/feed/);
-assert.match(core, /pageId}\\/photos/);
+assert.match(core, /pageId}\/photos/);
 assert.match(core, /published: "false"/);
 assert.match(core, /attached_media/);
 assert.match(core, /media_fbid/);
