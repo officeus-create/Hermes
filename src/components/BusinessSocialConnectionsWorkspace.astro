@@ -293,6 +293,15 @@ const { vertical, backHref, backLabel } = Astro.props;
     }catch(error){if(result)result.textContent=error.message||"Unable to register source.";}
   });
 
+  const loadCreativeState=async()=>{
+    try{
+      const payload=await request(`/api/hermes-connect/social/creative-intake?vertical=${encodeURIComponent(vertical)}`);
+      const latest=payload.intakes?.[0];if(latest?.id&&!currentIntakeId)currentIntakeId=String(latest.id);
+      const aiState=root.querySelector("[data-ai-state]");if(aiState)aiState.textContent=String(payload.ai?.state||"unknown").replaceAll("_"," ");
+      const generate=root.querySelector("[data-ai-generate]");if(generate instanceof HTMLButtonElement)generate.disabled=payload.ai?.state!=="ready"||!currentIntakeId;
+    }catch{}
+  };
+
   root.querySelector("[data-drive-connect]")?.addEventListener("click",async()=>{
     const result=root.querySelector("[data-ai-result]");
     try{
@@ -322,7 +331,7 @@ const { vertical, backHref, backLabel } = Astro.props;
   const params=new URLSearchParams(window.location.search);const oauthResult=params.get("result");const driveResult=params.get("drive");
   if(oauthResult)showStatus(oauthResult==="connected"?"Provider authorization completed.":`Provider authorization: ${oauthResult.replaceAll("_"," ")}`,oauthResult!=="connected"&&oauthResult!=="selection_required");
   if(driveResult)showStatus(driveResult==="connected"?"Google Drive connected for Social Studio.":`Google Drive: ${driveResult.replaceAll("_"," ")}`,driveResult!=="connected");
-  void loadConnections();void loadFeed();
+  void loadConnections();void loadFeed();void loadCreativeState();
 })();
 </script>
 
