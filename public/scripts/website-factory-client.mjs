@@ -43,7 +43,7 @@ const emptyPayload = () => ({
   starting_from_zero: false,
   sources: [],
   facts: {},
-  goals: { primary: "", secondary: [], target_customer: "", geography: "", languages: [], primary_action: "" },
+  goals: { primary: "", secondary: [], target_customer: "", geography: "", languages: [], primary_action: "", semantic_core: [], local_intents: [] },
   brief: { text: "", must_have: [], nice_to_have: [], dislikes: [], tone: "", constraints: [], unresolved_questions: [] },
   references: [],
   pages: ["Home", "Services", "About / Trust", "FAQ", "Contact"],
@@ -308,7 +308,8 @@ function hydrateForm() {
   setValue("[data-brief-tone]", payload.brief?.tone);
   setValue("[data-brief-constraints]", Array.isArray(payload.brief?.constraints) ? payload.brief.constraints.join("\n") : "");
   for (const role of ["visual", "functionality", "structure"]) {
-    const reference = (payload.references || []).find((item) => item.role === role);
+    const normalizedRole = role === "structure" ? "structure-conversion" : role;
+    const reference = (payload.references || []).find((item) => item.role === role || item.role === normalizedRole);
     setValue(`[data-ref-url="${role}"]`, reference?.url || "");
     setValue(`[data-ref-note="${role}"]`, reference?.note || "");
   }
@@ -346,6 +347,8 @@ function collectPayload() {
       geography: $("[data-goal-geography]")?.value || "",
       languages: listFromText($("[data-goal-languages]")?.value || ""),
       primary_action: $("[data-goal-action]")?.value || "",
+      semantic_core: Array.isArray(previous.goals?.semantic_core) ? previous.goals.semantic_core : [],
+      local_intents: Array.isArray(previous.goals?.local_intents) ? previous.goals.local_intents : [],
     },
     brief: {
       text: $("[data-brief-text]")?.value || "",
@@ -544,7 +547,7 @@ $("[data-source-form]")?.addEventListener("submit", (event) => {
   const url = secureUrl(input?.value || "");
   if (!url) return setAlert("Use a public HTTPS URL without embedded credentials.");
   const sources = Array.isArray(draft.payload.sources) ? draft.payload.sources : [];
-  if (!sources.some((item) => item.url === url)) sources.push({ url, type: "website", note: "", status: "saved" });
+  if (!sources.some((item) => item.url === url)) sources.push({ url, type: "website", note: "", status: "pending" });
   draft.payload.sources = sources;
   if (input) input.value = "";
   renderSources();
