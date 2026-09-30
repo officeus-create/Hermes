@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage entry uses one connected system scene and keeps the canonical social preview", async ({ page }) => {
+test("homepage entry uses four architectural system scene and keeps the canonical social preview", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -10,7 +10,7 @@ test("homepage entry uses one connected system scene and keeps the canonical soc
 
   const routes = page.locator(".home-master-route");
   await expect(routes).toHaveCount(4);
-  await expect(page.locator(".home-master-core")).toHaveCount(1);
+  await expect(page.locator(".home-master-core")).toHaveCount(0);
 
   const visual = await routes.evaluateAll((nodes) =>
     nodes.map((node) => {

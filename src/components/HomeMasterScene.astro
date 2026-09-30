@@ -2,94 +2,57 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string }> = {
+const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
     detail: "Car hauling · dealers · shippers · carriers",
-    displayNumber: "01",
+    displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
     accent: "var(--hermes-marketing)",
     detail: "Website · SEO/GEO · customer acquisition",
-    displayNumber: "02",
+    displayNumber: "02", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
-    displayNumber: "03",
+    displayNumber: "03", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
     detail: "U.S. logistics · sales · marketing · operations",
-    displayNumber: "04",
+    displayNumber: "04", crop: 818, goal: "Develop people",
   },
 };
 ---
-
 <section class="home-master" id="top" aria-labelledby="home-master-title">
-  <div class="home-master-atmosphere" aria-hidden="true"></div>
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <p class="home-master-kicker"><span>HERMES ECOSYSTEM</span><i aria-hidden="true"></i></p>
-      <h1 id="home-master-title">
-        <span class="home-master-display">One Hermes system.</span>
-        <span class="home-master-script">Four operating directions.</span>
-      </h1>
-      <p class="home-master-ink-note">
-        <strong>One Hermes ecosystem. One operating architecture.</strong>
-        Choose by the business result you need: Hermes Logistics supports car hauling, carriers, dealers, and shippers;
-        Hermes Marketing connects websites, SEO/GEO, and customer acquisition; Hermes Technology builds CRM,
-        automation, and custom software; Hermes Academy develops practical operating capability.
-      </p>
+      <h1 id="home-master-title" class="home-master-display">Four <span>directions.</span></h1>
+      <p class="home-master-script">Choose yours.</p>
+      <p class="home-master-ink-note">Logistics, marketing, technology and learning for your business. One Hermes ecosystem.</p>
     </header>
-
-    <span class="home-legacy-anchor" id="journey" aria-hidden="true"></span>
-
-    <div class="home-master-stage" id="paths" aria-label="Hermes operating directions">
-      <span class="home-master-axis home-master-axis-horizontal" aria-hidden="true"></span>
-      <span class="home-master-axis home-master-axis-vertical" aria-hidden="true"></span>
-
-      <div class="home-master-core" aria-hidden="true">
-        <span class="home-master-core-ring home-master-core-ring-one"></span>
-        <span class="home-master-core-ring home-master-core-ring-two"></span>
-        <span class="home-master-core-mark">H</span>
-        <span class="home-master-core-copy">
-          <small>HERMES</small>
-          <strong>Operating system</strong>
-          <em>One brand · connected work</em>
-        </span>
-      </div>
-
+    <span id="journey" class="home-legacy-anchor" aria-hidden="true"></span>
+    <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       {publicPaths.map((path) => {
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
         return (
-          <a
-            class={`home-master-route home-master-route-${path.id}`}
-            href={`/paths/${path.id}/`}
-            style={`--route-accent:${meta.accent}`}
-            aria-label={`Open ${path.brandLabel}: ${meta.detail}`}
-            data-home-route
-            data-route-id={path.id}
-          >
-            <span class="home-master-route-signal" aria-hidden="true"><i></i></span>
-            <span class="home-master-route-number">{meta.displayNumber}</span>
+          <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
+            style={`--route-accent:${meta.accent};--art-x:${-meta.crop / 267 * 100}%`}
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}`} data-home-route data-route-id={path.id}>
+            <span class="home-portal-art" aria-hidden="true"></span>
             <span class="home-master-route-copy">
-              <small>{path.shortValue}</small>
-              <strong>{path.brandLabel}</strong>
-              <span>{meta.detail}</span>
+              <small><i aria-hidden="true"></i>{meta.goal}</small>
+              <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
+              <span class="home-route-detail">{meta.detail}</span>
             </span>
-            <span class="home-master-route-arrow" aria-hidden="true"><ArrowUpRight size={19} /></span>
+            <span class="home-master-route-arrow" aria-hidden="true"><ArrowUpRight size={24} /></span>
           </a>
         );
       })}
-    </div>
-
-    <p class="home-master-note">
-      Direction color is a navigation signal. The Hermes shell, typography, interaction rules, and product truth stay shared.
-    </p>
+    </nav>
   </div>
 </section>
-
 <script>
   import { trackCtaClicked, trackTrackSelected } from "../lib/analytics.ts";
 
@@ -102,583 +65,34 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     });
   });
 </script>
-
 <style>
-  .home-master {
-    position: relative;
-    min-height: 100svh;
-    overflow: hidden;
-    padding: clamp(7rem, 12vh, 9rem) 0 clamp(2.75rem, 5vh, 4.5rem);
-    color: var(--hermes-ink);
-    background:
-      linear-gradient(var(--hermes-line-light-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--hermes-line-light-soft) 1px, transparent 1px),
-      var(--hermes-pearl);
-    background-size: 72px 72px, 72px 72px, auto;
-  }
-
-  .home-master-atmosphere {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 50% -8%, color-mix(in srgb, var(--hermes-violet) 9%, transparent), transparent 31rem),
-      radial-gradient(circle at 8% 76%, color-mix(in srgb, var(--hermes-logistics) 5%, transparent), transparent 28rem),
-      radial-gradient(circle at 92% 72%, color-mix(in srgb, var(--hermes-marketing) 4%, transparent), transparent 26rem);
-  }
-
-  .home-master-shell {
-    position: relative;
-    width: min(1480px, calc(100% - 40px));
-    margin: 0 auto;
-  }
-
-  .home-master-intro {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 470px);
-    column-gap: clamp(2rem, 6vw, 7rem);
-    align-items: end;
-    margin-bottom: clamp(2rem, 4vw, 3.2rem);
-    scroll-margin-top: 6rem;
-  }
-
-  .home-legacy-anchor {
-    display: block;
-    width: 0;
-    height: 0;
-    scroll-margin-top: 6rem;
-  }
-
-  .home-master-kicker {
-    grid-column: 1 / -1;
-    display: inline-flex;
-    width: max-content;
-    align-items: center;
-    gap: .8rem;
-    margin: 0 0 .9rem;
-    color: var(--hermes-muted);
-    font: 800 .66rem/1.2 var(--font-mono);
-    letter-spacing: .18em;
-  }
-
-  .home-master-kicker i {
-    width: 76px;
-    height: 1px;
-    background: color-mix(in srgb, var(--hermes-ink) 34%, transparent);
-  }
-
-  .home-master-intro h1 {
-    margin: 0;
-    max-width: 930px;
-    color: var(--hermes-ink);
-    font-size: clamp(3.35rem, 7vw, 7.1rem);
-    font-weight: 760;
-    line-height: .9;
-    letter-spacing: -.065em;
-    text-wrap: balance;
-  }
-
-  .home-master-display,
-  .home-master-script {
-    display: block;
-  }
-
-  .home-master-script {
-    margin-top: .08em;
-    color: color-mix(in srgb, var(--hermes-ink) 58%, var(--hermes-paper));
-    font-size: .55em;
-    font-weight: 520;
-    letter-spacing: -.04em;
-  }
-
-  .home-master-ink-note {
-    margin: 0 0 .25rem;
-    max-width: 440px;
-    color: var(--hermes-muted);
-    font-size: clamp(.92rem, 1.2vw, 1.06rem);
-    line-height: 1.7;
-  }
-
-  .home-master-ink-note strong {
-    color: var(--hermes-graphite);
-    font-weight: 780;
-  }
-
-  .home-master-stage {
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(190px, .52fr) minmax(0, 1fr);
-    grid-template-rows: repeat(2, minmax(220px, 1fr));
-    min-height: clamp(570px, 62vh, 720px);
-    overflow: hidden;
-    border: 1px solid var(--hermes-line-light);
-    border-radius: 34px;
-    background:
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hermes-violet) 5%, transparent), transparent 19rem),
-      color-mix(in srgb, var(--hermes-paper) 92%, transparent);
-    box-shadow: var(--hermes-shadow-card);
-    scroll-margin-top: 6rem;
-  }
-
-  .home-master-stage::before {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    content: "";
-    pointer-events: none;
-    background:
-      linear-gradient(var(--hermes-line-light-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--hermes-line-light-soft) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 90%, transparent 100%);
-  }
-
-  .home-master-axis {
-    position: absolute;
-    z-index: -1;
-    display: block;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent, var(--hermes-line-light), transparent);
-  }
-
-  .home-master-axis-horizontal {
-    top: 50%;
-    right: 8%;
-    left: 8%;
-    height: 1px;
-  }
-
-  .home-master-axis-vertical {
-    top: 9%;
-    bottom: 9%;
-    left: 50%;
-    width: 1px;
-    background: linear-gradient(180deg, transparent, var(--hermes-line-light), transparent);
-  }
-
-  .home-master-core {
-    position: relative;
-    z-index: 3;
-    grid-column: 2;
-    grid-row: 1 / 3;
-    place-self: center;
-    display: grid;
-    width: clamp(168px, 15vw, 224px);
-    aspect-ratio: 1;
-    place-items: center;
-    border: 1px solid var(--hermes-line-dark);
-    border-radius: 50%;
-    color: var(--hermes-paper);
-    background:
-      radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--hermes-violet) 32%, transparent), transparent 38%),
-      radial-gradient(circle at 70% 74%, color-mix(in srgb, var(--hermes-ocean) 20%, transparent), transparent 36%),
-      var(--hermes-obsidian);
-    box-shadow: var(--hermes-shadow-workspace);
-  }
-
-  .home-master-core::after {
-    position: absolute;
-    inset: -18px;
-    z-index: -1;
-    content: "";
-    border: 1px solid color-mix(in srgb, var(--hermes-violet) 22%, transparent);
-    border-radius: 50%;
-    box-shadow: 0 0 0 14px color-mix(in srgb, var(--hermes-violet) 3%, transparent);
-  }
-
-  .home-master-core-ring {
-    position: absolute;
-    border: 1px solid color-mix(in srgb, var(--hermes-paper) 20%, transparent);
-    border-radius: 50%;
-  }
-
-  .home-master-core-ring-one {
-    inset: 17%;
-    border-top-color: color-mix(in srgb, var(--hermes-violet) 72%, white);
-    animation: home-master-orbit 18s linear infinite;
-  }
-
-  .home-master-core-ring-two {
-    inset: 29%;
-    border-right-color: color-mix(in srgb, var(--hermes-ocean) 70%, white);
-    animation: home-master-orbit-reverse 13s linear infinite;
-  }
-
-  .home-master-core-mark {
-    position: absolute;
-    color: color-mix(in srgb, var(--hermes-paper) 9%, transparent);
-    font-size: clamp(5rem, 8vw, 8rem);
-    font-weight: 850;
-    line-height: 1;
-    letter-spacing: -.08em;
-  }
-
-  .home-master-core-copy {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    gap: .25rem;
-    max-width: 12rem;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .home-master-core-copy small {
-    color: color-mix(in srgb, var(--hermes-violet) 78%, white);
-    font: 800 .6rem/1.2 var(--font-mono);
-    letter-spacing: .18em;
-  }
-
-  .home-master-core-copy strong {
-    color: var(--hermes-paper);
-    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
-    line-height: 1.04;
-    letter-spacing: -.03em;
-  }
-
-  .home-master-core-copy em {
-    color: var(--hermes-muted-dark);
-    font-size: .7rem;
-    font-style: normal;
-    line-height: 1.35;
-  }
-
-  .home-master-route {
-    position: relative;
-    z-index: 2;
-    align-self: stretch;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: clamp(.85rem, 1.5vw, 1.3rem);
-    align-items: end;
-    min-width: 0;
-    margin: clamp(1.35rem, 3vw, 2.5rem);
-    padding: clamp(1.15rem, 2.2vw, 1.8rem) clamp(.9rem, 1.7vw, 1.35rem);
-    border-block: 1px solid var(--hermes-line-light);
-    color: var(--hermes-ink);
-    text-decoration: none;
-    outline: none;
-    background: transparent;
-    transition:
-      transform var(--hermes-motion-fast) var(--hermes-ease),
-      background-color var(--hermes-motion-fast) ease,
-      border-color var(--hermes-motion-fast) ease;
-  }
-
-  .home-master-route::after {
-    position: absolute;
-    top: 50%;
-    width: clamp(1.4rem, 3vw, 3.2rem);
-    height: 1px;
-    content: "";
-    background: linear-gradient(90deg, var(--route-accent), transparent);
-    opacity: .48;
-    transform: translateY(-50%);
-  }
-
-  .home-master-route-logistics {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .home-master-route-technology {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .home-master-route-marketing {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .home-master-route-academy {
-    grid-column: 3;
-    grid-row: 2;
-  }
-
-  .home-master-route-logistics::after,
-  .home-master-route-technology::after {
-    right: -3vw;
-  }
-
-  .home-master-route-marketing::after,
-  .home-master-route-academy::after {
-    left: -3vw;
-    background: linear-gradient(90deg, transparent, var(--route-accent));
-  }
-
-  .home-master-route:hover,
-  .home-master-route:focus-visible {
-    transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--route-accent) 28%, var(--hermes-line-light));
-    background: color-mix(in srgb, var(--route-accent) 5%, transparent);
-  }
-
-  .home-master-route:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--route-accent) 42%, white);
-    outline-offset: 4px;
-  }
-
-  .home-master-route-signal {
-    align-self: stretch;
-    display: grid;
-    width: 8px;
-    min-height: 72px;
-    place-items: center;
-    border-radius: var(--hermes-radius-pill);
-    background: color-mix(in srgb, var(--route-accent) 10%, transparent);
-  }
-
-  .home-master-route-signal i {
-    width: 4px;
-    height: 62%;
-    border-radius: var(--hermes-radius-pill);
-    background: var(--route-accent);
-    box-shadow: 0 0 18px color-mix(in srgb, var(--route-accent) 22%, transparent);
-  }
-
-  .home-master-route-number {
-    position: absolute;
-    top: .9rem;
-    right: 1rem;
-    color: color-mix(in srgb, var(--route-accent) 72%, var(--hermes-ink));
-    font: 800 .6rem/1 var(--font-mono);
-    letter-spacing: .16em;
-  }
-
-  .home-master-route-copy {
-    align-self: center;
-    display: grid;
-    gap: .46rem;
-    min-width: 0;
-  }
-
-  .home-master-route-copy small {
-    color: color-mix(in srgb, var(--route-accent) 76%, var(--hermes-ink));
-    font: 800 .62rem/1.2 var(--font-mono);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .home-master-route-copy strong {
-    color: var(--hermes-ink);
-    font-size: clamp(1.55rem, 2.5vw, 2.55rem);
-    line-height: .98;
-    letter-spacing: -.05em;
-  }
-
-  .home-master-route-copy span {
-    max-width: 31ch;
-    color: var(--hermes-muted);
-    font-size: clamp(.74rem, .95vw, .84rem);
-    line-height: 1.5;
-  }
-
-  .home-master-route-arrow {
-    align-self: end;
-    display: grid;
-    width: 42px;
-    height: 42px;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--route-accent) 24%, var(--hermes-line-light));
-    border-radius: 50%;
-    color: var(--hermes-ink);
-    background: color-mix(in srgb, var(--hermes-paper) 76%, transparent);
-    transition:
-      transform var(--hermes-motion-fast) var(--hermes-ease),
-      border-color var(--hermes-motion-fast) ease,
-      background-color var(--hermes-motion-fast) ease;
-  }
-
-  .home-master-route:hover .home-master-route-arrow,
-  .home-master-route:focus-visible .home-master-route-arrow {
-    transform: translate(2px, -2px);
-    border-color: var(--route-accent);
-    background: color-mix(in srgb, var(--route-accent) 8%, var(--hermes-paper));
-  }
-
-  .home-master-note {
-    margin: 1rem 0 0;
-    color: var(--hermes-muted);
-    font-size: .72rem;
-    text-align: right;
-  }
-
-  @keyframes home-master-orbit {
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes home-master-orbit-reverse {
-    to { transform: rotate(-360deg); }
-  }
-
-  @media (max-width: 980px) {
-    .home-master {
-      padding-top: 6rem;
-    }
-
-    .home-master-intro {
-      grid-template-columns: 1fr;
-      gap: 1.3rem;
-    }
-
-    .home-master-stage {
-      grid-template-columns: minmax(0, 1fr) minmax(150px, .42fr) minmax(0, 1fr);
-      min-height: 640px;
-    }
-
-    .home-master-route {
-      margin: 1.1rem;
-      padding-inline: .9rem;
-    }
-
-    .home-master-route-copy strong {
-      font-size: clamp(1.35rem, 3vw, 2rem);
-    }
-
-    .home-master-route-copy span {
-      font-size: .72rem;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .home-master {
-      padding: 5.25rem 0 1.6rem;
-    }
-
-    .home-master-shell {
-      width: min(100% - 24px, 1480px);
-    }
-
-    .home-master-intro h1 {
-      font-size: clamp(3rem, 16vw, 4.5rem);
-    }
-
-    .home-master-ink-note {
-      font-size: .92rem;
-    }
-
-    .home-master-stage {
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto;
-      gap: 0;
-      min-height: 0;
-      padding: 1rem .8rem .8rem;
-      border-radius: 26px;
-    }
-
-    .home-master-axis-horizontal {
-      display: none;
-    }
-
-    .home-master-axis-vertical {
-      top: 6.6rem;
-      bottom: 2rem;
-      left: 1.58rem;
-      background: linear-gradient(180deg, var(--hermes-line-light), transparent);
-    }
-
-    .home-master-core {
-      grid-column: 1;
-      grid-row: auto;
-      justify-self: start;
-      width: 106px;
-      margin: .2rem 0 1.1rem .2rem;
-    }
-
-    .home-master-core::after {
-      inset: -9px;
-      box-shadow: none;
-    }
-
-    .home-master-core-copy {
-      gap: .1rem;
-      padding: .6rem;
-    }
-
-    .home-master-core-copy strong {
-      font-size: .78rem;
-    }
-
-    .home-master-core-copy em {
-      display: none;
-    }
-
-    .home-master-core-mark {
-      font-size: 4rem;
-    }
-
-    .home-master-route,
-    .home-master-route-logistics,
-    .home-master-route-marketing,
-    .home-master-route-technology,
-    .home-master-route-academy {
-      grid-column: 1;
-      grid-row: auto;
-      margin: 0 0 0 1.7rem;
-      padding: 1.05rem .55rem 1.05rem 1rem;
-      border-block: 0;
-      border-top: 1px solid var(--hermes-line-light);
-      background: transparent;
-    }
-
-    .home-master-route:last-of-type {
-      border-bottom: 1px solid var(--hermes-line-light);
-    }
-
-    .home-master-route::after {
-      top: 1.45rem;
-      right: auto;
-      left: -1.13rem;
-      width: 1.15rem;
-      background: linear-gradient(90deg, var(--route-accent), transparent);
-      opacity: .55;
-    }
-
-    .home-master-route-signal {
-      width: 6px;
-      min-height: 62px;
-    }
-
-    .home-master-route-number {
-      top: .75rem;
-      right: .5rem;
-    }
-
-    .home-master-route-copy strong {
-      max-width: none;
-      font-size: 1.45rem;
-    }
-
-    .home-master-route-copy span {
-      font-size: .73rem;
-    }
-
-    .home-master-route-arrow {
-      width: 38px;
-      height: 38px;
-    }
-
-    .home-master-note {
-      text-align: left;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .home-master-core-ring,
-    .home-master-route,
-    .home-master-route-arrow {
-      animation: none;
-      transition: none;
-    }
-
-    .home-master-route:hover,
-    .home-master-route:focus-visible,
-    .home-master-route:hover .home-master-route-arrow,
-    .home-master-route:focus-visible .home-master-route-arrow {
-      transform: none;
-    }
-  }
+.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:radial-gradient(ellipse at 95% 24%,#e3dbff88,transparent 45%),radial-gradient(ellipse at 70% 35%,#c4eeff88,transparent 40%),#f8faff;color:#090b31}
+.home-master::before{content:"";position:absolute;pointer-events:none;width:90%;height:24rem;right:-25%;top:10rem;transform:rotate(-17deg);border:1px solid #fff;border-radius:50%;background:linear-gradient(180deg,#cabaff44,#fff9,#b9e8ff55);filter:blur(.5px)}
+.home-master-shell{position:relative;width:min(1480px,calc(100% - 40px));margin:auto}
+.home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
+.home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
+.home-master-display span{background:linear-gradient(100deg,#0a0c35 10%,#7364e8 74%,#867cff);background-clip:text;-webkit-text-fill-color:transparent}
+.home-master-script{position:relative;width:max-content;max-width:100%;margin:.2rem 0 1.6rem;color:#0c103b;font:400 clamp(2.8rem,5.2vw,5rem)/1.1 "Nothing You Could Do",cursive;letter-spacing:-.07em;transform:rotate(-3deg)}
+.home-master-script::after{content:"";position:absolute;bottom:-.3rem;left:0;width:100%;height:3px;border-radius:50%;background:linear-gradient(90deg,#5b83ff,#8b72ed,transparent);transform:rotate(-2deg)}
+.home-master-ink-note{margin:0;color:#505680;font-size:clamp(.96rem,1.35vw,1.25rem);line-height:1.6}
+.home-legacy-anchor{display:block;scroll-margin-top:6rem}
+.home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;border:2px solid #fff;border-radius:34px;overflow:hidden;box-shadow:0 16px 48px #293b6414;scroll-margin-top:6rem;background:#fff}
+.home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
+.home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
+.home-portal-art::before{content:"";position:absolute;top:-64.26%;left:var(--art-x);width:416.1%;aspect-ratio:1111/1416;background:url('/images/home-approved-20260930.webp') center/100% 100% no-repeat;transition:filter 180ms ease}
+.home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#382b50 27%,#382b50)}
+.home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
+.home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
+.home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
+.home-master-route-copy strong{font:800 clamp(1.45rem,2.8vw,2.7rem)/1.03 var(--font-display);letter-spacing:-.055em;padding-right:26px;color:#fff}
+.home-route-detail{font-size:clamp(.7rem,.85vw,.85rem);line-height:1.45;color:#f0f2fa;max-width:28ch}
+.home-master-route-arrow{position:absolute;right:clamp(12px,2vw,28px);top:60%;display:grid;place-items:center;width:48px;height:48px;border:1px solid #ffffff80;border-radius:50%;background:#ffffff12}
+.home-master-route:hover .home-portal-art::before{filter:brightness(1.07)}
+.home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
+@media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-portal-art::before{top:-58.87%}.home-master-route::after{inset:56% 0 0}}
+@media(prefers-reduced-motion:reduce){.home-portal-art::before{transition:none}}
 </style>

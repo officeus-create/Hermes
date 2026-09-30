@@ -175,15 +175,16 @@ function validateStructuredData(pageHtml, pageName) {
 
 // The homepage is deliberately an entrance, not a catalogue. Rich service/product/contact
 // requirements stay on their own routes above; Home only has to explain the four choices.
+const homeHeading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]*>/g, "").trim();
+if (homeHeading !== "Four directions.") throw new Error("Homepage must retain the approved native Four directions heading");
 const required = [
-  "One Hermes system.",
-  "Four operating directions.",
+  "directions.",
+  "Choose yours.",
   "One Hermes ecosystem.",
-  "One operating architecture.",
   "Move freight",
   "Grow demand",
   "Build systems",
-  "Build capability",
+  "Develop people",
   "Car hauling · dealers · shippers · carriers",
   "Website · SEO/GEO · customer acquisition",
   "CRM · automation · custom software",

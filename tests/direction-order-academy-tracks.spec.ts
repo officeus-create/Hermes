@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("Hermes header order stays Logistics → Marketing → IT → Academy, with Catalog separated", async ({ page }) => {
+test("Hermes header order stays Logistics → Marketing → Technology → Academy, with Catalog separated", async ({ page }) => {
   const header = await source("src/components/SiteHeader.astro");
   const publicPaths = await source("src/data/public-paths.ts");
 
@@ -24,7 +24,7 @@ test("Hermes header order stays Logistics → Marketing → IT → Academy, with
   expect(desktopDirections).toEqual([
     { href: "/paths/logistics/", label: "Logistics" },
     { href: "/paths/marketing/", label: "Marketing" },
-    { href: "/paths/technology/", label: "IT" },
+    { href: "/paths/technology/", label: "Technology" },
     { href: "/paths/academy/", label: "Academy" },
   ]);
   const mobileDirections = await page.locator('#mobile-menu a[href^="/paths/"]').evaluateAll((links) =>

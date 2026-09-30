@@ -71,9 +71,9 @@ test("the focused homepage routes product discovery through Hermes Technology in
   await page.goto("/");
 
   await expect(page.locator(".home-connect-product-card")).toHaveCount(0);
-  const technologyRoom = page.getByRole("link", { name: "Open Hermes Technology" });
+  const technologyRoom = page.getByRole("link", { name: /^Build systems: Hermes Technology/ });
   await expect(technologyRoom).toBeVisible();
   await expect(technologyRoom).toHaveAttribute("href", "/paths/technology/");
   await expect(technologyRoom).toContainText("Build systems");
-  await expect(technologyRoom).toContainText("Hermes Technology");
+  await expect(technologyRoom).toContainText(/Hermes\s*Technology/);
 });

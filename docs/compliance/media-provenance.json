@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-30",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -251,6 +251,16 @@
       "source": null,
       "rightsEvidence": null,
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/home-approved-20260930.webp",
+      "sha256": "3b5f0d7220d657827310466189d478b2b5b847d9433cdde97eabd46ec2ef4068",
+      "firstTrackedCommit": "345e2fc30f675067b2a16b769ec9e0422e3016d0",
+      "classification": "OWNER_APPROVED_AI_GENERATED_HOME_ARTWORK",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Library libfile_ae6e471fd5d0819183e0e32c45af5854; PNG SHA256 7ab1cf36ccafcb2d71526c912b62695bc5a7434ede83e925d9c0c340eef25a77; WebP encoding at quality 88 for this homepage",
+      "rightsEvidence": "User approved this generated Hermes Home visual for launch at 14:49 UTC on 2026-09-30; bounded source transcript retained in delegated task. No third-party stock attribution or invented legal clearance.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
     }
   ]
 }

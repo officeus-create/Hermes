@@ -119,8 +119,8 @@ CURRENT decision; extends the existing V4 direction and does not create V5.
 
 This register distinguishes governance from deployed visual implementation.
 
-Current main still uses:
-- `HomeFourRooms.astro`: four separate dark direction cards with strong division color and “Four directions. Choose yours.” This remains useful routing but is PRE-V4 relative to the approved one-world Home Master Scene.
+Current-main reconciliation at `9f71a9ff7a40adf87d341c38a68aaba73ab50882` (#1574):
+- Home now uses `HomeMasterScene.astro`: one connected light-first scene with four direct direction links. `HomeFourRooms` and its duplicate color overrides were replaced with an explicit V4 implementation and regression contract. Do not rebuild that completed slice from the earlier snapshot.
 - `PathDetailPage.astro`: one shared static hero-image/shade/text pattern across Logistics, Marketing, Technology and Academy before later division-specific modules. Direction-specific content exists, but the top-level Spatial / Attention / Digital / Human visual physics are not yet fully implemented.
 - `/services/website-development/`: canonical semantic/commercial `DigitalServicePage` owner with structured schema, CTA and proof link, but no Website Factory Proof Replay or full V4 capability-showroom sequence yet.
 
@@ -141,9 +141,22 @@ Do not call V4 visually LIVE until the representative implementation is merged, 
 
 ## 2026-09-30 — V4 representative release acceptance gate
 
-- Current homepage regression coverage explicitly requires `HomeFourRooms`. The V4 Home Master Scene must replace that superseded visual contract deliberately in the same bounded implementation change while preserving direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
+- #1574 replaced the superseded `HomeFourRooms` regression contract with the implemented Home Master Scene contract. Further V4 slices must preserve those assertions and add coverage for new behavior, including direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
 - `Website checks` success is necessary but not sufficient for a rich signature scene. The current generated-file performance budget is advisory; production Lighthouse is a separate measurement path. Record representative mobile + desktop LCP/CLS/TBT diagnostics before a V4 signature scene is called LIVE_VERIFIED.
 - Reuse the existing analytics owner. Generic public-site behavior uses consent-gated Hermes analytics/GA4 and privacy-safe first-party counting. Repair Shop PostHog remains a separately bounded product stream.
 - Candidate showroom engagement events must enter the approved generic event registry with controlled privacy-safe parameters before production reporting.
 - Keep business-state semantics distinct: showroom engagement != commercial CTA != intake start != preview ready != handoff ready != delivery confirmed != human-qualified lead != opportunity/revenue.
 - Website Development retains its established commercial chain: `commercial_cta_click → website_project_intake_start → website_project_preview_ready → website_handoff_ready`, followed by receiver/human qualification evidence before business-result claims.
+
+
+## 2026-09-30 — Approved pearl architectural Home implementation (task5)
+
+Owner: Home frontend task5, isolated from Catalog PR1576. Reuse existing PR1577 / fix/home-v4-accessible-static-routing-20260930 following explicit handoff from its idle owner thread 01a0f242-0dab-7053-ba6b-b5c26670a632 at fa191201c0933229f2c989b7cd0fa10e606c54bd. Base main freshly verified 9f71a9ff7a40adf87d341c38a68aaba73ab50882. Preserve previous governance records and semantic/navigation tests.
+
+Current owner decision: generated Library libfile_ae6e471fd5d0819183e0e32c45af5854 approved for launch at 14:49 UTC Sept30. Its pearl header, native Four directions / handwritten Choose yours, blue logistics / green marketing / orange technology / purple academy architectural portals and cyan/lavender contact field supersede the #1574 system-ring composition. This is the existing Home, with existing canonical routes, product truth, metadata, language/account infrastructure and direction-specific forms. Compact header CTA retains a 44px hit target; Home Connect appears before Catalog and links to the actual existing /services/hermes-connect/ Product Hub. Account/login are retained; no second authentication flow.
+
+Approved image bytes were materialized locally with Library identity and viewed before implementation. One WebP encoded through existing Sharp at quality 88 is 216,880 bytes (PNG 1,940,685 bytes); all decorative CSS windows share that asset. Native headings, script phrase, accessible goal/brand/intent labels and actions remain real HTML. Original baked portal/contact labels are masked. Native quill font Nothing You Could Do (34,920 bytes) is self-hosted, with upstream Google Fonts bytes, SIL OFL notice and exact blob provenance; no new runtime dependency, paid subscription or generated business claim. Original social-preview asset is preserved. Asset introduction commit: 345e2fc30f675067b2a16b769ec9e0422e3016d0.
+
+Verification: local build 388 pages, zero errors/warnings; full npm test passed. Responsive screenshot pixels viewed at 390/430/768/1024/1440, no horizontal overflow. Regression QA found and fixed an inherited menu-display breakpoint conflict at 1024px, stale production-contact wording marker, a reduced-motion cascade conflict, masked-art ghost labels and light-footer text contrast. Existing source-label/geometry assertions were updated to the explicitly approved composition; canonical-route/SEO/privacy/form and no-JS/keyboard contracts remain. Final exact-head CI, parent independent screenshot QA and production readback remain release gates; do not claim LIVE from local evidence.
+
+Compounding scorecard: primary approved visual made functional; SEO existing owner/meta/schema/social/hreflang preserved; conversion compact CTA/contact route and Connect discovery; knowledge provenance and regression evidence; internal linking four canonical directions plus current Connect; scale responsive reuse only (no new URL family); AI/product no new platform; data/privacy no new fields/events/PII or delivery behavior; content reuse artwork source identity retained; architecture existing Astro/CSS/registry/analytics reused; deferred unrelated direction redesign, Catalog, Worker/D1/customer patches and accessibility debt. Rollback: revert this bounded Home/font/media/contract delta while retaining prior product/data work.
