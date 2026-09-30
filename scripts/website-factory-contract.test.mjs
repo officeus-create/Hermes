@@ -4,8 +4,21 @@ import { resolve } from "node:path";
 import {
   cleanWebsiteFactoryUrl,
   normalizeWebsiteFactoryPayload,
+  transitionWebsiteFactorySourceImport,
+  websiteFactoryCatalogPublicationGate,
   websiteFactoryReadiness,
+  websiteFactoryToCatalogConceptDraft,
 } from "../functions/api/_lib/website-factory.mjs";
+import {
+  CATALOG_LIFECYCLE_STATES,
+  canTransitionCatalogState,
+  catalogConceptPreviewGate,
+  catalogConceptPublicationQa,
+  catalogConceptSeoReadiness,
+  catalogSemanticSignals,
+  ethicalCatalogAttributionLink,
+  normalizeConceptSourceImports,
+} from "../src/lib/catalog-concept-governance.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
@@ -75,6 +88,48 @@ assert.deepEqual(websiteFactoryReadiness(readyPayload), { ready: true, reasons: 
 const blockedPayload = normalizeWebsiteFactoryPayload({ starting_from_zero: false });
 assert.equal(websiteFactoryReadiness(blockedPayload).ready, false, "missing source/goal/brief/references must stay blocked");
 
+const governedPayload = normalizeWebsiteFactoryPayload({
+  sources: [{ url: "https://example.com/business" }],
+  facts: { business_name: "Example Garage", city: "London", country: "UK", services: ["MOT"] },
+  goals: { primary: "Qualified enquiries", semantic_core: ["MOT London"], local_intents: ["garage London"] },
+  brief: { text: "Build a clear local service website." },
+  references: [
+    { role: "visual", url: "https://example.com/v" },
+    { role: "functionality", url: "https://example.com/f" },
+    { role: "structure", url: "https://example.com/s" },
+  ],
+});
+assert.equal(governedPayload.sources[0].status, "pending");
+assert.deepEqual(governedPayload.references.map((item) => item.role), ["visual", "functionality", "structure-conversion"]);
+assert.deepEqual(governedPayload.goals.semantic_core, ["MOT London"]);
+assert.deepEqual(governedPayload.goals.local_intents, ["garage London"]);
+
+const conceptDraft = websiteFactoryToCatalogConceptDraft(governedPayload, { draftId: "wf-1", title: "Example Garage" });
+assert.equal(conceptDraft.lifecycleState, "CONCEPT_DRAFT");
+assert.equal(conceptDraft.publication.indexable, false);
+assert.equal(catalogConceptPreviewGate(conceptDraft).robots, "noindex,nofollow");
+assert.equal(CATALOG_LIFECYCLE_STATES.length, 8);
+assert.equal(canTransitionCatalogState("DISCOVERED", "RESEARCHED"), true);
+assert.equal(canTransitionCatalogState("DISCOVERED", "CLIENT"), false);
+assert.equal(normalizeConceptSourceImports(conceptDraft.sourceImports)[0].status, "pending");
+assert.ok(catalogSemanticSignals(conceptDraft).includes("MOT London"));
+assert.equal(websiteFactoryCatalogPublicationGate(conceptDraft, { ownerApproved: false }).ready, false);
+assert.equal(catalogConceptPublicationQa(conceptDraft, { ownerApproved: false }).ready, false);
+
+const verifiedConceptDraft = {
+  ...conceptDraft,
+  sourceImports: conceptDraft.sourceImports.map((source) => transitionWebsiteFactorySourceImport(source, "verified")),
+};
+assert.equal(websiteFactoryCatalogPublicationGate(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+assert.equal(catalogConceptSeoReadiness(conceptDraft).ready, false);
+assert.equal(catalogConceptSeoReadiness(verifiedConceptDraft).ready, true);
+assert.equal(catalogConceptPublicationQa(verifiedConceptDraft, { ownerApproved: true }).ready, true);
+const attributionLink = ethicalCatalogAttributionLink({ href: "https://example.com/source", label: "Public source" });
+assert.equal(attributionLink.editoriallyRequired, true);
+assert.equal(attributionLink.reciprocalRequired, false);
+assert.equal(attributionLink.paidLinkRequired, false);
+assert.throws(() => transitionWebsiteFactorySourceImport(verifiedConceptDraft.sourceImports[0], "pending"), /source_import_transition_invalid/);
+
 assert.match(drafts, /getAuthenticatedSpecialist/, "draft collection must require the shared Hermes session");
 assert.match(drafts, /sameOriginMutation/, "draft creation must be same-origin protected");
 assert.match(drafts, /WHERE specialist_id = \?/, "draft list must be owner scoped");
@@ -92,5 +147,9 @@ assert.match(item, /notification_status:\s*"failed"/, "delivery failures must be
 assert.match(item, /retry:\s*true/, "reposting an already submitted brief must be able to retry a non-sent notification");
 assert.match(item, /build_started:\s*false/, "brief creation must never claim an automated website build started");
 assert.match(item, /No automated production build has been started/, "handoff copy must state the production boundary");
+assert.match(item, /catalog_concept_draft/, "submitted Factory brief must expose its private Catalog concept draft");
+assert.match(item, /websiteFactoryToCatalogConceptDraft/, "private handoff must derive the Catalog concept from the canonical Factory payload");
+assert.match(item, /Catalog lifecycle:/, "human handoff must include the concept lifecycle boundary");
+assert.match(item, /indexable=\$\{catalogConceptDraft\.publication\.indexable\}/, "human handoff must state that the concept is not publication-ready by implication");
 
 console.log("Hermes Connect Website Factory Design 4 contract: PASS");
