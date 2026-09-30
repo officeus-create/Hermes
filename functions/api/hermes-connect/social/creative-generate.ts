@@ -76,11 +76,8 @@ async function generateDraft(env:Env,context:any,imageAssets:any[]){
         {role:"user",content:JSON.stringify({...context,image_descriptions:descriptions})},
       ],
       temperature:0.3,
-      max_tokens:2600,
-    },{
-      gateway:{id:"default",collectLog:false,skipCache:true,metadata:{hermes_task_type:"social_content_generation",public_safe:"false"}},
-      rejectIfBusy:true,
-    });
+      max_completion_tokens:2600,
+    },{rejectIfBusy:true});
     const draft=safeDraft(parseJsonText(outputText(response)));
     return draft?{ok:true,draft,provider:"cloudflare_workers_ai",model}:{ok:false,error_class:"social_ai_invalid_output"};
   }catch{return{ok:false,error_class:"social_ai_cloudflare_unavailable"};}
