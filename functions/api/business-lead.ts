@@ -507,6 +507,8 @@ export async function onRequestPost({ request, env }: Context) {
         "",
         `Catalog profile: ${normalizeCatalogProfilePath(catalogProfile) || catalogProfile}`,
         `Hermes request ID: ${requestId}`,
+        "Hermes is not charging your business for this Catalog lead.",
+        "Claiming the Catalog profile or purchasing Hermes services is optional and remains a separate decision.",
         "This message was sent because Catalog email notifications were explicitly enabled in the authenticated shop workspace.",
       ].join("\n").slice(0, 12_000);
       const ownerDelivered = await deliverCatalogOwnerInquiry(env, requestId, catalogRecord.ownerEmail, ownerText);
