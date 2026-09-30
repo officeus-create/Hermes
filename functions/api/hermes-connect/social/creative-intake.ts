@@ -36,6 +36,25 @@ function publicIntake(row:any){
     updated_at:String(row.updated_at||""),
   }:null;
 }
+function publicDraft(row:any){
+  if(!row?.draft_json)return null;
+  try{
+    const value=JSON.parse(String(row.draft_json));
+    const carousel=Array.isArray(value?.carousel_plan)?value.carousel_plan.slice(0,10).map((item:any)=>({
+      headline:clean(item?.headline,120),body:clean(item?.body,320),visual_direction:clean(item?.visual_direction,320),
+    })).filter((item:any)=>item.headline||item.body||item.visual_direction):[];
+    const draft={
+      master_caption:clean(value?.master_caption,2200),
+      threads_text:clean(value?.threads_text,500),
+      facebook_text:clean(value?.facebook_text,5000),
+      instagram_story_text:clean(value?.instagram_story_text,500),
+      carousel_plan:carousel,
+      source_summary:clean(value?.source_summary,1800),
+      claims_to_verify:Array.isArray(value?.claims_to_verify)?value.claims_to_verify.slice(0,12).map((item:any)=>clean(item,280)).filter(Boolean):[],
+    };
+    return draft.master_caption||draft.threads_text||draft.facebook_text||draft.instagram_story_text||draft.source_summary||carousel.length?draft:null;
+  }catch{return null;}
+}
 
 export async function onRequestGet({request,env}:{request:Request;env:Env}){
   if(!env.DB)return jsonResponse(503,{success:false,error:"database_not_configured"},headers);
@@ -56,6 +75,7 @@ export async function onRequestGet({request,env}:{request:Request;env:Env}){
   return jsonResponse(200,{
     success:true,
     intakes:(rows?.results||[]).map(publicIntake),
+    latest_draft:publicDraft((rows?.results||[])[0]),
     drive,
     ai:{
       state:aiState,
