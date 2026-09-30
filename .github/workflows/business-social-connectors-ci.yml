@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "functions/api/_lib/business-social.mjs"
+      - "functions/api/_lib/business-social-studio.mjs"
       - "functions/api/hermes-connect/social/**"
       - "functions/api/internal/social/threads/callback.ts"
       - "src/components/BusinessSocialConnectionsWorkspace.astro"
