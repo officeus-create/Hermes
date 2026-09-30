@@ -21,6 +21,15 @@ const headers={ "Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nof
 const clean=(value:unknown,max=240)=>String(value??"").trim().slice(0,max);
 const DEFAULT_CF_MODEL="@cf/google/gemma-4-26b-a4b-it";
 function socialAiRuntime(env:Env){
+  const configured=Boolean(env.AI&&typeof env.AI.run==="function");
+  return{
+    configured,
+    provider:configured?"cloudflare_workers_ai":null,
+    model:configured?(clean(env.HERMES_SOCIAL_CF_MODEL,160)||DEFAULT_CF_MODEL):null,
+  };
+}
+const DEFAULT_CF_MODEL="@cf/google/gemma-4-26b-a4b-it";
+function socialAiRuntime(env:Env){
   const cloudflare=Boolean(env.AI&&typeof env.AI.run==="function");
   const openai=Boolean(String(env.HERMES_SOCIAL_AI_API_KEY||"").trim()&&String(env.HERMES_SOCIAL_AI_MODEL||"").trim());
   return{
