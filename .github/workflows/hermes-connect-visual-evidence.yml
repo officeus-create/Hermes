@@ -3,6 +3,10 @@ name: Hermes Connect visual evidence
 on:
   pull_request:
     paths:
+      - 'src/components/HomeMasterScene.astro'
+      - 'src/lib/home-portal-motion.ts'
+      - 'public/images/home-approved-20260930.webp'
+      - 'scripts/capture-home-motion-evidence.mjs'
       - 'public/demos/hermes-connect/**'
       - 'public/design-owner-polish.css'
       - 'public/design-owner-polish.js'
@@ -93,6 +97,7 @@ jobs:
 
           curl -fsS http://127.0.0.1:4321/ > /dev/null
           GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+          node scripts/capture-home-motion-evidence.mjs
           node scripts/validate-route-screenshot-layout.mjs
 
       - name: Upload visual evidence
