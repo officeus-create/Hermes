@@ -176,17 +176,22 @@ function validateStructuredData(pageHtml, pageName) {
 // The homepage is deliberately an entrance, not a catalogue. Rich service/product/contact
 // requirements stay on their own routes above; Home only has to explain the four choices.
 const required = [
-  "Four directions.",
-  "Choose yours.",
+  "One Hermes system.",
+  "Four operating directions.",
   "One Hermes ecosystem.",
-  "Move freight",
-  "Grow demand",
-  "Build capability",
-  "Build systems",
+  "One operating architecture.",
+  "Move / operate",
+  "Grow / create demand",
+  "Build / automate",
+  "Learn / develop",
+  "Car hauling · dealers · shippers · carriers",
+  "Website · SEO/GEO · customer acquisition",
+  "CRM · automation · custom software",
+  "U.S. logistics · sales · marketing · operations",
   "Hermes Logistics",
   "Hermes Marketing",
-  "Hermes Academy",
   "Hermes Technology",
+  "Hermes Academy",
 ];
 
 for (const text of required) {
