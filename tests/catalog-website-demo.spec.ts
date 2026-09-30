@@ -50,7 +50,8 @@ test("V4 concept stays readable across breakpoints with static reduced motion", 
     (window as Window & { conceptCLS?: number }).conceptCLS = 0;
     new PerformanceObserver(list => {
       for (const entry of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[]) {
-        if (!entry.hadRecentInput) (window as Window & { conceptCLS: number }).conceptCLS += entry.value;
+        const state = window as Window & { conceptCLS?: number };
+        if (!entry.hadRecentInput) state.conceptCLS = (state.conceptCLS ?? 0) + entry.value;
       }
     }).observe({ type: "layout-shift", buffered: true });
   });
@@ -62,7 +63,7 @@ test("V4 concept stays readable across breakpoints with static reduced motion", 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(page.locator(".wheel-drawing")).toHaveCSS("animation-name", "none");
     await page.evaluate(() => document.fonts.ready);
-    const cls = await page.evaluate(() => (window as Window & { conceptCLS: number }).conceptCLS);
+    const cls = await page.evaluate(() => (window as Window & { conceptCLS?: number }).conceptCLS ?? 0);
     expect(cls).toBeLessThanOrEqual(0.1);
     console.log(`Kittle concept width=${width} CLS=${cls}`);
     await expect(page.locator(".services > .service-grid button")).toHaveCount(4);
