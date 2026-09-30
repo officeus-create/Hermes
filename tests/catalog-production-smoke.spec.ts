@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.skip(!process.env.HERMES_PRODUCTION_URL, "production-only smoke; local regression has no Cloudflare API runtime");
+
 test("production Catalog reconciles public CRM profiles with the single v2 runtime", async ({ page }) => {
   const pageErrors: string[] = [];
   const failedCatalogRequests: string[] = [];
