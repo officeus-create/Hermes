@@ -5,8 +5,9 @@ import { expect, test } from "@playwright/test";
 const root = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
-test("homepage keeps interaction polish lightweight without loading hidden direction images", () => {
+test("homepage keeps V4 interaction polish lightweight without hidden media runtime", () => {
   const page = read("src/pages/index.astro");
+  const scene = read("src/components/HomeMasterScene.astro");
   const layer = read("src/components/HomePerformanceLayer.astro");
   const headers = read("public/_headers");
 
@@ -15,6 +16,9 @@ test("homepage keeps interaction polish lightweight without loading hidden direc
   expect(page).not.toContain('const homepageLcpImage = "/images/path-logistics-system.jpg"');
   expect(page).not.toContain("preloadImage={homepageLcpImage}");
 
+  expect(scene).not.toContain("<img");
+  expect(scene).not.toContain("<video");
+  expect(scene).not.toContain("<canvas");
   expect(layer).not.toContain("new Image()");
   expect(layer).not.toContain("IntersectionObserver");
   expect(layer).not.toContain("data-image-ready");
@@ -22,7 +26,7 @@ test("homepage keeps interaction polish lightweight without loading hidden direc
   expect(layer).toContain("contain-intrinsic-size: 1100px");
 
   expect(layer).toContain("@media (hover: hover) and (pointer: fine)");
-  expect(layer).toContain(".home-room:hover .home-room-copy strong");
+  expect(layer).toContain(".home-master-route:hover .home-master-route-copy strong");
   expect(layer).not.toContain("text-shadow");
   expect(layer).not.toContain("linear-gradient");
   expect(layer).toContain("@media (prefers-reduced-motion: reduce)");

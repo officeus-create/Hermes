@@ -380,7 +380,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hermes-bouncing-i > i { animation: none !important; }
   .hc-brand-page .hc-knot { translate: 0 0 !important; scale: 1.08 !important; transition: none !important; }
-  .home-room,
+  .home-master-route,
   :is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
       .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
       .department-technology-card-link, .department-technology-link, .hc-lab-links a) svg {
