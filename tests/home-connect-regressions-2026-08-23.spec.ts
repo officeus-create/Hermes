@@ -4,8 +4,8 @@ test("mobile homepage keeps V4 system statement visible after load", async ({ pa
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  const title = page.locator(".home-rooms-display");
-  await expect(title).toHaveText("Four directions.");
+  const title = page.locator(".home-master-display");
+  await expect(title).toHaveText("One Hermes system.");
   await expect(title).toBeVisible();
 
   const paint = await title.evaluate((node) => {
