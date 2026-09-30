@@ -55,12 +55,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ? { surface, caption, image_urls: imageUrls }
     : provider === "threads"
       ? { surface, text, image_urls: imageUrls }
-      : { surface, text };
+      : { surface, text, image_urls: imageUrls };
   const objectType = provider === "instagram"
     ? (surface === "story" ? "INSTAGRAM_STORY" : imageUrls.length <= 1 ? "INSTAGRAM_IMAGE" : "INSTAGRAM_CAROUSEL")
     : provider === "threads"
       ? (imageUrls.length === 0 ? "THREADS_TEXT" : imageUrls.length === 1 ? "THREADS_IMAGE" : "THREADS_CAROUSEL")
-      : "FACEBOOK_PAGE_POST";
+      : imageUrls.length === 0 ? "FACEBOOK_PAGE_POST" : imageUrls.length === 1 ? "FACEBOOK_PAGE_IMAGE" : "FACEBOOK_PAGE_MULTI_IMAGE";
   const fingerprint = await businessSocialPayloadFingerprint(provider, payload);
   const reservation = await reserveBusinessSocialPublication(env.DB, {
     business,
@@ -89,7 +89,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     else if (imageUrls.length === 1) published = await publishThreadsImage(credential.payload, text, imageUrls[0]);
     else published = await publishThreadsCarousel(credential.payload, text, imageUrls);
   } else if (provider === "facebook") {
-    published = await publishFacebookPagePost(env, credential.payload, text);
+    published = await publishFacebookPagePost(env, credential.payload, text, imageUrls);
   } else if (surface === "story") {
     published = await publishInstagramStoryImage(env, credential.payload, imageUrls[0]);
   } else if (imageUrls.length === 1) {
