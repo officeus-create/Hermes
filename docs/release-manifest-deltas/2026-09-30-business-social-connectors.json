@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-09-30-business-social-connectors",
+  "generated_at": "2026-09-30T00:00:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/repair-shops/social/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/social/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/repair-shops/social.astro",
+      "status": "COMPLETE",
+      "blocker": "Owner-facing social control surface is code-ready but provider accounts remain disconnected until explicit business-owner OAuth.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/dealers/social/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/dealers/social/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/dealers/social.astro",
+      "status": "COMPLETE",
+      "blocker": "Owner-facing social control surface is code-ready but provider accounts remain disconnected until explicit dealership-owner OAuth.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/beauty/workspace/social/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/beauty/workspace/social/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/beauty/workspace/social.astro",
+      "status": "COMPLETE",
+      "blocker": "Owner-facing social control surface is code-ready but provider accounts remain disconnected until explicit Beauty business-owner OAuth.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 3,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

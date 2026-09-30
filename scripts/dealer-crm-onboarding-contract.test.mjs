@@ -83,7 +83,9 @@ assert.match(workspace, /Approve & post to Load Board/);
 assert.match(workspace, /VIN <span>private<\/span>/);
 assert.match(workspace, /Retail inventory is context, not freight/);
 assert.match(workspace, /catalogOptIn: false/);
-assert.match(workspace, /data-prepare-provider/);
+assert.match(workspace, /\/services\/hermes-connect\/dealers\/social\/\?provider=\$\{item\.provider\}/);
+assert.match(workspace, /Needs owner authorization/);
+assert.doesNotMatch(workspace, /data-prepare-provider/);
 assert.doesNotMatch(workspace, privateDealerContactPattern);
 assert.doesNotMatch(workspace, /\.innerHTML\s*=/);
 

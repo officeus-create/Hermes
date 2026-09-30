@@ -140,8 +140,10 @@ assert.match(pageSource, /ProgressoPro/);
 assert.match(pageSource, /Hermes Business Academy/);
 assert.match(pageSource, /Publish Office canary/);
 assert.match(pageSource, /Disconnect locally/);
-assert.match(navSource, /\/api\/internal\/social\/threads\/connections/);
-assert.match(navSource, /data-hc-social-connections-link/);
+assert.match(navSource, /\$\{repairShopRoot\}\/social/);
+assert.match(navSource, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
+assert.doesNotMatch(navSource, /\/api\/internal\/social\/threads\/connections/);
+assert.doesNotMatch(navSource, /data-hc-social-connections-link/);
 assert.match(vendorRegistry, /meta-threads-owner-oauth/);
 assert.match(releaseDelta, /internal\/social-connections/);
 
