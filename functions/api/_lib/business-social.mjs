@@ -189,6 +189,9 @@ export async function ensureBusinessSocialSchema(db) {
       language TEXT,
       market TEXT,
       status TEXT NOT NULL DEFAULT 'source_registered',
+      draft_json TEXT,
+      analyzed_at TEXT,
+      last_error_class TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )
