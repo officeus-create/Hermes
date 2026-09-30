@@ -3,6 +3,8 @@ name: Hermes Connect visual evidence
 on:
   pull_request:
     paths:
+      - 'functions/api/hermes-connect/dealer/crm.ts'
+      - 'tests/dealer-crm-followup.spec.ts'
       - 'src/components/HomeMasterScene.astro'
       - 'src/lib/home-portal-motion.ts'
       - 'public/images/home-approved-20260930.webp'
@@ -101,6 +103,11 @@ jobs:
           GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-home-motion-evidence.mjs
           node scripts/validate-route-screenshot-layout.mjs
 
+      - name: Capture synthetic dealer follow-up warning
+        env:
+          HERMES_E2E_PORT: '4329'
+        run: npx playwright test tests/dealer-crm-followup.spec.ts --output=artifacts/dealer-followup
+
       - name: Upload visual evidence
         uses: actions/upload-artifact@v4
         with:
@@ -114,5 +121,13 @@ jobs:
         with:
           name: home-motion-evidence-${{ github.event.pull_request.head.sha }}
           path: artifacts/route-screenshots/home-motion
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload small dealer follow-up evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dealer-followup-evidence-${{ github.event.pull_request.head.sha }}
+          path: artifacts/dealer-followup
           if-no-files-found: error
           retention-days: 14
