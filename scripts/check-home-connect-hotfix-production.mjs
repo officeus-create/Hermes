@@ -149,7 +149,7 @@ try {
     homeMaster.status200 = response?.status() === 200;
     homeMaster.visible =
       homeMaster.found &&
-      homeMaster.text === "One system." &&
+      homeMaster.text === "One Hermes system." &&
       homeMaster.opacity === "1" &&
       homeMaster.visibility !== "hidden" &&
       homeMaster.display !== "none" &&
