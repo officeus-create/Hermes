@@ -3,22 +3,28 @@ import { sameOriginMutation } from "../../_lib/load-board-market-posts.mjs";
 import { ensureBusinessSocialSchema, resolveOwnedSocialBusiness } from "../../_lib/business-social.mjs";
 import { readBusinessSocialDriveSource } from "../../_lib/business-social-drive.mjs";
 
-type Env={DB?:any;GOOGLE_SOCIAL_DRIVE_CLIENT_ID?:string;GOOGLE_SOCIAL_DRIVE_CLIENT_SECRET?:string;GOOGLE_SOCIAL_DRIVE_REDIRECT_URI?:string;GOOGLE_SOCIAL_DRIVE_TOKEN_KEY?:string;HERMES_SOCIAL_AI_API_KEY?:string;HERMES_SOCIAL_AI_MODEL?:string};
+type Env={
+  DB?:any;
+  AI?:any;
+  GOOGLE_SOCIAL_DRIVE_CLIENT_ID?:string;
+  GOOGLE_SOCIAL_DRIVE_CLIENT_SECRET?:string;
+  GOOGLE_SOCIAL_DRIVE_REDIRECT_URI?:string;
+  GOOGLE_SOCIAL_DRIVE_TOKEN_KEY?:string;
+  HERMES_SOCIAL_CF_MODEL?:string;
+};
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow","Content-Type":"application/json; charset=utf-8"};
 const clean=(value:unknown,max=240)=>String(value??"").trim().slice(0,max);
+const DEFAULT_CF_MODEL="@cf/google/gemma-4-26b-a4b-it";
+const SOCIAL_INSTRUCTIONS="You are Hermes Connect Social Studio. Use only supplied source material. Do not invent customers, revenue, rankings, percentages, prices, guarantees, integrations, or outcomes. Put uncertain claims in claims_to_verify. Return ONLY valid JSON with keys master_caption, threads_text, facebook_text, instagram_story_text, carousel_plan (array of 2-10 objects with headline, body, visual_direction), source_summary, claims_to_verify. Keep Threads text within 500 characters and adapt copy natively by platform.";
 
-function extractOutputText(payload:any){
-  if(typeof payload?.output_text==="string"&&payload.output_text.trim())return payload.output_text.trim();
-  const chunks=[];
-  for(const item of payload?.output||[]){
-    for(const part of item?.content||[]){
-      if(typeof part?.text==="string")chunks.push(part.text);
-    }
+function outputText(payload:any){
+  for(const value of [payload?.response,payload?.result?.response,payload?.output_text,payload?.choices?.[0]?.message?.content]){
+    if(typeof value==="string"&&value.trim())return value.trim();
   }
-  return chunks.join("\n").trim();
+  return "";
 }
 function parseJsonText(value:string){
-  const raw=String(value||"").trim().replace(/^\`\`\`(?:json)?\s*/i,"").replace(/\s*\`\`\`$/,"");
+  const raw=String(value||"").trim().replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/,"");
   try{return JSON.parse(raw);}catch{return null;}
 }
 function safeDraft(value:any){
@@ -35,32 +41,46 @@ function safeDraft(value:any){
     source_summary:clean(value.source_summary,1800),
     claims_to_verify:Array.isArray(value.claims_to_verify)?value.claims_to_verify.slice(0,12).map((v:any)=>clean(v,280)).filter(Boolean):[],
   };
-  if(!draft.master_caption&&!draft.threads_text&&!draft.facebook_text&&!carousel.length)return null;
-  return draft;
+  return draft.master_caption||draft.threads_text||draft.facebook_text||draft.instagram_story_text||carousel.length?draft:null;
 }
-
-async function generateDraft(env:Env,inputParts:any[]){
-  const apiKey=clean(env.HERMES_SOCIAL_AI_API_KEY,4096);
-  const model=clean(env.HERMES_SOCIAL_AI_MODEL,120);
-  if(!apiKey||!model)return{ok:false,error_class:"social_ai_configuration_required"};
-  const response=await fetch("https://api.openai.com/v1/responses",{
-    method:"POST",
-    headers:{Authorization:`Bearer ${apiKey}`,"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model,
-      input:[{
-        role:"user",
-        content:inputParts,
-      }],
-      instructions:"You are Hermes Connect Social Studio. Use only the supplied source material. Do not invent customers, revenue, rankings, percentages, prices, guarantees, integrations, or outcomes. If a claim is uncertain, put it in claims_to_verify instead of asserting it. Return ONLY valid JSON with keys master_caption, threads_text, facebook_text, instagram_story_text, carousel_plan (array of 2-10 objects with headline, body, visual_direction), source_summary, claims_to_verify. Keep Threads text within 500 characters and make each platform copy native rather than identical.",
+function imageDocument(asset:any){
+  const match=/^data:([^;,]+);base64,(.+)$/i.exec(String(asset?.data_url||""));
+  if(!match)return null;
+  try{
+    const binary=atob(match[2]);const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i+=1)bytes[i]=binary.charCodeAt(i);
+    return{name:clean(asset?.name,180)||"source-image",blob:new Blob([bytes],{type:clean(match[1],120)||"image/jpeg"})};
+  }catch{return null;}
+}
+async function imageDescriptions(ai:any,imageAssets:any[]){
+  if(!imageAssets.length||typeof ai?.toMarkdown!=="function")return[];
+  const files=imageAssets.map(imageDocument).filter(Boolean);
+  if(!files.length)return[];
+  try{
+    const converted=await ai.toMarkdown(files,{conversionOptions:{output:{format:"text"},image:{descriptionLanguage:"en"}}});
+    const rows=Array.isArray(converted)?converted:[converted];
+    return rows.slice(0,4).map((row:any,index)=>({
+      name:clean(row?.name||files[index]?.name,180),
+      description:clean(row?.data,5000),
+    })).filter((row:any)=>row.description);
+  }catch{return[];}
+}
+async function generateDraft(env:Env,context:any,imageAssets:any[]){
+  if(!env.AI||typeof env.AI.run!=="function")return{ok:false,error_class:"social_ai_configuration_required"};
+  const model=clean(env.HERMES_SOCIAL_CF_MODEL,160)||DEFAULT_CF_MODEL;
+  const descriptions=await imageDescriptions(env.AI,imageAssets);
+  try{
+    const response=await env.AI.run(model,{
+      messages:[
+        {role:"system",content:SOCIAL_INSTRUCTIONS},
+        {role:"user",content:JSON.stringify({...context,image_descriptions:descriptions})},
+      ],
       temperature:0.3,
-    })
-  });
-  const payload=await response.json().catch(()=>({}));
-  if(!response.ok)return{ok:false,error_class:"social_ai_provider_rejected"};
-  const parsed=parseJsonText(extractOutputText(payload));
-  const draft=safeDraft(parsed);
-  return draft?{ok:true,draft}:{ok:false,error_class:"social_ai_invalid_output"};
+      max_completion_tokens:2600,
+    },{rejectIfBusy:true});
+    const draft=safeDraft(parseJsonText(outputText(response)));
+    return draft?{ok:true,draft,provider:"cloudflare_workers_ai",model}:{ok:false,error_class:"social_ai_invalid_output"};
+  }catch{return{ok:false,error_class:"social_ai_cloudflare_unavailable"};}
 }
 
 export async function onRequestPost({request,env}:{request:Request;env:Env}){
@@ -99,10 +119,8 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
     text_sources:textAssets.map((asset:any)=>({name:asset.name,mime_type:asset.mime_type,text:String(asset.text||"").slice(0,12000)})),
     non_text_assets:(source.assets||[]).filter((asset:any)=>asset.kind!=="text"&&asset.kind!=="image").map((asset:any)=>({name:asset.name,mime_type:asset.mime_type})).slice(0,10),
   };
-  const inputParts:any[]=[{type:"input_text",text:JSON.stringify(context)}];
-  for(const asset of imageAssets)inputParts.push({type:"input_image",image_url:asset.data_url,detail:"low"});
 
-  const generated=await generateDraft(env,inputParts);
+  const generated:any=await generateDraft(env,context,imageAssets);
   const now=new Date().toISOString();
   if(!generated.ok){
     await env.DB.prepare("UPDATE hermes_business_social_creative_intakes SET status='blocked',last_error_class=?,updated_at=? WHERE id=?")
@@ -111,5 +129,9 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
   }
   await env.DB.prepare("UPDATE hermes_business_social_creative_intakes SET status='draft_ready',draft_json=?,analyzed_at=?,last_error_class=NULL,updated_at=? WHERE id=?")
     .bind(JSON.stringify(generated.draft),now,now,intakeId).run();
-  return jsonResponse(200,{success:true,intake_id:intakeId,status:"draft_ready",draft:generated.draft,source:{name:source.source?.name||null,asset_count:(source.assets||[]).length}},headers);
+  return jsonResponse(200,{
+    success:true,intake_id:intakeId,status:"draft_ready",draft:generated.draft,
+    ai:{provider:generated.provider,model:generated.model},
+    source:{name:source.source?.name||null,asset_count:(source.assets||[]).length},
+  },headers);
 }
