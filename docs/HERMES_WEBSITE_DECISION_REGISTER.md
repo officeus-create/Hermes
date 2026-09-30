@@ -114,3 +114,27 @@ CURRENT decision; extends the existing V4 direction and does not create V5.
 - Evidence must compound: `FACT/RESULT → EVIDENCE → WEBSITE/CASE STUDY/INSIGHT → SOCIAL DERIVATIVES → ATTRIBUTED RETURN → NEW BUSINESS EVIDENCE`.
 - Home remains one Hermes world, with optional goal routing that preserves semantic links: MOVE/OPERATE → Logistics; GROW/GET DEMAND → Marketing; BUILD/AUTOMATE → Technology; LEARN/WORK/DEVELOP → Academy.
 - Execution order remains unchanged: Home Master Scene + Logistics Master Scene first; verify exact-head/mobile/performance/SEO/accessibility; only then derive other directions and commercial showrooms.
+
+## 2026-09-30 — V4 current-main implementation gap
+
+This register distinguishes governance from deployed visual implementation.
+
+Current main still uses:
+- `HomeFourRooms.astro`: four separate dark direction cards with strong division color and “Four directions. Choose yours.” This remains useful routing but is PRE-V4 relative to the approved one-world Home Master Scene.
+- `PathDetailPage.astro`: one shared static hero-image/shade/text pattern across Logistics, Marketing, Technology and Academy before later division-specific modules. Direction-specific content exists, but the top-level Spatial / Attention / Digital / Human visual physics are not yet fully implemented.
+- `/services/website-development/`: canonical semantic/commercial `DigitalServicePage` owner with structured schema, CTA and proof link, but no Website Factory Proof Replay or full V4 capability-showroom sequence yet.
+
+Preserve instead of rebuilding:
+- LogisticsAudienceHub, HermesPathEngine, Logistics commercial/product modules;
+- Technology Build Pulse, Operating Flow, Capability Catalog, Solution Mockups, Interactive Prototypes, Partnership/Studio Proof and Project Brief;
+- private/noindex Website Factory workflow as the factual source for a future sanitized public replay.
+
+Execution sequence:
+1. Home Master Scene;
+2. Logistics Spatial Operations master scene using existing real functionality;
+3. exact-head 390/430/768/1024/1440 + SEO/accessibility/performance verification;
+4. Website Development capability showroom using sanitized Website Factory/build/QA/SEO/deploy proof;
+5. resolve generic Web Design query ownership before adding any new canonical route;
+6. derive the remaining direction engines from the validated shared Scene Kit.
+
+Do not call V4 visually LIVE until the representative implementation is merged, deployed and publicly read back.
