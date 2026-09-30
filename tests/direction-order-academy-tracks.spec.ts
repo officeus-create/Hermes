@@ -34,8 +34,8 @@ test("Hermes header order stays Logistics → Marketing → IT → Academy, with
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveText("Catalog");
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveClass(/catalog-nav-link/);
 
-  const roomIds = await page.locator("[data-home-room]").evaluateAll((rooms) => rooms.map((room) => room.getAttribute("data-room-id")));
-  expect(roomIds).toEqual(["logistics", "marketing", "technology", "academy"]);
+  const routeIds = await page.locator("[data-home-route]").evaluateAll((routes) => routes.map((route) => route.getAttribute("data-route-id")));
+  expect(routeIds).toEqual(["logistics", "marketing", "technology", "academy"]);
 });
 
 test("Academy exposes five learning tracks without pretending enrollment is open", async () => {
