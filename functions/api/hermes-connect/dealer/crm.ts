@@ -205,8 +205,16 @@ async function intelligence(db: any, companyId: string) {
       AND follow_up_at IS NOT NULL
       AND follow_up_at < ?
   `).bind(companyId, new Date().toISOString()).first();
+  const incomplete = await db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM hermes_dealer_leads
+    WHERE company_id = ?
+      AND stage NOT IN ('won','lost')
+      AND (next_action IS NULL OR TRIM(next_action) = '' OR follow_up_at IS NULL)
+  `).bind(companyId).first();
   const nextActions: Array<{ code: string; label: string }> = [];
   if (Number(overdue?.count || 0) > 0) nextActions.push({ code: "lead_follow_up_due", label: "Review overdue lead follow-ups." });
+  if (Number(incomplete?.count || 0) > 0) nextActions.push({ code: "lead_follow_up_incomplete", label: "Add a next action and follow-up date to active leads." });
   if (base.counts.transport_drafts > 0) nextActions.push({ code: "transport_drafts_waiting", label: "Review transport drafts before owner-approved Load Board publication." });
   if (base.counts.transport_sync_errors > 0) nextActions.push({ code: "transport_sync_error", label: "Inspect Transport Request sync errors; do not create duplicate loads." });
   const socialProviders = new Set(["facebook", "instagram", "threads"]);
@@ -217,7 +225,7 @@ async function intelligence(db: any, companyId: string) {
     mode: "rules_based_private_operations",
     autonomous_actions: false,
     external_ai_write: false,
-    metrics: { ...base.counts, overdue_lead_followups: Number(overdue?.count || 0) },
+    metrics: { ...base.counts, overdue_lead_followups: Number(overdue?.count || 0), incomplete_lead_followups: Number(incomplete?.count || 0) },
     next_actions: nextActions,
     connection_truth: base.connections,
   };
