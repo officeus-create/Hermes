@@ -127,7 +127,7 @@ assert.match(driveCallback, /consumeBusinessSocialDriveOAuthState/);
 assert.match(driveCallback, /saveBusinessSocialDriveConnection/);
 assert.match(creativeGenerate, /readBusinessSocialDriveSource/);
 assert.match(creativeGenerate, /@cf\/google\/gemma-4-26b-a4b-it/);
-assert.match(creativeGenerate, /env\.AI\.toMarkdown/);
+assert.match(creativeGenerate, /ai\.toMarkdown/);
 assert.match(creativeGenerate, /collectLog:false/);
 assert.match(creativeGenerate, /skipCache:true/);
 assert.match(creativeGenerate, /rejectIfBusy:true/);
