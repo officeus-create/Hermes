@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("mobile homepage keeps Four directions visible after load", async ({ page }) => {
+test("mobile homepage keeps V4 system statement visible after load", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
