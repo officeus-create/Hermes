@@ -49,11 +49,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(400, { success: false, error: "social_surface_invalid" }, headers);
   }
   const imageUrls = Array.isArray(body.image_urls) ? body.image_urls : [];
+  const caption = String(body.caption || "");
+  const text = String(body.text || "");
   const payload = provider === "instagram"
-    ? { surface, caption: String(body.caption || ""), image_urls: imageUrls }
+    ? { surface, caption, image_urls: imageUrls }
     : provider === "threads"
-      ? { surface, text: String(body.text || ""), image_urls: imageUrls }
-      : { surface, text: String(body.text || "") };
+      ? { surface, text, image_urls: imageUrls }
+      : { surface, text };
   const objectType = provider === "instagram"
     ? (surface === "story" ? "INSTAGRAM_STORY" : imageUrls.length <= 1 ? "INSTAGRAM_IMAGE" : "INSTAGRAM_CAROUSEL")
     : provider === "threads"
@@ -83,17 +85,17 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   let published: any;
   if (provider === "threads") {
-    if (payload.image_urls.length === 0) published = await publishBusinessThreadsText(credential.payload, payload.text);
-    else if (payload.image_urls.length === 1) published = await publishThreadsImage(credential.payload, payload.text, payload.image_urls[0]);
-    else published = await publishThreadsCarousel(credential.payload, payload.text, payload.image_urls);
+    if (imageUrls.length === 0) published = await publishBusinessThreadsText(credential.payload, text);
+    else if (imageUrls.length === 1) published = await publishThreadsImage(credential.payload, text, imageUrls[0]);
+    else published = await publishThreadsCarousel(credential.payload, text, imageUrls);
   } else if (provider === "facebook") {
-    published = await publishFacebookPagePost(env, credential.payload, payload.text);
+    published = await publishFacebookPagePost(env, credential.payload, text);
   } else if (surface === "story") {
-    published = await publishInstagramStoryImage(env, credential.payload, payload.image_urls[0]);
-  } else if (payload.image_urls.length === 1) {
-    published = await publishInstagramSingleImage(env, credential.payload, payload.caption, payload.image_urls[0]);
+    published = await publishInstagramStoryImage(env, credential.payload, imageUrls[0]);
+  } else if (imageUrls.length === 1) {
+    published = await publishInstagramSingleImage(env, credential.payload, caption, imageUrls[0]);
   } else {
-    published = await publishInstagramCarousel(env, credential.payload, payload.caption, payload.image_urls);
+    published = await publishInstagramCarousel(env, credential.payload, caption, imageUrls);
   }
 
   if (!published.ok) {
