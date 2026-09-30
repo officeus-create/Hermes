@@ -78,7 +78,7 @@ export async function onRequestPost({request,env}:{request:Request;env:Env}){
     .bind(intakeId,business.business_key,String(specialist.id)).first();
   if(!intake)return jsonResponse(404,{success:false,error:"creative_intake_not_found"},headers);
 
-  const source=await readBusinessSocialDriveSource(env.DB,env,business,specialist.id,String(intake.source_url||""));
+  const source:any=await readBusinessSocialDriveSource(env.DB,env,business,specialist.id,String(intake.source_url||""));
   if(!source.ok){
     await env.DB.prepare("UPDATE hermes_business_social_creative_intakes SET status='blocked',last_error_class=?,updated_at=? WHERE id=?")
       .bind(source.error_class,new Date().toISOString(),intakeId).run();
