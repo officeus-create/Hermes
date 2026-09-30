@@ -759,12 +759,105 @@ export function publicBusinessSocialPublication(row) {
   };
 }
 
-export async function publishFacebookPagePost(env, credential, message) {
+export async function publishFacebookPagePost(env, credential, message, imageUrls = []) {
   const text = String(message || "").trim();
-  if (!text || text.length > 5000) return { ok: false, error_class: "facebook_text_invalid" };
+  const images = normalizeImageUrls(imageUrls);
+  if (text.length > 5000 || (!text && images.length === 0)) return { ok: false, error_class: "facebook_content_invalid" };
   const pageId = clean(credential?.page_id, 160);
   const accessToken = clean(credential?.access_token, 4096);
   if (!pageId || !accessToken) return { ok: false, error_class: "authorization_required" };
+
+  const readPost = async (objectId) => {
+    const readUrl = new URL(objectId, metaGraphBase(env));
+    readUrl.searchParams.set("fields", "id,permalink_url,created_time");
+    readUrl.searchParams.set("access_token", accessToken);
+    return providerJson(readUrl.toString(), { headers: { Accept: "application/json" } });
+  };
+  const readPhoto = async (photoId) => {
+    const readUrl = new URL(photoId, metaGraphBase(env));
+    readUrl.searchParams.set("fields", "id,link,page_story_id,created_time");
+    readUrl.searchParams.set("access_token", accessToken);
+    return providerJson(readUrl.toString(), { headers: { Accept: "application/json" } });
+  };
+
+  if (images.length === 1) {
+    const url = new URL(`${pageId}/photos`, metaGraphBase(env));
+    const result = await providerJson(url.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+      body: new URLSearchParams({
+        url: images[0],
+        message: text,
+        published: "true",
+        access_token: accessToken,
+      }),
+    });
+    if (!result.ok || (!result.data?.id && !result.data?.post_id)) {
+      return { ok: false, error_class: result.network_error ? "provider_outcome_unknown" : "provider_rejected" };
+    }
+    const postId = clean(result.data?.post_id, 240);
+    const photoId = clean(result.data?.id, 240);
+    let permalink = null;
+    let readbackOk = false;
+    if (postId) {
+      const readback = await readPost(postId);
+      readbackOk = readback.ok;
+      if (readback.ok) permalink = clean(readback.data?.permalink_url, 1500);
+    }
+    if (!permalink && photoId) {
+      const photoReadback = await readPhoto(photoId);
+      readbackOk = readbackOk || photoReadback.ok;
+      if (photoReadback.ok) {
+        permalink = clean(photoReadback.data?.link, 1500);
+        const storyId = clean(photoReadback.data?.page_story_id, 240);
+        if (!permalink && storyId) {
+          const storyReadback = await readPost(storyId);
+          readbackOk = readbackOk || storyReadback.ok;
+          if (storyReadback.ok) permalink = clean(storyReadback.data?.permalink_url, 1500);
+        }
+      }
+    }
+    return { ok: true, media_id: postId || photoId, permalink, readback_ok: readbackOk };
+  }
+
+  if (images.length > 1) {
+    const stagedPhotoIds = [];
+    for (const imageUrl of images) {
+      const url = new URL(`${pageId}/photos`, metaGraphBase(env));
+      const staged = await providerJson(url.toString(), {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+        body: new URLSearchParams({ url: imageUrl, published: "false", access_token: accessToken }),
+      });
+      if (!staged.ok || !staged.data?.id) {
+        return { ok: false, error_class: staged.network_error ? "provider_outcome_unknown" : "provider_rejected" };
+      }
+      stagedPhotoIds.push(clean(staged.data.id, 240));
+    }
+    const feedUrl = new URL(`${pageId}/feed`, metaGraphBase(env));
+    const body = new URLSearchParams({
+      attached_media: JSON.stringify(stagedPhotoIds.map((mediaFbid) => ({ media_fbid: mediaFbid }))),
+      access_token: accessToken,
+    });
+    if (text) body.set("message", text);
+    const published = await providerJson(feedUrl.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+      body,
+    });
+    if (!published.ok || !published.data?.id) {
+      return { ok: false, error_class: published.network_error ? "provider_outcome_unknown" : "provider_rejected" };
+    }
+    const mediaId = clean(published.data.id, 240);
+    const readback = await readPost(mediaId);
+    return {
+      ok: true,
+      media_id: mediaId,
+      permalink: readback.ok ? clean(readback.data?.permalink_url, 1500) : null,
+      readback_ok: readback.ok,
+    };
+  }
+
   const url = new URL(`${pageId}/feed`, metaGraphBase(env));
   const result = await providerJson(url.toString(), {
     method: "POST",
@@ -775,10 +868,7 @@ export async function publishFacebookPagePost(env, credential, message) {
     return { ok: false, error_class: result.network_error ? "provider_outcome_unknown" : "provider_rejected" };
   }
   const mediaId = clean(result.data.id, 240);
-  const readUrl = new URL(mediaId, metaGraphBase(env));
-  readUrl.searchParams.set("fields", "id,permalink_url,created_time");
-  readUrl.searchParams.set("access_token", accessToken);
-  const readback = await providerJson(readUrl.toString(), { headers: { Accept: "application/json" } });
+  const readback = await readPost(mediaId);
   return {
     ok: true,
     media_id: mediaId,
