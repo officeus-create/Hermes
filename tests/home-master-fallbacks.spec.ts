@@ -55,7 +55,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     for (const ring of motion) {
       expect(ring.name).toBe("none");
     }
-    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, marketing, technology and learning. One Hermes ecosystem.");
+    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, marketing, technology and learning for your business. One Hermes ecosystem.");
     if (width === 390 || width === 1440) {
       await test.info().attach(`home-v4-${width}px`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
     }
