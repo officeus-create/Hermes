@@ -10,317 +10,313 @@ const { vertical, backHref, backLabel } = Astro.props;
 <main class:list={["business-social-page", vertical === "repair_shop" && "company-page"]} data-business-social data-vertical={vertical}>
   <div class="social-shell">
     <a class="back-link" href={backHref}>← {backLabel}</a>
+
     <header class="social-hero">
       <div>
-        <p class="eyebrow">Hermes Connect · Social Media</p>
+        <p class="eyebrow">Hermes Connect · Social Studio</p>
         <h1>Social Media</h1>
-        <p class="lead">Connect the business-owned Facebook Page, Instagram Professional account and Threads profile through provider OAuth. Tokens stay encrypted server-side and no account is marked connected until provider readback succeeds.</p>
+        <p class="lead">Connect Facebook, Instagram and Threads once, see the channels together, and prepare one owner-approved content package for the selected destinations.</p>
       </div>
       <div class="truth-card">
-        <strong data-business-name>Loading business…</strong>
-        <span data-business-type>Owner workspace</span>
-        <small>Facebook · Instagram · Threads</small>
+        <span>Current business</span>
+        <strong data-business-name>Loading…</strong>
+        <small data-business-type>Owner workspace</small>
       </div>
     </header>
 
     <p class="notice" data-social-status role="status">Checking connection state…</p>
 
-    <section class="provider-grid" aria-label="Social network connections">
-      <article class="provider-card" data-provider-card="facebook">
-        <div class="provider-head">
-          <div><small>Meta</small><h2>Facebook</h2></div>
-          <span class="state" data-provider-state>Loading…</span>
-        </div>
-        <p data-provider-account>Not connected</p>
-        <div class="candidate-wrap hidden" data-candidate-wrap>
-          <label>Choose Page<select data-candidate-select></select></label>
-          <button type="button" class="secondary" data-select-account>Use this Page</button>
-        </div>
-        <div class="actions">
-          <button type="button" data-connect-provider>Connect / reconnect</button>
-          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
-        </div>
+    <section class="connection-strip" aria-label="Social network connections">
+      <article class="connection-card" data-provider-card="instagram">
+        <div class="network-mark" aria-hidden="true">IG</div>
+        <div class="connection-copy"><strong>Instagram</strong><span data-provider-account>Not connected</span></div>
+        <span class="state" data-provider-state>Loading…</span>
+        <div class="candidate-wrap hidden" data-candidate-wrap><select aria-label="Choose Instagram account" data-candidate-select></select><button type="button" class="secondary" data-select-account>Use account</button></div>
+        <div class="connection-actions"><button type="button" data-connect-provider>Connect</button><button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button></div>
       </article>
 
-      <article class="provider-card" data-provider-card="instagram">
-        <div class="provider-head">
-          <div><small>Meta</small><h2>Instagram</h2></div>
-          <span class="state" data-provider-state>Loading…</span>
-        </div>
-        <p data-provider-account>Not connected</p>
-        <div class="candidate-wrap hidden" data-candidate-wrap>
-          <label>Choose Instagram account<select data-candidate-select></select></label>
-          <button type="button" class="secondary" data-select-account>Use this account</button>
-        </div>
-        <div class="actions">
-          <button type="button" data-connect-provider>Connect / reconnect</button>
-          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
-        </div>
+      <article class="connection-card" data-provider-card="facebook">
+        <div class="network-mark" aria-hidden="true">f</div>
+        <div class="connection-copy"><strong>Facebook</strong><span data-provider-account>Not connected</span></div>
+        <span class="state" data-provider-state>Loading…</span>
+        <div class="candidate-wrap hidden" data-candidate-wrap><select aria-label="Choose Facebook Page" data-candidate-select></select><button type="button" class="secondary" data-select-account>Use Page</button></div>
+        <div class="connection-actions"><button type="button" data-connect-provider>Connect</button><button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button></div>
       </article>
 
-      <article class="provider-card" data-provider-card="threads">
-        <div class="provider-head">
-          <div><small>Meta</small><h2>Threads</h2></div>
-          <span class="state" data-provider-state>Loading…</span>
-        </div>
-        <p data-provider-account>Not connected</p>
-        <div class="actions">
-          <button type="button" data-connect-provider>Connect / reconnect</button>
-          <button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button>
-        </div>
+      <article class="connection-card" data-provider-card="threads">
+        <div class="network-mark threads-mark" aria-hidden="true">@</div>
+        <div class="connection-copy"><strong>Threads</strong><span data-provider-account>Not connected</span></div>
+        <span class="state" data-provider-state>Loading…</span>
+        <div class="connection-actions"><button type="button" data-connect-provider>Connect</button><button type="button" class="secondary hidden" data-disconnect-provider>Disconnect</button></div>
       </article>
     </section>
 
-    <section class="publish-section">
+    <section class="studio-section">
       <div class="section-heading">
-        <div>
-          <p class="eyebrow">Owner-approved publishing</p>
-          <h2>Create and publish</h2>
-        </div>
-        <p>Manual publishing is available only for a verified connection. Recurring scheduling stays in the canonical Hermes Social Publisher; this CRM does not create a second scheduler.</p>
+        <div><p class="eyebrow">One screen · all channels</p><h2>Live channel overview</h2></div>
+        <button type="button" class="secondary compact" data-refresh-feed>Refresh</button>
+      </div>
+      <div class="channel-overview">
+        <article class="channel-panel" data-feed-panel="instagram"><div class="panel-title"><strong>Instagram</strong><span data-feed-state>Waiting</span></div><div class="feed-list" data-feed-list></div></article>
+        <article class="channel-panel" data-feed-panel="facebook"><div class="panel-title"><strong>Facebook</strong><span data-feed-state>Waiting</span></div><div class="feed-list" data-feed-list></div></article>
+        <article class="channel-panel" data-feed-panel="threads"><div class="panel-title"><strong>Threads</strong><span data-feed-state>Waiting</span></div><div class="feed-list" data-feed-list></div></article>
+      </div>
+    </section>
+
+    <section class="studio-section composer-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Unified composer</p><h2>Create once, adapt by channel</h2></div>
+        <p>One approval can fan out to the selected connected channels. Each provider write keeps its own idempotency receipt, so a partial failure is visible and never blindly retried.</p>
       </div>
 
-      <div class="publisher-grid">
-        <form class="publisher-card" data-publish-form="threads">
-          <div><small>Threads</small><h3>Text post</h3></div>
-          <label>Post text<textarea name="text" rows="6" maxlength="500" placeholder="Write a platform-native Threads post."></textarea></label>
-          <button type="submit" disabled>Publish to Threads</button>
-          <p data-publish-result></p>
-        </form>
+      <form class="unified-composer" data-unified-composer>
+        <div class="composer-main">
+          <label>Master caption / idea
+            <textarea name="caption" rows="5" maxlength="2200" placeholder="Write the core message once. Threads and Facebook copies can be adjusted below."></textarea>
+          </label>
+          <label>Media URLs <span>1–10 public HTTPS images, one per line. One image = post; 2+ = carousel where supported.</span>
+            <textarea name="image_urls" rows="5" placeholder="https://…/image-1.jpg&#10;https://…/image-2.jpg"></textarea>
+          </label>
+          <div class="copy-grid">
+            <label>Threads copy <span>≤500 UTF-8 bytes</span><textarea name="threads_text" rows="4" maxlength="500" placeholder="Native Threads copy"></textarea></label>
+            <label>Facebook copy <span>Optional override</span><textarea name="facebook_text" rows="4" maxlength="5000" placeholder="Facebook Page copy"></textarea></label>
+          </div>
+        </div>
 
-        <form class="publisher-card" data-publish-form="instagram">
-          <div><small>Instagram</small><h3>Carousel</h3></div>
-          <label>Caption<textarea name="caption" rows="4" maxlength="2200" placeholder="Carousel caption"></textarea></label>
-          <label>Image URLs <span>2–10 HTTPS images, one per line</span><textarea name="image_urls" rows="6" placeholder="https://…/slide-1.jpg&#10;https://…/slide-2.jpg"></textarea></label>
-          <button type="submit" disabled>Publish carousel</button>
-          <p data-publish-result></p>
-        </form>
+        <aside class="distribution-card">
+          <p class="eyebrow">Destinations</p>
+          <label class="target-row"><input type="checkbox" value="instagram_feed" data-target data-target-provider="instagram" checked /><span><strong>Instagram Feed</strong><small>Single image or carousel</small></span></label>
+          <label class="target-row"><input type="checkbox" value="instagram_story" data-target data-target-provider="instagram" checked /><span><strong>Instagram Story</strong><small>Uses the first image · eligible Business accounts</small></span></label>
+          <label class="target-row"><input type="checkbox" value="threads_feed" data-target data-target-provider="threads" checked /><span><strong>Threads Feed</strong><small>Text, image or carousel</small></span></label>
+          <label class="target-row"><input type="checkbox" value="facebook_feed" data-target data-target-provider="facebook" checked /><span><strong>Facebook Page</strong><small>Page post</small></span></label>
+          <div class="platform-boundary"><strong>Threads Story</strong><span>Threads has no Instagram-style Story surface. The same creative can go to the native Threads feed/carousel instead.</span></div>
+          <button type="submit" class="publish-button">Publish selected</button>
+          <div class="publish-results" data-bundle-results aria-live="polite"></div>
+        </aside>
+      </form>
+    </section>
 
-        <form class="publisher-card" data-publish-form="facebook">
-          <div><small>Facebook Page</small><h3>Page post</h3></div>
-          <label>Post text<textarea name="text" rows="6" maxlength="5000" placeholder="Write the Facebook Page post."></textarea></label>
-          <button type="submit" disabled>Publish to Facebook</button>
-          <p data-publish-result></p>
+    <section class="studio-section ai-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">AI Creative Intake</p><h2>Google Drive → content brief → review → publish</h2></div>
+        <span class="ai-state" data-ai-state>Drive authorization required</span>
+      </div>
+      <div class="ai-grid">
+        <form class="ai-intake-card" data-ai-intake>
+          <label>Google Drive folder or file URL<input name="source_url" type="url" placeholder="https://drive.google.com/…" required /></label>
+          <div class="copy-grid">
+            <label>Language<input name="language" value="en" /></label>
+            <label>Market<input name="market" placeholder="USA, Dubai, local city…" /></label>
+          </div>
+          <label>What should AI understand or achieve?<textarea name="brief" rows="4" placeholder="Offer, audience, CTA, restrictions, products to prioritize…"></textarea></label>
+          <button type="submit">Register source</button>
+          <p data-ai-result></p>
         </form>
+        <div class="ai-flow-card">
+          <div><span>01</span><strong>Source</strong><small>Owner-approved Drive material</small></div>
+          <div><span>02</span><strong>AI analysis</strong><small>Extract facts, offer, visual assets and content angles</small></div>
+          <div><span>03</span><strong>Draft package</strong><small>Post, carousel, Story and platform-specific copy</small></div>
+          <div><span>04</span><strong>Review & publish</strong><small>Human approval before external writes</small></div>
+          <p>Source registration is live now. Automated Drive reading and AI generation stay fail-closed until business-scoped Google Drive OAuth and an approved model runtime are configured.</p>
+        </div>
       </div>
     </section>
 
     <section class="safety-note">
-      <strong>Connection boundary</strong>
-      <p>Saving a public profile URL is not a connection. A network becomes connected only after owner OAuth, provider account readback and encrypted token persistence. Provider failures fail closed and an idempotency key prevents accidental duplicate publishing.</p>
+      <strong>Connection and publishing boundary</strong>
+      <p>A public profile link is not OAuth. A channel becomes writable only after provider authorization and provider readback. Tokens stay encrypted server-side. Recurring scheduling remains owned by the canonical Hermes Social Publisher rather than this CRM creating a second scheduler.</p>
     </section>
   </div>
 </main>
 
 <script is:inline define:vars={{ vertical }}>
 (() => {
-  const root = document.querySelector("[data-business-social]");
-  if (!(root instanceof HTMLElement)) return;
-  const status = root.querySelector("[data-social-status]");
-  const cards = new Map(
-    [...root.querySelectorAll("[data-provider-card]")].map((node) => [node.getAttribute("data-provider-card"), node])
-  );
-  const forms = new Map(
-    [...root.querySelectorAll("[data-publish-form]")].map((node) => [node.getAttribute("data-publish-form"), node])
-  );
+  const root=document.querySelector("[data-business-social]");
+  if(!(root instanceof HTMLElement))return;
+  const status=root.querySelector("[data-social-status]");
+  const cards=new Map([...root.querySelectorAll("[data-provider-card]")].map((node)=>[node.getAttribute("data-provider-card"),node]));
+  const connectionState={instagram:false,facebook:false,threads:false};
 
-  const showStatus = (message, error = false) => {
-    if (!status) return;
-    status.textContent = message;
-    status.toggleAttribute("data-error", error);
-  };
-
-  const request = async (url, options = {}) => {
-    const response = await fetch(url, {
-      credentials: "same-origin",
-      cache: "no-store",
-      ...options,
-      headers: { Accept: "application/json", "Content-Type": "application/json", ...(options.headers || {}) },
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      const error = new Error(payload.error || `request_${response.status}`);
-      error.payload = payload;
-      throw error;
-    }
+  const showStatus=(message,error=false)=>{if(!status)return;status.textContent=message;status.toggleAttribute("data-error",error);};
+  const request=async(url,options={})=>{
+    const response=await fetch(url,{credentials:"same-origin",cache:"no-store",...options,headers:{Accept:"application/json","Content-Type":"application/json",...(options.headers||{})}});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok){const error=new Error(payload.error||`request_${response.status}`);error.payload=payload;error.status=response.status;throw error;}
     return payload;
   };
 
-  const setPublisherEnabled = (provider, enabled) => {
-    const form = forms.get(provider);
-    const button = form?.querySelector('button[type="submit"]');
-    if (button instanceof HTMLButtonElement) button.disabled = !enabled;
-  };
-
-  const renderConnection = (connection) => {
-    const provider = connection?.provider;
-    const card = cards.get(provider);
-    if (!(card instanceof HTMLElement)) return;
-    const state = card.querySelector("[data-provider-state]");
-    const account = card.querySelector("[data-provider-account]");
-    const connect = card.querySelector("[data-connect-provider]");
-    const disconnect = card.querySelector("[data-disconnect-provider]");
-    const candidateWrap = card.querySelector("[data-candidate-wrap]");
-    const candidateSelect = card.querySelector("[data-candidate-select]");
-
-    const stateValue = String(connection?.state || "ready_for_owner_auth");
-    if (state) state.textContent = stateValue.replaceAll("_", " ");
-    const accountLabel = connection?.username
-      ? `@${connection.username}`
-      : connection?.account_name || (stateValue === "connected_write" ? "Connected account" : "Not connected");
-    if (account) account.textContent = accountLabel;
-
-    if (connect instanceof HTMLButtonElement) {
-      connect.disabled = !connection?.configured;
-      connect.textContent = stateValue === "connected_write" ? "Reconnect" : connection?.configured ? "Connect" : "Needs provider app config";
-    }
-    if (disconnect instanceof HTMLElement) disconnect.classList.toggle("hidden", stateValue !== "connected_write");
-
-    const candidates = Array.isArray(connection?.candidates) ? connection.candidates : [];
-    if (candidateWrap instanceof HTMLElement) candidateWrap.classList.toggle("hidden", stateValue !== "selection_required" || candidates.length === 0);
-    if (candidateSelect instanceof HTMLSelectElement) {
-      candidateSelect.replaceChildren();
-      for (const candidate of candidates) {
-        const option = document.createElement("option");
-        option.value = String(candidate.index);
-        option.textContent = String(candidate.label || "Account");
-        candidateSelect.append(option);
-      }
-    }
-    setPublisherEnabled(provider, stateValue === "connected_write");
-  };
-
-  const load = async () => {
-    try {
-      const payload = await request(`/api/hermes-connect/social/connections?vertical=${encodeURIComponent(vertical)}`);
-      const businessName = root.querySelector("[data-business-name]");
-      const businessType = root.querySelector("[data-business-type]");
-      if (businessName) businessName.textContent = payload.business?.name || "Business";
-      if (businessType) businessType.textContent = String(payload.business?.vertical || vertical).replaceAll("_", " ");
-      for (const connection of payload.connections || []) renderConnection(connection);
-      showStatus("Social connections are ready. Connect only the accounts owned by this business.");
-    } catch (error) {
-      showStatus(error?.message === "authentication_required" ? "Sign in to the owner CRM first." : "Unable to load social connections.", true);
+  const updateTargets=()=>{
+    for(const input of root.querySelectorAll("[data-target]")){
+      if(!(input instanceof HTMLInputElement))continue;
+      const provider=input.dataset.targetProvider;
+      input.disabled=!connectionState[provider];
+      input.closest(".target-row")?.toggleAttribute("data-disabled",input.disabled);
     }
   };
 
-  for (const [provider, card] of cards) {
-    if (!(card instanceof HTMLElement)) continue;
-    card.querySelector("[data-connect-provider]")?.addEventListener("click", async () => {
-      try {
-        showStatus(`Preparing ${provider} authorization…`);
-        const payload = await request("/api/hermes-connect/social/oauth/start", {
-          method: "POST",
-          body: JSON.stringify({ provider, vertical }),
-        });
-        window.location.assign(payload.authorization_url);
-      } catch (error) {
-        showStatus(`${provider}: ${error.message}`, true);
-      }
-    });
+  const renderConnection=(connection)=>{
+    const provider=connection?.provider;
+    const card=cards.get(provider);
+    if(!(card instanceof HTMLElement))return;
+    const stateValue=String(connection?.state||"ready_for_owner_auth");
+    connectionState[provider]=stateValue==="connected_write";
+    const state=card.querySelector("[data-provider-state]");
+    const account=card.querySelector("[data-provider-account]");
+    if(state)state.textContent=stateValue.replaceAll("_"," ");
+    if(account)account.textContent=connection?.username?`@${connection.username}`:connection?.account_name||(connectionState[provider]?"Connected":"Not connected");
+    const connect=card.querySelector("[data-connect-provider]");
+    const disconnect=card.querySelector("[data-disconnect-provider]");
+    if(connect instanceof HTMLButtonElement){connect.disabled=!connection?.configured;connect.textContent=connectionState[provider]?"Reconnect":connection?.configured?"Connect":"Needs app config";}
+    if(disconnect instanceof HTMLElement)disconnect.classList.toggle("hidden",!connectionState[provider]);
+    const candidates=Array.isArray(connection?.candidates)?connection.candidates:[];
+    const wrap=card.querySelector("[data-candidate-wrap]");
+    const select=card.querySelector("[data-candidate-select]");
+    if(wrap instanceof HTMLElement)wrap.classList.toggle("hidden",stateValue!=="selection_required"||!candidates.length);
+    if(select instanceof HTMLSelectElement){select.replaceChildren();for(const candidate of candidates){const option=document.createElement("option");option.value=String(candidate.index);option.textContent=String(candidate.label||"Account");select.append(option);}}
+    updateTargets();
+  };
 
-    card.querySelector("[data-select-account]")?.addEventListener("click", async () => {
-      const select = card.querySelector("[data-candidate-select]");
-      if (!(select instanceof HTMLSelectElement)) return;
-      try {
-        const payload = await request("/api/hermes-connect/social/select", {
-          method: "POST",
-          body: JSON.stringify({ provider, vertical, candidate_index: Number(select.value) }),
-        });
-        for (const connection of payload.connections || []) renderConnection(connection);
-        showStatus(`${provider} account connected.`);
-      } catch (error) {
-        showStatus(`${provider}: ${error.message}`, true);
-      }
-    });
+  const loadConnections=async()=>{
+    try{
+      const payload=await request(`/api/hermes-connect/social/connections?vertical=${encodeURIComponent(vertical)}`);
+      const businessName=root.querySelector("[data-business-name]");
+      const businessType=root.querySelector("[data-business-type]");
+      if(businessName)businessName.textContent=payload.business?.name||"Business";
+      if(businessType)businessType.textContent=String(payload.business?.vertical||vertical).replaceAll("_"," ");
+      for(const connection of payload.connections||[])renderConnection(connection);
+      showStatus("Social Studio is ready. Connected channels can be reviewed and published from one screen.");
+    }catch(error){showStatus(error?.message==="authentication_required"?"Sign in to the owner CRM first.":"Unable to load social connections.",true);}
+  };
 
-    card.querySelector("[data-disconnect-provider]")?.addEventListener("click", async () => {
-      if (!window.confirm(`Disconnect the Hermes-side ${provider} authorization for this business?`)) return;
-      try {
-        const payload = await request("/api/hermes-connect/social/disconnect", {
-          method: "POST",
-          body: JSON.stringify({ provider, vertical, confirm: true }),
-        });
-        for (const connection of payload.connections || []) renderConnection(connection);
-        showStatus(`${provider} disconnected locally. Revoke provider access in Meta separately if required.`);
-      } catch (error) {
-        showStatus(`${provider}: ${error.message}`, true);
-      }
+  for(const [provider,card] of cards){
+    if(!(card instanceof HTMLElement))continue;
+    card.querySelector("[data-connect-provider]")?.addEventListener("click",async()=>{
+      try{showStatus(`Preparing ${provider} authorization…`);const payload=await request("/api/hermes-connect/social/oauth/start",{method:"POST",body:JSON.stringify({provider,vertical})});window.location.assign(payload.authorization_url);}
+      catch(error){showStatus(`${provider}: ${error.message}`,true);}
     });
-  }
-
-  for (const [provider, form] of forms) {
-    if (!(form instanceof HTMLFormElement)) continue;
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!window.confirm(`Publish this approved ${provider} content now?`)) return;
-      const result = form.querySelector("[data-publish-result]");
-      const button = form.querySelector('button[type="submit"]');
-      if (button instanceof HTMLButtonElement) button.disabled = true;
-      if (result) result.textContent = "Publishing…";
-      const idempotency = `hc-${provider}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const body = { provider, vertical, idempotency_key: idempotency };
-      if (provider === "instagram") {
-        body.caption = form.elements.namedItem("caption")?.value || "";
-        body.image_urls = String(form.elements.namedItem("image_urls")?.value || "").split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
-      } else {
-        body.text = form.elements.namedItem("text")?.value || "";
-      }
-      try {
-        const payload = await request("/api/hermes-connect/social/publish", { method: "POST", body: JSON.stringify(body) });
-        const publication = payload.publication || {};
-        if (result) {
-          result.replaceChildren();
-          const text = document.createElement("span");
-          text.textContent = publication.status || "Published";
-          result.append(text);
-          if (publication.permalink) {
-            const link = document.createElement("a");
-            link.href = publication.permalink;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = " Open post";
-            result.append(link);
-          }
-        }
-      } catch (error) {
-        if (result) result.textContent = error?.payload?.publication?.status || error.message || "Publish failed";
-      } finally {
-        if (button instanceof HTMLButtonElement) button.disabled = false;
-      }
+    card.querySelector("[data-select-account]")?.addEventListener("click",async()=>{
+      const select=card.querySelector("[data-candidate-select]");if(!(select instanceof HTMLSelectElement))return;
+      try{const payload=await request("/api/hermes-connect/social/select",{method:"POST",body:JSON.stringify({provider,vertical,candidate_index:Number(select.value)})});for(const connection of payload.connections||[])renderConnection(connection);showStatus(`${provider} account connected.`);void loadFeed();}
+      catch(error){showStatus(`${provider}: ${error.message}`,true);}
+    });
+    card.querySelector("[data-disconnect-provider]")?.addEventListener("click",async()=>{
+      if(!window.confirm(`Disconnect the Hermes-side ${provider} authorization for this business?`))return;
+      try{const payload=await request("/api/hermes-connect/social/disconnect",{method:"POST",body:JSON.stringify({provider,vertical,confirm:true})});for(const connection of payload.connections||[])renderConnection(connection);showStatus(`${provider} disconnected locally.`);void loadFeed();}
+      catch(error){showStatus(`${provider}: ${error.message}`,true);}
     });
   }
 
-  const params = new URLSearchParams(window.location.search);
-  const oauthResult = params.get("result");
-  if (oauthResult) {
-    showStatus(oauthResult === "connected" ? "Provider authorization completed." : `Provider authorization: ${oauthResult.replaceAll("_", " ")}`, oauthResult !== "connected" && oauthResult !== "selection_required");
-  }
-  void load();
+  const renderFeed=(provider,data)=>{
+    const panel=root.querySelector(`[data-feed-panel="${provider}"]`);if(!(panel instanceof HTMLElement))return;
+    const state=panel.querySelector("[data-feed-state]");const list=panel.querySelector("[data-feed-list]");
+    if(!(list instanceof HTMLElement))return;list.replaceChildren();
+    if(!data?.connected){if(state)state.textContent="Not connected";list.innerHTML='<p class="empty-feed">Connect this channel to load its recent content.</p>';return;}
+    if(data.error){if(state)state.textContent="Readback issue";list.innerHTML='<p class="empty-feed">Connected, but recent-content readback is unavailable.</p>';return;}
+    if(state)state.textContent="Live";
+    const items=(data.items||[]).filter((item)=>provider!=="threads"||(!item.is_reply&&!item.is_repost)).slice(0,4);
+    if(!items.length){list.innerHTML='<p class="empty-feed">No recent authored items returned.</p>';return;}
+    for(const item of items){
+      const article=document.createElement("article");article.className="feed-item";
+      if(item.media_url){const img=document.createElement("img");img.src=item.media_url;img.alt="";img.loading="lazy";article.append(img);}
+      const copy=document.createElement("div");const text=document.createElement("p");text.textContent=(item.text||item.media_type||"Post").slice(0,180);copy.append(text);
+      const meta=document.createElement("small");meta.textContent=item.timestamp?new Date(item.timestamp).toLocaleString():"";copy.append(meta);
+      if(item.permalink){const link=document.createElement("a");link.href=item.permalink;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open";copy.append(link);}
+      article.append(copy);list.append(article);
+    }
+  };
+
+  const loadFeed=async()=>{
+    try{const payload=await request(`/api/hermes-connect/social/feed?vertical=${encodeURIComponent(vertical)}`);for(const provider of ["instagram","facebook","threads"])renderFeed(provider,payload.feeds?.[provider]);}
+    catch{for(const provider of ["instagram","facebook","threads"])renderFeed(provider,{connected:false});}
+  };
+  root.querySelector("[data-refresh-feed]")?.addEventListener("click",()=>void loadFeed());
+
+  const composer=root.querySelector("[data-unified-composer]");
+  const master=composer?.elements?.namedItem?.("caption");
+  const threadsCopy=composer?.elements?.namedItem?.("threads_text");
+  const facebookCopy=composer?.elements?.namedItem?.("facebook_text");
+  let threadsTouched=false,facebookTouched=false;
+  threadsCopy?.addEventListener("input",()=>threadsTouched=true);facebookCopy?.addEventListener("input",()=>facebookTouched=true);
+  master?.addEventListener("input",()=>{
+    if(!threadsTouched&&threadsCopy)threadsCopy.value=String(master.value||"").slice(0,500);
+    if(!facebookTouched&&facebookCopy)facebookCopy.value=String(master.value||"");
+  });
+
+  composer?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const resultBox=root.querySelector("[data-bundle-results]");if(resultBox)resultBox.replaceChildren();
+    const selected=[...root.querySelectorAll("[data-target]:checked")].filter((node)=>node instanceof HTMLInputElement&&!node.disabled).map((node)=>node.value);
+    if(!selected.length){if(resultBox)resultBox.textContent="Select at least one connected destination.";return;}
+    const imageUrls=String(composer.elements.namedItem("image_urls")?.value||"").split(/\r?\n/).map((item)=>item.trim()).filter(Boolean);
+    if(selected.some((item)=>item.startsWith("instagram_"))&&!imageUrls.length){if(resultBox)resultBox.textContent="Instagram Feed/Story requires at least one public HTTPS image.";return;}
+    if(!window.confirm(`Publish this approved package to ${selected.length} selected destination(s)?`))return;
+    const base=`hc-studio-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+    const targetMap={
+      instagram_feed:{provider:"instagram",surface:"feed"},
+      instagram_story:{provider:"instagram",surface:"story"},
+      threads_feed:{provider:"threads",surface:"feed"},
+      facebook_feed:{provider:"facebook",surface:"feed"},
+    };
+    for(const target of selected){
+      const row=document.createElement("div");row.className="result-row";row.textContent=`${target.replaceAll("_"," ")} · publishing…`;resultBox?.append(row);
+      const cfg=targetMap[target];
+      const payload={provider:cfg.provider,surface:cfg.surface,vertical,idempotency_key:`${base}-${target}`,image_urls:imageUrls};
+      if(cfg.provider==="instagram")payload.caption=String(composer.elements.namedItem("caption")?.value||"");
+      else if(cfg.provider==="threads")payload.text=String(composer.elements.namedItem("threads_text")?.value||composer.elements.namedItem("caption")?.value||"");
+      else payload.text=String(composer.elements.namedItem("facebook_text")?.value||composer.elements.namedItem("caption")?.value||"");
+      try{
+        const response=await request("/api/hermes-connect/social/publish",{method:"POST",body:JSON.stringify(payload)});
+        row.textContent=`${target.replaceAll("_"," ")} · ${response.publication?.status||"accepted"}`;
+        if(response.publication?.permalink){const link=document.createElement("a");link.href=response.publication.permalink;link.target="_blank";link.rel="noopener noreferrer";link.textContent=" Open";row.append(link);}
+      }catch(error){row.textContent=`${target.replaceAll("_"," ")} · ${error?.payload?.publication?.status||error.message||"failed"}`;row.setAttribute("data-error","true");}
+    }
+    void loadFeed();
+  });
+
+  const aiForm=root.querySelector("[data-ai-intake]");
+  aiForm?.addEventListener("submit",async(event)=>{
+    event.preventDefault();const result=root.querySelector("[data-ai-result]");if(result)result.textContent="Registering source…";
+    try{
+      const payload=await request("/api/hermes-connect/social/creative-intake",{method:"POST",body:JSON.stringify({
+        vertical,source_url:aiForm.elements.namedItem("source_url")?.value||"",brief:aiForm.elements.namedItem("brief")?.value||"",
+        language:aiForm.elements.namedItem("language")?.value||"en",market:aiForm.elements.namedItem("market")?.value||"",
+      })});
+      if(result)result.textContent=`Source registered · ${payload.intake?.status||"ready"} · next: Drive authorization`;
+      const aiState=root.querySelector("[data-ai-state]");if(aiState)aiState.textContent="Source registered · Drive authorization required";
+    }catch(error){if(result)result.textContent=error.message||"Unable to register source.";}
+  });
+
+  const params=new URLSearchParams(window.location.search);const oauthResult=params.get("result");
+  if(oauthResult)showStatus(oauthResult==="connected"?"Provider authorization completed.":`Provider authorization: ${oauthResult.replaceAll("_"," ")}`,oauthResult!=="connected"&&oauthResult!=="selection_required");
+  void loadConnections();void loadFeed();
 })();
 </script>
 
 <style>
-  .business-social-page{min-height:100vh;background:#f4f6f8;color:#172033;padding:7.5rem 0 4rem}
-  .social-shell{width:min(1180px,calc(100% - 32px));margin:0 auto}
-  .back-link{display:inline-flex;margin-bottom:1.2rem;color:#526174;text-decoration:none;font-weight:760}
-  .social-hero{display:grid;grid-template-columns:1.5fr .7fr;gap:1.5rem;align-items:end;padding:2rem;border:1px solid #e1e6ed;border-radius:22px;background:#fff}
-  .eyebrow{margin:0 0 .45rem;color:#69768a;font-size:.76rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
-  .social-hero h1{margin:0;font-size:clamp(2.4rem,6vw,5rem);line-height:.95}
-  .lead{max-width:760px;margin:1rem 0 0;color:#617083;line-height:1.65}
-  .truth-card{display:grid;gap:.35rem;padding:1.2rem;border-radius:16px;background:#172033;color:#fff}.truth-card span,.truth-card small{color:#c7d0dd}
-  .notice{margin:1rem 0;padding:.85rem 1rem;border:1px solid #cfe4d5;border-radius:12px;background:#f0f9f3;color:#285f3b}.notice[data-error]{border-color:#f0cbd1;background:#fff3f4;color:#8d2f40}
-  .provider-grid,.publisher-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
-  .provider-card,.publisher-card,.safety-note{padding:1.2rem;border:1px solid #e1e6ed;border-radius:16px;background:#fff}
-  .provider-head{display:flex;justify-content:space-between;gap:1rem}.provider-head h2,.publisher-card h3{margin:.2rem 0 0}.provider-head small,.publisher-card small{color:#7a8698;font-weight:800}
-  .state{padding:.35rem .55rem;border-radius:999px;background:#eef2f7;color:#556274;font-size:.72rem;font-weight:850}
-  .actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
-  button{border:1px solid #172033;border-radius:10px;background:#172033;color:#fff;padding:.72rem .9rem;font:inherit;font-weight:800;cursor:pointer}button.secondary{background:#fff;color:#172033;border-color:#d5dce5}button:disabled{opacity:.45;cursor:not-allowed}
-  .hidden{display:none!important}.candidate-wrap{display:grid;gap:.65rem;padding:.8rem;margin-top:.8rem;border-radius:12px;background:#f6f8fb}
-  label{display:grid;gap:.4rem;font-weight:760}label span{font-size:.75rem;color:#7b8798;font-weight:650}
-  select,textarea{width:100%;box-sizing:border-box;border:1px solid #ccd5e0;border-radius:10px;background:#fff;padding:.72rem;font:inherit;color:#172033}
-  .publish-section{margin-top:2rem}.section-heading{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:1rem}.section-heading h2{margin:.2rem 0 0;font-size:2rem}.section-heading>p{max-width:620px;color:#667487;line-height:1.55}
-  .publisher-card{display:grid;gap:1rem}.publisher-card p{min-height:1.25rem;margin:0;color:#536276;font-size:.84rem}.publisher-card p a{color:#1268c4}
-  .safety-note{margin-top:1rem}.safety-note p{margin:.35rem 0 0;color:#667487;line-height:1.55}
-  @media(max-width:900px){.social-hero,.provider-grid,.publisher-grid{grid-template-columns:1fr}.section-heading{display:grid;gap:.4rem}.business-social-page{padding-top:6.5rem}}
+.business-social-page{min-height:100vh;background:#f4f6f8;color:#172033;padding:5.25rem 0 3rem}
+.social-shell{width:min(1240px,calc(100% - 28px));margin:0 auto}
+.back-link{display:inline-flex;margin-bottom:.8rem;color:#59687a;text-decoration:none;font-size:.82rem;font-weight:760}
+.social-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.45fr);gap:1rem;align-items:center;padding:1.15rem 1.25rem;border:1px solid #e1e6ed;border-radius:16px;background:#fff}
+.eyebrow{margin:0 0 .28rem;color:#647287;font-size:.67rem;font-weight:850;text-transform:uppercase;letter-spacing:.09em}
+.social-hero h1{margin:0;font-size:clamp(2rem,4vw,3.15rem);line-height:1;letter-spacing:-.035em}
+.lead{max-width:780px;margin:.65rem 0 0;color:#617083;font-size:.9rem;line-height:1.55}
+.truth-card{display:grid;gap:.15rem;padding:.85rem .95rem;border-radius:12px;background:#172033;color:#fff}.truth-card span,.truth-card small{color:#c8d0dc;font-size:.72rem}.truth-card strong{font-size:.92rem}
+.notice{margin:.7rem 0;padding:.65rem .8rem;border:1px solid #cfe4d5;border-radius:10px;background:#f0f9f3;color:#285f3b;font-size:.8rem}.notice[data-error]{border-color:#f0cbd1;background:#fff3f4;color:#8d2f40}
+.connection-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}
+.connection-card{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:.55rem;align-items:center;padding:.75rem;border:1px solid #e1e6ed;border-radius:13px;background:#fff}
+.network-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#f0f3f7;color:#172033;font-size:.78rem;font-weight:900}.threads-mark{font-size:1rem}
+.connection-copy{display:grid;gap:.12rem;min-width:0}.connection-copy strong{font-size:.84rem}.connection-copy span{overflow:hidden;color:#718094;font-size:.7rem;text-overflow:ellipsis;white-space:nowrap}
+.state{padding:.28rem .45rem;border-radius:999px;background:#eef2f7;color:#59677a;font-size:.62rem;font-weight:850;white-space:nowrap}
+.connection-actions,.candidate-wrap{grid-column:2/-1;display:flex;gap:.4rem;align-items:center}.candidate-wrap select{min-width:0;flex:1}.hidden{display:none!important}
+button,.secondary{min-height:34px;padding:.45rem .65rem;border:1px solid #172033;border-radius:8px;background:#172033;color:#fff;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer}.secondary{border-color:#d5dce5;background:#fff;color:#172033}.compact{min-height:32px}button:disabled{opacity:.4;cursor:not-allowed}
+.studio-section{margin-top:.8rem;padding:1rem;border:1px solid #e1e6ed;border-radius:16px;background:#fff}.section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:.8rem}.section-heading h2{margin:.1rem 0 0;font-size:1.25rem}.section-heading>p{max-width:620px;margin:0;color:#68768a;font-size:.78rem;line-height:1.5}
+.channel-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}.channel-panel{min-width:0;border:1px solid #e4e8ee;border-radius:12px;background:#fafbfd;overflow:hidden}.panel-title{display:flex;align-items:center;justify-content:space-between;padding:.65rem .75rem;border-bottom:1px solid #e8ebf0}.panel-title strong{font-size:.82rem}.panel-title span{color:#788597;font-size:.65rem;font-weight:800}
+.feed-list{display:grid;gap:1px}.feed-item{display:grid;grid-template-columns:54px minmax(0,1fr);gap:.6rem;padding:.55rem .65rem;background:#fff}.feed-item img{width:54px;height:54px;border-radius:8px;object-fit:cover}.feed-item p{margin:0;color:#344154;font-size:.7rem;line-height:1.35}.feed-item small{display:block;margin-top:.2rem;color:#9099a7;font-size:.6rem}.feed-item a{display:inline-block;margin-top:.2rem;color:#1268c4;font-size:.65rem;font-weight:800;text-decoration:none}.empty-feed{margin:0;padding:1rem;color:#7c899a;font-size:.72rem}
+.unified-composer{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.55fr);gap:.8rem}.composer-main{display:grid;gap:.7rem}.copy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}
+label{display:grid;gap:.3rem;color:#4e5d71;font-size:.72rem;font-weight:800}label span{color:#8290a1;font-size:.64rem;font-weight:650}input,select,textarea{width:100%;box-sizing:border-box;border:1px solid #ccd5e0;border-radius:9px;background:#fff;padding:.58rem .65rem;color:#172033;font:inherit;font-size:.78rem;outline:none}textarea{resize:vertical}input:focus,select:focus,textarea:focus{border-color:#5f8fc6;box-shadow:0 0 0 3px rgba(95,143,198,.1)}
+.distribution-card{padding:.8rem;border:1px solid #dfe5ed;border-radius:12px;background:#f8fafc}.target-row{display:flex;align-items:flex-start;gap:.55rem;padding:.55rem .2rem;border-bottom:1px solid #e8ecf1}.target-row input{width:16px;min-height:16px;margin-top:.15rem}.target-row span{display:grid;gap:.08rem}.target-row strong{color:#293649;font-size:.75rem}.target-row small{color:#7b8798;font-size:.64rem}.target-row[data-disabled]{opacity:.45}.platform-boundary{display:grid;gap:.18rem;margin:.65rem 0;padding:.6rem;border-radius:9px;background:#fff5df;color:#745019}.platform-boundary strong{font-size:.7rem}.platform-boundary span{font-size:.64rem;line-height:1.4}.publish-button{width:100%;min-height:40px}.publish-results{display:grid;gap:.25rem;margin-top:.55rem}.result-row{padding:.4rem .5rem;border-radius:7px;background:#eef7f1;color:#315f40;font-size:.66rem}.result-row[data-error]{background:#fff0f1;color:#8b3443}.result-row a{color:inherit;font-weight:850}
+.ai-section{background:linear-gradient(135deg,#fff,#f7f5ff)}.ai-state{padding:.35rem .55rem;border-radius:999px;background:#f0ecff;color:#5b42b5;font-size:.66rem;font-weight:850}.ai-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:.7rem}.ai-intake-card{display:grid;gap:.65rem}.ai-intake-card p{margin:0;color:#68768a;font-size:.68rem}.ai-flow-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;padding:.65rem;border:1px solid #e3deef;border-radius:11px;background:#fff}.ai-flow-card>div{display:grid;gap:.12rem;padding:.55rem;border-radius:9px;background:#faf9fd}.ai-flow-card span{color:#7d67c6;font-size:.62rem;font-weight:900}.ai-flow-card strong{font-size:.72rem}.ai-flow-card small{color:#7d8796;font-size:.62rem;line-height:1.35}.ai-flow-card>p{grid-column:1/-1;margin:.15rem 0 0;color:#687387;font-size:.68rem;line-height:1.45}
+.safety-note{margin-top:.8rem;padding:.75rem .85rem;border:1px solid #e1e6ed;border-radius:12px;background:#fff}.safety-note strong{font-size:.75rem}.safety-note p{margin:.25rem 0 0;color:#68768a;font-size:.68rem;line-height:1.45}
+@media(max-width:980px){.social-hero,.unified-composer,.ai-grid{grid-template-columns:1fr}.connection-strip,.channel-overview{grid-template-columns:1fr}.section-heading{align-items:flex-start;flex-direction:column}.copy-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.business-social-page{padding-top:4.7rem}.social-shell{width:min(100% - 14px,1240px)}.social-hero{padding:.9rem}.studio-section{padding:.75rem}.ai-flow-card{grid-template-columns:1fr}.ai-flow-card>p{grid-column:auto}}
 </style>
