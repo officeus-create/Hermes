@@ -10,7 +10,7 @@ const routes = [
 test("Hermes homepage is one connected four-direction operating scene", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /One system\. Four operating directions\./ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /One Hermes system\. Four operating directions\./ })).toBeVisible();
   await expect(page.locator(".home-master-stage .home-master-route")).toHaveCount(4);
   await expect(page.locator(".home-master-core")).toHaveCount(1);
   await expect(page.locator(".home-role-router")).toHaveCount(0);
