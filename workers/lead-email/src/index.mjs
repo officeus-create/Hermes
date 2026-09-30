@@ -326,6 +326,41 @@ const sendSafely = async (env, message, transport = sendMessage) => {
   return { ok: false, attempts: lastAttempt, mapped: lastMapped };
 };
 
+// Catalog claims and retries belong to the upstream D1 receipt ledger. Never
+// retry here: a failed response can follow an already accepted provider send.
+const catalogRecipientFingerprint = async (deliveryKey, recipientIdentity, recipientEmail) => {
+  const digest = await crypto.subtle.digest("SHA-256", encoder.encode(`${deliveryKey}:${recipientIdentity}:${recipientEmail}`));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+};
+
+const sendCatalogOnce = async (env, input, message, deliveryKey, transport, configurationMissing) => {
+  const recipientIdentity = deliveryKey === "catalog:owner" ? String(input.recipient_identity || "") : "";
+  const recipientFingerprint = isEmail(message.to)
+    ? await catalogRecipientFingerprint(deliveryKey, recipientIdentity, message.to) : null;
+  const receipt = (status, deliveryStatus, retryable, providerMessageId, error) => json(status, {
+    ok: deliveryStatus === "accepted",
+    request_id: input.request_id,
+    delivery_key: deliveryKey,
+    delivery_status: deliveryStatus,
+    retryable,
+    recipient_fingerprint: recipientFingerprint,
+    ...(providerMessageId ? { provider_message_id: providerMessageId } : {}),
+    ...(error ? { error } : {}),
+  });
+  if (recipientFingerprint === null) return receipt(503, "failed", true, undefined, "service_not_configured");
+  if (input.expected_recipient_fingerprint !== undefined && input.expected_recipient_fingerprint !== recipientFingerprint) return receipt(409, "failed", false);
+  if (configurationMissing) return receipt(503, "failed", true);
+  try {
+    const result = await transport(env, { ...message, deliveryKey });
+    return receipt(202, "accepted", false, cleanHeader(result?.messageId, 160));
+  } catch (error) {
+    // This code is emitted only for an explicit Gmail send 429 rejection.
+    // Generic status/message inference cannot prove that a send was rejected.
+    if (Number(error?.status) === 429 && error?.code === "E_PROVIDER_RATE") return receipt(429, "failed", true);
+    return receipt(503, "uncertain", false);
+  }
+};
+
 const carHaulingTelegramClock = (now = new Date()) => {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: CAR_HAULING_TELEGRAM_TIME_ZONE,
@@ -742,11 +777,10 @@ const worker = {
 
     const isAccountPath = url.pathname === "/v1/send-account";
     const accountTransportMode = clean(env.ACCOUNT_EMAIL_TRANSPORT, 40).toLowerCase() || "cloudflare";
-    if (isAccountPath && !["cloudflare", "gmail_api"].includes(accountTransportMode)) {
-      return json(503, { ok: false, error: "service_not_configured" });
-    }
     const accountUsesGmail = isAccountPath && accountTransportMode === "gmail_api";
-    if (!env.LEAD_SERVICE_TOKEN || !env.SALES_SENDER || (!accountUsesGmail && !env.EMAIL)) {
+    const serviceConfigurationMissing = !env.SALES_SENDER || (!accountUsesGmail && !env.EMAIL)
+      || (isAccountPath && !["cloudflare", "gmail_api"].includes(accountTransportMode));
+    if (!env.LEAD_SERVICE_TOKEN) {
       return json(503, { ok: false, error: "service_not_configured" });
     }
 
@@ -778,10 +812,34 @@ const worker = {
     const replyTo = cleanHeader(input?.reply_to, 320).toLowerCase();
     const subjectAllowed = isAccountPath ? isAccountSubject(subject) : isAllowedSubject(subject);
 
-    if (!isRequestId(requestId) || !subjectAllowed || text.length < 80) {
+    const deliveryKey = input?.delivery_key;
+    const isCatalogDelivery = deliveryKey === "catalog:internal" || deliveryKey === "catalog:owner";
+    if (deliveryKey !== undefined && (
+      !isCatalogDelivery
+      || (deliveryKey === "catalog:internal" && (url.pathname !== "/v1/send" || subject !== "[HERMES INQUIRY] [CATALOG]"))
+      || (deliveryKey === "catalog:owner" && (!isAccountPath || subject !== "[HERMES CATALOG] [CUSTOMER INQUIRY]"))
+    )) return json(400, { ok: false, error: "invalid_catalog_delivery" });
+    if (!isCatalogDelivery && serviceConfigurationMissing) return json(503, { ok: false, error: "service_not_configured" });
+
+    if (!isRequestId(requestId) || (isCatalogDelivery && input.request_id !== requestId) || !subjectAllowed || text.length < 80) {
       return json(400, { ok: false, error: "invalid_message" });
     }
     if (replyTo && !isEmail(replyTo)) return json(400, { ok: false, error: "invalid_reply_to" });
+
+    if (isCatalogDelivery) {
+      const recipientEmail = cleanHeader(deliveryKey === "catalog:owner" ? input.recipient_email : env.SALES_DESTINATION, 320).toLowerCase();
+      if ((deliveryKey === "catalog:owner" && (!isEmail(recipientEmail) || replyTo))
+          || (input.recipient_identity !== undefined && typeof input.recipient_identity !== "string")) {
+        return json(400, { ok: false, error: "invalid_catalog_delivery" });
+      }
+      const gmail = gmailConfig(env);
+      const configurationMissing = serviceConfigurationMissing || !isEmail(cleanHeader(env.SALES_SENDER, 320))
+        || !isEmail(recipientEmail) || (accountUsesGmail && (!gmail.clientId || !gmail.clientSecret || !gmail.refreshToken));
+      return sendCatalogOnce(env, input, {
+        to: recipientEmail, from: cleanHeader(env.SALES_SENDER, 320), subject, text,
+        replyTo, attachments: [], requestId,
+      }, deliveryKey, accountUsesGmail ? sendGmailApiMessage : sendMessage, configurationMissing);
+    }
 
     if (isAccountPath) {
       const recipientEmail = cleanHeader(input?.recipient_email, 320).toLowerCase();
