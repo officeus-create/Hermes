@@ -338,3 +338,13 @@ WORKING_APPROACH: Preserve the full native pointer flow with explicit visible/en
 STATUS: bounded fixes implemented; final exact-head verification required.
 EVIDENCE: 3097d25d Website checks passed 1,741 browser cases/12 existing skips; quality audit36744479204 passed advisory workflow, ZAP0 failures/13 warning classes/54 passes; Home Pa11y count36 versus87 on original handed-off PR. Audit explicitly identified new contact div aria-label without permitted group role and inherited pale-green status text on the new light footer.
 WORKING_APPROACH: Add role=group to the already-named native contact actions; scope darker green status foreground to Home footer only. Keep shared service themes, account/product truth and other-route accessibility remediation untouched. No WCAG-clean claim or audit gate changes.
+
+
+## 2026-09-30 — Home raster resolution ceiling / bounded motion preview
+STATUS: Small preview implemented, browser/visual exact-head verification pending.
+PROBLEM: Owner likes live layout but requests clearer first-page imagery and subtle truck/leaf motion.
+ROOT_CAUSE:1111x1416 source gives267px per portal, below desktop/Retina display demand; compression is a secondary limit.
+FAILED_APPROACH: No repeated generation, fake resolution upscale, heavy autoplay or browser-launch bypass attempted.
+WORKING_APPROACH: Source-preserving quality93 WebP283474B; reuse masked actual truck/leaves, one6s compositor animation paused offscreen/hidden and canceled for reduced motion.
+EVIDENCE: Local metadata/source pixels viewed; build388 pages and full static suite pass. Browser results and screenshot/preview fidelity pending exact-head CI.
+LESSON/REUSE_RULE: Check native source dimensions before attributing blur to CSS or compression. Bound decorative animation time, visibility, motion preferences and transfer budget independently.

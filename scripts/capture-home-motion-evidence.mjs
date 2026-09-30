@@ -1,0 +1,35 @@
+import { chromium } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+
+const directory='artifacts/route-screenshots/home-motion';
+await mkdir(directory,{recursive:true});
+const browser=await chromium.launch();
+const results=[];
+try {
+  for(const width of [1440,390]) {
+    const context=await browser.newContext({viewport:{width,height:width===1440?1200:844},reducedMotion:'no-preference'});
+    const page=await context.newPage();
+    await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+    await page.evaluate(()=>document.fonts.ready);
+    await page.waitForFunction(()=>[...document.querySelectorAll('[data-home-motion]')].every(node=>node.dataset.motionState==='running'));
+    await page.evaluate(()=>{
+      for(const layer of document.querySelectorAll('[data-home-motion]')) {
+        const animation=layer.querySelector('g').getAnimations()[0];
+        animation.pause();
+        animation.currentTime=3000;
+        layer.dataset.motionState='paused';
+      }
+    });
+    await page.screenshot({path:`${directory}/home-${width}-motion-midpoint.png`,fullPage:false});
+    await page.evaluate(()=>document.querySelectorAll('[data-home-motion] g').forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
+    await page.waitForFunction(()=>[...document.querySelectorAll('[data-home-motion]')].every(node=>node.dataset.motionState==='finished'));
+    await page.screenshot({path:`${directory}/home-${width}-settled.png`,fullPage:false});
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.screenshot({path:`${directory}/home-${width}-reduced.png`,fullPage:false});
+    const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,layers:[...document.querySelectorAll('[data-home-motion]')].map(node=>({kind:node.dataset.homeMotion,state:node.dataset.motionState,display:getComputedStyle(node).display,animations:node.querySelector('g').getAnimations().length}))}));
+    if(geometry.scrollWidth>width||geometry.layers.some(layer=>layer.display!=='none'||layer.animations!==0)) throw new Error(`Home motion geometry/reduced-motion failed at ${width}`);
+    results.push(geometry);
+    await context.close();
+  }
+  await writeFile(`${directory}/evidence.json`,JSON.stringify({sha:process.env.GITHUB_SHA,results},null,2)+'\n');
+} finally { await browser.close(); }

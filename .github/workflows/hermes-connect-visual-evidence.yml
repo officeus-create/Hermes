@@ -3,6 +3,10 @@ name: Hermes Connect visual evidence
 on:
   pull_request:
     paths:
+      - 'src/components/HomeMasterScene.astro'
+      - 'src/lib/home-portal-motion.ts'
+      - 'public/images/home-approved-20260930.webp'
+      - 'scripts/capture-home-motion-evidence.mjs'
       - 'public/demos/hermes-connect/**'
       - 'public/design-owner-polish.css'
       - 'public/design-owner-polish.js'
@@ -93,6 +97,7 @@ jobs:
 
           curl -fsS http://127.0.0.1:4321/ > /dev/null
           GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+          GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-home-motion-evidence.mjs
           node scripts/validate-route-screenshot-layout.mjs
 
       - name: Upload visual evidence
@@ -100,5 +105,13 @@ jobs:
         with:
           name: hermes-connect-visual-evidence-${{ github.event.pull_request.head.sha }}
           path: artifacts/route-screenshots
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload small Home motion evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-motion-evidence-${{ github.event.pull_request.head.sha }}
+          path: artifacts/route-screenshots/home-motion
           if-no-files-found: error
           retention-days: 14

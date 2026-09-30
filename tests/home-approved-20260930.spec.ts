@@ -125,3 +125,46 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  expect(artwork).toHaveLength(1);
 });
+
+test('Home truck and leaves run once, pause offscreen and settle to the approved still',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:1200});
+ await page.goto('/');
+ const layers=page.locator('[data-home-motion]');
+ await expect(layers).toHaveCount(2);
+ await page.locator('#paths').scrollIntoViewIfNeeded();
+ await expect(layers.first()).toHaveAttribute('data-motion-state','running');
+ const timing=await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].effect!.getTiming());
+ expect(timing.duration).toBe(6000);
+ expect(timing.iterations).toBe(1);
+ await page.locator('footer').scrollIntoViewIfNeeded();
+ await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
+ const time=await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].currentTime);
+ await page.waitForTimeout(180);
+ expect(await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].currentTime)).toBe(time);
+ await page.locator('#paths').scrollIntoViewIfNeeded();
+ await expect(layers.first()).toHaveAttribute('data-motion-state','finished',{timeout:8000});
+ await expect(layers.nth(1)).toHaveAttribute('data-motion-state','finished');
+ await expect(layers.first()).toHaveCSS('opacity','0');
+ await page.locator('footer').scrollIntoViewIfNeeded();
+ await page.locator('#paths').scrollIntoViewIfNeeded();
+ await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
+});
+
+test('Home motion responds to reduced-motion changes and stays decorative',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/');
+ const layers=page.locator('[data-home-motion]');
+ await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
+ for(const layer of await layers.all()) {
+  await expect(layer).toHaveAttribute('aria-hidden','true');
+  await expect(layer).toHaveCSS('display','none');
+  expect(await layer.evaluate(node=>node.querySelector('g')!.getAnimations().length)).toBe(0);
+ }
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.locator('#paths').scrollIntoViewIfNeeded();
+ await expect(layers.first()).toHaveAttribute('data-motion-state','running');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
+ expect(await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations().length)).toBe(0);
+});
