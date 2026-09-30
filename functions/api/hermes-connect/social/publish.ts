@@ -13,6 +13,12 @@ import {
   resolveOwnedSocialBusiness,
   validBusinessSocialIdempotencyKey,
 } from "../../_lib/business-social.mjs";
+import {
+  publishInstagramSingleImage,
+  publishInstagramStoryImage,
+  publishThreadsCarousel,
+  publishThreadsImage,
+} from "../../_lib/business-social-studio.mjs";
 
 type Env = {
   DB?: any;
