@@ -391,8 +391,180 @@ Demo/sample states must be labeled.
 
 A beautiful interface is not evidence that the underlying capability exists.
 
+
+## 19. Public capability showroom
+
+Not every page receives the same visual budget.
+
+Use page intent before choosing media or motion:
+
+- **Identity / Home** — establish one Hermes world and route the visitor; one ecosystem scene, low technical detail.
+- **Service / sales** — explain offer, fit, proof and next action; a signature scene is justified only when it proves the service.
+- **Capability showroom** — sanitized interactive proof is primary material. Web Design, Website Development and selected Technology pages belong here.
+- **Product** — real UI/workflow truth first; effects remain subordinate to usability.
+- **Editorial / Insights / News** — reading, evidence, source context, internal links and discoverability first; motion stays minimal.
+- **Utility / auth / contact / legal** — clarity, trust, accessibility and speed; no spectacle.
+
+Capability-showroom material may include sanitized representations of Website Factory intake/brief logic, responsive component behavior, build/test/visual-QA states, SEO/GEO/entity/internal-link architecture, social distribution/connectors and CRM/lead routing.
+
+Private owner data, credentials, customer records and private Website Factory drafts never become public proof.
+
+## 20. Evidence-state grammar
+
+Any visual that could be mistaken for real operational state must expose an understandable maturity label:
+
+- **LIVE** — current authorized production behavior verified by fresh evidence.
+- **VERIFIED** — capability exists and is proven, while the visual is a sanitized representation rather than a live feed.
+- **DEMO** — working sample using synthetic or sanitized data.
+- **CONCEPT** — design/roadmap explanation, not a current capability.
+
+Animation, pulses, timestamps, counters, maps, social metrics or AI-processing visuals must never imply a stronger maturity state than the evidence supports.
+
+## 21. Connected content-to-client loop
+
+The website, news/Insights layer, social distribution and CRM are one system:
+
+`source fact / result / release → canonical Website/Insights owner → structured media + schema/internal links → channel-native Threads/Instagram/Facebook/Telegram derivative → attributed return path → site action → receiver/CRM → human qualification → opportunity/revenue evidence`
+
+Design implications:
+
+- searchable depth belongs to the canonical website owner;
+- social is adaptation/distribution, not a competing archive;
+- each distributable page should have reusable Open Graph/social assets where useful;
+- attribution/UTM must survive the return path;
+- current authorized connector behavior may become Technology/Marketing proof;
+- thin indexable “news” pages must not be generated merely to create activity.
+
+## 22. Adaptive richness and design measurement
+
+A signature scene has quality tiers:
+
+1. **Desktop rich** — fullest approved interactive/cinematic treatment.
+2. **Tablet/mobile** — simplified composition preserving meaning and CTA priority.
+3. **Reduced-motion / low-power** — static or low-motion equivalent.
+4. **Crawler / no-JS** — complete semantic business truth and internal links.
+
+Where privacy rules permit, existing approved analytics/PostHog may measure meaningful interaction such as scene reached, proof opened, demo engaged, CTA selected and disclosure expanded.
+
+Measurement helps decide whether a treatment improves comprehension or conversion. It does not replace brand judgment.
+
+Approved generated media should be stored under Hermes control where licensing permits. No public route hot-depends on a generation provider.
+
+
 ## Canonical implementation source
 
 Semantic tokens live in `src/styles/hermes-brand-system.css`.
 
 Legacy variables remain compatibility inputs and must be migrated incrementally rather than globally redefined in one risky change.
+
+
+## 23. Proof Replay — preferred public technology proof
+
+A public capability showroom should normally use a deterministic sanitized replay of a real Hermes workflow instead of connecting the public page directly to private production control planes.
+
+Preferred choreography:
+
+`INPUT → TRANSFORMATION → PROOF → BUSINESS OUTCOME → NEXT ACTION`
+
+Rules:
+- use real workflow logic/state structure with synthetic or sanitized data;
+- label the presentation LIVE / VERIFIED / DEMO / CONCEPT correctly;
+- never expose credentials, private drafts, customer identifiers or owner-only control surfaces;
+- preserve a useful static HTML/SVG version when motion/runtime is unavailable;
+- prefer this pattern for Website Factory, CI/QA, social distribution, CRM routing, Logistics route intelligence and similar system proof.
+
+## 24. Semantic Twin — rich visuals never own business truth
+
+Every map, canvas, animation, video, system graph or cinematic scene must have an ordinary semantic HTML twin carrying the same essential business meaning.
+
+The semantic twin includes, where relevant:
+- heading/context and entities;
+- service/process facts and locations;
+- evidence/maturity state;
+- meaningful internal links;
+- the next action / CTA.
+
+The rich scene may compress and animate this relationship, but it may never be the only carrier of meaning. This is the designed crawler/no-JS/reduced-motion state, not an afterthought.
+
+## 25. Capability-showroom choreography by commercial surface
+
+**Web Design**  
+`BUSINESS DNA / SOURCES → VISUAL DIRECTION → TOKENS / COMPONENTS → RESPONSIVE BEHAVIOR → ACCESSIBILITY / QA → APPROVED DESIGN SYSTEM`
+
+**Website Development**  
+`APPROVED DESIGN → SEMANTIC BUILD → COMPONENTS → TESTS → PERFORMANCE / SEO → DEPLOYMENT EVIDENCE → MEASUREMENT`
+
+**SEO / GEO / AI visibility**  
+`INTENT / ENTITY / LOCATION → OWNER PAGE / INFORMATION ARCHITECTURE → SCHEMA / INTERNAL LINKS → CRAWL / INDEX EVIDENCE → VISIBILITY → ATTRIBUTED ACTION`
+
+Do not represent rankings, traffic or AI visibility as guaranteed outcomes.
+
+**CRM / Technology**  
+`SOURCE / LEAD / EVENT → NORMALIZATION → WORKFLOW / AUTOMATION → HUMAN DECISION → STATE / RECEIPT → BUSINESS FOLLOW-UP`
+
+**Marketing**  
+`SOURCE CONTENT → WEBSITE OWNER → CHANNEL ADAPTATION → DISTRIBUTION → ATTRIBUTED RETURN → QUALIFICATION`
+
+Web Design and Website Development must therefore surprise in different ways: design demonstrates transformation into a coherent responsive visual system; development demonstrates transformation into semantic production code with QA, performance, discoverability, deployment and measurement.
+
+## 26. Reusable Scene Kit
+
+Build new signature experiences from reusable layers rather than page-local mini design systems:
+
+1. semantic content layer;
+2. shared Hermes shell/tokens/components;
+3. direction engine: Spatial / Attention / Digital / Human;
+4. one page-specific signature scene;
+5. evidence-state/status layer;
+6. analytics hooks;
+7. mobile / reduced-motion / static fallbacks.
+
+New ideas enter as bounded scene modules. They do not redefine the header, typography, button family, analytics owner or brand foundation.
+
+## 27. Experiment lifecycle — inspiration cannot silently replace CURRENT
+
+Every new reference, visual idea or tool passes through:
+
+`INBOX / REFERENCE → PROTOTYPE → SELECTED → IMPLEMENTED → LIVE_VERIFIED → MEASURED → RETAIN / ITERATE / RETIRE`
+
+Only SELECTED or later may influence production. A newer-looking reference does not supersede accepted work automatically. Prototype/builder output remains non-canonical and noindex unless explicitly promoted through the normal implementation/verification path.
+
+## 28. Native-first runtime and open-source adoption
+
+The current website runtime remains intentionally small: Astro + Tailwind + browser-native capabilities. The repository already uses native cross-document View Transitions.
+
+Default order:
+1. existing Astro/CSS/SVG/browser capability;
+2. Web Animations / native View Transitions;
+3. the smallest maintained runtime that solves a selected signature scene materially better;
+4. heavier 3D/data runtimes only for isolated proven needs.
+
+Current distinction: HyperFrames/GSAP is verified inside Hermes Video Factory, but it is **not** a current main-website runtime dependency. Do not promote it into public site runtime without a separate bundle, license, performance and fallback decision.
+
+Current open-source candidates, to be reverified at adoption time:
+- MapLibre GL JS — permissive BSD-style license; real geospatial scenes;
+- deck.gl — MIT; layered geospatial/data visualization;
+- Motion — MIT; optional motion runtime when native primitives are insufficient;
+- Rive WASM runtime — MIT; stateful vector interaction candidate;
+- dotLottie Web — MIT; bounded microanimation;
+- Three.js — MIT; isolated 3D only;
+- ComfyUI — GPL-3.0 application; local asset-production workflow, not website runtime;
+- LTX-Video repository code — Apache-2.0; model/weights/output terms remain a separate commercial-use check.
+
+Repository license does not automatically license model weights, fonts, source media or generated outputs.
+
+## 29. Evidence freshness, provenance and flywheel
+
+LIVE and VERIFIED are freshness-sensitive. When current authorization or evidence disappears, downgrade the public state to VERIFIED / DEMO / CONCEPT instead of visually implying stale live behavior.
+
+Approved production media should retain provenance sufficient to recover:
+- source/provider or generator;
+- owner/usage rights;
+- approval state;
+- Hermes-controlled canonical copy.
+
+The design system should compound proof:
+
+`FACT / RESULT → EVIDENCE → WEBSITE OWNER / CASE STUDY / INSIGHT → SOCIAL DERIVATIVES → ATTRIBUTED RETURN → NEW BUSINESS EVIDENCE`
+
+Customer case studies require real permission and bounded claims. Internal releases may become public technology proof after sanitization.

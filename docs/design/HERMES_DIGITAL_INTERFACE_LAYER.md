@@ -241,6 +241,24 @@ Especially on Web Design / Website Development / Technology / Marketing surfaces
 
 Private owner data, credentials, private Website Factory drafts and customer records remain private. Demonstration states must be labeled when they are sample or simulated.
 
+
+### Evidence-state labels for public system visuals
+
+When a social, website or product-native visual can be mistaken for operational truth, use the V4 evidence-state grammar:
+
+`LIVE · VERIFIED · DEMO · CONCEPT`
+
+Use the strongest state only when current evidence supports it. This is especially important for AI states, maps, social metrics, CRM flows, automation, connectors, counters and timestamps.
+
+### One content/distribution loop
+
+Website/Insights, social channels and CRM must be designed as one measurable path:
+
+`canonical searchable source → channel-native derivative → attributed return → site action → receiver/CRM → human qualification → business evidence`
+
+The website owns durable context, schema and internal linking. Threads/Instagram/Facebook/Telegram adapt approved truth for distribution. Social publishing volume is not itself a search or business outcome.
+
+
 ---
 
 ## 4. Standard content archetypes
@@ -376,3 +394,50 @@ Default to HDIL whenever generating or reviewing Hermes digital communication as
 - **Website / Hermes Connect / Command Center:** Product Native.
 
 An explicit current owner directive may override a channel treatment for a specific campaign, but should not silently create a competing design system.
+
+
+---
+
+## 11. Capability-showroom interface contract
+
+Public Web Design, Website Development, Technology, Marketing and SEO/GEO showrooms inherit HDIL, but use **Product Native proof** rather than decorative terminal theater.
+
+Preferred public proof pattern:
+- deterministic sanitized Proof Replay;
+- explicit LIVE / VERIFIED / DEMO / CONCEPT state;
+- semantic HTML twin carrying the same entities/process/links/CTA;
+- one signature scene plus calmer explanatory sections;
+- static/reduced-motion/mobile equivalent.
+
+Commercial choreography:
+- **Web Design:** business sources → visual direction → tokens/components → responsive states → accessibility/QA → approved design system.
+- **Website Development:** approved design → semantic build → components → tests → performance/SEO → deployment evidence → measurement.
+- **SEO/GEO:** intent/entity/location → owner architecture → schema/internal links → crawl/index evidence → visibility → attributed action.
+- **Marketing:** canonical website content → channel adaptation → distribution → attributed return → qualification.
+- **CRM/Technology:** source/event → normalization → workflow → human decision → receipt/state → follow-up.
+
+Do not use Full Terminal merely to make Technology look technical. Code/terminal language is valid only when it represents a real build, system or state.
+
+## 12. Social/news visual loop
+
+Insights/Website is the searchable canonical owner for substantial content. Threads, Instagram, Facebook and Telegram are channel-native derivative surfaces.
+
+One evidence object may produce multiple presentations:
+- Website/Insights: semantic depth, schema, sources, internal links;
+- Threads: concise conversational derivative;
+- Instagram: visual/card/carousel derivative;
+- Facebook: editorial/community derivative;
+- Telegram: operational/news derivative.
+
+Each derivative preserves product-truth state and attribution back to the canonical owner. Social assets should be reproducible from governed Hermes tokens/media rather than becoming independent mini-brands.
+
+## 13. Evidence freshness and media provenance
+
+A visually strong asset must never outlive the truth it represents.
+
+If live authorization/readback disappears:
+- LIVE downgrades to VERIFIED/DEMO/CONCEPT as appropriate;
+- the visual may remain as a sanitized capability example;
+- no stale counter/timestamp/pulse may continue implying current live state.
+
+Production media should retain internal provenance for provider/source, usage rights, approval and Hermes-controlled canonical storage. Provider access ending is not a reason to lose an approved asset or block a page release.
