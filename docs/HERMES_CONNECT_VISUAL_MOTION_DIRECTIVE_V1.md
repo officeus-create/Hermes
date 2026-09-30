@@ -1,5 +1,7 @@
 # Hermes Connect — Visual Motion Directive V1
 
+> **V4 governance note — 2026-09-30:** This file preserves the approved desire for a richer, responsive Hermes Connect experience, the Hermes Intelligence Knot, readable UI and reduced-motion support. Its older Pearl + Obsidian and “orbit/particle/animated-gradient” prescriptions are no longer blanket visual rules. Current implementation must follow `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md`: light-first, one bounded signature scene, motion tied to real state/relationship, and no effect pile-up. Where this V1 directive conflicts with V4, V4 wins.
+
 Status: APPROVED / LOCKED FOR WEB PRODUCT V1
 
 ## Owner feedback converted into implementation rules

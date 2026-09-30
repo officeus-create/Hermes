@@ -196,6 +196,50 @@ Language, account/sign-in and contact actions are utilities. Account access must
 - Prefer small state changes over animated shimmer, large glow, bouncing, or expanding navigation.
 - Preserve strong text contrast and current-location indication.
 - Keep the header readable before JavaScript executes.
+- The four colored pillars are orientation cues only; they must not become the primary visual identity of the four business directions.
+
+### V4 website / product visual-engine contract
+
+Website and product surfaces inherit **ONE HERMES / FOUR VISUAL ENGINES** from the parent brand system.
+
+- **Logistics — Spatial Operations:** movement through roads, routes, maps, equipment, capacity and operating decisions.
+- **Marketing — Attention & Demand:** movement from content/search/social distribution into attributable site action, lead and evidence.
+- **Technology — Digital Systems:** movement from source/context through systems, APIs, AI, connectors, build/test/deploy and product UI.
+- **Academy — Human Progress:** movement from learning and practice into feedback, skill, responsibility and career progression.
+
+Direction color remains secondary. A person should be able to distinguish the direction from the kind of information and motion being shown, not only from a blue/green/orange/violet marker.
+
+Normal public-page budget: one major signature scene plus restrained functional micro-interactions. After the signature scene, the page becomes calmer and prioritizes comprehension, proof and conversion.
+
+### Canonical content → social distribution
+
+Substantial original public content should normally have one canonical searchable website/Insights owner before it is adapted into social channels.
+
+Preferred flow:
+
+`SOURCE FACT / RESULT / RELEASE → canonical website/Insights owner → channel-native asset/copy → attributed return path → CRM/qualification evidence`
+
+The existing Threads / Instagram / Facebook / Telegram distribution surfaces do not authorize blind mass cross-posting or thin indexable news production.
+
+- Threads / X / Telegram remain text-first/operational where appropriate.
+- Instagram / Facebook preserve native visual/human storytelling.
+- Website/Insights owns search depth, durable context, schema and internal links.
+- Social automation may adapt or distribute approved truth; it must not invent performance, customer, integration or revenue claims.
+
+### Showing Hermes technology in public design
+
+Product-Native Mode should increasingly demonstrate sanitized real Hermes capability instead of using generic agency imagery.
+
+Especially on Web Design / Website Development / Technology / Marketing surfaces, permitted proof may include current, sanitized representations of:
+
+- Website Factory intake and structured brief logic;
+- responsive design-system/component behavior;
+- build / test / visual-QA evidence;
+- SEO/GEO/entity/internal-link architecture;
+- social distribution/connectors;
+- CRM/lead routing and analytics evidence boundaries.
+
+Private owner data, credentials, private Website Factory drafts and customer records remain private. Demonstration states must be labeled when they are sample or simulated.
 
 ---
 
