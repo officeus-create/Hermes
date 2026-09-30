@@ -138,3 +138,12 @@ Execution sequence:
 6. derive the remaining direction engines from the validated shared Scene Kit.
 
 Do not call V4 visually LIVE until the representative implementation is merged, deployed and publicly read back.
+
+## 2026-09-30 — V4 representative release acceptance gate
+
+- Current homepage regression coverage explicitly requires `HomeFourRooms`. The V4 Home Master Scene must replace that superseded visual contract deliberately in the same bounded implementation change while preserving direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
+- `Website checks` success is necessary but not sufficient for a rich signature scene. The current generated-file performance budget is advisory; production Lighthouse is a separate measurement path. Record representative mobile + desktop LCP/CLS/TBT diagnostics before a V4 signature scene is called LIVE_VERIFIED.
+- Reuse the existing analytics owner. Generic public-site behavior uses consent-gated Hermes analytics/GA4 and privacy-safe first-party counting. Repair Shop PostHog remains a separately bounded product stream.
+- Candidate showroom engagement events must enter the approved generic event registry with controlled privacy-safe parameters before production reporting.
+- Keep business-state semantics distinct: showroom engagement != commercial CTA != intake start != preview ready != handoff ready != delivery confirmed != human-qualified lead != opportunity/revenue.
+- Website Development retains its established commercial chain: `commercial_cta_click → website_project_intake_start → website_project_preview_ready → website_handoff_ready`, followed by receiver/human qualification evidence before business-result claims.
