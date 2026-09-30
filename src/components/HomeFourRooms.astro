@@ -19,7 +19,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
         <span class="home-rooms-display">Four directions.</span>
         <span class="home-rooms-script"><em>Choose yours.</em></span>
       </h1>
-      <p class="home-rooms-ink-note"><strong>One Hermes ecosystem. One operating architecture.</strong> Each direction has its own business purpose, color, evidence, and path into the wider Hermes system.</p>
+      <p class="home-rooms-ink-note"><strong>Choose by the business result you need.</strong> Hermes Logistics supports car hauling, carriers, dealers, and shippers. Hermes Marketing connects websites, SEO/GEO, and customer acquisition. Hermes Technology builds CRM, automation, and custom software. Hermes Academy develops practical operating capability.</p>
     </header>
 
     <span class="home-legacy-anchor" id="journey" aria-hidden="true"></span>
@@ -31,7 +31,7 @@ const roomMeta: Record<string, { accent: string; glow: string; label: string; di
             class={`home-room home-room-${path.id}`}
             href={`/paths/${path.id}/`}
             style={`--room-accent:${meta.accent};--room-glow:${meta.glow};--room-image:url('${path.image}')`}
-            aria-label={`Open ${path.brandLabel}`}
+            aria-label={`Open ${path.brandLabel}: ${meta.detail}`}
             data-home-room
             data-room-id={path.id}
           >
