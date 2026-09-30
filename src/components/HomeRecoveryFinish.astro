@@ -132,7 +132,6 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
 </style>
 
 <style is:global>
-  /* Final Home-only polish: keep the four-room architecture, add the recovered living character. */
   body:has(.hermes-home-recovery) .site-header {
     top: .7rem;
     min-height: 68px;
@@ -147,120 +146,6 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
   body:has(.hermes-home-recovery) .site-header.site-header-scrolled {
     background: rgba(7,9,16,.82);
     border-color: rgba(255,255,255,.14);
-  }
-
-  .hermes-home-recovery .home-rooms-intro h1 {
-    position: relative;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    background: linear-gradient(105deg, #fff 0%, #fff 18%, #9e86ff 36%, #ef75b3 54%, #e8c36a 70%, #71d9ff 86%, #fff 100%);
-    background-size: 240% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: home-direction-spectrum 8s ease-in-out infinite;
-    filter: drop-shadow(0 0 24px rgba(124,92,255,.09));
-  }
-
-  .hermes-home-recovery .home-rooms-intro h1 em {
-    position: relative;
-    color: rgba(255,255,255,.62);
-    -webkit-text-fill-color: rgba(255,255,255,.62);
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -.02em;
-    clip-path: inset(0 100% 0 0);
-    animation: home-ink-write 1.7s steps(24, end) .2s forwards;
-  }
-
-  .hermes-home-recovery .home-rooms-intro h1::after {
-    content: "";
-    position: absolute;
-    z-index: 3;
-    left: .04em;
-    top: 78%;
-    width: 24px;
-    height: 5px;
-    border-radius: 999px 2px 999px 2px;
-    background: linear-gradient(90deg, rgba(255,255,255,.95), #9e86ff 55%, #5ac8fa);
-    box-shadow: 0 0 16px rgba(158,134,255,.55);
-    transform-origin: left center;
-    opacity: 0;
-    animation: home-quill-travel 1.72s cubic-bezier(.18,.74,.24,1) .18s both;
-  }
-
-  .hermes-home-recovery .home-rooms-intro > p:last-child {
-    position: relative;
-    max-width: 430px;
-    padding-left: 2.4rem;
-    color: rgba(255,255,255,.52);
-    font-family: var(--font-serif);
-    font-size: clamp(.76rem, 1vw, .88rem);
-    font-style: italic;
-    line-height: 1.6;
-    letter-spacing: .01em;
-    clip-path: inset(0 100% 0 0);
-    animation: home-ink-write 1.9s steps(32, end) 1.15s forwards;
-  }
-
-  .hermes-home-recovery .home-rooms-intro > p:last-child::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: .75em;
-    width: 1.75rem;
-    height: 1px;
-    background: linear-gradient(90deg, #9e86ff, rgba(90,200,250,.25));
-    transform-origin: left center;
-    animation: home-ink-line 1s ease 1.05s both;
-  }
-
-  .hermes-home-recovery .home-room-arrow {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  .hermes-home-recovery .home-room-arrow::before {
-    content: "";
-    position: absolute;
-    inset: 8px;
-    z-index: 2;
-    border-radius: 9px;
-    background: url('/demos/hermes-connect/icon-192.svg') center / contain no-repeat;
-    opacity: .92;
-    transition: opacity 280ms ease, transform 360ms cubic-bezier(.22,.75,.2,1);
-  }
-
-  .hermes-home-recovery .home-room-arrow::after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    inset: -45%;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 0 58%, var(--room-accent) 72%, transparent 88% 100%);
-    opacity: .35;
-    animation: home-action-orbit 7s linear infinite;
-  }
-
-  .hermes-home-recovery .home-room-arrow > svg {
-    position: relative;
-    z-index: 3;
-    opacity: 0;
-    transform: translate(-5px, 5px);
-    transition: opacity 260ms ease, transform 340ms cubic-bezier(.22,.75,.2,1);
-  }
-
-  .hermes-home-recovery .home-room:hover .home-room-arrow::before,
-  .hermes-home-recovery .home-room:focus-visible .home-room-arrow::before {
-    opacity: 0;
-    transform: scale(.7) rotate(-10deg);
-  }
-
-  .hermes-home-recovery .home-room:hover .home-room-arrow > svg,
-  .hermes-home-recovery .home-room:focus-visible .home-room-arrow > svg {
-    opacity: 1;
-    transform: translate(0,0);
   }
 
   #contact.home-contact-shell {
@@ -318,30 +203,6 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
     box-shadow: 0 0 18px rgba(124,92,255,.18);
   }
 
-  @keyframes home-direction-spectrum {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-
-  @keyframes home-ink-write {
-    from { clip-path: inset(0 100% 0 0); }
-    to { clip-path: inset(0 0 0 0); }
-  }
-
-  @keyframes home-ink-line {
-    from { transform: scaleX(0); opacity: 0; }
-    to { transform: scaleX(1); opacity: 1; }
-  }
-
-  @keyframes home-quill-travel {
-    0% { opacity: 0; transform: translateX(0) translateY(3px) rotate(-18deg) scaleX(.7); }
-    10% { opacity: 1; }
-    82% { opacity: 1; }
-    100% { opacity: 0; transform: translateX(clamp(11rem, 34vw, 26rem)) translateY(-3px) rotate(-8deg) scaleX(1); }
-  }
-
-  @keyframes home-action-orbit { to { transform: rotate(360deg); } }
-
   @keyframes home-footer-mesh {
     0% { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0 0; }
     100% { background-position: 18% 12%, 82% 16%, 88% 82%, 14% 84%, 0 0; }
@@ -362,79 +223,15 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
       border-radius: 22px;
     }
 
-    #contact.home-contact-shell { border-radius: 28px 28px 0 0; }
-
-    .hermes-home-recovery .home-rooms-intro > p:last-child {
-      max-width: 35ch;
-      padding-left: 2rem;
+    #contact.home-contact-shell {
+      border-radius: 28px 28px 0 0;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hermes-home-recovery .home-rooms-intro h1,
-    .hermes-home-recovery .home-rooms-intro h1 em,
-    .hermes-home-recovery .home-rooms-intro h1::after,
-    .hermes-home-recovery .home-rooms-intro > p:last-child,
-    .hermes-home-recovery .home-rooms-intro > p:last-child::before,
-    .hermes-home-recovery .home-room-arrow::after,
     #contact.home-contact-shell,
     #contact.home-contact-shell::before {
       animation: none !important;
     }
-
-    .hermes-home-recovery .home-rooms-intro h1 em,
-    .hermes-home-recovery .home-rooms-intro > p:last-child {
-      clip-path: none;
-    }
-  }
-
-  /* 2026-09-29 pillar entrance reset: contact/footer recovery remains,
-     but legacy handwritten spectrum and orbit effects no longer override HomeFourRooms. */
-  .hermes-home-recovery .home-rooms-intro h1 {
-    color: #0b0d12 !important;
-    -webkit-text-fill-color: #0b0d12 !important;
-    background: none !important;
-    animation: none !important;
-    filter: none !important;
-  }
-
-  .hermes-home-recovery .home-rooms-intro h1 em {
-    color: #69707d !important;
-    -webkit-text-fill-color: #69707d !important;
-    font-family: inherit !important;
-    font-style: normal !important;
-    font-weight: 520 !important;
-    letter-spacing: -.04em !important;
-    clip-path: none !important;
-    animation: none !important;
-  }
-
-  .hermes-home-recovery .home-rooms-intro h1::after {
-    display: none !important;
-  }
-
-  .hermes-home-recovery .home-rooms-intro > p:last-child {
-    max-width: 420px;
-    padding-left: 0 !important;
-    color: #6b7280 !important;
-    font-family: inherit !important;
-    font-size: clamp(.92rem,1.2vw,1.06rem) !important;
-    font-style: normal !important;
-    line-height: 1.7 !important;
-    letter-spacing: normal !important;
-    clip-path: none !important;
-    animation: none !important;
-  }
-
-  .hermes-home-recovery .home-rooms-intro > p:last-child::before,
-  .hermes-home-recovery .home-room-arrow::before,
-  .hermes-home-recovery .home-room-arrow::after {
-    display: none !important;
-  }
-
-  .hermes-home-recovery .home-room-arrow > svg {
-    position: static !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
 </style>
