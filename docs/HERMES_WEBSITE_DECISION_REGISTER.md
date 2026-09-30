@@ -1,5 +1,23 @@
 # Hermes website decision register
 
+## Current V4 override — 2026-09-30
+
+This historical register remains provenance, but current design authority is `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 plus the Drive `HERMES DESIGN CONSTITUTION V4 — CURRENT`.
+
+Current rules that supersede older visual assumptions:
+
+- one Hermes brand / four visual engines: Logistics Spatial Operations, Marketing Attention & Demand, Technology Digital Systems, Academy Human Progress;
+- direction colors are navigation/state signals, not four page themes;
+- Home becomes one Hermes ecosystem scene, not a set of near-identical colored cards;
+- Web Design / Website Development / selected Technology pages are capability showrooms and should demonstrate sanitized real Hermes technology;
+- public operational visuals use LIVE / VERIFIED / DEMO / CONCEPT maturity labels where confusion is possible;
+- Website/Insights → social distribution → attributed site action → CRM/qualification is one content-to-client loop;
+- one major signature scene per page; editorial/utility pages remain intentionally calm;
+- paid generative tools are accelerators only, with native/open-source/static fallbacks;
+- SEO/GEO/AEO, mobile, accessibility and product truth outrank visual novelty.
+
+
+
 Updated: 2026-07-22
 
 ## Current architecture
