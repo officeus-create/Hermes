@@ -241,6 +241,24 @@ Especially on Web Design / Website Development / Technology / Marketing surfaces
 
 Private owner data, credentials, private Website Factory drafts and customer records remain private. Demonstration states must be labeled when they are sample or simulated.
 
+
+### Evidence-state labels for public system visuals
+
+When a social, website or product-native visual can be mistaken for operational truth, use the V4 evidence-state grammar:
+
+`LIVE · VERIFIED · DEMO · CONCEPT`
+
+Use the strongest state only when current evidence supports it. This is especially important for AI states, maps, social metrics, CRM flows, automation, connectors, counters and timestamps.
+
+### One content/distribution loop
+
+Website/Insights, social channels and CRM must be designed as one measurable path:
+
+`canonical searchable source → channel-native derivative → attributed return → site action → receiver/CRM → human qualification → business evidence`
+
+The website owns durable context, schema and internal linking. Threads/Instagram/Facebook/Telegram adapt approved truth for distribution. Social publishing volume is not itself a search or business outcome.
+
+
 ---
 
 ## 4. Standard content archetypes
