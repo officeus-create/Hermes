@@ -1,4 +1,12 @@
 @import "tailwindcss";
+@font-face {
+ font-family: "Nothing You Could Do";
+ font-style: normal;
+ font-weight: 400;
+ font-display: swap;
+ src: url("/fonts/nothing-you-could-do.ttf") format("truetype");
+}
+
 
 @font-face {
   font-family: "Manrope";

@@ -1,27 +1,27 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-  [/Open Hermes Logistics/i, "/paths/logistics/"],
-  [/Open Hermes Marketing/i, "/paths/marketing/"],
-  [/Open Hermes Technology/i, "/paths/technology/"],
-  [/Open Hermes Academy/i, "/paths/academy/"],
+  [/Hermes Logistics/i, "/paths/logistics/"],
+  [/Hermes Marketing/i, "/paths/marketing/"],
+  [/Hermes Technology/i, "/paths/technology/"],
+  [/Hermes Academy/i, "/paths/academy/"],
 ] as const;
 
-test("Hermes homepage is one connected four-direction operating scene", async ({ page }) => {
+test("Hermes homepage is four architectural four-direction portal scene", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /One Hermes system\. Four operating directions\./ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Four directions\./ })).toBeVisible();
   await expect(page.locator(".home-master-stage .home-master-route")).toHaveCount(4);
-  await expect(page.locator(".home-master-core")).toHaveCount(1);
+  await expect(page.locator(".home-master-core")).toHaveCount(0);
   await expect(page.locator(".home-role-router")).toHaveCount(0);
   await expect(page.locator(".product-showcase")).toHaveCount(0);
   await expect(page.locator(".home-technology-preview")).toHaveCount(0);
 
   for (const [label, href] of routes) {
-    await expect(page.getByRole("link", { name: label })).toHaveAttribute("href", href);
+    await expect(page.locator("#paths").getByRole("link", { name: label })).toHaveAttribute("href", href);
   }
 
-  await expect(page.locator(".home-master-route-number")).toHaveText(["01", "02", "03", "04"]);
+  await expect(page.locator(".home-portal-art")).toHaveCount(4);
 
   const visual = await page.evaluate(() => {
     const stage = document.querySelector<HTMLElement>(".home-master-stage");
@@ -42,13 +42,13 @@ test("Hermes homepage is one connected four-direction operating scene", async ({
   expect(new Set(visual!.accents).size).toBe(4);
 });
 
-test("V4 homepage keeps direct routing and usable geometry on mobile", async ({ page }) => {
+test("Approved homepage keeps direct routing and usable geometry on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
   await expect(page.locator(".home-master-route")).toHaveCount(4);
-  await expect(page.getByRole("link", { name: /Open Hermes Logistics/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Open Hermes Technology/i })).toBeVisible();
+  await expect(page.locator("#paths").getByRole("link", { name: /Hermes Logistics/i })).toBeVisible();
+  await expect(page.locator("#paths").getByRole("link", { name: /Hermes Technology/i })).toBeVisible();
 
   const geometry = await page.evaluate(() => {
     const stage = document.querySelector<HTMLElement>(".home-master-stage");
@@ -69,7 +69,7 @@ test("V4 homepage keeps direct routing and usable geometry on mobile", async ({ 
 
 
 for (const width of [390, 430, 768, 1024, 1440]) {
-  test(`V4 Home Master Scene holds its routing contract at ${width}px`, async ({ page }) => {
+  test(`Approved Home Master Scene holds its routing contract at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/");
 

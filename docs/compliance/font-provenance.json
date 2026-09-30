@@ -71,6 +71,20 @@
       "exact_binary_source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwlBFgg.woff2",
       "verified_at": "2026-08-11",
       "replacement_if_unresolved": "Replace with a newly sourced and documented upstream build before claiming exact binary provenance."
+    },
+    {
+      "path": "public/fonts/nothing-you-could-do.ttf",
+      "family": "Nothing You Could Do",
+      "css_weight": "400",
+      "repository_blob_sha": "5ff49fb944e0df19d6a68dea53d2c43c69141e77",
+      "license": "SIL Open Font License 1.1",
+      "license_status": "family_license_verified",
+      "license_source": "https://github.com/google/fonts/blob/main/ofl/nothingyoucoulddo/OFL.txt",
+      "upstream_family_reference": "https://github.com/google/fonts/tree/main/ofl/nothingyoucoulddo",
+      "notice_requirement": "Redistribute with docs/compliance/nothing-you-could-do-OFL.txt copyright and OFL notice.",
+      "binary_origin_status": "verified_exact_provenance",
+      "exact_binary_source": "https://raw.githubusercontent.com/google/fonts/main/ofl/nothingyoucoulddo/NothingYouCouldDo.ttf",
+      "verified_at": "2026-09-30"
     }
   ],
   "release_boundary": "This registry verifies family-level license sources and exact repository identities. All four deployed WOFF2 binaries were replaced on 2026-08-11 with fresh downloads from the official Google Fonts CSS2 API (fonts.googleapis.com/css2, latin-subset unicode-range block), matching the exact_binary_source URL and repository_blob_sha recorded per font."

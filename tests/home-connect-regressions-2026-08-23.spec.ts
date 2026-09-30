@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("mobile homepage keeps V4 system statement visible after load", async ({ page }) => {
+test("mobile homepage keeps Approved system statement visible after load", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
   const title = page.locator(".home-master-display");
-  await expect(title).toHaveText("One Hermes system.");
+  await expect(title).toHaveText("Four directions.");
   await expect(title).toBeVisible();
 
   const paint = await title.evaluate((node) => {
@@ -23,7 +23,7 @@ test("mobile homepage keeps V4 system statement visible after load", async ({ pa
   expect(paint.webkitTextFillColor).not.toContain("transparent");
 });
 
-test("homepage contact shell is square outside and rounded only on the inner contact surface", async ({ page }) => {
+test("homepage contact shell preserves the approved rounded pearl surface", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
@@ -42,8 +42,8 @@ test("homepage contact shell is square outside and rounded only on the inner con
       overflow: style.overflow,
     };
   });
-  expect(shellPaint.topLeft).toBe("0px");
-  expect(shellPaint.topRight).toBe("0px");
+  expect(shellPaint.topLeft).toBe("36px");
+  expect(shellPaint.topRight).toBe("36px");
   expect(shellPaint.backgroundColor).not.toBe("rgb(255, 255, 255)");
   expect(shellPaint.overflow).toBe("hidden");
 
@@ -54,11 +54,11 @@ test("homepage contact shell is square outside and rounded only on the inner con
       topRight: style.borderTopRightRadius,
     };
   });
-  expect(contactPaint.topLeft).not.toBe("0px");
-  expect(contactPaint.topRight).not.toBe("0px");
+  expect(contactPaint.topLeft).toBe("0px");
+  expect(contactPaint.topRight).toBe("0px");
 });
 
-for (const width of [360, 390, 412, 768]) {
+for (const width of [360, 390, 412, 768, 1024]) {
   test(`homepage uses mobile header contract at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
@@ -69,7 +69,7 @@ for (const width of [360, 390, 412, 768]) {
   });
 }
 
-for (const width of [1024, 1280]) {
+for (const width of [1280, 1440]) {
   test(`homepage keeps desktop header contract at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");

@@ -4,7 +4,7 @@ const directions = [
   ["logistics", "Hermes Logistics", "Move freight"],
   ["marketing", "Hermes Marketing", "Grow demand"],
   ["technology", "Hermes Technology", "Build systems"],
-  ["academy", "Hermes Academy", "Build capability"],
+  ["academy", "Hermes Academy", "Develop people"],
 ] as const;
 
 test("Home exposes goal-based navigation and direct routes without JavaScript", async ({ browser, baseURL }) => {
@@ -15,12 +15,12 @@ test("Home exposes goal-based navigation and direct routes without JavaScript", 
   await expect(navigation).toBeVisible();
   await expect(navigation.getByRole("link")).toHaveCount(4);
   for (const [id, brand, goal] of directions) {
-    const link = navigation.getByRole("link", { name: new RegExp(`Open ${brand}: ${goal}`) });
+    const link = navigation.getByRole("link", { name: new RegExp(`${goal}: ${brand}`) });
     await expect(link).toBeVisible();
     await expect(link).toHaveAttribute("href", `/paths/${id}/`);
     await expect(link).toContainText(goal);
   }
-  await navigation.getByRole("link", { name: /Open Hermes Logistics/ }).click();
+  await navigation.getByRole("link", { name: /Move freight: Hermes Logistics/ }).click();
   await expect(page).toHaveURL(/\/paths\/logistics\/$/);
   await context.close();
 });
@@ -48,19 +48,14 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
-    const motion = await page.locator(".home-master-core-ring").evaluateAll((rings) => rings.map((ring) => {
+    const motion = await page.locator(".home-portal-art").evaluateAll((rings) => rings.map((ring) => {
       const style = getComputedStyle(ring);
       return { name: style.animationName, count: style.animationIterationCount, duration: parseFloat(style.animationDuration) };
     }));
     for (const ring of motion) {
-      if (width <= 980) expect(ring.name).toBe("none");
-      else {
-        expect(ring.name).not.toBe("none");
-        expect(ring.count).toBe("1");
-        expect(ring.duration).toBeLessThanOrEqual(2);
-      }
+      expect(ring.name).toBe("none");
     }
-    await expect(page.locator(".home-master-note")).toHaveText("Choose a direction to explore services and find the right team for your next step.");
+    await expect(page.locator(".home-master-ink-note")).toHaveText("Logistics, marketing, technology and learning. One Hermes ecosystem.");
     if (width === 390 || width === 1440) {
       await test.info().attach(`home-v4-${width}px`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
     }
@@ -71,8 +66,8 @@ test("Home reduced motion keeps the scene and routes fully static and usable", a
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const rings = await page.locator(".home-master-core-ring").evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).animationName));
-  expect(rings).toEqual(["none", "none"]);
+  const rings = await page.locator(".home-portal-art").evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).animationName));
+  expect(rings).toEqual(["none", "none", "none", "none"]);
   const link = page.locator(".home-master-route").first();
   await link.focus();
   const motion = await link.evaluate((node) => ({

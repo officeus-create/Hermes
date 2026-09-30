@@ -1,128 +1,26 @@
-/* Homepage mobile visual contract — V4 Home Master Scene.
- * Scope: homepage only. Keep the primary statement readable, prevent horizontal
- * overflow, preserve the mobile header contract, and keep the contact finish sealed.
- */
+/* User-approved September 30 pearl Home; shared service pages retain their theme. */
+body:has(.hermes-home-recovery){background:#f8faff}
+body:has(.hermes-home-recovery) .site-header{top:.8rem;width:min(1400px,calc(100% - 92px));min-height:60px;padding:10px 22px;border:1px solid #dfe3f5;border-radius:999px;background:#ffffffbd;color:#0c103b;box-shadow:0 10px 35px #6578af0a;backdrop-filter:blur(18px)}
+body:has(.hermes-home-recovery) .site-header.site-header-scrolled{background:#fffffff2}
+body:has(.hermes-home-recovery) .site-header .wordmark-mark{background:#fff;color:#101332;border:1px solid #d7dcf1}
+body:has(.hermes-home-recovery) .site-header .desktop-nav{gap:clamp(.65rem,1.5vw,1.5rem);margin-left:2rem;font-size:.78rem}
+body:has(.hermes-home-recovery) .site-header .nav-primary-link{padding-left:0}
+body:has(.hermes-home-recovery) .site-header .nav-primary-link::before{display:none}
+body:has(.hermes-home-recovery) .site-header .nav-secondary-start{margin-left:0;padding-left:.68rem}
+body:has(.hermes-home-recovery) .site-header .nav-secondary-start::after{display:none}
+body:has(.hermes-home-recovery) .site-header .header-actions{gap:.5rem}
+body:has(.hermes-home-recovery) .site-header .header-cta{display:inline-flex;justify-content:center;min-height:44px;max-width:125px;min-width:0;padding:6px 12px;background:#17194c;color:#fff;font-size:.7rem;line-height:1.25;border-radius:999px;white-space:normal}
+body:has(.hermes-home-recovery) .site-header .hc-account-menu>summary{min-height:44px}
+body:has(.hermes-home-recovery) .site-header .mobile-nav{background:#fcfcff;color:#101332;box-shadow:0 16px 45px #181b4320}
+body:has(.hermes-home-recovery) .site-header .menu-button{color:#101332}
+body:has(.hermes-home-recovery) #contact.home-contact-shell{background:linear-gradient(130deg,#f8faff,#e2eeff 55%,#eee5ff);color:#101332;border-radius:36px 36px 0 0;overflow:hidden}
+@media(max-width:1180px){body:has(.hermes-home-recovery) .site-header{width:calc(100% - 24px)}body:has(.hermes-home-recovery) .site-header .desktop-nav,body:has(.hermes-home-recovery) .site-header .header-actions{display:none!important}body:has(.hermes-home-recovery) .site-header .menu-button{display:inline-flex!important;margin-left:auto}}
+body:has(.hermes-home-recovery) #contact .site-footer{background:#f0f1fc;color:#161a43;border-top:1px solid #dce0f2}
+body:has(.hermes-home-recovery) #contact .site-footer a,body:has(.hermes-home-recovery) #contact .site-footer p,body:has(.hermes-home-recovery) #contact .site-footer strong{color:#404869}
+body:has(.hermes-home-recovery) #contact .hc-launcher-panel{background:#ffffffa6;border-color:#d3d8ef;color:#161a43}
 
-.hermes-home-recovery .home-master-display,
-.hermes-home-recovery .home-master-script {
-  position: relative;
-  z-index: 2;
-  display: block;
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: none !important;
-  animation: none !important;
-  -webkit-text-fill-color: currentColor !important;
-  background: none !important;
-  filter: none;
-}
+body:has(.hermes-home-recovery) #contact .footer-location{color:#404869!important}
+body:has(.hermes-home-recovery) #contact .footer-meta,body:has(.hermes-home-recovery) #contact .footer-meta span{color:#505680}
 
-@supports (-webkit-touch-callout: none) {
-  .hermes-home-recovery .home-master-display,
-  .hermes-home-recovery .home-master-script {
-    -webkit-background-clip: border-box !important;
-    background-clip: border-box !important;
-    -webkit-text-fill-color: currentColor !important;
-  }
-}
-
-.hermes-home-recovery .home-master-stage {
-  position: relative;
-  isolation: isolate;
-  box-shadow: 0 24px 64px rgba(28,35,48,.08);
-}
-
-body:has(.hermes-home-recovery) {
-  background-color: #070912;
-}
-
-body:has(.hermes-home-recovery) #contact.home-contact-shell {
-  position: relative;
-  overflow: hidden !important;
-  margin-top: -1px;
-  border-radius: 0 !important;
-  background-color: #070912 !important;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(124,92,255,.14), transparent 34rem),
-    linear-gradient(180deg, #0a0c17 0%, #080a12 38%, #070912 100%) !important;
-  isolation: isolate;
-}
-
-body:has(.hermes-home-recovery) #contact.home-contact-shell::before {
-  position: absolute;
-  z-index: 0;
-  inset: 0 0 auto;
-  height: clamp(90px, 10vw, 180px);
-  pointer-events: none;
-  content: "";
-  background: linear-gradient(180deg, #080a12 0%, rgba(28,25,69,.92) 34%, rgba(17,22,47,.55) 68%, transparent 100%);
-}
-
-body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  border-radius: clamp(34px, 5vw, 72px) clamp(34px, 5vw, 72px) 0 0;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(124,92,255,.34), transparent 31rem),
-    radial-gradient(circle at 88% 10%, rgba(90,200,250,.16), transparent 29rem),
-    linear-gradient(180deg, #15163a 0%, #0d1228 48%, #080a12 100%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-}
-
-body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact::after {
-  position: absolute;
-  z-index: -1;
-  right: 0;
-  bottom: -1px;
-  left: 0;
-  height: clamp(80px, 12vw, 170px);
-  pointer-events: none;
-  content: "";
-  background: linear-gradient(180deg, transparent 0%, rgba(8,10,18,.55) 48%, #070912 100%);
-}
-
-@media (max-width: 900px) {
-  body:has(.hermes-home-recovery) .site-header {
-    width: calc(100% - 16px);
-    min-height: 60px;
-    padding-inline: .75rem;
-  }
-
-  body:has(.hermes-home-recovery) .site-header .desktop-nav,
-  body:has(.hermes-home-recovery) .site-header .header-actions {
-    display: none !important;
-  }
-
-  body:has(.hermes-home-recovery) .site-header .menu-button {
-    display: inline-flex !important;
-    margin-left: auto;
-  }
-}
-
-@media (max-width: 800px) {
-  .hermes-home-recovery .home-master-intro h1 {
-    min-height: 1em;
-  }
-
-  .hermes-home-recovery .home-master-display {
-    font-size: clamp(2.8rem, 13vw, 4.7rem);
-    line-height: .92;
-    letter-spacing: -.055em;
-  }
-
-  .hermes-home-recovery .home-master-stage {
-    box-shadow: 0 20px 50px rgba(28,35,48,.09);
-  }
-
-  body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
-    border-radius: 38px 38px 0 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hermes-home-recovery .home-master-display,
-  .hermes-home-recovery .home-master-script {
-    animation: none !important;
-  }
-}
+@media(max-width:1180px){body:has(.hermes-home-recovery) .site-header .mobile-nav:not([hidden]){display:grid}}
+@media(prefers-reduced-motion:reduce){.hermes-home-recovery .home-portal-art,.hermes-home-recovery .home-portal-art::before,.hermes-home-recovery .home-master-route{animation:none!important;transition:none!important}}

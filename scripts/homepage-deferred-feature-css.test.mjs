@@ -20,15 +20,15 @@ assert.equal(html.includes("data-home-technology-section"), false, "focused home
 assert.equal(/\/_astro\/(?:load|product)\.[^"']+\.css/i.test(head), false, "load/product CSS must not block the focused homepage");
 assert.equal(/\/_astro\/technology\.[^"']+\.css/i.test(head), false, "technology feature CSS must not block the focused homepage");
 
-// V4: one Hermes system, four direct operating directions.
-assert.ok(homepageSource.includes('import HomeMasterScene from "../components/HomeMasterScene.astro"'), "homepage must use the V4 master scene");
-assert.ok(homepageSource.includes("<HomeMasterScene />"), "homepage must render the V4 master scene");
+// Approved: one Hermes system, four direct operating directions.
+assert.ok(homepageSource.includes('import HomeMasterScene from "../components/HomeMasterScene.astro"'), "homepage must use the Approved master scene");
+assert.ok(homepageSource.includes("<HomeMasterScene />"), "homepage must render the Approved master scene");
 assert.equal(homepageSource.includes("HomeFourRooms"), false, "homepage must not retain the superseded four-room entrance");
 assert.equal(homepageSource.includes("HomeRoleRouter"), false, "homepage must not restore a competing role router");
 assert.equal(homepageSource.includes("WebsiteProofBand"), false, "homepage must not restore the product showroom");
 assert.equal(homepageSource.includes("HomeTechnologyPreview"), false, "homepage must not restore the technology chooser");
 
-assert.ok(masterSource.includes('class="home-master-stage"'), "V4 entrance must expose one connected system stage");
+assert.ok(masterSource.includes('class="home-master-stage"'), "Approved entrance must expose one connected system stage");
 assert.ok(masterSource.includes("publicPaths.map"), "all four public Hermes directions must come from the canonical path registry");
 assert.ok(masterSource.includes("logistics:") && masterSource.includes("marketing:") && masterSource.includes("academy:") && masterSource.includes("technology:"), "four directions must retain distinct operating intents");
 for (const signal of [
@@ -64,7 +64,7 @@ assert.ok(brandCss.includes("--hermes-obsidian: #0b0d12"), "master brand system 
 assert.ok(brandCss.includes("--hermes-violet: #7c5cff"), "master brand system must retain canonical Intelligence Violet");
 assert.ok(brandCss.includes("--hermes-ocean: #5ac8fa"), "master brand system must retain canonical Ocean support color");
 
-// Shared navigation/privacy infrastructure remains unchanged by the V4 entrance.
+// Shared navigation/privacy infrastructure remains unchanged by the Approved entrance.
 assert.ok(footerSource.includes('class="footer-primary-nav"'), "footer must preserve one canonical navigation DOM");
 assert.equal(footerSource.includes('class="footer-mobile-groups"'), false, "footer must not duplicate navigation into a hidden mobile DOM");
 assert.ok(/\.footer-primary-nav a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile footer links must retain at least 44px touch targets");
@@ -74,4 +74,4 @@ assert.ok(consentSource.includes('href="/privacy/"'), "privacy policy link must 
 assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
 assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
 
-console.log("V4 Home Master Scene, shared Hermes brand, navigation, and privacy contract passed.");
+console.log("Approved Home Master Scene, shared Hermes brand, navigation, and privacy contract passed.");

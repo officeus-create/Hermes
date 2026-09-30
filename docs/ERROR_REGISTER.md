@@ -317,3 +317,14 @@ RESOLUTION: The earlier direct signup attempt from the execution workspace did r
 CORRECTED_ROOT_CAUSE: The confirmed failure was path/environment-specific edge rejection of that direct request. Treating it as a company/account blocker was too broad. Production state must be established by the approved user-facing flow and a fresh authenticated readback, not by one blocked automation request.
 
 PREVENTION: Record transport/edge failure and account state separately. A 403 on one provisioning path must not be upgraded to "account cannot be created." Conversely, successful registration is not complete until a new session can sign in and read back the expected company, services, hours, and share/booking route. Do not publish credentials in GitHub or public Catalog data.
+
+
+## 2026-09-30 — Approved Home visual mismatch and inherited responsive menu cascade
+
+PROBLEM: Main #1574 showed a system-ring scene rather than the later owner-approved pearl architectural image. Initial task5 QA found a 1024px menu button controlling a nav hidden by inherited desktop CSS; raster source contact labels ghosted behind native copy and inherited footer white text lost contrast.
+ROOT_CAUSE: Superseded visual target and layered legacy Home/shared CSS. Existing production contact smoke depended on retired wording; global reduced-motion timing overrode a local declaration.
+FAILED_APPROACH: Treating prose or a green prior visual head as fidelity proof; starting a browser capture against rebuilding output.
+WORKING_APPROACH: Materialize and inspect exact approved pixels; reuse handed-off PR1577; real HTML text/actions over decorative approved artwork windows; opaque duplicate-label masks, native OFL quill font, scoped pearl footer and open-menu breakpoint, hook-based production marker and explicit static reduced-motion overrides. Single 216,880-byte WebP rather than shipping the 1.94MB source PNG.
+EVIDENCE: Fresh base main 9f71a9ff, idle-owner handoff at fa191201, viewed 390/430/768/1024/1440 screenshots and local build/full static suite. Exact final CI and production release status must be read from PR1577; no LIVE claim in this preparation entry.
+LESSON: Visual approval, semantic usability, responsive cascade and production evidence are distinct checks.
+REUSE_RULE: Preserve native links/text and shared service functionality; inspect the actual final screenshot at every navigation breakpoint. Update copy-dependent monitors to existing semantic hooks when visual copy changes.
