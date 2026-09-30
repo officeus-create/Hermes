@@ -20,20 +20,7 @@
       "Meta states that publishing, sending and spending require user approval",
       "Start with one bounded workflow, explicit permissions, human review and an owned KPI"
     ],
-    "faq": [
-      {
-        "question": "Does Meta Muse automatically publish posts or spend ad budget on its own?",
-        "answer": "Meta's September 29 announcement says nothing publishes, sends or spends without the user's approval."
-      },
-      {
-        "question": "Should a business connect every available tool to an AI agent immediately?",
-        "answer": "A safer operating approach is to start with the minimum data and permissions needed for one bounded workflow, measure the result, and expand only when the control model is proven."
-      },
-      {
-        "question": "Does the Muse launch prove it will increase leads or revenue?",
-        "answer": "No. Meta describes product capabilities and integrations, but the announcement does not guarantee reach, lead volume, conversion rate or revenue. Those outcomes need independent measurement in the business's own systems."
-      }
-    ],
+    "faq": [],
     "related": [
       {
         "title": "Hermes Marketing",
@@ -73,7 +60,7 @@
       "marketing workflow automation",
       "Meta business agent"
     ],
-    "contentTier": "standalone",
+    "contentTier": "digest",
     "currentMarketClaim": true,
     "telegram": {
       "group": "SMM Organic Target",
@@ -109,15 +96,15 @@
       "currentVerificationUrl": "https://about.fb.com/news/2026/09/introducing-muse-small-business/"
     },
     "publicationScore": {
-      "score": 80,
-      "recommendation": "standalone",
+      "score": 74,
+      "recommendation": "digest",
       "reasons": [
         "+20 freshness",
         "+20 source authority",
-        "+10 first-party evidence",
-        "+5 historical comparison",
-        "+15 search value",
-        "+10 internal-link fit"
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+13 search value",
+        "+9 internal-link fit"
       ]
     },
     "privacyReview": {
