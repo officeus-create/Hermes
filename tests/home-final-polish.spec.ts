@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("homepage keeps one connected master scene and shared direction signals", async ({ page }) => {
   await page.goto("/");
 
-  const heading = page.getByRole("heading", { name: /One system\. Four operating directions\./ });
+  const heading = page.getByRole("heading", { name: /One Hermes system\. Four operating directions\./ });
   await expect(heading).toBeVisible();
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   await expect(page.locator(".home-master-core")).toHaveCount(1);
