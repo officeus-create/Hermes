@@ -14,8 +14,6 @@ type Env = {
   GOOGLE_SOCIAL_DRIVE_REDIRECT_URI?: string;
   GOOGLE_SOCIAL_DRIVE_TOKEN_KEY?: string;
   HERMES_SOCIAL_CF_MODEL?: string;
-  HERMES_SOCIAL_AI_API_KEY?: string;
-  HERMES_SOCIAL_AI_MODEL?: string;
 };
 const headers={ "Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow" };
 const clean=(value:unknown,max=240)=>String(value??"").trim().slice(0,max);
@@ -26,16 +24,6 @@ function socialAiRuntime(env:Env){
     configured,
     provider:configured?"cloudflare_workers_ai":null,
     model:configured?(clean(env.HERMES_SOCIAL_CF_MODEL,160)||DEFAULT_CF_MODEL):null,
-  };
-}
-const DEFAULT_CF_MODEL="@cf/google/gemma-4-26b-a4b-it";
-function socialAiRuntime(env:Env){
-  const cloudflare=Boolean(env.AI&&typeof env.AI.run==="function");
-  const openai=Boolean(String(env.HERMES_SOCIAL_AI_API_KEY||"").trim()&&String(env.HERMES_SOCIAL_AI_MODEL||"").trim());
-  return{
-    configured:cloudflare||openai,
-    provider:cloudflare?"cloudflare_workers_ai":openai?"openai":null,
-    model:cloudflare?(clean(env.HERMES_SOCIAL_CF_MODEL,160)||DEFAULT_CF_MODEL):(openai?clean(env.HERMES_SOCIAL_AI_MODEL,160):null),
   };
 }
 
