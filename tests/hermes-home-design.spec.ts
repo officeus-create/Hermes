@@ -66,3 +66,30 @@ test("V4 homepage keeps direct routing and usable geometry on mobile", async ({ 
   expect(geometry!.radius).toBe("26px");
   expect(Math.min(...geometry!.routeHeights)).toBeGreaterThanOrEqual(86);
 });
+
+
+for (const width of [390, 430, 768, 1024, 1440]) {
+  test(`V4 Home Master Scene holds its routing contract at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/");
+
+    await expect(page.locator(".home-master-stage")).toBeVisible();
+    await expect(page.locator(".home-master-route")).toHaveCount(4);
+
+    const state = await page.evaluate(() => {
+      const stage = document.querySelector<HTMLElement>(".home-master-stage");
+      const routes = [...document.querySelectorAll<HTMLAnchorElement>(".home-master-route")];
+      return {
+        hasStage: Boolean(stage && stage.getBoundingClientRect().width > 0),
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        routeIds: routes.map((route) => route.dataset.routeId),
+        routeWidths: routes.map((route) => route.getBoundingClientRect().width),
+      };
+    });
+
+    expect(state.hasStage).toBe(true);
+    expect(state.overflow).toBe(false);
+    expect(state.routeIds).toEqual(["logistics", "marketing", "technology", "academy"]);
+    expect(Math.min(...state.routeWidths)).toBeGreaterThan(120);
+  });
+}
