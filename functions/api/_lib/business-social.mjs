@@ -176,6 +176,27 @@ export async function ensureBusinessSocialSchema(db) {
     CREATE INDEX IF NOT EXISTS idx_business_social_publications_business
     ON hermes_business_social_publications(business_key, provider, created_at DESC)
   `).run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_business_social_creative_intakes (
+      id TEXT PRIMARY KEY,
+      business_key TEXT NOT NULL,
+      owner_specialist_id TEXT NOT NULL,
+      vertical_key TEXT NOT NULL,
+      business_id TEXT NOT NULL,
+      source_kind TEXT NOT NULL DEFAULT 'google_drive',
+      source_url TEXT NOT NULL,
+      brief TEXT,
+      language TEXT,
+      market TEXT,
+      status TEXT NOT NULL DEFAULT 'source_registered',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare(`
+    CREATE INDEX IF NOT EXISTS idx_business_social_creative_intakes_business
+    ON hermes_business_social_creative_intakes(business_key, created_at DESC)
+  `).run();
 }
 
 async function findRepairShop(db, ownerId) {
