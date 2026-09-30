@@ -29,6 +29,18 @@ assert.equal(homepageSource.includes("HomeTechnologyPreview"), false, "homepage 
 assert.ok(roomsSource.includes('class="home-rooms-grid"'), "four-room entrance must expose one direction grid");
 assert.ok(roomsSource.includes("publicPaths.map"), "all four public Hermes directions must come from the canonical path registry");
 assert.ok(roomsSource.includes("logistics:") && roomsSource.includes("marketing:") && roomsSource.includes("academy:") && roomsSource.includes("technology:"), "four directions must retain distinct visual characters");
+for (const signal of [
+  "Car hauling · dealers · shippers · carriers",
+  "Website · SEO/GEO · customer acquisition",
+  "CRM · automation · custom software",
+  "U.S. logistics · sales · marketing · operations",
+]) {
+  assert.ok(roomsSource.includes(signal), `homepage direction cards must preserve commercial intent signal: ${signal}`);
+}
+assert.ok(
+  homepageSource.includes("U.S. car hauling, carrier, dealer and shipper logistics plus website development, SEO/GEO, CRM automation"),
+  "homepage metadata must preserve the three priority revenue intent families",
+);
 assert.ok(roomsSource.includes("prefers-reduced-motion"), "room motion must respect reduced-motion preferences");
 assert.ok(roomsSource.includes(":focus-visible"), "room navigation must preserve keyboard focus treatment");
 
