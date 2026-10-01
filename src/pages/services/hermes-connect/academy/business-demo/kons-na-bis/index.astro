@@ -1,0 +1,308 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import { academyBusinessCrmTemplate, konsNaBisAcademyCrm, hermesAcademyCrmSeed } from "../../../../../data/academy-business-crm";
+
+const data = konsNaBisAcademyCrm;
+const template = academyBusinessCrmTemplate;
+const metrics = template.metrics;
+const modules = template.modules;
+const vacancies = data.vacancySignals;
+const programs = data.programs;
+const demoLeads = data.demoEntities.leads;
+const demoCandidates = data.demoEntities.candidates;
+const evidenceLabels = {
+  official_program: "Official public program",
+  public_vacancy: "Public vacancy",
+  existing_hermes_capability: "Existing Hermes capability",
+  hermes_inference: "Hermes proposed field",
+  demo_placeholder: "Demo placeholder",
+};
+---
+
+<BaseLayout
+  title="Academy Business CRM Demo | Hermes Connect"
+  description="Noindex Hermes Connect demo workspace for academy, course and business-club operations: marketing, sales, cohorts, learners, HR and analytics."
+  robots="noindex,nofollow"
+  locale="uk"
+  htmlLang="uk"
+>
+  <main id="main-content" class="crm-shell" data-academy-business-demo>
+    <header class="topbar">
+      <a class="hc-brand" href="/services/hermes-connect/"><span>H</span><b>Hermes Connect</b></a>
+      <div class="top-status">
+        <span class="pill demo">DEMO</span>
+        <span class="pill">No live writes</span>
+        <span class="pill">Source check · {data.client.sourceVerifiedAt}</span>
+      </div>
+      <a class="exit" href="/businesses/concepts/kons-na-bis/">Website concept ↗</a>
+    </header>
+
+    <div class="app-grid">
+      <aside class="sidebar">
+        <div class="client">
+          <span class="avatar">КБ</span>
+          <div><strong>{data.client.name}</strong><small>Academy / Business club</small></div>
+        </div>
+        <p class="nav-label">Workspace</p>
+        <nav aria-label="Academy CRM sections" data-demo-nav>
+          {modules.map((module, index) => (
+            <button type="button" class:list={["nav-item", index === 0 && "active"]} data-target={module.key}>
+              <span>{String(index + 1).padStart(2, "0")}</span>{module.label}
+            </button>
+          ))}
+        </nav>
+        <div class="boundary">
+          <strong>Review boundary</strong>
+          <p>Public facts + synthetic demo rows only. Real KNB leads, students, revenue and candidates are not loaded.</p>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <section class="view active" data-view="overview">
+          <div class="view-head">
+            <div><p class="eyebrow">Executive overview</p><h1>Academy Business CRM</h1><p>Marketing → Sales → Learning → HR → Analytics in one management layer.</p></div>
+            <div class="view-actions">
+              <a href={data.client.programmeUrl} target="_blank" rel="noopener noreferrer">Official program ↗</a>
+              <a href="/services/hermes-connect/academy/">Hermes Academy runtime ↗</a>
+            </div>
+          </div>
+
+          <div class="notice">
+            <b>Client data is intentionally blank.</b>
+            <span>The dashboard defines what should be measured. It does not fabricate KPI values or claim private access.</span>
+          </div>
+
+          <div class="metric-grid">
+            {metrics.slice(0, 8).map((metric) => (
+              <article class="metric-card">
+                <span>{metric.label}</span>
+                <strong>—</strong>
+                <small>{evidenceLabels[metric.evidence]}</small>
+              </article>
+            ))}
+          </div>
+
+          <div class="two-col">
+            <article class="panel">
+              <div class="panel-head"><div><p class="eyebrow">Sales CRM</p><h2>Lead pipeline</h2></div><span class="tag">Synthetic rows</span></div>
+              <div class="pipeline">
+                {demoLeads.map((lead) => (
+                  <div class="lead-row">
+                    <div><strong>{lead.name}</strong><small>{lead.source} · {lead.program}</small></div>
+                    <span>{lead.stage}</span>
+                    <div><b>{lead.owner}</b><small>Next: {lead.next}</small></div>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-head"><div><p class="eyebrow">Operating model</p><h2>What the public signals require</h2></div><span class="tag">5 vacancies</span></div>
+              <ul class="requirement-list">
+                <li><b>Marketing:</b> funnels, channel economics, CAC, LTV, ROMI, revenue and profit.</li>
+                <li><b>Sales:</b> multilevel management, conversion, average check, productivity and profitability.</li>
+                <li><b>Education:</b> program matching, enrollment, cohorts, assignments, reviews and progress.</li>
+                <li><b>HR:</b> vacancy pipeline, interviews, assessment stages and adaptation.</li>
+              </ul>
+            </article>
+          </div>
+
+          <article class="panel integration">
+            <div>
+              <p class="eyebrow">Architecture</p>
+              <h2>Reuse the existing Hermes Academy engine.</h2>
+              <p>This management workspace sits above the current learner, evidence, support and reviewer routes. It does not create a parallel auth or curriculum store.</p>
+            </div>
+            <div class="integration-links">
+              {hermesAcademyCrmSeed.reuse.map((href) => <a href={href}>{href.replace("/services/hermes-connect/academy/", "") || "academy"}</a>)}
+            </div>
+          </article>
+        </section>
+
+        <section class="view" data-view="marketing" hidden>
+          <div class="view-head"><div><p class="eyebrow">Marketing</p><h1>Growth control center</h1><p>Channel economics and funnel decisions connected to revenue.</p></div></div>
+          <div class="metric-grid">
+            {metrics.filter((metric) => ["cac","ltv","romi","channel_efficiency","revenue","profit"].includes(metric.key)).map((metric) => (
+              <article class="metric-card"><span>{metric.label}</span><strong>—</strong><small>Connect source data</small></article>
+            ))}
+          </div>
+          <div class="two-col">
+            <article class="panel">
+              <p class="eyebrow">Funnel</p><h2>Source → consultation → sale → enrollment</h2>
+              <div class="funnel">
+                {["Traffic / audience","Lead","Qualified","Consultation","Sale","Enrollment","Next program"].map((stage, index) => (
+                  <div><span>{String(index + 1).padStart(2,"0")}</span><b>{stage}</b><strong>—</strong></div>
+                ))}
+              </div>
+            </article>
+            <article class="panel">
+              <p class="eyebrow">Hypotheses</p><h2>Test what changes business result.</h2>
+              <div class="cards-mini">
+                <div><b>Channel</b><span>Owner · spend · leads · CAC · revenue</span></div>
+                <div><b>Creative / content</b><span>Message · audience · source · downstream sale</span></div>
+                <div><b>Landing</b><span>Visit → application → consultation conversion</span></div>
+                <div><b>Offer</b><span>Program fit · conversion · average check · LTV</span></div>
+              </div>
+            </article>
+          </div>
+          <article class="panel source-panel">
+            <p class="eyebrow">Why these fields exist</p><h2>Current Head of Marketing vacancy</h2>
+            <p>The public role explicitly asks for channel/funnel scaling, hypothesis testing, budget efficiency, analytics, CAC, LTV, ROMI, and decisions tied to revenue and profit.</p>
+            <a href={vacancies.find((v) => v.id === "head-of-marketing")?.source} target="_blank" rel="noopener noreferrer">Open public source ↗</a>
+          </article>
+        </section>
+
+        <section class="view" data-view="sales" hidden>
+          <div class="view-head"><div><p class="eyebrow">Sales CRM</p><h1>Consultative sales pipeline</h1><p>Warm lead → needs discovery → program fit → decision → enrollment.</p></div></div>
+          <div class="pipeline-board">
+            {["New lead","Qualified","Consultation","Program selected","Decision / follow-up","Enrolled"].map((stage, index) => (
+              <article><span>0{index + 1}</span><h3>{stage}</h3><b>—</b><small>real records after connection</small></article>
+            ))}
+          </div>
+          <div class="two-col">
+            <article class="panel">
+              <p class="eyebrow">Four-level system</p><h2>Model hierarchy without inventing roles.</h2>
+              <div class="level-stack">
+                {[1,2,3,4].map((level) => <div><span>LEVEL {level}</span><b>Bind actual KNB role after discovery</b><small>plan · conversion · coaching · accountability</small></div>)}
+              </div>
+            </article>
+            <article class="panel">
+              <p class="eyebrow">Sales scorecard</p><h2>One view for management.</h2>
+              <div class="score-list">
+                {["Conversion","Average check","Sales productivity","Profitability","Plan attainment","Follow-up SLA"].map((label) => <div><span>{label}</span><b>—</b></div>)}
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" data-view="programs" hidden>
+          <div class="view-head"><div><p class="eyebrow">Programs & cohorts</p><h1>One catalog of learning products</h1><p>Programs connect sales qualification to enrollment and learner operations.</p></div></div>
+          <div class="program-grid">
+            {programs.map((program) => (
+              <article class="program-card">
+                <div class="panel-head"><span class="tag">{program.duration}</span><span class="tag">{program.format}</span></div>
+                <h2>{program.name}</h2>
+                <ul>{program.features.map((feature) => <li>{feature}</li>)}</ul>
+                <small>{evidenceLabels[program.evidence]}</small>
+              </article>
+            ))}
+          </div>
+          <article class="panel">
+            <p class="eyebrow">Cohort template</p><h2>Planning → enrollment → active → review → completion</h2>
+            <div class="cohort-row"><strong>Demo cohort</strong><span>Managed growth</span><span>Planning</span><span>Learners: —</span><span>Completion: —</span></div>
+          </article>
+        </section>
+
+        <section class="view" data-view="students" hidden>
+          <div class="view-head"><div><p class="eyebrow">Students / members</p><h1>Learner 360</h1><p>Commercial context and learning context remain connected, but permissions stay separated.</p></div></div>
+          <div class="three-col">
+            {[
+              ["Profile","identity · contact · source · consent"],
+              ["Commercial","program interest · consultation · purchase state · next action"],
+              ["Learning","enrollment · lessons · submissions · feedback · progression"],
+              ["Community","membership · cohort · support · engagement"],
+              ["Retention","completion · alumni · renewal · next program"],
+              ["Privacy","access scope · retention · audit trail"]
+            ].map(([title, body]) => <article class="panel compact"><h2>{title}</h2><p>{body}</p><strong>—</strong></article>)}
+          </div>
+        </section>
+
+        <section class="view" data-view="learning" hidden>
+          <div class="view-head"><div><p class="eyebrow">Learning operations</p><h1>Reuse existing Academy capabilities</h1><p>Assignments, evidence, human review, support and progression already exist in Hermes Connect.</p></div></div>
+          <div class="learning-flow">
+            {[
+              ["01","Enroll","Program / cohort"],
+              ["02","Learn","Lessons / recordings"],
+              ["03","Practice","Assignments / evidence"],
+              ["04","Review","Human feedback"],
+              ["05","Support","Private questions"],
+              ["06","Progress","Human progression decision"]
+            ].map(([n,title,body]) => <article><span>{n}</span><b>{title}</b><small>{body}</small></article>)}
+          </div>
+          <article class="panel">
+            <p class="eyebrow">Permission boundary</p><h2>Reviewer and support power remain separate.</h2>
+            <p>The business CRM should read approved aggregate state; it must not bypass the existing Academy reviewer/support allowlists or turn a CRM role label into learner-review permission.</p>
+          </article>
+        </section>
+
+        <section class="view" data-view="hr" hidden>
+          <div class="view-head"><div><p class="eyebrow">HR & vacancies</p><h1>Recruiting pipeline from current public needs</h1><p>Vacancies help define which people/process modules belong in an academy-business CRM.</p></div></div>
+          <div class="vacancy-grid">
+            {vacancies.map((vacancy) => (
+              <article class="vacancy-card">
+                <div class="panel-head"><span class="tag">{vacancy.published}</span><span class="tag">{vacancy.compensation}</span></div>
+                <h2>{vacancy.title}</h2>
+                <ul>{vacancy.crmNeeds.slice(0,6).map((need) => <li>{need}</li>)}</ul>
+                <a href={vacancy.source} target="_blank" rel="noopener noreferrer">Public vacancy ↗</a>
+              </article>
+            ))}
+          </div>
+          <article class="panel">
+            <p class="eyebrow">Candidate demo</p><h2>Vacancy → screening → interview → decision → adaptation</h2>
+            <div class="candidate-list">
+              {demoCandidates.map((candidate) => <div><strong>{candidate.role}</strong><span>{candidate.stage}</span><span>Assessment: {candidate.score}</span><span>Next: {candidate.next}</span></div>)}
+            </div>
+          </article>
+        </section>
+
+        <section class="view" data-view="analytics" hidden>
+          <div class="view-head"><div><p class="eyebrow">Analytics</p><h1>Metric dictionary before fake dashboards</h1><p>Every KPI is defined first; real values appear only after trusted sources are connected.</p></div></div>
+          <div class="analytics-table">
+            <div class="table-head"><span>Metric</span><span>Current value</span><span>Evidence</span><span>Purpose</span></div>
+            {metrics.map((metric) => (
+              <div><strong>{metric.label}</strong><b>—</b><span>{evidenceLabels[metric.evidence]}</span><span>{metric.key.includes("cac") || metric.key.includes("romi") || metric.key.includes("ltv") ? "Marketing economics" : metric.key.includes("completion") || metric.key.includes("renewal") ? "Learning / retention" : "Commercial control"}</span></div>
+            ))}
+          </div>
+        </section>
+
+        <section class="view" data-view="catalog" hidden>
+          <div class="view-head"><div><p class="eyebrow">Catalog & website</p><h1>Discovery outside, operations inside</h1><p>Public Catalog is the acquisition layer. Hermes Connect is the private operational layer.</p></div></div>
+          <div class="two-col">
+            <article class="panel">
+              <p class="eyebrow">Prepared review artifact</p><h2>KNB website / Catalog concept</h2>
+              <p>A noindex visual concept is included in the same branch. It links into this CRM demo without claiming the business is publicly onboarded.</p>
+              <a class="button-link" href="/businesses/concepts/kons-na-bis/">Open website concept ↗</a>
+            </article>
+            <article class="panel">
+              <p class="eyebrow">Production gate</p><h2>Canonical company first.</h2>
+              <p>PR #1591 owns the safe company provisioning / Catalog projection path. Public opt-in and real company identity remain separate approval steps.</p>
+              <div class="status-stack"><span>Backend provisioning</span><b>Review in #1591</b><span>Public Catalog opt-in</span><b>Not performed</b><span>Live CRM data</span><b>Not connected</b></div>
+            </article>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const nav = document.querySelector("[data-demo-nav]");
+  const views = [...document.querySelectorAll("[data-view]")];
+  const buttons = [...document.querySelectorAll("[data-target]")];
+  const activate = (target) => {
+    for (const view of views) {
+      const active = view.getAttribute("data-view") === target;
+      view.toggleAttribute("hidden", !active);
+      view.classList.toggle("active", active);
+    }
+    for (const button of buttons) button.classList.toggle("active", button.getAttribute("data-target") === target);
+    history.replaceState(null, "", "#" + target);
+    document.querySelector(".workspace")?.scrollTo({ top: 0, behavior: "instant" });
+  };
+  nav?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-target]");
+    if (button) activate(button.getAttribute("data-target"));
+  });
+  const initial = location.hash.slice(1);
+  if (initial && views.some((view) => view.getAttribute("data-view") === initial)) activate(initial);
+</script>
+
+<style>
+  .crm-shell{--ink:#162b36;--muted:#67777f;--line:#dce2e4;--bg:#f4f7f7;--card:#fff;--blue:#386dff;--violet:#745fc0;--green:#7c9d33;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Manrope,"Source Sans 3",sans-serif}.topbar{height:68px;display:flex;align-items:center;gap:18px;padding:0 24px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.hc-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;margin-right:auto}.hc-brand>span{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--ink);color:#fff;font-weight:900}.hc-brand b{font-size:16px}.top-status{display:flex;gap:7px;flex-wrap:wrap}.pill,.tag{border:1px solid var(--line);background:#f8fafa;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:750;color:#52646c}.pill.demo{background:#eef0ff;color:#5141a0;border-color:#d7d2f3}.exit{font-size:13px;font-weight:750;color:inherit;text-underline-offset:4px}.app-grid{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:calc(100vh - 68px)}.sidebar{background:#fff;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto}.client{display:flex;align-items:center;gap:11px;padding:8px 8px 18px;border-bottom:1px solid var(--line)}.avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#e5dcf4,#d7ed95);font-weight:900}.client strong,.client small{display:block}.client small{font-size:11px;color:var(--muted);margin-top:3px}.nav-label,.eyebrow{text-transform:uppercase;letter-spacing:1.2px;font-size:10px;font-weight:850;color:#77878e}.nav-label{padding:19px 9px 8px;margin:0}.sidebar nav{display:grid;gap:3px}.nav-item{display:flex;gap:10px;align-items:center;text-align:left;border:0;background:transparent;border-radius:9px;padding:10px;font:inherit;font-size:13px;color:#506169;cursor:pointer}.nav-item span{font-size:10px;width:19px;color:#87959b}.nav-item:hover,.nav-item.active{background:#eef3f4;color:var(--ink);font-weight:750}.nav-item.active{box-shadow:inset 3px 0 var(--violet)}.boundary{margin:22px 6px 0;border:1px solid #e1dfef;background:#f7f5fc;border-radius:12px;padding:13px}.boundary strong{font-size:12px}.boundary p{font-size:11px;line-height:1.5;color:var(--muted);margin-bottom:0}.workspace{padding:30px;min-width:0}.view{max-width:1480px;margin:0 auto}.view[hidden]{display:none!important}.view-head{display:flex;gap:30px;justify-content:space-between;align-items:flex-start;margin-bottom:24px}.view-head h1{font-size:clamp(30px,4vw,48px);letter-spacing:-2px;margin:6px 0 7px;line-height:1.05}.view-head p:not(.eyebrow){margin:0;color:var(--muted);font-size:16px}.view-actions{display:flex;gap:9px;flex-wrap:wrap}.view-actions a,.button-link{border:1px solid var(--line);background:#fff;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:750;color:inherit;text-decoration:none}.notice{display:flex;gap:12px;align-items:center;background:#fff9dd;border:1px solid #eadfa7;border-radius:12px;padding:13px 15px;margin-bottom:16px;font-size:12px}.notice span{color:#6d6542}.metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:17px}.metric-card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px;min-height:116px}.metric-card>span,.metric-card>small{display:block}.metric-card>span{font-size:12px;color:var(--muted)}.metric-card>strong{display:block;font-size:33px;margin:12px 0 8px}.metric-card>small{font-size:10px;color:#8b989d}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.panel,.program-card,.vacancy-card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;min-width:0}.panel h2,.program-card h2,.vacancy-card h2{font-size:21px;letter-spacing:-.6px;margin:7px 0 13px}.panel p{color:var(--muted);line-height:1.55}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.pipeline{display:grid;gap:8px}.lead-row{display:grid;grid-template-columns:1.2fr .8fr 1fr;gap:12px;align-items:center;border-top:1px solid #edf0f1;padding:11px 0}.lead-row:first-child{border-top:0}.lead-row strong,.lead-row small,.lead-row b{display:block}.lead-row small{font-size:10px;color:var(--muted);margin-top:3px}.lead-row>span{font-size:11px;background:#eef1f7;border-radius:999px;padding:6px 8px;width:max-content}.requirement-list{padding-left:18px;margin:10px 0}.requirement-list li{margin:11px 0;color:var(--muted)}.requirement-list b{color:var(--ink)}.integration{display:grid;grid-template-columns:1.2fr 1fr;gap:25px;align-items:center}.integration-links{display:grid;grid-template-columns:1fr 1fr;gap:7px}.integration-links a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--line);border-radius:8px;padding:9px;font-size:10px;color:inherit}.funnel{display:grid;gap:7px}.funnel>div{display:grid;grid-template-columns:34px 1fr 60px;align-items:center;gap:10px;background:#f6f8f8;border-radius:8px;padding:9px}.funnel span{font-size:9px;color:#87959b}.funnel b{font-size:12px}.funnel strong{text-align:right}.cards-mini{display:grid;grid-template-columns:1fr 1fr;gap:9px}.cards-mini>div{border:1px solid var(--line);border-radius:10px;padding:12px}.cards-mini b,.cards-mini span{display:block}.cards-mini b{font-size:12px}.cards-mini span{font-size:10px;color:var(--muted);margin-top:5px}.source-panel{margin-top:15px}.source-panel a,.vacancy-card a{font-size:12px;font-weight:750;color:inherit;text-underline-offset:4px}.pipeline-board{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:15px}.pipeline-board article{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:130px}.pipeline-board span,.pipeline-board small{display:block;color:var(--muted);font-size:9px}.pipeline-board h3{font-size:13px;min-height:34px;margin:8px 0}.pipeline-board b{font-size:25px}.level-stack{display:grid;gap:7px}.level-stack>div{display:grid;grid-template-columns:80px 1fr;gap:5px 12px;border:1px solid var(--line);border-radius:9px;padding:11px}.level-stack span{font-size:9px;color:var(--violet);font-weight:850}.level-stack b{font-size:12px}.level-stack small{grid-column:2;font-size:10px;color:var(--muted)}.score-list{display:grid;gap:0}.score-list>div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.program-grid,.vacancy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:15px}.program-card ul,.vacancy-card ul{padding-left:18px;color:var(--muted);font-size:12px;line-height:1.65}.program-card>small{font-size:10px;color:#849197}.cohort-row,.candidate-list>div{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:center;border-top:1px solid var(--line);padding:12px 0;font-size:11px}.cohort-row{border-top:0}.compact{min-height:130px}.compact strong{font-size:26px}.learning-flow{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:15px}.learning-flow article{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;min-height:110px}.learning-flow span,.learning-flow b,.learning-flow small{display:block}.learning-flow span{font-size:9px;color:var(--violet);font-weight:850}.learning-flow b{font-size:13px;margin:9px 0}.learning-flow small{font-size:10px;color:var(--muted)}.analytics-table{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.analytics-table>div{display:grid;grid-template-columns:1.1fr .5fr 1fr 1fr;gap:12px;padding:11px 14px;border-top:1px solid var(--line);font-size:11px}.analytics-table>div:first-child{border-top:0}.analytics-table .table-head{background:#f0f4f4;font-weight:850;color:#64747b;text-transform:uppercase;font-size:9px}.analytics-table b{font-size:17px}.status-stack{display:grid;grid-template-columns:1fr auto;gap:9px;border-top:1px solid var(--line);padding-top:13px;font-size:11px}.status-stack b{text-align:right}.button-link{display:inline-flex;margin-top:8px;background:var(--ink);color:#fff}
+  button:focus-visible,a:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+  @media(max-width:1100px){.metric-grid{grid-template-columns:repeat(2,1fr)}.pipeline-board,.learning-flow{grid-template-columns:repeat(3,1fr)}.three-col{grid-template-columns:1fr 1fr}}
+  @media(max-width:850px){.top-status{display:none}.app-grid{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}.sidebar nav{grid-template-columns:repeat(3,1fr)}.boundary{display:none}.workspace{padding:22px}.two-col,.integration{grid-template-columns:1fr}.view-head{display:block}.view-actions{margin-top:13px}.program-grid,.vacancy-grid{grid-template-columns:1fr}.cohort-row,.candidate-list>div{grid-template-columns:1fr 1fr}.integration-links{margin-top:8px}}
+  @media(max-width:560px){.topbar{padding:0 14px}.hc-brand b{display:none}.exit{font-size:11px}.sidebar{padding:12px}.client{padding-bottom:12px}.nav-label{padding-top:12px}.sidebar nav{display:flex;overflow:auto;padding-bottom:5px}.nav-item{flex:0 0 auto}.nav-item span{display:none}.workspace{padding:17px}.metric-grid,.three-col,.pipeline-board,.learning-flow{grid-template-columns:1fr 1fr}.lead-row{grid-template-columns:1fr 1fr}.lead-row>div:last-child{grid-column:1/-1}.cards-mini{grid-template-columns:1fr}.analytics-table>div{grid-template-columns:1fr .4fr}.analytics-table>div span:nth-child(3),.analytics-table>div span:nth-child(4){display:none}.notice{align-items:flex-start;flex-direction:column}}
+  @media(max-width:380px){.metric-grid,.three-col,.pipeline-board,.learning-flow{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
