@@ -138,3 +138,59 @@ test("Academy setup fails closed when the same account already owns a different 
 
   sqlite.close();
 });
+
+
+test("Academy setup does not overwrite an unrelated company that wins a concurrent create race", async () => {
+  const { sqlite, db } = makeD1();
+  const { id, token } = seedIdentity(sqlite);
+  const originalPrepare = db.prepare.bind(db);
+  let injected = false;
+
+  db.prepare = (sql) => {
+    const query = originalPrepare(sql);
+    if (!injected && String(sql).includes("INSERT OR IGNORE INTO hermes_company_profiles")) {
+      const originalBind = query.bind.bind(query);
+      query.bind = (...values) => {
+        const bound = originalBind(...values);
+        const originalRun = bound.run.bind(bound);
+        bound.run = async () => {
+          if (!injected) {
+            injected = true;
+            const now = new Date().toISOString();
+            sqlite.prepare(`
+              INSERT INTO hermes_company_profiles
+                (id,owner_specialist_id,company_name,slug,company_type,city,state,website,catalog_opt_in,catalog_status,load_board_access,created_at,updated_at)
+              VALUES (?,?,?,?,?,?,?,?,0,'self_submitted',0,?,?)
+            `).run(
+              "company-concurrent",
+              id,
+              "Concurrent Other Company",
+              "concurrent-other-company",
+              "carrier",
+              "Chicago",
+              "IL",
+              "https://concurrent.example/",
+              now,
+              now,
+            );
+          }
+          return originalRun();
+        };
+        return bound;
+      };
+    }
+    return query;
+  };
+
+  const response = await onRequestPost({ request: postRequest(token, academyPayload), env: { DB: db } });
+  assert.equal(injected, true);
+  assert.equal(response.status, 409);
+  const body = await response.json();
+  assert.equal(body.error, "canonical_company_concurrent_conflict");
+  const company = sqlite.prepare("SELECT company_name,website FROM hermes_company_profiles WHERE owner_specialist_id=?").get(id);
+  assert.equal(company.company_name, "Concurrent Other Company");
+  assert.equal(company.website, "https://concurrent.example/");
+  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_academy_business_profiles").get().count, 0);
+
+  sqlite.close();
+});
