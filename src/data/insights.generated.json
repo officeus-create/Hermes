@@ -1,5 +1,262 @@
 [
   {
+    "id": "ucr-2027-registration-fees-october-2026",
+    "direction": "logistics",
+    "slug": "ucr-2027-registration-fees-october-2026",
+    "title": "2027 UCR Registration Opens With Higher Fees | Hermes Insights",
+    "description": "The 2027 Unified Carrier Registration portal opens October 1, 2026, with higher fee brackets. Hermes explains what covered carriers, brokers, freight forwarders and leasing companies should verify before January 1.",
+    "eyebrow": "Carrier Compliance Update · October 2026",
+    "h1": "2027 UCR registration is open. What should covered carriers and brokers verify now?",
+    "conciseAnswer": "The UCR Plan says the 2027 registration portal opens October 1, 2026 and the approved 2027 fees take effect the same day. Covered entities must register annually and complete registration and payment before January 1 of the registration year to avoid potential state enforcement after that date. Confirm whether the business is subject to UCR, verify the correct fleet bracket and current USDOT/authority information, and register through the official UCR/NRS route rather than relying on an old fee table.",
+    "explanation": [
+      "What changed: the 2027 Unified Carrier Registration cycle opens October 1, 2026. The UCR Plan lists 2027 carrier/forwarder fees of $55 for 0–2 vehicles, $167 for 3–5, $333 for 6–20, $1,163 for 21–100, $5,548 for 101–1,000 and $54,165 for 1,001 or more. Brokers and leasing companies are listed at $55. FMCSA's final rule says the 2027 structure averages about 20% above the 2025–2026 structure, with increases varying by bracket.",
+      "Why it matters: UCR is an annual registration obligation for covered entities, not a freight-market rate or optional load-board fee. A stale 2026 fee table can create a compliance error during carrier onboarding or annual readiness review. Historical Hermes carrier-readiness material is used only for the anonymized operating pattern that authority, registration and compliance checks belong before load execution; no old fees, earnings, contacts, customer data or commercial promises are reused as current facts.",
+      "What to do: first use the official UCR eligibility guidance to confirm whether the entity must register. Then verify the fleet count and current USDOT/authority information, select the correct 2027 bracket, and complete registration through the official UCR/NRS process before January 1, 2027. Treat Hermes checklists as operational preparation only and use official UCR/FMCSA sources for the regulatory requirement and fee amount.",
+      "Result: a carrier, broker or operations team can update its 2027 compliance checklist with the correct current fee table and a dated registration deadline instead of carrying forward last year's numbers. This does not determine whether a particular business is legally subject to UCR; the official UCR eligibility tool and appropriate professional guidance remain the authority. Source/date: UCR Plan, 2027 registration opening and fee schedule effective October 1, 2026; FMCSA final rule published September 2026."
+    ],
+    "takeaways": [
+      "The 2027 UCR registration portal opens October 1, 2026",
+      "Approved 2027 UCR fees are higher than the 2025–2026 structure and vary by fleet bracket",
+      "Covered entities should complete registration and payment before January 1, 2027",
+      "Verify eligibility, fleet bracket and current USDOT/authority information against official sources before filing"
+    ],
+    "faq": [
+      {
+        "question": "What is the 2027 UCR fee for a carrier with 0–2 vehicles?",
+        "answer": "The UCR Plan lists $55 for the 0–2 vehicle carrier/forwarder bracket for registration year 2027. Brokers and leasing companies are also listed at $55."
+      },
+      {
+        "question": "When does 2027 UCR registration open?",
+        "answer": "The UCR Plan states that the 2027 Registration Portal through the NRS opens October 1, 2026."
+      },
+      {
+        "question": "When should a covered entity complete 2027 UCR registration?",
+        "answer": "The UCR Plan says an entity subject to UCR should complete registration and pay the fee before January 1 of the registration year; after that date, a non-registrant may be subject to state enforcement."
+      },
+      {
+        "question": "Does this Hermes article decide whether my company is subject to UCR?",
+        "answer": "No. Use the official UCR eligibility guidance and appropriate regulatory or professional advice for that determination. Hermes uses the update only as operational education."
+      }
+    ],
+    "related": [
+      {
+        "title": "New Authority Car Hauler Readiness Checklist",
+        "body": "Review authority, insurance, equipment, operating area, documents and first-load boundaries before entering operating workflows.",
+        "href": "/logistics/resources/new-authority-car-hauler-readiness-checklist/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Continue to carrier, shipper, dealer and operating resources in the canonical Logistics direction.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Keep compliance readiness separate from source-gated load and capacity discovery.",
+        "href": "/load-board/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open Carrier Readiness Checklist",
+      "href": "/logistics/resources/new-authority-car-hauler-readiness-checklist/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "UCR Plan — Fee Brackets / 2027 Registration Portal",
+    "sourceUrl": "https://plan.ucr.gov/fee-brackets/",
+    "sourcePublishedAt": "2026-10-01",
+    "datePublished": "2026-10-01",
+    "dateModified": "2026-10-01",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "2027 UCR registration",
+      "UCR fees 2027",
+      "Unified Carrier Registration",
+      "carrier compliance 2027",
+      "broker UCR fee",
+      "motor carrier registration"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "UCR Plan 2027 fee brackets and registration opening",
+        "use": "primary",
+        "url": "https://plan.ucr.gov/fee-brackets/",
+        "observedAt": "2026-10-01",
+        "eventDate": "2026-10-01",
+        "notes": "Primary UCR Plan source for the 2027 registration opening, annual-registration timing and exact 2027 fee brackets."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "FMCSA final rule for 2027 UCR fees",
+        "use": "verification",
+        "url": "https://www.fmcsa.dot.gov/regulations/federal-register-documents/2026-17893",
+        "observedAt": "2026-10-01",
+        "eventDate": "2026-09-01",
+        "notes": "Primary FMCSA source confirming adoption of the 2027 UCR fee increase and its approximate average change from the prior fee structure."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical carrier-readiness operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern that authority, registration and compliance readiness belong before load execution. No names, contacts, company identifiers, loads, rates, earnings or private commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes carrier-readiness operating material",
+      "nowPeriod": "2027 UCR cycle opening October 1, 2026",
+      "summary": "Historical Hermes carrier-readiness work treated authority and compliance checks as prerequisites to operating workflows; the October 2026 UCR cycle supplies the current official fee table and deadline. No historical fee or commercial term is carried forward as current truth.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://plan.ucr.gov/fee-brackets/"
+    },
+    "publicationScore": {
+      "score": 85,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+12 first-party evidence",
+        "+8 historical comparison",
+        "+15 search value",
+        "+10 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "cloudflare-agentic-web-second-audience-september-2026",
+    "direction": "technology",
+    "slug": "cloudflare-agentic-web-second-audience-september-2026",
+    "title": "Cloudflare: AI Agent Requests Grew 1,700% on Its Network | Hermes Insights",
+    "description": "Cloudflare reported that daily requests from AI agents on its network grew more than 1,700% over the past year. Hermes turns the September 30 telemetry into a practical website, SEO/GEO and agent-governance checklist.",
+    "eyebrow": "Agentic Web Update · September 2026",
+    "h1": "Cloudflare says AI-agent requests grew more than 1,700%. What should business websites change?",
+    "conciseAnswer": "Cloudflare reported on September 30, 2026 that daily requests from AI agents on its network grew more than 1,700% over the prior year. That is Cloudflare network telemetry, not proof that every website has the same traffic mix. Treat people, search crawlers, AI-training crawlers and task-oriented agents as different audiences: keep canonical facts machine-readable, measure actual bot/agent traffic, and apply access rules by purpose rather than blocking everything labeled AI.",
+    "explanation": [
+      "What changed: Cloudflare says average HTTP request volume on its network rose from about 63 million requests per second at the end of 2024 to about 115 million, and daily requests from AI agents on its network grew by more than 1,700% over the past year. Cloudflare frames these agents as a second audience alongside people. These are Cloudflare network observations, so they should not be converted into a claim that every site receives the same proportion of agent traffic.",
+      "Why it matters: websites are increasingly consumed by software that searches, summarizes, compares or acts for a user. That changes the operating problem from simple human-page design to audience governance: which automated clients should discover public facts, which should be allowed to train on content, which may act on behalf of users, and how should the business measure each path? Historical Hermes marketing and technology material contributes only the anonymized pattern that owned-site discoverability, controlled publishing and measurable handoffs matter; current traffic claims come only from Cloudflare's dated public telemetry.",
+      "What to do: separate search crawlers, AI-training crawlers and task-oriented agents in policy and measurement. Keep canonical business facts, service boundaries, structured data and internal links clear; inspect server or edge telemetry before changing access rules; preserve legitimate search discovery where intended; and connect agent-driven visits or actions to owned analytics and CRM evidence rather than counting bot volume as business success.",
+      "Result: the website becomes easier to govern for two audiences—people and authorized software—without confusing automated traffic with qualified demand. The useful outcome is better visibility into who is accessing the site and why, plus purpose-specific controls. It is not a ranking, lead or revenue guarantee. Source/date: Cloudflare Blog, September 30, 2026."
+    ],
+    "takeaways": [
+      "Cloudflare says daily AI-agent requests on its network grew more than 1,700% over the past year",
+      "Cloudflare network telemetry should not be generalized into a universal traffic mix for every site",
+      "Search discovery, AI training and task-oriented agents should be governed as different use cases",
+      "Measure agent traffic and business outcomes separately instead of treating automated request volume as demand"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Cloudflare crawler-control analysis",
+        "body": "Review the existing Hermes explanation of separating search discoverability from AI-training controls.",
+        "href": "/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Connect agent governance to websites, CRM and controlled business automation.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "SEO Services",
+        "body": "Keep crawl, indexation, structured data and measurement tied to real search discovery.",
+        "href": "/services/seo/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review Crawler-Control Analysis",
+      "href": "/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Technology",
+      "href": "/paths/technology/"
+    },
+    "sourceLabel": "Cloudflare Blog — The Internet has a second audience",
+    "sourceUrl": "https://blog.cloudflare.com/agentic-web/",
+    "sourcePublishedAt": "2026-09-30",
+    "datePublished": "2026-10-01",
+    "dateModified": "2026-10-01",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "AI agents web traffic",
+      "agentic web",
+      "AI crawler governance",
+      "AI agent SEO",
+      "Cloudflare AI agents",
+      "website agent traffic"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Cloudflare September 30 agentic-web telemetry",
+        "use": "primary",
+        "url": "https://blog.cloudflare.com/agentic-web/",
+        "observedAt": "2026-10-01",
+        "eventDate": "2026-09-30",
+        "notes": "Primary Cloudflare source for network request volume and the reported year-over-year growth in requests from AI agents."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing and technology operating archive",
+        "use": "context_only",
+        "notes": "Used only for anonymized patterns around owned-site discoverability, controlled publishing and measurable handoffs. No private messages, credentials, client metrics or commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing and technology operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Hermes historical work treated the owned website as the canonical discovery and conversion surface; Cloudflare's September 2026 telemetry adds evidence that task-oriented agents are becoming a material automated audience. Current scale claims come only from Cloudflare's dated public source.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://blog.cloudflare.com/agentic-web/"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+19 source authority",
+        "+8 first-party evidence",
+        "+5 historical comparison",
+        "+13 search value",
+        "+9 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
