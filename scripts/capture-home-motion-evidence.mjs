@@ -11,6 +11,13 @@ try {
     const page=await context.newPage();
     await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
     await page.evaluate(()=>document.fonts.ready);
+    await page.getByRole('button',{name:'Continue without analytics',exact:true}).click();
+    const images=await page.evaluate(async()=>{
+      const posters=[...document.querySelectorAll('.home-portal-art img')];
+      for(const image of posters) image.loading='eager';
+      await Promise.all([...document.querySelectorAll('.home-master-stage img')].map(image=>image.decode()));
+      return posters.map(image=>({src:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}));
+    });
     await page.waitForFunction(()=>[...document.querySelectorAll('[data-home-motion]')].every(node=>node.dataset.motionState==='running'));
     await page.evaluate(()=>{
       for(const layer of document.querySelectorAll('[data-home-motion]')) {
@@ -28,7 +35,7 @@ try {
     await page.screenshot({path:`${directory}/home-${width}-reduced.png`,fullPage:false});
     const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,layers:[...document.querySelectorAll('[data-home-motion]')].map(node=>({kind:node.dataset.homeMotion,state:node.dataset.motionState,display:getComputedStyle(node).display,animations:node.getAnimations().length}))}));
     if(geometry.scrollWidth>width||geometry.layers.some(layer=>layer.display!=='block'||layer.animations!==0)) throw new Error(`Home motion geometry/reduced-motion failed at ${width}`);
-    results.push(geometry);
+    results.push({...geometry,images});
     await context.close();
   }
   await writeFile(`${directory}/evidence.json`,JSON.stringify({sha:process.env.GITHUB_SHA,results},null,2)+'\n');

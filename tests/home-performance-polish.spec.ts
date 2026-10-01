@@ -16,7 +16,9 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   expect(page).not.toContain('const homepageLcpImage = "/images/path-logistics-system.jpg"');
   expect(page).not.toContain("preloadImage={homepageLcpImage}");
 
-  expect(scene).not.toContain("<img");
+  expect(scene).toContain('type="image/avif"');
+  expect(scene).toContain("srcset=");
+  expect(scene).toContain('decoding="async"');
   expect(scene).not.toContain("<video");
   expect(scene).not.toContain("<canvas");
   expect(layer).not.toContain("new Image()");
