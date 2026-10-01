@@ -151,3 +151,20 @@ test("Academy business appears in the shared Hermes account portfolio through ca
   assert.match(switcher, /item\?\.key === "academy_business"/);
   assert.match(switcher, /"academy-business": "\/services\/hermes-connect\/academy\/business\/workspace\//);
 });
+
+
+test("Academy owner workspace exposes bounded team-role structure without claiming active RBAC", async () => {
+  const workspace = await read("src/pages/services/hermes-connect/academy/business/workspace/index.astro");
+  assert.match(workspace, /TEAM ACCESS · RBAC/);
+  assert.match(workspace, />OWNER</);
+  assert.match(workspace, />ADMIN</);
+  assert.match(workspace, />MARKETING</);
+  assert.match(workspace, />SALES</);
+  assert.match(workspace, />HR</);
+  assert.match(workspace, />CURATOR</);
+  assert.match(workspace, />REVIEWER</);
+  assert.match(workspace, />READ ONLY</);
+  assert.match(workspace, /permission backend pending/);
+  assert.match(workspace, /not presented as fully activated multi-user RBAC/);
+  assert.match(workspace, /company-scoped permissions/);
+});
