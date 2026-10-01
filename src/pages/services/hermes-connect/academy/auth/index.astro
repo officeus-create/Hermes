@@ -7,63 +7,71 @@ import "../../../../../styles/hermes-academy-app.css";
 
 <BaseLayout
   title="Academy Learner Access | Hermes Connect"
-  description="Sign in with an existing Hermes identity or create a learner identity for Hermes Business Academy."
+  description="Вхід або створення learner identity для Hermes Business Academy через спільний Hermes-акаунт."
   robots="noindex,nofollow"
+  htmlLang="uk"
+  locale="uk"
 >
   <div class="academy-app-page">
-    <SiteHeader activePath="/paths/academy/" />
+    <SiteHeader activePath="/paths/academy/" locale="uk" />
     <main id="main-content" class="academy-app-shell">
-      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
-        <a href="/services/hermes-connect/academy/">Academy learner access</a><span>/</span><span aria-current="page">Sign in</span>
-      </nav>
+      <div class="academy-auth-toolbar">
+        <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+          <a href="/services/hermes-connect/academy/" data-i18n="academy">Hermes Connect Academy</a><span>/</span><span aria-current="page" data-i18n="signInCrumb">Вхід</span>
+        </nav>
+        <div class="academy-auth-lang" aria-label="Language">
+          <button type="button" data-lang="uk" class="active">UA</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+      </div>
 
       <section class="academy-app-hero">
         <article class="academy-app-card">
-          <p class="academy-app-eyebrow">Shared Hermes identity</p>
-          <h1>Use one Hermes account across the ecosystem.</h1>
-          <p>If you already have a Hermes Connect session, the Academy uses that same identity. New learners create an identity through the existing Hermes authentication service; no second password store, account database or Academy-only session cookie is created.</p>
-          <div class="academy-app-note">Creating a learner account does not approve an Academy application or enroll you in a cohort. Enrollment state is shown separately in the learner dashboard.</div>
+          <p class="academy-app-eyebrow" data-i18n="shared">Спільний Hermes-акаунт</p>
+          <h1 data-i18n="title">Один Hermes-акаунт для всієї екосистеми.</h1>
+          <p data-i18n="lead">Якщо у вас уже є сесія Hermes Connect, Academy використовує ту саму identity. Новий учасник створює акаунт через спільну Hermes authentication service — без другого сховища паролів або окремого Academy login.</p>
+          <div class="academy-app-note" data-i18n="boundary">Створення learner account не означає автоматичне зарахування на програму. Enrollment відображається окремо в learner dashboard.</div>
           <div class="academy-app-actions" style="margin-top:14px">
-            <a class="academy-app-button" href="/services/hermes-connect/academy/business/auth/?mode=register&lang=uk">Ви власник академії / курсів? Відкрити Academy Business CRM →</a>
+            <a class="academy-app-button" data-owner-link href="/services/hermes-connect/academy/business/auth/?mode=register&lang=uk" data-i18n="owner">Ви власник академії / курсів? Відкрити Academy Business CRM →</a>
           </div>
         </article>
 
         <article class="academy-app-card academy-app-dark">
           <div id="academy-auth-loading">
-            <span class="academy-app-status">Secure session</span>
-            <h2 style="margin-top:14px">Checking your Hermes session…</h2>
-            <p>Existing Hermes sessions work here without another login.</p>
+            <span class="academy-app-status" data-i18n="secure">Безпечна сесія</span>
+            <h2 style="margin-top:14px" data-i18n="checking">Перевіряємо вашу Hermes-сесію…</h2>
+            <p data-i18n="checkingCopy">Чинна Hermes-сесія працює тут без повторного входу.</p>
           </div>
 
           <div id="academy-auth-active" class="academy-app-hidden">
-            <span class="academy-app-status">Session active</span>
-            <h2 style="margin-top:14px">Welcome, <span data-academy-auth-name>Learner</span>.</h2>
+            <span class="academy-app-status" data-i18n="active">Сесія активна</span>
+            <h2 style="margin-top:14px"><span data-i18n="welcome">Вітаємо,</span> <span data-academy-auth-name>Learner</span>.</h2>
             <p data-academy-auth-email></p>
             <div class="academy-app-actions">
-              <a class="academy-app-button intelligence" href="/services/hermes-connect/academy/dashboard/">Open learner dashboard</a>
-              <button class="academy-app-button" type="button" data-academy-logout>Log out</button>
+              <a class="academy-app-button intelligence" data-dashboard-link href="/services/hermes-connect/academy/dashboard/" data-i18n="dashboard">Відкрити learner dashboard</a>
+              <button class="academy-app-button" type="button" data-academy-logout data-i18n="logout">Вийти</button>
             </div>
           </div>
 
           <div id="academy-auth-forms" class="academy-app-hidden">
             <div class="academy-app-tabs" aria-label="Authentication mode">
-              <button class="academy-app-tab active" type="button" data-auth-tab="login">Login</button>
-              <button class="academy-app-tab" type="button" data-auth-tab="register">Create account</button>
+              <button class="academy-app-tab active" type="button" data-auth-tab="login" data-i18n="login">Увійти</button>
+              <button class="academy-app-tab" type="button" data-auth-tab="register" data-i18n="create">Створити акаунт</button>
             </div>
             <div class="academy-app-alert" data-auth-alert role="status"></div>
 
             <form class="academy-app-form academy-auth-section active" data-auth-form="login">
               <div class="academy-app-field"><label for="academy-login-email">Email</label><input id="academy-login-email" name="email" type="email" autocomplete="email" required /></div>
-              <div class="academy-app-field"><label for="academy-login-password">Password</label><input id="academy-login-password" name="password" type="password" autocomplete="current-password" minlength="8" required /></div>
-              <button class="academy-app-button intelligence" type="submit">Secure login</button>
+              <div class="academy-app-field"><label for="academy-login-password" data-i18n="password">Пароль</label><input id="academy-login-password" name="password" type="password" autocomplete="current-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit" data-i18n="secureLogin">Безпечний вхід</button>
             </form>
 
             <form class="academy-app-form academy-auth-section" data-auth-form="register">
-              <div class="academy-app-field"><label for="academy-reg-name">Full name</label><input id="academy-reg-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="100" required /></div>
+              <div class="academy-app-field"><label for="academy-reg-name" data-i18n="fullName">Ім’я та прізвище</label><input id="academy-reg-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="100" required /></div>
               <div class="academy-app-field"><label for="academy-reg-email">Email</label><input id="academy-reg-email" name="email" type="email" autocomplete="email" required /></div>
-              <div class="academy-app-field"><label for="academy-reg-location">Country and city</label><input id="academy-reg-location" name="location" type="text" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
-              <div class="academy-app-field"><label for="academy-reg-password">Password</label><input id="academy-reg-password" name="password" type="password" autocomplete="new-password" minlength="8" required /></div>
-              <button class="academy-app-button intelligence" type="submit">Create learner identity</button>
+              <div class="academy-app-field"><label for="academy-reg-location" data-i18n="location">Країна та місто</label><input id="academy-reg-location" name="location" type="text" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
+              <div class="academy-app-field"><label for="academy-reg-password" data-i18n="password">Пароль</label><input id="academy-reg-password" name="password" type="password" autocomplete="new-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit" data-i18n="createLearner">Створити learner account</button>
             </form>
           </div>
         </article>
@@ -74,17 +82,65 @@ import "../../../../../styles/hermes-academy-app.css";
 </BaseLayout>
 
 <script>
+  const dictionary = {
+    uk: {
+      academy:"Hermes Connect Academy",signInCrumb:"Вхід",shared:"Спільний Hermes-акаунт",title:"Один Hermes-акаунт для всієї екосистеми.",
+      lead:"Якщо у вас уже є сесія Hermes Connect, Academy використовує ту саму identity. Новий учасник створює акаунт через спільну Hermes authentication service — без другого сховища паролів або окремого Academy login.",
+      boundary:"Створення learner account не означає автоматичне зарахування на програму. Enrollment відображається окремо в learner dashboard.",
+      owner:"Ви власник академії / курсів? Відкрити Academy Business CRM →",secure:"Безпечна сесія",checking:"Перевіряємо вашу Hermes-сесію…",checkingCopy:"Чинна Hermes-сесія працює тут без повторного входу.",
+      active:"Сесія активна",welcome:"Вітаємо,",dashboard:"Відкрити learner dashboard",logout:"Вийти",login:"Увійти",create:"Створити акаунт",password:"Пароль",secureLogin:"Безпечний вхід",
+      fullName:"Ім’я та прізвище",location:"Країна та місто",createLearner:"Створити learner account",loginFailed:"Не вдалося увійти. Перевірте email і пароль.",registrationFailed:"Не вдалося створити акаунт."
+    },
+    en: {
+      academy:"Hermes Connect Academy",signInCrumb:"Sign in",shared:"Shared Hermes identity",title:"Use one Hermes account across the ecosystem.",
+      lead:"If you already have a Hermes Connect session, Academy uses that same identity. New learners create an account through the shared Hermes authentication service — no second password store or Academy-only login.",
+      boundary:"Creating a learner account does not automatically enroll you in a program. Enrollment state is shown separately in the learner dashboard.",
+      owner:"Own an academy / courses business? Open Academy Business CRM →",secure:"Secure session",checking:"Checking your Hermes session…",checkingCopy:"An existing Hermes session works here without another login.",
+      active:"Session active",welcome:"Welcome,",dashboard:"Open learner dashboard",logout:"Log out",login:"Login",create:"Create account",password:"Password",secureLogin:"Secure login",
+      fullName:"Full name",location:"Country and city",createLearner:"Create learner identity",loginFailed:"We could not sign you in. Check your email and password.",registrationFailed:"We could not create your account."
+    }
+  } as const;
+  type Lang = keyof typeof dictionary;
+  const params = new URLSearchParams(window.location.search);
+  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  const withLang = (path: string) => {
+    const url = new URL(path, window.location.origin);
+    if (lang === "en") url.searchParams.set("lang", "en");
+    else url.searchParams.set("lang", "uk");
+    return url.pathname + url.search + url.hash;
+  };
+  const applyLanguage = (next: Lang) => {
+    lang = next;
+    document.documentElement.lang = next;
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
+      const key = node.dataset.i18n as keyof typeof dictionary.uk;
+      const value = dictionary[next][key];
+      if (value) node.textContent = value;
+    });
+    document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.classList.toggle("active", button.dataset.lang === next));
+    const owner = document.querySelector<HTMLAnchorElement>("[data-owner-link]");
+    const dashboard = document.querySelector<HTMLAnchorElement>("[data-dashboard-link]");
+    if (owner) owner.href = withLang("/services/hermes-connect/academy/business/auth/?mode=register");
+    if (dashboard) dashboard.href = withLang("/services/hermes-connect/academy/dashboard/");
+  };
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.addEventListener("click", () => {
+    const next: Lang = button.dataset.lang === "en" ? "en" : "uk";
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", next);
+    window.location.assign(url.pathname + url.search + url.hash);
+  }));
+  applyLanguage(lang);
+
   const loading = document.getElementById("academy-auth-loading");
   const active = document.getElementById("academy-auth-active");
   const forms = document.getElementById("academy-auth-forms");
   const alert = document.querySelector<HTMLElement>("[data-auth-alert]");
-  const requestedMode = new URLSearchParams(window.location.search).get("mode");
+  const requestedMode = params.get("mode");
 
   const show = (target: HTMLElement | null) => {
     [loading, active, forms].forEach((node) => node?.classList.add("academy-app-hidden"));
     target?.classList.remove("academy-app-hidden");
   };
-
   const showAlert = (message: string, kind: "error" | "success" = "error") => {
     if (!alert) return;
     alert.textContent = message;
@@ -95,13 +151,11 @@ import "../../../../../styles/hermes-academy-app.css";
     alert.textContent = "";
     alert.className = "academy-app-alert";
   };
-
   const selectTab = (mode: "login" | "register") => {
     document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach((button) => button.classList.toggle("active", button.dataset.authTab === mode));
     document.querySelectorAll<HTMLElement>("[data-auth-form]").forEach((form) => form.classList.toggle("active", form.dataset.authForm === mode));
     clearAlert();
   };
-
   document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach((button) => {
     button.addEventListener("click", () => selectTab(button.dataset.authTab === "register" ? "register" : "login"));
   });
@@ -120,65 +174,51 @@ import "../../../../../styles/hermes-academy-app.css";
         show(active);
         return;
       }
-    } catch {
-      // Fall through to the normal login/register forms.
-    }
+    } catch {}
     show(forms);
   }
 
   document.querySelector<HTMLFormElement>('[data-auth-form="login"]')?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearAlert();
+    event.preventDefault(); clearAlert();
     const form = event.currentTarget as HTMLFormElement;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
     try {
       const values = new FormData(form);
       const response = await fetch("/api/auth/login", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: values.get("email"), password: values.get("password") }),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) throw new Error(data.error || "Login failed");
-      window.location.assign("/services/hermes-connect/academy/dashboard/");
-    } catch (error) {
-      showAlert(error instanceof Error ? error.message : "Login failed");
+      if (!response.ok || !data.success) throw new Error("login_failed");
+      window.location.assign(withLang("/services/hermes-connect/academy/dashboard/"));
+    } catch {
+      showAlert(dictionary[lang].loginFailed);
     } finally {
       if (submit) submit.disabled = false;
     }
   });
 
   document.querySelector<HTMLFormElement>('[data-auth-form="register"]')?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearAlert();
+    event.preventDefault(); clearAlert();
     const form = event.currentTarget as HTMLFormElement;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
     try {
       const values = new FormData(form);
       const response = await fetch("/api/auth/register", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: values.get("email"),
-          password: values.get("password"),
-          name: values.get("name"),
-          role: "Academy Learner",
-          location: values.get("location"),
+          email: values.get("email"), password: values.get("password"), name: values.get("name"),
+          role: "Academy Learner", location: values.get("location"),
           bio: "Hermes Academy learner identity for reviewed training access.",
         }),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.success) {
-        const message = data.error || (Array.isArray(data.errors) ? data.errors.join(", ") : "Registration failed");
-        throw new Error(message);
-      }
-      window.location.assign("/services/hermes-connect/academy/dashboard/");
-    } catch (error) {
-      showAlert(error instanceof Error ? error.message : "Registration failed");
+      if (!response.ok || !data.success) throw new Error("registration_failed");
+      window.location.assign(withLang("/services/hermes-connect/academy/dashboard/"));
+    } catch {
+      showAlert(dictionary[lang].registrationFailed);
     } finally {
       if (submit) submit.disabled = false;
     }
@@ -191,3 +231,11 @@ import "../../../../../styles/hermes-academy-app.css";
 
   checkSession();
 </script>
+
+<style>
+  .academy-auth-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+  .academy-auth-lang{display:flex;padding:3px;border:1px solid rgba(148,163,184,.35);border-radius:999px;background:#fff}
+  .academy-auth-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}
+  .academy-auth-lang button.active{background:#111827;color:#fff}
+  @media(max-width:720px){.academy-auth-toolbar{align-items:flex-start}}
+</style>
