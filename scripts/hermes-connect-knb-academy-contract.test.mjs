@@ -10,6 +10,15 @@ test('KNB academy demo keeps client evidence and CRM structure explicit',()=>{
   assert.match(html,/Consultation → sale conversion/);
   assert.match(html,/Course completion/);
   assert.match(html,/Exact brief pending/);
+  assert.match(html,/PUBLIC OPERATING SIGNALS/);
+  assert.match(html,/4-рівнева система продажів/);
+  assert.match(html,/Керівник відділу маркетингу/);
+  assert.match(html,/Менеджер з продажу \/ куратор/);
+  assert.match(html,/Рекрутер/);
+  assert.match(html,/vacancy11308040/);
+  assert.match(html,/vacancy11308016/);
+  assert.match(html,/vacancy11196301/);
+  assert.match(html,/vacancy11342667/);
   assert.match(html,/no live customer data/i);
   assert.match(html,/no claim of CRM activation/i);
   assert.match(html,/noindex,nofollow/i);
