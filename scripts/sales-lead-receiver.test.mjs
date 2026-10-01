@@ -114,7 +114,7 @@ const catalogWorkerResponse = await leadEmailWorker.fetch(new Request("https://l
 }), workerEnv);
 assert.equal(catalogWorkerResponse.status, 202);
 assert.equal(emailMessages.length, catalogEmailCountBefore + 1);
-assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG] [ID:catalog_mail_1296_12345]");
+assert.equal(emailMessages.at(-1).subject, "!!! LEAD !!! [HERMES INQUIRY] [CATALOG] [ID:catalog_mail_1296_12345]");
 assert.equal(emailMessages.at(-1).to, "officeus@hermeslogisticsus.com");
 emailMessages.length = catalogEmailCountBefore;
 
@@ -137,6 +137,107 @@ assert.equal(emailMessages.length, ownerCatalogEmailCountBefore + 1);
 assert.equal(emailMessages.at(-1).to, "verified-shop-owner@example.com");
 assert.equal(emailMessages.at(-1).subject, "[HERMES CATALOG] [CUSTOMER INQUIRY]");
 emailMessages.length = ownerCatalogEmailCountBefore;
+
+const ownerAlertBaseline = emailMessages.length;
+const ownerAlertEnv = {
+  ...workerEnv,
+  OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com",
+};
+const ownerLeadRequestId = "owner_lead_alert_20261001";
+const ownerLeadResponse = await leadEmailWorker.fetch(new Request("https://lead-email.internal/v1/send", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${serviceToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_id: ownerLeadRequestId,
+    subject: "[HERMES INQUIRY] [IT DEVELOPMENT]",
+    text: [
+      "Hermes Contact Request",
+      "----------------------",
+      "Direction: IT Development",
+      "Name: Saad Saleem",
+      "Email: saad@example.com",
+      "Message:",
+      "We need an AI-powered CRM and automation system for our business.",
+      "",
+      "Submitted from: /paths/technology/",
+      "Server delivery record",
+      `Request ID: ${ownerLeadRequestId}`,
+    ].join("\n"),
+    reply_to: "saad@example.com",
+  }),
+}), ownerAlertEnv);
+assert.equal(ownerLeadResponse.status, 202);
+assert.deepEqual(await ownerLeadResponse.json(), {
+  ok: true,
+  recipient_count: 2,
+  owner_alert: "delivered",
+  calendar_invite: "attached",
+});
+assert.equal(emailMessages.length, ownerAlertBaseline + 2);
+const ownerLeadPrimary = emailMessages.at(-2);
+const ownerLeadPersonal = emailMessages.at(-1);
+assert.equal(ownerLeadPrimary.to, "officeus@hermeslogisticsus.com");
+assert.equal(ownerLeadPrimary.subject, `!!! LEAD !!! [HERMES INQUIRY] [IT DEVELOPMENT] [ID:${ownerLeadRequestId}]`);
+assert.equal(ownerLeadPersonal.to, "volkogon.v@gmail.com");
+assert.equal(ownerLeadPersonal.replyTo, "saad@example.com");
+assert.equal(ownerLeadPersonal.subject, `!!! LEAD !!! IT Development - Saad Saleem [ID:${ownerLeadRequestId}]`);
+assert.match(ownerLeadPersonal.text, /\n\s*LEAD\n/);
+assert.equal(ownerLeadPersonal.attachments.length, 1);
+assert.equal(ownerLeadPersonal.attachments[0].filename, `lead-${ownerLeadRequestId}.ics`);
+assert.match(ownerLeadPersonal.attachments[0].type, /^text\/calendar/);
+const ownerLeadCalendar = Buffer.from(ownerLeadPersonal.attachments[0].content, "base64").toString("utf8");
+assert.match(ownerLeadCalendar, /METHOD:REQUEST/);
+assert.match(ownerLeadCalendar, /SUMMARY:LEAD - IT Development - Saad Saleem/);
+assert.match(ownerLeadCalendar, /ATTENDEE;CN=Vladimir Viktorovich;RSVP=FALSE:mailto:volkogon\.v@gmail\.com/);
+assert.match(ownerLeadCalendar, /TRIGGER:-PT5M/);
+
+const qaLeadCountBefore = emailMessages.length;
+const qaLeadResponse = await leadEmailWorker.fetch(new Request("https://lead-email.internal/v1/send", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${serviceToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_id: "owner_qa_alert_20261001",
+    subject: "[HERMES INQUIRY] [IT DEVELOPMENT]",
+    text: [
+      "Hermes Contact Request",
+      "Direction: IT Development",
+      "Name: Hermes Paid Plan Production Smoke",
+      "Email: officeus@hermeslogisticsus.com",
+      "SYNTHETIC QA — NOT A CUSTOMER / NOT A PAYMENT / DO NOT PROCESS",
+    ].join("\n"),
+    reply_to: "officeus@hermeslogisticsus.com",
+  }),
+}), ownerAlertEnv);
+assert.equal(qaLeadResponse.status, 202);
+assert.equal((await qaLeadResponse.json()).owner_alert, "not_applicable");
+assert.equal(emailMessages.length, qaLeadCountBefore + 1);
+assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [IT DEVELOPMENT] [ID:owner_qa_alert_20261001]");
+
+const academyAlertCountBefore = emailMessages.length;
+const academyAlertResponse = await leadEmailWorker.fetch(new Request("https://lead-email.internal/v1/send", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${serviceToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    request_id: "academy_alert_test_20261001",
+    subject: "[HERMES INQUIRY] [ACADEMY]",
+    text: "Hermes Contact Request\nDirection: Hermes Business Academy\nName: Academy Candidate\nEmail: candidate@example.com\nI want to study logistics and build my career through the Academy program.",
+    reply_to: "candidate@example.com",
+  }),
+}), ownerAlertEnv);
+assert.equal(academyAlertResponse.status, 202);
+assert.equal((await academyAlertResponse.json()).owner_alert, "not_applicable");
+assert.equal(emailMessages.length, academyAlertCountBefore + 1);
+assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [ACADEMY] [ID:academy_alert_test_20261001]");
+emailMessages.length = ownerAlertBaseline;
 
 const validPayload = {
   request_id: "release_test_12345",
@@ -221,7 +322,7 @@ assert.equal(serviceCalls.length, 2);
 assert.equal(serviceCalls[1].payload.subject, "[HERMES INQUIRY] [MARKETING]");
 assert.equal(serviceCalls[1].payload.reply_to, "lead@example.com");
 assert.equal(emailMessages.length, 2);
-assert.equal(emailMessages[1].subject, "[HERMES INQUIRY] [MARKETING] [ID:contact_test_12345]");
+assert.equal(emailMessages[1].subject, "!!! LEAD !!! [HERMES INQUIRY] [MARKETING] [ID:contact_test_12345]");
 assert.equal(emailMessages[1].replyTo, "lead@example.com");
 assert.match(emailMessages[1].text, /Name: Test Website Lead/);
 assert.match(emailMessages[1].text, /Platforms: SEO \/ Google Search, LinkedIn/);
@@ -252,7 +353,7 @@ const technologyBriefResponse = await onRequest({
 });
 assert.equal(technologyBriefResponse.status, 200);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
-assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [IT DEVELOPMENT] [ID:technology_brief_test_12345]");
+assert.equal(emailMessages.at(-1).subject, "!!! LEAD !!! [HERMES INQUIRY] [IT DEVELOPMENT] [ID:technology_brief_test_12345]");
 assert.match(emailMessages.at(-1).text, /END OF TECHNOLOGY BRIEF/);
 assert.match(emailMessages.at(-1).text, /System\/workflow needed: CRM and automation/);
 
