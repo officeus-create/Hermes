@@ -15,6 +15,10 @@ test.describe("KNB client concept", () => {
       "https://biznes-club-knb.com/zrostannia-u-biznesi-ads",
     );
     await expect(page.locator(".steps .step")).toHaveCount(7);
+    for (const service of ["Просування", "SEO / GEO", "Сайт", "CRM та процеси"]) {
+      await expect(page.getByRole("heading", { name: service, exact: true })).toBeVisible();
+    }
+    await expect(page.getByText("Заявка → консультація → вибір програми → участь", { exact: false })).toBeVisible();
   });
 
   test("does not overflow at mobile widths", async ({ page }) => {
