@@ -28,12 +28,12 @@ const verticals = [
   },
   {
     name: "Academy",
-    status: "PRIVATE LEARNER WORKSPACE",
-    body: "Students, programs, assignments, practice, evidence, progress, support, and human-reviewed progression in one learner workspace.",
-    modules: ["Students", "Programs", "Evidence", "Progress"],
+    status: "BUSINESS CRM + LEARNER ACCESS",
+    body: "Academies, courses and business clubs get an owner CRM for leads, consultations, cohorts, assignments, marketing KPI, HR and retention, while learners keep a separate reviewed learning workspace.",
+    modules: ["Sales CRM", "Learners", "Cohorts", "Marketing KPI"],
     href: "/services/hermes-connect/academy/",
     private: true,
-    ctaLabel: "Open learner workspace",
+    ctaLabel: "Choose Academy owner or learner access",
   },
   {
     name: "Beauty & Wellness",
@@ -101,7 +101,7 @@ const schema = [
       url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/?mode=register",
       description: "Repair Shop registration and software access are $0 during setup; paid continuation is confirmed separately.",
     },
-    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current public live vertical; Academy has a private learner workspace; Beauty & Wellness has a private owner foundation for salon profile, team, and services; unreleased business configurations remain product previews.",
+    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current public live vertical; Academy has separate private business-owner CRM and learner access; Beauty & Wellness has a private owner foundation for salon profile, team, and services; unreleased business configurations remain product previews.",
   },
   {
     "@context": "https://schema.org",
@@ -121,7 +121,7 @@ const schema = [
 
 <BaseLayout
   title="Hermes Connect | AI Operating System for Business"
-  description="Run your business with AI. Hermes Connect adapts one operating system to different business workflows, with Repair Shops as the current public live vertical and private Academy and Beauty workspaces with bounded scopes."
+  description="Run your business with AI. Hermes Connect adapts one operating system to different business workflows, with Repair Shops as the current public live vertical and private Academy business-owner, Academy learner, and Beauty workspaces with bounded scopes."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" theme="light" />
@@ -137,13 +137,13 @@ const schema = [
             <a class="hc-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register"><Wrench size={18} aria-hidden="true" />Start Repair Shops free <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="hc-secondary" href="/services/hermes-connect/repair-shops/">See live Repair Shops</a>
             <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/?mode=login">Owner access</a>
-            <a class="hc-secondary" href="/services/hermes-connect/academy/">Open Academy</a>
+            <a class="hc-secondary" href="/services/hermes-connect/academy/">Academy CRM / learner access</a>
             <a class="hc-secondary" href="#choose-your-business">Choose your business</a>
           </div>
           <div class="hc-truth" aria-label="Current Hermes Connect product status">
             <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
             <span><CheckCircle2 size={15} aria-hidden="true" />$0 during Repair Shop setup · $99/month after setup if you continue</span>
-            <span><ShieldCheck size={15} aria-hidden="true" />Academy has private learner access</span>
+            <span><ShieldCheck size={15} aria-hidden="true" />Academy has business-owner CRM and separate learner access</span>
             <span><ShieldCheck size={15} aria-hidden="true" />Beauty has a private owner foundation</span>
             <span><CheckCircle2 size={15} aria-hidden="true" />Unreleased industries remain previews</span>
           </div>
