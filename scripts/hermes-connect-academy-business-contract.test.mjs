@@ -106,7 +106,7 @@ test("KNB concept and demo route into real Academy business onboarding with UA E
   assert.match(demo, /data-lang="uk"/);
   assert.match(demo, /data-lang="en"/);
   assert.match(auth, /academyType:"business_club"/);
-  assert.match(auth, /https:\/\/biznes-club-knb\.com\//);
+  assert.match(auth, /https:\/\/kons-na-bis\.com\//);
 });
 
 test("Academy business appears in the shared Hermes account portfolio through canonical company id", async () => {
