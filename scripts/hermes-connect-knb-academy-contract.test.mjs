@@ -45,6 +45,9 @@ test('KNB Catalog concept turns the candidate brief into a source-bounded market
   assert.match(concept,/Overthinking/);
   assert.match(concept,/Human capital/);
   assert.match(concept,/CANDIDATE ASSESSMENT|Candidate Assessment/);
+  assert.match(concept,/CANDIDATE INTAKE · FORM REVIEW/);
+  assert.match(concept,/Salary history → expectation/);
+  assert.match(concept,/Google Form · reference only · not submitted/);
   assert.match(concept,/DIAGNOSTIC → PROGRAM FIT/);
   assert.match(concept,/Key business metrics/);
   assert.match(concept,/Hiring system/);
