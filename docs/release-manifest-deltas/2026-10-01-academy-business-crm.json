@@ -6,6 +6,22 @@
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
+      "route": "/businesses/marketing-growth-audit-example/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/marketing-growth-audit-example/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
       "route": "/businesses/concepts/kons-na-bis/",
       "source_state": "current_main",
       "indexability": "noindex",
@@ -71,8 +87,8 @@
     }
   ],
   "acceptance": {
-    "route_count_added": 4,
-    "indexable_route_count_added": 0,
+    "route_count_added": 5,
+    "indexable_route_count_added": 1,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
