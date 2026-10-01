@@ -1,5 +1,6 @@
 (() => {
   const repairGrid = document.querySelector('[data-catalog-grid]');
+  const grid = repairGrid;
   const academyGrid = document.querySelector('[data-academy-catalog-grid]');
   if (!repairGrid && !academyGrid) return;
 
@@ -95,7 +96,7 @@
       }
 
       if (repairGrid) {
-        const publishedCount = repairGrid.querySelectorAll('[data-catalog-card]').length;
+        const publishedCount = grid.querySelectorAll('[data-catalog-card]').length;
         document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
           node.textContent = String(publishedCount);
         });
