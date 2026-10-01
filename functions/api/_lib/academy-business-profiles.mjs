@@ -1,5 +1,14 @@
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 
+async function ensureColumns(db, table, columns) {
+  const existing = await db.prepare(`PRAGMA table_info(${table})`).all();
+  const names = new Set((existing?.results || []).map((row) => String(row.name)));
+  for (const [name, definition] of Object.entries(columns)) {
+    if (names.has(name)) continue;
+    await db.prepare(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`).run();
+  }
+}
+
 export function cleanAcademyBusinessText(value, max = 160) {
   return String(value ?? "").replace(CONTROL_CHARS, "").trim().slice(0, max);
 }
@@ -19,6 +28,7 @@ export async function ensureAcademyBusinessProfilesSchema(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_academy_business_profiles (
       id TEXT PRIMARY KEY,
+      company_id TEXT,
       owner_specialist_id TEXT NOT NULL UNIQUE,
       business_name TEXT NOT NULL,
       slug TEXT NOT NULL UNIQUE,
@@ -29,12 +39,16 @@ export async function ensureAcademyBusinessProfilesSchema(db) {
       website TEXT,
       phone TEXT,
       timezone TEXT,
-      catalog_opt_in INTEGER NOT NULL DEFAULT 1,
+      catalog_opt_in INTEGER NOT NULL DEFAULT 0,
       catalog_status TEXT NOT NULL DEFAULT 'self_submitted',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     )
   `).run();
+  await ensureColumns(db, "hermes_academy_business_profiles", {
+    company_id: "TEXT",
+  });
+  await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_academy_business_company ON hermes_academy_business_profiles(company_id) WHERE company_id IS NOT NULL").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_academy_business_catalog ON hermes_academy_business_profiles(catalog_opt_in, catalog_status, country_code, city)").run();
 }
 
