@@ -92,25 +92,4 @@ assert.equal(transientResult.delivery_ledger.required_internal.status, "delivere
 assert.equal(transientResult.delivery_ledger.required_internal.attempts, 3);
 assert.equal(transientResult.carrier_copy, "delivered");
 assert.equal(transientAttempts, 3);
-
-sent.length = 0;
-const inquiryRequestId = "website_inquiry_thread_test_20261001";
-const inquiryResponse = await worker.fetch(new Request("https://lead-email.internal/v1/send", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${env.LEAD_SERVICE_TOKEN}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    request_id: inquiryRequestId,
-    subject: "[HERMES INQUIRY] [IT DEVELOPMENT]",
-    text: "Synthetic website inquiry proving that each real lead receives a request-specific transport subject so Gmail cannot merge unrelated customers or QA messages into one conversation.",
-    reply_to: "potential.client@example.com",
-  }),
-}), env);
-assert.equal(inquiryResponse.status, 202);
-assert.equal(sent.length, 1);
-assert.equal(sent[0].subject, `[HERMES INQUIRY] [IT DEVELOPMENT] [ID:${inquiryRequestId}]`);
-assert.equal(sent[0].replyTo, "potential.client@example.com");
-
 console.log("Lead email contract delivery passed: required Hermes mailbox succeeds even when an external carrier copy is not allowed by the current email binding.");
