@@ -25,6 +25,24 @@ export const konsNaBisClient = Object.freeze({
   },
   evidence: {
     warmLeadsPerSalesManager: "20-25",
-    exactClientTestAssignment: "not_recovered_from_source_thread"
+    exactClientTestAssignment: "recovered_2026-10-01_18:24",
+    candidateAssessment: {
+      receivedAt: "2026-10-01T18:24:00+03:00",
+      deadline: "2026-10-02T09:00:00+03:00",
+      submissionFormat: "Google Docs",
+      visualFormat: "MindMap_or_scheme",
+      task1: "Analyze any KNB social channel and explain what you would implement immediately as the direction lead and which growth paths you see.",
+      task2: "Build a marketing acquisition funnel and offer for the seven-week Managed Business Growth Strategy program.",
+      socialSources: {
+        instagram: "https://www.instagram.com/konsnabis",
+        youtube: "https://youtube.com/@oleksandr_morozov_knb",
+        tiktok: "https://www.tiktok.com/@konsnabis",
+        facebook: "https://www.facebook.com/konsnabis/",
+        threads: "https://www.threads.com/@konsnabis",
+        telegram: "https://t.me/+XSUYZOYC-Ws0OWFi"
+      },
+      referenceFormProvided: true,
+      referenceFormMustNotBeSubmittedByHermes: true
+    }
   }
 });
