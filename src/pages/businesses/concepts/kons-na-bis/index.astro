@@ -4,11 +4,11 @@ import {konsNaBisClient as client} from "../../../../data/catalog-client-kons-na
 
 const observedAt = "2026-10-01";
 const socialSnapshot = [
-  { label: "Instagram", value: "77.1K", detail: "followers", href: "https://www.instagram.com/konsnabis/" },
-  { label: "YouTube · Oleksandr", value: "64.2K", detail: "subscribers · 1.3K videos", href: "https://www.youtube.com/@Oleksandr_Morozov_KnB" },
-  { label: "TikTok", value: "19.6K", detail: "followers · 163.1K likes", href: "https://www.tiktok.com/@konsnabis" },
-  { label: "Threads", value: "5,971", detail: "followers · 845 threads", href: "https://www.threads.com/@konsnabis" },
-  { label: "Facebook", value: "85.7K", detail: "followers · public metadata snapshot", href: "https://www.facebook.com/konsnabis/" },
+  { label: "Instagram", value: "77.1K", detail: "followers", entity: "company_channel", observedAt, href: "https://www.instagram.com/konsnabis/" },
+  { label: "YouTube · Oleksandr", value: "64.2K", detail: "subscribers · 1.3K videos", entity: "personal_brand", observedAt, href: "https://www.youtube.com/@Oleksandr_Morozov_KnB" },
+  { label: "TikTok", value: "19.6K", detail: "followers · 163.1K likes", entity: "company_channel", observedAt, href: "https://www.tiktok.com/@konsnabis" },
+  { label: "Threads", value: "5,971", detail: "followers · 845 threads", entity: "company_channel", observedAt, href: "https://www.threads.com/@konsnabis" },
+  { label: "Facebook", value: "85.7K", detail: "followers · public metadata snapshot", entity: "company_channel", observedAt, href: "https://www.facebook.com/konsnabis/" },
 ];
 
 const instagramAudit = [
@@ -132,7 +132,7 @@ const sources = [
       <p data-i18n="socialCopy">Публічні цифри — лише snapshot, не доказ продажів. Для управління потрібен ланцюг від конкретного content asset до CRM outcome.</p>
     </div>
     <div class="knb-social-grid">
-      {socialSnapshot.map((item)=><a href={item.href} target="_blank" rel="noopener noreferrer"><small>{item.label}</small><strong>{item.value}</strong><span>{item.detail}</span></a>)}
+      {socialSnapshot.map((item)=><a href={item.href} target="_blank" rel="noopener noreferrer"><small>{item.label}</small><strong>{item.value}</strong><span>{item.detail}</span><em>{item.entity === "personal_brand" ? "personal brand" : "company channel"} · observed {item.observedAt}</em></a>)}
     </div>
   </section>
 
@@ -237,7 +237,7 @@ const sources = [
       <a href="/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=kons-na-bis&lang=uk" data-language-route data-i18n="register">Зареєструвати / відкрити Academy CRM →</a>
     </div>
     <div class="knb-crm-fields">
-      {["source_channel","content_id","campaign_id","CTA / keyword","entry_offer","primary pain","diagnostic_primary_gap","baseline","recommended_module","business stage","manager","consultation status","program fit","objection","sale / revenue","cohort","completion","renewal"].map((field)=><span>{field}</span>)}
+      {["source_channel","content_id","campaign_id","CTA / keyword","entry_offer","primary pain","diagnostic_primary_gap","baseline","recommended_module","reason_to_believe","business stage","manager","consultation status","program fit","objection","sale / revenue","cohort","completion","renewal"].map((field)=><span>{field}</span>)}
     </div>
     <p data-i18n="crmCopy">Одна людина не повинна ставати новим контактом при переході Instagram → Telegram → consultation. CRM зберігає один lead/customer identity та історію каналів.</p>
   </section>
