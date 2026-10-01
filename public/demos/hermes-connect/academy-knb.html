@@ -17,7 +17,7 @@
 </head>
 <body>
 <div class="shell">
-<header class="topbar"><a class="brand" href="./academy.html"><span class="brand-mark"></span><span><strong>Hermes Connect</strong><small>Academy CRM · client demo</small></span></a><div class="top-actions"><span class="badge">Noindex demo</span><div class="lang-switch" aria-label="Language"><button type="button" class="active" data-lang="uk">UA</button><button type="button" data-lang="en">EN</button></div><a class="btn" href="./academy.html">← Academy</a><a class="btn" href="/services/hermes-connect/academy/business/auth/?mode=register&source=knb-demo&business=kons-na-bis&lang=uk">Зареєструвати CRM →</a><a class="btn iris" href="../../../../businesses/concepts/kons-na-bis/">Catalog concept →</a></div></header>
+<header class="topbar"><a class="brand" href="./academy.html"><span class="brand-mark"></span><span><strong>Hermes Connect</strong><small>Academy CRM · client demo</small></span></a><div class="top-actions"><span class="badge">Noindex demo</span><div class="lang-switch" aria-label="Language"><button type="button" class="active" data-lang="uk">UA</button><button type="button" data-lang="en">EN</button></div><a class="btn" href="./academy.html">← Academy</a><a class="btn" data-language-route href="/services/hermes-connect/academy/business/auth/?mode=register&source=knb-demo&business=kons-na-bis&lang=uk">Зареєструвати CRM →</a><a class="btn iris" href="../../../../businesses/concepts/kons-na-bis/">Catalog concept →</a></div></header>
 
 <section class="hero">
 <article class="hero-copy"><div class="eyebrow">Конс на Бі$ · структурований demo workspace</div><h1>CRM для бізнес-академії: від заявки до вимірюваного результату учасника.</h1><p>Демо поєднує продаж освітніх програм, навчальний прогрес, маркетингову аналітику, рекрутинг і керування наступною дією. Показники, яких немає у підтверджених джерелах, не вигадуються.</p><div class="hero-links"><a class="btn primary" href="#crm">Відкрити CRM pipeline</a><a class="btn" href="#test">Test Assignment / KPI</a></div></article>
@@ -152,6 +152,7 @@ const translateText=(lang)=>{
   nodes.forEach(node=>{const raw=node.nodeValue||'';const trimmed=raw.trim();const next=map.get(trimmed);if(next)node.nodeValue=raw.replace(trimmed,next);});
   document.documentElement.lang=lang;
   document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  document.querySelectorAll('[data-language-route]').forEach(link=>{const url=new URL(link.getAttribute('href')||'/',location.origin);url.searchParams.set('lang',lang);link.setAttribute('href',url.pathname+url.search+url.hash);});
   try{localStorage.setItem('hermes-connect-language',lang)}catch{}
 };
 let initial='uk';try{if(localStorage.getItem('hermes-connect-language')==='en')initial='en'}catch{}
