@@ -80,6 +80,9 @@ const genericCase=await readFile(new URL('../src/pages/businesses/marketing-grow
 test('Catalog exposes a reusable indexable marketing growth strategy example',()=>{
   assert.match(genericCase,/Marketing Growth Audit Example/);
   assert.match(genericCase,/Social → CRM → Revenue/);
+  assert.match(genericCase,/DIAGNOSTIC LENSES/);
+  assert.match(genericCase,/Overthinking \/ complexity/);
+  assert.match(genericCase,/Human capital/);
   assert.match(genericCase,/90-DAY OPERATING PLAN/);
   assert.match(genericCase,/Qualified attention/);
   assert.match(genericCase,/CAC · LTV\/retention · ROMI/);
