@@ -11,8 +11,8 @@
 .stage-col{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:210px}.stage-col h4{margin:0 0 10px;font-size:12px}.lead-card{background:var(--pearl);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}.lead-card b,.lead-card small{display:block}.lead-card small{margin-top:5px;color:var(--muted)}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}.tabs button{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:999px;cursor:pointer}.tabs button.active{background:var(--obsidian);color:#fff}.tab-panel{display:none}.tab-panel.active{display:block}
 .metric-row{display:grid;grid-template-columns:1.3fr repeat(4,.7fr);gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.metric-row:last-child{border:0}
-.metric-row input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff}.lang-switch{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:999px;background:#fff}.lang-switch button{border:0;background:transparent;border-radius:999px;padding:7px 9px;font-weight:800;cursor:pointer}.lang-switch button.active{background:var(--obsidian);color:#fff}
-@media(max-width:900px){.hero{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}.metric-row{grid-template-columns:1fr 1fr}.metric-row>*:first-child{grid-column:1/-1}}
+.metric-row input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff}.signal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.signal-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff}.signal-card small,.signal-card strong,.signal-card span{display:block}.signal-card small{color:var(--muted);font-size:10px}.signal-card strong{margin:7px 0;font-size:15px}.signal-card span{color:var(--muted);font-size:12px;line-height:1.5}.signal-card a{display:inline-flex;margin-top:10px;font-size:11px;font-weight:800}.lang-switch{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:999px;background:#fff}.lang-switch button{border:0;background:transparent;border-radius:999px;padding:7px 9px;font-weight:800;cursor:pointer}.lang-switch button.active{background:var(--obsidian);color:#fff}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}.metric-row{grid-template-columns:1fr 1fr}.metric-row>*:first-child{grid-column:1/-1}.signal-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -77,6 +77,16 @@
 <div class="tab-panel" data-panel="hr"><div class="panel-head"><div><small>RECRUITING</small><h3>Candidate pipeline</h3></div></div><div class="pipeline"><div class="pipe-step"><span>1</span><b>Applicant</b><small>CV/source</small></div><div class="pipe-step"><span>2</span><b>Screen</b><small>Recruiter review</small></div><div class="pipe-step"><span>3</span><b>Interview</b><small>Scorecard</small></div><div class="pipe-step"><span>4</span><b>Test</b><small>Assignment evidence</small></div><div class="pipe-step"><span>5</span><b>Offer / No</b><small>Human decision</small></div></div></div>
 </section>
 
+<section class="panel" style="margin-bottom:16px">
+<div class="panel-head"><div><small>PUBLIC OPERATING SIGNALS</small><h3>Що поточні вакансії говорять про потрібну CRM.</h3><p>Поля нижче походять з актуальних публічних вакансій КНБ. Це не приватні вимоги клієнта і не твердження про фактичні KPI.</p></div><span class="stage">Source-backed</span></div>
+<div class="signal-grid">
+  <article class="signal-card"><small>25 Sep 2026 · Marketing</small><strong>Керівник відділу маркетингу</strong><span>Budget & channel control · funnels · analytics · revenue / profit orientation · CAC · LTV · ROMI.</span><a href="https://robota.ua/company4890229/vacancy11308040" target="_blank" rel="noopener noreferrer">Public vacancy ↗</a></article>
+  <article class="signal-card"><small>25 Sep 2026 · Sales</small><strong>Керівник відділу продажу</strong><span>4-рівнева система продажів · управління керівниками · scaling · analytics · фінальний фінансовий результат.</span><a href="https://alliance-desktop.robota.ua/ru/company4890229/vacancy11308016" target="_blank" rel="noopener noreferrer">Public vacancy ↗</a></article>
+  <article class="signal-card"><small>Current · Sales</small><strong>Менеджер з продажу / куратор</strong><span>Гарячі заявки · підбір програми · CRM notes · довгострокові відносини · next action.</span><a href="https://alliance-desktop.robota.ua/ru/company4890229/vacancy11196301" target="_blank" rel="noopener noreferrer">Public vacancy ↗</a></article>
+  <article class="signal-card"><small>29 Sep 2026 · HR</small><strong>Рекрутер</strong><span>Screening · interview · potential / culture assessment · candidate stages · adaptation.</span><a href="https://robota.ua/company4890229/vacancy11342667" target="_blank" rel="noopener noreferrer">Public vacancy ↗</a></article>
+</div>
+</section>
+
 <section class="panel" id="test">
 <div class="panel-head"><div><small>TEST ASSIGNMENT / KPI BOARD</small><h3>Показати результат цифрами, але не підміняти відсутній бриф</h3><p>Точний текст персонального тестового завдання КНБ у доступних джерелах не знайдено. Тут закладена рамка, яка готова прийняти їхні точні KPI без переробки CRM.</p></div><span class="stage warn">Exact brief pending</span></div>
 <div class="metric-row"><b>KPI</b><span>Baseline</span><span>Target</span><span>Actual</span><span>Status</span></div>
@@ -123,6 +133,14 @@ const uaToEn=new Map([
 ['До / після — тільки дані, внесені учасником або підтверджені куратором.','Before / after — only data entered by the learner or confirmed by a reviewer.'],
 ['Завершення, NPS/feedback, членство, повторні програми.','Completion, NPS/feedback, membership, repeat programs.'],
 ['Вакансія CMO прямо вимагає аналітику, unit economics, funnel, CAC, LTV та ROMI.','The CMO vacancy explicitly requires analytics, unit economics, funnel, CAC, LTV, and ROMI.'],
+['Що поточні вакансії говорять про потрібну CRM.','What current vacancies say the CRM should support.'],
+['Поля нижче походять з актуальних публічних вакансій КНБ. Це не приватні вимоги клієнта і не твердження про фактичні KPI.','The fields below come from current public KNB vacancies. They are not private client requirements or claims about actual KPI.'],
+['Керівник відділу маркетингу','Head of Marketing'],
+['Керівник відділу продажу','Head of Sales'],
+['Менеджер з продажу / куратор','Sales manager / program curator'],
+['Рекрутер','Recruiter'],
+['4-рівнева система продажів · управління керівниками · scaling · analytics · фінальний фінансовий результат.','4-level sales system · manager-of-managers control · scaling · analytics · final financial result.'],
+['Гарячі заявки · підбір програми · CRM notes · довгострокові відносини · next action.','Warm leads · program fit · CRM notes · long-term relationships · next action.'],
 ['Показати результат цифрами, але не підміняти відсутній бриф','Show measurable results without inventing a missing brief'],
 ['Точний текст персонального тестового завдання КНБ у доступних джерелах не знайдено. Тут закладена рамка, яка готова прийняти їхні точні KPI без переробки CRM.','The exact KNB test assignment was not found in the available sources. This structure is ready to accept exact client KPI without rebuilding the CRM.']
 ]);
