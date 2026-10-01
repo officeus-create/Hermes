@@ -58,6 +58,11 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(workspace, /Pending human review/);
   assert.match(workspace, /PROGRAMS & COHORTS/);
   assert.match(workspace, /EXECUTIVE KPI DICTIONARY/);
+  assert.match(workspace, /ACQUISITION CONTROL/);
+  assert.match(workspace, /Certificate 283€/);
+  assert.match(workspace, /diagnostic gap/);
+  assert.match(workspace, /recommended module/);
+  assert.match(workspace, /not real KNB leads|не реальні leads КНБ/);
   assert.match(workspace, /repeat\(10,minmax\(150px,1fr\)\)/);
   assert.match(workspace, /Multi-level sales structure/);
   assert.match(workspace, /Average check/);
