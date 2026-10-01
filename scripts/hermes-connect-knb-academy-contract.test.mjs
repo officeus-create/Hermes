@@ -23,3 +23,33 @@ test('KNB academy demo keeps client evidence and CRM structure explicit',()=>{
   assert.match(html,/no claim of CRM activation/i);
   assert.match(html,/noindex,nofollow/i);
 });
+
+
+const concept=await readFile(new URL('../src/pages/businesses/concepts/kons-na-bis/index.astro',import.meta.url),'utf8');
+test('KNB Catalog concept turns the candidate brief into a source-bounded marketing showcase',()=>{
+  assert.match(concept,/Social → CRM → Revenue/);
+  assert.match(concept,/77\.1K/);
+  assert.match(concept,/19\.6K/);
+  assert.match(concept,/5,971/);
+  assert.match(concept,/64\.2K/);
+  assert.match(concept,/TASK 1 · INSTAGRAM AUDIT/);
+  assert.match(concept,/TASK 2 · 7-WEEK PROGRAM FUNNEL/);
+  assert.match(concept,/6-point Diagnostic/);
+  assert.match(concept,/Qualified attention/);
+  assert.match(concept,/CAC · LTV \/ renewal · ROMI/);
+  assert.match(concept,/DIAGNOSTIC LENSES · PROVIDED TRAINING/);
+  assert.match(concept,/Overthinking/);
+  assert.match(concept,/Human capital/);
+  assert.match(concept,/CANDIDATE ASSESSMENT|Candidate Assessment/);
+  assert.match(concept,/source_channel/);
+  assert.match(concept,/campaign_id/);
+  assert.match(concept,/cohort/);
+  assert.match(concept,/renewal/);
+  assert.match(concept,/request_same_audit/);
+  assert.match(concept,/type=marketing-package&months=3/);
+  assert.match(concept,/data-lang="uk"/);
+  assert.match(concept,/data-lang="en"/);
+  assert.match(concept,/noindex,nofollow/);
+  assert.match(concept,/client-owned claims/i);
+  assert.match(concept,/не офіційний сайт КНБ/);
+});
