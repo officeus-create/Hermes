@@ -111,6 +111,22 @@ const schema = [
         <div class="map-scroll"><div class="tile-map" role="img" aria-label="United States tile map showing active Hermes Catalog states">{usStateDirectoryTiles.map((state) => { const count = stateCounts.get(state.slug) ?? 0; const style = `grid-row:${state.row};grid-column:${state.col};`; return count > 0 ? <a class="state-tile active" style={style} href={`/businesses/${state.slug}/`} aria-label={`${state.name}: ${count} business profile`}><strong>{state.abbreviation}</strong><span>{count}</span></a> : <span class="state-tile pending" style={style} title={`${state.name}: research queue`} aria-label={`${state.name}: research queue`}><strong>{state.abbreviation}</strong></span>; })}</div></div>
       </section>
 
+      <section class="catalog-results" id="academy-client-concepts" aria-labelledby="academy-client-concepts-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Client concept · Academy</p><h2 id="academy-client-concepts-title">Business Academy CRM showcase</h2></div>
+          <p>Structured demo based on a current client workstream. It is intentionally marked as a concept until the owner approves public activation.</p>
+        </div>
+        <div class="business-grid">
+          <article class="business-card" data-catalog-card data-search-text="конс на бі$ kons na bis business academy crm courses education sales marketing cac ltv romi ukraine">
+            <div class="business-card__top"><span>Business academy</span><span>Client concept</span></div>
+            <h3>Конс на Бі$</h3>
+            <p>Ukraine · Business club & education</p>
+            <ul><li>Academy CRM</li><li>Warm-lead sales pipeline</li><li>Cohorts & assignments</li><li>CAC · LTV · ROMI dashboard</li></ul>
+            <div class="business-card__actions"><a href="/businesses/concepts/kons-na-bis/">View Catalog concept</a><span><a href="/demos/hermes-connect/academy-knb.html">Open Hermes Connect demo →</a></span></div>
+          </article>
+        </div>
+      </section>
+
       <section class="catalog-results international-results" id="international-businesses" aria-labelledby="international-businesses-title">
         <div class="section-heading">
           <div><p class="eyebrow">Secondary discovery layer</p><h2 id="international-businesses-title">International businesses</h2></div>
