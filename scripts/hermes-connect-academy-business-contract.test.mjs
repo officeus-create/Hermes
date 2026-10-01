@@ -81,3 +81,16 @@ test("KNB concept and demo route into real Academy business onboarding with UA E
   assert.match(demo, /data-lang="uk"/);
   assert.match(demo, /data-lang="en"/);
 });
+
+
+test("Academy business appears in the shared Hermes account portfolio", async () => {
+  const [accountApi, switcher] = await Promise.all([
+    read("functions/api/hermes-connect/account.ts"),
+    read("src/components/HermesConnectAccountSwitcher.astro"),
+  ]);
+  assert.match(accountApi, /key: "academy_business"/);
+  assert.match(accountApi, /getOwnedAcademyBusiness/);
+  assert.match(accountApi, /academy\/business\/workspace/);
+  assert.match(switcher, /item\?\.key === "academy_business"/);
+  assert.match(switcher, /"academy-business": "\/services\/hermes-connect\/academy\/business\/workspace\//);
+});
