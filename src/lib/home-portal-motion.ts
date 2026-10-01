@@ -1,11 +1,11 @@
-/** One brief compositor animation per visible portal; no timers or frame loop. */
+/** Three gentle subject cycles with rests; no panel motion, timers or frame loop. */
 export function initializeHomePortalMotion() {
-  const layers = [...document.querySelectorAll<SVGSVGElement>("[data-home-motion]")];
+  const layers = [...document.querySelectorAll<HTMLElement>("[data-home-motion]")];
   if (!layers.length || !window.IntersectionObserver || !Element.prototype.animate) return;
   const preference = matchMedia("(prefers-reduced-motion: reduce)");
   const visible = new Set<Element>();
-  const animations = new Map<SVGSVGElement, Animation>();
-  const completed = new Set<SVGSVGElement>();
+  const animations = new Map<HTMLElement, Animation>();
+  const completed = new Set<HTMLElement>();
 
   function update() {
     for (const layer of layers) {
@@ -19,21 +19,21 @@ export function initializeHomePortalMotion() {
       const canRun = visible.has(layer) && !document.hidden;
       if (completed.has(layer)) continue;
       if (!animation && canRun) {
-        const patch = layer.querySelector("g");
-        if (!patch) continue;
         const truck = layer.dataset.homeMotion === "truck";
-        animation = patch.animate(truck ? [
-          { transform: "translate(0, 0)", opacity: 0 },
-          { transform: "translate(-.3px, -1px)", opacity: 1, offset: .18 },
-          { transform: "translate(-1.8px, -6px)", opacity: 1, offset: .8 },
-          { transform: "translate(-2px, -7px)", opacity: 0 },
+        animation = layer.animate(truck ? [
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 1 },
+          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 1, offset: .48 },
+          { transform: "translate(-35%,75%) rotate(-18deg)", opacity: 0, offset: .55 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 0, offset: .56 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 1, offset: .64 },
+          { transform: "translate(0,0) rotate(-18deg)", opacity: 1 },
         ] : [
-          { transform: "rotate(0deg)", opacity: 0 },
-          { transform: "rotate(-.6deg)", opacity: 1, offset: .25 },
-          { transform: "rotate(.5deg)", opacity: 1, offset: .65 },
-          { transform: "rotate(0deg)", opacity: 0 },
-        ], { duration: 6000, iterations: 1, easing: "ease-in-out" });
-        patch.style.transformOrigin = "181px 148px";
+          { transform: "rotate(0deg)" },
+          { transform: "rotate(-2.2deg)", offset: .16 },
+          { transform: "rotate(1.8deg)", offset: .32 },
+          { transform: "rotate(0deg)", offset: .48 },
+          { transform: "rotate(0deg)" },
+        ], { duration: 12000, iterations: 3, easing: "ease-in-out" });
         animations.set(layer, animation);
         animation.onfinish = () => {
           completed.add(layer);
