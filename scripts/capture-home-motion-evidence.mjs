@@ -32,6 +32,14 @@ try {
     await page.waitForFunction(()=>[...document.querySelectorAll('[data-home-motion]')].every(node=>node.dataset.motionState==='finished'));
     await page.screenshot({path:`${directory}/home-${width}-settled.png`,fullPage:false});
     if(width===390) await page.screenshot({path:`${directory}/home-390-full-settled.png`,fullPage:true});
+    if(width===1440) {
+      for(const direction of ['logistics','marketing','technology','academy']) {
+        await page.locator(`[data-route-id="${direction}"]`).hover();
+        await page.waitForTimeout(900);
+        await page.locator(`[data-route-id="${direction}"]`).screenshot({path:`${directory}/home-1440-${direction}-hover.png`,animations:'allow'});
+        await page.mouse.move(0,0);
+      }
+    }
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.screenshot({path:`${directory}/home-${width}-reduced.png`,fullPage:false});
     const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,layers:[...document.querySelectorAll('[data-home-motion]')].map(node=>({kind:node.dataset.homeMotion,state:node.dataset.motionState,display:getComputedStyle(node).display,animations:node.getAnimations().length}))}));

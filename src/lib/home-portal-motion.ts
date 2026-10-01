@@ -59,6 +59,15 @@ export function initializeHomePortalMotion() {
     update();
   }, { threshold: .2 });
   layers.forEach(layer => observer.observe(layer));
+  const truck = layers.find(layer => layer.dataset.homeMotion === "truck");
+  const logistics = truck?.closest<HTMLElement>(".home-master-route-logistics");
+  const restartFinishedTruck = () => {
+    if (!truck || preference.matches || !completed.has(truck)) return;
+    completed.delete(truck);
+    update();
+  };
+  logistics?.addEventListener("pointerenter", restartFinishedTruck);
+  logistics?.addEventListener("focusin", restartFinishedTruck);
   preference.addEventListener("change", update);
   document.addEventListener("visibilitychange", update);
   update();

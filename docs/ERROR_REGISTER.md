@@ -348,3 +348,11 @@ FAILED_APPROACH: No repeated generation, fake resolution upscale, heavy autoplay
 WORKING_APPROACH: Source-preserving quality93 WebP283474B; reuse masked actual truck/leaves, one6s compositor animation paused offscreen/hidden and canceled for reduced motion.
 EVIDENCE: Local metadata/source pixels viewed; build388 pages and full static suite pass. Browser results and screenshot/preview fidelity pending exact-head CI.
 LESSON/REUSE_RULE: Check native source dimensions before attributing blur to CSS or compression. Bound decorative animation time, visibility, motion preferences and transfer budget independently.
+
+## 2026-10-01 — Home nested-letter semantics and decorative crop
+STATUS: Heading issue fixed on PR1590 head e265c252; decorative crop refinement pending preview QA.
+PROBLEM: Wrapping the i in “directions” for a short hop preserved visible text but inserted spaces into its computed accessible name. A separate build check also searched the serialized HTML for a contiguous word, despite already checking the exact rendered h1. Initial marketing cards covered approved art copy; Academy shelf overlays looked like artificial columns.
+ROOT_CAUSE: Inline visual markup affects accessible-name spacing; screenshot review at the final crop is needed for any decorative layer over generated art.
+WORKING_APPROACH: Explicitly preserve the h1 accessible name “Four directions.” and retain the exact rendered-heading build gate; remove only its redundant raw-markup substring check. Capture individual hover portals under the artifact transfer limit, then refine decorative geometry from actual pixels.
+EVIDENCE: PR1590 first Website run 36854008608 failed the heading assertions; corrected head e265c252 Website 36854981058 passed, visual run 36854981146 passed with artifact 11158726272, and viewed desktop/mobile frames showed the crop issue. New visual adjustment requires its own current-head verification.
+LESSON/REUSE_RULE: Test computed accessible names after animating a single letter. Keep public headline text and contract checks semantic. Inspect hover and mobile pixels before accepting overlays; animation state alone does not establish visual quality.
