@@ -2,7 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const page = await readFile(new URL("../src/pages/services/hermes-connect/access/index.astro", import.meta.url), "utf8");
+const [page, product] = await Promise.all([
+  readFile(new URL("../src/pages/services/hermes-connect/access/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
+]);
 
 test("Hermes Connect access routes one account into vertical-specific CRM", () => {
   assert.match(page, /Один вхід\. CRM — під ваш тип бізнесу\./);
@@ -35,4 +38,11 @@ test("Catalog publication remains separate from account registration", () => {
   assert.match(page, /не публікує бізнес у Catalog автоматично/);
   assert.match(page, /окремий opt-in/);
   assert.match(page, /Приватні CRM-дані не стають публічними/);
+});
+
+
+test("Hermes Connect product entry routes through the business-aware access page", () => {
+  assert.match(product, /href="\/services\/hermes-connect\/access\/\?lang=uk"/);
+  assert.match(product, /Choose business \/ Sign in/);
+  assert.match(product, /href="\/services\/hermes-connect\/academy\/\?lang=uk"/);
 });
