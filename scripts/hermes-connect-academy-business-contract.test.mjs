@@ -109,7 +109,9 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(sitemap, /\/businesses\/connect\/academy\//);
   assert.match(catalogPage, /Request a similar audit/);
   assert.match(catalogPage, /type=marketing-package&months=3/);
-  assert.match(catalogPage, /Strategy case/);
+  assert.match(catalogPage, /Strategy example/);
+  assert.match(catalogPage, /Business Academy Growth Strategy/);
+  assert.doesNotMatch(catalogPage, /<h3>Конс на Бі\$<\/h3>/);
 });
 
 test("KNB concept and demo route into real Academy business onboarding with UA EN switch", async () => {
