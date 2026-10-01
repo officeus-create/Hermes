@@ -109,10 +109,14 @@ test("KNB concept and demo route into real Academy business onboarding with UA E
   assert.match(concept, /business=kons-na-bis/);
   assert.match(concept, /data-lang="uk"/);
   assert.match(concept, /data-lang="en"/);
+  assert.match(concept, /data-language-route/);
+  assert.match(concept, /url\.searchParams\.set\("lang", next\)/);
   assert.match(demo, /Зареєструвати CRM/);
   assert.match(demo, /academy\/business\/auth\/\?mode=register/);
   assert.match(demo, /data-lang="uk"/);
   assert.match(demo, /data-lang="en"/);
+  assert.match(demo, /data-language-route/);
+  assert.match(demo, /url\.searchParams\.set\('lang',lang\)/);
   assert.match(auth, /academyType:"business_club"/);
   assert.match(auth, /https:\/\/kons-na-bis\.com\//);
 });
