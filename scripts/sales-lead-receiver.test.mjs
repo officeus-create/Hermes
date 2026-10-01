@@ -279,7 +279,7 @@ assert.equal(serviceCalls[0].payload.reply_to, "dealer@example.com");
 assert.equal(emailMessages.length, 1);
 assert.equal(emailMessages[0].to, "officeus@hermeslogisticsus.com");
 assert.equal(emailMessages[0].from, "website@hermeslogisticsus.com");
-assert.equal(emailMessages[0].subject, "[HERMES SALES] [POSTED LOAD] [DEALER]");
+assert.equal(emailMessages[0].subject, "!!! LEAD !!! [HERMES SALES] [POSTED LOAD] [DEALER]");
 assert.equal(emailMessages[0].replyTo, "dealer@example.com");
 assert.match(emailMessages[0].text, /Delivery: securely received by the Hermes website endpoint\./);
 assert.doesNotMatch(emailMessages[0].text, /Delivery: preview only/i);
@@ -423,7 +423,7 @@ assert.equal(legacyServiceCalls.length, 2);
 assert.equal(legacyServiceCalls[0].subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
 assert.equal(legacyServiceCalls[1].subject, "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]");
 assert.equal(emailMessages.length, emailCountBeforeLegacy + 1);
-assert.equal(emailMessages.at(-1).subject, "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]");
+assert.equal(emailMessages.at(-1).subject, "!!! LEAD !!! [HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]");
 assert.match(emailMessages.at(-1).text, /Direction: IT Development/);
 assert.match(emailMessages.at(-1).text, /secure CRM integration/);
 
