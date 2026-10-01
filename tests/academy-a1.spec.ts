@@ -46,7 +46,7 @@ test.describe("Hermes Connect Academy A1", () => {
       specialist: { id: "specialist-shop-1", email: "owner@example.com", name: "Existing Hermes User", role: "Shop Owner" },
     })));
 
-    await page.goto("/services/hermes-connect/academy/auth/?mode=login", { waitUntil: "domcontentloaded" });
+    await page.goto("/services/hermes-connect/academy/auth/?mode=login&lang=en", { waitUntil: "domcontentloaded" });
     await expect(page.getByText("Welcome, Existing Hermes User.")).toBeVisible();
     await expect(page.getByRole("link", { name: "Open learner dashboard" })).toHaveAttribute("href", "/services/hermes-connect/academy/dashboard/");
 
@@ -63,7 +63,7 @@ test.describe("Hermes Connect Academy A1", () => {
       return route.fulfill(ok({ success: true, specialist: { id: "specialist-new", email: registerPayload.email, name: registerPayload.name, role: registerPayload.role } }, 201));
     });
 
-    await page.goto("/services/hermes-connect/academy/auth/?mode=register", { waitUntil: "domcontentloaded" });
+    await page.goto("/services/hermes-connect/academy/auth/?mode=register&lang=en", { waitUntil: "domcontentloaded" });
     await page.getByLabel("Full name").fill("New Learner");
     await page.getByLabel("Email", { exact: true }).last().fill("new@example.com");
     await page.getByLabel("Country and city").fill("Kyiv, Ukraine");
