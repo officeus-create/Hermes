@@ -1,4 +1,5 @@
 import { ensureAcademyBusinessProfilesSchema } from "../../../api/_lib/academy-business-profiles.mjs";
+import { ensureHermesCompanyProfilesSchema } from "../../../api/_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
 
@@ -26,14 +27,28 @@ const typeLabels: Record<string, { uk: string; en: string }> = {
 
 export async function onRequestGet({ env, params }: { env: Env; params: { slug?: string } }) {
   if (!env.DB) return new Response("Service unavailable", { status: 503 });
+  await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureAcademyBusinessProfilesSchema(env.DB);
   const slug = String(params.slug || "").trim().slice(0, 100);
   if (!/^[a-z0-9\u0400-\u04ff-]+$/i.test(slug)) return new Response("Not found", { status: 404 });
 
   const row = await env.DB.prepare(`
-    SELECT id,business_name,slug,academy_type,city,region,country_code,website,phone,catalog_status,updated_at
-    FROM hermes_academy_business_profiles
-    WHERE slug=? AND catalog_opt_in=1
+    SELECT
+      c.id AS company_id,
+      c.company_name AS business_name,
+      c.slug,
+      a.academy_type,
+      c.city,
+      c.state AS region,
+      c.country_code,
+      c.website,
+      c.phone,
+      c.catalog_status,
+      c.updated_at
+    FROM hermes_company_profiles c
+    JOIN hermes_academy_business_profiles a ON a.company_id=c.id
+    WHERE c.slug=? AND c.catalog_opt_in=1
+      AND c.catalog_status IN ('self_submitted','verified_public')
     LIMIT 1
   `).bind(slug).first();
   if (!row) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
@@ -61,7 +76,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     ...(website ? { sameAs: [website] } : {}),
     knowsAbout: ["Courses", "Education", "Learning programs", "Business training"],
   };
-  const requestHref = `/businesses/request/?type=catalog-business-request&business=${encodeURIComponent(String(row.business_name))}&business_id=${encodeURIComponent(`academy-business:${String(row.id)}`)}&profile=${encodeURIComponent(canonical)}&city=${encodeURIComponent(String(row.city || ""))}&state=${encodeURIComponent(String(row.region || ""))}&country=${encodeURIComponent(String(row.country_code || ""))}&source_ref=academy_business_crm`;
+  const requestHref = `/businesses/request/?type=catalog-business-request&business=${encodeURIComponent(String(row.business_name))}&business_id=${encodeURIComponent(String(row.company_id))}&profile=${encodeURIComponent(canonical)}&city=${encodeURIComponent(String(row.city || ""))}&state=${encodeURIComponent(String(row.region || ""))}&country=${encodeURIComponent(String(row.country_code || ""))}&source_ref=academy_business_crm`;
 
   const websiteAction = website ? `<a class="button" href="${esc(website)}" target="_blank" rel="nofollow noopener" data-i18n="website">Відкрити сайт ↗</a>` : "";
   const phoneAction = phoneDial ? `<a class="button" href="tel:${esc(phoneDial)}" data-i18n="call">Подзвонити</a>` : "";
