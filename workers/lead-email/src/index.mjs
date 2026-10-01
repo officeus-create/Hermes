@@ -84,41 +84,30 @@ const escapeCalendarText = (value) =>
 
 const calendarUtc = (date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 
-const buildLeadCalendarInvite = ({ requestId, direction, name, email, sourcePath, organizer, attendee }) => {
+const buildLeadCalendarReminder = ({ requestId }) => {
   const created = new Date();
   const starts = new Date(created.getTime() + 5 * 60 * 1000);
-  const ends = new Date(starts.getTime() + 30 * 60 * 1000);
-  const summary = `LEAD - ${direction || "Hermes"} - ${name || email || "New inquiry"}`;
-  const description = [
-    "NEW HERMES LEAD",
-    direction ? `Direction: ${direction}` : "",
-    name ? `Name: ${name}` : "",
-    email ? `Email: ${email}` : "",
-    sourcePath ? `Source: ${sourcePath}` : "",
-    `Request ID: ${requestId}`,
-  ].filter(Boolean).join("\n");
+  const ends = new Date(starts.getTime() + 60 * 1000);
 
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Hermes Technology//Lead Alert//EN",
     "CALSCALE:GREGORIAN",
-    "METHOD:REQUEST",
+    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${requestId}@hermeslogisticsus.com`,
     `DTSTAMP:${calendarUtc(created)}`,
     `DTSTART:${calendarUtc(starts)}`,
     `DTEND:${calendarUtc(ends)}`,
-    `SUMMARY:${escapeCalendarText(summary)}`,
-    `DESCRIPTION:${escapeCalendarText(description)}`,
-    `ORGANIZER:mailto:${organizer}`,
-    `ATTENDEE;CN=Vladimir Viktorovich;RSVP=FALSE:mailto:${attendee}`,
-    "STATUS:CONFIRMED",
-    "TRANSP:OPAQUE",
+    "SUMMARY:LEAD REMINDER - HERMES",
+    `DESCRIPTION:${escapeCalendarText(`Open the private owner lead alert email. Request ID: ${requestId}`)}`,
+    "CLASS:PRIVATE",
+    "TRANSP:TRANSPARENT",
     "BEGIN:VALARM",
     "TRIGGER:-PT5M",
     "ACTION:DISPLAY",
-    "DESCRIPTION:LEAD",
+    "DESCRIPTION:LEAD REMINDER",
     "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR",
@@ -135,15 +124,7 @@ const buildOwnerLeadAlert = ({ env, subject, text, replyTo, requestId }) => {
   const name = extractLeadField(text, "Name");
   const email = extractLeadField(text, "Email") || replyTo;
   const sourcePath = extractLeadField(text, "Submitted from") || extractLeadField(text, "Page");
-  const calendarInvite = buildLeadCalendarInvite({
-    requestId,
-    direction,
-    name,
-    email,
-    sourcePath,
-    organizer: cleanHeader(env.SALES_SENDER, 320),
-    attendee: recipient,
-  });
+  const calendarReminder = buildLeadCalendarReminder({ requestId });
 
   const alertSubject = `!!! LEAD !!! ${direction}${name ? ` - ${name}` : ""} [ID:${requestId}]`;
   const alertText = [
@@ -170,8 +151,8 @@ const buildOwnerLeadAlert = ({ env, subject, text, replyTo, requestId }) => {
     replyTo,
     attachments: [{
       filename: `lead-${requestId}.ics`.slice(0, 120),
-      contentType: "text/calendar; method=REQUEST; charset=utf-8",
-      contentBase64: stringToBase64(calendarInvite),
+      contentType: "text/calendar; method=PUBLISH; charset=utf-8",
+      contentBase64: stringToBase64(calendarReminder),
     }],
     requestId,
     deliveryKey: "owner-lead-alert",
@@ -1100,7 +1081,7 @@ const worker = {
         ok: true,
         recipient_count: 1 + (ownerResult.ok ? 1 : 0),
         owner_alert: ownerResult.ok ? "delivered" : "pending",
-        calendar_invite: ownerResult.ok ? "attached" : "pending",
+        calendar_reminder: ownerResult.ok ? "attached" : "pending",
       });
     } catch (error) {
       const mapped = classifyProviderError(error);
