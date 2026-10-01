@@ -189,13 +189,13 @@ assert.equal(ownerLeadPersonal.attachments.length, 1);
 assert.equal(ownerLeadPersonal.attachments[0].filename, `lead-${ownerLeadRequestId}.ics`);
 assert.match(ownerLeadPersonal.attachments[0].type, /^text\/calendar/);
 const ownerLeadCalendar = Buffer.from(ownerLeadPersonal.attachments[0].content, "base64").toString("utf8");
-assert.match(ownerLeadCalendar, /METHOD:PUBLISH/);
+assert.doesNotMatch(ownerLeadCalendar, /(?:^|\r?\n)METHOD:/);
 assert.match(ownerLeadCalendar, /SUMMARY:LEAD REMINDER - HERMES/);
 assert.match(ownerLeadCalendar, /CLASS:PRIVATE/);
 assert.match(ownerLeadCalendar, /TRANSP:TRANSPARENT/);
 assert.doesNotMatch(ownerLeadCalendar, /METHOD:REQUEST|ATTENDEE|ORGANIZER|RSVP|TRANSP:OPAQUE|STATUS:CONFIRMED/);
 assert.doesNotMatch(ownerLeadCalendar, /Saad Saleem|saad@example\.com/);
-assert.match(ownerLeadPersonal.attachments[0].type, /method=PUBLISH/);
+assert.doesNotMatch(ownerLeadPersonal.attachments[0].type, /(?:^|;)\s*method=/i);
 assert.match(ownerLeadCalendar, /TRIGGER:-PT5M/);
 
 const qaLeadCountBefore = emailMessages.length;

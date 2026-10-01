@@ -94,7 +94,6 @@ const buildLeadCalendarReminder = ({ requestId }) => {
     "VERSION:2.0",
     "PRODID:-//Hermes Technology//Lead Alert//EN",
     "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${requestId}@hermeslogisticsus.com`,
     `DTSTAMP:${calendarUtc(created)}`,
@@ -151,7 +150,7 @@ const buildOwnerLeadAlert = ({ env, subject, text, replyTo, requestId }) => {
     replyTo,
     attachments: [{
       filename: `lead-${requestId}.ics`.slice(0, 120),
-      contentType: "text/calendar; method=PUBLISH; charset=utf-8",
+      contentType: "text/calendar; charset=utf-8",
       contentBase64: stringToBase64(calendarReminder),
     }],
     requestId,
