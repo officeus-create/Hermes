@@ -21,7 +21,7 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   expect(await page.locator(`main a[href="${academyRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`main a[href="${beautyRoute}"]`).count()).toBeGreaterThan(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("PRIVATE LEARNER WORKSPACE", { exact: true })).toBeVisible();
+  await expect(page.getByText("BUSINESS CRM + LEARNER ACCESS", { exact: true })).toBeVisible();
   await expect(page.getByText("PRIVATE OWNER FOUNDATION", { exact: true })).toBeVisible();
   expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(3);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
