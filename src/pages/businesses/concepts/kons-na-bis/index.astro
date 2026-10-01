@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import {konsNaBisClient as client} from "../../../../data/catalog-client-kons-na-bis";
+---
+<BaseLayout title="Конс на Бі$ — Hermes Catalog concept" description="Noindex demo concept for a business academy and club." robots="noindex,nofollow" locale="uk" htmlLang="uk">
+<main id="main-content" style="max-width:1180px;margin:auto;padding:40px 24px;font-family:system-ui">
+<p style="font-size:13px;text-transform:uppercase;letter-spacing:.08em">Hermes Catalog · client concept · це не офіційний сайт бізнесу</p>
+<h1 style="font-size:clamp(44px,7vw,92px);line-height:.96;margin:40px 0">Конс на Бі$<br><span style="color:#6a548f">Academy × CRM</span></h1>
+<p style="font-size:22px;max-width:780px">{client.programmeName}: каталог, воронка заявок, навчальний прогрес, аналітика та retention в одному демонстраційному контурі.</p>
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:44px 0">
+{[
+ ["01","7-тижнева програма","Уроки, завдання, щотижневі розбори, VIP-сесії та записи."],
+ ["02","Sales CRM","Теплі заявки → консультація → рішення → зарахування → клуб."],
+ ["03","Marketing KPI","Funnel, CAC, LTV, ROMI та revenue attribution без вигаданих цифр."],
+ ["04","Academy Operations","Cohorts, assignments, reviews, attendance, recordings, next action."]
+].map(([n,t,d])=><article style="border:1px solid #ddd;border-radius:16px;padding:22px"><b>{n}</b><h2>{t}</h2><p>{d}</p></article>)}
+</section>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<a href="/demos/hermes-connect/academy-knb.html" style="padding:14px 18px;background:#111;color:#fff;border-radius:10px;text-decoration:none">Відкрити Academy CRM demo →</a>
+<a href={client.programmeUrl} target="_blank" rel="noopener noreferrer" style="padding:14px 18px;border:1px solid #111;border-radius:10px;text-decoration:none">Офіційна програма ↗</a>
+</div>
+<p style="margin-top:44px;color:#666">Boundary: client relationship recorded internally; design approval, billing, owner claim and live CRM activation are not represented as complete.</p>
+</main>
+</BaseLayout>
