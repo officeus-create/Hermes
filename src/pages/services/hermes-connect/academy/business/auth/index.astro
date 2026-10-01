@@ -57,6 +57,7 @@ import "../../../../../../styles/hermes-academy-app.css";
             <form class="academy-app-form academy-auth-section active" data-auth-form="register">
               <div class="academy-app-field"><label data-i18n="fullName">Ім’я та прізвище</label><input name="name" autocomplete="name" minlength="2" maxlength="100" required /></div>
               <div class="academy-app-field"><label>Email</label><input name="email" type="email" autocomplete="email" required /></div>
+              <div class="academy-app-field"><label data-i18n="ownerLocation">Країна / місто</label><input name="location" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
               <div class="academy-app-field"><label data-i18n="password">Пароль</label><input name="password" type="password" autocomplete="new-password" minlength="8" required /></div>
               <button class="academy-app-button intelligence" type="submit" data-i18n="createOwner">Створити акаунт власника</button>
             </form>
@@ -86,14 +87,14 @@ import "../../../../../../styles/hermes-academy-app.css";
                 <option value="corporate_academy" data-i18n-option="corporateAcademy">Корпоративна академія</option>
               </select>
             </div>
-            <div class="academy-app-field"><label data-i18n="city">Місто</label><input name="city" minlength="2" maxlength="100" value="Київ" required /></div>
-            <div class="academy-app-field"><label data-i18n="region">Область / регіон</label><input name="region" maxlength="100" value="Київська область" /></div>
+            <div class="academy-app-field"><label data-i18n="city">Місто</label><input name="city" minlength="2" maxlength="100" required /></div>
+            <div class="academy-app-field"><label data-i18n="region">Область / регіон</label><input name="region" maxlength="100" /></div>
             <div class="academy-app-field"><label data-i18n="country">Код країни</label><input name="countryCode" maxlength="2" minlength="2" value="UA" required /></div>
             <div class="academy-app-field"><label data-i18n="timezone">Часовий пояс</label><input name="timezone" maxlength="64" value="Europe/Kyiv" /></div>
             <div class="academy-app-field"><label data-i18n="website">Сайт · необов’язково</label><input name="website" inputmode="url" placeholder="https://..." /></div>
             <div class="academy-app-field"><label data-i18n="phone">Телефон · необов’язково</label><input name="phone" autocomplete="tel" /></div>
           </div>
-          <label class="academy-owner-check"><input name="catalogOptIn" type="checkbox" checked /><span data-i18n="catalogOpt">Додати бізнес у Hermes Catalog. Публічно можуть показуватися назва, тип, локація, сайт і бізнес-телефон; учні, заявки, CRM-записи та платежі не публікуються.</span></label>
+          <label class="academy-owner-check"><input name="catalogOptIn" type="checkbox" /><span data-i18n="catalogOpt">Додати бізнес у Hermes Catalog. Публічно можуть показуватися назва, тип, локація, сайт і бізнес-телефон; учні, заявки, CRM-записи та платежі не публікуються.</span></label>
           <button class="academy-app-button intelligence" type="submit" data-i18n="openCrm">Зберегти та відкрити Academy CRM</button>
         </form>
         <div class="academy-app-alert" data-business-alert role="status"></div>
@@ -113,7 +114,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       create:"Створити акаунт",login:"Увійти",fullName:"Ім’я та прізвище",password:"Пароль",createOwner:"Створити акаунт власника",secureLogin:"Безпечний вхід",
       step2:"Крок 2 · Навчальний бізнес",setupTitle:"Налаштуйте вашу Academy CRM.",setupLead:"Ці дані визначають назву workspace і тип CRM. Публікація в Catalog — окремий opt-in; приватні дані студентів та CRM туди не потрапляють.",
       businessName:"Назва академії / курсів",businessType:"Тип бізнесу",city:"Місто",region:"Область / регіон",country:"Код країни",timezone:"Часовий пояс",website:"Сайт · необов’язково",phone:"Телефон · необов’язково",
-      catalogOpt:"Додати бізнес у Hermes Catalog. Публічно показуються лише дані бізнесу; учні, заявки, CRM, платежі та приватні контакти не публікуються.",openCrm:"Зберегти та відкрити Academy CRM",
+      ownerLocation:"Країна / місто",catalogOpt:"За бажанням додати бізнес у Hermes Catalog. Публічно показуються лише дані бізнесу; учні, заявки, CRM, платежі та приватні контакти не публікуються.",openCrm:"Зберегти та відкрити Academy CRM",
       businessAcademy:"Бізнес-академія",onlineSchool:"Онлайн-школа",courses:"Курси",businessClub:"Бізнес-клуб",coaching:"Коучинг / менторство",corporateAcademy:"Корпоративна академія"
     },
     en: {
@@ -124,7 +125,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       create:"Create account",login:"Sign in",fullName:"Full name",password:"Password",createOwner:"Create owner account",secureLogin:"Secure sign in",
       step2:"Step 2 · Education business",setupTitle:"Configure your Academy CRM.",setupLead:"These details set the workspace identity and CRM type. Catalog publication is a separate opt-in; learner and CRM data stays private.",
       businessName:"Academy / course business name",businessType:"Business type",city:"City",region:"Region",country:"Country code",timezone:"Time zone",website:"Website · optional",phone:"Phone · optional",
-      catalogOpt:"Add this business to Hermes Catalog. Name, type, location, website, and business phone may be public; learners, leads, CRM records, and payments are never published.",openCrm:"Save and open Academy CRM",
+      ownerLocation:"Country / city",catalogOpt:"Optionally add this business to Hermes Catalog. Name, type, location, website, and business phone may be public; learners, leads, CRM records, and payments are never published.",openCrm:"Save and open Academy CRM",
       businessAcademy:"Business academy",onlineSchool:"Online school",courses:"Courses",businessClub:"Business club",coaching:"Coaching / mentoring",corporateAcademy:"Corporate academy"
     }
   } as const;
@@ -155,8 +156,9 @@ import "../../../../../../styles/hermes-academy-app.css";
 
   const prefill=()=>{
     const business=params.get("business");
-    const input=businessForm?.elements.namedItem("businessName");
-    if(input && "value" in input && business==="kons-na-bis" && !input.value) input.value="Конс на Бі$";
+    if(business!=="kons-na-bis"||!businessForm)return;
+    const values={businessName:"Конс на Бі$",academyType:"business_club",website:"https://biznes-club-knb.com/",countryCode:"UA"};
+    for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input&&!input.value)input.value=value;}
   };
 
   const showAuthenticated=async(specialist:any)=>{
@@ -183,7 +185,7 @@ import "../../../../../../styles/hermes-academy-app.css";
 
   document.querySelector<HTMLFormElement>('[data-auth-form="register"]')?.addEventListener("submit",async(event)=>{
     event.preventDefault(); const form=event.currentTarget as HTMLFormElement; const data=new FormData(form); const button=form.querySelector<HTMLButtonElement>('button[type="submit"]'); if(button)button.disabled=true;
-    try{const payload=await json("/api/auth/register",{method:"POST",body:JSON.stringify({name:data.get("name"),email:data.get("email"),password:data.get("password"),role:"Academy Business Owner",location:"Ukraine",bio:"Hermes Connect Academy business owner account."})});await showAuthenticated(payload.specialist);}
+    try{const payload=await json("/api/auth/register",{method:"POST",body:JSON.stringify({name:data.get("name"),email:data.get("email"),password:data.get("password"),role:"Academy Business Owner",location:data.get("location"),bio:"Hermes Connect Academy business owner account."})});await showAuthenticated(payload.specialist);}
     catch(error:any){setAlert(authAlert,error?.payload?.error==="email_already_registered"?(lang==="uk"?"Цей email вже має Hermes-акаунт. Увійдіть.":"This email already has a Hermes account. Sign in."):String(error?.message||"Registration failed"),true);}
     finally{if(button)button.disabled=false;}
   });
@@ -202,7 +204,15 @@ import "../../../../../../styles/hermes-academy-app.css";
       })});
       setAlert(businessAlert,lang==="uk"?"Профіль збережено. Відкриваємо CRM…":"Profile saved. Opening CRM…");
       location.assign(payload.next_url||"/services/hermes-connect/academy/business/workspace/");
-    }catch(error:any){setAlert(businessAlert,String(error?.message||"Could not save business"),true);}finally{if(button)button.disabled=false;}
+    }catch(error:any){
+      const code=String(error?.payload?.error||error?.message||"");
+      const message=code==="existing_company_requires_manual_link"
+        ? (lang==="uk"?"У цьому Hermes-акаунті вже є інший бізнес. Потрібне ручне підтвердження зв’язку, щоб не створити дублікат.":"This Hermes account already owns a different business. Manual linking is required to avoid a duplicate.")
+        : code==="academy_company_identity_conflict"
+          ? (lang==="uk"?"Виявлено конфлікт бізнес-профілю. Дані не змінено; потрібна перевірка Hermes.":"A business identity conflict was detected. Nothing was changed; Hermes review is required.")
+          : String(error?.message||"Could not save business");
+      setAlert(businessAlert,message,true);
+    }finally{if(button)button.disabled=false;}
   });
 
   void (async()=>{try{const me=await json("/api/auth/me");await showAuthenticated(me.specialist);}catch{loading?.classList.add("academy-app-hidden");auth?.classList.remove("academy-app-hidden");prefill();}})();
