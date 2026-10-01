@@ -114,3 +114,4 @@ await import('./hermes-connect-account-contract.test.mjs');
 await import('./hermes-connect-account-switcher-contract.test.mjs');
 
 await import('./hermes-connect-knb-academy-contract.test.mjs');
+await import('./hermes-connect-academy-business-contract.test.mjs');
