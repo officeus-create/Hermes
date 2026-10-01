@@ -54,6 +54,10 @@ test('KNB Catalog concept turns the candidate brief into a source-bounded market
   assert.match(concept,/campaign_id/);
   assert.match(concept,/diagnostic_primary_gap/);
   assert.match(concept,/recommended_module/);
+  assert.match(concept,/reason_to_believe/);
+  assert.match(concept,/personal_brand/);
+  assert.match(concept,/company_channel/);
+  assert.match(concept,/observedAt/);
   assert.match(concept,/cohort/);
   assert.match(concept,/renewal/);
   assert.match(concept,/request_same_audit/);
@@ -79,5 +83,8 @@ test('Catalog exposes a reusable indexable marketing growth strategy example',()
   assert.match(genericCase,/CANDIDATE ASSESSMENT/);
   assert.match(genericCase,/PROOF GOVERNANCE/);
   assert.match(genericCase,/type=marketing-package&months=3/);
+  assert.match(genericCase,/reason_to_believe/);
+  assert.match(genericCase,/trackCaseOpened\("marketing_growth_audit_example"\)/);
+  assert.match(genericCase,/trackEvent\("case_study_cta"/);
   assert.doesNotMatch(genericCase,/robots="noindex/);
 });
