@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import { academyBusinessCrmTemplate, hermesAcademyCrmSeed, konsNaBisAcademyCrm } from "../../../../../data/academy-business-crm";
+
+const template = academyBusinessCrmTemplate;
+---
+
+<BaseLayout
+  title="Academy Business CRM Template | Hermes Connect"
+  description="Reusable noindex Hermes Connect management template for academies, course operators and business clubs."
+  robots="noindex,nofollow"
+>
+  <main id="main-content" class="template-page">
+    <header>
+      <a href="/services/hermes-connect/">Hermes Connect</a>
+      <span>Academy Business CRM · Template v1</span>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">Reusable operating template</p>
+      <h1>One management layer for academies, courses and business clubs.</h1>
+      <p>
+        Marketing, sales, programs, cohorts, learners, learning operations, HR and analytics
+        share one company context. The template defines the workflow; each business keeps its own data,
+        permissions and public profile.
+      </p>
+      <div class="module-grid">
+        {template.modules.map((module, index) => (
+          <article><span>{String(index + 1).padStart(2,"0")}</span><b>{module.label}</b></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="instances">
+      <p class="eyebrow">Current instances</p>
+      <div class="instance-grid">
+        <article>
+          <span class="state">CLIENT DEMO</span>
+          <h2>{konsNaBisAcademyCrm.client.name}</h2>
+          <p>
+            Public operating signals and current vacancies are mapped into a review-only CRM workspace.
+            Real KPI values and private records remain disconnected.
+          </p>
+          <a href="/services/hermes-connect/academy/business-demo/kons-na-bis/">Open KNB CRM demo ↗</a>
+          <a href="/businesses/concepts/kons-na-bis/">Open website / Catalog concept ↗</a>
+        </article>
+
+        <article>
+          <span class="state internal">HERMES INSTANCE</span>
+          <h2>{hermesAcademyCrmSeed.business}</h2>
+          <p>
+            Reuse the existing Academy identity, curriculum, submissions, support, reviewer and progression
+            boundaries. Add the business-management layer above them instead of creating another Academy runtime.
+          </p>
+          <a href="/services/hermes-connect/academy/">Open existing Academy workspace ↗</a>
+          <div class="reuse">
+            {hermesAcademyCrmSeed.reuse.map((route) => <code>{route}</code>)}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="architecture">
+      <p class="eyebrow">Core pipeline</p>
+      <h2>Discovery → sale → enrollment → learning → retention.</h2>
+      <div class="pipeline">
+        {template.stages.map((stage, index) => (
+          <div><span>{String(index + 1).padStart(2,"0")}</span><b>{stage}</b></div>
+        ))}
+      </div>
+    </section>
+
+    <footer>
+      Review-only architecture surface · no production business is activated from this page.
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .template-page{min-height:100vh;background:#f5f7f7;color:#182e38;font-family:Manrope,"Source Sans 3",sans-serif;padding:0 max(22px,calc((100vw - 1240px)/2))}.template-page header{height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #dbe1e2;font-size:12px}.template-page header a{font-size:16px;font-weight:850;color:inherit;text-decoration:none}.hero,.instances,.architecture{padding:58px 0;border-bottom:1px solid #dbe1e2}.eyebrow{text-transform:uppercase;letter-spacing:1.3px;font-size:10px;font-weight:850;color:#76878e}.hero h1{font-size:clamp(39px,5.5vw,72px);line-height:1;letter-spacing:-3.5px;max-width:980px;margin:18px 0}.hero>p:not(.eyebrow){max-width:780px;color:#64757c;font-size:18px;line-height:1.55}.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:35px}.module-grid article{background:#fff;border:1px solid #dbe1e2;border-radius:12px;padding:14px}.module-grid span{font-size:9px;color:#7661bb;margin-right:10px}.module-grid b{font-size:12px}.instance-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}.instance-grid>article{background:#fff;border:1px solid #dbe1e2;border-radius:16px;padding:24px}.instance-grid h2,.architecture h2{font-size:28px;letter-spacing:-1px;margin:12px 0}.instance-grid p{color:#64757c;line-height:1.6}.instance-grid a{display:block;width:max-content;max-width:100%;margin-top:10px;color:inherit;font-size:12px;font-weight:800;text-underline-offset:4px}.state{display:inline-flex;border-radius:999px;background:#eeebfa;color:#6652ae;padding:6px 9px;font-size:9px;font-weight:850}.state.internal{background:#edf4df;color:#657b2d}.reuse{display:grid;gap:5px;margin-top:16px}.reuse code{overflow:hidden;text-overflow:ellipsis;background:#f4f6f6;border-radius:7px;padding:7px;font-size:9px}.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:25px}.pipeline div{background:#fff;border:1px solid #dbe1e2;border-radius:10px;padding:12px;min-height:65px}.pipeline span,.pipeline b{display:block}.pipeline span{font-size:8px;color:#7661bb}.pipeline b{font-size:11px;margin-top:8px}.template-page footer{padding:28px 0 55px;font-size:11px;color:#75848a}
+  @media(max-width:800px){.module-grid{grid-template-columns:1fr 1fr}.instance-grid{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr 1fr 1fr}.hero h1{letter-spacing:-2px}}
+  @media(max-width:460px){.module-grid,.pipeline{grid-template-columns:1fr 1fr}.hero{padding-top:40px}.hero h1{font-size:42px}}
+</style>
