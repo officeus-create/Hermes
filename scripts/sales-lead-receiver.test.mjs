@@ -114,7 +114,7 @@ const catalogWorkerResponse = await leadEmailWorker.fetch(new Request("https://l
 }), workerEnv);
 assert.equal(catalogWorkerResponse.status, 202);
 assert.equal(emailMessages.length, catalogEmailCountBefore + 1);
-assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG]");
+assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [CATALOG] [ID:catalog_mail_1296_12345]");
 assert.equal(emailMessages.at(-1).to, "officeus@hermeslogisticsus.com");
 emailMessages.length = catalogEmailCountBefore;
 
@@ -221,7 +221,7 @@ assert.equal(serviceCalls.length, 2);
 assert.equal(serviceCalls[1].payload.subject, "[HERMES INQUIRY] [MARKETING]");
 assert.equal(serviceCalls[1].payload.reply_to, "lead@example.com");
 assert.equal(emailMessages.length, 2);
-assert.equal(emailMessages[1].subject, "[HERMES INQUIRY] [MARKETING]");
+assert.equal(emailMessages[1].subject, "[HERMES INQUIRY] [MARKETING] [ID:contact_test_12345]");
 assert.equal(emailMessages[1].replyTo, "lead@example.com");
 assert.match(emailMessages[1].text, /Name: Test Website Lead/);
 assert.match(emailMessages[1].text, /Platforms: SEO \/ Google Search, LinkedIn/);
@@ -252,6 +252,7 @@ const technologyBriefResponse = await onRequest({
 });
 assert.equal(technologyBriefResponse.status, 200);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
+assert.equal(emailMessages.at(-1).subject, "[HERMES INQUIRY] [IT DEVELOPMENT] [ID:technology_brief_test_12345]");
 assert.match(emailMessages.at(-1).text, /END OF TECHNOLOGY BRIEF/);
 assert.match(emailMessages.at(-1).text, /System\/workflow needed: CRM and automation/);
 
