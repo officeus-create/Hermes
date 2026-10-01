@@ -41,12 +41,22 @@ function publicDraft(value:unknown){
   let draft:any=value;
   if(typeof value==="string"){try{draft=JSON.parse(value);}catch{return null;}}
   if(!draft||typeof draft!=="object")return null;
+  const allowedFormats=new Set(["single_image","carousel","text_post","story_first","mixed"]);
+  const allowedDestinations=new Set(["instagram_feed","instagram_story","threads_feed","facebook_feed"]);
+  const recommendedFormat=allowedFormats.has(String(draft.recommended_format||""))?String(draft.recommended_format):"mixed";
+  const recommendedDestinations=Array.isArray(draft.recommended_destinations)
+    ? [...new Set(draft.recommended_destinations.map((item:any)=>String(item||"").trim()).filter((item:string)=>allowedDestinations.has(item)))].slice(0,4)
+    : [];
   const carousel=Array.isArray(draft.carousel_plan)?draft.carousel_plan.slice(0,10).map((item:any)=>({
     headline:clean(item?.headline,120),
     body:clean(item?.body,320),
     visual_direction:clean(item?.visual_direction,320),
   })).filter((item:any)=>item.headline||item.body||item.visual_direction):[];
   return{
+    recommended_format:recommendedFormat,
+    format_reason:clean(draft.format_reason,480),
+    recommended_destinations:recommendedDestinations,
+    recommended_media_count:Math.max(0,Math.min(10,Math.round(Number(draft.recommended_media_count||0)||0))),
     master_caption:clean(draft.master_caption,2200),
     threads_text:clean(draft.threads_text,500),
     facebook_text:clean(draft.facebook_text,5000),
