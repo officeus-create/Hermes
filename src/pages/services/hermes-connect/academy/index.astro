@@ -6,89 +6,108 @@ import "../../../../styles/hermes-academy-app.css";
 ---
 
 <BaseLayout
-  title="Hermes Connect Academy | Learner Access"
-  description="Private Hermes Connect Academy access for enrollment, curriculum progress, evidence submissions, learner support and human-reviewed progression."
+  title="Hermes Connect Academy | CRM для академій та навчання"
+  description="Hermes Connect Academy: окремий CRM-контур для власників академій, курсів і бізнес-клубів та окремий learner workspace для студентів."
   robots="noindex,nofollow"
+  htmlLang="uk"
+  locale="uk"
 >
   <div class="academy-app-page">
-    <SiteHeader activePath="/paths/academy/" />
+    <SiteHeader activePath="/services/hermes-connect/" />
     <main id="main-content" class="academy-app-shell">
-      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span>/</span><a href="/paths/academy/">Academy</a><span>/</span><span aria-current="page">Hermes Connect learner access</span>
-      </nav>
+      <div class="academy-hub-toolbar">
+        <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+          <a href="/">Hermes</a><span>/</span><a href="/services/hermes-connect/">Hermes Connect</a><span>/</span><span>Academy</span>
+        </nav>
+        <div class="academy-hub-lang" aria-label="Language"><button type="button" class="active" data-lang="uk">UA</button><button type="button" data-lang="en">EN</button></div>
+      </div>
 
       <section class="academy-app-hero">
         <article class="academy-app-card">
-          <p class="academy-app-eyebrow">Hermes Connect · Academy workspace</p>
-          <h1>One learner identity. One reviewed progression path.</h1>
-          <p>Hermes Business Academy keeps enrollment, authenticated curriculum progress, learner evidence, private course questions and human progression review inside the same Hermes identity/session system. Public program pages remain the source of curriculum descriptions.</p>
-          <div class="academy-app-actions">
-            <a class="academy-app-button primary" href="/services/hermes-connect/academy/auth/">Sign in or create learner account</a>
-            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Open learner dashboard</a>
-            <a class="academy-app-button" href="/services/hermes-connect/academy/progression/">Open progression</a>
-            <a class="academy-app-button" href="/services/hermes-connect/academy/submissions/">Evidence submissions</a>
-            <a class="academy-app-button" href="/services/hermes-connect/academy/support/">Questions & support</a>
-          </div>
+          <p class="academy-app-eyebrow">Hermes Connect · Academy</p>
+          <h1 data-i18n="title">Одна платформа. Два різні сценарії: керувати академією або навчатися.</h1>
+          <p data-i18n="lead">Hermes identity спільна для екосистеми, але workspace підлаштовується під роль і тип бізнесу. Власник отримує Academy CRM. Студент отримує learner workspace.</p>
         </article>
         <aside class="academy-app-card academy-app-dark">
-          <span class="academy-app-status">Private learner workspace</span>
-          <h2 style="margin-top:14px">Application ≠ enrollment ≠ completion.</h2>
-          <p>Creating an account or choosing a program does not automatically approve admission. Lesson counts, accepted evidence and support responses do not automatically complete a program. Academy completion remains a separate human decision and does not guarantee employment, income, certification, clients, commercial entitlement, or live operational access.</p>
-          <a class="academy-app-button" href="/academy/apply/">Open public application</a>
+          <span class="academy-app-status" data-i18n="rule">Vertical-specific CRM</span>
+          <h2 data-i18n="notUniversal">Не одна CRM для всіх бізнесів.</h2>
+          <p data-i18n="notUniversalCopy">СТО потрібні записи, автомобілі та графік. Академії потрібні ліди, консультації, учасники, потоки, уроки, assignments, reviews, marketing KPI та retention.</p>
         </aside>
       </section>
 
-      <section class="academy-app-grid" aria-label="Academy programs and method">
-        <article class="academy-app-panel">
-          <p class="academy-app-eyebrow">Current public programs</p>
-          <h2>Start from an approved curriculum source.</h2>
-          <div class="academy-app-programs">
-            <article class="academy-program-card">
-              <span class="academy-app-status">Program 01</span>
-              <h3>U.S. Logistics Operations</h3>
-              <p>Dispatch foundations, carrier/broker communication, equipment and lane logic, documents, negotiation practice and operating rhythm.</p>
-              <a class="academy-app-button" href="/academy/us-logistics-operations/">Review curriculum</a>
-            </article>
-            <article class="academy-program-card">
-              <span class="academy-app-status">Program 02</span>
-              <h3>Marketing</h3>
-              <p>Positioning, website-first content, channel distribution, lead journey, sales follow-up, analytics and improvement.</p>
-              <a class="academy-app-button" href="/academy/marketing/">Review curriculum</a>
-            </article>
+      <section class="academy-choice-grid">
+        <article class="academy-app-panel academy-choice-card">
+          <p class="academy-app-eyebrow" data-i18n="ownerEyebrow">Для власника академії / курсів</p>
+          <h2 data-i18n="ownerTitle">Запустити Academy Business CRM.</h2>
+          <p data-i18n="ownerCopy">Реєстрація власника → профіль навчального бізнесу → опційна публікація в Hermes Catalog → приватний Academy CRM workspace.</p>
+          <ul>
+            <li>Lead → consultation → sale → enrollment</li>
+            <li>Cohorts · lessons · assignments · reviews</li>
+            <li>CAC · LTV · ROMI · revenue attribution</li>
+            <li>HR / recruiting · retention · next program</li>
+          </ul>
+          <div class="academy-app-actions">
+            <a class="academy-app-button intelligence" href="/services/hermes-connect/academy/business/auth/?mode=register&lang=uk" data-i18n="registerBusiness">Зареєструвати академію / курси</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/business/workspace/" data-i18n="openBusiness">Відкрити мою Academy CRM</a>
+            <a class="academy-app-button" href="/demos/hermes-connect/academy-knb.html" data-i18n="seeDemo">Подивитися demo «Конс на Бі$»</a>
           </div>
         </article>
 
-        <article class="academy-app-panel">
-          <p class="academy-app-eyebrow">Learning method</p>
-          <h2>Progress remains evidence-led and human-reviewed.</h2>
-          <p>The current Academy workflow moves through readiness, authenticated lessons, self-tracked lesson progress, evidence submission, private learner questions, reviewer feedback/correction and a separate human progression decision.</p>
-          <div class="academy-app-note">A1 provides shared learner identity and enrollment. A2 provides authenticated curriculum and self-tracked lesson progress. A3 adds private evidence plus manually authorized review. A3.1 adds a separate private learner-question/support loop. A4 adds program-level human progression. Commercial access remains a separate A5 gate and is not inferred from any learner, reviewer or support state.</div>
+        <article class="academy-app-panel academy-choice-card">
+          <p class="academy-app-eyebrow" data-i18n="learnerEyebrow">Для студента / учасника</p>
+          <h2 data-i18n="learnerTitle">Навчання та прогрес.</h2>
+          <p data-i18n="learnerCopy">Окремий learner flow для enrollment, уроків, evidence submissions, приватних питань і human-reviewed progression.</p>
+          <ul>
+            <li data-i18n="programs">Програми та curriculum</li>
+            <li data-i18n="progress">Прогрес і evidence</li>
+            <li data-i18n="support">Питання та підтримка</li>
+            <li data-i18n="human">Рішення про progression залишається за людиною</li>
+          </ul>
           <div class="academy-app-actions">
-            <a class="academy-app-button" href="/academy/how-training-works/">How training works</a>
-            <a class="academy-app-button" href="/academy/resources/">Academy resources</a>
+            <a class="academy-app-button primary" href="/services/hermes-connect/academy/auth/?mode=register" data-i18n="registerLearner">Створити learner account</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/" data-i18n="learnerDashboard">Відкрити learner dashboard</a>
           </div>
         </article>
       </section>
 
-      <section class="academy-app-panel" style="margin-top:18px" aria-label="Authorized reviewer workspaces">
-        <p class="academy-app-eyebrow">Manually authorized reviewers only</p>
-        <h2>Reviewer workspaces stay behind the separate Academy reviewer allowlist.</h2>
-        <p>A valid Hermes account alone does not grant reviewer power. These routes require an active <code>academy_reviewer_access</code> authorization and continue to enforce program scope and self-review restrictions.</p>
-        <div class="academy-app-actions">
-          <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/">Evidence review queue</a>
-          <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/progression/">Progression review queue</a>
+      <section class="academy-app-panel" style="margin-top:18px">
+        <p class="academy-app-eyebrow">ACADEMY BUSINESS PIPELINE</p>
+        <h2 data-i18n="flowTitle">Як бізнес заходить у Hermes Connect.</h2>
+        <div class="academy-hub-flow">
+          <div><span>01</span><b data-i18n="f1">Обрати Academy</b><small data-i18n="f1c">На Hermes Connect або з Catalog.</small></div>
+          <div><span>02</span><b data-i18n="f2">Створити Hermes account</b><small data-i18n="f2c">Одна identity без другого password store.</small></div>
+          <div><span>03</span><b data-i18n="f3">Заповнити бізнес-профіль</b><small data-i18n="f3c">Тип, місто, сайт, timezone та Catalog opt-in.</small></div>
+          <div><span>04</span><b data-i18n="f4">Відкрити Academy CRM</b><small data-i18n="f4c">Sales, learners, operations, marketing та HR.</small></div>
+          <div><span>05</span><b data-i18n="f5">Публічний Catalog</b><small data-i18n="f5c">Лише дозволені бізнес-дані; CRM залишається приватною.</small></div>
         </div>
       </section>
 
-      <section class="academy-app-panel" style="margin-top:18px" aria-label="Authorized Academy support workspace">
-        <p class="academy-app-eyebrow">Manually authorized support only</p>
-        <h2>Learner support uses a different permission boundary.</h2>
-        <p>Answering learner questions requires a separate active <code>academy_support_access</code> authorization. Reviewer permission does not automatically grant support permission, and support permission does not grant evidence/progression reviewer power.</p>
+      <section class="academy-app-panel" style="margin-top:18px">
+        <p class="academy-app-eyebrow" data-i18n="permissions">Permission boundaries</p>
+        <h2 data-i18n="permissionsTitle">Навчання, reviewer access і support не змішуються з бізнес-власністю.</h2>
+        <p data-i18n="permissionsCopy">Learner account не робить користувача власником академії. Business owner account не дає автоматичного reviewer або support permission. Кожен контур має окремий доступ.</p>
         <div class="academy-app-actions">
-          <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/support/">Learner support queue</a>
+          <a class="academy-app-button" href="/academy/how-training-works/" data-i18n="training">Як працює навчання</a>
+          <a class="academy-app-button" href="/businesses/" data-i18n="catalog">Hermes Catalog</a>
         </div>
       </section>
     </main>
     <SiteFooter />
   </div>
 </BaseLayout>
+
+<script>
+  const d={
+    uk:{title:"Одна платформа. Два різні сценарії: керувати академією або навчатися.",lead:"Hermes identity спільна для екосистеми, але workspace підлаштовується під роль і тип бізнесу. Власник отримує Academy CRM. Студент отримує learner workspace.",rule:"Vertical-specific CRM",notUniversal:"Не одна CRM для всіх бізнесів.",notUniversalCopy:"СТО потрібні записи, автомобілі та графік. Академії потрібні ліди, консультації, учасники, потоки, уроки, assignments, reviews, marketing KPI та retention.",ownerEyebrow:"Для власника академії / курсів",ownerTitle:"Запустити Academy Business CRM.",ownerCopy:"Реєстрація власника → профіль навчального бізнесу → опційна публікація в Hermes Catalog → приватний Academy CRM workspace.",registerBusiness:"Зареєструвати академію / курси",openBusiness:"Відкрити мою Academy CRM",seeDemo:"Подивитися demo «Конс на Бі$»",learnerEyebrow:"Для студента / учасника",learnerTitle:"Навчання та прогрес.",learnerCopy:"Окремий learner flow для enrollment, уроків, evidence submissions, приватних питань і human-reviewed progression.",programs:"Програми та curriculum",progress:"Прогрес і evidence",support:"Питання та підтримка",human:"Рішення про progression залишається за людиною",registerLearner:"Створити learner account",learnerDashboard:"Відкрити learner dashboard",flowTitle:"Як бізнес заходить у Hermes Connect.",f1:"Обрати Academy",f1c:"На Hermes Connect або з Catalog.",f2:"Створити Hermes account",f2c:"Одна identity без другого password store.",f3:"Заповнити бізнес-профіль",f3c:"Тип, місто, сайт, timezone та Catalog opt-in.",f4:"Відкрити Academy CRM",f4c:"Sales, learners, operations, marketing та HR.",f5:"Публічний Catalog",f5c:"Лише дозволені бізнес-дані; CRM залишається приватною.",permissions:"Permission boundaries",permissionsTitle:"Навчання, reviewer access і support не змішуються з бізнес-власністю.",permissionsCopy:"Learner account не робить користувача власником академії. Business owner account не дає автоматичного reviewer або support permission. Кожен контур має окремий доступ.",training:"Як працює навчання",catalog:"Hermes Catalog"},
+    en:{title:"One platform. Two different paths: run an academy or learn inside one.",lead:"Hermes identity is shared across the ecosystem, while the workspace adapts to the role and business type. Owners get Academy CRM. Learners get a learner workspace.",rule:"Vertical-specific CRM",notUniversal:"Not one CRM for every business.",notUniversalCopy:"Repair shops need appointments, vehicles, and shop scheduling. Academies need leads, consultations, learners, cohorts, lessons, assignments, reviews, marketing KPI, and retention.",ownerEyebrow:"For academy / course owners",ownerTitle:"Launch Academy Business CRM.",ownerCopy:"Owner registration → education-business profile → optional Hermes Catalog publication → private Academy CRM workspace.",registerBusiness:"Register academy / courses",openBusiness:"Open my Academy CRM",seeDemo:"See «Конс на Бі$» demo",learnerEyebrow:"For learners / participants",learnerTitle:"Learning and progression.",learnerCopy:"A separate learner flow for enrollment, lessons, evidence submissions, private questions, and human-reviewed progression.",programs:"Programs and curriculum",progress:"Progress and evidence",support:"Questions and support",human:"Progression decisions remain human-controlled",registerLearner:"Create learner account",learnerDashboard:"Open learner dashboard",flowTitle:"How a business enters Hermes Connect.",f1:"Choose Academy",f1c:"From Hermes Connect or Catalog.",f2:"Create Hermes account",f2c:"One identity without a second password store.",f3:"Complete business profile",f3c:"Type, city, website, timezone, and Catalog opt-in.",f4:"Open Academy CRM",f4c:"Sales, learners, operations, marketing, and HR.",f5:"Public Catalog",f5c:"Only allowed public business data; CRM stays private.",permissions:"Permission boundaries",permissionsTitle:"Learning, reviewer access, support, and business ownership remain separate.",permissionsCopy:"A learner account does not make someone an academy owner. A business-owner account does not automatically grant reviewer or support permission. Each path has its own access boundary.",training:"How training works",catalog:"Hermes Catalog"}
+  } as const;
+  type Lang=keyof typeof d;const p=new URLSearchParams(location.search);let lang:Lang=p.get("lang")==="en"?"en":"uk";try{const s=localStorage.getItem("hermes-connect-language");if(!p.has("lang")&&(s==="uk"||s==="en"))lang=s}catch{}
+  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof d.uk;const v=d[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.addEventListener("click",()=>apply(b.dataset.lang==="en"?"en":"uk")));apply(lang);
+</script>
+
+<style>
+  .academy-hub-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px}.academy-hub-lang{display:flex;padding:3px;border:1px solid rgba(148,163,184,.35);border-radius:999px;background:#fff}.academy-hub-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-hub-lang button.active{background:#111827;color:#fff}
+  .academy-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}.academy-choice-card ul{padding-left:20px;line-height:1.8}.academy-hub-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:16px}.academy-hub-flow>div{padding:16px;border:1px solid rgba(148,163,184,.25);border-radius:14px}.academy-hub-flow span,.academy-hub-flow b,.academy-hub-flow small{display:block}.academy-hub-flow span{font-size:11px;color:#7c3aed;font-weight:900}.academy-hub-flow b{margin:7px 0}.academy-hub-flow small{color:#64748b;line-height:1.5}
+  @media(max-width:850px){.academy-choice-grid{grid-template-columns:1fr}.academy-hub-flow{grid-template-columns:1fr 1fr}}@media(max-width:520px){.academy-hub-flow{grid-template-columns:1fr}.academy-hub-toolbar{align-items:flex-start}}
+</style>
