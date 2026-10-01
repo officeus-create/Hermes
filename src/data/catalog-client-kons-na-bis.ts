@@ -37,7 +37,7 @@ export const konsNaBisClient = Object.freeze({
         instagram: "https://www.instagram.com/konsnabis",
         youtube: "https://youtube.com/@oleksandr_morozov_knb",
         tiktok: "https://www.tiktok.com/@konsnabis",
-        facebook: "https://www.facebook.com/konsnabis/",
+        facebook: "https://www.facebook.com/share/17jqya6Sot/?mibextid=wwXIfr",
         threads: "https://www.threads.com/@konsnabis",
         telegram: "https://t.me/+XSUYZOYC-Ws0OWFi"
       },
