@@ -96,7 +96,7 @@ const buildLeadCalendarInvite = ({ requestId, direction, name, email, sourcePath
     email ? `Email: ${email}` : "",
     sourcePath ? `Source: ${sourcePath}` : "",
     `Request ID: ${requestId}`,
-  ].filter(Boolean).join("\\n");
+  ].filter(Boolean).join("\n");
 
   return [
     "BEGIN:VCALENDAR",
