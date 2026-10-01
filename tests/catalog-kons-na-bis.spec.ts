@@ -6,7 +6,7 @@ test.describe("KNB client concept", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
     await expect(page.locator("html")).toHaveAttribute("lang", "uk");
     await expect(page.getByText("це не офіційний сайт бізнесу")).toBeVisible();
-    await expect(page.getByRole("link", { name: /CRM demo/i })).toHaveAttribute(
+    await expect(page.locator("a.nav-action")).toHaveAttribute(
       "href",
       "/services/hermes-connect/academy/business-demo/kons-na-bis/",
     );
