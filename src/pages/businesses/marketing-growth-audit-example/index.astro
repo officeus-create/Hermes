@@ -4,30 +4,30 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
 const funnel = [
-  ["01","Attention","Short-form / long-form content grouped by customer pain"],
-  ["02","Trackable CTA","One primary action per asset + campaign_id"],
-  ["03","Diagnostic","Baseline + primary gap + first three actions"],
-  ["04","CRM context","Source, pain, stage, offer, owner, next action"],
-  ["05","Consultation","Fit, economics, objection, decision"],
-  ["06","Core offer","Program / service matched to the diagnosed gap"],
-  ["07","Delivery","Cohort / project / implementation evidence"],
-  ["08","Outcome","Baseline → actual, with source and definition"],
-  ["09","Retention","Renewal / next program / referral"],
+  {n:"01",uk:"Увага",en:"Attention",ukc:"Short-form / long-form контент за pain-кластерами клієнта.",enc:"Short-form / long-form content grouped by customer pain."},
+  {n:"02",uk:"Вимірюваний CTA",en:"Trackable CTA",ukc:"Одна primary action на asset + campaign_id.",enc:"One primary action per asset + campaign_id."},
+  {n:"03",uk:"Діагностика",en:"Diagnostic",ukc:"Baseline + головний gap + перші три дії.",enc:"Baseline + primary gap + first three actions."},
+  {n:"04",uk:"CRM-контекст",en:"CRM context",ukc:"Source, pain, stage, offer, owner і next action.",enc:"Source, pain, stage, offer, owner, next action."},
+  {n:"05",uk:"Консультація",en:"Consultation",ukc:"Fit, economics, objection і decision.",enc:"Fit, economics, objection, decision."},
+  {n:"06",uk:"Основний оффер",en:"Core offer",ukc:"Програма / послуга, що відповідає діагностованому gap.",enc:"Program / service matched to the diagnosed gap."},
+  {n:"07",uk:"Delivery",en:"Delivery",ukc:"Cohort / project / implementation evidence.",enc:"Cohort / project / implementation evidence."},
+  {n:"08",uk:"Результат",en:"Outcome",ukc:"Baseline → actual із source та definition.",enc:"Baseline → actual, with source and definition."},
+  {n:"09",uk:"Retention",en:"Retention",ukc:"Renewal / наступна програма / referral.",enc:"Renewal / next program / referral."},
 ];
 
 const metrics = [
-  ["Qualified attention","Reach/view from the intended buying audience, not raw volume alone."],
-  ["Lead action","DM, form, diagnostic or call start attributed to the source asset."],
-  ["Qualified lead","Correct buyer, defined need, fit and usable next action."],
-  ["Consultation","Booked → attended → qualified, with loss reason."],
-  ["Sale + revenue","Closed deal and attributed revenue when the CRM source is trustworthy."],
-  ["Unit economics","CAC · LTV/retention · ROMI only after real spend/revenue are connected."],
+  {uk:"Кваліфікована увага",en:"Qualified attention",ukc:"Reach / views від потрібної buyer-аудиторії, а не raw volume сам по собі.",enc:"Reach/view from the intended buying audience, not raw volume alone."},
+  {uk:"Lead action",en:"Lead action",ukc:"DM, form, diagnostic або call start з attribution до source asset.",enc:"DM, form, diagnostic or call start attributed to the source asset."},
+  {uk:"Кваліфікований lead",en:"Qualified lead",ukc:"Правильний buyer, визначена потреба, fit і usable next action.",enc:"Correct buyer, defined need, fit and usable next action."},
+  {uk:"Консультація",en:"Consultation",ukc:"Booked → attended → qualified із loss reason.",enc:"Booked → attended → qualified, with loss reason."},
+  {uk:"Продаж + revenue",en:"Sale + revenue",ukc:"Closed deal та attributed revenue, коли CRM-source надійний.",enc:"Closed deal and attributed revenue when the CRM source is trustworthy."},
+  {uk:"Unit economics",en:"Unit economics",ukc:"CAC · LTV/retention · ROMI тільки після підключення реальних spend/revenue.",enc:"CAC · LTV/retention · ROMI only after real spend/revenue are connected."},
 ];
 
 const phases = [
-  ["0–7 days","Instrument","Unify CTA vocabulary, UTM/campaign rules, CRM source fields, proof ledger and baseline dashboard."],
-  ["8–30 days","Learn","Map content by pain × funnel stage, compare winners/losers, standardize diagnostic and consultation handoff."],
-  ["31–90 days","Scale","Expand proven hooks, retarget qualified audiences, connect delivery/renewal back to acquisition source."],
+  {window:"0–7 днів",uk:"Інструментувати",en:"Instrument",ukc:"Єдиний словник CTA, UTM/campaign rules, CRM source fields, proof ledger і baseline dashboard.",enc:"Unify CTA vocabulary, UTM/campaign rules, CRM source fields, proof ledger and baseline dashboard."},
+  {window:"8–30 днів",uk:"Навчитися на даних",en:"Learn",ukc:"Розкласти content за pain × funnel stage, порівнювати winners/losers, стандартизувати diagnostic і consultation handoff.",enc:"Map content by pain × funnel stage, compare winners/losers, standardize diagnostic and consultation handoff."},
+  {window:"31–90 днів",uk:"Масштабувати",en:"Scale",ukc:"Розширювати proven hooks, retarget qualified audiences і зв’язати delivery/renewal з acquisition source.",enc:"Expand proven hooks, retarget qualified audiences, connect delivery/renewal back to acquisition source."},
 ];
 
 const schema = [
@@ -120,18 +120,18 @@ const schema = [
 
       <section class="panel">
         <div class="head"><div><p class="eyebrow">04 · MINDMAP</p><h2 data-i18n="funnelTitle">Воронка закінчується бізнес-результатом, не охопленням.</h2></div></div>
-        <div class="funnel">{funnel.map(([n,t,d])=><article><span>{n}</span><b>{t}</b><small>{d}</small></article>)}</div>
+        <div class="funnel">{funnel.map((item)=><article><span>{item.n}</span><b data-uk={item.uk} data-en={item.en}>{item.uk}</b><small data-uk={item.ukc} data-en={item.enc}>{item.ukc}</small></article>)}</div>
       </section>
 
       <section class="panel">
         <div class="head"><div><p class="eyebrow">05 · MEASUREMENT</p><h2 data-i18n="metricsTitle">Шість контрольних рівнів замість vanity metrics.</h2></div></div>
-        <div class="metrics">{metrics.map(([title,copy],index)=><article><span>0{index+1}</span><div><b>{title}</b><small>{copy}</small></div></article>)}</div>
+        <div class="metrics">{metrics.map((item,index)=><article><span>0{index+1}</span><div><b data-uk={item.uk} data-en={item.en}>{item.uk}</b><small data-uk={item.ukc} data-en={item.enc}>{item.ukc}</small></div></article>)}</div>
         <p class="note" data-i18n="metricNote">CAC/LTV/ROMI не заповнюються “для красивого дашборду”. Вони з’являються після дозволеного підключення spend, sales/revenue та attribution rules.</p>
       </section>
 
       <section class="panel">
         <div class="head"><div><p class="eyebrow">06 · 90-DAY OPERATING PLAN</p><h2 data-i18n="planTitle">Спочатку instrumentation, потім learning, потім scale.</h2></div></div>
-        <div class="phases">{phases.map(([window,title,copy])=><article><span>{window}</span><h3>{title}</h3><p>{copy}</p></article>)}</div>
+        <div class="phases">{phases.map((item)=><article><span>{item.window}</span><h3 data-uk={item.uk} data-en={item.en}>{item.uk}</h3><p data-uk={item.ukc} data-en={item.enc}>{item.ukc}</p></article>)}</div>
       </section>
 
       <section class="panel">
@@ -184,7 +184,7 @@ const schema = [
   type Lang=keyof typeof d;
   const params=new URLSearchParams(location.search);
   let lang:Lang=params.get("lang")==="en"?"en":"uk";
-  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof d.uk;const v=d[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
+  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof d.uk;const v=d[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLElement>("[data-uk][data-en]").forEach(n=>{n.textContent=next==="en"?(n.dataset.en||""):(n.dataset.uk||"")});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.addEventListener("click",()=>{const next:Lang=b.dataset.lang==="en"?"en":"uk";const u=new URL(location.href);u.searchParams.set("lang",next);history.replaceState({}, "", u.pathname+u.search+u.hash);apply(next)}));
   apply(lang);
 </script>
