@@ -166,7 +166,7 @@ test("Hermes Connect Hub presents one live product, private Academy and Beauty, 
   await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("PRIVATE LEARNER WORKSPACE", { exact: true })).toBeVisible();
+  await expect(page.getByText("BUSINESS CRM + LEARNER ACCESS", { exact: true })).toBeVisible();
   await expect(page.locator('main a[href="/services/hermes-connect/academy/"]')).not.toHaveCount(0);
   await expect(page.getByText("PRIVATE OWNER FOUNDATION", { exact: true })).toBeVisible();
   await expect(page.locator('main a[href="/services/hermes-connect/beauty/workspace/"]')).not.toHaveCount(0);
@@ -191,7 +191,7 @@ test("Hermes Connect Hub keeps explicit Russian content and persists the selecte
   await expect(page.locator(".hc-lead")).toContainText("Одна операционная система");
   await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
   await expect(page.locator("[data-hc-product-context] [data-hc-english-only]")).toHaveCount(0);
-  await expect(page.getByText("ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ", { exact: true })).toBeVisible();
+  await expect(page.getByText("CRM ДЛЯ БИЗНЕСА + ДОСТУП К ОБУЧЕНИЮ", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/?lang=ru");
 
   await page.goto("/services/hermes-connect/");
