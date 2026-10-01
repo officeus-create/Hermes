@@ -22,6 +22,27 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   assert.equal(observed.nextCalls, 1);
 }
 
+{
+  const upstream = new Response(
+    "<html><body>Your information was not sent or stored.</body></html>",
+    { headers: { "content-type": "text/html; charset=utf-8" } },
+  );
+  let nextCalls = 0;
+  const context = {
+    request: new Request("https://hermeslogisticsus.com/businesses/"),
+    next: async () => { nextCalls += 1; return upstream; },
+    env: { ASSETS: { fetch: async () => new Response("unused") } },
+  };
+  const response = await routeMiddleware(context);
+  assert.equal(response, upstream, "ordinary main-domain HTML must pass through without buffering/rebuilding");
+  assert.equal(nextCalls, 1);
+  assert.equal(
+    await response.text(),
+    "<html><body>Your information was not sent or stored.</body></html>",
+    "root middleware must not rewrite intentional preview copy in static HTML",
+  );
+}
+
 for (const legacyPath of ["/academy", "/academy/"]) {
   const { context, observed } = contextFor(`https://hermeslogisticsus.com${legacyPath}?utm_source=gsc`);
   const response = await routeMiddleware(context);
