@@ -1,4 +1,5 @@
 import { jsonResponse } from "../_lib/session.mjs";
+import { publicCompanyFacts } from "../_lib/public-company-facts.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
@@ -29,7 +30,7 @@ export async function onRequestGet({ env }: { env: Env }) {
 
   const [companyResult, repairResult] = await Promise.all([
     env.DB.prepare(`
-      SELECT id, company_name, slug, company_type, city, state, catalog_status, created_at, updated_at
+      SELECT id, company_name, slug, company_type, city, state, country_code, catalog_status, created_at, updated_at
       FROM hermes_company_profiles
       WHERE catalog_opt_in = 1
         AND catalog_status IN ('self_submitted', 'verified_public')
@@ -46,21 +47,7 @@ export async function onRequestGet({ env }: { env: Env }) {
     `).all(),
   ]);
 
-  const companies = (companyResult?.results || []).map((row: any) => ({
-    id: row.id,
-    companyName: row.company_name,
-    slug: row.slug,
-    companyType: row.company_type,
-    city: row.city,
-    state: row.state,
-    status: row.catalog_status,
-    source: "hermes_connect_company",
-    profileUrl: null,
-    services: [],
-    verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }));
+  const companies = (companyResult?.results || []).map(publicCompanyFacts);
 
   for (const row of repairResult?.results || []) {
     const services = await repairShopServices(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));

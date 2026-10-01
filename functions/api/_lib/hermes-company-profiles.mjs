@@ -88,3 +88,29 @@ export async function specialistHasLoadBoardAccess(db, specialist) {
   ).bind(specialist.id).first();
   return Number(company?.load_board_access) === 1;
 }
+
+/**
+ * Prepare club facts only. This does not authorize ownership, persist a company,
+ * grant module access or change the existing Load Board registration contract.
+ * Callers must resolve the approved existing client owner before persistence.
+ */
+export function normalizeBusinessClubCompanyFacts(input = {}) {
+  const countryCode = cleanCompanyText(input.countryCode, 8).toUpperCase();
+  const companyType = cleanCompanyText(input.companyType, 40).toLowerCase().replace(/[\s-]+/g, "_");
+  const companyName = cleanCompanyText(input.companyName, 140);
+  const city = cleanCompanyText(input.city, 100);
+  const region = cleanCompanyText(input.region ?? input.state, 100);
+  const errors = [];
+  if (countryCode !== "UA") errors.push("business_club_country_unsupported");
+  if (companyType !== "business_club") errors.push("business_club_type_required");
+  if (companyName.length < 2) errors.push("company_name_required");
+  if (city.length < 2) errors.push("city_required");
+  if (region.length < 2) errors.push("region_required");
+  if (errors.length) return { ok: false, errors };
+  return {
+    ok: true,
+    facts: { companyName, companyType, countryCode, city, state: region },
+    activation: { loadBoardAccess: false, catalogOptIn: false },
+  };
+}
+
