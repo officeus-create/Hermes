@@ -93,7 +93,7 @@ import "../../../../../../styles/hermes-academy-app.css";
             <div class="academy-app-field"><label data-i18n="website">Сайт · необов’язково</label><input name="website" inputmode="url" placeholder="https://..." /></div>
             <div class="academy-app-field"><label data-i18n="phone">Телефон · необов’язково</label><input name="phone" autocomplete="tel" /></div>
           </div>
-          <label class="academy-owner-check"><input name="catalogOptIn" type="checkbox" checked /><span data-i18n="catalogOpt">Додати бізнес у Hermes Catalog. Публічно показуються лише дані бізнесу; учні, заявки, CRM, платежі та приватні контакти не публікуються.</span></label>
+          <label class="academy-owner-check"><input name="catalogOptIn" type="checkbox" checked /><span data-i18n="catalogOpt">Додати бізнес у Hermes Catalog. Публічно можуть показуватися назва, тип, локація, сайт і бізнес-телефон; учні, заявки, CRM-записи та платежі не публікуються.</span></label>
           <button class="academy-app-button intelligence" type="submit" data-i18n="openCrm">Зберегти та відкрити Academy CRM</button>
         </form>
         <div class="academy-app-alert" data-business-alert role="status"></div>
@@ -124,7 +124,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       create:"Create account",login:"Sign in",fullName:"Full name",password:"Password",createOwner:"Create owner account",secureLogin:"Secure sign in",
       step2:"Step 2 · Education business",setupTitle:"Configure your Academy CRM.",setupLead:"These details set the workspace identity and CRM type. Catalog publication is a separate opt-in; learner and CRM data stays private.",
       businessName:"Academy / course business name",businessType:"Business type",city:"City",region:"Region",country:"Country code",timezone:"Time zone",website:"Website · optional",phone:"Phone · optional",
-      catalogOpt:"Add this business to Hermes Catalog. Only public business details are listed; learners, leads, CRM records, payments, and private contacts are never published.",openCrm:"Save and open Academy CRM",
+      catalogOpt:"Add this business to Hermes Catalog. Name, type, location, website, and business phone may be public; learners, leads, CRM records, and payments are never published.",openCrm:"Save and open Academy CRM",
       businessAcademy:"Business academy",onlineSchool:"Online school",courses:"Courses",businessClub:"Business club",coaching:"Coaching / mentoring",corporateAcademy:"Corporate academy"
     }
   } as const;
