@@ -1,80 +1,252 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import {konsNaBisClient as client} from "../../../../data/catalog-client-kons-na-bis";
+
+const observedAt = "2026-10-01";
+const socialSnapshot = [
+  { label: "Instagram", value: "77.1K", detail: "followers", href: "https://www.instagram.com/konsnabis/" },
+  { label: "YouTube · Oleksandr", value: "64.2K", detail: "subscribers · 1.3K videos", href: "https://www.youtube.com/@Oleksandr_Morozov_KnB" },
+  { label: "TikTok", value: "19.6K", detail: "followers · 163.1K likes", href: "https://www.tiktok.com/@konsnabis" },
+  { label: "Threads", value: "5,971", detail: "followers · 845 threads", href: "https://www.threads.com/@konsnabis" },
+  { label: "Facebook", value: "85.7K", detail: "followers · public metadata snapshot", href: "https://www.facebook.com/konsnabis/" },
+];
+
+const instagramAudit = [
+  {
+    titleUk: "Сильна база уваги",
+    titleEn: "Strong attention base",
+    bodyUk: "Велика аудиторія, активний short-form контент, кейси, highlights і зрозуміла тематика для власників бізнесу.",
+    bodyEn: "Large audience, active short-form publishing, cases, highlights, and a clear business-owner theme.",
+    state: "strength",
+  },
+  {
+    titleUk: "CTA фрагментовані",
+    titleEn: "CTA fragmentation",
+    bodyUk: "У bio — слово «сертифікат», у частині постів — «+» у Direct, в інших — загальне «долучайтесь». Це ускладнює чисту атрибуцію й порівняння конверсій.",
+    bodyEn: "The bio uses the keyword “certificate”, some posts ask for “+” in DM, while others use generic join CTAs. That makes clean attribution and conversion comparison harder.",
+    state: "gap",
+  },
+  {
+    titleUk: "Контент є, але потрібна stage-логіка",
+    titleEn: "Content needs stage logic",
+    bodyUk: "Останні публікації охоплюють сильні болі — стагнація, партнери, сезонність, контент, впровадження. Їх варто розкласти за Awareness → Consideration → Proof → Conversion.",
+    bodyEn: "Recent posts cover strong pains—stagnation, partners, seasonality, content, implementation. They should be mapped to Awareness → Consideration → Proof → Conversion.",
+    state: "gap",
+  },
+  {
+    titleUk: "Обсяг не дорівнює результату",
+    titleEn: "Volume is not the outcome",
+    bodyUk: "Висока частота публікацій має сенс лише разом із source/creative/CTA attribution та downstream CRM: qualified lead, consultation, sale, cohort, renewal.",
+    bodyEn: "High publishing cadence only matters when source/creative/CTA attribution connects to downstream CRM: qualified lead, consultation, sale, cohort, renewal.",
+    state: "gap",
+  },
+];
+
+const funnel = [
+  ["01","CONTENT","Problem / case / insight"],
+  ["02","CTA","One trackable action per asset"],
+  ["03","DIAGNOSTIC","6-point Growth Score"],
+  ["04","CRM","Source + pain + business stage"],
+  ["05","CONSULTATION","Gap review + fit"],
+  ["06","OFFER","7-week program"],
+  ["07","DELIVERY","Cohort + assignments + reviews"],
+  ["08","OUTCOME","Baseline → actual"],
+  ["09","RENEWAL","Club / next program"],
+];
+
+const measurement = [
+  ["1","Qualified attention","Reach / views from the intended owner audience"],
+  ["2","Lead action","DM / form / diagnostic starts by campaign"],
+  ["3","Qualified lead","Business owner + fit + defined problem"],
+  ["4","Consultation","Booked → attended → qualified"],
+  ["5","Sale","Consultation → paid program + attributed revenue"],
+  ["6","Unit economics","CAC · LTV / renewal · ROMI where source data exists"],
+];
+
+const firstMoves = [
+  ["0–7 days","Instrument","One campaign_id, UTM/keyword convention, CRM source fields, one primary CTA per asset, baseline dashboard."],
+  ["8–30 days","Learn","Content matrix by pain × funnel stage; weekly winner/loser review; consultation script tied to diagnostic outputs."],
+  ["31–90 days","Scale","Retarget proven audiences, expand winning hooks, connect cohort outcomes and renewal to original acquisition source."],
+];
+
+const sources = [
+  {label:"Instagram @konsnabis",href:"https://www.instagram.com/konsnabis/"},
+  {label:"TikTok @konsnabis",href:"https://www.tiktok.com/@konsnabis"},
+  {label:"Threads @konsnabis",href:"https://www.threads.com/@konsnabis"},
+  {label:"YouTube · Oleksandr Morozov",href:"https://www.youtube.com/@Oleksandr_Morozov_KnB"},
+  {label:"KNB official site",href:"https://kons-na-bis.com/"},
+  {label:"7-week program",href:client.programmeUrl},
+];
 ---
-<BaseLayout title="Конс на Бі$ — Hermes Catalog concept" description="Noindex demo concept for a business academy and club." robots="noindex,nofollow" locale="uk" htmlLang="uk">
+<BaseLayout title="Конс на Бі$ — Marketing Growth Case | Hermes Catalog" description="Noindex Hermes Catalog client concept: public-source social audit, measurable funnel, Academy CRM map and candidate assessment example." robots="noindex,nofollow" locale="uk" htmlLang="uk">
 <main id="main-content" class="knb-page">
   <div class="knb-top">
     <a href="/businesses/">← Hermes Catalog</a>
     <div class="knb-lang" aria-label="Language"><button type="button" class="active" data-lang="uk">UA</button><button type="button" data-lang="en">EN</button></div>
   </div>
-  <p class="knb-kicker" data-i18n="kicker">Hermes Catalog · client concept · це не офіційний сайт бізнесу</p>
-  <h1>Конс на Бі$<br><span>Academy × CRM</span></h1>
-  <p class="knb-lead" data-i18n="lead">{client.programmeName}: каталог, воронка заявок, навчальний прогрес, аналітика та retention в одному демонстраційному контурі.</p>
 
-  <section class="knb-grid">
-    <article><b>01</b><h2 data-i18n="t1">7-тижнева програма</h2><p data-i18n="d1">Уроки, завдання, щотижневі розбори, VIP-сесії та записи.</p></article>
-    <article><b>02</b><h2>Sales CRM</h2><p data-i18n="d2">Теплі заявки → консультація → рішення → зарахування → клуб.</p></article>
-    <article><b>03</b><h2>Marketing KPI</h2><p data-i18n="d3">Funnel, CAC, LTV, ROMI та revenue attribution без вигаданих цифр.</p></article>
-    <article><b>04</b><h2>Academy Operations</h2><p data-i18n="d4">Cohorts, assignments, reviews, attendance, recordings, next action.</p></article>
+  <section class="knb-hero">
+    <p class="knb-kicker" data-i18n="kicker">Hermes Catalog · client strategy concept · не офіційний сайт КНБ</p>
+    <h1>Конс на Бі$<br><span>Social → CRM → Revenue</span></h1>
+    <p class="knb-lead" data-i18n="lead">Відповідь на реальний marketing-assessment: не просто аудит соцмережі, а вимірювана система залучення для 7-тижневої програми з прив’язкою до Academy CRM.</p>
+    <div class="knb-hero-actions">
+      <a class="primary" href="#audit" data-i18n="seeAudit">Дивитися аудит</a>
+      <a href="#funnel" data-i18n="seeFunnel">Дивитися funnel</a>
+      <a href="/demos/hermes-connect/academy-knb.html" data-language-route data-i18n="openDemo">Відкрити CRM demo</a>
+    </div>
+    <p class="knb-date"><span data-i18n="snapshot">Public-source snapshot</span> · {observedAt}</p>
   </section>
 
-  <section class="knb-path">
-    <p class="knb-kicker">HERMES CONNECT PATH</p>
-    <h2 data-i18n="pathTitle">Як це має працювати для клієнта.</h2>
-    <div>
-      <span data-i18n="p1">1. Побачити бізнес у Catalog</span><b>→</b>
-      <span data-i18n="p2">2. Зареєструвати Hermes account</span><b>→</b>
-      <span data-i18n="p3">3. Підтвердити профіль академії</span><b>→</b>
-      <span data-i18n="p4">4. Відкрити Academy CRM</span>
+  <section class="knb-social" aria-labelledby="social-title">
+    <div class="knb-section-head">
+      <div><p class="knb-kicker">PUBLIC FOOTPRINT</p><h2 id="social-title" data-i18n="socialTitle">Аудиторія вже є. Завдання — зв’язати її з результатом.</h2></div>
+      <p data-i18n="socialCopy">Публічні цифри — лише snapshot, не доказ продажів. Для управління потрібен ланцюг від конкретного content asset до CRM outcome.</p>
     </div>
+    <div class="knb-social-grid">
+      {socialSnapshot.map((item)=><a href={item.href} target="_blank" rel="noopener noreferrer"><small>{item.label}</small><strong>{item.value}</strong><span>{item.detail}</span></a>)}
+    </div>
+  </section>
+
+  <section class="knb-panel" id="audit">
+    <div class="knb-section-head">
+      <div><p class="knb-kicker">TASK 1 · INSTAGRAM AUDIT</p><h2 data-i18n="auditTitle">Що я б змінив одразу як керівник напряму.</h2></div>
+      <a href="https://www.instagram.com/konsnabis/" target="_blank" rel="noopener noreferrer">@konsnabis ↗</a>
+    </div>
+    <div class="knb-audit-grid">
+      {instagramAudit.map((item)=><article class:list={[item.state==="strength"?"strength":"gap"]}><span>{item.state==="strength"?"STRENGTH":"OPPORTUNITY"}</span><h3 data-uk={item.titleUk} data-en={item.titleEn}>{item.titleUk}</h3><p data-uk={item.bodyUk} data-en={item.bodyEn}>{item.bodyUk}</p></article>)}
+    </div>
+    <div class="knb-evidence-note" data-i18n="recentEvidence">У свіжих Instagram-публікаціях 30.09–01.10 видно кілька різних conversion-механік: «+» у Direct, безкоштовна консультація, загальне «долучайтесь»; у bio — окремий keyword «сертифікат». Це хороший матеріал для A/B testing, але тільки якщо кожен CTA має власний campaign_id та CRM source.</div>
+  </section>
+
+  <section class="knb-panel" id="funnel">
+    <div class="knb-section-head">
+      <div><p class="knb-kicker">TASK 2 · 7-WEEK PROGRAM FUNNEL</p><h2 data-i18n="funnelTitle">Один funnel від уваги до renewal.</h2></div>
+      <span class="knb-pill" data-i18n="program">Стратегія керованого зростання у бізнесі</span>
+    </div>
+    <div class="knb-funnel">
+      {funnel.map(([n,t,d])=><div><span>{n}</span><b>{t}</b><small>{d}</small></div>)}
+    </div>
+
+    <div class="knb-offer">
+      <div>
+        <p class="knb-kicker">RECOMMENDED OFFER</p>
+        <h3 data-i18n="offerTitle">Безкоштовна діагностика «6 показників росту» + персональна карта перших 3 дій.</h3>
+        <p data-i18n="offerCopy">Не починати з дисконту. Спочатку показати власнику, де саме втрачається ріст: увага, lead action, qualification, consultation, sale або unit economics. Якщо 7-тижнева програма реально підходить — показати, який блок програми закриває кожний gap.</p>
+      </div>
+      <aside>
+        <strong data-i18n="whyOffer">Чому цей оффер</strong>
+        <ul>
+          <li data-i18n="why1">відповідає позиціонуванню КНБ «керувати показниками»;</li>
+          <li data-i18n="why2">дає користь до покупки і підвищує довіру;</li>
+          <li data-i18n="why3">створює структуровані CRM-дані для sales;</li>
+          <li data-i18n="why4">дозволяє сегментувати follow-up без загальних розсилок.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="knb-panel">
+    <div class="knb-section-head"><div><p class="knb-kicker">MEASUREMENT</p><h2 data-i18n="measurementTitle">Шість контрольних показників замість vanity metrics.</h2></div></div>
+    <div class="knb-metrics">
+      {measurement.map(([n,t,d])=><article><span>{n}</span><div><b>{t}</b><small>{d}</small></div></article>)}
+    </div>
+    <p class="knb-note" data-i18n="metricBoundary">Нуль не підставляється замість відсутніх даних. CAC/LTV/ROMI з’являються тільки після підключення витрат, CRM revenue і правил attribution.</p>
+  </section>
+
+  <section class="knb-panel">
+    <div class="knb-section-head"><div><p class="knb-kicker">MINDMAP</p><h2 data-i18n="mindmapTitle">Контент має закінчуватися не охопленням, а наступною дією.</h2></div></div>
+    <div class="knb-mindmap">
+      <b>Instagram / TikTok / Threads / YouTube / Facebook</b><i>→</i>
+      <b data-i18n="painCluster">Pain / case cluster</b><i>→</i>
+      <b>Trackable CTA</b><i>→</i>
+      <b>6-point Diagnostic</b><i>→</i>
+      <b>Hermes / Client CRM</b><i>→</i>
+      <b>Consultation</b><i>→</i>
+      <b>7-week Program</b><i>→</i>
+      <b>Cohort delivery</b><i>→</i>
+      <b>Outcome + Renewal</b>
+    </div>
+  </section>
+
+  <section class="knb-panel">
+    <div class="knb-section-head"><div><p class="knb-kicker">0–90 DAY OPERATING PLAN</p><h2 data-i18n="planTitle">Спочатку вимірювання, потім масштаб.</h2></div></div>
+    <div class="knb-plan">{firstMoves.map(([window,title,body])=><article><span>{window}</span><h3>{title}</h3><p>{body}</p></article>)}</div>
+  </section>
+
+  <section class="knb-panel knb-crm">
+    <div class="knb-section-head">
+      <div><p class="knb-kicker">HERMES CONNECT · ACADEMY CRM</p><h2 data-i18n="crmTitle">Що має потрапляти в CRM з маркетингу.</h2></div>
+      <a href="/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=kons-na-bis&lang=uk" data-language-route data-i18n="register">Зареєструвати / відкрити Academy CRM →</a>
+    </div>
+    <div class="knb-crm-fields">
+      {["source_channel","content_id","campaign_id","CTA / keyword","lead_magnet","primary pain","business stage","manager","consultation status","program fit","objection","sale / revenue","cohort","completion","renewal"].map((field)=><span>{field}</span>)}
+    </div>
+    <p data-i18n="crmCopy">Одна людина не повинна ставати новим контактом при переході Instagram → Telegram → consultation. CRM зберігає один lead/customer identity та історію каналів.</p>
+  </section>
+
+  <section class="knb-panel">
+    <div class="knb-section-head"><div><p class="knb-kicker">HIRING SYSTEM</p><h2 data-i18n="hiringTitle">Те саме тестове — як reusable Candidate Assessment у CRM.</h2></div></div>
+    <p data-i18n="hiringCopy">Brief, deadline, джерела, Google Docs/MindMap submission, rubric, reviewer score та human decision зберігаються в Candidate Assessment. Це окремо від learner progress і не створює автоматичних кадрових рішень.</p>
+    <div class="knb-assessment">
+      <span>Evidence & diagnosis · 0–5</span><span>Audience & positioning · 0–5</span><span>Funnel logic · 0–5</span><span>Offer quality · 0–5</span><span>KPI & measurement · 0–5</span><span>Execution thinking · 0–5</span>
+    </div>
+  </section>
+
+  <section class="knb-panel knb-form-review">
+    <div class="knb-section-head"><div><p class="knb-kicker">CANDIDATE INTAKE</p><h2 data-i18n="formTitle">Що ми б спростили у формі кандидата.</h2></div></div>
+    <p data-i18n="formCopy">Для оцінки маркетолога пріоритет — job-relevant evidence: досвід, portfolio/cases, фактичні KPI, інструменти, мова, availability, test assignment і спосіб мислення. Питання про куріння, сімейний стан, дітей, партнера чи особисті життєві періоди не потрібні для оцінки якості marketing work і не входять у наш default CRM template.</p>
+  </section>
+
+  <section class="knb-panel knb-sources">
+    <div class="knb-section-head"><div><p class="knb-kicker">EVIDENCE</p><h2 data-i18n="sourcesTitle">Публічні джерела, використані в concept.</h2></div></div>
+    <div>{sources.map((source)=><a href={source.href} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>)}</div>
+    <p data-i18n="sourceBoundary">Метрики — snapshot на дату вище. Вони можуть змінюватися. Бізнес-результати, які КНБ заявляє на власних сторінках, залишаються client-owned claims і не подаються Hermes як незалежно перевірені.</p>
   </section>
 
   <div class="knb-actions">
     <a class="primary" href="/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=kons-na-bis&lang=uk" data-language-route data-i18n="register">Зареєструвати / відкрити Academy CRM →</a>
-    <a href="/demos/hermes-connect/academy-knb.html" data-i18n="demo">Переглянути CRM demo →</a>
-    <a href={client.programmeUrl} target="_blank" rel="noopener noreferrer" data-i18n="official">Офіційна програма ↗</a>
+    <a href="/demos/hermes-connect/academy-knb.html" data-language-route data-i18n="demo">Переглянути CRM demo →</a>
+    <a href={client.programmeUrl} target="_blank" rel="noopener noreferrer" data-i18n="official">Офіційна програма КНБ ↗</a>
   </div>
-
-  <p class="knb-boundary" data-i18n="boundary">Це демонстраційна структура. Реєстрація, owner claim, оплата та публічна активація клієнта не вважаються завершеними без дії самого власника.</p>
+  <p class="knb-boundary" data-i18n="boundary">Це демонстраційний strategy concept на основі публічних джерел і наданого candidate brief. Він не стверджує, що КНБ погодила стратегію, активувала Hermes Connect, оплатила послуги або надала доступ до приватної аналітики.</p>
 </main>
+
 <script>
 const d={
-uk:{kicker:"Hermes Catalog · client concept · це не офіційний сайт бізнесу",lead:"Стратегія керованого зростання у бізнесі: каталог, воронка заявок, навчальний прогрес, аналітика та retention в одному демонстраційному контурі.",t1:"7-тижнева програма",d1:"Уроки, завдання, щотижневі розбори, VIP-сесії та записи.",d2:"Теплі заявки → консультація → рішення → зарахування → клуб.",d3:"Funnel, CAC, LTV, ROMI та revenue attribution без вигаданих цифр.",d4:"Cohorts, assignments, reviews, attendance, recordings, next action.",pathTitle:"Як це має працювати для клієнта.",p1:"1. Побачити бізнес у Catalog",p2:"2. Зареєструвати Hermes account",p3:"3. Підтвердити профіль академії",p4:"4. Відкрити Academy CRM",register:"Зареєструвати / відкрити Academy CRM →",demo:"Переглянути CRM demo →",official:"Офіційна програма ↗",boundary:"Це демонстраційна структура. Реєстрація, owner claim, оплата та публічна активація клієнта не вважаються завершеними без дії самого власника."},
-en:{kicker:"Hermes Catalog · client concept · this is not the business's official website",lead:"Managed Business Growth Strategy: catalog discovery, lead pipeline, learner progress, analytics, and retention in one demo structure.",t1:"7-week program",d1:"Lessons, assignments, weekly reviews, VIP sessions, and recordings.",d2:"Warm leads → consultation → decision → enrollment → club.",d3:"Funnel, CAC, LTV, ROMI, and revenue attribution without fabricated metrics.",d4:"Cohorts, assignments, reviews, attendance, recordings, and next action.",pathTitle:"How the client path should work.",p1:"1. Find the business in Catalog",p2:"2. Create a Hermes account",p3:"3. Confirm the academy profile",p4:"4. Open Academy CRM",register:"Register / open Academy CRM →",demo:"View CRM demo →",official:"Official program ↗",boundary:"This is a demo structure. Registration, owner claim, billing, and public client activation are not treated as complete without an action by the owner."}
-};
-type Lang = "uk" | "en";
-type TranslationKey = keyof typeof d.uk;
-let lang: Lang = "uk";
-try {
-  const saved = localStorage.getItem("hermes-connect-language");
-  if (saved === "en") lang = "en";
-} catch {}
-function apply(next: Lang) {
-  lang = next;
-  document.documentElement.lang = next;
-  try { localStorage.setItem("hermes-connect-language", next); } catch {}
-  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
-    const key = node.dataset.i18n as TranslationKey | undefined;
-    if (!key) return;
-    const value = d[next][key];
-    if (value) node.textContent = value;
-  });
-  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.lang === next);
-  });
-  document.querySelectorAll<HTMLAnchorElement>("[data-language-route]").forEach((link) => {
-    const url = new URL(link.getAttribute("href") || "/", window.location.origin);
-    url.searchParams.set("lang", next);
-    link.href = url.pathname + url.search + url.hash;
-  });
+uk:{
+kicker:"Hermes Catalog · client strategy concept · не офіційний сайт КНБ",lead:"Відповідь на реальний marketing-assessment: не просто аудит соцмережі, а вимірювана система залучення для 7-тижневої програми з прив’язкою до Academy CRM.",seeAudit:"Дивитися аудит",seeFunnel:"Дивитися funnel",openDemo:"Відкрити CRM demo",snapshot:"Public-source snapshot",
+socialTitle:"Аудиторія вже є. Завдання — зв’язати її з результатом.",socialCopy:"Публічні цифри — лише snapshot, не доказ продажів. Для управління потрібен ланцюг від конкретного content asset до CRM outcome.",auditTitle:"Що я б змінив одразу як керівник напряму.",recentEvidence:"У свіжих Instagram-публікаціях 30.09–01.10 видно кілька різних conversion-механік: «+» у Direct, безкоштовна консультація, загальне «долучайтесь»; у bio — окремий keyword «сертифікат». Це хороший матеріал для A/B testing, але тільки якщо кожен CTA має власний campaign_id та CRM source.",
+funnelTitle:"Один funnel від уваги до renewal.",program:"Стратегія керованого зростання у бізнесі",offerTitle:"Безкоштовна діагностика «6 показників росту» + персональна карта перших 3 дій.",offerCopy:"Не починати з дисконту. Спочатку показати власнику, де саме втрачається ріст: увага, lead action, qualification, consultation, sale або unit economics. Якщо 7-тижнева програма реально підходить — показати, який блок програми закриває кожний gap.",whyOffer:"Чому цей оффер",why1:"відповідає позиціонуванню КНБ «керувати показниками»;",why2:"дає користь до покупки і підвищує довіру;",why3:"створює структуровані CRM-дані для sales;",why4:"дозволяє сегментувати follow-up без загальних розсилок.",
+measurementTitle:"Шість контрольних показників замість vanity metrics.",metricBoundary:"Нуль не підставляється замість відсутніх даних. CAC/LTV/ROMI з’являються тільки після підключення витрат, CRM revenue і правил attribution.",mindmapTitle:"Контент має закінчуватися не охопленням, а наступною дією.",painCluster:"Pain / case cluster",planTitle:"Спочатку вимірювання, потім масштаб.",crmTitle:"Що має потрапляти в CRM з маркетингу.",crmCopy:"Одна людина не повинна ставати новим контактом при переході Instagram → Telegram → consultation. CRM зберігає один lead/customer identity та історію каналів.",
+hiringTitle:"Те саме тестове — як reusable Candidate Assessment у CRM.",hiringCopy:"Brief, deadline, джерела, Google Docs/MindMap submission, rubric, reviewer score та human decision зберігаються в Candidate Assessment. Це окремо від learner progress і не створює автоматичних кадрових рішень.",formTitle:"Що ми б спростили у формі кандидата.",formCopy:"Для оцінки маркетолога пріоритет — job-relevant evidence: досвід, portfolio/cases, фактичні KPI, інструменти, мова, availability, test assignment і спосіб мислення. Питання про куріння, сімейний стан, дітей, партнера чи особисті життєві періоди не потрібні для оцінки якості marketing work і не входять у наш default CRM template.",
+sourcesTitle:"Публічні джерела, використані в concept.",sourceBoundary:"Метрики — snapshot на дату вище. Вони можуть змінюватися. Бізнес-результати, які КНБ заявляє на власних сторінках, залишаються client-owned claims і не подаються Hermes як незалежно перевірені.",register:"Зареєструвати / відкрити Academy CRM →",demo:"Переглянути CRM demo →",official:"Офіційна програма КНБ ↗",boundary:"Це демонстраційний strategy concept на основі публічних джерел і наданого candidate brief. Він не стверджує, що КНБ погодила стратегію, активувала Hermes Connect, оплатила послуги або надала доступ до приватної аналітики."
+},
+en:{
+kicker:"Hermes Catalog · client strategy concept · not KNB’s official website",lead:"A response to a real marketing assessment: not just a social audit, but a measurable acquisition system for the seven-week program connected to Academy CRM.",seeAudit:"View audit",seeFunnel:"View funnel",openDemo:"Open CRM demo",snapshot:"Public-source snapshot",
+socialTitle:"The audience already exists. The task is to connect it to outcomes.",socialCopy:"Public counts are a snapshot, not proof of sales. Management needs a chain from each content asset to a CRM outcome.",auditTitle:"What I would change immediately as the channel lead.",recentEvidence:"Recent Instagram posts from Sep 30–Oct 1 use several conversion mechanisms: “+” in DM, a free consultation, and a generic join CTA; the bio uses a separate “certificate” keyword. That is useful A/B material only when each CTA has its own campaign_id and CRM source.",
+funnelTitle:"One funnel from attention to renewal.",program:"Managed Business Growth Strategy",offerTitle:"Free “6 growth metrics” diagnostic + a personal map of the first 3 actions.",offerCopy:"Do not lead with a discount. First show the owner where growth is leaking: attention, lead action, qualification, consultation, sale, or unit economics. If the seven-week program is a real fit, show which program block closes each gap.",whyOffer:"Why this offer",why1:"matches KNB’s positioning around managing by metrics;",why2:"creates value before purchase and builds trust;",why3:"creates structured CRM data for sales;",why4:"enables segmented follow-up instead of generic blasts.",
+measurementTitle:"Six control metrics instead of vanity metrics.",metricBoundary:"Unknown data is not turned into zero. CAC/LTV/ROMI appear only after spend, CRM revenue, and attribution rules are connected.",mindmapTitle:"Content should end in a next action, not in reach.",painCluster:"Pain / case cluster",planTitle:"Measure first, then scale.",crmTitle:"What marketing should write into CRM.",crmCopy:"One person should not become a new contact when moving Instagram → Telegram → consultation. CRM keeps one lead/customer identity and the channel history.",
+hiringTitle:"The same brief becomes a reusable Candidate Assessment in CRM.",hiringCopy:"Brief, deadline, sources, Google Docs/MindMap submission, rubric, reviewer score, and a human decision live in Candidate Assessment. It stays separate from learner progress and does not automate employment decisions.",formTitle:"What we would simplify in candidate intake.",formCopy:"For a marketing role, prioritize job-relevant evidence: experience, portfolio/cases, actual KPI, tools, language, availability, a work sample, and reasoning. Smoking, family status, children, partner details, or personal life-history questions are not needed to assess marketing-work quality and are not part of our default CRM template.",
+sourcesTitle:"Public sources used in this concept.",sourceBoundary:"Metrics are a snapshot on the date above and can change. Business-result claims published by KNB remain client-owned claims and are not presented by Hermes as independently verified.",register:"Register / open Academy CRM →",demo:"View CRM demo →",official:"Official KNB program ↗",boundary:"This is a strategy concept based on public sources and the supplied candidate brief. It does not claim that KNB approved the strategy, activated Hermes Connect, paid for services, or granted access to private analytics."
 }
-document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => {
-  button.addEventListener("click", () => apply(button.dataset.lang === "en" ? "en" : "uk"));
-});
+};
+type Lang="uk"|"en"; type TranslationKey=keyof typeof d.uk;
+let lang:Lang="uk";
+try{const saved=localStorage.getItem("hermes-connect-language");if(saved==="en")lang="en";}catch{}
+function apply(next:Lang){
+ lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{}
+ document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as TranslationKey|undefined;if(!key)return;const value=d[next][key];if(value)node.textContent=value;});
+ document.querySelectorAll<HTMLElement>("[data-uk][data-en]").forEach(node=>{node.textContent=next==="en"?(node.dataset.en||""):(node.dataset.uk||"");});
+ document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(button=>button.classList.toggle("active",button.dataset.lang===next));
+ document.querySelectorAll<HTMLAnchorElement>("[data-language-route]").forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
+}
+document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(button=>button.addEventListener("click",()=>apply(button.dataset.lang==="en"?"en":"uk")));
 apply(lang);
 </script>
+
 <style>
-.knb-page{max-width:1180px;margin:auto;padding:38px 24px 70px;font-family:Inter,system-ui;color:#182033}.knb-top{display:flex;justify-content:space-between;align-items:center;gap:16px}.knb-top>a{text-decoration:none;font-weight:800}.knb-lang{display:flex;padding:3px;border:1px solid #dce2e9;border-radius:999px}.knb-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.knb-lang button.active{background:#182033;color:#fff}.knb-kicker{margin-top:34px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:#6a548f;font-weight:850}.knb-page h1{font-size:clamp(48px,8vw,96px);line-height:.94;margin:28px 0}.knb-page h1 span{color:#6a548f}.knb-lead{font-size:22px;line-height:1.55;max-width:820px;color:#59697c}.knb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:42px 0}.knb-grid article{border:1px solid #dde3ea;border-radius:18px;padding:22px;background:#fff}.knb-grid b{color:#6a548f}.knb-grid h2{font-size:21px}.knb-grid p{color:#64748b;line-height:1.6}.knb-path{padding:28px;border-radius:22px;background:#f5f2fa}.knb-path h2{font-size:30px;margin:8px 0 22px}.knb-path>div{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.knb-path span{padding:11px 13px;border-radius:12px;background:#fff;font-weight:750}.knb-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.knb-actions a{padding:14px 18px;border:1px solid #182033;border-radius:10px;text-decoration:none;font-weight:800}.knb-actions .primary{background:#182033;color:#fff}.knb-boundary{margin-top:38px;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6}
+:root{color-scheme:light}.knb-page{max-width:1240px;margin:auto;padding:38px 24px 76px;font-family:Inter,system-ui;color:#182033}.knb-top{display:flex;justify-content:space-between;align-items:center;gap:16px}.knb-top>a{text-decoration:none;font-weight:800}.knb-lang{display:flex;padding:3px;border:1px solid #dce2e9;border-radius:999px}.knb-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.knb-lang button.active{background:#182033;color:#fff}.knb-kicker{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:#6a548f;font-weight:900}.knb-hero{padding:70px 0 48px}.knb-page h1{font-size:clamp(52px,8vw,104px);line-height:.92;margin:18px 0}.knb-page h1 span{color:#6a548f}.knb-lead{font-size:22px;line-height:1.55;max-width:880px;color:#59697c}.knb-hero-actions,.knb-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.knb-hero-actions a,.knb-actions a,.knb-section-head>a{padding:11px 14px;border:1px solid #cfd9e4;border-radius:10px;text-decoration:none;font-weight:800}.knb-hero-actions .primary,.knb-actions .primary{background:#182033;color:#fff;border-color:#182033}.knb-date{margin-top:18px;color:#7b8796;font-size:12px}.knb-social,.knb-panel{margin-top:18px;padding:28px;border:1px solid #dde3ea;border-radius:24px;background:#fff;box-shadow:0 18px 50px rgba(24,32,51,.05)}.knb-section-head{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}.knb-section-head h2{margin:4px 0 0;font-size:clamp(28px,4vw,44px);letter-spacing:-.035em}.knb-section-head>p{max-width:520px;color:#64748b;line-height:1.6}.knb-social-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:22px}.knb-social-grid a{display:block;padding:16px;border:1px solid #e1e7ee;border-radius:15px;text-decoration:none}.knb-social-grid small,.knb-social-grid strong,.knb-social-grid span{display:block}.knb-social-grid small{color:#6a548f;font-weight:850}.knb-social-grid strong{margin:7px 0;font-size:28px}.knb-social-grid span{color:#697789;font-size:11px}.knb-audit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}.knb-audit-grid article{padding:20px;border-radius:16px;border:1px solid #e0e6ed}.knb-audit-grid article>span{font-size:9px;font-weight:900;letter-spacing:.08em}.knb-audit-grid .strength>span{color:#16815f}.knb-audit-grid .gap>span{color:#a16207}.knb-audit-grid h3{margin:8px 0}.knb-audit-grid p{color:#64748b;line-height:1.6}.knb-evidence-note,.knb-note,.knb-boundary{margin-top:18px;padding:15px 17px;border-radius:14px;background:#f8fafc;color:#526276;line-height:1.6;font-size:12px}.knb-funnel{display:grid;grid-template-columns:repeat(9,minmax(115px,1fr));gap:8px;overflow:auto;margin-top:20px;padding-bottom:6px}.knb-funnel>div{padding:13px;border-radius:13px;background:#f7f5fb;border:1px solid #e4dff0;min-height:110px}.knb-funnel span,.knb-funnel b,.knb-funnel small{display:block}.knb-funnel span{font-size:9px;color:#6a548f;font-weight:900}.knb-funnel b{margin-top:8px;font-size:11px}.knb-funnel small{margin-top:6px;color:#697789;font-size:10px;line-height:1.4}.knb-offer{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:18px}.knb-offer>div,.knb-offer aside{padding:22px;border-radius:17px;background:#182033;color:#fff}.knb-offer aside{background:#f5f2fa;color:#28334a}.knb-offer h3{font-size:25px;margin:6px 0 10px}.knb-offer p,.knb-offer li{line-height:1.6}.knb-offer aside ul{padding-left:18px}.knb-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}.knb-metrics article{display:flex;gap:12px;padding:15px;border:1px solid #e0e6ed;border-radius:14px}.knb-metrics article>span{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:#f0ebfa;color:#6a548f;font-weight:900}.knb-metrics b,.knb-metrics small{display:block}.knb-metrics small{margin-top:5px;color:#68778a;line-height:1.45}.knb-mindmap{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:18px}.knb-mindmap b{padding:9px 11px;border-radius:10px;background:#f4f6f9;font-size:11px}.knb-mindmap i{font-style:normal;color:#9aa6b4}.knb-plan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.knb-plan article{padding:18px;border:1px solid #e1e6ed;border-radius:15px}.knb-plan span{color:#6a548f;font-size:10px;font-weight:900}.knb-plan h3{margin:7px 0}.knb-plan p{color:#64748b;line-height:1.55}.knb-crm{background:linear-gradient(135deg,#fff,#f7f3ff)}.knb-crm-fields,.knb-assessment{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px}.knb-crm-fields span,.knb-assessment span{padding:7px 9px;border:1px solid #dcd5ec;border-radius:999px;background:#fff;font-size:10px}.knb-crm>p,.knb-panel>p{color:#64748b;line-height:1.6}.knb-form-review{border-color:#f0dfba;background:#fffaf0}.knb-sources>div:last-of-type{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.knb-sources a{padding:7px 9px;border:1px solid #dde3ea;border-radius:999px;text-decoration:none;font-size:10px}.knb-boundary{background:#fff7ed;color:#7c2d12}.knb-pill{padding:7px 10px;border-radius:999px;background:#f0ebfa;color:#5c4680;font-size:11px;font-weight:850}
+@media(max-width:950px){.knb-social-grid{grid-template-columns:repeat(2,1fr)}.knb-funnel{grid-template-columns:repeat(9,150px)}.knb-offer,.knb-audit-grid{grid-template-columns:1fr}.knb-metrics,.knb-plan{grid-template-columns:1fr 1fr}.knb-section-head{display:block}.knb-section-head>a,.knb-pill{display:inline-flex;margin-top:12px}}
+@media(max-width:620px){.knb-social-grid,.knb-metrics,.knb-plan{grid-template-columns:1fr}.knb-page{padding-inline:16px}.knb-social,.knb-panel{padding:20px}.knb-page h1{font-size:clamp(48px,15vw,72px)}}
 </style>
 </BaseLayout>
