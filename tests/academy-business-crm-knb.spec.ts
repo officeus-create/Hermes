@@ -49,3 +49,11 @@ test.describe("Academy Business CRM KNB demo", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 });
+
+test("generic Academy Business CRM hub exposes KNB and Hermes instances without activation", async ({ page }) => {
+  await page.goto("/services/hermes-connect/academy/business-demo/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+  await expect(page.getByRole("heading", { name: "Конс на Бі$" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hermes Business Academy" })).toBeVisible();
+  await expect(page.getByText(/no production business is activated/i)).toBeVisible();
+});
