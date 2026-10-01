@@ -166,10 +166,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   let companyId = String(existingCompany?.id || existingProfile?.company_id || "");
   let canonicalSlug = String(existingCompany?.slug || existingProfile?.slug || "");
 
+  let canonicalInsertChanges: number | null = null;
   if (!existingCompany) {
     companyId = companyId || `company-${crypto.randomUUID()}`;
     canonicalSlug = canonicalSlug || companySlug(businessName, specialist.id) || academyBusinessSlug(businessName, specialist.id);
-    await env.DB.prepare(`
+    const created = await env.DB.prepare(`
       INSERT OR IGNORE INTO hermes_company_profiles (
         id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,
         country_code,timezone,public_source_ref,catalog_opt_in,catalog_status,load_board_access,created_at,updated_at
@@ -190,12 +191,28 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       now,
       now,
     ).run();
+    canonicalInsertChanges = Number(created?.meta?.changes ?? 0);
   }
 
   const canonical = await env.DB.prepare(
     "SELECT id,company_name,slug,company_type,city,state,country_code,website,catalog_status,load_board_access,created_at FROM hermes_company_profiles WHERE owner_specialist_id=? LIMIT 1"
   ).bind(specialist.id).first() as any;
   if (!canonical?.id) return jsonResponse(409, { success: false, error: "canonical_company_create_conflict" });
+
+  if (existingProfile?.company_id && String(existingProfile.company_id) !== String(canonical.id)) {
+    return jsonResponse(409, { success: false, error: "academy_company_identity_conflict" });
+  }
+
+  if (!existingCompany && canonicalInsertChanges !== 1) {
+    const sameConcurrentIdentity = fold(canonical.company_name) === fold(businessName) || sameWebsite(canonical.website, website);
+    if (!sameConcurrentIdentity) {
+      return jsonResponse(409, {
+        success: false,
+        error: "canonical_company_concurrent_conflict",
+        existingCompany: { id: canonical.id, name: canonical.company_name },
+      });
+    }
+  }
 
   companyId = String(canonical.id);
   canonicalSlug = String(canonical.slug || canonicalSlug || academyBusinessSlug(businessName, specialist.id));
