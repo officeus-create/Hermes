@@ -98,7 +98,7 @@
         "sourceId": "PUBLIC-WEB-CURRENT",
         "kind": "public_external",
         "label": "FMCSA final rule for 2027 UCR fees",
-        "use": "verification",
+        "use": "primary",
         "url": "https://www.fmcsa.dot.gov/regulations/federal-register-documents/2026-17893",
         "observedAt": "2026-10-01",
         "eventDate": "2026-09-01",
