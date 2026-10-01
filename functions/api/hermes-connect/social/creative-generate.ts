@@ -15,7 +15,7 @@ type Env={
 const headers={"Cache-Control":"private, no-store","X-Robots-Tag":"noindex, nofollow","Content-Type":"application/json; charset=utf-8"};
 const clean=(value:unknown,max=240)=>String(value??"").trim().slice(0,max);
 const DEFAULT_CF_MODEL="@cf/google/gemma-4-26b-a4b-it";
-const SOCIAL_INSTRUCTIONS="You are Hermes Connect Social Studio. Use only supplied source material. Do not invent customers, revenue, rankings, percentages, prices, guarantees, integrations, or outcomes. Put uncertain claims in claims_to_verify. Return ONLY valid JSON with keys master_caption, threads_text, facebook_text, instagram_story_text, carousel_plan (array of 2-10 objects with headline, body, visual_direction), source_summary, claims_to_verify. Keep Threads text within 500 characters and adapt copy natively by platform.";
+const SOCIAL_INSTRUCTIONS="You are Hermes Connect Social Studio. Use only supplied source material. Do not invent customers, revenue, rankings, percentages, prices, guarantees, integrations, or outcomes. Put uncertain claims in claims_to_verify. Decide the best content shape from the source instead of forcing a carousel. Return ONLY valid JSON with keys recommended_format (one of single_image, carousel, text_post, story_first, mixed), format_reason, recommended_destinations (subset of instagram_feed, instagram_story, threads_feed, facebook_feed), recommended_media_count (0-10), master_caption, threads_text, facebook_text, instagram_story_text, carousel_plan (array of 0-10 objects with headline, body, visual_direction; use 2-10 only when carousel is actually recommended), source_summary, claims_to_verify. Keep Threads text within 500 characters, adapt copy natively by platform, and recommend only surfaces that can truthfully carry the source.";
 
 function outputText(payload:any){
   for(const value of [payload?.response,payload?.result?.response,payload?.output_text,payload?.choices?.[0]?.message?.content]){
@@ -29,10 +29,21 @@ function parseJsonText(value:string){
 }
 function safeDraft(value:any){
   if(!value||typeof value!=="object")return null;
+  const allowedFormats=new Set(["single_image","carousel","text_post","story_first","mixed"]);
+  const allowedDestinations=new Set(["instagram_feed","instagram_story","threads_feed","facebook_feed"]);
+  const recommendedFormat=allowedFormats.has(String(value.recommended_format||""))?String(value.recommended_format):"mixed";
+  const recommendedDestinations=Array.isArray(value.recommended_destinations)
+    ? [...new Set(value.recommended_destinations.map((item:any)=>String(item||"").trim()).filter((item:string)=>allowedDestinations.has(item)))].slice(0,4)
+    : [];
+  const recommendedMediaCount=Math.max(0,Math.min(10,Math.round(Number(value.recommended_media_count||0)||0)));
   const carousel=Array.isArray(value.carousel_plan)?value.carousel_plan.slice(0,10).map((item:any)=>({
     headline:clean(item?.headline,120),body:clean(item?.body,320),visual_direction:clean(item?.visual_direction,320)
   })).filter((item:any)=>item.headline||item.body||item.visual_direction):[];
   const draft={
+    recommended_format:recommendedFormat,
+    format_reason:clean(value.format_reason,480),
+    recommended_destinations:recommendedDestinations,
+    recommended_media_count:recommendedMediaCount,
     master_caption:clean(value.master_caption,2200),
     threads_text:clean(value.threads_text,500),
     facebook_text:clean(value.facebook_text,5000),
@@ -41,7 +52,7 @@ function safeDraft(value:any){
     source_summary:clean(value.source_summary,1800),
     claims_to_verify:Array.isArray(value.claims_to_verify)?value.claims_to_verify.slice(0,12).map((v:any)=>clean(v,280)).filter(Boolean):[],
   };
-  return draft.master_caption||draft.threads_text||draft.facebook_text||draft.instagram_story_text||carousel.length?draft:null;
+  return draft.master_caption||draft.threads_text||draft.facebook_text||draft.instagram_story_text||carousel.length||draft.format_reason?draft:null;
 }
 function imageDocument(asset:any){
   const match=/^data:([^;,]+);base64,(.+)$/i.exec(String(asset?.data_url||""));
