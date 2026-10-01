@@ -13,7 +13,7 @@ import "../../../../styles/hermes-academy-app.css";
   locale="uk"
 >
   <div class="academy-app-page">
-    <SiteHeader activePath="/services/hermes-connect/" />
+    <SiteHeader activePath="/services/hermes-connect/" locale="uk" />
     <main id="main-content" class="academy-app-shell">
       <div class="academy-hub-toolbar">
         <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
@@ -138,14 +138,15 @@ import "../../../../styles/hermes-academy-app.css";
   type Key = keyof typeof d.uk;
   const params = new URLSearchParams(location.search);
   let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
-  try {
-    const saved = localStorage.getItem("hermes-connect-language");
-    if (!params.has("lang") && (saved === "uk" || saved === "en")) lang = saved;
-  } catch {}
   function apply(next: Lang) {
     lang = next;
     document.documentElement.lang = next;
     try { localStorage.setItem("hermes-connect-language", next); } catch {}
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/"]').forEach((link) => {
+      const url = new URL(link.getAttribute("href") || "/", window.location.origin);
+      url.searchParams.set("lang", next);
+      link.href = url.pathname + url.search + url.hash;
+    });
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
       const key = node.dataset.i18n as Key | undefined;
       if (!key) return;
@@ -157,7 +158,12 @@ import "../../../../styles/hermes-academy-app.css";
     });
   }
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => {
-    button.addEventListener("click", () => apply(button.dataset.lang === "en" ? "en" : "uk"));
+    button.addEventListener("click", () => {
+      const next: Lang = button.dataset.lang === "en" ? "en" : "uk";
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", next);
+      window.location.assign(url.pathname + url.search + url.hash);
+    });
   });
   apply(lang);
 </script>
