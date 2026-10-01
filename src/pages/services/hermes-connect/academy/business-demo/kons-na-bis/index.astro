@@ -1,6 +1,6 @@
 ---
-import BaseLayout from "../../../../../layouts/BaseLayout.astro";
-import { academyBusinessCrmTemplate, konsNaBisAcademyCrm, hermesAcademyCrmSeed } from "../../../../../data/academy-business-crm";
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import { academyBusinessCrmTemplate, konsNaBisAcademyCrm, hermesAcademyCrmSeed } from "../../../../../../data/academy-business-crm";
 
 const data = konsNaBisAcademyCrm;
 const template = academyBusinessCrmTemplate;
@@ -287,7 +287,7 @@ const evidenceLabels = {
     }
     for (const button of buttons) button.classList.toggle("active", button.getAttribute("data-target") === target);
     history.replaceState(null, "", "#" + target);
-    document.querySelector(".workspace")?.scrollTo({ top: 0, behavior: "instant" });
+    document.querySelector(".workspace")?.scrollTo({ top: 0, behavior: "auto" });
   };
   nav?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-target]");
