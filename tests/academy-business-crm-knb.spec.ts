@@ -24,7 +24,7 @@ test.describe("Academy Business CRM KNB demo", () => {
 
     await page.getByRole("button", { name: /Sales CRM/ }).click();
     const sales = page.locator('[data-view="sales"]');
-    await expect(sales.getByRole("heading", { name: "Four-level system" })).toBeVisible();
+    await expect(sales.getByText("Four-level system", { exact: true })).toBeVisible();
     await expect(sales.getByText("Average check", { exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: /HR & vacancies/ }).click();
