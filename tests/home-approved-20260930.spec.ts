@@ -33,7 +33,10 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
-   expect(await route.evaluate(n=>getComputedStyle(n.querySelector('.home-portal-art')!,'::before').backgroundImage)).toContain('home-approved-20260930.webp');
+   const image=route.locator('.home-portal-art img');
+   await expect(image).toBeVisible();
+   await expect.poll(()=>image.evaluate((node:HTMLImageElement)=>node.naturalWidth)).toBeGreaterThanOrEqual(512);
+   expect(await image.evaluate((node:HTMLImageElement)=>node.currentSrc)).toContain('/images/home-20261001/');
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -73,7 +76,7 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
  const page=await context.newPage();
  await page.goto('/');
  await expect(page.getByRole('navigation',{name:'Hermes operating directions'})).toBeVisible();
- expect(await page.locator('.home-portal-art').first().evaluate(n=>getComputedStyle(n,'::before').transitionDuration)).toBe('0s');
+ expect(await page.locator('.home-portal-art img').first().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s');
  await page.locator('[data-route-id="marketing"]').click();
  await expect(page).toHaveURL(/\/paths\/marketing\//);
  await context.close();
@@ -112,7 +115,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
 
 test('compact Home CTA reaches native contact actions and approved artwork loads once',async({page})=>{
  const artwork:string[]=[];
- page.on('request',r=>{if(r.url().includes('/images/home-approved-20260930.webp'))artwork.push(r.url())});
+ page.on('request',r=>{if(r.url().includes('/images/home-20261001/'))artwork.push(r.url())});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await page.locator('.header-cta').click();
@@ -123,10 +126,11 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- expect(artwork).toHaveLength(1);
+ expect(artwork.length).toBeGreaterThanOrEqual(6);
+ expect(new Set(artwork).size).toBe(artwork.length);
 });
 
-test('Home truck and leaves run once, pause offscreen and settle to the approved still',async({page})=>{
+test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1200});
  await page.goto('/');
@@ -134,18 +138,19 @@ test('Home truck and leaves run once, pause offscreen and settle to the approved
  await expect(layers).toHaveCount(2);
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','running');
- const timing=await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].effect!.getTiming());
- expect(timing.duration).toBe(6000);
- expect(timing.iterations).toBe(1);
+ const timing=await layers.first().evaluate(node=>node.getAnimations()[0].effect!.getTiming());
+ expect(timing.duration).toBe(12000);
+ expect(timing.iterations).toBe(3);
  await page.locator('footer').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
- const time=await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].currentTime);
+ const time=await layers.first().evaluate(node=>node.getAnimations()[0].currentTime);
  await page.waitForTimeout(180);
- expect(await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations()[0].currentTime)).toBe(time);
+ expect(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime)).toBe(time);
  await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','finished',{timeout:8000});
+ await layers.evaluateAll(nodes=>nodes.forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
+ await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
  await expect(layers.nth(1)).toHaveAttribute('data-motion-state','finished');
- await expect(layers.first()).toHaveCSS('opacity','0');
+ await expect(layers.first()).toHaveCSS('opacity','1');
  await page.locator('footer').scrollIntoViewIfNeeded();
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
@@ -158,13 +163,13 @@ test('Home motion responds to reduced-motion changes and stays decorative',async
  await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
  for(const layer of await layers.all()) {
   await expect(layer).toHaveAttribute('aria-hidden','true');
-  await expect(layer).toHaveCSS('display','none');
-  expect(await layer.evaluate(node=>node.querySelector('g')!.getAnimations().length)).toBe(0);
+  await expect(layer).toHaveCSS('display','block');
+  expect(await layer.evaluate(node=>node.getAnimations().length)).toBe(0);
  }
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','running');
  await page.emulateMedia({reducedMotion:'reduce'});
  await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
- expect(await layers.first().evaluate(node=>node.querySelector('g')!.getAnimations().length)).toBe(0);
+ expect(await layers.first().evaluate(node=>node.getAnimations().length)).toBe(0);
 });

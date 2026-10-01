@@ -38,27 +38,16 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
-            style={`--route-accent:${meta.accent};--art-x:${-meta.crop / 267 * 100}%`}
+            style={`--route-accent:${meta.accent}`}
             aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}`} data-home-route data-route-id={path.id}>
-            <span class="home-portal-art" aria-hidden="true"></span>
-            {(path.id === "logistics" || path.id === "marketing") && (
-              <svg class="home-portal-motion" viewBox="0 0 267 568" aria-hidden="true" focusable="false"
-                data-home-motion={path.id === "logistics" ? "truck" : "leaves"} data-motion-state="idle">
-                <defs>
-                  <radialGradient id={`home-motion-fade-${path.id}`}>
-                    <stop offset="0" stop-color="white" /><stop offset="72%" stop-color="white" /><stop offset="100%" stop-color="black" />
-                  </radialGradient>
-                  <mask id={`home-motion-mask-${path.id}`} maskUnits="userSpaceOnUse">
-                    {path.id === "logistics"
-                      ? <ellipse cx="169" cy="319" rx="33" ry="59" fill={`url(#home-motion-fade-${path.id})`} />
-                      : <ellipse cx="181" cy="88" rx="49" ry="65" fill={`url(#home-motion-fade-${path.id})`} />}
-                  </mask>
-                </defs>
-                <g mask={`url(#home-motion-mask-${path.id})`}>
-                  <image href="/images/home-approved-20260930.webp?v=q93" x={-meta.crop} y="-365" width="1111" height="1416" />
-                </g>
-              </svg>
-            )}
+            <span class="home-portal-art" aria-hidden="true">
+              <picture>
+                <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" alt="" loading={path.id === "logistics" || path.id === "marketing" ? "eager" : "lazy"} decoding="async" fetchpriority={path.id === "logistics" ? "high" : "auto"} />
+              </picture>
+            </span>
+            {path.id === "logistics" && <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle"><img src="/images/home-20261001/truck.webp" width="192" height="207" alt="" decoding="async" /></span>}
+            {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" alt="" decoding="async" /></span>}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true"></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
@@ -100,9 +89,12 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;border:2px solid #fff;border-radius:34px;overflow:hidden;box-shadow:0 16px 48px #293b6414;scroll-margin-top:6rem;background:#fff}
 .home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
-.home-portal-motion{position:absolute;z-index:-2;top:0;left:0;width:100%;height:auto;pointer-events:none;opacity:0}
-.home-portal-motion[data-motion-state="running"],.home-portal-motion[data-motion-state="paused"]{opacity:1}
-.home-portal-art::before{content:"";position:absolute;top:-64.26%;left:var(--art-x);width:416.1%;aspect-ratio:1111/1416;background:url('/images/home-approved-20260930.webp?v=q93') center/100% 100% no-repeat;transition:filter 180ms ease}
+.home-portal-art picture{display:block;width:100%;height:92%}
+.home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
+.home-portal-motion{position:absolute;z-index:-2;pointer-events:none;display:block}
+.home-portal-motion img{display:block;width:100%;height:auto}
+.home-moving-truck{left:60%;top:47%;width:10.5%;transform:rotate(-18deg);transform-origin:center}
+.home-moving-leaves{left:47%;top:2.4%;width:27%;transform-origin:50% 100%}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
 .home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
 .home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
@@ -113,9 +105,9 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-copy strong{font:800 clamp(1.45rem,2.8vw,2.7rem)/1.03 var(--font-display);letter-spacing:-.055em;padding-right:26px;color:#fff}
 .home-route-detail{font-size:clamp(.7rem,.85vw,.85rem);line-height:1.45;color:#f0f2fa;max-width:28ch}
 .home-master-route-arrow{position:absolute;right:clamp(12px,2vw,28px);top:60%;display:grid;place-items:center;width:48px;height:48px;border:1px solid #ffffff80;border-radius:50%;background:#ffffff12}
-.home-master-route:hover .home-portal-art::before{filter:brightness(1.07)}
+.home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-portal-art::before{top:-58.87%}.home-master-route::after{inset:56% 0 0}}
-@media(prefers-reduced-motion:reduce){.home-portal-art::before{transition:none}.home-portal-motion{display:none}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}}
+@media(prefers-reduced-motion:reduce){.home-portal-art img{transition:none}.home-portal-motion{animation:none;transition:none}}
 </style>
