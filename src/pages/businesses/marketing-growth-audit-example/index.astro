@@ -1,0 +1,194 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+
+const funnel = [
+  ["01","Attention","Short-form / long-form content grouped by customer pain"],
+  ["02","Trackable CTA","One primary action per asset + campaign_id"],
+  ["03","Diagnostic","Baseline + primary gap + first three actions"],
+  ["04","CRM context","Source, pain, stage, offer, owner, next action"],
+  ["05","Consultation","Fit, economics, objection, decision"],
+  ["06","Core offer","Program / service matched to the diagnosed gap"],
+  ["07","Delivery","Cohort / project / implementation evidence"],
+  ["08","Outcome","Baseline → actual, with source and definition"],
+  ["09","Retention","Renewal / next program / referral"],
+];
+
+const metrics = [
+  ["Qualified attention","Reach/view from the intended buying audience, not raw volume alone."],
+  ["Lead action","DM, form, diagnostic or call start attributed to the source asset."],
+  ["Qualified lead","Correct buyer, defined need, fit and usable next action."],
+  ["Consultation","Booked → attended → qualified, with loss reason."],
+  ["Sale + revenue","Closed deal and attributed revenue when the CRM source is trustworthy."],
+  ["Unit economics","CAC · LTV/retention · ROMI only after real spend/revenue are connected."],
+];
+
+const phases = [
+  ["0–7 days","Instrument","Unify CTA vocabulary, UTM/campaign rules, CRM source fields, proof ledger and baseline dashboard."],
+  ["8–30 days","Learn","Map content by pain × funnel stage, compare winners/losers, standardize diagnostic and consultation handoff."],
+  ["31–90 days","Scale","Expand proven hooks, retarget qualified audiences, connect delivery/renewal back to acquisition source."],
+];
+
+const schema = [
+  {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    headline:"Marketing Growth Audit Example: Social → CRM → Revenue",
+    description:"A reusable Hermes marketing strategy example showing how public social signals become a measurable diagnostic, CRM funnel, offer, KPI system and 90-day growth plan.",
+    url:"https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/",
+    author:{"@type":"Organization","name":"Hermes"},
+  },
+  {
+    "@context":"https://schema.org",
+    "@type":"Service",
+    name:"Marketing growth audit and 90-day media plan",
+    serviceType:"Marketing strategy, social audit, funnel design and CRM attribution",
+    provider:{"@type":"Organization","name":"Hermes"},
+    url:"https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/",
+  },
+];
+---
+<BaseLayout
+  title="Marketing Growth Audit Example | Hermes Catalog"
+  description="See how Hermes turns a social-channel audit into a measurable offer, funnel, CRM attribution model, KPI system and 90-day growth plan."
+  schema={schema}
+  htmlLang="uk"
+  locale="uk"
+>
+  <SiteHeader activePath="/businesses/" theme="light" locale="uk" />
+  <main id="main-content" class="case-page">
+    <div class="case-shell">
+      <div class="case-toolbar">
+        <a href="/businesses/" data-i18n="back">← Hermes Catalog</a>
+        <div class="case-lang" aria-label="Language"><button class="active" type="button" data-lang="uk">UA</button><button type="button" data-lang="en">EN</button></div>
+      </div>
+
+      <section class="case-hero">
+        <p class="eyebrow">HERMES STRATEGY CASE · MARKETING</p>
+        <h1 data-i18n="title">Social → CRM → Revenue</h1>
+        <p class="lead" data-i18n="lead">Приклад того, що ми рекомендуємо бізнесу після маркетингового аудиту: не “більше постів”, а одна вимірювана система від контенту до продажу, delivery та повторної покупки.</p>
+        <div class="actions">
+          <a class="primary" href="#audit" data-i18n="seeMethod">Подивитися метод</a>
+          <a href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=strategy_case&utm_campaign=marketing_growth_audit_example" data-i18n="requestAudit">Замовити подібний аудит →</a>
+        </div>
+        <div class="truth">
+          <span data-i18n="truth1">Public signals ≠ private analytics</span>
+          <span data-i18n="truth2">Unknown ≠ zero</span>
+          <span data-i18n="truth3">Human-approved claims</span>
+          <span data-i18n="truth4">No guaranteed rankings, leads or revenue</span>
+        </div>
+      </section>
+
+      <section class="panel" id="audit">
+        <div class="head"><div><p class="eyebrow">01 · AUDIT</p><h2 data-i18n="auditTitle">Що ми перевіряємо до того, як радити tactic.</h2></div></div>
+        <div class="grid four">
+          <article><span>01</span><h3 data-i18n="a1">Audience & positioning</h3><p data-i18n="a1c">Хто покупець, яка проблема, який stage of awareness і чому оффер має бути релевантним саме зараз.</p></article>
+          <article><span>02</span><h3 data-i18n="a2">Content architecture</h3><p data-i18n="a2c">Pain → insight → proof → conversion → retention. Кожен asset має зрозумілу роль у funnel.</p></article>
+          <article><span>03</span><h3 data-i18n="a3">CTA & attribution</h3><p data-i18n="a3c">Один primary CTA на asset, campaign_id, UTM/keyword convention та downstream CRM outcome.</p></article>
+          <article><span>04</span><h3 data-i18n="a4">Proof consistency</h3><p data-i18n="a4c">Claim → source → observed_at → definition → approved wording → review date.</p></article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">02 · CHANNEL SYSTEM</p><h2 data-i18n="channelsTitle">Канали мають різні ролі, але одну customer identity.</h2></div></div>
+        <div class="channel-grid">
+          <article><b>Instagram / TikTok</b><small data-i18n="ch1">Attention, hooks, cases, objections, short-form testing.</small></article>
+          <article><b>YouTube / Podcast</b><small data-i18n="ch2">Depth, trust, education, long-form intent and searchable proof.</small></article>
+          <article><b>Threads</b><small data-i18n="ch3">Fast hypothesis testing, opinions, questions and conversation starters.</small></article>
+          <article><b>Telegram / Email</b><small data-i18n="ch4">Nurture, follow-up, event/program reminders and retention.</small></article>
+          <article><b>Website</b><small data-i18n="ch5">Canonical offer, proof, diagnostic, conversion and consent.</small></article>
+          <article><b>CRM</b><small data-i18n="ch6">One lead/customer identity across every channel and every next action.</small></article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">03 · OFFER</p><h2 data-i18n="offerTitle">Не винаходити lead magnet, якщо в бізнесу вже є сильний diagnostic entry point.</h2></div></div>
+        <div class="offer">
+          <div>
+            <strong data-i18n="offer">“Знайдемо головне вузьке місце росту, зафіксуємо baseline і дамо персональну карту перших 3 дій.”</strong>
+            <p data-i18n="offerCopy">Після діагностики sales бачить контекст, а клієнт — reason-to-believe. Основний продукт пропонується тільки після problem-fit, а не замість нього.</p>
+          </div>
+          <ul>
+            <li data-i18n="o1">користь до покупки;</li>
+            <li data-i18n="o2">структуровані CRM-дані;</li>
+            <li data-i18n="o3">персональний program/service fit;</li>
+            <li data-i18n="o4">чистіша attribution та follow-up.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">04 · MINDMAP</p><h2 data-i18n="funnelTitle">Воронка закінчується бізнес-результатом, не охопленням.</h2></div></div>
+        <div class="funnel">{funnel.map(([n,t,d])=><article><span>{n}</span><b>{t}</b><small>{d}</small></article>)}</div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">05 · MEASUREMENT</p><h2 data-i18n="metricsTitle">Шість контрольних рівнів замість vanity metrics.</h2></div></div>
+        <div class="metrics">{metrics.map(([title,copy],index)=><article><span>0{index+1}</span><div><b>{title}</b><small>{copy}</small></div></article>)}</div>
+        <p class="note" data-i18n="metricNote">CAC/LTV/ROMI не заповнюються “для красивого дашборду”. Вони з’являються після дозволеного підключення spend, sales/revenue та attribution rules.</p>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">06 · 90-DAY OPERATING PLAN</p><h2 data-i18n="planTitle">Спочатку instrumentation, потім learning, потім scale.</h2></div></div>
+        <div class="phases">{phases.map(([window,title,copy])=><article><span>{window}</span><h3>{title}</h3><p>{copy}</p></article>)}</div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">07 · CRM FIELD MAP</p><h2 data-i18n="crmTitle">Що має пережити перехід із social у sales.</h2></div></div>
+        <div class="chips">{["source_channel","content_id","campaign_id","CTA / keyword","entry_offer","primary pain","diagnostic_primary_gap","baseline","recommended_module/service","business stage","owner / manager","consultation status","objection","sale / revenue","delivery","completion","renewal"].map(x=><span>{x}</span>)}</div>
+        <p class="note" data-i18n="crmNote">Instagram → Telegram → form → consultation не повинні створювати чотири різні контакти. Один buyer має одну identity та історію touchpoints.</p>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><p class="eyebrow">08 · CANDIDATE ASSESSMENT</p><h2 data-i18n="assessmentTitle">Той самий метод можна використовувати для тесту маркетолога в CRM.</h2></div></div>
+        <div class="assessment">
+          <span>Evidence & diagnosis · 0–5</span>
+          <span>Audience & positioning · 0–5</span>
+          <span>Funnel logic · 0–5</span>
+          <span>Offer quality · 0–5</span>
+          <span>KPI & measurement · 0–5</span>
+          <span>Execution thinking · 0–5</span>
+        </div>
+        <p class="note" data-i18n="assessmentCopy">Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment не змішується з learner progress і не робить кадрове рішення автоматично.</p>
+      </section>
+
+      <section class="panel proof">
+        <div class="head"><div><p class="eyebrow">09 · PROOF GOVERNANCE</p><h2 data-i18n="proofTitle">Перед масштабуванням — одна canonical версія кожного claim.</h2></div></div>
+        <div class="proof-grid">
+          <article><b>Claim</b><small data-i18n="p1">Що саме говоримо публічно.</small></article>
+          <article><b>Source</b><small data-i18n="p2">URL / CRM / document + observed_at.</small></article>
+          <article><b>Definition</b><small data-i18n="p3">Population, period, calculation.</small></article>
+          <article><b>Owner</b><small data-i18n="p4">Хто відповідає за evidence.</small></article>
+          <article><b>Approved wording</b><small data-i18n="p5">Що дозволено site/social/sales.</small></article>
+          <article><b>Review date</b><small data-i18n="p6">Коли перевіряти повторно.</small></article>
+        </div>
+      </section>
+
+      <section class="cta">
+        <p class="eyebrow">HERMES MARKETING + CONNECT</p>
+        <h2 data-i18n="ctaTitle">Хочете такий самий аудит для свого бізнесу?</h2>
+        <p data-i18n="ctaCopy">Ми можемо почати з public-source audit, скласти 90-day media plan і показати, які CRM-поля та attribution потрібні до масштабування.</p>
+        <a class="primary" href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=strategy_case&utm_campaign=marketing_growth_audit_example&utm_content=final_cta" data-i18n="cta">Запросити аудит →</a>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const d={
+    uk:{back:"← Hermes Catalog",title:"Social → CRM → Revenue",lead:"Приклад того, що ми рекомендуємо бізнесу після маркетингового аудиту: не “більше постів”, а одна вимірювана система від контенту до продажу, delivery та повторної покупки.",seeMethod:"Подивитися метод",requestAudit:"Замовити подібний аудит →",truth1:"Public signals ≠ private analytics",truth2:"Unknown ≠ zero",truth3:"Human-approved claims",truth4:"Без гарантій ranking, leads або revenue",auditTitle:"Що ми перевіряємо до того, як радити tactic.",a1:"Audience & positioning",a1c:"Хто покупець, яка проблема, який stage of awareness і чому оффер має бути релевантним саме зараз.",a2:"Content architecture",a2c:"Pain → insight → proof → conversion → retention. Кожен asset має зрозумілу роль у funnel.",a3:"CTA & attribution",a3c:"Один primary CTA на asset, campaign_id, UTM/keyword convention та downstream CRM outcome.",a4:"Proof consistency",a4c:"Claim → source → observed_at → definition → approved wording → review date.",channelsTitle:"Канали мають різні ролі, але одну customer identity.",ch1:"Attention, hooks, cases, objections, short-form testing.",ch2:"Depth, trust, education, long-form intent and searchable proof.",ch3:"Fast hypothesis testing, opinions, questions and conversation starters.",ch4:"Nurture, follow-up, event/program reminders and retention.",ch5:"Canonical offer, proof, diagnostic, conversion and consent.",ch6:"Одна lead/customer identity через усі канали і next actions.",offerTitle:"Не винаходити lead magnet, якщо в бізнесу вже є сильний diagnostic entry point.",offer:"“Знайдемо головне вузьке місце росту, зафіксуємо baseline і дамо персональну карту перших 3 дій.”",offerCopy:"Після діагностики sales бачить контекст, а клієнт — reason-to-believe. Основний продукт пропонується тільки після problem-fit, а не замість нього.",o1:"користь до покупки;",o2:"структуровані CRM-дані;",o3:"персональний program/service fit;",o4:"чистіша attribution та follow-up.",funnelTitle:"Воронка закінчується бізнес-результатом, не охопленням.",metricsTitle:"Шість контрольних рівнів замість vanity metrics.",metricNote:"CAC/LTV/ROMI не заповнюються “для красивого дашборду”. Вони з’являються після дозволеного підключення spend, sales/revenue та attribution rules.",planTitle:"Спочатку instrumentation, потім learning, потім scale.",crmTitle:"Що має пережити перехід із social у sales.",crmNote:"Instagram → Telegram → form → consultation не повинні створювати чотири різні контакти. Один buyer має одну identity та історію touchpoints.",assessmentTitle:"Той самий метод можна використовувати для тесту маркетолога в CRM.",assessmentCopy:"Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment не змішується з learner progress і не робить кадрове рішення автоматично.",proofTitle:"Перед масштабуванням — одна canonical версія кожного claim.",p1:"Що саме говоримо публічно.",p2:"URL / CRM / document + observed_at.",p3:"Population, period, calculation.",p4:"Хто відповідає за evidence.",p5:"Що дозволено site/social/sales.",p6:"Коли перевіряти повторно.",ctaTitle:"Хочете такий самий аудит для свого бізнесу?",ctaCopy:"Ми можемо почати з public-source audit, скласти 90-day media plan і показати, які CRM-поля та attribution потрібні до масштабування.",cta:"Запросити аудит →"},
+    en:{back:"← Hermes Catalog",title:"Social → CRM → Revenue",lead:"An example of what Hermes recommends after a marketing audit: not simply more posts, but one measurable system from content to sale, delivery, and repeat purchase.",seeMethod:"See the method",requestAudit:"Request a similar audit →",truth1:"Public signals ≠ private analytics",truth2:"Unknown ≠ zero",truth3:"Human-approved claims",truth4:"No guaranteed rankings, leads or revenue",auditTitle:"What we check before recommending a tactic.",a1:"Audience & positioning",a1c:"Who buys, which problem matters, the awareness stage, and why the offer is relevant now.",a2:"Content architecture",a2c:"Pain → insight → proof → conversion → retention. Every asset has a clear funnel role.",a3:"CTA & attribution",a3c:"One primary CTA per asset, campaign_id, UTM/keyword convention, and downstream CRM outcome.",a4:"Proof consistency",a4c:"Claim → source → observed_at → definition → approved wording → review date.",channelsTitle:"Channels have different jobs but one customer identity.",ch1:"Attention, hooks, cases, objections, short-form testing.",ch2:"Depth, trust, education, long-form intent and searchable proof.",ch3:"Fast hypothesis testing, opinions, questions and conversation starters.",ch4:"Nurture, follow-up, event/program reminders and retention.",ch5:"Canonical offer, proof, diagnostic, conversion and consent.",ch6:"One lead/customer identity across every channel and next action.",offerTitle:"Do not invent another lead magnet when the business already has a strong diagnostic entry point.",offer:"“We identify the main growth bottleneck, record the baseline, and give a personal map of the first three actions.”",offerCopy:"After the diagnostic, sales has context and the buyer has a reason to believe. The core product is offered after problem-fit, not instead of it.",o1:"value before purchase;",o2:"structured CRM data;",o3:"personalized program/service fit;",o4:"cleaner attribution and follow-up.",funnelTitle:"The funnel ends in a business outcome, not reach.",metricsTitle:"Six control levels instead of vanity metrics.",metricNote:"CAC/LTV/ROMI are not filled for dashboard aesthetics. They appear after permitted spend, sales/revenue and attribution sources are connected.",planTitle:"Instrument first, learn second, scale third.",crmTitle:"What must survive the handoff from social to sales.",crmNote:"Instagram → Telegram → form → consultation should not create four different contacts. One buyer keeps one identity and touchpoint history.",assessmentTitle:"The same method can become a marketer candidate test inside CRM.",assessmentCopy:"Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment stays separate from learner progress and does not automate hiring.",proofTitle:"Before scaling, keep one canonical version of every claim.",p1:"Exactly what we say publicly.",p2:"URL / CRM / document + observed_at.",p3:"Population, period, calculation.",p4:"Who owns the evidence.",p5:"What site/social/sales may use.",p6:"When it must be reviewed again.",ctaTitle:"Want the same type of audit for your business?",ctaCopy:"We can start with a public-source audit, build a 90-day media plan, and show which CRM fields and attribution rules should exist before scaling.",cta:"Request an audit →"}
+  } as const;
+  type Lang=keyof typeof d;
+  const params=new URLSearchParams(location.search);
+  let lang:Lang=params.get("lang")==="en"?"en":"uk";
+  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof d.uk;const v=d[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.addEventListener("click",()=>{const next:Lang=b.dataset.lang==="en"?"en":"uk";const u=new URL(location.href);u.searchParams.set("lang",next);history.replaceState({}, "", u.pathname+u.search+u.hash);apply(next)}));
+  apply(lang);
+</script>
+
+<style>
+  .case-page{background:radial-gradient(circle at 80% 3%,rgba(124,92,255,.12),transparent 28rem),#f5f7fa;color:#151d2a;min-height:100vh}.case-shell{width:min(1180px,calc(100% - 32px));margin:auto;padding:112px 0 88px}.case-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.case-toolbar>a{font-weight:850;color:#36516e;text-decoration:none}.case-lang{display:flex;padding:3px;border:1px solid #d9e1ea;border-radius:999px;background:#fff}.case-lang button{border:0;background:transparent;border-radius:999px;padding:7px 11px;font-weight:900;cursor:pointer}.case-lang button.active{background:#151d2a;color:#fff}.case-hero,.panel,.cta{border:1px solid #dfe5ec;border-radius:26px;background:#fff;box-shadow:0 18px 52px rgba(26,48,76,.06)}.case-hero{padding:clamp(28px,6vw,64px);background:radial-gradient(circle at 92% 12%,rgba(124,92,255,.18),transparent 27rem),#fff}.eyebrow{margin:0 0 8px;color:#6d56d9;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.case-hero h1{margin:14px 0;font-size:clamp(52px,8vw,96px);line-height:.93;letter-spacing:-.055em}.lead{max-width:860px;color:#617086;font-size:clamp(17px,2vw,21px);line-height:1.65}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}.actions a,.cta a{display:inline-flex;align-items:center;min-height:46px;padding:0 16px;border:1px solid #ced8e3;border-radius:11px;color:#294f73;text-decoration:none;font-weight:900}.actions .primary,.cta .primary{background:#151d2a;color:#fff;border-color:#151d2a}.truth{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}.truth span,.chips span,.assessment span{padding:7px 10px;border-radius:999px;background:#f0f3f7;color:#506174;font-size:11px;font-weight:800}.panel{padding:26px;margin-top:18px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.head h2,.cta h2{max-width:850px;margin:3px 0 12px;font-size:clamp(30px,4.8vw,54px);line-height:1;letter-spacing:-.04em}.grid,.channel-grid,.proof-grid{display:grid;gap:12px;margin-top:18px}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.grid article,.channel-grid article,.proof-grid article{padding:18px;border:1px solid #e1e7ee;border-radius:16px;background:#fbfcfe}.grid article>span{color:#8a96a5;font-size:10px;font-weight:900}.grid h3{margin:10px 0 8px;font-size:18px}.grid p,.channel-grid small,.proof-grid small,.phases p,.offer p,.note{color:#65758a;line-height:1.6}.channel-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.channel-grid b,.channel-grid small,.proof-grid b,.proof-grid small{display:block}.channel-grid small,.proof-grid small{margin-top:6px}.offer{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-top:18px}.offer>div,.offer>ul{margin:0;padding:22px;border-radius:18px}.offer>div{background:#151d2a;color:#fff}.offer strong{font-size:clamp(23px,3vw,34px);line-height:1.15}.offer>div p{color:#bec8d6}.offer>ul{padding-left:42px;background:#f1edff;color:#503b8e;line-height:1.8}.funnel{display:grid;grid-template-columns:repeat(9,minmax(140px,1fr));gap:9px;overflow:auto;padding:8px 0}.funnel article{min-height:150px;padding:14px;border:1px solid #e0e6ed;border-radius:15px;background:#fbfcfe}.funnel span,.funnel b,.funnel small{display:block}.funnel span{color:#7358bd;font-size:10px;font-weight:900}.funnel b{margin:12px 0 8px}.funnel small{color:#68788c;line-height:1.45}.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}.metrics article{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:15px;border-bottom:1px solid #e3e8ef}.metrics span{color:#7458bf;font-weight:900}.metrics b,.metrics small{display:block}.metrics small{margin-top:4px;color:#69798c}.note{margin-top:16px;padding:14px 16px;border-radius:14px;background:#f7f9fb}.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.phases article{padding:20px;border:1px solid #e0e6ed;border-radius:17px}.phases span{color:#6d56d9;font-weight:900}.phases h3{margin:8px 0}.chips,.assessment{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.assessment span{background:#eee9ff;color:#553e93}.proof-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cta{margin-top:18px;padding:clamp(28px,6vw,60px);background:#151d2a;color:#fff}.cta .eyebrow{color:#ae9eff}.cta p{max-width:800px;color:#bdc7d4;line-height:1.65}.cta .primary{background:#fff;color:#151d2a;border-color:#fff}@media(max-width:900px){.grid.four,.channel-grid,.proof-grid{grid-template-columns:repeat(2,1fr)}.offer{grid-template-columns:1fr}.phases{grid-template-columns:1fr}}@media(max-width:600px){.case-shell{width:min(100% - 22px,1180px);padding-top:96px}.grid.four,.channel-grid,.proof-grid,.metrics{grid-template-columns:1fr}.case-toolbar{align-items:flex-start}}
+</style>
