@@ -36,7 +36,7 @@ try {
       for(const direction of ['logistics','marketing','technology','academy']) {
         await page.locator(`[data-route-id="${direction}"]`).hover();
         await page.waitForTimeout(900);
-        await page.screenshot({path:`${directory}/home-1440-${direction}-hover.png`,fullPage:false});
+        await page.locator(`[data-route-id="${direction}"]`).screenshot({path:`${directory}/home-1440-${direction}-hover.png`,animations:'allow'});
         await page.mouse.move(0,0);
       }
     }

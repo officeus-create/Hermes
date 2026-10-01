@@ -178,7 +178,7 @@ function validateStructuredData(pageHtml, pageName) {
 const homeHeading = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1].replace(/<[^>]*>/g, "").trim();
 if (homeHeading !== "Four directions.") throw new Error("Homepage must retain the approved native Four directions heading");
 const required = [
-  "directions.",
+  // The exact rendered h1 is checked above; its animated letter may have a nested span.
   "Choose yours.",
   "One Hermes ecosystem.",
   "Move freight",
