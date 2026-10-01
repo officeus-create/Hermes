@@ -50,6 +50,14 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(workspace, /CAC · LTV · ROMI/);
   assert.match(workspace, /LEARNER 360/);
   assert.match(workspace, /HR \/ RECRUITING/);
+  assert.match(workspace, /PROGRAMS & COHORTS/);
+  assert.match(workspace, /EXECUTIVE KPI DICTIONARY/);
+  assert.match(workspace, /repeat\(10,minmax\(150px,1fr\)\)/);
+  assert.match(workspace, /Multi-level sales structure/);
+  assert.match(workspace, /Average check/);
+  assert.match(workspace, /Sales productivity/);
+  assert.match(workspace, /Renewal \/ next program/);
+  assert.match(workspace, /Applicant → Screen → Interview → Test → Offer \/ No → Adaptation/);
   assert.match(workspace, /Repair Shop.*Academy/s);
   assert.match(workspace, /demo data/);
   assert.match(hub, /Register academy \/ courses/);
