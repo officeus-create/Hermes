@@ -59,6 +59,9 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(workspace, /PROGRAMS & COHORTS/);
   assert.match(workspace, /EXECUTIVE KPI DICTIONARY/);
   assert.match(workspace, /ACQUISITION CONTROL/);
+  assert.match(workspace, /CLAIMS \/ PROOF REGISTRY/);
+  assert.match(workspace, /observed_at/);
+  assert.match(workspace, /Needs review/);
   assert.match(workspace, /Certificate 283€/);
   assert.match(workspace, /diagnostic gap/);
   assert.match(workspace, /recommended module/);
