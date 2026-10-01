@@ -157,7 +157,7 @@ import "../../../../../../styles/hermes-academy-app.css";
   const prefill=()=>{
     const business=params.get("business");
     if(business!=="kons-na-bis"||!businessForm)return;
-    const values={businessName:"Конс на Бі$",academyType:"business_club",website:"https://biznes-club-knb.com/",countryCode:"UA"};
+    const values={businessName:"Конс на Бі$",academyType:"business_club",website:"https://kons-na-bis.com/",countryCode:"UA"};
     for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input&&!input.value)input.value=value;}
   };
 
