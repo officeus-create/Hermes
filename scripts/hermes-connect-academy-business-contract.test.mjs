@@ -102,7 +102,9 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(publicProfile, /data-lang="uk"/);
   assert.match(publicProfile, /data-lang="en"/);
   assert.match(sitemap, /\/businesses\/connect\/academy\//);
-  assert.match(catalogPage, /Register \/ open Academy CRM/);
+  assert.match(catalogPage, /Request a similar audit/);
+  assert.match(catalogPage, /type=marketing-package&months=3/);
+  assert.match(catalogPage, /Strategy case/);
 });
 
 test("KNB concept and demo route into real Academy business onboarding with UA EN switch", async () => {
