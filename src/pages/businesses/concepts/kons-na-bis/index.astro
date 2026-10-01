@@ -31,7 +31,7 @@ import {konsNaBisClient as client} from "../../../../data/catalog-client-kons-na
   </section>
 
   <div class="knb-actions">
-    <a class="primary" href="/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=kons-na-bis&lang=uk" data-i18n="register">Зареєструвати / відкрити Academy CRM →</a>
+    <a class="primary" href="/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=kons-na-bis&lang=uk" data-language-route data-i18n="register">Зареєструвати / відкрити Academy CRM →</a>
     <a href="/demos/hermes-connect/academy-knb.html" data-i18n="demo">Переглянути CRM demo →</a>
     <a href={client.programmeUrl} target="_blank" rel="noopener noreferrer" data-i18n="official">Офіційна програма ↗</a>
   </div>
@@ -62,6 +62,11 @@ function apply(next: Lang) {
   });
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => {
     button.classList.toggle("active", button.dataset.lang === next);
+  });
+  document.querySelectorAll<HTMLAnchorElement>("[data-language-route]").forEach((link) => {
+    const url = new URL(link.getAttribute("href") || "/", window.location.origin);
+    url.searchParams.set("lang", next);
+    link.href = url.pathname + url.search + url.hash;
   });
 }
 document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => {
