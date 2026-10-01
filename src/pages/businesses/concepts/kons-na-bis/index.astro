@@ -236,7 +236,7 @@ const sources = [
 
   <section class="knb-future-client">
     <div><p class="knb-kicker">FOR FUTURE HERMES CLIENTS</p><h2 data-i18n="sameAuditTitle">Хочете такий самий аудит для свого бізнесу?</h2><p data-i18n="sameAuditCopy">Hermes може почати з audit → funnel → offer → KPI → 90-day roadmap, а потім під’єднати правильний vertical workspace у Hermes Connect.</p></div>
-    <a class="primary" href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_marketing_case&utm_content=request_same_audit" data-i18n="sameAuditCta">Запросити аудит і 90-day roadmap →</a>
+    <a class="primary" href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_marketing_case&utm_content=request_same_audit" data-future-client-cta data-i18n="sameAuditCta">Запросити аудит і 90-day roadmap →</a>
   </section>
 
   <div class="knb-actions">
@@ -248,6 +248,12 @@ const sources = [
 </main>
 
 <script>
+import { trackCaseOpened, trackEvent } from "../../../../lib/analytics";
+trackCaseOpened("knb_marketing_case");
+document.querySelector<HTMLAnchorElement>("[data-future-client-cta]")?.addEventListener("click", (event) => {
+  const link = event.currentTarget as HTMLAnchorElement;
+  trackEvent("case_study_cta", { caseId: "knb_marketing_case", destination: link.pathname, action: "request_similar_audit" });
+});
 const d={
 uk:{
 kicker:"Hermes Catalog · client strategy concept · не офіційний сайт КНБ",lead:"Відповідь на реальний marketing-assessment: не просто аудит соцмережі, а вимірювана система залучення для 7-тижневої програми з прив’язкою до Academy CRM.",seeAudit:"Дивитися аудит",seeFunnel:"Дивитися funnel",openDemo:"Відкрити CRM demo",snapshot:"Public-source snapshot",
