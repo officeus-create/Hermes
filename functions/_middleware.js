@@ -8,15 +8,7 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
-const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
-const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
-const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
 const HSTS_HEADER_VALUE = "max-age=31536000";
-const STALE_PUBLIC_COPY = [
-  "Your information was not sent or stored.",
-  "Contact delivery is not connected",
-  "contact delivery is not connected",
-];
 
 const MAIN_LEGACY_REDIRECTS = new Map([
   ["/academy", "/paths/academy/"],
@@ -312,7 +304,7 @@ function canonicalMainLegacyRedirect(incomingUrl) {
   return Response.redirect(target.toString(), 301);
 }
 
-async function sanitizeMainDomainCopy(context) {
+async function routeMainAndCompatibilityHosts(context) {
   const publicHostRedirect = canonicalPublicHostRedirect(context.request);
   if (publicHostRedirect) return withTransportSecurity(publicHostRedirect);
 
@@ -341,25 +333,11 @@ async function sanitizeMainDomainCopy(context) {
     }
   }
 
-  const response = await context.next();
-  const contentType = response.headers.get("content-type") || "";
-  if (!contentType.toLowerCase().includes("text/html")) return response;
-
-  const original = await response.text();
-  let sanitized = STALE_PUBLIC_COPY.reduce(
-    (html, staleCopy) => html.replaceAll(staleCopy, LIVE_DELIVERY_COPY),
-    original,
-  );
-  sanitized = sanitized.replaceAll(OLD_CONNECT_ACCESS, NEW_CONNECT_ACCESS);
-  if (sanitized === original) return new Response(original, response);
-
-  const headers = new Headers(response.headers);
-  headers.delete("content-length");
-  return new Response(sanitized, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  // Ordinary main-domain pages are static Astro output. Return the upstream
+  // response untouched so the root middleware does not buffer/rewrite every
+  // HTML document in memory. Public-copy correctness is enforced at source
+  // and build/test layers instead of at the edge.
+  return context.next();
 }
 
-export const onRequest = [sanitizeMainDomainCopy];
+export const onRequest = [routeMainAndCompatibilityHosts];
