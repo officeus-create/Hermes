@@ -73,6 +73,22 @@
           continue;
         }
         if (company?.companyType === 'academy_business' && academyGrid && !academyExisting.has(href)) {
+          const companyName = String(company.companyName || '').trim().toLowerCase();
+          const matching = [...academyGrid.querySelectorAll('.business-card')].find((card) =>
+            String(card.querySelector('h3')?.textContent || '').trim().toLowerCase() === companyName
+          );
+          if (matching) {
+            const primary = matching.querySelector('.business-card__actions a[href]');
+            if (primary) {
+              primary.setAttribute('href', href);
+              primary.textContent = 'View live Catalog profile';
+            }
+            const status = matching.querySelector('.business-card__top span:last-child');
+            if (status) status.textContent = String(company.verificationLabel || 'Self-submitted · verification pending');
+            matching.dataset.searchText = [matching.dataset.searchText, company.city, company.state, company.countryCode].filter(Boolean).join(' ').toLowerCase();
+            academyExisting.add(href);
+            continue;
+          }
           academyGrid.append(makeCard(company));
           academyExisting.add(href);
         }
