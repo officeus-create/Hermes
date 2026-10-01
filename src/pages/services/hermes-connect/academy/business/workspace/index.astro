@@ -1,0 +1,134 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import "../../../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Academy Business CRM | Hermes Connect"
+  description="Private Hermes Connect workspace for academies, courses, schools and business clubs."
+  robots="noindex,nofollow"
+  htmlLang="uk"
+  locale="uk"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/services/hermes-connect/" />
+    <main id="main-content" class="academy-app-shell">
+      <div class="academy-owner-toolbar">
+        <a href="/services/hermes-connect/" data-i18n="back">← Hermes Connect</a>
+        <div class="academy-owner-lang" aria-label="Language">
+          <button type="button" data-lang="uk" class="active">UA</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+      </div>
+
+      <div class="academy-app-alert" data-workspace-alert role="status"></div>
+
+      <section class="academy-app-hero" data-workspace-loading>
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Hermes Connect · Academy Business CRM</p>
+          <h1 data-i18n="loading">Завантажуємо ваш робочий простір…</h1>
+          <p data-i18n="loadingCopy">Перевіряємо Hermes-акаунт та профіль навчального бізнесу.</p>
+        </article>
+      </section>
+
+      <div class="academy-app-hidden" data-workspace-content>
+        <section class="academy-app-hero">
+          <article class="academy-app-card">
+            <p class="academy-app-eyebrow" data-i18n="ownerWorkspace">Робочий простір власника</p>
+            <h1><span data-business-name>Academy</span> · <span data-i18n="crm">Academy CRM</span></h1>
+            <p data-i18n="heroCopy">CRM адаптована під навчальний бізнес: продаж програм, учасники, потоки, навчання, завдання, перевірки, маркетинг, HR та повторні продажі працюють як один pipeline.</p>
+            <div class="academy-app-actions">
+              <a class="academy-app-button intelligence" href="#crm" data-i18n="openPipeline">Відкрити sales pipeline</a>
+              <a class="academy-app-button" data-catalog-link href="/businesses/" data-i18n="catalogProfile">Профіль у Catalog</a>
+              <a class="academy-app-button" href="/services/hermes-connect/academy/business/auth/" data-i18n="settings">Налаштування бізнесу</a>
+              <button class="academy-app-button" type="button" data-logout data-i18n="logout">Вийти</button>
+            </div>
+          </article>
+          <aside class="academy-app-card academy-app-dark">
+            <span class="academy-app-status" data-i18n="vertical">Academy vertical</span>
+            <h2 data-i18n="different">Не універсальна CRM.</h2>
+            <p data-i18n="differentCopy">Repair Shop отримує записи, автомобілі та графік СТО. Academy отримує ліди, консультації, учасників, cohorts, lessons, assignments, reviews і retention. Hermes identity спільна, робочий процес — різний.</p>
+          </aside>
+        </section>
+
+        <section class="academy-owner-kpis">
+          <article><span data-i18n="leads">Нові ліди</span><strong>12</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="consultations">Консультації</span><strong>6</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="learners">Активні учасники</span><strong>34</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="review">На перевірці</span><strong>8</strong><small data-i18n="sample">demo data</small></article>
+          <article><span>ROMI</span><strong>—</strong><small data-i18n="realOnly">лише з реальних даних</small></article>
+        </section>
+
+        <section class="academy-app-panel" id="crm">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">SALES CRM</p><h2 data-i18n="pipeline">Лід → консультація → рішення → зарахування → alumni</h2></div><span class="academy-app-status" data-i18n="sampleBoard">Демо-дошка</span></div>
+          <div class="academy-owner-pipeline">
+            <div><b data-i18n="newLead">Нова заявка</b><article><strong>Demo · Ірина</strong><small>Instagram · SMB owner</small></article><article><strong>Demo · Максим</strong><small>Webinar · warm lead</small></article></div>
+            <div><b data-i18n="qualified">Кваліфікація</b><article><strong>Demo · Олена</strong><small data-i18n="need">Потреба: систематизація продажів</small></article></div>
+            <div><b data-i18n="consultation">Консультація</b><article><strong>Demo · Андрій</strong><small>Next action · 16:30</small></article></div>
+            <div><b data-i18n="decision">Рішення</b><article><strong>Demo · Сергій</strong><small>Objection · implementation time</small></article></div>
+            <div><b data-i18n="enrolled">Зарахований</b><article><strong>Demo · Наталія</strong><small>Cohort · 7-week growth</small></article></div>
+            <div><b>Alumni / Club</b><article><strong>Demo · Віктор</strong><small>Next offer · membership</small></article></div>
+          </div>
+        </section>
+
+        <section class="academy-owner-modules">
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">LEARNER 360</p><h2 data-i18n="learner360">Картка учасника</h2><ul><li data-i18n="source">Джерело ліда, менеджер і консультація</li><li data-i18n="progress">Прогрес за модулями та відвідування</li><li data-i18n="assignments">Домашні завдання і reviewer feedback</li><li data-i18n="baseline">Business KPI baseline / before → after</li><li data-i18n="retention">Завершення, feedback, наступна програма, клуб</li></ul></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">ACADEMY OPS</p><h2 data-i18n="delivery">Навчальний delivery</h2><ul><li data-i18n="cohorts">Потоки / cohorts</li><li data-i18n="lessons">Уроки та записи</li><li data-i18n="weekly">Щотижневі розбори</li><li>VIP sessions</li><li data-i18n="nextAction">Наступна дія по кожному учаснику</li></ul></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">MARKETING</p><h2>CAC · LTV · ROMI</h2><p data-i18n="marketingCopy">Канал → lead → consultation → sale → revenue. Фінансові показники не вигадуються: вони з’являються після підключення реальних витрат і CRM revenue.</p></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">HR / RECRUITING</p><h2 data-i18n="hiring">Команда академії</h2><p>Applicant → Screen → Interview → Test → Offer / No.</p><p data-i18n="hiringCopy">Recruiting зберігається окремо від learner progression та не перетворює навчальні оцінки на автоматичні кадрові рішення.</p></article>
+        </section>
+
+        <section class="academy-app-panel">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">TEST ASSIGNMENT / KPI</p><h2 data-i18n="testBoard">Дошка тестового завдання</h2></div><span class="academy-app-status" data-i18n="pending">Точний brief pending</span></div>
+          <p data-i18n="testCopy">Структура готова прийняти конкретні KPI клієнта: baseline → target → actual → status. До відновлення точного брифу цифри не вигадуються.</p>
+          <div class="academy-owner-metrics">
+            <div><b>Lead → consultation</b><span>Baseline</span><span>Target</span><span>Actual</span><em>Pending</em></div>
+            <div><b>Consultation → sale</b><span>Baseline</span><span>Target</span><span>Actual</span><em>Pending</em></div>
+            <div><b>CAC / LTV / ROMI</b><span>Baseline</span><span>Target</span><span>Actual</span><em>Pending</em></div>
+            <div><b>Course completion</b><span>Baseline</span><span>Target</span><span>Actual</span><em>Pending</em></div>
+          </div>
+        </section>
+
+        <p class="academy-owner-boundary" data-i18n="boundary">Поки що операційні картки та показники на цій сторінці — демонстраційна структура vertical. Бізнес-профіль і Hermes-акаунт зберігаються реально; CRM-модулі активуються поетапно без підміни demo-даних реальними.</p>
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const dict={
+    uk:{back:"← Hermes Connect",loading:"Завантажуємо ваш робочий простір…",loadingCopy:"Перевіряємо Hermes-акаунт та профіль навчального бізнесу.",ownerWorkspace:"Робочий простір власника",crm:"Academy CRM",heroCopy:"CRM адаптована під навчальний бізнес: продаж програм, учасники, потоки, навчання, завдання, перевірки, маркетинг, HR та повторні продажі працюють як один pipeline.",openPipeline:"Відкрити sales pipeline",catalogProfile:"Профіль у Catalog",settings:"Налаштування бізнесу",logout:"Вийти",vertical:"Academy vertical",different:"Не універсальна CRM.",differentCopy:"Repair Shop отримує записи, автомобілі та графік СТО. Academy отримує ліди, консультації, учасників, cohorts, lessons, assignments, reviews і retention. Hermes identity спільна, робочий процес — різний.",leads:"Нові ліди",consultations:"Консультації",learners:"Активні учасники",review:"На перевірці",sample:"demo data",realOnly:"лише з реальних даних",pipeline:"Лід → консультація → рішення → зарахування → alumni",sampleBoard:"Демо-дошка",newLead:"Нова заявка",qualified:"Кваліфікація",need:"Потреба: систематизація продажів",consultation:"Консультація",decision:"Рішення",enrolled:"Зарахований",learner360:"Картка учасника",source:"Джерело ліда, менеджер і консультація",progress:"Прогрес за модулями та відвідування",assignments:"Домашні завдання і reviewer feedback",baseline:"Business KPI baseline / before → after",retention:"Завершення, feedback, наступна програма, клуб",delivery:"Навчальний delivery",cohorts:"Потоки / cohorts",lessons:"Уроки та записи",weekly:"Щотижневі розбори",nextAction:"Наступна дія по кожному учаснику",marketingCopy:"Канал → lead → consultation → sale → revenue. Фінансові показники не вигадуються: вони з’являються після підключення реальних витрат і CRM revenue.",hiring:"Команда академії",hiringCopy:"Recruiting зберігається окремо від learner progression та не перетворює навчальні оцінки на автоматичні кадрові рішення.",testBoard:"Дошка тестового завдання",pending:"Точний brief pending",testCopy:"Структура готова прийняти конкретні KPI клієнта: baseline → target → actual → status. До відновлення точного брифу цифри не вигадуються.",boundary:"Поки що операційні картки та показники на цій сторінці — демонстраційна структура vertical. Бізнес-профіль і Hermes-акаунт зберігаються реально; CRM-модулі активуються поетапно без підміни demo-даних реальними."},
+    en:{back:"← Hermes Connect",loading:"Loading your workspace…",loadingCopy:"Checking your Hermes account and education-business profile.",ownerWorkspace:"Owner workspace",crm:"Academy CRM",heroCopy:"CRM adapted to an education business: program sales, learners, cohorts, learning, assignments, reviews, marketing, HR, and repeat sales in one pipeline.",openPipeline:"Open sales pipeline",catalogProfile:"Catalog profile",settings:"Business settings",logout:"Log out",vertical:"Academy vertical",different:"Not a universal CRM.",differentCopy:"Repair Shops get appointments, vehicles, and shop scheduling. Academy gets leads, consultations, learners, cohorts, lessons, assignments, reviews, and retention. Hermes identity stays shared while workflow changes by vertical.",leads:"New leads",consultations:"Consultations",learners:"Active learners",review:"Awaiting review",sample:"demo data",realOnly:"real data only",pipeline:"Lead → consultation → decision → enrolled → alumni",sampleBoard:"Demo board",newLead:"New lead",qualified:"Qualified",need:"Need: sales systemization",consultation:"Consultation",decision:"Decision",enrolled:"Enrolled",learner360:"Learner 360",source:"Lead source, manager, and consultation",progress:"Module progress and attendance",assignments:"Assignments and reviewer feedback",baseline:"Business KPI baseline / before → after",retention:"Completion, feedback, next program, club",delivery:"Learning delivery",cohorts:"Cohorts",lessons:"Lessons and recordings",weekly:"Weekly reviews",nextAction:"Next action for every learner",marketingCopy:"Channel → lead → consultation → sale → revenue. Financial metrics are never fabricated; they appear after real spend and CRM revenue are connected.",hiring:"Academy team",hiringCopy:"Recruiting stays separate from learner progression and does not turn learning scores into automated employment decisions.",testBoard:"Test assignment board",pending:"Exact brief pending",testCopy:"The structure is ready for client KPI: baseline → target → actual → status. No numbers are invented before the exact brief is recovered.",boundary:"For now, operating cards and metrics on this page are a vertical demo structure. The business profile and Hermes identity are persisted; CRM modules are activated incrementally without presenting demo data as real."}
+  } as const;
+  type Lang=keyof typeof dict;
+  const params=new URLSearchParams(location.search);let lang:Lang=params.get("lang")==="en"?"en":"uk";try{const s=localStorage.getItem("hermes-connect-language");if(!params.has("lang")&&(s==="uk"||s==="en"))lang=s}catch{}
+  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof dict.uk;const v=dict[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.addEventListener("click",()=>apply(b.dataset.lang==="en"?"en":"uk")));apply(lang);
+
+  const loading=document.querySelector<HTMLElement>("[data-workspace-loading]");const content=document.querySelector<HTMLElement>("[data-workspace-content]");const alert=document.querySelector<HTMLElement>("[data-workspace-alert]");
+  const json=async(url:string,options:RequestInit={})=>{const r=await fetch(url,{...options,headers:{Accept:"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});const p=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(p.error||`request_${r.status}`),{status:r.status,payload:p});return p;};
+  const fail=(message:string)=>{if(alert){alert.textContent=message;alert.className="academy-app-alert show error";}};
+  void(async()=>{
+    try{
+      await json("/api/auth/me");
+      const state=await json("/api/hermes-connect/academy/business");
+      if(!state.academyBusiness){location.assign("/services/hermes-connect/academy/business/auth/?mode=register");return;}
+      const b=state.academyBusiness;const name=document.querySelector<HTMLElement>("[data-business-name]");if(name)name.textContent=b.businessName||"Academy";
+      const link=document.querySelector<HTMLAnchorElement>("[data-catalog-link]");if(link)link.href=b.catalogOptIn?`/businesses/connect/academy/${encodeURIComponent(b.slug)}/`:"/businesses/";
+      loading?.classList.add("academy-app-hidden");content?.classList.remove("academy-app-hidden");
+    }catch(error:any){if(error?.status===401){location.assign("/services/hermes-connect/academy/business/auth/?mode=login");return;}fail(String(error?.message||"Could not load workspace"));}
+  })();
+  document.querySelector<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);location.assign("/services/hermes-connect/academy/business/auth/?mode=login");});
+</script>
+
+<style>
+  .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
+  .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
+  .academy-owner-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}.academy-owner-kpis article{padding:18px;border:1px solid rgba(148,163,184,.28);border-radius:18px;background:#fff}.academy-owner-kpis span,.academy-owner-kpis small{display:block}.academy-owner-kpis span{font-size:12px;color:#64748b}.academy-owner-kpis strong{display:block;margin:7px 0;font-size:28px}.academy-owner-kpis small{font-size:10px;color:#94a3b8}
+  .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(6,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
+  .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
+  @media(max-width:900px){.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules{grid-template-columns:1fr}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
+</style>
