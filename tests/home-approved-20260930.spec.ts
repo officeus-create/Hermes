@@ -35,8 +35,8 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    })).toBe(false);
    const image=route.locator('.home-portal-art img');
    await expect(image).toBeVisible();
-   await expect.poll(()=>image.evaluate((node:HTMLImageElement)=>node.naturalWidth)).toBeGreaterThanOrEqual(512);
-   expect(await image.evaluate((node:HTMLImageElement)=>node.currentSrc)).toContain('/images/home-20261001/');
+   await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThanOrEqual(512);
+   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toContain('/images/home-20261001/');
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
