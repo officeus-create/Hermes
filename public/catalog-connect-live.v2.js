@@ -1,23 +1,28 @@
 (() => {
-  const grid = document.querySelector('[data-catalog-grid]');
-  if (!grid) return;
+  const repairGrid = document.querySelector('[data-catalog-grid]');
+  const academyGrid = document.querySelector('[data-academy-catalog-grid]');
+  if (!repairGrid && !academyGrid) return;
+
   const makeCard = (company) => {
     const article = document.createElement('article');
     article.className = 'business-card';
     article.dataset.catalogCard = '';
+
+    const isAcademy = company?.companyType === 'academy_business';
+    const typeLabel = isAcademy ? String(company.typeLabel || 'Academy / Courses') : 'Repair Shop';
     const services = Array.isArray(company.services) ? company.services.slice(0, 4).map(String) : [];
-    article.dataset.searchText = [company.companyName, 'Repair Shop', company.city, company.state, ...services].filter(Boolean).join(' ').toLowerCase();
+    article.dataset.searchText = [company.companyName, typeLabel, company.city, company.state, company.countryCode, ...services].filter(Boolean).join(' ').toLowerCase();
 
     const top = document.createElement('div');
     top.className = 'business-card__top';
     const type = document.createElement('span');
-    type.textContent = 'Repair Shop';
+    type.textContent = typeLabel;
     const status = document.createElement('span');
     status.textContent = String(company.verificationLabel || 'Self-submitted · verification pending');
     top.append(type, status);
 
     const title = document.createElement('h3');
-    title.textContent = String(company.companyName || 'Repair Shop');
+    title.textContent = String(company.companyName || typeLabel);
     const location = document.createElement('p');
     location.textContent = [company.city, company.state].filter(Boolean).join(', ');
     article.append(top, title, location);
@@ -32,7 +37,9 @@
       article.append(list);
     } else {
       const note = document.createElement('p');
-      note.textContent = 'Services are managed by the owner in Hermes Connect.';
+      note.textContent = isAcademy
+        ? 'Programs and public business details are managed by the owner in Hermes Connect.'
+        : 'Services are managed by the owner in Hermes Connect.';
       article.append(note);
     }
 
@@ -42,7 +49,7 @@
     link.href = String(company.profileUrl || '#');
     link.textContent = 'View profile';
     const meta = document.createElement('span');
-    meta.textContent = 'Hermes Connect profile · owner-submitted';
+    meta.textContent = isAcademy ? 'Hermes Connect Academy profile · owner-submitted' : 'Hermes Connect profile · owner-submitted';
     actions.append(link, meta);
     article.append(actions);
     return article;
@@ -52,17 +59,31 @@
     .then((response) => response.ok ? response.json() : null)
     .then((payload) => {
       if (!payload?.success || !Array.isArray(payload.companies)) return;
-      const existing = new Set([...grid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')));
+
+      const repairExisting = new Set(repairGrid ? [...repairGrid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')) : []);
+      const academyExisting = new Set(academyGrid ? [...academyGrid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')) : []);
+
       for (const company of payload.companies) {
         const href = String(company?.profileUrl || '');
-        if (!href || company?.companyType !== 'repair_shop' || existing.has(href)) continue;
-        grid.append(makeCard(company));
-        existing.add(href);
+        if (!href) continue;
+
+        if (company?.companyType === 'repair_shop' && repairGrid && !repairExisting.has(href)) {
+          repairGrid.append(makeCard(company));
+          repairExisting.add(href);
+          continue;
+        }
+        if (company?.companyType === 'academy_business' && academyGrid && !academyExisting.has(href)) {
+          academyGrid.append(makeCard(company));
+          academyExisting.add(href);
+        }
       }
-      const publishedCount = grid.querySelectorAll('[data-catalog-card]').length;
-      document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
-        node.textContent = String(publishedCount);
-      });
+
+      if (repairGrid) {
+        const publishedCount = repairGrid.querySelectorAll('[data-catalog-card]').length;
+        document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
+          node.textContent = String(publishedCount);
+        });
+      }
       document.dispatchEvent(new CustomEvent('hermes:catalog-profiles-loaded'));
     })
     .catch(() => {});
