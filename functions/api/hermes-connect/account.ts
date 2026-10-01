@@ -55,13 +55,15 @@ async function getOwnedHermesCompany(db: any, ownerId: string) {
 }
 
 async function getOwnedAcademyBusiness(db: any, ownerId: string) {
+  await ensureHermesCompanyProfilesSchema(db);
   await ensureAcademyBusinessProfilesSchema(db);
   return db.prepare(`
-    SELECT id,business_name,slug
-    FROM hermes_academy_business_profiles
-    WHERE owner_specialist_id = ?
+    SELECT c.id, c.company_name AS business_name, c.slug
+    FROM hermes_academy_business_profiles a
+    JOIN hermes_company_profiles c ON c.id = a.company_id
+    WHERE a.owner_specialist_id = ? AND c.owner_specialist_id = ?
     LIMIT 1
-  `).bind(ownerId).first();
+  `).bind(ownerId, ownerId).first();
 }
 
 async function getInternalAiAccess(db: any, specialistId: string) {
