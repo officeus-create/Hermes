@@ -50,6 +50,11 @@ const isAccountSubject = (value) =>
   value === "[HERMES CATALOG] [CUSTOMER INQUIRY]" ||
   value === "[HERMES CATALOG] [WEEKLY REPORT]";
 
+const deliverySubject = (subject, requestId) =>
+  subject.startsWith("[HERMES INQUIRY] ")
+    ? `${subject} [ID:${requestId}]`
+    : subject;
+
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
   const rightBytes = encoder.encode(right);
@@ -948,7 +953,7 @@ const worker = {
     const message = {
       to: cleanHeader(env.SALES_DESTINATION, 320).toLowerCase(),
       from: cleanHeader(env.SALES_SENDER, 320),
-      subject,
+      subject: deliverySubject(subject, requestId),
       text,
       replyTo,
       attachments: [],
