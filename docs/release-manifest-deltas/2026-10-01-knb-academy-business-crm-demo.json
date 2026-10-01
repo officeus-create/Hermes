@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-01-knb-academy-business-crm-demo",
+  "generated_at": "2026-10-01T15:53:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/businesses/concepts/kons-na-bis/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/businesses/concepts/kons-na-bis/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/businesses/concepts/kons-na-bis/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/academy/business-demo/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/business-demo/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/business-demo/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/academy/business-demo/kons-na-bis/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/business-demo/kons-na-bis/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/business-demo/kons-na-bis/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 3,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
