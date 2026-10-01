@@ -279,7 +279,7 @@ const evidenceLabels = {
   const nav = document.querySelector("[data-demo-nav]");
   const views = [...document.querySelectorAll("[data-view]")];
   const buttons = [...document.querySelectorAll("[data-target]")];
-  const activate = (target) => {
+  const activate = (target: string | null) => {
     for (const view of views) {
       const active = view.getAttribute("data-view") === target;
       view.toggleAttribute("hidden", !active);
@@ -290,7 +290,9 @@ const evidenceLabels = {
     document.querySelector(".workspace")?.scrollTo({ top: 0, behavior: "auto" });
   };
   nav?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-target]");
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest("[data-target]");
     if (button) activate(button.getAttribute("data-target"));
   });
   const initial = location.hash.slice(1);
