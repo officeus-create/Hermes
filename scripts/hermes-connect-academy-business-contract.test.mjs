@@ -46,10 +46,16 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
     read("src/pages/services/hermes-connect/index.astro"),
     read("src/pages/services/hermes-connect/academy/auth/index.astro"),
   ]);
-  assert.match(workspace, /Lead → consultation → decision → enrolled → alumni/);
+  assert.match(workspace, /Lead → consultation → program → enrollment → learning → renewal/);
   assert.match(workspace, /CAC · LTV · ROMI/);
   assert.match(workspace, /LEARNER 360/);
   assert.match(workspace, /HR \/ RECRUITING/);
+  assert.match(workspace, /CANDIDATE ASSESSMENT/);
+  assert.match(workspace, /Конс на Бі\$ · Marketing candidate/);
+  assert.match(workspace, /Google Docs \+ MindMap/);
+  assert.match(workspace, /Evidence & diagnosis/);
+  assert.match(workspace, /KPI & measurement/);
+  assert.match(workspace, /Pending human review/);
   assert.match(workspace, /PROGRAMS & COHORTS/);
   assert.match(workspace, /EXECUTIVE KPI DICTIONARY/);
   assert.match(workspace, /repeat\(10,minmax\(150px,1fr\)\)/);
