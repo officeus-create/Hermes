@@ -29,7 +29,7 @@
 <article class="kpi"><span>Курс</span><strong>7 тиж.</strong><small>Офіційна програма</small></article>
 <article class="kpi"><span>CRM stages</span><strong>6</strong><small>Demo model</small></article>
 <article class="kpi"><span>Marketing core</span><strong>CAC · LTV · ROMI</strong><small>З вакансії CMO</small></article>
-<article class="kpi"><span>Exact client test KPI</span><strong>Pending</strong><small>Source thread not recovered</small></article>
+<article class="kpi"><span>Client assessment</span><strong>2 tasks</strong><small>Brief recovered · deadline 02.10 · 09:00</small></article>
 </section>
 
 <section class="panel" id="crm" style="margin-bottom:16px">
@@ -88,13 +88,18 @@
 </section>
 
 <section class="panel" id="test">
-<div class="panel-head"><div><small>TEST ASSIGNMENT / KPI BOARD</small><h3>Показати результат цифрами, але не підміняти відсутній бриф</h3><p>Точний текст персонального тестового завдання КНБ у доступних джерелах не знайдено. Тут закладена рамка, яка готова прийняти їхні точні KPI без переробки CRM.</p></div><span class="stage warn">Exact brief pending</span></div>
-<div class="metric-row"><b>KPI</b><span>Baseline</span><span>Target</span><span>Actual</span><span>Status</span></div>
-<div class="metric-row"><b>Lead → consultation conversion</b><input placeholder="source data"><input placeholder="client target"><input placeholder="actual"><span>Pending</span></div>
-<div class="metric-row"><b>Consultation → sale conversion</b><input placeholder="source data"><input placeholder="client target"><input placeholder="actual"><span>Pending</span></div>
-<div class="metric-row"><b>CAC / LTV / ROMI</b><input placeholder="source data"><input placeholder="client target"><input placeholder="actual"><span>Pending</span></div>
-<div class="metric-row"><b>Course completion / assignment review</b><input placeholder="source data"><input placeholder="client target"><input placeholder="actual"><span>Pending</span></div>
-<div class="metric-row"><b>Revenue attributed to marketing</b><input placeholder="source data"><input placeholder="client target"><input placeholder="actual"><span>Pending</span></div>
+<div class="panel-head"><div><small>CANDIDATE ASSESSMENT · MARKETING</small><h3>Реальне тестове КНБ як reusable HR-template.</h3><p>Brief отримано 01.10.2026 о 18:24. Дедлайн — 02.10.2026 о 09:00. Формат здачі — Google Docs; funnel можна подати як MindMap або схему. Google Form використовується лише як reference для структури intake — Hermes його не заповнює.</p></div><span class="stage">Brief recovered</span></div>
+<div class="grid two" style="margin-bottom:16px">
+<article class="callout"><b>Завдання 1 · Social audit</b><p>Проаналізувати будь-яку соцмережу КНБ. Короткий висновок: що впровадити одразу як керівник напряму та які шляхи розвитку бачимо.</p><small>Sources: Instagram · YouTube · TikTok · Facebook · Threads · Telegram</small></article>
+<article class="callout"><b>Завдання 2 · Funnel + offer</b><p>Побудувати marketing funnel для 7-тижневої програми «Стратегія керованого зростання у бізнесі», показати MindMap / схему, запропонувати оффер і пояснити логіку.</p><small>Submission: Google Docs · Human review only</small></article>
+</div>
+<div class="metric-row"><b>Reviewer rubric</b><span>0–5</span><span>0–5</span><span>0–5</span><span>Human decision</span></div>
+<div class="metric-row"><b>Evidence & diagnosis</b><span>Source quality</span><span>Insight</span><span>Boundaries</span><span>Review</span></div>
+<div class="metric-row"><b>Audience & positioning</b><span>ICP</span><span>Pain</span><span>Reason to believe</span><span>Review</span></div>
+<div class="metric-row"><b>Funnel logic</b><span>Entry</span><span>Handoff</span><span>Retention</span><span>Review</span></div>
+<div class="metric-row"><b>Offer quality</b><span>Value</span><span>CTA</span><span>No fake guarantee</span><span>Review</span></div>
+<div class="metric-row"><b>KPI & measurement</b><span>Conversion</span><span>CAC/LTV</span><span>Attribution</span><span>Review</span></div>
+<div class="metric-row"><b>Execution thinking</b><span>7 days</span><span>30 days</span><span>90 days</span><span>Review</span></div>
 </section>
 
 <footer class="footer"><span>Client-demo boundary: no live customer data, no claim of CRM activation, no fabricated client approval, payment or KPI.</span><span>Hermes Connect · Academy vertical demo · 2026-10-01</span></footer>
@@ -104,6 +109,18 @@ const buttons=[...document.querySelectorAll('[data-tab]')],panels=[...document.q
 buttons.forEach(btn=>btn.addEventListener('click',()=>{buttons.forEach(x=>x.classList.toggle('active',x===btn));panels.forEach(p=>p.classList.toggle('active',p.dataset.panel===btn.dataset.tab));}));
 
 const uaToEn=new Map([
+['Client assessment','Client assessment'],
+['2 tasks','2 tasks'],
+['Brief recovered · deadline 02.10 · 09:00','Brief recovered · deadline 02 Oct · 09:00'],
+['CANDIDATE ASSESSMENT · MARKETING','CANDIDATE ASSESSMENT · MARKETING'],
+['Реальне тестове КНБ як reusable HR-template.','The real KNB assignment as a reusable HR template.'],
+['Brief отримано 01.10.2026 о 18:24. Дедлайн — 02.10.2026 о 09:00. Формат здачі — Google Docs; funnel можна подати як MindMap або схему. Google Form використовується лише як reference для структури intake — Hermes його не заповнює.','Brief received 01 Oct 2026 at 18:24. Deadline: 02 Oct 2026 at 09:00. Submission: Google Docs; the funnel may be shown as a MindMap or diagram. The Google Form is reference-only for intake structure; Hermes does not submit it.'],
+['Brief recovered','Brief recovered'],
+['Завдання 1 · Social audit','Task 1 · Social audit'],
+['Проаналізувати будь-яку соцмережу КНБ. Короткий висновок: що впровадити одразу як керівник напряму та які шляхи розвитку бачимо.','Analyze any KNB social channel. Give a concise conclusion: what you would implement immediately as the direction lead and which growth paths you see.'],
+['Завдання 2 · Funnel + offer','Task 2 · Funnel + offer'],
+['Побудувати marketing funnel для 7-тижневої програми «Стратегія керованого зростання у бізнесі», показати MindMap / схему, запропонувати оффер і пояснити логіку.','Build a marketing funnel for the seven-week Managed Business Growth Strategy program, show a MindMap / diagram, propose an offer, and explain the logic.'],
+
 ['Зареєструвати CRM →','Register CRM →'],
 ['Конс на Бі$ · структурований demo workspace','Конс на Бі$ · structured demo workspace'],
 ['CRM для бізнес-академії: від заявки до вимірюваного результату учасника.','Business-academy CRM: from lead to measurable participant outcome.'],
