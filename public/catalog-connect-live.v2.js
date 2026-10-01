@@ -8,6 +8,7 @@
     const article = document.createElement('article');
     article.className = 'business-card';
     article.dataset.catalogCard = '';
+    article.dataset.catalogEntityId = String(company?.id || '');
 
     const isAcademy = company?.companyType === 'academy_business';
     const typeLabel = isAcademy ? String(company.typeLabel || 'Academy / Courses') : 'Repair Shop';
@@ -61,37 +62,22 @@
     .then((payload) => {
       if (!payload?.success || !Array.isArray(payload.companies)) return;
 
-      const repairExisting = new Set(repairGrid ? [...repairGrid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')) : []);
-      const academyExisting = new Set(academyGrid ? [...academyGrid.querySelectorAll('a[href]')].map((link) => link.getAttribute('href')) : []);
+      const repairExistingIds = new Set(repairGrid ? [...repairGrid.querySelectorAll('[data-catalog-entity-id]')].map((node) => node.getAttribute('data-catalog-entity-id')).filter(Boolean) : []);
+      const academyExistingIds = new Set(academyGrid ? [...academyGrid.querySelectorAll('[data-catalog-entity-id]')].map((node) => node.getAttribute('data-catalog-entity-id')).filter(Boolean) : []);
 
       for (const company of payload.companies) {
         const href = String(company?.profileUrl || '');
-        if (!href) continue;
+        const id = String(company?.id || '');
+        if (!href || !id) continue;
 
-        if (company?.companyType === 'repair_shop' && repairGrid && !repairExisting.has(href)) {
+        if (company?.companyType === 'repair_shop' && repairGrid && !repairExistingIds.has(id)) {
           repairGrid.append(makeCard(company));
-          repairExisting.add(href);
+          repairExistingIds.add(id);
           continue;
         }
-        if (company?.companyType === 'academy_business' && academyGrid && !academyExisting.has(href)) {
-          const companyName = String(company.companyName || '').trim().toLowerCase();
-          const matching = [...academyGrid.querySelectorAll('.business-card')].find((card) =>
-            String(card.querySelector('h3')?.textContent || '').trim().toLowerCase() === companyName
-          );
-          if (matching) {
-            const primary = matching.querySelector('.business-card__actions a[href]');
-            if (primary) {
-              primary.setAttribute('href', href);
-              primary.textContent = 'View live Catalog profile';
-            }
-            const status = matching.querySelector('.business-card__top span:last-child');
-            if (status) status.textContent = String(company.verificationLabel || 'Self-submitted · verification pending');
-            matching.dataset.searchText = [matching.dataset.searchText, company.city, company.state, company.countryCode].filter(Boolean).join(' ').toLowerCase();
-            academyExisting.add(href);
-            continue;
-          }
+        if (company?.companyType === 'academy_business' && academyGrid && !academyExistingIds.has(id)) {
           academyGrid.append(makeCard(company));
-          academyExisting.add(href);
+          academyExistingIds.add(id);
         }
       }
 
