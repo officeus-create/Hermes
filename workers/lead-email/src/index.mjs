@@ -67,13 +67,12 @@ const deliverySubject = (subject, requestId, text = "") => {
 };
 
 const extractLeadField = (text, label, max = 180) => {
-  const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, "\\const deliverySubject = (subject, requestId) =>
-  subject.startsWith("[HERMES INQUIRY] ")
-    ? `${subject} [ID:${requestId}]`
-    : subject;
-");
-  const match = String(text || "").match(new RegExp(`(?:^|\\n)${escapedLabel}:\\s*([^\\n]+)`, "i"));
-  return cleanHeader(match?.[1] || "", max);
+  const prefix = `${String(label || "").trim().toLowerCase()}:`;
+  const line = String(text || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .find((item) => item.toLowerCase().startsWith(prefix));
+  return cleanHeader(line ? line.slice(prefix.length).trim() : "", max);
 };
 
 const escapeCalendarText = (value) =>
