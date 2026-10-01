@@ -75,3 +75,28 @@ test("Academy owner registration persists business profile and routes into the v
     catalogOptIn: true,
   });
 });
+
+
+test("KNB Catalog strategy case is mobile-safe, bilingual, and routes future clients to the marketing handoff", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/businesses/concepts/kons-na-bis/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "uk");
+  await expect(page.getByRole("heading", { name: "Конс на Бі$ Social → CRM → Revenue" })).toBeVisible();
+  await expect(page.getByText("77.1K", { exact: true })).toBeVisible();
+  await expect(page.getByText("TASK 1 · INSTAGRAM AUDIT", { exact: true })).toBeVisible();
+  await expect(page.getByText("TASK 2 · 7-WEEK PROGRAM FUNNEL", { exact: true })).toBeVisible();
+  await expect(page.getByText("DIAGNOSTIC LENSES · PROVIDED TRAINING", { exact: true })).toBeVisible();
+
+  const auditCta = page.getByRole("link", { name: "Запросити аудит і 90-day roadmap →" });
+  await expect(auditCta).toHaveAttribute("href", /\/businesses\/request\/\?type=marketing-package&months=3/);
+  await expect(auditCta).toHaveAttribute("href", /utm_campaign=knb_marketing_case/);
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+
+  await page.getByRole("button", { name: "EN" }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { name: "Want the same type of audit for your business?" })).toBeVisible();
+  await expect(page.getByText("Six places where marketing can lose money before funnel optimization.")).toBeVisible();
+});
