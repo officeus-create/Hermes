@@ -44,7 +44,7 @@ const sitemapPaths = [sitemapIndexPath, ...indexedChildSitemapPaths];
 
 const expectedCurrentMarkers = [
   "Website inquiries are delivered securely by email",
-  "Keep the next step simple.",
+  "Choose yours.",
   "U.S. logistics · International email coordination",
 ];
 
