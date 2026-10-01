@@ -53,6 +53,9 @@ test('KNB Catalog concept turns the candidate brief into a source-bounded market
   assert.match(concept,/cohort/);
   assert.match(concept,/renewal/);
   assert.match(concept,/request_same_audit/);
+  assert.match(concept,/trackCaseOpened\("knb_marketing_case"\)/);
+  assert.match(concept,/trackEvent\("case_study_cta"/);
+  assert.match(concept,/request_similar_audit/);
   assert.match(concept,/type=marketing-package&months=3/);
   assert.match(concept,/data-lang="uk"/);
   assert.match(concept,/data-lang="en"/);
