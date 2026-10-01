@@ -63,3 +63,17 @@ test('KNB Catalog concept turns the candidate brief into a source-bounded market
   assert.match(concept,/client-owned claims/i);
   assert.match(concept,/не офіційний сайт КНБ/);
 });
+
+
+const genericCase=await readFile(new URL('../src/pages/businesses/marketing-growth-audit-example/index.astro',import.meta.url),'utf8');
+test('Catalog exposes a reusable indexable marketing growth strategy example',()=>{
+  assert.match(genericCase,/Marketing Growth Audit Example/);
+  assert.match(genericCase,/Social → CRM → Revenue/);
+  assert.match(genericCase,/90-DAY OPERATING PLAN/);
+  assert.match(genericCase,/Qualified attention/);
+  assert.match(genericCase,/CAC · LTV\/retention · ROMI/);
+  assert.match(genericCase,/CANDIDATE ASSESSMENT/);
+  assert.match(genericCase,/PROOF GOVERNANCE/);
+  assert.match(genericCase,/type=marketing-package&months=3/);
+  assert.doesNotMatch(genericCase,/robots="noindex/);
+});
