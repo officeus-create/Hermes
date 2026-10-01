@@ -20,6 +20,8 @@ test("Academy registration reuses shared auth and extends one canonical Hermes c
   assert.match(auth, /name="location"/);
   assert.match(auth, /data-lang="uk"/);
   assert.match(auth, /data-lang="en"/);
+  assert.match(auth, /locale="uk"/);
+  assert.match(auth, /window\.location\.assign/);
 
   assert.match(api, /ensureHermesCompanyProfilesSchema/);
   assert.match(api, /hermes_company_profiles/);
@@ -54,6 +56,9 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(hub, /Create learner account/);
   assert.match(productHub, /BUSINESS CRM \+ LEARNER ACCESS/);
   assert.match(learnerAuth, /Academy Business CRM/);
+  assert.match(learnerAuth, /data-lang="uk"/);
+  assert.match(learnerAuth, /data-lang="en"/);
+  assert.match(learnerAuth, /locale="uk"/);
 });
 
 test("Academy Catalog projects the canonical company once and keeps private CRM data out", async () => {
