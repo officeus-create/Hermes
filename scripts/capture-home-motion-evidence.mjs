@@ -35,7 +35,7 @@ try {
     if(width===1440) {
       for(const direction of ['logistics','marketing','technology','academy']) {
         await page.locator(`[data-route-id="${direction}"]`).hover();
-        await page.waitForTimeout(direction==='logistics'?1900:900);
+        await page.waitForTimeout(1900);
         await page.locator(`[data-route-id="${direction}"]`).screenshot({path:`${directory}/home-1440-${direction}-hover.png`,animations:'allow'});
         await page.mouse.move(0,0);
       }
@@ -52,7 +52,9 @@ try {
   await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
   await touchPage.evaluate(()=>document.fonts.ready);
   await touchPage.getByRole('button',{name:'Continue without analytics',exact:true}).click();
-  await touchPage.locator('[data-home-explainer="logistics"]').screenshot({path:`${directory}/home-390-touch-logistics-explainer.png`,animations:'allow'});
+  for(const direction of ['logistics','marketing','technology','academy']) {
+    await touchPage.locator(`[data-home-explainer="${direction}"]`).screenshot({path:`${directory}/home-390-touch-${direction}-explainer.png`,animations:'allow'});
+  }
   if(await touchPage.evaluate(()=>document.documentElement.scrollWidth>innerWidth)) throw new Error('Home touch geometry failed at 390');
   await touchContext.close();
 
