@@ -5,6 +5,7 @@ test("logistics spatial operations explains a controlled path without changing t
 
   const scene = page.locator("[data-logistics-spatial-operations]");
   await expect(scene).toBeVisible();
+  await expect(scene.locator(".logistics-spatial-ambient")).toHaveAttribute("aria-hidden", "true");
   await expect(page.getByRole("heading", { name: "See how a logistics request moves from context to a controlled handoff." })).toBeVisible();
   await expect(scene).toContainText("Illustrative workflow — not live load, rate, capacity, demand, vehicle, telemetry, or ETA data.");
 
@@ -43,5 +44,58 @@ test.describe("logistics spatial operations mobile contract", () => {
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
+
+test("logistics ambient motion is decorative, deliberate, and reduced-motion safe", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+
+  const motion = await page.evaluate(() => {
+    const grid = document.querySelector<HTMLElement>(".logistics-spatial-grid");
+    const ambient = document.querySelector<HTMLElement>(".logistics-spatial-ambient");
+    const route = document.querySelector<SVGPathElement>(".logistics-spatial-route-live");
+    const node = document.querySelector<HTMLElement>(".logistics-spatial-node-context");
+    if (!grid || !ambient || !route || !node) return null;
+    return {
+      grid: getComputedStyle(grid).animationName,
+      ambient: getComputedStyle(ambient).animationName,
+      route: getComputedStyle(route).animationName,
+      nodeHalo: getComputedStyle(node, "::after").animationName,
+      ambientPointerEvents: getComputedStyle(ambient).pointerEvents,
+    };
+  });
+
+  expect(motion).not.toBeNull();
+  expect(motion!.grid).toContain("logistics-grid-drift");
+  expect(motion!.ambient).toContain("logistics-ambient-drift");
+  expect(motion!.route).toContain("logistics-route-flow");
+  expect(motion!.route).toContain("logistics-route-glow");
+  expect(motion!.nodeHalo).toContain("logistics-node-wake");
+  expect(motion!.ambientPointerEvents).toBe("none");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+
+  const reduced = await page.evaluate(() => {
+    const grid = document.querySelector<HTMLElement>(".logistics-spatial-grid");
+    const ambient = document.querySelector<HTMLElement>(".logistics-spatial-ambient");
+    const route = document.querySelector<SVGPathElement>(".logistics-spatial-route-live");
+    const node = document.querySelector<HTMLElement>(".logistics-spatial-node-context");
+    if (!grid || !ambient || !route || !node) return null;
+    return {
+      grid: getComputedStyle(grid).animationName,
+      ambient: getComputedStyle(ambient).animationName,
+      route: getComputedStyle(route).animationName,
+      nodeHalo: getComputedStyle(node, "::after").animationName,
+    };
+  });
+
+  expect(reduced).not.toBeNull();
+  expect(reduced).toEqual({
+    grid: "none",
+    ambient: "none",
+    route: "none",
+    nodeHalo: "none",
   });
 });
