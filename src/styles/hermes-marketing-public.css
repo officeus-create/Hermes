@@ -25,6 +25,14 @@
   color: var(--hermes-muted);
 }
 
+.detail-page-marketing .marketing-flow-boundary {
+  display: block;
+  margin-top: 10px;
+  color: color-mix(in srgb, var(--hermes-muted) 84%, var(--path-signal));
+  font-size: .76rem;
+  line-height: 1.5;
+}
+
 /* Four capabilities: one card family, not four competing mini-brands. */
 .detail-page-marketing .marketing-service-rails {
   gap: 14px;
