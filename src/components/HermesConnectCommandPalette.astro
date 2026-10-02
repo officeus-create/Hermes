@@ -1,0 +1,396 @@
+---
+---
+
+<button type="button" class="hc-command-trigger" data-hc-command-trigger aria-haspopup="dialog" aria-controls="hc-command-palette">
+  <span data-hc-command-trigger-label>Search</span>
+  <kbd aria-hidden="true">⌘K</kbd>
+</button>
+
+<dialog id="hc-command-palette" class="hc-command-dialog" data-hc-command-dialog aria-labelledby="hc-command-title">
+  <section class="hc-command-panel">
+    <header class="hc-command-head">
+      <div>
+        <span class="hc-command-kicker">Hermes Connect</span>
+        <h2 id="hc-command-title" data-hc-command-title>Search & open</h2>
+      </div>
+      <button type="button" class="hc-command-close" data-hc-command-close aria-label="Close">×</button>
+    </header>
+    <label class="hc-command-search">
+      <span class="sr-only" data-hc-command-search-label>Search Hermes Connect</span>
+      <input type="search" autocomplete="off" spellcheck="false" data-hc-command-input placeholder="Search products and workspaces…" />
+      <kbd aria-hidden="true">Esc</kbd>
+    </label>
+    <p class="hc-command-status" data-hc-command-status aria-live="polite"></p>
+    <div class="hc-command-results" data-hc-command-results></div>
+    <footer class="hc-command-foot">
+      <span>↑ ↓</span><span data-hc-command-open-copy>Enter to open</span>
+    </footer>
+  </section>
+</dialog>
+
+<script>
+  import {
+    searchHermesResults,
+    type HermesSearchContext,
+    type HermesSearchResult,
+  } from "../lib/hermes-connect-search";
+
+  (() => {
+    const trigger = document.querySelector<HTMLButtonElement>("[data-hc-command-trigger]");
+    const dialog = document.querySelector<HTMLDialogElement>("[data-hc-command-dialog]");
+    const closeButton = document.querySelector<HTMLButtonElement>("[data-hc-command-close]");
+    const input = document.querySelector<HTMLInputElement>("[data-hc-command-input]");
+    const resultsRoot = document.querySelector<HTMLElement>("[data-hc-command-results]");
+    const status = document.querySelector<HTMLElement>("[data-hc-command-status]");
+    if (!trigger || !dialog || !input || !resultsRoot || !status) return;
+
+    const supported = new Set(["en", "uk", "ru", "es", "it", "fr"]);
+    const requested = new URLSearchParams(window.location.search).get("lang");
+    let stored = "";
+    try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
+    const locale = requested && supported.has(requested)
+      ? requested
+      : supported.has(stored)
+        ? stored
+        : "en";
+
+    const copies: Record<string, Record<string, string>> = {
+      en: { trigger: "Search", openCommand: "Open Hermes command palette", title: "Search & open", placeholder: "Search products and workspaces…", close: "Close", loading: "Loading your allowed workspaces…", ready: "Type to search Hermes Connect.", empty: "No allowed results match this search.", enter: "Enter to open", products: "Products", workspaces: "Workspaces", businesses: "Businesses", registrations: "Owner registrations" },
+      ru: { trigger: "Поиск", openCommand: "Открыть палитру команд Hermes", title: "Найти и открыть", placeholder: "Поиск по продуктам и рабочим пространствам…", close: "Закрыть", loading: "Загружаем доступные вам пространства…", ready: "Введите запрос для поиска в Hermes Connect.", empty: "Нет доступных результатов по этому запросу.", enter: "Enter — открыть", products: "Продукты", workspaces: "Пространства", businesses: "Бизнесы", registrations: "Регистрации владельца" },
+      uk: { trigger: "Пошук", openCommand: "Відкрити палітру команд Hermes", title: "Знайти й відкрити", placeholder: "Пошук продуктів і робочих просторів…", close: "Закрити", loading: "Завантажуємо доступні вам простори…", ready: "Введіть запит для пошуку в Hermes Connect.", empty: "Немає доступних результатів за цим запитом.", enter: "Enter — відкрити", products: "Продукти", workspaces: "Простори", businesses: "Бізнеси", registrations: "Реєстрації власника" },
+      es: { trigger: "Buscar", openCommand: "Abrir la paleta de comandos de Hermes", title: "Buscar y abrir", placeholder: "Buscar productos y espacios…", close: "Cerrar", loading: "Cargando tus espacios permitidos…", ready: "Escribe para buscar en Hermes Connect.", empty: "No hay resultados permitidos.", enter: "Enter para abrir", products: "Productos", workspaces: "Espacios", businesses: "Negocios", registrations: "Registros del propietario" },
+      it: { trigger: "Cerca", openCommand: "Apri la palette comandi Hermes", title: "Cerca e apri", placeholder: "Cerca prodotti e spazi…", close: "Chiudi", loading: "Caricamento degli spazi consentiti…", ready: "Digita per cercare in Hermes Connect.", empty: "Nessun risultato consentito.", enter: "Invio per aprire", products: "Prodotti", workspaces: "Spazi", businesses: "Aziende", registrations: "Registrazioni proprietario" },
+      fr: { trigger: "Rechercher", openCommand: "Ouvrir la palette de commandes Hermes", title: "Rechercher et ouvrir", placeholder: "Rechercher produits et espaces…", close: "Fermer", loading: "Chargement de vos espaces autorisés…", ready: "Saisissez une recherche dans Hermes Connect.", empty: "Aucun résultat autorisé.", enter: "Entrée pour ouvrir", products: "Produits", workspaces: "Espaces", businesses: "Entreprises", registrations: "Inscriptions propriétaire" },
+    };
+    const copy = copies[locale] || copies.en;
+
+    const label = document.querySelector<HTMLElement>("[data-hc-command-trigger-label]");
+    const title = document.querySelector<HTMLElement>("[data-hc-command-title]");
+    const searchLabel = document.querySelector<HTMLElement>("[data-hc-command-search-label]");
+    const openCopy = document.querySelector<HTMLElement>("[data-hc-command-open-copy]");
+    if (label) label.textContent = copy.trigger;
+    if (title) title.textContent = copy.title;
+    if (searchLabel) searchLabel.textContent = copy.placeholder;
+    if (openCopy) openCopy.textContent = copy.enter;
+    trigger.setAttribute("aria-label", copy.openCommand);
+    closeButton?.setAttribute("aria-label", copy.close);
+    input.placeholder = copy.placeholder;
+
+    const safeHermesHref = (value: unknown) => {
+      try {
+        const url = new URL(String(value || ""), window.location.origin);
+        if (url.origin !== window.location.origin) return "";
+        if (!url.pathname.startsWith("/services/hermes-connect") && !url.pathname.startsWith("/load-board") && !url.pathname.startsWith("/demos/hermes-connect/")) return "";
+        return `${url.pathname}${url.search}${url.hash}`;
+      } catch {
+        return "";
+      }
+    };
+
+    const withLocale = (href: string) => {
+      const safeHref = safeHermesHref(href);
+      if (!safeHref) return "";
+      const url = new URL(safeHref, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    const staticResults: HermesSearchResult[] = [
+      { id: "product-hub", entityType: "product", title: "Hermes Connect", subtitle: "Product Hub", href: "/services/hermes-connect/", visibility: "public", source: "product_registry", keywords: ["hub", "operating system"] },
+      { id: "repair-shops", entityType: "product", title: "Repair Shops", subtitle: "CRM & booking", href: "/services/hermes-connect/repair-shops/", visibility: "public", source: "product_registry", keywords: ["repair", "shop", "crm", "booking"] },
+      { id: "load-board", entityType: "product", title: "Load Board", subtitle: "Logistics workspace", href: "/load-board/", visibility: "public", source: "product_registry", keywords: ["loads", "carrier", "logistics"] },
+      { id: "academy", entityType: "product", title: "Academy", subtitle: "Training workspace", href: "/services/hermes-connect/academy/", visibility: "public", source: "product_registry", keywords: ["training", "learning"] },
+      { id: "website-factory", entityType: "product", title: "Website Factory", subtitle: "Project brief", href: "/services/hermes-connect/website-factory/", visibility: "public", source: "product_registry", keywords: ["website", "brief", "build"] },
+      { id: "account-access", entityType: "product", title: "Hermes Account", subtitle: "Access & workspaces", href: "/services/hermes-connect/access/", visibility: "public", source: "product_registry", keywords: ["account", "login", "workspace"] },
+    ];
+
+    let allResults: HermesSearchResult[] = [...staticResults];
+    const context: HermesSearchContext = { workspaceIds: [], companyIds: [], internalOwner: false };
+    let accountLoaded = false;
+    let accountLoading: Promise<void> | null = null;
+    let activeIndex = -1;
+
+    const groupLabel = (entityType: string) => {
+      if (entityType === "workspace") return copy.workspaces;
+      if (entityType === "business") return copy.businesses;
+      if (entityType === "registration") return copy.registrations;
+      return copy.products;
+    };
+
+    const render = () => {
+      const matches = searchHermesResults(allResults, input.value, context, 30);
+      resultsRoot.replaceChildren();
+      activeIndex = -1;
+
+      if (!matches.length) {
+        const empty = document.createElement("p");
+        empty.className = "hc-command-empty";
+        empty.textContent = copy.empty;
+        resultsRoot.append(empty);
+        status.textContent = copy.empty;
+        return;
+      }
+
+      const groups = new Map<string, typeof matches>();
+      for (const match of matches) {
+        const label = groupLabel(match.entityType);
+        const list = groups.get(label) || [];
+        list.push(match);
+        groups.set(label, list);
+      }
+
+      for (const [label, items] of groups) {
+        const section = document.createElement("section");
+        section.className = "hc-command-group";
+        const heading = document.createElement("h3");
+        heading.textContent = label;
+        const list = document.createElement("div");
+        list.className = "hc-command-list";
+        for (const item of items) {
+          const link = document.createElement("a");
+          link.className = "hc-command-result";
+          link.href = withLocale(item.href);
+          link.dataset.hcCommandResult = "true";
+          const text = document.createElement("span");
+          const strong = document.createElement("strong");
+          strong.textContent = item.title;
+          const small = document.createElement("small");
+          small.textContent = item.subtitle || item.entityType;
+          text.append(strong, small);
+          const action = document.createElement("em");
+          action.textContent = "↗";
+          link.append(text, action);
+          link.addEventListener("click", () => dialog.close());
+          list.append(link);
+        }
+        section.append(heading, list);
+        resultsRoot.append(section);
+      }
+
+      status.textContent = input.value.trim()
+        ? `${matches.length} ${matches.length === 1 ? "result" : "results"}`
+        : copy.ready;
+    };
+
+    const addAuthorizedAccountResults = async () => {
+      if (accountLoaded) return;
+      const accountResponse = await fetch("/api/hermes-connect/account", {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      let account: any = null;
+      try { account = await accountResponse.json(); } catch {}
+      if (!accountResponse.ok || !account?.success) {
+        accountLoaded = true;
+        render();
+        return;
+      }
+
+      const owned = Array.isArray(account.owned_businesses) ? account.owned_businesses : [];
+      const workspaces = Array.isArray(account.workspaces) ? account.workspaces : [];
+      const companyIds = new Set<string>();
+      const workspaceIds = new Set<string>();
+
+      for (const business of owned) {
+        const id = String(business?.id || "").trim();
+        const href = safeHermesHref(business?.href);
+        if (!id || !href) continue;
+        companyIds.add(id);
+        allResults.push({
+          id,
+          entityType: "business",
+          title: String(business?.name || business?.key || "Business"),
+          subtitle: String(business?.workspace_state || "Owned business").replaceAll("_", " "),
+          href,
+          visibility: "company",
+          companyId: id,
+          source: "account",
+          keywords: [business?.key, business?.slug].filter(Boolean).map(String),
+        });
+      }
+
+      for (const workspace of workspaces) {
+        if (workspace?.available === false) continue;
+        const key = String(workspace?.key || "").trim();
+        const href = safeHermesHref(workspace?.href);
+        if (!key || !href) continue;
+        workspaceIds.add(key);
+        const titles: Record<string, string> = {
+          academy: "Academy",
+          load_board: "Load Board",
+          hr: "HR Review",
+          internal_ai: "AI Connect",
+        };
+        allResults.push({
+          id: key,
+          entityType: "workspace",
+          title: titles[key] || key.replaceAll("_", " "),
+          subtitle: String(workspace?.kind || "Workspace").replaceAll("_", " "),
+          href,
+          visibility: "workspace",
+          workspaceId: key,
+          source: "account",
+          keywords: [key, workspace?.kind].filter(Boolean).map(String),
+        });
+        const stateCompanyId = String(workspace?.state?.company_id || "").trim();
+        if (stateCompanyId) companyIds.add(stateCompanyId);
+      }
+
+      context.companyIds = [...companyIds];
+      context.workspaceIds = [...workspaceIds];
+      context.internalOwner = Boolean(account?.capabilities?.internal_ai);
+
+      if (context.internalOwner) {
+        const registrationResponse = await fetch("/api/internal/registrations", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        });
+        let registrationPayload: any = null;
+        try { registrationPayload = await registrationResponse.json(); } catch {}
+        if (registrationResponse.ok && registrationPayload?.success && Array.isArray(registrationPayload.registrations)) {
+          for (const row of registrationPayload.registrations) {
+            const id = String(row?.id || "").trim();
+            if (!id) continue;
+            const title = String(row?.shop_name || row?.name || "Registration").trim() || "Registration";
+            const location = [row?.city, row?.state].filter(Boolean).map(String).join(", ");
+            const subtitle = [row?.role, location].filter(Boolean).map(String).join(" · ");
+            allResults.push({
+              id,
+              entityType: "registration",
+              title,
+              subtitle,
+              href: "/services/hermes-connect/internal/registrations/",
+              visibility: "internal_owner",
+              source: "owner_registrations",
+              keywords: [
+                row?.name,
+                row?.email,
+                row?.phone,
+                row?.shop_name,
+                row?.city,
+                row?.state,
+                row?.role,
+                row?.source,
+                row?.salesperson_code,
+              ].filter(Boolean).map(String),
+              updatedAt: String(row?.shop_updated_at || row?.created_at || "") || undefined,
+            });
+          }
+        }
+      }
+
+      accountLoaded = true;
+      render();
+    };
+
+    const ensureAccountResults = () => {
+      if (!accountLoading) {
+        status.textContent = copy.loading;
+        accountLoading = addAuthorizedAccountResults().catch(() => {
+          accountLoaded = true;
+          render();
+        });
+      }
+      return accountLoading;
+    };
+
+    const openPalette = () => {
+      if (!dialog.open) dialog.showModal();
+      input.value = "";
+      render();
+      window.requestAnimationFrame(() => input.focus());
+      void ensureAccountResults();
+    };
+
+    const resultLinks = () => [...resultsRoot.querySelectorAll<HTMLAnchorElement>("[data-hc-command-result]")];
+    const focusResult = (nextIndex: number) => {
+      const links = resultLinks();
+      if (!links.length) return;
+      activeIndex = ((nextIndex % links.length) + links.length) % links.length;
+      links[activeIndex]?.focus();
+    };
+
+    trigger.addEventListener("click", openPalette);
+    closeButton?.addEventListener("click", () => dialog.close());
+    input.addEventListener("input", render);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusResult(0);
+      }
+    });
+    resultsRoot.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusResult(activeIndex + 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (activeIndex <= 0) input.focus();
+        else focusResult(activeIndex - 1);
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (dialog.open) dialog.close();
+        else openPalette();
+      }
+    });
+    dialog.addEventListener("close", () => trigger.focus());
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const mount = document.querySelector<HTMLElement>("[data-hc-product-context] .hc-product-context__inner");
+      const syncTriggerMount = () => {
+        if (window.innerWidth > 700 && mount) {
+          if (trigger.parentElement !== mount) mount.append(trigger);
+          return;
+        }
+        if (trigger.parentElement !== document.body) document.body.insertBefore(trigger, dialog);
+      };
+      syncTriggerMount();
+      window.addEventListener("resize", syncTriggerMount, { passive: true });
+      render();
+    }, { once: true });
+  })();
+</script>
+
+<style>
+  .hc-command-trigger{position:fixed;right:1rem;top:5.25rem;z-index:950;display:inline-flex;align-items:center;gap:.55rem;min-height:40px;border:1px solid rgba(23,32,51,.12);border-radius:999px;padding:.48rem .7rem;background:rgba(255,255,255,.96);color:#172033;box-shadow:0 10px 26px rgba(23,32,51,.1);font:inherit;font-size:.78rem;font-weight:800;cursor:pointer;backdrop-filter:blur(12px)}
+  .hc-command-trigger kbd{border:1px solid rgba(23,32,51,.12);border-radius:.42rem;padding:.12rem .34rem;background:#f4f6f8;color:#667085;font:600 .66rem/1.3 ui-monospace,SFMono-Regular,Menlo,monospace}
+  :global(.hc-product-context__inner)>.hc-command-trigger{position:static;margin-left:auto;flex:0 0 auto;box-shadow:none;background:rgba(255,255,255,.74)}
+  .hc-command-dialog{width:min(680px,calc(100vw - 1rem));max-height:min(760px,calc(100vh - 2rem));padding:0;border:0;border-radius:24px;background:transparent;color:#172033;box-shadow:0 34px 100px rgba(23,32,51,.28)}
+  .hc-command-dialog::backdrop{background:rgba(15,23,42,.34);backdrop-filter:blur(4px)}
+  .hc-command-panel{overflow:hidden;border:1px solid rgba(23,32,51,.1);border-radius:24px;background:#fff}
+  .hc-command-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;padding:1.15rem 1.15rem .8rem}
+  .hc-command-kicker{display:block;color:#7c5cff;font:800 .66rem/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
+  .hc-command-head h2{margin:.18rem 0 0;font-size:1.35rem}
+  .hc-command-close{width:38px;height:38px;border:1px solid rgba(23,32,51,.1);border-radius:50%;background:#f7f6f3;color:#172033;font:500 1.35rem/1 sans-serif;cursor:pointer}
+  .hc-command-search{display:flex;align-items:center;gap:.7rem;margin:0 1.15rem;padding:.72rem .8rem;border:1px solid rgba(23,32,51,.13);border-radius:14px;background:#fafbfc}
+  .hc-command-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#172033;font:inherit;font-size:1rem}
+  .hc-command-search kbd{color:#667085;font:600 .68rem/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .hc-command-status{min-height:1.15rem;margin:.55rem 1.2rem .25rem;color:#7a8595;font-size:.72rem}
+  .hc-command-results{max-height:min(520px,60vh);overflow:auto;padding:.25rem .65rem .8rem}
+  .hc-command-group h3{margin:.75rem .55rem .32rem;color:#7a8595;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase}
+  .hc-command-list{display:grid;gap:.16rem}
+  .hc-command-result{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-radius:13px;padding:.72rem .75rem;color:#172033;text-decoration:none}
+  .hc-command-result:hover,.hc-command-result:focus-visible{outline:0;background:#f3f6fb}
+  .hc-command-result span{display:grid;gap:.16rem}
+  .hc-command-result strong{font-size:.88rem}
+  .hc-command-result small{color:#727b89;font-size:.72rem}
+  .hc-command-result em{color:#7c5cff;font-style:normal}
+  .hc-command-empty{margin:.6rem;padding:1.25rem;border-radius:14px;background:#f7f6f3;color:#667085;text-align:center}
+  .hc-command-foot{display:flex;gap:1rem;border-top:1px solid rgba(23,32,51,.08);padding:.65rem 1.1rem;color:#7a8595;font-size:.68rem}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:700px){
+    .hc-command-trigger{top:auto;right:.75rem;bottom:.75rem;min-width:46px;justify-content:center}
+    .hc-command-trigger kbd{display:none}
+    :global(.hc-product-context__inner)>.hc-command-trigger{margin-left:0}
+    .hc-command-dialog{width:calc(100vw - .75rem);max-height:calc(100vh - .75rem);border-radius:20px}
+    .hc-command-panel{border-radius:20px}
+    .hc-command-results{max-height:58vh}
+  }
+</style>
