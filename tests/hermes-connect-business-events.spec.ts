@@ -91,6 +91,13 @@ test("internal AI remains a separate owner-scoped adapter, not Dealer storage", 
     correlation_id: "hcai-task-1",
   });
   expect(normalizeInternalAiEvent({
+    organization_scope: "hermes_internal",
+    task_id: "hcai-task-missing-event-id",
+    event_type: "output",
+    message: "No",
+    created_at: "2026-10-02T11:00:00Z",
+  })).toBeNull();
+  expect(normalizeInternalAiEvent({
     id: 8,
     organization_scope: "another_org",
     task_id: "hcai-task-2",
