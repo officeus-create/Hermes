@@ -339,7 +339,13 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
         const target = root.querySelector('[data-list="activity"]');
         clear(target);
         if (!rows.length) { target?.append(create('p', 'No CRM activity yet.', 'empty')); return; }
-        rows.forEach((row) => target.append(recordCard(row.event_type, formatDate(row.created_at), row.summary, row.id, 'activity')));
+        rows.forEach((row) => target.append(recordCard(
+          row.event_type,
+          formatDate(row.occurred_at || row.created_at),
+          row.summary,
+          row.event_id || row.id,
+          'activity',
+        )));
       };
 
       const renderIntelligence = (payload) => {
@@ -361,7 +367,7 @@ import { legacyToyotaDallasDealerPilot } from "../../../../../data/hermes-connec
         if (module === 'leads') { state.leads = payload.leads || []; renderLeads(); }
         if (module === 'appointments') { state.appointments = payload.appointments || []; renderAppointments(); }
         if (module === 'team') { state.team = payload.team || { members: [], department_hours: [], member_schedules: [] }; renderTeam(); fillTeamSchedule(); }
-        if (module === 'activity') renderActivity(payload.activity || []);
+        if (module === 'activity') renderActivity(payload.events || payload.activity || []);
         if (module === 'intelligence') renderIntelligence(payload.intelligence || {});
         refillReferenceSelects();
       };
