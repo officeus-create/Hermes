@@ -35,7 +35,7 @@ try {
     if(width===1440) {
       for(const direction of ['logistics','marketing','technology','academy']) {
         await page.locator(`[data-route-id="${direction}"]`).hover();
-        await page.waitForTimeout(900);
+        await page.waitForTimeout(direction==='logistics'?1900:900);
         await page.locator(`[data-route-id="${direction}"]`).screenshot({path:`${directory}/home-1440-${direction}-hover.png`,animations:'allow'});
         await page.mouse.move(0,0);
       }
