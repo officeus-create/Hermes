@@ -113,3 +113,30 @@ test("command trigger does not collide with existing Load Board Search control",
   await expect(page.getByRole("button", { name: "Search", exact: true })).toHaveCount(1);
   await expect(page.locator("[data-hc-command-trigger]")).toHaveAccessibleName("Open Hermes command palette");
 });
+
+test("account provider cannot inject an external command-palette destination", async ({ page }) => {
+  await page.route("**/api/hermes-connect/account", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        owned_businesses: [
+          { key: "repair_shop", id: "safe-shop", name: "Safe Shop", href: "/services/hermes-connect/repair-shops/dashboard/", workspace_state: "live" },
+          { key: "repair_shop", id: "external-shop", name: "External Shop", href: "https://example.test/phish", workspace_state: "live" },
+        ],
+        workspaces: [
+          { key: "external_tool", kind: "shared_workspace", href: "https://example.test/tool", available: true, state: {} },
+        ],
+        capabilities: { internal_ai: false },
+      }),
+    });
+  });
+  await page.goto("/services/hermes-connect/");
+  await page.keyboard.press("Control+K");
+  const dialog = page.locator("[data-hc-command-dialog]");
+  await page.locator("[data-hc-command-input]").fill("shop");
+  await expect(dialog.getByRole("link", { name: /Safe Shop/i })).toBeVisible();
+  await expect(dialog.getByText("External Shop", { exact: true })).toHaveCount(0);
+  await expect(dialog.locator('a[href^="https://example.test"]')).toHaveCount(0);
+});
