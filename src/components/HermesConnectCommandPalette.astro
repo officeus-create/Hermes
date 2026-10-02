@@ -333,7 +333,15 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       const mount = document.querySelector<HTMLElement>("[data-hc-product-context] .hc-product-context__inner");
-      if (mount) mount.append(trigger);
+      const syncTriggerMount = () => {
+        if (window.innerWidth > 700 && mount) {
+          if (trigger.parentElement !== mount) mount.append(trigger);
+          return;
+        }
+        if (trigger.parentElement !== document.body) document.body.insertBefore(trigger, dialog);
+      };
+      syncTriggerMount();
+      window.addEventListener("resize", syncTriggerMount, { passive: true });
       render();
     }, { once: true });
   })();
