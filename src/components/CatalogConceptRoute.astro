@@ -5,6 +5,7 @@ import SiteFooter from "./SiteFooter.astro";
 import CatalogWebsiteConcept from "./CatalogWebsiteConcept.astro";
 import InternationalBusinessProfile from "./InternationalBusinessProfile.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { buildCatalogConceptSchema } from "../lib/catalog-concept-schema.mjs";
 
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
@@ -16,17 +17,7 @@ const title = business.id === "catalog-ua-chayka-store"
 const description = business.id === "catalog-ua-chayka-store"
   ? "Hermes Catalog website concept for Чайка Store in Чайки: phone repair discovery, contacts and More Chay tea direction."
   : `Public Hermes Catalog discovery profile for ${business.name} in ${business.locality}, ${business.region}.`;
-const schema = isLocalizedConcept ? [
-  {"@context":"https://schema.org","@type":business.schemaType,"@id":profileUrl+"#business",name:business.name,url:profileUrl,telephone:business.phone,address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,...(business.postalCode?{postalCode:business.postalCode}:{}),addressCountry:business.countryCode},sameAs:business.channels.map((channel)=>channel.url)},
-  {"@context":"https://schema.org","@type":"Service",name:`${business.primaryIntent} discovery in ${business.locality}`,provider:{"@id":profileUrl+"#business"},areaServed:{"@type":"Place",name:`${business.locality}, ${business.region}`},description:"Public business discovery profile. Operating details marked for owner confirmation remain unverified."},
-  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[
-    {"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},
-    {"@type":"ListItem",position:2,name:business.countrySlug,item:`https://hermeslogisticsus.com/businesses/${business.countrySlug}/`},
-    {"@type":"ListItem",position:3,name:business.locality,item:`https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/`},
-    {"@type":"ListItem",position:4,name:business.name,item:profileUrl}
-  ]},
-  ...((business.faq?.length ?? 0) > 0 ? [{"@context":"https://schema.org","@type":"FAQPage",mainEntity:business.faq!.map((item)=>({"@type":"Question",name:item.question,acceptedAnswer:{"@type":"Answer",text:item.answer}}))}] : [])
-] : [];
+const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profileUrl }) : [];
 ---
 {isLocalizedConcept ? (
   <BaseLayout title={title} description={description} schema={schema}>
