@@ -1,6 +1,7 @@
 const BUSINESS_NAMESPACES = new Set(["company", "repair_shop"]);
 const NATIVE_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$/;
 const LINK_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$/;
+const EVIDENCE_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,239}$/;
 
 const clean = (value, max = 180) =>
   String(value ?? "")
@@ -48,7 +49,7 @@ export function normalizeBusinessIdentityLink(input = {}) {
   if (!LINK_ID_RE.test(id)) return null;
   if (!canonical || !alias || canonical.ref === alias.ref) return null;
   if (relationshipType !== "same_business") return null;
-  if (!evidenceRef || !verifiedBy || !Number.isFinite(verifiedAtMs)) return null;
+  if (!EVIDENCE_REF_RE.test(evidenceRef) || !LINK_ID_RE.test(verifiedBy) || !Number.isFinite(verifiedAtMs)) return null;
 
   return {
     id,
