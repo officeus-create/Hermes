@@ -1,6 +1,73 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
+test("dynamic command results keep readable scoped styles on desktop and mobile", async ({ page }, testInfo) => {
+  await page.setViewportSize(testInfo.project.name === "mobile"
+    ? { width: 390, height: 844 }
+    : { width: 1440, height: 1000 });
+  await page.route("**/api/hermes-connect/account", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: JSON.stringify({
+      success: true,
+      owned_businesses: [{ id: "synthetic-style-company", key: "repair_shop", name: "Synthetic Business Workspace", href: "/services/hermes-connect/repair-shops/dashboard/" }],
+      workspaces: [], capabilities: { internal_ai: true },
+    }),
+  }));
+  await page.route("**/api/internal/registrations", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: JSON.stringify({
+      success: true,
+      registrations: [{ id: "synthetic-style-registration", shop_name: "Synthetic Owner Record" }],
+    }),
+  }));
+  await page.goto("/services/hermes-connect/");
+  await page.locator("[data-hc-command-trigger]").click();
+  const dialog = page.locator("[data-hc-command-dialog]");
+  const input = dialog.locator("[data-hc-command-input]");
+  await input.fill("synthetic");
+  const results = dialog.locator("[data-hc-command-result]");
+  await expect(results).toHaveCount(2);
+  for (const result of await results.all()) {
+    await expect(result).toHaveCSS("display", "flex");
+    await expect(result.locator("span")).toHaveCSS("display", "grid");
+    const layout = await result.evaluate((node) => {
+      const title = node.querySelector("strong")!;
+      const subtitle = node.querySelector("small")!;
+      const heading = node.closest("section")!.querySelector("h3")!;
+      const titleBox = title.getBoundingClientRect();
+      const subtitleBox = subtitle.getBoundingClientRect();
+      const rowBox = node.getBoundingClientRect();
+      const rowStyle = getComputedStyle(node);
+      return {
+        padding: parseFloat(rowStyle.paddingTop),
+        titleBottom: titleBox.bottom,
+        subtitleTop: subtitleBox.top,
+        subtitleHeight: subtitleBox.height,
+        titleText: title.textContent,
+        subtitleText: subtitle.textContent,
+        groupFont: parseFloat(getComputedStyle(heading).fontSize),
+        subtitleFont: parseFloat(getComputedStyle(subtitle).fontSize),
+        inViewport: rowBox.left >= 0 && rowBox.right <= innerWidth,
+      };
+    });
+    expect(layout.padding).toBeGreaterThanOrEqual(8);
+    expect(layout.titleBottom).toBeLessThanOrEqual(layout.subtitleTop);
+    expect(layout.subtitleHeight).toBeGreaterThan(0);
+    expect(layout.titleText).toMatch(/^Synthetic /);
+    expect(layout.subtitleText?.trim()).toBeTruthy();
+    expect(layout.groupFont).toBeLessThan(layout.subtitleFont);
+    expect(layout.inViewport).toBe(true);
+  }
+  await input.press("ArrowDown");
+  await expect(results.first()).toBeFocused();
+  await expect(results.first()).toHaveCSS("background-color", "rgb(243, 246, 251)");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const screenshot = testInfo.outputPath("dynamic-command-results.png");
+  await page.screenshot({ path: screenshot });
+  await testInfo.attach("dynamic-command-results", { path: screenshot, contentType: "image/png" });
+  await input.fill("no-synthetic-match");
+  await expect(dialog.locator(".hc-command-empty")).toBeVisible();
+  await expect(dialog.locator(".hc-command-empty")).toHaveCSS("text-align", "center");
+});
+
 test("Hermes Connect command palette is mounted only through the shared layout", async () => {
   const layout = await readFile("src/layouts/BaseLayout.astro", "utf8");
   expect(layout).toContain("HermesConnectCommandPalette");
