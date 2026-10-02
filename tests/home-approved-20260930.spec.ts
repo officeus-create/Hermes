@@ -1,5 +1,12 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+const homeFlows = {
+ logistics: ["Request", "Route fit", "Human review", "Handoff"],
+ marketing: ["Signal", "Distribution", "Site action", "Evidence"],
+ technology: ["Brief", "Build", "QA", "Readback"],
+ academy: ["Task", "Attempt", "Review", "Progression"],
+} as const;
+
 // CI Chromium can stop rAF after history restoration while the focused document,
 // DOM layout and native input remain available. Preserve pointer/actionability
 // coverage with explicit checks rather than a forced click or an rAF-based wait.
@@ -77,13 +84,13 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
  const page=await context.newPage();
  await page.goto('/');
  await expect(page.getByRole('navigation',{name:'Hermes operating directions'})).toBeVisible();
- const explainer=page.locator('[data-home-explainer="logistics"]');
- await expect(explainer).toHaveCount(1);
- await expect(explainer).toContainText('Request');
- await expect(explainer).toContainText('Route fit');
- await expect(explainer).toContainText('Human review');
- await expect(explainer).toContainText('Handoff');
- await expect(explainer).toHaveCSS('opacity','1');
+ const explainers=page.locator('[data-home-explainer]');
+ await expect(explainers).toHaveCount(4);
+ for (const [direction, labels] of Object.entries(homeFlows)) {
+  const explainer=page.locator(`[data-home-explainer="${direction}"]`);
+  for (const label of labels) await expect(explainer).toContainText(label);
+  await expect(explainer).toHaveCSS('opacity','1');
+ }
  expect(await page.locator('.home-portal-art img').first().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s');
  await page.locator('[data-route-id="marketing"]').click();
  await expect(page).toHaveURL(/\/paths\/marketing\//);
@@ -138,28 +145,35 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
-test('Logistics living layer reveals event to human handoff and remains static on touch',async({browser,page},testInfo)=>{
+test('all four Home directions explain a causal workflow and remain static on touch',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const route=page.locator('[data-route-id="logistics"]');
- const explainer=route.locator('[data-home-explainer="logistics"]');
  const hoverCapable=await page.evaluate(()=>matchMedia('(hover:hover) and (pointer:fine)').matches);
- if(hoverCapable) {
-  await expect(explainer).toHaveCSS('opacity','0');
-  await route.hover();
+ for (const [direction, labels] of Object.entries(homeFlows)) {
+  const route=page.locator(`[data-route-id="${direction}"]`);
+  const explainer=route.locator(`[data-home-explainer="${direction}"]`);
+  if(hoverCapable) {
+   await expect(explainer).toHaveCSS('opacity','0');
+   await route.hover();
+  }
+  await expect(explainer).toHaveCSS('opacity','1');
+  for(const id of ['event','system','human','outcome']) {
+   await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
+  }
+  const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
+  expect(accessibleName).toContain('example flow:');
+  for(const label of labels) expect(accessibleName).toContain(label.toLowerCase());
  }
- await expect(explainer).toHaveCSS('opacity','1');
- for(const id of ['event','system','human','outcome']) {
-  await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
- }
- await expect(route).toHaveAttribute('aria-label',/Example flow: request, route fit, human review, handoff/);
 
  const touch=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference'});
  const mobile=await touch.newPage();
  await mobile.goto('/');
- const mobileExplainer=mobile.locator('[data-home-explainer="logistics"]');
- await expect(mobileExplainer).toHaveCSS('opacity','1');
+ for (const [direction, labels] of Object.entries(homeFlows)) {
+  const mobileExplainer=mobile.locator(`[data-home-explainer="${direction}"]`);
+  await expect(mobileExplainer).toHaveCSS('opacity','1');
+  for (const label of labels) await expect(mobileExplainer).toContainText(label);
+ }
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
 });
