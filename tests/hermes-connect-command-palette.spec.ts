@@ -7,6 +7,15 @@ test("Hermes Connect command palette is mounted only through the shared layout",
   expect(layout).toContain("isHermesConnectExperienceRoute");
 });
 
+test("desktop command trigger mounts inside the Hermes Connect product context", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.route("**/api/hermes-connect/account", async (route) => {
+    await route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) });
+  });
+  await page.goto("/services/hermes-connect/");
+  await expect.poll(() => page.locator("[data-hc-product-context] [data-hc-command-trigger]").count()).toBe(1);
+});
+
 test("authorized account workspaces and owner registrations become searchable without URL PII", async ({ page }) => {
   await page.route("**/api/hermes-connect/account", async (route) => {
     await route.fulfill({
@@ -40,13 +49,12 @@ test("authorized account workspaces and owner registrations become searchable wi
   });
 
   await page.goto("/services/hermes-connect/");
-  await expect.poll(() => page.locator("[data-hc-product-context] [data-hc-command-trigger]").count()).toBe(1);
   await page.keyboard.press("Control+K");
   const dialog = page.locator("[data-hc-command-dialog]");
   await expect(dialog).toBeVisible();
   const input = page.locator("[data-hc-command-input]");
   await input.fill("kittle");
-  await expect(page.getByRole("link", { name: /Kittle's Garage/i })).toHaveCount(2);
+  await expect(dialog.getByRole("link", { name: /Kittle's Garage/i })).toHaveCount(2);
   const registrationLink = dialog.locator('a[href^="/services/hermes-connect/internal/registrations/"]').first();
   await expect(registrationLink).toBeVisible();
   await expect(registrationLink).not.toHaveAttribute("href", /private|example|specialist-/i);
@@ -74,8 +82,9 @@ test("non-owner command palette never requests the owner registration ledger", a
 
   await page.goto("/services/hermes-connect/");
   await page.keyboard.press("Control+K");
-  await expect(page.locator("[data-hc-command-dialog]")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Academy" })).toBeVisible();
+  const dialog = page.locator("[data-hc-command-dialog]");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /Academy/i }).first()).toBeVisible();
   await page.locator("[data-hc-command-input]").fill("owner registration");
   await expect.poll(() => registrationRequests).toBe(0);
 });
@@ -90,7 +99,8 @@ test("mobile command trigger opens the same searchable surface", async ({ page }
   await expect(trigger).toBeVisible();
   await expect.poll(() => trigger.evaluate((node) => node.parentElement === document.body)).toBe(true);
   await trigger.click();
-  await expect(page.locator("[data-hc-command-dialog]")).toBeVisible();
+  const dialog = page.locator("[data-hc-command-dialog]");
+  await expect(dialog).toBeVisible();
   await page.locator("[data-hc-command-input]").fill("repair");
-  await expect(page.getByRole("link", { name: /Repair Shops/i })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /Repair Shops/i })).toBeVisible();
 });
