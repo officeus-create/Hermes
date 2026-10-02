@@ -71,6 +71,9 @@ test("owner registrations adopts the shared grid without weakening access bounda
   expect(source).toContain("HERMES_INTERNAL_OWNER");
   expect(source).toContain('robots="noindex,nofollow"');
   expect(source).toContain('data-page-size');
+  expect(source).toContain('data-role');
+  expect(source).toContain('data-review-state');
+  expect(source).toContain('data-window');
   expect(source).toContain('data-sort="created_at"');
   expect(source).not.toContain("innerHTML");
 });
