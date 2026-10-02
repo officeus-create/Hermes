@@ -151,7 +151,7 @@ const { delivery_key: internalKey, expected_recipient_fingerprint: internalExpec
 legacyLead.subject = "[HERMES INQUIRY] [GENERAL]";
 const ordinaryLead = await run(legacyLead, { EMAIL: transport });
 assert.equal(attempts, 1);
-assert.deepEqual(ordinaryLead, { status: 202, receipt: { ok: true, recipient_count: 1 } });
+assert.deepEqual(ordinaryLead, { status: 202, receipt: { ok: true, recipient_count: 1, owner_alert: "not_applicable" } });
 
 // Gmail calls are completely synthetic; one token call and one send call only.
 const originalFetch = globalThis.fetch;
