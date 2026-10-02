@@ -42,6 +42,23 @@ test("shared Hermes Connect grid bounds page size and page number", () => {
   expect(bounded.rows).toHaveLength(200);
 });
 
+test("shared Hermes Connect grid keeps a 10,000-row dataset bounded to one rendered page", () => {
+  const large = Array.from({ length: 10_000 }, (_, index) => ({
+    name: `Shop ${String(index).padStart(5, "0")}`,
+    company: index % 10 === 0 ? "Arkansas Pilot" : "Other",
+    created_at: `2026-09-${String((index % 28) + 1).padStart(2, "0")}T10:00:00Z`,
+  }));
+  const filtered = filterHermesGridRows(large, "arkansas", (row) => [row.name, row.company]);
+  expect(filtered).toHaveLength(1_000);
+
+  const sorted = sortHermesGridRows(filtered, (row) => row.name, "desc");
+  const firstPage = paginateHermesGridRows(sorted, 1, 100);
+  expect(firstPage.total).toBe(1_000);
+  expect(firstPage.rows).toHaveLength(100);
+  expect(firstPage.pageCount).toBe(10);
+  expect(firstPage.rows[0]?.name).toBe("Shop 09990");
+});
+
 test("sort toggle changes direction only for the active column", () => {
   expect(nextHermesGridSort("created_at", "desc", "name")).toEqual({ key: "name", direction: "asc" });
   expect(nextHermesGridSort("name", "asc", "name")).toEqual({ key: "name", direction: "desc" });
