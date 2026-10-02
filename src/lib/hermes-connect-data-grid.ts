@@ -39,8 +39,9 @@ function compareValues(left: unknown, right: unknown) {
   if (typeof left === "number" && typeof right === "number") return left - right;
   if (typeof left === "boolean" && typeof right === "boolean") return Number(left) - Number(right);
 
-  const leftDate = typeof left === "string" ? Date.parse(left) : Number.NaN;
-  const rightDate = typeof right === "string" ? Date.parse(right) : Number.NaN;
+  const isoDate = /^\d{4}-\d{2}-\d{2}(?:[T ][0-9:.+-]+Z?)?$/;
+  const leftDate = typeof left === "string" && isoDate.test(left) ? Date.parse(left) : Number.NaN;
+  const rightDate = typeof right === "string" && isoDate.test(right) ? Date.parse(right) : Number.NaN;
   if (Number.isFinite(leftDate) && Number.isFinite(rightDate)) return leftDate - rightDate;
 
   return String(left).localeCompare(String(right), undefined, { numeric: true, sensitivity: "base" });
