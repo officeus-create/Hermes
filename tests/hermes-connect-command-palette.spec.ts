@@ -40,6 +40,7 @@ test("authorized account workspaces and owner registrations become searchable wi
   });
 
   await page.goto("/services/hermes-connect/");
+  await expect.poll(() => page.locator("[data-hc-product-context] [data-hc-command-trigger]").count()).toBe(1);
   await page.keyboard.press("Control+K");
   const dialog = page.locator("[data-hc-command-dialog]");
   await expect(dialog).toBeVisible();
@@ -87,6 +88,7 @@ test("mobile command trigger opens the same searchable surface", async ({ page }
   await page.goto("/services/hermes-connect/");
   const trigger = page.locator("[data-hc-command-trigger]");
   await expect(trigger).toBeVisible();
+  await expect.poll(() => trigger.evaluate((node) => node.parentElement === document.body)).toBe(true);
   await trigger.click();
   await expect(page.locator("[data-hc-command-dialog]")).toBeVisible();
   await page.locator("[data-hc-command-input]").fill("repair");
