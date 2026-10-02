@@ -105,9 +105,8 @@
         }
       }
 
-      const publishedCount = [repairGrid, academyGrid]
-        .filter(Boolean)
-        .reduce((total, target) => total + target.querySelectorAll('[data-catalog-card]').length, 0);
+      const publishedCount = (grid ? grid.querySelectorAll('[data-catalog-card]').length : 0)
+        + (academyGrid ? academyGrid.querySelectorAll('[data-catalog-card]').length : 0);
       document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
         node.textContent = String(publishedCount);
       });
