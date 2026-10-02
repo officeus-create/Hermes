@@ -144,8 +144,11 @@ test('Logistics living layer reveals event to human handoff and remains static o
  await page.goto('/');
  const route=page.locator('[data-route-id="logistics"]');
  const explainer=route.locator('[data-home-explainer="logistics"]');
- await expect(explainer).toHaveCSS('opacity','0');
- await route.hover();
+ const hoverCapable=await page.evaluate(()=>matchMedia('(hover:hover) and (pointer:fine)').matches);
+ if(hoverCapable) {
+  await expect(explainer).toHaveCSS('opacity','0');
+  await route.hover();
+ }
  await expect(explainer).toHaveCSS('opacity','1');
  for(const id of ['event','system','human','outcome']) {
   await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
