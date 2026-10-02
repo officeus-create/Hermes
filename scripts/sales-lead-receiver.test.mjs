@@ -174,7 +174,7 @@ assert.deepEqual(await ownerLeadResponse.json(), {
   ok: true,
   recipient_count: 2,
   owner_alert: "delivered",
-  calendar_invite: "attached",
+  calendar_reminder: "attached",
 });
 assert.equal(emailMessages.length, ownerAlertBaseline + 2);
 const ownerLeadPrimary = emailMessages.at(-2);
@@ -189,9 +189,13 @@ assert.equal(ownerLeadPersonal.attachments.length, 1);
 assert.equal(ownerLeadPersonal.attachments[0].filename, `lead-${ownerLeadRequestId}.ics`);
 assert.match(ownerLeadPersonal.attachments[0].type, /^text\/calendar/);
 const ownerLeadCalendar = Buffer.from(ownerLeadPersonal.attachments[0].content, "base64").toString("utf8");
-assert.match(ownerLeadCalendar, /METHOD:REQUEST/);
-assert.match(ownerLeadCalendar, /SUMMARY:LEAD - IT Development - Saad Saleem/);
-assert.match(ownerLeadCalendar, /ATTENDEE;CN=Vladimir Viktorovich;RSVP=FALSE:mailto:volkogon\.v@gmail\.com/);
+assert.doesNotMatch(ownerLeadCalendar, /(?:^|\r?\n)METHOD:/);
+assert.match(ownerLeadCalendar, /SUMMARY:LEAD REMINDER - HERMES/);
+assert.match(ownerLeadCalendar, /CLASS:PRIVATE/);
+assert.match(ownerLeadCalendar, /TRANSP:TRANSPARENT/);
+assert.doesNotMatch(ownerLeadCalendar, /METHOD:REQUEST|ATTENDEE|ORGANIZER|RSVP|TRANSP:OPAQUE|STATUS:CONFIRMED/);
+assert.doesNotMatch(ownerLeadCalendar, /Saad Saleem|saad@example\.com/);
+assert.doesNotMatch(ownerLeadPersonal.attachments[0].type, /(?:^|;)\s*method=/i);
 assert.match(ownerLeadCalendar, /TRIGGER:-PT5M/);
 
 const qaLeadCountBefore = emailMessages.length;
