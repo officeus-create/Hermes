@@ -148,10 +148,10 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   const matchesWindow=(row:Registration,windowValue:string)=>{if(windowValue==="all")return true;const created=Date.parse(String(row.created_at||""));if(!Number.isFinite(created))return false;const hours=windowValue==="24h"?24:windowValue==="7d"?24*7:24*30;return created>=Date.now()-hours*60*60*1000;};
   const matchesReview=(row:Registration,state:string)=>state==="all"||(state==="unreviewed"&&!isSynthetic(row)&&!row.reviewed_at)||(state==="reviewed"&&Boolean(row.reviewed_at))||(state==="incomplete"&&isShopOwner(row)&&!isProfileComplete(row))||(state==="alert_failed"&&row.registration_alert_status==="failed");
   function syncRoleOptions(){
-    if(!roleFilter)return;const current=roleFilter.value||savedRole||"all";const roles=[...new Set(rows.map(row=>text(row.role)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    if(!roleFilter)return;const current=roleFilter.dataset.ready==="true"?(roleFilter.value||"all"):(savedRole||"all");const roles=[...new Set(rows.map(row=>text(row.role)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
     roleFilter.replaceChildren();const all=document.createElement("option");all.value="all";all.textContent=t("All roles","Все роли");roleFilter.append(all);
     for(const role of roles){const option=document.createElement("option");option.value=role;option.textContent=role;roleFilter.append(option);}
-    roleFilter.value=roles.includes(current)?current:"all";savedRole=roleFilter.value;
+    roleFilter.value=roles.includes(current)?current:"all";roleFilter.dataset.ready="true";savedRole=roleFilter.value;
   }
   function render(){
     if(!tbody)return;tbody.replaceChildren();const term=search?.value||"";const mode=kind?.value||"real";const selectedRole=roleFilter?.value||"all";const selectedReview=reviewFilter?.value||"all";const selectedWindow=windowFilter?.value||"all";
