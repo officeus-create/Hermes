@@ -158,7 +158,7 @@ import "../../../../../../styles/hermes-academy-app.css";
     const business=params.get("business");
     if(business!=="kons-na-bis"||!businessForm)return;
     const values={businessName:"Конс на Бі$",academyType:"business_club",website:"https://kons-na-bis.com/",countryCode:"UA"};
-    for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input&&!input.value)input.value=value;}
+    for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input&&(key==="academyType"||!input.value))input.value=value;}
   };
 
   const showAuthenticated=async(specialist:any)=>{
