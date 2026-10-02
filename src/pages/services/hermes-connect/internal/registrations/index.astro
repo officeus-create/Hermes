@@ -156,7 +156,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     if(status)status.textContent=t(`${result.start}–${result.end} of ${result.total} matching · ${rows.length} loaded`,`${result.start}–${result.end} из ${result.total} найденных · загружено ${rows.length}`);
     if(pageStatus)pageStatus.textContent=t(`Page ${result.page} of ${result.pageCount}`,`Страница ${result.page} из ${result.pageCount}`);
     if(prev)prev.disabled=result.page<=1;if(next)next.disabled=result.page>=result.pageCount;
-    document.querySelectorAll<HTMLButtonElement>("[data-sort]").forEach(button=>{const active=button.dataset.sort===sortKey;button.dataset.active=String(active);button.setAttribute("aria-sort",active?(sortDirection==="asc"?"ascending":"descending"):"none");const marker=button.querySelector("span");if(marker)marker.textContent=active?(sortDirection==="asc"?"↑":"↓"):"↕";});
+    document.querySelectorAll<HTMLButtonElement>("[data-sort]").forEach(button=>{const active=button.dataset.sort===sortKey;button.dataset.active=String(active);button.setAttribute("aria-pressed",String(active));button.setAttribute("aria-label",active?t(`Sort ${button.textContent?.trim()||""} ${sortDirection==="asc"?"descending":"ascending"}`,`Сортировать ${button.textContent?.trim()||""} ${sortDirection==="asc"?"по убыванию":"по возрастанию"}`):t(`Sort by ${button.textContent?.trim()||""}`,`Сортировать по ${button.textContent?.trim()||""}`));const marker=button.querySelector("span");if(marker)marker.textContent=active?(sortDirection==="asc"?"↑":"↓"):"↕";});
   }
   async function load(){
     if(status)status.textContent=t("Loading registrations…","Загружаем регистрации…");
