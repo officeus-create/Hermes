@@ -1,5 +1,134 @@
 [
   {
+    "id": "dat-reefer-rates-october-2026",
+    "direction": "logistics",
+    "slug": "reefer-rates-capacity-october-2026",
+    "title": "Reefer Spot Rates Stay Elevated as Produce Rush Cools | Hermes Insights",
+    "description": "DAT reported national reefer spot linehaul at $2.71 per mile for the week ending September 25, 2026, down $0.02 week over week but still 36.1% above a year earlier. Hermes explains why the signal belongs in lane-level route planning rather than as a universal booking target.",
+    "eyebrow": "Reefer Market Update · October 2026",
+    "h1": "Reefer rates eased slightly, but remain well above last year. What should carriers check before booking?",
+    "conciseAnswer": "DAT reported that national reefer spot linehaul averaged $2.71 per mile for the week ending September 25, 2026, excluding fuel. That was down $0.02 per mile week over week, but 36.1% above the same period a year earlier and 27.1% above DAT's nine-year seasonal average. Use the report as current market context, then evaluate the actual origin, deadhead, destination reload, fuel, timing and equipment fit before making a load decision.",
+    "explanation": [
+      "What changed: DAT's October 1 Reefer Report says national reefer spot linehaul averaged $2.71 per mile for the week ending September 25, excluding fuel. The average slipped 0.7%, or $0.02 per mile, from the previous week, while remaining 36.1% above the year-earlier level and 27.1% above the nine-year seasonal average of $2.13 per mile.",
+      "Why it matters: a small national week-over-week decline can coexist with a historically elevated market and large regional differences. DAT's top-origin table ranged from $3.60 per mile in the Upper Midwest to $2.24 in South Central. Historical Hermes operating material is used only for the anonymized pattern that route planning, deadhead control and reload planning belong in the same decision. No private rates, customer information, earnings, guarantees or old commercial claims are reused as current facts.",
+      "What to do: use the DAT report to refresh the market baseline, then calculate the specific movement. Check origin capacity, deadhead to pickup, loaded miles, fuel and tolls, appointment constraints, reefer/equipment fit, destination reload probability and payment terms. Treat national and regional averages as negotiation context rather than guaranteed achievable rates.",
+      "Result: the carrier or dispatcher gets a current reefer market benchmark without turning an aggregate rate into a universal booking rule. The practical output is a lane-level decision based on total route economics and current operating constraints. Source/date: DAT Freight & Analytics, October 1, 2026."
+    ],
+    "takeaways": [
+      "DAT reported national reefer linehaul at $2.71 per mile for the week ending September 25, excluding fuel",
+      "The national average was down $0.02 week over week but 36.1% above the year-earlier level",
+      "Regional averages remained materially different, including $3.60 in the Upper Midwest and $2.24 in South Central",
+      "Use current market data as context, then calculate the actual lane, deadhead, fuel, timing and reload opportunity"
+    ],
+    "faq": [
+      {
+        "question": "Does DAT's $2.71 reefer rate include fuel?",
+        "answer": "No. DAT states that the cited reefer spot linehaul rates exclude fuel costs and surcharges unless otherwise noted."
+      },
+      {
+        "question": "Should every reefer load below $2.71 per mile be rejected?",
+        "answer": "No. The national average is market context, not a universal floor. A real load decision depends on the specific lane, deadhead, fuel, tolls, appointment timing, equipment fit, payment terms and likely next movement."
+      },
+      {
+        "question": "Why do regional reefer rates matter?",
+        "answer": "Because DAT reported large regional differences in the same week. A national average can describe the broad market while still being a poor proxy for a specific origin or destination."
+      }
+    ],
+    "related": [
+      {
+        "title": "Reefer Load Board",
+        "body": "Review the Hermes Load Board entry point for reefer equipment and source-gated load discovery.",
+        "href": "/load-board/equipment/reefer/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Use current load, capacity and source evidence separately from aggregate market averages.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Continue to carrier, shipper and operating resources in the canonical Logistics direction.",
+        "href": "/paths/logistics/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Reefer Load Board",
+      "href": "/load-board/equipment/reefer/"
+    },
+    "secondaryAction": {
+      "label": "Review Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "DAT Freight & Analytics — Reefer Report",
+    "sourceUrl": "https://www.dat.com/blog/reefer-report-rates-ease-as-produce-rush-cools-but-the-year-over-year-premium-holds",
+    "sourcePublishedAt": "2026-10-01",
+    "datePublished": "2026-10-02",
+    "dateModified": "2026-10-02",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "reefer spot rates",
+      "reefer rates 2026",
+      "refrigerated freight rates",
+      "reefer load board",
+      "reefer carrier market",
+      "deadhead planning",
+      "DAT reefer report"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "DAT Reefer Report — week ending September 25, 2026",
+        "use": "primary",
+        "url": "https://www.dat.com/blog/reefer-report-rates-ease-as-produce-rush-cools-but-the-year-over-year-premium-holds",
+        "observedAt": "2026-10-02",
+        "eventDate": "2026-10-01",
+        "notes": "Primary dated source for national and regional reefer spot linehaul rates; DAT states the reported rates exclude fuel unless otherwise noted."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern that route planning, deadhead control and reload planning belong in the same decision. No names, contacts, customer data, loads, private rates, earnings or old commercial claims are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes logistics operating archive",
+      "nowPeriod": "Week ending September 25, 2026",
+      "summary": "Historical Hermes operating material treated route planning, deadhead control and reload planning as connected decisions; DAT's current reefer report supplies the dated national and regional market context. Historical figures and private commercial claims are not reused as current benchmarks.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.dat.com/blog/reefer-report-rates-ease-as-produce-rush-cools-but-the-year-over-year-premium-holds"
+    },
+    "publicationScore": {
+      "score": 87,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+18 source authority",
+        "+12 first-party evidence",
+        "+7 historical comparison",
+        "+15 search value",
+        "+15 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
