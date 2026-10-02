@@ -55,6 +55,12 @@ assert.match(loader, /querySelectorAll\('\[data-catalog-business-count\]'\)/);
 assert.match(loader, /grid\.querySelectorAll\('\[data-catalog-card\]'\)/);
 assert.doesNotMatch(loader, /addEventListener\('input'|addEventListener\('submit'/);
 assert.match(loader, /textContent = String\(company\.companyName/);
+assert.match(loader, /\^\\\/businesses\\\/connect\\\/repair-shop/);
+assert.match(loader, /\^\\\/businesses\\\/connect\\\/academy/);
+assert.match(loader, /isGenericUaAcademyLike/);
+assert.match(loader, /business_club/);
+assert.match(loader, /profile route pending verification/);
+
 assert.match(ownerPage, /robots="noindex,nofollow"/);
 assert.match(ownerPage, /6\+ months/);
 assert.match(ownerPage, /No ranking, traffic or lead result is guaranteed/);

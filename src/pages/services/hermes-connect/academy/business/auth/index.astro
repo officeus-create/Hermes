@@ -1,0 +1,226 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import "../../../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Hermes Connect · CRM для академії"
+  description="Реєстрація власника академії, курсів або бізнес-клубу в Hermes Connect."
+  robots="noindex,nofollow"
+  htmlLang="uk"
+  locale="uk"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/services/hermes-connect/" locale="uk" />
+    <main id="main-content" class="academy-app-shell">
+      <div class="academy-owner-toolbar">
+        <a href="/services/hermes-connect/" data-i18n="back">← Hermes Connect</a>
+        <div class="academy-owner-lang" aria-label="Language">
+          <button type="button" data-lang="uk" class="active">UA</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+      </div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow" data-i18n="eyebrow">Hermes Connect · Academy Business</p>
+          <h1 data-i18n="title">CRM, яка підлаштовується під академію, курси або бізнес-клуб.</h1>
+          <p data-i18n="lead">Один Hermes-акаунт, але різні робочі модулі для різних типів бізнесу. Для академії це ліди, консультації, учасники, потоки, уроки, завдання, перевірки, маркетинг, HR та retention.</p>
+          <div class="academy-app-note" data-i18n="note">Це окремий сценарій для власника навчального бізнесу. Якщо ви хочете навчатися як студент, використовуйте learner access.</div>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/auth/?mode=register" data-i18n="learner">Я хочу навчатися →</a>
+            <a class="academy-app-button" href="/businesses/" data-i18n="catalog">Відкрити Hermes Catalog →</a>
+          </div>
+        </article>
+
+        <article class="academy-app-card academy-app-dark">
+          <div data-owner-loading>
+            <span class="academy-app-status" data-i18n="secure">Безпечний Hermes-акаунт</span>
+            <h2 style="margin-top:14px" data-i18n="checking">Перевіряємо вашу сесію…</h2>
+          </div>
+
+          <div class="academy-app-hidden" data-owner-authenticated>
+            <span class="academy-app-status" data-i18n="signed">Вхід виконано</span>
+            <h2 style="margin-top:14px"><span data-i18n="hello">Вітаємо,</span> <span data-owner-name></span>.</h2>
+            <p data-owner-email></p>
+            <p data-i18n="profileNext">Заповніть профіль навчального бізнесу. Після цього відкриється Academy CRM.</p>
+          </div>
+
+          <div class="academy-app-hidden" data-owner-auth>
+            <div class="academy-app-tabs">
+              <button class="academy-app-tab active" type="button" data-auth-tab="register" data-i18n="create">Створити акаунт</button>
+              <button class="academy-app-tab" type="button" data-auth-tab="login" data-i18n="login">Увійти</button>
+            </div>
+            <div class="academy-app-alert" data-auth-alert role="status"></div>
+            <form class="academy-app-form academy-auth-section active" data-auth-form="register">
+              <div class="academy-app-field"><label data-i18n="fullName">Ім’я та прізвище</label><input name="name" autocomplete="name" minlength="2" maxlength="100" required /></div>
+              <div class="academy-app-field"><label>Email</label><input name="email" type="email" autocomplete="email" required /></div>
+              <div class="academy-app-field"><label data-i18n="ownerLocation">Країна / місто</label><input name="location" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
+              <div class="academy-app-field"><label data-i18n="password">Пароль</label><input name="password" type="password" autocomplete="new-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit" data-i18n="createOwner">Створити акаунт власника</button>
+            </form>
+            <form class="academy-app-form academy-auth-section" data-auth-form="login">
+              <div class="academy-app-field"><label>Email</label><input name="email" type="email" autocomplete="email" required /></div>
+              <div class="academy-app-field"><label data-i18n="password">Пароль</label><input name="password" type="password" autocomplete="current-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit" data-i18n="secureLogin">Безпечний вхід</button>
+            </form>
+          </div>
+        </article>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-business-setup>
+        <p class="academy-app-eyebrow" data-i18n="step2">Крок 2 · Навчальний бізнес</p>
+        <h2 data-i18n="setupTitle">Налаштуйте вашу Academy CRM.</h2>
+        <p data-i18n="setupLead">Ці дані визначають назву workspace і тип CRM. Публікація в Catalog — окремий opt-in; приватні дані студентів та CRM туди не потрапляють.</p>
+        <form class="academy-app-form" data-business-form>
+          <div class="academy-owner-grid">
+            <div class="academy-app-field"><label data-i18n="businessName">Назва академії / курсів</label><input name="businessName" minlength="2" maxlength="140" required /></div>
+            <div class="academy-app-field"><label data-i18n="businessType">Тип бізнесу</label>
+              <select name="academyType" required>
+                <option value="business_academy" data-i18n-option="businessAcademy">Бізнес-академія</option>
+                <option value="online_school" data-i18n-option="onlineSchool">Онлайн-школа</option>
+                <option value="courses" data-i18n-option="courses">Курси</option>
+                <option value="business_club" data-i18n-option="businessClub">Бізнес-клуб</option>
+                <option value="coaching" data-i18n-option="coaching">Коучинг / менторство</option>
+                <option value="corporate_academy" data-i18n-option="corporateAcademy">Корпоративна академія</option>
+              </select>
+            </div>
+            <div class="academy-app-field"><label data-i18n="city">Місто</label><input name="city" minlength="2" maxlength="100" required /></div>
+            <div class="academy-app-field"><label data-i18n="region">Область / регіон</label><input name="region" maxlength="100" /></div>
+            <div class="academy-app-field"><label data-i18n="country">Код країни</label><input name="countryCode" maxlength="2" minlength="2" value="UA" required /></div>
+            <div class="academy-app-field"><label data-i18n="timezone">Часовий пояс</label><input name="timezone" maxlength="64" value="Europe/Kyiv" /></div>
+            <div class="academy-app-field"><label data-i18n="website">Сайт · необов’язково</label><input name="website" inputmode="url" placeholder="https://..." /></div>
+            <div class="academy-app-field"><label data-i18n="phone">Телефон · необов’язково</label><input name="phone" autocomplete="tel" /></div>
+          </div>
+          <label class="academy-owner-check"><input name="catalogOptIn" type="checkbox" /><span data-i18n="catalogOpt">Додати бізнес у Hermes Catalog. Публічно можуть показуватися назва, тип, локація, сайт і бізнес-телефон; учні, заявки, CRM-записи та платежі не публікуються.</span></label>
+          <button class="academy-app-button intelligence" type="submit" data-i18n="openCrm">Зберегти та відкрити Academy CRM</button>
+        </form>
+        <div class="academy-app-alert" data-business-alert role="status"></div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const dictionary = {
+    uk: {
+      back:"← Hermes Connect",eyebrow:"Hermes Connect · Academy Business",title:"CRM, яка підлаштовується під академію, курси або бізнес-клуб.",
+      lead:"Один Hermes-акаунт, але різні робочі модулі для різних типів бізнесу. Для академії це ліди, консультації, учасники, потоки, уроки, завдання, перевірки, маркетинг, HR та retention.",
+      note:"Це окремий сценарій для власника навчального бізнесу. Якщо ви хочете навчатися як студент, використовуйте learner access.",learner:"Я хочу навчатися →",catalog:"Відкрити Hermes Catalog →",
+      secure:"Безпечний Hermes-акаунт",checking:"Перевіряємо вашу сесію…",signed:"Вхід виконано",hello:"Вітаємо,",profileNext:"Заповніть профіль навчального бізнесу. Після цього відкриється Academy CRM.",
+      create:"Створити акаунт",login:"Увійти",fullName:"Ім’я та прізвище",password:"Пароль",createOwner:"Створити акаунт власника",secureLogin:"Безпечний вхід",
+      step2:"Крок 2 · Навчальний бізнес",setupTitle:"Налаштуйте вашу Academy CRM.",setupLead:"Ці дані визначають назву workspace і тип CRM. Публікація в Catalog — окремий opt-in; приватні дані студентів та CRM туди не потрапляють.",
+      businessName:"Назва академії / курсів",businessType:"Тип бізнесу",city:"Місто",region:"Область / регіон",country:"Код країни",timezone:"Часовий пояс",website:"Сайт · необов’язково",phone:"Телефон · необов’язково",
+      ownerLocation:"Країна / місто",catalogOpt:"За бажанням додати бізнес у Hermes Catalog. Публічно показуються лише дані бізнесу; учні, заявки, CRM, платежі та приватні контакти не публікуються.",openCrm:"Зберегти та відкрити Academy CRM",
+      businessAcademy:"Бізнес-академія",onlineSchool:"Онлайн-школа",courses:"Курси",businessClub:"Бізнес-клуб",coaching:"Коучинг / менторство",corporateAcademy:"Корпоративна академія"
+    },
+    en: {
+      back:"← Hermes Connect",eyebrow:"Hermes Connect · Academy Business",title:"A CRM adapted to an academy, courses, or a business club.",
+      lead:"One Hermes account, with different modules for different businesses. Academy CRM focuses on leads, consultations, learners, cohorts, lessons, assignments, reviews, marketing, HR, and retention.",
+      note:"This is the owner flow for an education business. If you want to study as a learner, use learner access.",learner:"I want to learn →",catalog:"Open Hermes Catalog →",
+      secure:"Secure Hermes account",checking:"Checking your session…",signed:"Signed in",hello:"Welcome,",profileNext:"Complete the education-business profile. Your Academy CRM opens after this step.",
+      create:"Create account",login:"Sign in",fullName:"Full name",password:"Password",createOwner:"Create owner account",secureLogin:"Secure sign in",
+      step2:"Step 2 · Education business",setupTitle:"Configure your Academy CRM.",setupLead:"These details set the workspace identity and CRM type. Catalog publication is a separate opt-in; learner and CRM data stays private.",
+      businessName:"Academy / course business name",businessType:"Business type",city:"City",region:"Region",country:"Country code",timezone:"Time zone",website:"Website · optional",phone:"Phone · optional",
+      ownerLocation:"Country / city",catalogOpt:"Optionally add this business to Hermes Catalog. Name, type, location, website, and business phone may be public; learners, leads, CRM records, and payments are never published.",openCrm:"Save and open Academy CRM",
+      businessAcademy:"Business academy",onlineSchool:"Online school",courses:"Courses",businessClub:"Business club",coaching:"Coaching / mentoring",corporateAcademy:"Corporate academy"
+    }
+  } as const;
+
+  type Lang = keyof typeof dictionary;
+  const params = new URLSearchParams(location.search);
+  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  const applyLanguage=(next:Lang)=>{
+    lang=next; document.documentElement.lang=next; try{localStorage.setItem("hermes-connect-language",next)}catch{}
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/"]').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
+    document.querySelectorAll<HTMLOptionElement>("[data-i18n-option]").forEach(node=>{const key=node.dataset.i18nOption as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
+    document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(btn=>btn.classList.toggle("active",btn.dataset.lang===next));
+  };
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(btn=>btn.addEventListener("click",()=>{const next:Lang=btn.dataset.lang==="en"?"en":"uk";const url=new URL(window.location.href);url.searchParams.set("lang",next);window.location.assign(url.pathname+url.search+url.hash);}));
+  applyLanguage(lang);
+
+  const loading=document.querySelector<HTMLElement>("[data-owner-loading]");
+  const auth=document.querySelector<HTMLElement>("[data-owner-auth]");
+  const authenticated=document.querySelector<HTMLElement>("[data-owner-authenticated]");
+  const setup=document.querySelector<HTMLElement>("[data-business-setup]");
+  const authAlert=document.querySelector<HTMLElement>("[data-auth-alert]");
+  const businessAlert=document.querySelector<HTMLElement>("[data-business-alert]");
+  const businessForm=document.querySelector<HTMLFormElement>("[data-business-form]");
+
+  const setAlert=(node:HTMLElement|null,message:string,error=false)=>{if(!node)return;node.textContent=message;node.className=`academy-app-alert show ${error?"error":"success"}`;};
+  const json=async(url:string,options:RequestInit={})=>{const response=await fetch(url,{...options,headers:{"Content-Type":"application/json","Accept":"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});const payload=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(new Error(payload.error||payload.errors?.join(", ")||`request_${response.status}`),{payload});return payload;};
+
+  const prefill=()=>{
+    const business=params.get("business");
+    if(business!=="kons-na-bis"||!businessForm)return;
+    const values={businessName:"Конс на Бі$",academyType:"business_club",website:"https://kons-na-bis.com/",countryCode:"UA"};
+    for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input&&(key==="academyType"||!input.value))input.value=value;}
+  };
+
+  const showAuthenticated=async(specialist:any)=>{
+    loading?.classList.add("academy-app-hidden");auth?.classList.add("academy-app-hidden");authenticated?.classList.remove("academy-app-hidden");setup?.classList.remove("academy-app-hidden");
+    const name=document.querySelector<HTMLElement>("[data-owner-name]"); const email=document.querySelector<HTMLElement>("[data-owner-email]");
+    if(name)name.textContent=specialist?.name||"Owner"; if(email)email.textContent=specialist?.email||"";
+    try{
+      const existing=await json("/api/hermes-connect/academy/business");
+      if(existing.academyBusiness && businessForm){
+        const b=existing.academyBusiness;
+        const values={businessName:b.businessName,academyType:b.academyType,city:b.city,region:b.region||"",countryCode:b.countryCode||"UA",website:b.website||"",phone:b.phone||"",timezone:b.timezone||"Europe/Kyiv"};
+        for(const [key,value] of Object.entries(values)){const input=businessForm.elements.namedItem(key);if(input&&"value" in input)input.value=String(value||"");}
+        const opt=businessForm.elements.namedItem("catalogOptIn");if(opt instanceof HTMLInputElement)opt.checked=Boolean(b.catalogOptIn);
+      } else prefill();
+    }catch{prefill();}
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach(button=>button.addEventListener("click",()=>{
+    const mode=button.dataset.authTab==="login"?"login":"register";
+    document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach(x=>x.classList.toggle("active",x===button));
+    document.querySelectorAll<HTMLElement>("[data-auth-form]").forEach(x=>x.classList.toggle("active",x.dataset.authForm===mode));
+  }));
+  if(params.get("mode")==="login") document.querySelector<HTMLElement>('[data-auth-tab="login"]')?.click();
+
+  document.querySelector<HTMLFormElement>('[data-auth-form="register"]')?.addEventListener("submit",async(event)=>{
+    event.preventDefault(); const form=event.currentTarget as HTMLFormElement; const data=new FormData(form); const button=form.querySelector<HTMLButtonElement>('button[type="submit"]'); if(button)button.disabled=true;
+    try{const payload=await json("/api/auth/register",{method:"POST",body:JSON.stringify({name:data.get("name"),email:data.get("email"),password:data.get("password"),role:"Academy Business Owner",location:data.get("location"),bio:"Hermes Connect Academy business owner account."})});await showAuthenticated(payload.specialist);}
+    catch(error:any){setAlert(authAlert,error?.payload?.error==="email_already_registered"?(lang==="uk"?"Цей email вже має Hermes-акаунт. Увійдіть.":"This email already has a Hermes account. Sign in."):String(error?.message||"Registration failed"),true);}
+    finally{if(button)button.disabled=false;}
+  });
+  document.querySelector<HTMLFormElement>('[data-auth-form="login"]')?.addEventListener("submit",async(event)=>{
+    event.preventDefault();const form=event.currentTarget as HTMLFormElement;const data=new FormData(form);const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');if(button)button.disabled=true;
+    try{await json("/api/auth/login",{method:"POST",body:JSON.stringify({email:data.get("email"),password:data.get("password")})});const me=await json("/api/auth/me");await showAuthenticated(me.specialist);}
+    catch(error:any){setAlert(authAlert,String(error?.message||"Login failed"),true);}finally{if(button)button.disabled=false;}
+  });
+
+  businessForm?.addEventListener("submit",async(event)=>{
+    event.preventDefault();const data=new FormData(businessForm);const button=businessForm.querySelector<HTMLButtonElement>('button[type="submit"]');if(button)button.disabled=true;
+    try{
+      const payload=await json("/api/hermes-connect/academy/business",{method:"POST",body:JSON.stringify({
+        businessName:data.get("businessName"),academyType:data.get("academyType"),city:data.get("city"),region:data.get("region"),countryCode:data.get("countryCode"),
+        website:data.get("website"),phone:data.get("phone"),timezone:data.get("timezone"),catalogOptIn:data.get("catalogOptIn")==="on"
+      })});
+      setAlert(businessAlert,lang==="uk"?"Профіль збережено. Відкриваємо CRM…":"Profile saved. Opening CRM…");
+      location.assign(payload.next_url||"/services/hermes-connect/academy/business/workspace/");
+    }catch(error:any){
+      const code=String(error?.payload?.error||error?.message||"");
+      const message=code==="existing_company_requires_manual_link"
+        ? (lang==="uk"?"У цьому Hermes-акаунті вже є інший бізнес. Потрібне ручне підтвердження зв’язку, щоб не створити дублікат.":"This Hermes account already owns a different business. Manual linking is required to avoid a duplicate.")
+        : code==="academy_company_identity_conflict"
+          ? (lang==="uk"?"Виявлено конфлікт бізнес-профілю. Дані не змінено; потрібна перевірка Hermes.":"A business identity conflict was detected. Nothing was changed; Hermes review is required.")
+          : String(error?.message||"Could not save business");
+      setAlert(businessAlert,message,true);
+    }finally{if(button)button.disabled=false;}
+  });
+
+  void (async()=>{try{const me=await json("/api/auth/me");await showAuthenticated(me.specialist);}catch{loading?.classList.add("academy-app-hidden");auth?.classList.remove("academy-app-hidden");prefill();}})();
+</script>
+
+<style>
+  .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
+  .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
+  .academy-owner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.academy-owner-check{display:flex;gap:10px;align-items:flex-start;margin:16px 0 18px;line-height:1.55}.academy-owner-check input{margin-top:4px}
+  @media(max-width:760px){.academy-owner-grid{grid-template-columns:1fr}}
+</style>

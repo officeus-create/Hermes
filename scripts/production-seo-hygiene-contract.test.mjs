@@ -64,7 +64,8 @@ const indexedChildSitemapFiles = [
 // source-bounded profiles add five owners: Alabama, Brookwood, East Dundee and both profiles.\n// The Chayka Store pilot adds three intentional Ukraine Catalog owners: country, locality and business concept.
 // September 28 adds Little Rock, Guy and Cedarville locality pages plus three unclaimed Arkansas profiles.
 // September 29 adds three bounded secondary international discovery profiles plus the Irpin locality hub.
-const nonInsightsExpectedPageUrlCount = 296;
+// October 1 adds one intentional indexable Marketing Growth Audit Example in Hermes Catalog; the KNB branded concept remains noindex.
+const nonInsightsExpectedPageUrlCount = 297;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

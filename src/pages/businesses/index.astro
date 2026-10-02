@@ -111,6 +111,23 @@ const schema = [
         <div class="map-scroll"><div class="tile-map" role="img" aria-label="United States tile map showing active Hermes Catalog states">{usStateDirectoryTiles.map((state) => { const count = stateCounts.get(state.slug) ?? 0; const style = `grid-row:${state.row};grid-column:${state.col};`; return count > 0 ? <a class="state-tile active" style={style} href={`/businesses/${state.slug}/`} aria-label={`${state.name}: ${count} business profile`}><strong>{state.abbreviation}</strong><span>{count}</span></a> : <span class="state-tile pending" style={style} title={`${state.name}: research queue`} aria-label={`${state.name}: research queue`}><strong>{state.abbreviation}</strong></span>; })}</div></div>
       </section>
 
+      <section class="catalog-results" id="academy-client-concepts" aria-labelledby="academy-client-concepts-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Client strategy concept · Academy + Marketing</p><h2 id="academy-client-concepts-title">From public signal to CRM and measurable growth</h2></div>
+          <p>This noindex showcase demonstrates the method on a current client workstream without presenting the strategy, metrics, CRM activation or client approval as complete.</p>
+        </div>
+        <div class="business-grid" data-academy-catalog-grid>
+          <article class="business-card" data-catalog-card data-search-text="business academy crm courses education social audit sales funnel offer marketing cac ltv romi candidate assessment strategy example">
+            <div class="business-card__top"><span>Business academy</span><span>Strategy example</span></div>
+            <h3>Business Academy Growth Strategy</h3>
+            <p>Public-source audit → measurable funnel → vertical CRM example</p>
+            <ul><li>Social-channel audit</li><li>Program funnel + offer architecture</li><li>Diagnostic lenses + outcome KPI</li><li>Academy CRM + Candidate Assessment</li></ul>
+            <div class="business-card__actions"><a href="/businesses/marketing-growth-audit-example/">Open public strategy example</a><span><a href="/businesses/concepts/kons-na-bis/" rel="nofollow">Client-specific implementation →</a></span></div>
+            <a class="catalog-benefit__link" href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=academy_growth_strategy&utm_content=catalog_card">Request a similar audit →</a>
+          </article>
+        </div>
+      </section>
+
       <section class="catalog-results international-results" id="international-businesses" aria-labelledby="international-businesses-title">
         <div class="section-heading">
           <div><p class="eyebrow">Secondary discovery layer</p><h2 id="international-businesses-title">International businesses</h2></div>
