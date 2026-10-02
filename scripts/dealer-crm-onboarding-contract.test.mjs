@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
@@ -131,3 +133,6 @@ assert.match(access, /Dealer Operations/);
 assert.match(access, /<option value="dealer">Dealer<\/option>/);
 
 console.log("dealer-crm-onboarding-contract: Legacy Toyota dealer profile, full private dealer CRM modules, Transport Request -> Load Board sync, website read-only boundary and Meta owner-auth gates verified");
+
+// Keep the real-handler regression in the existing npm test/CI lane.
+execFileSync(process.execPath, ["--experimental-strip-types", fileURLToPath(new URL("./dealer-crm-followup.test.mjs", import.meta.url))], { stdio: "inherit" });
