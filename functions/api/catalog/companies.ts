@@ -89,7 +89,7 @@ export async function onRequestGet({ env }: { env: Env }) {
   for (const row of repairResult?.results || []) {
     const services = await repairShopServices(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
     companies.push({
-      id: `repair-shop:${row.id}`,
+      id: `repair-shop-crm:${row.id}`,
       companyName: row.name,
       slug: row.slug,
       companyType: "repair_shop",
