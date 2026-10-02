@@ -57,6 +57,10 @@ const directContactTitle = {
   </section>
 
   {isLogistics && <LogisticsSpatialOperations />}
+  {path.id === "marketing" && <MarketingGrowthFlow />}
+  {path.id === "technology" && <TechnologyBuildPulse />}
+  {isAcademy && <AcademyScreenFlow />}
+
   {isLogistics && <LogisticsAudienceHub />}
   {isLogistics && <HermesPathEngine />}
 
@@ -68,10 +72,6 @@ const directContactTitle = {
       <p class="detail-service-area"><MapPin size={18} aria-hidden="true" />{path.localFocus}</p>
     </div>
   </section>
-
-  {path.id === "technology" && <TechnologyBuildPulse />}
-
-  {isAcademy && <AcademyScreenFlow />}
 
   {
     !isAcademy && (
@@ -106,7 +106,6 @@ const directContactTitle = {
   {path.id === "technology" && <TechnologyStudioProof />}
   {path.id === "technology" && <TechnologyProjectBrief />}
   {path.id === "marketing" && <MarketingServicePillars />}
-  {path.id === "marketing" && <MarketingGrowthFlow />}
   {path.id === "logistics" && <DepartmentTechnologyBridge direction="logistics" />}
   {path.id === "marketing" && <DepartmentTechnologyBridge direction="marketing" />}
   {path.id === "academy" && <DepartmentTechnologyBridge direction="academy" />}
