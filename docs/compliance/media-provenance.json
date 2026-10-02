@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-10-01",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -251,6 +251,206 @@
       "source": null,
       "rightsEvidence": null,
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/home-approved-20260930.webp",
+      "sha256": "e02487abe4a1bfbce7877d4588d97efe2bbbb8994643c5dee527796b030958d8",
+      "firstTrackedCommit": "345e2fc30f675067b2a16b769ec9e0422e3016d0",
+      "classification": "OWNER_APPROVED_AI_GENERATED_HOME_ARTWORK",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Library libfile_ae6e471fd5d0819183e0e32c45af5854; PNG SHA256 7ab1cf36ccafcb2d71526c912b62695bc5a7434ede83e925d9c0c340eef25a77; WebP encoding at quality 93 (283474 bytes; unchanged 1111 x 1416 source pixels) for this homepage",
+      "rightsEvidence": "User approved this generated Hermes Home visual for launch at 14:49 UTC on 2026-09-30; bounded source transcript retained in delegated task. No third-party stock attribution or invented legal clearance.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-512.avif",
+      "sha256": "235d1ac5297141de0b7eedc3393b6cc7439c777afd6b7745b5908dc723de9c2e",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-512.webp",
+      "sha256": "13ecbbfd1f1bcb10a43698e12f350e8904f64207bf9226818949339e07d25178",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-887.avif",
+      "sha256": "83b6ddbd1ee0d554130aedfa4b3aa1872f19c29cfa01b16bbf962f7e61e2d970",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-887.webp",
+      "sha256": "6e09375ae02a1940557c1fab2a0227e7b285a24b55a3594f5cef951c7d711362",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/contact.webp",
+      "sha256": "69de184ab147700b0f914c5cd86d4a6eec0e227ce13705ff205a693d066fce09",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Cropped unchanged lower field from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; encoded for existing contact scene.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/leaves.webp",
+      "sha256": "314cacc41df6bcaf3e555dbdfbec67fc812685b5683899ebdabe0149cce4342d",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/logistics-512.avif",
+      "sha256": "8ac83c86d1e2eccff65609a879d573388da39684093e762d8e471ddd3d3deabc",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/logistics-512.webp",
+      "sha256": "1f4f229949bba33e2ef76c852d08d23b33186fd0491e8828f198df130a272f82",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/logistics-887.avif",
+      "sha256": "a79dd16dce854ac955aae40a39963a528e8a18f1798210ab70931d47d911d4d8",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/logistics-887.webp",
+      "sha256": "e3bb2894452892b9476b849be2c3669bd7e85780d916f051cfdc7caab2766505",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/marketing-512.avif",
+      "sha256": "5aad3db195b7cfce5f84a45066102181a8318faa6bb68fd57e9603a8a9a73873",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/marketing-512.webp",
+      "sha256": "bbd6c3f9bb9c1f4aff6926441d4aae5f171b9152c4c256310541286633293dc0",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/marketing-887.avif",
+      "sha256": "470d55c31e0df22c5e9c43926cd93980199d1415b7fbac97a86251c8257b732b",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/marketing-887.webp",
+      "sha256": "7f8d64c7074746929f827189eaa0f54dca1802c93990a05e77dd950a4e03285a",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/technology-512.avif",
+      "sha256": "a3a20947f443264aed5f002dbc84131b4da8c96dda5473f74652e8b7f794ec1b",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/technology-512.webp",
+      "sha256": "084edec20888806c8a44d9e42fa7d0c82e40a6c240551eb95cf104232e59255f",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/technology-887.avif",
+      "sha256": "45b68072b82eda27388e9f57a7179d34acbb1793c83130d01b7fdc1d7f7c8465",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/technology-887.webp",
+      "sha256": "c95344eb7e1970d9e6a75471a5310fbe8e3fc86181154e30446b26b9c9a3b0d2",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/truck.webp",
+      "sha256": "23abc399dd1b108242d80787f15942337f16f3ab17a5293154c0565dc70445ae",
+      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
     }
   ]
 }

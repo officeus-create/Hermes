@@ -3,6 +3,8 @@ import { ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "./ContactCTA.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import WebsiteDevelopmentShowroom from "./WebsiteDevelopmentShowroom.astro";
+import WebsiteRedesignShowroom from "./WebsiteRedesignShowroom.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { DigitalServicePageContent } from "../data/digital-service-pages";
@@ -197,6 +199,9 @@ const faqSchema = {
         <p class="digital-review-date">Scope reviewed {content.reviewedAt}</p>
       </div>
     </section>
+
+    {content.slug === "/services/website-development/" && <WebsiteDevelopmentShowroom />}
+    {content.slug === "/services/website-redesign/" && <WebsiteRedesignShowroom />}
 
     <section class="section" aria-labelledby="digital-audience-title">
       <div class="shell digital-two-column">

@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           expected_footer='Website inquiries are delivered securely by email'
-          expected_contact='Keep the next step simple.'
+          expected_contact='data-home-primary-contact'
           live=0
 
           for attempt in $(seq 1 18); do

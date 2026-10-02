@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
+import { latestHomeUpdate } from "../data/home-update-events";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
 import { academyLogisticsOwnerRoutes, directionForOwnerPath, directionOwnerRoutes, isAcademyLogisticsOwnerPath, type DirectionId } from "../data/localized-direction-owners";
 import hermesConnectSafePolishUrl from "../styles/hermes-connect-safe-polish.css?url";
@@ -19,6 +20,13 @@ interface Props {
 
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
+const isApprovedHome = currentPath === "/";
+const homeUpdates = isApprovedHome ? {
+  academy: latestHomeUpdate("academy"),
+  insights: latestHomeUpdate("insights"),
+  connect: latestHomeUpdate("connect"),
+  catalog: latestHomeUpdate("catalog"),
+} : null;
 const isHermesConnectRoute = currentPath.startsWith("/services/hermes-connect");
 const isLoadBoardRoute = currentPath === "/load-board/" || currentPath.startsWith("/load-board/");
 const isHermesConnectExperienceRoute = isHermesConnectRoute || isLoadBoardRoute;
@@ -76,7 +84,7 @@ const orderedPaths = [...site.paths].sort(
 const navigation = activeLocale === "en"
   ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
-      const label = item.href === "paths/technology/" ? "IT" : item.label;
+      const label = item.href === "paths/technology/" ? (isApprovedHome ? "Technology" : "IT") : item.label;
       return { ...item, key: navDirectionId(item.href), label, url, active: (activePath ?? currentPath) === url };
     })
   : orderedPaths.map((path) => ({
@@ -140,20 +148,21 @@ const languageLinks = siteLocales.map((language) => {
   </a>
 
   <nav class="desktop-nav desktop-nav--ecosystem" aria-label="Primary navigation">
-    {navigation.map((item) => <a class="nav-primary-link" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
-    <a class="nav-secondary-link nav-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
-    <a class="nav-secondary-link catalog-nav-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
+    {navigation.map((item) => <a class="nav-primary-link" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
+    <a class="nav-secondary-link nav-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
+    {isApprovedHome && <a class="nav-secondary-link" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
+    <a class="nav-secondary-link catalog-nav-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
   </nav>
 
   <div class="header-actions">
-    <HermesConnectLauncher
+    {!isApprovedHome && <HermesConnectLauncher
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
       locale={activeLocale}
       class="nav-tone-connect"
-    />
+    />}
     <a class="header-login-link" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <HermesConnectAccountSwitcher current={privateWorkspace} mode="menu" locale={activeLocale} />}
     {!privateWorkspace && <HermesConnectAccountSwitcher current={publicWorkspace} mode="menu" publicSafe locale={activeLocale} />}
@@ -182,17 +191,18 @@ const languageLinks = siteLocales.map((language) => {
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    {navigation.map((item) => <a class="mobile-nav-pillar" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
-    <a class="mobile-nav-pillar mobile-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights</a>
-    <a class="mobile-nav-pillar mobile-catalog-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span></a>
-    <HermesConnectLauncher
+    {navigation.map((item) => <a class="mobile-nav-pillar" data-nav-tone={item.key} href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}{item.key === "academy" && homeUpdates?.academy && <span class="home-update-sheen" data-home-update={homeUpdates.academy.publishedAt} data-update-description="home-academy-update" hidden aria-hidden="true"></span>}</a>)}
+    <a class="mobile-nav-pillar mobile-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
+    {isApprovedHome && <a class="mobile-nav-pillar" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
+    <a class="mobile-nav-pillar mobile-catalog-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
+    {!isApprovedHome && <HermesConnectLauncher
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
       locale={activeLocale}
       class="nav-tone-connect"
-    />
+    />}
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
@@ -206,6 +216,7 @@ const languageLinks = siteLocales.map((language) => {
       ))}
     </div>
   </nav>
+  {isApprovedHome && <span class="home-update-descriptions"><span id="home-academy-update" hidden>New Academy update within the last seven days.</span><span id="home-insights-update" hidden>New Insight within the last seven days.</span><span id="home-connect-update" hidden>New Connect update within the last seven days.</span><span id="home-catalog-update" hidden>New Catalog update within the last seven days.</span></span>}
 </header>
 
 {isHermesConnectExperienceRoute && <HermesConnectExperience loadBoardContext={isLoadBoardRoute} />}
@@ -218,6 +229,20 @@ const languageLinks = siteLocales.map((language) => {
   const header = document.querySelector<HTMLElement>("[data-header]");
 
   const updateHeader = () => header?.classList.toggle("site-header-scrolled", window.scrollY > 28);
+  if (location.pathname === "/") {
+    document.querySelectorAll<HTMLElement>("[data-home-update]").forEach((sheen) => {
+      const date = Date.parse(`${sheen.dataset.homeUpdate}T00:00:00Z`);
+      const age = Date.now() - date;
+      if (!Number.isFinite(date) || age < 0 || age > 7 * 86400_000) return;
+      sheen.hidden = false;
+      sheen.parentElement?.classList.add("has-home-update");
+      const description = sheen.dataset.updateDescription;
+      if (description) {
+        document.getElementById(description)?.removeAttribute("hidden");
+        sheen.parentElement?.setAttribute("aria-describedby", description);
+      }
+    });
+  }
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
 
@@ -267,6 +292,11 @@ const languageLinks = siteLocales.map((language) => {
 </script>
 
 <style is:global>
+  .home-update-descriptions { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+  .site-header .has-home-update { isolation:isolate;box-shadow:inset 0 0 0 1px #7b67ec66;border-radius:8px; }
+  .site-header .home-update-sheen:not([hidden]) { position:absolute;z-index:-1;inset:4px auto 4px 10%;width:32%;border-radius:999px;display:block;pointer-events:none;background:linear-gradient(90deg,transparent,#8a7ffc55,transparent);box-shadow:0 0 12px #9f94ff88;animation:home-update-glimmer 1.35s ease-in-out 2;opacity:0; }
+  @keyframes home-update-glimmer { 0%,100%{opacity:0;transform:translateX(0)} 25%,70%{opacity:.9} 85%{opacity:0;transform:translateX(190%)} }
+  @media (prefers-reduced-motion:reduce) { .site-header .home-update-sheen:not([hidden]){animation:none!important;opacity:.35;} }
   .site-header {
     --nav-logistics: #1E88FF;
     --nav-marketing: #00C853;

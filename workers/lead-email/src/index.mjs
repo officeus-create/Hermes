@@ -9,6 +9,9 @@ const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
 const DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS = ["dispatchtruck107@gmail.com", "volkogon.v@gmail.com"];
 const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
 const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
+const COMMERCIAL_INQUIRY_SUBJECT = /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|IT DEVELOPMENT|CATALOG|GENERAL)\]$/;
+const COMMERCIAL_POSTED_LOAD_SUBJECT = /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/;
+const SYNTHETIC_LEAD_MARKERS = /SYNTHETIC QA|INTERNAL QA|PRODUCTION SMOKE|SMOKE TEST|AUTOMATED SYNTHETIC PRODUCTION VERIFICATION|NOT A CUSTOMER|DO NOT PROCESS|TEST\/QA|carrier-production-smoke@hermesconnect\.app|cloudflare 6 qa/i;
 const GMAIL_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 const GMAIL_SEND_ENDPOINT = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 const GMAIL_REQUEST_TIMEOUT_MS = 8_000;
@@ -49,6 +52,131 @@ const isAccountSubject = (value) =>
   value === "[HERMES ACCOUNT] [PASSWORD RESET]" ||
   value === "[HERMES CATALOG] [CUSTOMER INQUIRY]" ||
   value === "[HERMES CATALOG] [WEEKLY REPORT]";
+
+const inquiryCategory = (subject) => subject.match(COMMERCIAL_INQUIRY_SUBJECT)?.[1] || "";
+
+const isOwnerCommercialLead = (subject, text) =>
+  (COMMERCIAL_INQUIRY_SUBJECT.test(subject) || COMMERCIAL_POSTED_LOAD_SUBJECT.test(subject))
+  && !SYNTHETIC_LEAD_MARKERS.test(text);
+
+const deliverySubject = (subject, requestId, text = "") => {
+  const uniqueSubject = subject.startsWith("[HERMES INQUIRY] ")
+    ? `${subject} [ID:${requestId}]`
+    : subject;
+  return isOwnerCommercialLead(subject, text) ? `!!! LEAD !!! ${uniqueSubject}` : uniqueSubject;
+};
+
+const extractLeadField = (text, label, max = 180) => {
+  const prefix = `${String(label || "").trim().toLowerCase()}:`;
+  const line = String(text || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .find((item) => item.toLowerCase().startsWith(prefix));
+  return cleanHeader(line ? line.slice(prefix.length).trim() : "", max);
+};
+
+const escapeCalendarText = (value) =>
+  String(value || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/\r?\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+
+const calendarUtc = (date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+
+const buildLeadCalendarInvite = ({ requestId, direction, name, email, sourcePath, organizer, attendee }) => {
+  const created = new Date();
+  const starts = new Date(created.getTime() + 5 * 60 * 1000);
+  const ends = new Date(starts.getTime() + 30 * 60 * 1000);
+  const summary = `LEAD - ${direction || "Hermes"} - ${name || email || "New inquiry"}`;
+  const description = [
+    "NEW HERMES LEAD",
+    direction ? `Direction: ${direction}` : "",
+    name ? `Name: ${name}` : "",
+    email ? `Email: ${email}` : "",
+    sourcePath ? `Source: ${sourcePath}` : "",
+    `Request ID: ${requestId}`,
+  ].filter(Boolean).join("\n");
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Hermes Technology//Lead Alert//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:REQUEST",
+    "BEGIN:VEVENT",
+    `UID:${requestId}@hermeslogisticsus.com`,
+    `DTSTAMP:${calendarUtc(created)}`,
+    `DTSTART:${calendarUtc(starts)}`,
+    `DTEND:${calendarUtc(ends)}`,
+    `SUMMARY:${escapeCalendarText(summary)}`,
+    `DESCRIPTION:${escapeCalendarText(description)}`,
+    `ORGANIZER:mailto:${organizer}`,
+    `ATTENDEE;CN=Vladimir Viktorovich;RSVP=FALSE:mailto:${attendee}`,
+    "STATUS:CONFIRMED",
+    "TRANSP:OPAQUE",
+    "BEGIN:VALARM",
+    "TRIGGER:-PT5M",
+    "ACTION:DISPLAY",
+    "DESCRIPTION:LEAD",
+    "END:VALARM",
+    "END:VEVENT",
+    "END:VCALENDAR",
+    "",
+  ].join("\r\n");
+};
+
+const buildOwnerLeadAlert = ({ env, subject, text, replyTo, requestId }) => {
+  if (!isOwnerCommercialLead(subject, text)) return null;
+  const recipient = cleanHeader(env.OWNER_LEAD_ALERT_RECIPIENT, 320).toLowerCase();
+  if (!isEmail(recipient)) return null;
+
+  const direction = extractLeadField(text, "Direction") || inquiryCategory(subject) || "Hermes";
+  const name = extractLeadField(text, "Name");
+  const email = extractLeadField(text, "Email") || replyTo;
+  const sourcePath = extractLeadField(text, "Submitted from") || extractLeadField(text, "Page");
+  const calendarInvite = buildLeadCalendarInvite({
+    requestId,
+    direction,
+    name,
+    email,
+    sourcePath,
+    organizer: cleanHeader(env.SALES_SENDER, 320),
+    attendee: recipient,
+  });
+
+  const alertSubject = `!!! LEAD !!! ${direction}${name ? ` - ${name}` : ""} [ID:${requestId}]`;
+  const alertText = [
+    "==================================================",
+    "                     LEAD",
+    "==================================================",
+    "",
+    `Direction: ${direction}`,
+    name ? `Name: ${name}` : "",
+    email ? `Email: ${email}` : "",
+    sourcePath ? `Source: ${sourcePath}` : "",
+    `Request ID: ${requestId}`,
+    "",
+    "FULL WEBSITE INQUIRY",
+    "--------------------",
+    text,
+  ].filter(Boolean).join("\n");
+
+  return {
+    to: recipient,
+    from: cleanHeader(env.SALES_SENDER, 320),
+    subject: alertSubject,
+    text: alertText,
+    replyTo,
+    attachments: [{
+      filename: `lead-${requestId}.ics`.slice(0, 120),
+      contentType: "text/calendar; method=REQUEST; charset=utf-8",
+      contentBase64: stringToBase64(calendarInvite),
+    }],
+    requestId,
+    deliveryKey: "owner-lead-alert",
+  };
+};
 
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
@@ -948,7 +1076,7 @@ const worker = {
     const message = {
       to: cleanHeader(env.SALES_DESTINATION, 320).toLowerCase(),
       from: cleanHeader(env.SALES_SENDER, 320),
-      subject,
+      subject: deliverySubject(subject, requestId, text),
       text,
       replyTo,
       attachments: [],
@@ -956,7 +1084,24 @@ const worker = {
     };
     try {
       await sendMessage(env, message);
-      return json(202, { ok: true, recipient_count: 1 });
+      const ownerAlert = buildOwnerLeadAlert({ env, subject, text, replyTo, requestId });
+      if (!ownerAlert) return json(202, { ok: true, recipient_count: 1, owner_alert: "not_applicable" });
+
+      const ownerResult = await sendSafely(env, ownerAlert);
+      if (!ownerResult.ok) {
+        console.error(JSON.stringify({
+          event: "owner_lead_alert_pending",
+          category: ownerResult.mapped.error,
+          attempts: ownerResult.attempts,
+          request_id: requestId,
+        }));
+      }
+      return json(202, {
+        ok: true,
+        recipient_count: 1 + (ownerResult.ok ? 1 : 0),
+        owner_alert: ownerResult.ok ? "delivered" : "pending",
+        calendar_invite: ownerResult.ok ? "attached" : "pending",
+      });
     } catch (error) {
       const mapped = classifyProviderError(error);
       console.error(JSON.stringify({ event: "lead_delivery_failed", category: mapped.error }));

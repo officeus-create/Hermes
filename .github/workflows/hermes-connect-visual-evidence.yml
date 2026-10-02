@@ -3,6 +3,14 @@ name: Hermes Connect visual evidence
 on:
   pull_request:
     paths:
+      - 'src/components/HomeMasterScene.astro'
+      - 'src/components/WebsiteDevelopmentShowroom.astro'
+      - 'src/components/WebsiteRedesignShowroom.astro'
+      - 'src/components/LogisticsSpatialOperations.astro'
+      - 'src/components/DigitalServicePage.astro'
+      - 'src/lib/home-portal-motion.ts'
+      - 'public/images/home-approved-20260930.webp'
+      - 'scripts/capture-home-motion-evidence.mjs'
       - 'public/demos/hermes-connect/**'
       - 'public/design-owner-polish.css'
       - 'public/design-owner-polish.js'
@@ -10,6 +18,7 @@ on:
       - 'public/department-menu.js'
       - 'public/repair-shop-design-polish.css'
       - 'src/components/HermesConnectLauncher.astro'
+      - 'src/components/BusinessSocialConnectionsWorkspace.astro'
       - 'src/components/AcademyScreenFlow.astro'
       - 'src/components/DepartmentMenuEnhancer.astro'
       - 'src/components/DepartmentMenuLocalization.astro'
@@ -18,6 +27,7 @@ on:
       - 'src/components/RussianLocaleIntegrity.astro'
       - 'src/components/SiteFooter.astro'
       - 'src/components/SiteHeader.astro'
+      - 'src/components/TrackingConsent.astro'
       - 'src/data/academy-public.ts'
       - 'src/data/public-paths.ts'
       - 'src/layouts/BaseLayout.astro'
@@ -27,6 +37,12 @@ on:
       - 'src/styles/hermes-repair-private-mobile.css'
       - 'src/styles/hermes-brand-system.css'
       - 'src/pages/services/hermes-connect/**'
+      - 'src/pages/services/website-development/**'
+      - 'src/pages/services/website-redesign/**'
+      - 'tests/website-development-showroom.spec.ts'
+      - 'tests/website-redesign-showroom.spec.ts'
+      - 'tests/logistics-spatial-operations.spec.ts'
+      - 'tests/tracking-consent.spec.ts'
       - 'src/pages/paths/**'
       - 'scripts/capture-route-screenshots.mjs'
       - 'scripts/route-screenshot-contract.mjs'
@@ -93,6 +109,7 @@ jobs:
 
           curl -fsS http://127.0.0.1:4321/ > /dev/null
           GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+          GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-home-motion-evidence.mjs
           node scripts/validate-route-screenshot-layout.mjs
 
       - name: Upload visual evidence
@@ -100,5 +117,13 @@ jobs:
         with:
           name: hermes-connect-visual-evidence-${{ github.event.pull_request.head.sha }}
           path: artifacts/route-screenshots
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload small Home motion evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-motion-evidence-${{ github.event.pull_request.head.sha }}
+          path: artifacts/route-screenshots/home-motion
           if-no-files-found: error
           retention-days: 14

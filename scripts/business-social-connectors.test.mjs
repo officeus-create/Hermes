@@ -1,0 +1,211 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import {
+  businessSocialProviderConfigured,
+  businessSocialScopes,
+  decryptBusinessSocialPayload,
+  encryptBusinessSocialPayload,
+  normalizeBusinessSocialProvider,
+  publicBusinessSocialConnection,
+  validBusinessSocialIdempotencyKey,
+} from "../functions/api/_lib/business-social.mjs";
+
+const tokenKey = Buffer.alloc(32, 13).toString("base64");
+const metaEnv = {
+  HERMES_SOCIAL_TOKEN_KEY: tokenKey,
+  HERMES_META_APP_ID: "123456",
+  HERMES_META_APP_SECRET: "private-secret",
+  HERMES_META_OAUTH_REDIRECT_URI: "https://hermeslogisticsus.com/api/hermes-connect/social/oauth/callback",
+};
+const threadsEnv = {
+  HERMES_SOCIAL_TOKEN_KEY: tokenKey,
+  THREADS_BRAND_APP_ID: "654321",
+  THREADS_BRAND_APP_SECRET: "threads-secret",
+  THREADS_BRAND_REDIRECT_URI: "https://hermeslogisticsus.com/api/internal/social/threads/callback",
+  THREADS_BRAND_TOKEN_KEY: tokenKey,
+};
+
+assert.equal(normalizeBusinessSocialProvider("facebook"), "facebook");
+assert.equal(normalizeBusinessSocialProvider("instagram"), "instagram");
+assert.equal(normalizeBusinessSocialProvider("threads"), "threads");
+assert.equal(normalizeBusinessSocialProvider("linkedin"), null);
+assert.equal(businessSocialProviderConfigured(metaEnv, "facebook"), true);
+assert.equal(businessSocialProviderConfigured(metaEnv, "instagram"), true);
+assert.equal(businessSocialProviderConfigured(metaEnv, "threads"), false);
+assert.equal(businessSocialProviderConfigured(threadsEnv, "threads"), true);
+assert.deepEqual(businessSocialScopes("facebook"), ["pages_show_list","pages_read_engagement","pages_manage_posts","pages_manage_engagement","pages_read_user_engagement"]);
+assert.ok(businessSocialScopes("instagram").includes("instagram_content_publish"));
+assert.ok(businessSocialScopes("threads").includes("threads_content_publish"));
+
+const encrypted = await encryptBusinessSocialPayload(metaEnv, {
+  access_token:"synthetic-secret-token",
+  page_id:"123",
+});
+assert.match(encrypted, /^v1\./);
+assert.doesNotMatch(encrypted, /synthetic-secret-token/);
+assert.equal((await decryptBusinessSocialPayload(metaEnv, encrypted)).access_token, "synthetic-secret-token");
+
+const publicConnection = publicBusinessSocialConnection({
+  provider:"instagram",
+  state:"connected_write",
+  account_name:"Business",
+  username:"business",
+  token_ciphertext:"MUST_NOT_LEAK",
+  token_expires_at:"2026-12-01T00:00:00Z",
+  candidate_labels_json:"[]",
+}, metaEnv, "instagram");
+assert.equal(publicConnection.state, "connected_write");
+assert.equal(publicConnection.username, "business");
+assert.equal("token_ciphertext" in publicConnection, false);
+assert.ok(validBusinessSocialIdempotencyKey("hc-social-20260930-0001"));
+assert.equal(validBusinessSocialIdempotencyKey("short"), null);
+
+const core = await readFile(new URL("../functions/api/_lib/business-social.mjs", import.meta.url), "utf8");
+const connections = await readFile(new URL("../functions/api/hermes-connect/social/connections.ts", import.meta.url), "utf8");
+const start = await readFile(new URL("../functions/api/hermes-connect/social/oauth/start.ts", import.meta.url), "utf8");
+const callback = await readFile(new URL("../functions/api/hermes-connect/social/oauth/callback.ts", import.meta.url), "utf8");
+const select = await readFile(new URL("../functions/api/hermes-connect/social/select.ts", import.meta.url), "utf8");
+const disconnect = await readFile(new URL("../functions/api/hermes-connect/social/disconnect.ts", import.meta.url), "utf8");
+const publish = await readFile(new URL("../functions/api/hermes-connect/social/publish.ts", import.meta.url), "utf8");
+const studioCore = await readFile(new URL("../functions/api/_lib/business-social-studio.mjs", import.meta.url), "utf8");
+const feed = await readFile(new URL("../functions/api/hermes-connect/social/feed.ts", import.meta.url), "utf8");
+const creativeIntake = await readFile(new URL("../functions/api/hermes-connect/social/creative-intake.ts", import.meta.url), "utf8");
+const driveCallback = await readFile(new URL("../functions/api/hermes-connect/social/drive/callback.ts", import.meta.url), "utf8");
+const creativeGenerate = await readFile(new URL("../functions/api/hermes-connect/social/creative-generate.ts", import.meta.url), "utf8");
+const threadsCallback = await readFile(new URL("../functions/api/internal/social/threads/callback.ts", import.meta.url), "utf8");
+const component = await readFile(new URL("../src/components/BusinessSocialConnectionsWorkspace.astro", import.meta.url), "utf8");
+const repairRoute = await readFile(new URL("../src/pages/services/hermes-connect/repair-shops/social.astro", import.meta.url), "utf8");
+const dealerRoute = await readFile(new URL("../src/pages/services/hermes-connect/dealers/social.astro", import.meta.url), "utf8");
+const beautyRoute = await readFile(new URL("../src/pages/services/hermes-connect/beauty/workspace/social.astro", import.meta.url), "utf8");
+const beautyWorkspace = await readFile(new URL("../src/pages/services/hermes-connect/beauty/workspace/index.astro", import.meta.url), "utf8");
+const repairNav = await readFile(new URL("../src/components/RepairShopOwnerNavEnhancer.astro", import.meta.url), "utf8");
+const repairSettings = await readFile(new URL("../src/pages/services/hermes-connect/repair-shops/settings.astro", import.meta.url), "utf8");
+const dealerWorkspace = await readFile(new URL("../src/pages/services/hermes-connect/dealers/workspace/index.astro", import.meta.url), "utf8");
+const dealerCrm = await readFile(new URL("../src/pages/services/hermes-connect/dealers/workspace/crm.astro", import.meta.url), "utf8");
+const releaseDelta = await readFile(new URL("../docs/release-manifest-deltas/2026-09-30-business-social-connectors.json", import.meta.url), "utf8");
+
+assert.match(core, /AES-GCM/);
+assert.match(core, /hermes_business_social_oauth_states/);
+assert.match(core, /OAUTH_STATE_TTL_MS = 10 \* 60 \* 1000/);
+assert.match(core, /INSERT OR IGNORE INTO hermes_business_social_publications/);
+assert.match(core, /selection_required/);
+assert.match(core, /pages_manage_posts/);
+assert.match(core, /"CREATE_CONTENT", "MANAGE", "MODERATE"/);
+assert.match(core, /instagram_content_publish/);
+assert.match(core, /media_type: "CAROUSEL"/);
+assert.match(core, /media_publish/);
+assert.match(core, /pageId}\/feed/);
+assert.match(core, /pageId}\/photos/);
+assert.match(core, /published: "false"/);
+assert.match(core, /attached_media/);
+assert.match(core, /media_fbid/);
+assert.match(core, /publishThreadsText/);
+assert.match(core, /COALESCE\(excluded\.token_ciphertext/);
+assert.match(core, /getOwnedBeautySalon/);
+assert.match(core, /beauty_salon:/);
+assert.match(core, /hermes_business_social_creative_intakes/);
+
+for (const source of [connections,start,callback,select,disconnect,publish]) {
+  assert.match(source, /getAuthenticatedSpecialist/);
+}
+assert.match(start, /sameOriginMutation/);
+assert.match(select, /sameOriginMutation/);
+assert.match(disconnect, /sameOriginMutation/);
+assert.match(publish, /sameOriginMutation/);
+assert.match(publish, /idempotency_key/);
+assert.match(publish, /provider_outcome_unknown/);
+assert.match(publish, /social_surface_invalid/);
+assert.match(publish, /publishInstagramStoryImage/);
+assert.match(publish, /publishThreadsImage/);
+assert.match(publish, /publishThreadsCarousel/);
+assert.match(publish, /FACEBOOK_PAGE_IMAGE/);
+assert.match(publish, /FACEBOOK_PAGE_MULTI_IMAGE/);
+assert.match(publish, /publishFacebookPagePost\(env, credential\.payload, text, imageUrls\)/);
+assert.match(studioCore, /media_type: "STORIES"/);
+assert.match(studioCore, /media_type: "CAROUSEL"/);
+assert.match(studioCore, /threads_publish/);
+assert.match(feed, /readRecentSocialMedia/);
+assert.match(creativeIntake, /google_drive_source_url_required/);
+assert.match(creativeIntake, /readBusinessSocialDriveConnection/);
+assert.match(creativeIntake, /ready_to_generate/);
+assert.match(creativeIntake, /draft_json/);
+assert.match(creativeIntake, /publicDraft/);
+assert.match(driveCallback, /consumeBusinessSocialDriveOAuthState/);
+assert.match(driveCallback, /saveBusinessSocialDriveConnection/);
+assert.match(creativeGenerate, /readBusinessSocialDriveSource/);
+assert.match(creativeGenerate, /@cf\/google\/gemma-4-26b-a4b-it/);
+assert.match(creativeGenerate, /ai\.toMarkdown/);
+assert.match(creativeGenerate, /rejectIfBusy:true/);
+assert.match(creativeGenerate, /max_completion_tokens:2600/);
+assert.doesNotMatch(creativeGenerate, /gateway:\{/);
+assert.match(creativeGenerate, /cloudflare_workers_ai/);
+assert.match(creativeGenerate, /claims_to_verify/);
+assert.match(creativeGenerate, /recommended_format/);
+assert.match(creativeGenerate, /recommended_destinations/);
+assert.match(creativeGenerate, /recommended_media_count/);
+assert.match(creativeGenerate, /single_image/);
+assert.match(creativeGenerate, /story_first/);
+assert.doesNotMatch(creativeGenerate, /api\.openai\.com/);
+assert.match(creativeIntake, /cloudflare_workers_ai/);
+assert.match(creativeIntake, /DEFAULT_CF_MODEL/);
+assert.match(threadsCallback, /consumeBusinessSocialOAuthState/);
+assert.match(threadsCallback, /connectBusinessThreadsFromCode/);
+assert.match(threadsCallback, /beauty\/workspace\/social/);
+assert.match(callback, /beauty\/workspace\/social/);
+
+assert.match(component, /Facebook/);
+assert.match(component, /Instagram/);
+assert.match(component, /Threads/);
+assert.match(component, /Live channel overview/);
+assert.match(component, /Unified composer/);
+assert.match(component, /Publish selected/);
+assert.match(component, /Smart mirror/);
+assert.match(component, /Instagram Feed → Instagram Story \+ Threads Feed \+ Facebook Page/);
+assert.match(component, /data-mirror-instagram/);
+assert.match(component, /syncMirrorTargets/);
+assert.match(component, /Instagram Story/);
+assert.match(component, /Text, image or multi-image post/);
+assert.match(component, /Threads has no Instagram-style Story surface/);
+assert.match(component, /AI Creative Intake/);
+assert.match(component, /api\/hermes-connect\/social\/feed/);
+assert.match(component, /api\/hermes-connect\/social\/creative-intake/);
+assert.match(component, /Connect Google Drive/);
+assert.match(component, /Generate AI draft/);
+assert.match(component, /Auto-build after intake/);
+assert.match(component, /data-ai-auto/);
+assert.match(component, /generateCurrentIntake/);
+assert.match(component, /Creative Review/);
+assert.match(component, /Recommended format/);
+assert.match(component, /data-ai-format/);
+assert.match(component, /data-ai-destinations/);
+assert.match(component, /recommended_destinations/);
+assert.match(component, /Carousel storyboard/);
+assert.match(component, /data-ai-preview/);
+assert.match(component, /renderCreativeReview/);
+assert.match(component, /api\/hermes-connect\/social\/drive\/start/);
+assert.match(component, /api\/hermes-connect\/social\/creative-generate/);
+assert.match(component, /canonical Hermes Social Publisher/);
+assert.doesNotMatch(component, /setInterval\(/);
+assert.match(repairRoute, /noindex,nofollow,noarchive/);
+assert.match(dealerRoute, /noindex,nofollow,noarchive/);
+assert.match(beautyRoute, /noindex,nofollow,noarchive/);
+assert.match(beautyRoute, /vertical="beauty_salon"/);
+assert.match(repairNav, /\$\{repairShopRoot\}\/social/);
+assert.match(repairNav, /href:withLocale\(`\$\{repairShopRoot\}\/social\/`\)/);
+assert.match(repairNav, /item\.icon === "social"/);
+assert.match(repairNav, /repair-crm-nav-item\.is-social/);
+assert.match(repairNav, /M16 8v5a3 3 0 0 0 6 0/);
+assert.doesNotMatch(repairNav, /api\/internal\/social\/threads\/connections/);
+assert.match(repairSettings, /repair-shops\/social\//);
+assert.match(beautyWorkspace, /beauty\/workspace\/social\//);
+assert.match(beautyWorkspace, /Open Social Media/);
+assert.match(dealerWorkspace, /dealers\/social\/\?provider=/);
+assert.doesNotMatch(dealerWorkspace, /data-prepare-provider/);
+assert.match(dealerCrm, /dealers\/social\//);
+assert.match(dealerCrm, /Social Media/);
+assert.match(releaseDelta, /repair-shops\/social/);
+assert.match(releaseDelta, /dealers\/social/);
+assert.match(releaseDelta, /beauty\/workspace\/social/);
+assert.match(releaseDelta, /"route_count_added": 3/);
+
+console.log("business social connectors contract: PASS");

@@ -119,7 +119,18 @@
 
     const boundary = document.createElement("p");
     boundary.className = "seo-intake-boundary";
-    boundary.textContent = "Prepare a review brief. The website does not automatically send or store these answers, and rankings, traffic, leads, revenue, or timing are not guaranteed.";
+    const syncBoundaryToContactMode = () => {
+      boundary.textContent = form.dataset.contactMode === "live"
+        ? "Submit your SEO review request through this form. A successful response means it was accepted for delivery, not that a person received or qualified it. Rankings, traffic, leads, revenue, and timing are not guaranteed."
+        : "Prepare a review brief. This preview does not send or store your answers; copy the summary and use the contact route to share it. Rankings, traffic, leads, revenue, and timing are not guaranteed.";
+    };
+    // ProductionContactMode registers its DOMContentLoaded override before this enhancer.
+    // Read the effective mode after that override rather than the static preview default.
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", syncBoundaryToContactMode, { once: true });
+    } else {
+      syncBoundaryToContactMode();
+    }
 
     const grid = document.createElement("div");
     grid.className = "seo-intake-grid";

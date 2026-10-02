@@ -5,6 +5,8 @@ Owner: CEO / AI Infrastructure
 Technical truth: GitHub (`officeus-create/Hermes`)
 Business memory / orchestration truth: One Brain / AI MASTER OPERATING BOARD
 
+> **Current design-governance note — 2026-09-30:** The provider-neutral Video Factory architecture, consent/evidence gates, deterministic rendering and runtime isolation in this dated foundation document remain valid. The historical aesthetic phrase “Pearl Outside / Obsidian Inside / Violet Intelligence” is superseded by `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4. Media now follows ONE HERMES / FOUR VISUAL ENGINES, light-first surfaces, bounded Focus Ink and one-signature-scene discipline. Do not use this historical file to restore a dark-first website or CRM.
+
 ## CEO decision
 
 Do not install Anime.js, Motion, Kokonut UI, Bklit UI, Manus, Soup, Codex, Remotion, HyperFrames and HeyGen as equal production dependencies.

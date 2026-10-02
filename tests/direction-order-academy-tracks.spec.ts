@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("Hermes header order stays Logistics → Marketing → IT → Academy, with Catalog separated", async ({ page }) => {
+test("Hermes header order stays Logistics → Marketing → Technology → Academy, with Catalog separated", async ({ page }) => {
   const header = await source("src/components/SiteHeader.astro");
   const publicPaths = await source("src/data/public-paths.ts");
 
@@ -24,7 +24,7 @@ test("Hermes header order stays Logistics → Marketing → IT → Academy, with
   expect(desktopDirections).toEqual([
     { href: "/paths/logistics/", label: "Logistics" },
     { href: "/paths/marketing/", label: "Marketing" },
-    { href: "/paths/technology/", label: "IT" },
+    { href: "/paths/technology/", label: "Technology" },
     { href: "/paths/academy/", label: "Academy" },
   ]);
   const mobileDirections = await page.locator('#mobile-menu a[href^="/paths/"]').evaluateAll((links) =>
@@ -34,8 +34,8 @@ test("Hermes header order stays Logistics → Marketing → IT → Academy, with
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveText("Catalog");
   await expect(page.locator('.desktop-nav a[href="/businesses/"]')).toHaveClass(/catalog-nav-link/);
 
-  const roomIds = await page.locator("[data-home-room]").evaluateAll((rooms) => rooms.map((room) => room.getAttribute("data-room-id")));
-  expect(roomIds).toEqual(["logistics", "marketing", "technology", "academy"]);
+  const routeIds = await page.locator("[data-home-route]").evaluateAll((routes) => routes.map((route) => route.getAttribute("data-route-id")));
+  expect(routeIds).toEqual(["logistics", "marketing", "technology", "academy"]);
 });
 
 test("Academy exposes five learning tracks without pretending enrollment is open", async () => {
