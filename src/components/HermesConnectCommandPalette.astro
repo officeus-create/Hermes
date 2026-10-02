@@ -76,13 +76,24 @@
     closeButton?.setAttribute("aria-label", copy.close);
     input.placeholder = copy.placeholder;
 
+    const safeHermesHref = (value: unknown) => {
+      try {
+        const url = new URL(String(value || ""), window.location.origin);
+        if (url.origin !== window.location.origin) return "";
+        if (!url.pathname.startsWith("/services/hermes-connect") && !url.pathname.startsWith("/load-board") && !url.pathname.startsWith("/demos/hermes-connect/")) return "";
+        return `${url.pathname}${url.search}${url.hash}`;
+      } catch {
+        return "";
+      }
+    };
+
     const withLocale = (href: string) => {
-      const url = new URL(href, window.location.origin);
+      const safeHref = safeHermesHref(href);
+      if (!safeHref) return "";
+      const url = new URL(safeHref, window.location.origin);
       if (locale === "en") url.searchParams.delete("lang");
-      else if (url.origin === window.location.origin) url.searchParams.set("lang", locale);
-      return url.origin === window.location.origin
-        ? `${url.pathname}${url.search}${url.hash}`
-        : url.toString();
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
     };
 
     const staticResults: HermesSearchResult[] = [
@@ -183,7 +194,7 @@
 
       for (const business of owned) {
         const id = String(business?.id || "").trim();
-        const href = String(business?.href || "").trim();
+        const href = safeHermesHref(business?.href);
         if (!id || !href) continue;
         companyIds.add(id);
         allResults.push({
@@ -202,7 +213,7 @@
       for (const workspace of workspaces) {
         if (workspace?.available === false) continue;
         const key = String(workspace?.key || "").trim();
-        const href = String(workspace?.href || "").trim();
+        const href = safeHermesHref(workspace?.href);
         if (!key || !href) continue;
         workspaceIds.add(key);
         const titles: Record<string, string> = {
