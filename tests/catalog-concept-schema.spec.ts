@@ -23,10 +23,11 @@ for (const schemaType of ["Store", "Restaurant", "HairSalon", "Florist", "LocalB
       business: { ...base, schemaType },
       profileUrl: "https://hermeslogisticsus.com/businesses/ukraine/chaiky/fixture/",
     });
-    expect(schema[0]["@type"]).toBe(schemaType);
+    const [businessSchema, serviceSchema, breadcrumbSchema, faqSchema] = schema;
+    expect(businessSchema?.["@type"]).toBe(schemaType);
     expect(JSON.stringify(schema)).not.toContain("AutoRepair");
-    expect(schema[1].name).toBe("Fixture service");
-    expect(schema[2].itemListElement.at(-1)?.item).toContain("/fixture/");
-    expect(schema[3]["@type"]).toBe("FAQPage");
+    expect((serviceSchema as { name?: string } | null)?.name).toBe("Fixture service");
+    expect((breadcrumbSchema as { itemListElement?: Array<{ item?: string }> } | null)?.itemListElement?.at(-1)?.item).toContain("/fixture/");
+    expect(faqSchema?.["@type"]).toBe("FAQPage");
   });
 }
