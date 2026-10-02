@@ -1,0 +1,196 @@
+---
+import { Activity, ArrowRight, CheckCircle2, FileSearch, LayoutTemplate, MonitorSmartphone, ShieldCheck } from "@lucide/astro";
+
+const stages = [
+  { key: "existing", label: "Existing site", title: "Start with the real website, not a blank canvas.", body: "Capture the current routes, working content, customer actions, search visibility, analytics, mobile behavior, integrations, and operational dependencies before deciding what should change.", icon: FileSearch },
+  { key: "diagnose", label: "Diagnose", title: "Separate proven friction from visual preference.", body: "Identify navigation, conversion, accessibility, performance, content, search, maintenance, and technical problems while marking working elements that should be protected.", icon: Activity },
+  { key: "system", label: "IA + design system", title: "Plan the new structure without losing useful ownership.", body: "Map retained and changed pages, redirects, canonical ownership, navigation, reusable components, content responsibilities, and the visual system before replacing production behavior.", icon: LayoutTemplate },
+  { key: "prototype", label: "Responsive prototype", title: "Show the changed experience before release.", body: "Build the responsive interface around approved priorities and real customer actions, while preserving crawlable meaning, contact paths, privacy boundaries, and scoped integrations.", icon: MonitorSmartphone },
+  { key: "review", label: "Regression + human review", title: "Compare old and new before anything replaces production.", body: "Check routes, redirects, canonicals, metadata, forms, links, mobile layouts, accessibility, analytics, privacy, content, and visible claims. A human decides whether the release is ready.", icon: ShieldCheck },
+  { key: "release", label: "Controlled release + measure", title: "Release carefully, read back production, then measure.", body: "Verify the approved deployment and public routes, then use Search Console, privacy-safe analytics, inquiries, errors, and user feedback to decide the next bounded improvement.", icon: CheckCircle2 },
+];
+---
+
+<section class="redesign-showroom section" aria-labelledby="redesign-showroom-title">
+  <div class="shell">
+    <div class="redesign-showroom-heading">
+      <div>
+        <p class="eyebrow">Web design showroom · Sample redesign workflow</p>
+        <h2 id="redesign-showroom-title">See how an existing website changes without throwing away what already works.</h2>
+      </div>
+      <p>This is a public-safe explanation of the Hermes redesign method, not a live customer migration. The goal is controlled improvement: diagnose first, preserve useful search and customer paths, review the replacement, and release only after evidence supports it.</p>
+    </div>
+
+    <div class="redesign-showroom-frame" data-redesign-showroom>
+      <ol class="redesign-showroom-steps" aria-label="Website redesign workflow">
+        {stages.map((stage, index) => {
+          const Icon = stage.icon;
+          return (
+            <li>
+              <button type="button" class="redesign-showroom-step" data-redesign-step={stage.key} aria-pressed={index === 0 ? "true" : "false"} aria-controls={"redesign-showroom-panel-" + stage.key}>
+                <span class="redesign-showroom-step-number">0{index + 1}</span>
+                <Icon size={19} aria-hidden="true" />
+                <span><strong>{stage.label}</strong><small>{stage.title}</small></span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      <div class="redesign-showroom-stage" aria-label="Sample website redesign visualization">
+        <div class="redesign-showroom-browser" aria-hidden="true">
+          <div class="redesign-showroom-browser-bar"><i></i><i></i><i></i><span>HERMES / CONTROLLED REDESIGN · SAMPLE</span></div>
+          <div class="redesign-showroom-canvas">
+            <div class="redesign-showroom-before">
+              <span class="redesign-showroom-kicker">CURRENT SITE</span>
+              <div class="redesign-wire hero"></div>
+              <div class="redesign-wire row"><i></i><i></i><i></i></div>
+              <div class="redesign-wire text"></div>
+              <div class="redesign-wire text short"></div>
+            </div>
+            <div class="redesign-showroom-bridge">
+              <span data-redesign-state>PROTECT</span>
+              <ArrowRight size={22} aria-hidden="true" />
+            </div>
+            <div class="redesign-showroom-after">
+              <span class="redesign-showroom-kicker">REVIEWED STATE</span>
+              <div class="redesign-wire hero active"></div>
+              <div class="redesign-wire row"><i></i><i></i><i></i></div>
+              <div class="redesign-wire text active"></div>
+              <div class="redesign-wire text short"></div>
+            </div>
+            <div class="redesign-showroom-legend">
+              <span><i class="keep"></i>Keep</span>
+              <span><i class="improve"></i>Improve</span>
+              <span><i class="verify"></i>Verify</span>
+            </div>
+            <div class="redesign-showroom-human"><ShieldCheck size={18} aria-hidden="true" /><span>Human release approval remains required</span></div>
+          </div>
+        </div>
+
+        <div class="redesign-showroom-semantic" aria-live="polite">
+          {stages.map((stage, index) => (
+            <article id={"redesign-showroom-panel-" + stage.key} class:list={["redesign-showroom-explanation", { active: index === 0 }]} data-redesign-panel={stage.key}>
+              <p class="eyebrow">0{index + 1} · {stage.label}</p>
+              <h3>{stage.title}</h3>
+              <p>{stage.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="redesign-showroom-proof">
+      <div>
+        <p class="eyebrow">Evidence boundary</p>
+        <h3>Redesign means controlled replacement, not visual churn.</h3>
+        <p>Hermes can preserve useful routes, content and customer actions while improving the approved experience. Search rankings, traffic, inquiries and revenue remain external outcomes and are not guaranteed.</p>
+      </div>
+      <a href="/case/it-development/" class="button button-ghost">Review the Hermes website case <ArrowRight size={18} aria-hidden="true" /></a>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll("[data-redesign-showroom]").forEach((showroom) => {
+    const steps = Array.from(showroom.querySelectorAll("[data-redesign-step]"));
+    const panels = Array.from(showroom.querySelectorAll("[data-redesign-panel]"));
+    const state = showroom.querySelector("[data-redesign-state]");
+    const stateLabels: Record<string, string> = {
+      existing: "PROTECT",
+      diagnose: "DIAGNOSE",
+      system: "MAP",
+      prototype: "PROTOTYPE",
+      review: "VERIFY",
+      release: "RELEASE",
+    };
+    const activate = (key: string) => {
+      steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-redesign-step") === key)));
+      panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-redesign-panel") === key));
+      if (state) state.textContent = stateLabels[key] || "REVIEW";
+      showroom.setAttribute("data-active-redesign-stage", key);
+    };
+    steps.forEach((step) => {
+      const key = step.getAttribute("data-redesign-step");
+      if (!key) return;
+      step.addEventListener("focus", () => activate(key));
+      step.addEventListener("pointerenter", () => activate(key));
+      step.addEventListener("click", () => activate(key));
+    });
+  });
+</script>
+
+<style>
+  .redesign-showroom { background: #f7f9ff; }
+  .redesign-showroom-heading { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(2rem,6vw,6rem); align-items:end; margin-bottom:2rem; }
+  .redesign-showroom-heading h2 { max-width:760px; margin-bottom:0; }
+  .redesign-showroom-heading > p { max-width:720px; margin:0; color:#526181; line-height:1.7; }
+  .redesign-showroom-frame { display:grid; grid-template-columns:minmax(240px,.72fr) minmax(0,1.55fr); gap:1rem; padding:1rem; border:1px solid rgba(28,62,141,.13); border-radius:28px; background:rgba(255,255,255,.86); box-shadow:0 28px 80px rgba(17,43,103,.08); }
+  .redesign-showroom-steps { display:grid; gap:.55rem; list-style:none; margin:0; padding:0; align-content:start; }
+  .redesign-showroom-step { width:100%; display:grid; grid-template-columns:34px 22px 1fr; gap:.7rem; align-items:center; padding:.9rem; border:1px solid transparent; border-radius:17px; background:transparent; color:#10204e; text-align:left; cursor:pointer; transition:background .35s ease,border-color .35s ease,transform .35s ease; }
+  .redesign-showroom-step:hover,.redesign-showroom-step:focus-visible,.redesign-showroom-step[aria-pressed="true"] { border-color:rgba(31,139,155,.22); background:#edf8fa; transform:translateX(4px); outline:none; }
+  .redesign-showroom-step-number { font-size:.72rem; letter-spacing:.12em; color:#197d8b; }
+  .redesign-showroom-step svg { color:#197d8b; }
+  .redesign-showroom-step strong,.redesign-showroom-step small { display:block; }
+  .redesign-showroom-step strong { font-size:.92rem; }
+  .redesign-showroom-step small { margin-top:.2rem; color:#6a7590; font-size:.72rem; line-height:1.35; }
+  .redesign-showroom-stage { min-width:0; }
+  .redesign-showroom-browser { overflow:hidden; border:1px solid rgba(16,32,78,.14); border-radius:23px; background:#f4f8fb; }
+  .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#6a7590; font-size:.67rem; letter-spacing:.12em; background:#fff; }
+  .redesign-showroom-browser-bar i { width:8px; height:8px; border-radius:50%; background:#c8d0df; }
+  .redesign-showroom-browser-bar span { margin-left:.45rem; }
+  .redesign-showroom-canvas { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:1rem; align-items:center; min-height:360px; padding:clamp(1.2rem,4vw,2.5rem); background:radial-gradient(circle at 50% 5%,rgba(52,172,190,.14),transparent 35%),linear-gradient(145deg,#f7fbfc,#eaf2f8); color:#10204e; }
+  .redesign-showroom-before,.redesign-showroom-after { padding:1rem; border:1px solid rgba(16,32,78,.12); border-radius:18px; background:#fff; box-shadow:0 14px 35px rgba(17,43,103,.07); }
+  .redesign-showroom-kicker { display:block; margin-bottom:.9rem; color:#6a7590; font-size:.64rem; letter-spacing:.13em; }
+  .redesign-wire { border-radius:8px; background:#e4e9f2; }
+  .redesign-wire.hero { height:74px; }
+  .redesign-wire.row { display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; margin-top:.6rem; background:transparent; }
+  .redesign-wire.row i { height:48px; border-radius:8px; background:#dce3ee; }
+  .redesign-wire.text { height:9px; margin-top:.8rem; }
+  .redesign-wire.text.short { width:64%; margin-top:.45rem; }
+  .redesign-wire.active { background:linear-gradient(90deg,#9fdce3,#4fb6c4); }
+  .redesign-showroom-bridge { display:grid; justify-items:center; gap:.55rem; color:#197d8b; }
+  .redesign-showroom-bridge span { min-width:82px; padding:.42rem .65rem; border:1px solid rgba(25,125,139,.2); border-radius:999px; background:#fff; text-align:center; font-size:.68rem; font-weight:800; letter-spacing:.09em; transition:background .35s ease,color .35s ease; }
+  [data-active-redesign-stage="diagnose"] .redesign-showroom-bridge span { background:#fff4df; color:#9a6415; }
+  [data-active-redesign-stage="system"] .redesign-showroom-bridge span,[data-active-redesign-stage="prototype"] .redesign-showroom-bridge span { background:#eaf3ff; color:#315fd7; }
+  [data-active-redesign-stage="review"] .redesign-showroom-bridge span,[data-active-redesign-stage="release"] .redesign-showroom-bridge span { background:#eaf8f0; color:#23734a; }
+  .redesign-showroom-legend { position:absolute; left:clamp(1.2rem,4vw,2.5rem); top:1rem; display:flex; flex-wrap:wrap; gap:.8rem; color:#66738f; font-size:.7rem; }
+  .redesign-showroom-legend span { display:inline-flex; gap:.4rem; align-items:center; }
+  .redesign-showroom-legend i { width:8px; height:8px; border-radius:50%; }
+  .redesign-showroom-legend .keep { background:#315fd7; }
+  .redesign-showroom-legend .improve { background:#d99a28; }
+  .redesign-showroom-legend .verify { background:#2b9d68; }
+  .redesign-showroom-human { position:absolute; left:50%; bottom:1.1rem; transform:translateX(-50%); display:inline-flex; gap:.55rem; align-items:center; color:#526181; font-size:.76rem; white-space:nowrap; }
+  .redesign-showroom-human svg { color:#23734a; }
+  .redesign-showroom-semantic { min-height:180px; padding:1.25rem 1.1rem .35rem; }
+  .redesign-showroom-explanation { display:none; }
+  .redesign-showroom-explanation.active { display:block; }
+  .redesign-showroom-explanation h3 { margin:.4rem 0 .6rem; font-size:clamp(1.35rem,2.5vw,2rem); }
+  .redesign-showroom-explanation > p:last-child { max-width:780px; color:#526181; line-height:1.65; }
+  .redesign-showroom-proof { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2rem; align-items:center; margin-top:1rem; padding:1.35rem 1.5rem; border:1px solid rgba(28,62,141,.13); border-radius:20px; background:#fff; }
+  .redesign-showroom-proof h3 { margin:.3rem 0 .45rem; }
+  .redesign-showroom-proof p { margin:0; color:#526181; line-height:1.6; }
+  .redesign-showroom-proof .button { white-space:nowrap; color:#10204e; border-color:rgba(16,32,78,.18); }
+  @media (max-width:900px) {
+    .redesign-showroom-heading,.redesign-showroom-proof { grid-template-columns:1fr; }
+    .redesign-showroom-frame { grid-template-columns:1fr; }
+    .redesign-showroom-steps { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .redesign-showroom-step { grid-template-columns:28px 20px 1fr; padding:.72rem; }
+    .redesign-showroom-step small { display:none; }
+  }
+  @media (max-width:640px) {
+    .redesign-showroom-frame { padding:.7rem; border-radius:22px; }
+    .redesign-showroom-steps { grid-template-columns:1fr; gap:.45rem; }
+    .redesign-showroom-step { min-height:48px; grid-template-columns:32px 22px 1fr; transform:none !important; }
+    .redesign-showroom-step small { display:block; font-size:.68rem; }
+    .redesign-showroom-browser-bar span { font-size:.55rem; }
+    .redesign-showroom-canvas { grid-template-columns:1fr; min-height:520px; padding:2.6rem 1rem 3.8rem; }
+    .redesign-showroom-bridge { grid-template-columns:1fr; justify-content:center; margin:-.15rem 0; }
+    .redesign-showroom-bridge svg { transform:rotate(90deg); }
+    .redesign-showroom-legend { left:1rem; top:.9rem; }
+    .redesign-showroom-human { bottom:1rem; width:calc(100% - 2rem); justify-content:center; white-space:normal; text-align:center; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .redesign-showroom-step,.redesign-showroom-bridge span { transition:none !important; }
+  }
+</style>
