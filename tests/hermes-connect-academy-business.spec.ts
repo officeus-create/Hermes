@@ -17,7 +17,7 @@ test("KNB Academy owner path defaults to Ukrainian, prefills bounded public fact
   await expect(page.locator('input[name="phone"]')).toHaveValue("");
   await expect(page.locator('input[name="catalogOptIn"]')).not.toBeChecked();
 
-  await page.getByRole("button", { name: "EN" }).click();
+  await page.getByRole("button", { name: "EN", exact: true }).click();
   await expect(page).toHaveURL(/business=kons-na-bis.*lang=en|lang=en.*business=kons-na-bis/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { name: "A CRM adapted to an academy, courses, or a business club." })).toBeVisible();
