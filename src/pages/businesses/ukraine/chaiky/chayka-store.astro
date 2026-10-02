@@ -4,14 +4,10 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import CatalogWebsiteConcept from "../../../../components/CatalogWebsiteConcept.astro";
 import { chaykaStoreConcept as business } from "../../../../data/catalog-business-concepts";
+import { buildCatalogConceptSchema } from "../../../../lib/catalog-concept-schema.mjs";
 
 const profileUrl="https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/";
-const schema=[
-  {"@context":"https://schema.org","@type":business.schemaType,"@id":profileUrl+"#business",name:business.name,url:profileUrl,telephone:business.phone,address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,postalCode:business.postalCode,addressCountry:business.countryCode},sameAs:business.channels.map((channel)=>channel.url)},
-  {"@context":"https://schema.org","@type":"Service",name:"Phone repair discovery in Chaiky",provider:{"@id":profileUrl+"#business"},areaServed:{"@type":"Place",name:"Чайки, Київська область"},description:"Public business discovery profile. Exact repair menu, prices, turnaround and warranty require owner confirmation."},
-  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},{"@type":"ListItem",position:2,name:"Ukraine",item:"https://hermeslogisticsus.com/businesses/ukraine/"},{"@type":"ListItem",position:3,name:"Chaiky",item:"https://hermeslogisticsus.com/businesses/ukraine/chaiky/"},{"@type":"ListItem",position:4,name:business.name,item:profileUrl}]},
-  {"@context":"https://schema.org","@type":"FAQPage",mainEntity:(business.faq||[]).map((item)=>({"@type":"Question",name:item.question,acceptedAnswer:{"@type":"Answer",text:item.answer}}))}
-];
+const schema=buildCatalogConceptSchema({ business, profileUrl });
 ---
 <BaseLayout title="Ремонт телефонів у Чайках | Чайка Store — Hermes Catalog" description="Hermes Catalog website concept for Чайка Store in Чайки: phone repair discovery, contacts and More Chay tea direction." schema={schema}>
   <SiteHeader theme="light" activePath="/businesses/"/>
