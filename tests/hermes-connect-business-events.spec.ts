@@ -75,7 +75,6 @@ test("dealer activity maps to one company-scoped canonical event", () => {
   const row = {
     id: "dact-1",
     company_id: "company-1",
-    actor_specialist_id: "specialist-1",
     event_type: "leads_updated",
     entity_type: "leads",
     entity_id: "lead-1",
@@ -94,7 +93,7 @@ test("dealer activity maps to one company-scoped canonical event", () => {
     visibility: "company",
     summary: "Private leads record updated in dealer CRM.",
   });
-  expect(event?.actor).toEqual({ type: "specialist", id: "specialist-1" });
+  expect(event?.actor).toBeNull();
   expect(normalizeDealerActivityEvent(row, "company-2")).toBeNull();
 });
 
