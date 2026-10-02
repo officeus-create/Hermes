@@ -1,0 +1,45 @@
+name: Catalog production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/catalog-connect-live.v2.js'
+      - 'functions/api/catalog/companies.ts'
+      - 'src/pages/businesses/index.astro'
+      - 'tests/catalog-production-smoke.spec.ts'
+      - 'playwright.production.config.ts'
+      - '.github/workflows/catalog-production-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-catalog:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HERMES_PRODUCTION_URL: https://hermeslogisticsus.com
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Wait for production deploy
+        if: github.event_name == 'push'
+        run: sleep 120
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify deployed Catalog runtime
+        run: npx playwright test tests/catalog-production-smoke.spec.ts --config=playwright.production.config.ts
