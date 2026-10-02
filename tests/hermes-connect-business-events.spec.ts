@@ -138,7 +138,7 @@ test("Dealer API and timeline adopt projection without deleting legacy activity"
   const api = await readFile("functions/api/hermes-connect/dealer/crm.ts", "utf8");
   const page = await readFile("src/pages/services/hermes-connect/dealers/workspace/crm.astro", "utf8");
   expect(api).toContain("normalizeDealerActivityEvent");
-  expect(api).toContain("activity:");
-  expect(api).toContain("events:");
+  expect(api).toContain("return { activity, events }");
+  expect(api).toContain("normalizeDealerActivityEvent");
   expect(page).toContain("payload.events || payload.activity");
 });
