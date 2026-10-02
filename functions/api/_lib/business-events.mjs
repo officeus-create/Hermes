@@ -30,6 +30,10 @@ export function sanitizeBusinessEventMetadata(metadata, allowedKeys = []) {
   return safe;
 }
 
+/**
+ * @param {Record<string, any>} input
+ * @param {{ allowedMetadataKeys?: string[] }} [options]
+ */
 export function normalizeBusinessEvent(input = {}, { allowedMetadataKeys = [] } = {}) {
   const eventId = clean(input.event_id, 160);
   const eventType = clean(input.event_type, 80).toLowerCase().replace(/[^a-z0-9_.:-]+/g, "_");
