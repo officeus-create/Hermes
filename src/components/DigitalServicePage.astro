@@ -156,7 +156,7 @@ const faqSchema = {
 ---
 
 <BaseLayout title={content.title} description={content.description} schema={[serviceSchema, breadcrumbSchema, faqSchema]}>
-  <SiteHeader activePath={parentHref} />
+  <SiteHeader activePath={parentHref} theme={websiteContext ? "light" : "dark"} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
       <div class="shell">
