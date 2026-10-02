@@ -10,7 +10,7 @@ export type HermesGridPage<Row> = {
   end: number;
 };
 
-const text = (value: unknown) => String(value ?? "").trim().toLocaleLowerCase();
+const text = (value: unknown) => String(value ?? "").trim().toLowerCase();
 
 export function normalizeHermesGridQuery(value: unknown) {
   return text(value).replace(/\s+/g, " ");
