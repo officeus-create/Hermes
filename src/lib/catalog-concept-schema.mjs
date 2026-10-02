@@ -46,5 +46,5 @@ export const buildCatalogConceptSchema = ({ business, profileUrl, catalogUrl = "
       acceptedAnswer: { "@type": "Answer", text: item.answer },
     })),
   } : null;
-  return [businessSchema, serviceSchema, breadcrumbSchema, faqSchema].filter(Boolean);
+  return [businessSchema, serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 };
