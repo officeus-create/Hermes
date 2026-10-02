@@ -77,6 +77,17 @@ test("identity link is explicit, evidence backed, and drops unrelated payload fi
   expect(normalized).not.toHaveProperty("company_name");
 });
 
+test("identity link rejects free-form or personal verifier/evidence text", () => {
+  expect(normalizeBusinessIdentityLink({
+    ...verifiedLink,
+    evidence_ref: "Owner says this is definitely the same business",
+  })).toBeNull();
+  expect(normalizeBusinessIdentityLink({
+    ...verifiedLink,
+    verified_by: "owner@example.test",
+  })).toBeNull();
+});
+
 test("only an active explicit same-business link resolves an alias", () => {
   expect(resolveCanonicalBusinessRef("repair_shop:shop_1", [verifiedLink])).toBe("company:company_1");
   expect(resolveCanonicalBusinessRef("repair_shop:shop_1", [{ ...verifiedLink, active: false }]))
