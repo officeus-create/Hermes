@@ -1,5 +1,134 @@
 [
   {
+    "id": "shopify-canvas-ai-store-design-october-2026",
+    "direction": "marketing",
+    "slug": "shopify-canvas-ai-store-design-october-2026",
+    "title": "Shopify Canvas Brings Sidekick Into Store-Wide Design | Hermes Insights",
+    "description": "Shopify introduced Canvas, a new store-wide design workspace where merchants can work with Sidekick across real theme code, interactive previews and multiple pages. Hermes explains what the release changes for AI-assisted website production and what still requires human QA.",
+    "eyebrow": "AI Website Production Update · October 2026",
+    "h1": "Shopify is moving AI from page edits to store-wide design. What should businesses keep under human control?",
+    "conciseAnswer": "Shopify announced Canvas on October 1, 2026 as a new design surface rolling out to merchants over the coming days. Canvas lets merchants view pages together, edit directly or work with Sidekick through chat, and preview the real code-backed store across products, collections and screen sizes. Shopify also says Canvas is early and is not replacing the existing editor yet. The practical lesson is to use AI for faster iteration while keeping brand, search, accessibility, analytics and conversion QA explicit.",
+    "explanation": [
+      "What changed: Shopify introduced Canvas, a store-wide visual workspace that works with Sidekick, its AI agent. Shopify says merchants can see pages together, edit elements directly or ask Sidekick to change them through chat, preview interactive code-backed pages across products and screen sizes, and let Sidekick work directly on theme files while validating code and reviewing screenshots.",
+      "Why it matters: AI-assisted website work is moving beyond isolated copy or section generation toward coordinated multi-page implementation. That can shorten iteration, but speed does not prove that a site is discoverable, accessible, conversion-ready or aligned with a business's actual offer. Historical Hermes website and marketing material is used only for the anonymized operating pattern that build, QA, search foundations and measurable conversion should be treated as one system. No private client work, pricing or performance claims are republished.",
+      "What to do: use an AI builder for bounded implementation and iteration, then run independent checks for canonical URLs, crawlability, structured data where appropriate, responsive behavior, accessibility, analytics events, forms, page speed, brand consistency and conversion paths. Preserve human approval for public claims and high-impact changes, and keep a rollback path. Shopify itself says Canvas is early and is not replacing the existing editor yet.",
+      "Result: a business can capture the speed advantage of agent-assisted design without confusing generated output with a finished production website. The useful operating model is AI-assisted build plus independent QA plus owned measurement. This does not guarantee higher rankings, traffic or sales. Source/date: Shopify, October 1, 2026."
+    ],
+    "takeaways": [
+      "Shopify Canvas is rolling out as a new store-wide design surface used with Sidekick",
+      "Canvas works on code-backed pages and lets merchants review interactive results across pages and screen sizes",
+      "Shopify says Canvas is early and is not replacing the existing editor yet",
+      "AI-assisted design should still pass independent search, accessibility, analytics and conversion QA"
+    ],
+    "faq": [
+      {
+        "question": "Is Shopify Canvas replacing the existing Shopify editor?",
+        "answer": "No. Shopify says Canvas is early and is not replacing the existing editor yet."
+      },
+      {
+        "question": "Does Canvas only generate static mockups?",
+        "answer": "Shopify says Canvas shows a render of the real code behind the store, with interactive previews and views across products, collections and screen sizes."
+      },
+      {
+        "question": "Does using an AI website builder improve SEO automatically?",
+        "answer": "No. The Shopify announcement is about store design and implementation workflow. Search visibility still depends on crawlability, content, technical quality, relevance, authority and measurement; no ranking guarantee follows from using Canvas or another AI builder."
+      }
+    ],
+    "related": [
+      {
+        "title": "Website Development",
+        "body": "Review Hermes website-development services and the technical SEO, QA and conversion foundations used for production builds.",
+        "href": "/services/website-development/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect website production with search visibility, content systems, analytics and conversion.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Review the Technology direction for software, automation and implementation workflows.",
+        "href": "/paths/technology/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Website Development",
+      "href": "/services/website-development/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Shopify — Introducing Canvas",
+    "sourceUrl": "https://www.shopify.com/news/introducing-canvas",
+    "sourcePublishedAt": "2026-10-01",
+    "datePublished": "2026-10-02",
+    "dateModified": "2026-10-02",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Shopify Canvas",
+      "Sidekick website design",
+      "AI website builder",
+      "AI ecommerce design",
+      "website development AI",
+      "Shopify Sidekick",
+      "AI web design workflow"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Shopify Canvas product announcement",
+        "use": "primary",
+        "url": "https://www.shopify.com/news/introducing-canvas",
+        "observedAt": "2026-10-02",
+        "eventDate": "2026-10-01",
+        "notes": "Primary Shopify source for Canvas rollout, Sidekick collaboration, code-backed previews, theme-file work and Shopify's statement that Canvas is early and not replacing the existing editor yet."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical website and marketing operating material",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern that website build, QA, search foundations and measurable conversion belong in one production system. No client identity, pricing, private results or unpublished implementation data are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes website and marketing operating material",
+      "nowPeriod": "October 2026",
+      "summary": "Historical Hermes website work treated build quality, search foundations, QA and conversion as connected concerns; Shopify's October 2026 Canvas release shows a major platform moving AI assistance deeper into the implementation layer. All current Shopify capability claims come only from Shopify's dated public announcement.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.shopify.com/news/introducing-canvas"
+    },
+    "publicationScore": {
+      "score": 81,
+      "recommendation": "standalone",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+8 first-party evidence",
+        "+5 historical comparison",
+        "+13 search value",
+        "+15 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "dat-reefer-rates-october-2026",
     "direction": "logistics",
     "slug": "reefer-rates-capacity-october-2026",
