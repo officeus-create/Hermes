@@ -64,6 +64,7 @@ const stateLabels = {
     <div class="logistics-spatial-frame">
       <div class="logistics-spatial-map" aria-label="Illustrative logistics operating path">
         <div class="logistics-spatial-grid" aria-hidden="true"></div>
+        <div class="logistics-spatial-ambient" aria-hidden="true"></div>
         <svg class="logistics-spatial-route" viewBox="0 0 760 420" role="img" aria-label="Illustrative route connecting request context, fit, source boundary, human review, and handoff">
           <path class="logistics-spatial-route-base" d="M70 330 C150 260 180 105 300 130 S425 330 515 250 S610 90 700 120" />
           <path class="logistics-spatial-route-live" d="M70 330 C150 260 180 105 300 130 S425 330 515 250 S610 90 700 120" />
@@ -163,15 +164,23 @@ const stateLabels = {
   .logistics-spatial-heading > div:last-child > strong { display:block; color:#31526f; font-size:.8rem; line-height:1.5; }
   .logistics-spatial-frame { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(300px,.72fr); gap:1rem; padding:1rem; border:1px solid rgba(21,76,126,.14); border-radius:30px; background:#fff; box-shadow:0 28px 80px rgba(17,43,103,.08); }
   .logistics-spatial-map { position:relative; min-height:520px; overflow:hidden; border-radius:23px; background:linear-gradient(145deg,#102f49,#174a6d 48%,#1c5a73); color:#fff; }
-  .logistics-spatial-grid { position:absolute; inset:0; opacity:.2; background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px); background-size:44px 44px; transform:perspective(700px) rotateX(58deg) scale(1.5); transform-origin:center 80%; }
-  .logistics-spatial-map::before,.logistics-spatial-map::after { content:""; position:absolute; border:1px solid rgba(255,255,255,.13); background:rgba(255,255,255,.045); border-radius:12px; transform:rotate(-7deg); }
+  .logistics-spatial-grid { position:absolute; inset:0; opacity:.2; background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px); background-size:44px 44px; transform:perspective(700px) rotateX(58deg) scale(1.5); transform-origin:center 80%; animation:logistics-grid-drift 11s ease-in-out infinite alternate; will-change:transform,opacity; }
+  .logistics-spatial-ambient { position:absolute; inset:-14% -18%; z-index:1; pointer-events:none; opacity:.72; overflow:hidden; background:radial-gradient(circle at 18% 72%,rgba(121,217,255,.16),transparent 24%),radial-gradient(circle at 76% 24%,rgba(94,153,255,.11),transparent 23%),linear-gradient(180deg,rgba(255,255,255,.025),transparent 55%); animation:logistics-ambient-drift 9s ease-in-out infinite alternate; will-change:transform,opacity; }
+  .logistics-spatial-ambient::before { content:""; position:absolute; top:-34%; left:-32%; width:24%; height:170%; background:linear-gradient(90deg,transparent,rgba(180,232,255,.14),transparent); transform:skewX(-16deg); filter:blur(5px); animation:logistics-light-sweep 10s cubic-bezier(.45,0,.2,1) infinite; }
+  .logistics-spatial-ambient::after { content:""; position:absolute; left:9%; right:8%; bottom:9%; height:22%; border-radius:50%; background:radial-gradient(ellipse at center,rgba(95,205,255,.11),transparent 68%); animation:logistics-horizon-breathe 7s ease-in-out infinite alternate; }
+  .logistics-spatial-map::before,.logistics-spatial-map::after { content:""; position:absolute; z-index:1; border:1px solid rgba(255,255,255,.13); background:rgba(255,255,255,.045); border-radius:12px; transform:rotate(-7deg); }
   .logistics-spatial-map::before { width:190px; height:90px; left:16%; top:12%; }
   .logistics-spatial-map::after { width:220px; height:120px; right:10%; bottom:18%; transform:rotate(8deg); }
-  .logistics-spatial-route { position:absolute; inset:7% 5% 12%; width:90%; height:78%; overflow:visible; }
+  .logistics-spatial-route { position:absolute; z-index:2; inset:7% 5% 12%; width:90%; height:78%; overflow:visible; }
   .logistics-spatial-route path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .logistics-spatial-route-base { stroke:rgba(255,255,255,.16); stroke-width:9; }
-  .logistics-spatial-route-live { stroke:#79d9ff; stroke-width:4; stroke-dasharray:9 10; filter:drop-shadow(0 0 7px rgba(121,217,255,.55)); animation:logistics-route-flow 1.6s linear infinite; }
+  .logistics-spatial-route-live { stroke:#79d9ff; stroke-width:4; stroke-dasharray:9 10; filter:drop-shadow(0 0 7px rgba(121,217,255,.55)); animation:logistics-route-flow 3.2s linear infinite,logistics-route-glow 7s ease-in-out infinite; }
   .logistics-spatial-node { position:absolute; z-index:3; display:grid; gap:.18rem; min-width:84px; padding:.65rem .72rem; border:1px solid rgba(255,255,255,.16); border-radius:14px; background:rgba(8,28,45,.76); box-shadow:0 12px 30px rgba(0,0,0,.12); transition:background .35s ease,border-color .35s ease,transform .35s ease; }
+  .logistics-spatial-node::after { content:""; position:absolute; inset:-6px; border:1px solid rgba(121,217,255,.38); border-radius:18px; opacity:0; transform:scale(.96); pointer-events:none; animation:logistics-node-wake 10s ease-out infinite; }
+  .logistics-spatial-node-fit::after { animation-delay:2s; }
+  .logistics-spatial-node-boundary::after { animation-delay:4s; }
+  .logistics-spatial-node-review::after { animation-delay:6s; }
+  .logistics-spatial-node-handoff::after { animation-delay:8s; }
   .logistics-spatial-node span { font:600 .65rem/1 "IBM Plex Mono",monospace; letter-spacing:.08em; color:#8ccff1; }
   .logistics-spatial-node strong { font-size:.8rem; }
   .logistics-spatial-node.active { background:#fff; border-color:#fff; color:#123c5c; transform:translateY(-4px); }
@@ -202,6 +211,33 @@ const stateLabels = {
   .logistics-spatial-actions > div:last-child { display:flex; flex-wrap:wrap; gap:.7rem; justify-content:flex-end; }
   .logistics-spatial-actions .button-ghost { color:#10204e; border-color:rgba(16,32,78,.18); }
   @keyframes logistics-route-flow { to { stroke-dashoffset:-38; } }
+  @keyframes logistics-route-glow {
+    0%,100% { opacity:.72; }
+    50% { opacity:1; }
+  }
+  @keyframes logistics-grid-drift {
+    0% { opacity:.16; transform:perspective(700px) rotateX(58deg) translate3d(0,0,0) scale(1.5); }
+    100% { opacity:.23; transform:perspective(700px) rotateX(58deg) translate3d(0,8px,0) scale(1.52); }
+  }
+  @keyframes logistics-ambient-drift {
+    0% { opacity:.58; transform:translate3d(-1.2%,.4%,0) scale(1); }
+    100% { opacity:.78; transform:translate3d(1.2%,-.5%,0) scale(1.025); }
+  }
+  @keyframes logistics-light-sweep {
+    0%,12% { transform:translate3d(-15%,0,0) skewX(-16deg); opacity:0; }
+    28% { opacity:.55; }
+    58% { opacity:.18; }
+    72%,100% { transform:translate3d(610%,0,0) skewX(-16deg); opacity:0; }
+  }
+  @keyframes logistics-horizon-breathe {
+    0% { opacity:.25; transform:scaleX(.94) translateY(2px); }
+    100% { opacity:.65; transform:scaleX(1.04) translateY(-2px); }
+  }
+  @keyframes logistics-node-wake {
+    0%,82%,100% { opacity:0; transform:scale(.96); }
+    86% { opacity:.45; }
+    93% { opacity:.12; transform:scale(1.12); }
+  }
   @media(max-width:980px) {
     .logistics-spatial-heading,.logistics-spatial-actions { grid-template-columns:1fr; }
     .logistics-spatial-frame { grid-template-columns:1fr; }
@@ -227,7 +263,18 @@ const stateLabels = {
     .logistics-spatial-actions .button { width:100%; justify-content:center; }
   }
   @media(prefers-reduced-motion:reduce) {
-    .logistics-spatial-route-live { animation:none; stroke-dasharray:none; }
+    .logistics-spatial-grid,
+    .logistics-spatial-ambient,
+    .logistics-spatial-ambient::before,
+    .logistics-spatial-ambient::after,
+    .logistics-spatial-route-live,
+    .logistics-spatial-node::after { animation:none !important; }
+    .logistics-spatial-grid { opacity:.2; transform:perspective(700px) rotateX(58deg) scale(1.5); }
+    .logistics-spatial-ambient { opacity:.48; transform:none; }
+    .logistics-spatial-ambient::before { opacity:.12; transform:translate3d(230%,0,0) skewX(-16deg); }
+    .logistics-spatial-ambient::after { opacity:.35; transform:none; }
+    .logistics-spatial-route-live { stroke-dasharray:none; opacity:.9; }
+    .logistics-spatial-node::after { opacity:0; transform:none; }
     .logistics-spatial-node,.logistics-spatial-steps li { transition:none !important; }
   }
 </style>
