@@ -88,7 +88,7 @@ const stages = [
     const panels = Array.from(showroom.querySelectorAll("[data-showroom-panel]"));
     const explanations = Array.from(showroom.querySelectorAll("[data-showroom-explanation]"));
     const nodes = Array.from(showroom.querySelectorAll("[data-route-node]"));
-    const activate = (key) => {
+    const activate = (key: string) => {
       const targetIndex = steps.findIndex((step) => step.getAttribute("data-showroom-step") === key);
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-showroom-step") === key)));
       panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-showroom-panel") === key));
