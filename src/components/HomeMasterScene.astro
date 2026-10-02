@@ -39,7 +39,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}`} data-home-route data-route-id={path.id}>
+            aria-label={path.id === "logistics" ? `${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: request, route fit, human review, handoff.` : `${meta.goal}: ${path.brandLabel} — ${meta.detail}`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               <picture>
                 <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
@@ -49,6 +49,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             {path.id === "logistics" && <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle"><img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="White delivery truck" decoding="async" /></span>}
             {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" aria-hidden="true" alt="Green leaves" decoding="async" /></span>}
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
+            {path.id === "logistics" && (
+              <span class="home-live-explainer" data-home-explainer="logistics" aria-hidden="true">
+                <span class="home-live-kicker">Example workflow</span>
+                <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M10 14 C26 8 31 39 47 34 S67 12 88 20" />
+                </svg>
+                <span class="home-live-step" data-live-step="event"><b>01</b><em>Request</em></span>
+                <span class="home-live-step" data-live-step="system"><b>02</b><em>Route fit</em></span>
+                <span class="home-live-step" data-live-step="human"><b>03</b><em>Human review</em></span>
+                <span class="home-live-step" data-live-step="outcome"><b>04</b><em>Handoff</em></span>
+              </span>
+            )}
             {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
             {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
             {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i></span>}
@@ -106,6 +118,25 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-road-flow i:nth-child(1){left:12%;top:14%}.home-road-flow i:nth-child(2){left:44%;top:37%}.home-road-flow i:nth-child(3){left:74%;top:13%}
 .home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i{animation:home-road-streak 1.9s ease-in-out 2}
 .home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(2){animation-delay:.28s}.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(3){animation-delay:.56s}
+.home-live-explainer{position:absolute;z-index:1;inset:9% 5% 37%;pointer-events:none;opacity:0;transform:translateY(7px);transition:opacity .28s ease .08s,transform .38s cubic-bezier(.16,1,.3,1) .08s}
+.home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid #d9efffaa;border-radius:999px;background:#0b2139c7;box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#edf8ff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
+.home-live-path{position:absolute;inset:9% 0 0;width:100%;height:82%;overflow:visible}
+.home-live-path path{fill:none;stroke:#d8f4ff;stroke-width:.75;stroke-linecap:round;stroke-dasharray:180;stroke-dashoffset:180;filter:drop-shadow(0 0 4px #51bfff);opacity:.88}
+.home-live-step{position:absolute;display:flex;align-items:center;gap:5px;min-width:0;padding:6px 8px;border:1px solid #dff3ff99;border-radius:999px;background:#0b2139d9;box-shadow:0 8px 20px #0715273b;backdrop-filter:blur(7px);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
+.home-live-step::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:#a9e4ff;box-shadow:0 0 0 3px #8ed9ff22,0 0 9px #6dccff}
+.home-live-step b{color:#9ed8ff;font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
+.home-live-step em{overflow:hidden;color:#fff;font:700 clamp(.48rem,.62vw,.64rem)/1.1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis}
+.home-live-step[data-live-step="event"]{left:2%;top:21%}
+.home-live-step[data-live-step="system"]{left:29%;top:48%}
+.home-live-step[data-live-step="human"]{left:55%;top:24%}
+.home-live-step[data-live-step="outcome"]{right:1%;top:37%}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-explainer{opacity:1;transform:translateY(0)}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-path path{animation:home-live-route 1.55s cubic-bezier(.16,1,.3,1) .2s forwards}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step{opacity:1;transform:translateY(0) scale(1)}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="event"]{transition-delay:.26s}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
+.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
 .home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
 .home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
 .home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-child{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
@@ -130,6 +161,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-shelf-book:nth-child(3){right:13%;height:8%;top:32%;background:linear-gradient(90deg,#a68fb7,#ebd9eb,#a68fb7)}.home-shelf-book:nth-child(4){right:18%;height:7%;top:33%;background:linear-gradient(90deg,#a792c2,#e2cde8,#a792c2)}
 .home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book{animation:home-book-choose 1.8s ease-in-out 2}
 .home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(3){animation-delay:.3s}.home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(4){animation-delay:.6s}
+@keyframes home-live-route{to{stroke-dashoffset:0}}
 @keyframes home-letter-hop{0%,70%,100%{transform:translateY(0) rotate(0)}28%{transform:translateY(-.16em) rotate(-8deg)}50%{transform:translateY(.02em) rotate(3deg)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
@@ -152,6 +184,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}}
-@media(prefers-reduced-motion:reduce){.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.43rem}.home-live-path{display:none}.home-live-step{padding:4px 6px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.4rem}.home-live-step em{font-size:.5rem;line-height:1.05;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}}
+@media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>
