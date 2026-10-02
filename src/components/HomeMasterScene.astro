@@ -2,25 +2,34 @@
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
-const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string }> = {
+const flowStages = ["event", "system", "human", "outcome"] as const;
+const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
     detail: "Car hauling · dealers · shippers · carriers",
+    flow: ["Request", "Route fit", "Human review", "Handoff"],
+    flowPath: "M10 14 C26 8 31 39 47 34 S67 12 88 20",
     displayNumber: "01", crop: 20, goal: "Move freight",
   },
   marketing: {
     accent: "var(--hermes-marketing)",
     detail: "Website · SEO/GEO · customer acquisition",
+    flow: ["Signal", "Distribution", "Site action", "Evidence"],
+    flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "02", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
+    flow: ["Brief", "Build", "QA", "Readback"],
+    flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "03", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
     detail: "U.S. logistics · sales · marketing · operations",
+    flow: ["Task", "Attempt", "Review", "Progression"],
+    flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "04", crop: 818, goal: "Develop people",
   },
 };
@@ -36,10 +45,11 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
       {publicPaths.map((path) => {
         const meta = routeMeta[path.id] ?? routeMeta.logistics;
+        const flowLabel = meta.flow.join(", ").toLowerCase();
         return (
           <a class={`home-master-route home-master-route-${path.id}`} href={`/paths/${path.id}/`}
             style={`--route-accent:${meta.accent}`}
-            aria-label={path.id === "logistics" ? `${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: request, route fit, human review, handoff.` : `${meta.goal}: ${path.brandLabel} — ${meta.detail}`} data-home-route data-route-id={path.id}>
+            aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               <picture>
                 <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
@@ -49,18 +59,17 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             {path.id === "logistics" && <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle"><img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="White delivery truck" decoding="async" /></span>}
             {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" aria-hidden="true" alt="Green leaves" decoding="async" /></span>}
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
-            {path.id === "logistics" && (
-              <span class="home-live-explainer" data-home-explainer="logistics" aria-hidden="true">
-                <span class="home-live-kicker">Example workflow</span>
-                <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M10 14 C26 8 31 39 47 34 S67 12 88 20" />
-                </svg>
-                <span class="home-live-step" data-live-step="event"><b>01</b><em>Request</em></span>
-                <span class="home-live-step" data-live-step="system"><b>02</b><em>Route fit</em></span>
-                <span class="home-live-step" data-live-step="human"><b>03</b><em>Human review</em></span>
-                <span class="home-live-step" data-live-step="outcome"><b>04</b><em>Handoff</em></span>
-              </span>
-            )}
+            <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
+              <span class="home-live-kicker">Example workflow</span>
+              <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
+                <path d={meta.flowPath} />
+              </svg>
+              {meta.flow.map((label, index) => (
+                <span class="home-live-step" data-live-step={flowStages[index]} data-live-index={index}>
+                  <b>{String(index + 1).padStart(2, "0")}</b><em>{label}</em>
+                </span>
+              ))}
+            </span>
             {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
             {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
             {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i></span>}
@@ -105,6 +114,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-legacy-anchor{display:block;scroll-margin-top:6rem}
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;border:2px solid #fff;border-radius:34px;overflow:hidden;box-shadow:0 16px 48px #293b6414;scroll-margin-top:6rem;background:#fff}
 .home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
+.home-master-route-logistics{--flow-panel:#0b2139d9;--flow-kicker:#0b2139c7;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
+.home-master-route-marketing{--flow-panel:#102c25dc;--flow-kicker:#102c25c9;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
+.home-master-route-technology{--flow-panel:#3a281edc;--flow-kicker:#3a281ec9;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
+.home-master-route-academy{--flow-panel:#2d2044dc;--flow-kicker:#2d2044c9;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
@@ -119,24 +132,36 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i{animation:home-road-streak 1.9s ease-in-out 2}
 .home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(2){animation-delay:.28s}.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(3){animation-delay:.56s}
 .home-live-explainer{position:absolute;z-index:1;inset:9% 5% 37%;pointer-events:none;opacity:0;transform:translateY(7px);transition:opacity .28s ease .08s,transform .38s cubic-bezier(.16,1,.3,1) .08s}
-.home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid #d9efffaa;border-radius:999px;background:#0b2139c7;box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#edf8ff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
+.home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-kicker);box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#fff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-live-path{position:absolute;inset:9% 0 0;width:100%;height:82%;overflow:visible}
-.home-live-path path{fill:none;stroke:#d8f4ff;stroke-width:.75;stroke-linecap:round;stroke-dasharray:180;stroke-dashoffset:180;filter:drop-shadow(0 0 4px #51bfff);opacity:.88}
-.home-live-step{position:absolute;display:flex;align-items:center;gap:5px;min-width:0;padding:6px 8px;border:1px solid #dff3ff99;border-radius:999px;background:#0b2139d9;box-shadow:0 8px 20px #0715273b;backdrop-filter:blur(7px);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
-.home-live-step::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:#a9e4ff;box-shadow:0 0 0 3px #8ed9ff22,0 0 9px #6dccff}
-.home-live-step b{color:#9ed8ff;font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
+.home-live-path path{fill:none;stroke:var(--flow-line);stroke-width:.75;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;filter:drop-shadow(0 0 4px var(--flow-glow));opacity:.88}
+.home-live-step{position:absolute;display:flex;align-items:center;gap:5px;min-width:0;padding:6px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-panel);box-shadow:0 8px 20px #0715273b;backdrop-filter:blur(7px);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
+.home-live-step::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:var(--flow-dot);box-shadow:0 0 0 3px color-mix(in srgb,var(--flow-dot) 22%,transparent),0 0 9px var(--flow-glow)}
+.home-live-step b{color:var(--flow-light);font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
 .home-live-step em{overflow:hidden;color:#fff;font:700 clamp(.48rem,.62vw,.64rem)/1.1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis}
 .home-live-step[data-live-step="event"]{left:2%;top:21%}
 .home-live-step[data-live-step="system"]{left:29%;top:48%}
 .home-live-step[data-live-step="human"]{left:55%;top:24%}
 .home-live-step[data-live-step="outcome"]{right:1%;top:37%}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-explainer{opacity:1;transform:translateY(0)}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-path path{animation:home-live-route 1.55s cubic-bezier(.16,1,.3,1) .2s forwards}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step{opacity:1;transform:translateY(0) scale(1)}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="event"]{transition-delay:.26s}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
+.home-master-route-marketing .home-live-step[data-live-step="event"]{left:2%;top:39%}
+.home-master-route-marketing .home-live-step[data-live-step="system"]{left:21%;top:14%}
+.home-master-route-marketing .home-live-step[data-live-step="human"]{left:49%;top:45%}
+.home-master-route-marketing .home-live-step[data-live-step="outcome"]{right:1%;top:22%}
+.home-master-route-technology .home-live-step[data-live-step="event"]{left:2%;top:18%}
+.home-master-route-technology .home-live-step[data-live-step="system"]{left:28%;top:49%}
+.home-master-route-technology .home-live-step[data-live-step="human"]{left:54%;top:26%}
+.home-master-route-technology .home-live-step[data-live-step="outcome"]{right:1%;top:48%}
+.home-master-route-academy .home-live-step[data-live-step="event"]{left:2%;top:60%}
+.home-master-route-academy .home-live-step[data-live-step="system"]{left:27%;top:49%}
+.home-master-route-academy .home-live-step[data-live-step="human"]{left:52%;top:36%}
+.home-master-route-academy .home-live-step[data-live-step="outcome"]{right:1%;top:22%}
+.home-master-route:is(:hover,:focus-visible) .home-live-explainer{opacity:1;transform:translateY(0)}
+.home-master-route:is(:hover,:focus-visible) .home-live-path path{animation:home-live-route 1.55s cubic-bezier(.16,1,.3,1) .2s forwards}
+.home-master-route:is(:hover,:focus-visible) .home-live-step{opacity:1;transform:translateY(0) scale(1)}
+.home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="event"]{transition-delay:.26s}
+.home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
+.home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
+.home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
 .home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
 .home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
 .home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-child{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
