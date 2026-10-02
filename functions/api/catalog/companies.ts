@@ -1,6 +1,7 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
+import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
 
 type Env = { DB?: any };
@@ -22,18 +23,32 @@ async function repairShopServices(db: any, ownerId: string, shopId: string) {
   return services.map((item: any) => String(item.name || "").trim()).filter(Boolean).slice(0, 20);
 }
 
+const academyTypeLabels: Record<string, string> = {
+  business_academy: "Business academy",
+  online_school: "Online school",
+  courses: "Courses",
+  business_club: "Business club",
+  coaching: "Coaching / mentoring",
+  corporate_academy: "Corporate academy",
+};
+
 export async function onRequestGet({ env }: { env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureRepairShopProfileSchema(env.DB);
+  await ensureAcademyBusinessProfilesSchema(env.DB);
 
   const [companyResult, repairResult] = await Promise.all([
     env.DB.prepare(`
-      SELECT id, company_name, slug, company_type, city, state, catalog_status, created_at, updated_at
-      FROM hermes_company_profiles
-      WHERE catalog_opt_in = 1
-        AND catalog_status IN ('self_submitted', 'verified_public')
-      ORDER BY CASE WHEN catalog_status = 'verified_public' THEN 0 ELSE 1 END, updated_at DESC
+      SELECT
+        c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,
+        c.catalog_status,c.created_at,c.updated_at,
+        a.academy_type
+      FROM hermes_company_profiles c
+      LEFT JOIN hermes_academy_business_profiles a ON a.company_id=c.id
+      WHERE c.catalog_opt_in = 1
+        AND c.catalog_status IN ('self_submitted', 'verified_public')
+      ORDER BY CASE WHEN c.catalog_status = 'verified_public' THEN 0 ELSE 1 END, c.updated_at DESC
       LIMIT 500
     `).all(),
     env.DB.prepare(`
@@ -46,21 +61,30 @@ export async function onRequestGet({ env }: { env: Env }) {
     `).all(),
   ]);
 
-  const companies = (companyResult?.results || []).map((row: any) => ({
-    id: row.id,
-    companyName: row.company_name,
-    slug: row.slug,
-    companyType: row.company_type,
-    city: row.city,
-    state: row.state,
-    status: row.catalog_status,
-    source: "hermes_connect_company",
-    profileUrl: null,
-    services: [],
-    verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }));
+  const companies = (companyResult?.results || []).map((row: any) => {
+    const academySubtype = String(row.academy_type || "");
+    const isAcademy = Boolean(academySubtype);
+    return {
+      id: String(row.id),
+      companyName: String(row.company_name || ""),
+      slug: String(row.slug || ""),
+      companyType: isAcademy ? "academy_business" : String(row.company_type || "other"),
+      ...(isAcademy ? {
+        subtype: academySubtype,
+        typeLabel: academyTypeLabels[academySubtype] || "Academy / Courses",
+      } : {}),
+      city: String(row.city || ""),
+      state: String(row.state || ""),
+      countryCode: String(row.country_code || "US"),
+      status: String(row.catalog_status || "self_submitted"),
+      source: isAcademy ? "academy_business_crm" : "hermes_connect_company",
+      profileUrl: isAcademy ? `/businesses/connect/academy/${encodeURIComponent(String(row.slug || ""))}/` : null,
+      services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : [],
+      verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  });
 
   for (const row of repairResult?.results || []) {
     const services = await repairShopServices(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
@@ -71,6 +95,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       companyType: "repair_shop",
       city: row.city,
       state: row.region || row.state || row.country_code,
+      countryCode: row.country_code || "US",
       status: "self_submitted",
       source: "repair_shop_crm",
       profileUrl: `/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug || ""))}/`,
