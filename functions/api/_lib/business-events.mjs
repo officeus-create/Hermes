@@ -89,10 +89,11 @@ export function normalizeDealerActivityEvent(row, expectedCompanyId) {
 
 export function normalizeInternalAiEvent(row) {
   if (clean(row?.organization_scope, 80) !== "hermes_internal") return null;
+  const sourceEventId = clean(row?.id, 120);
   const taskId = clean(row?.task_id, 160);
-  if (!taskId) return null;
+  if (!sourceEventId || !taskId) return null;
   return normalizeBusinessEvent({
-    event_id: `hcai_event_${clean(row?.id, 120)}`,
+    event_id: `hcai_event_${sourceEventId}`,
     event_type: row?.event_type,
     entity_type: "ai_task",
     entity_id: taskId,
