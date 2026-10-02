@@ -77,6 +77,13 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
  const page=await context.newPage();
  await page.goto('/');
  await expect(page.getByRole('navigation',{name:'Hermes operating directions'})).toBeVisible();
+ const explainer=page.locator('[data-home-explainer="logistics"]');
+ await expect(explainer).toHaveCount(1);
+ await expect(explainer).toContainText('Request');
+ await expect(explainer).toContainText('Route fit');
+ await expect(explainer).toContainText('Human review');
+ await expect(explainer).toContainText('Handoff');
+ await expect(explainer).toHaveCSS('opacity','1');
  expect(await page.locator('.home-portal-art img').first().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s');
  await page.locator('[data-route-id="marketing"]').click();
  await expect(page).toHaveURL(/\/paths\/marketing\//);
@@ -129,6 +136,32 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  expect(artwork.length).toBeGreaterThanOrEqual(6);
  expect(new Set(artwork).size).toBe(artwork.length);
+});
+
+test('Logistics living layer reveals event to human handoff and remains static on touch',async({browser,page},testInfo)=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/');
+ const route=page.locator('[data-route-id="logistics"]');
+ const explainer=route.locator('[data-home-explainer="logistics"]');
+ const hoverCapable=await page.evaluate(()=>matchMedia('(hover:hover) and (pointer:fine)').matches);
+ if(hoverCapable) {
+  await expect(explainer).toHaveCSS('opacity','0');
+  await route.hover();
+ }
+ await expect(explainer).toHaveCSS('opacity','1');
+ for(const id of ['event','system','human','outcome']) {
+  await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
+ }
+ await expect(route).toHaveAttribute('aria-label',/Example flow: request, route fit, human review, handoff/);
+
+ const touch=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference'});
+ const mobile=await touch.newPage();
+ await mobile.goto('/');
+ const mobileExplainer=mobile.locator('[data-home-explainer="logistics"]');
+ await expect(mobileExplainer).toHaveCSS('opacity','1');
+ expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await touch.close();
 });
 
 test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
