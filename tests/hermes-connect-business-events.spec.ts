@@ -20,6 +20,34 @@ test("business event metadata is explicit allowlist and rejects sensitive keys",
   });
 });
 
+test("event payload cannot self-authorize metadata fields", () => {
+  const event = normalizeBusinessEvent({
+    event_id: "evt-meta",
+    event_type: "lead_updated",
+    entity_type: "lead",
+    entity_id: "lead-1",
+    company_id: "company-1",
+    occurred_at: "2026-10-02T10:00:00Z",
+    source: "dealer_crm",
+    visibility: "company",
+    metadata: { stage: "qualified", email: "private@example.test" },
+    allowed_metadata_keys: ["stage", "email"],
+  });
+  expect(event?.metadata).toEqual({});
+  const explicitlyAllowed = normalizeBusinessEvent({
+    event_id: "evt-meta-2",
+    event_type: "lead_updated",
+    entity_type: "lead",
+    entity_id: "lead-1",
+    company_id: "company-1",
+    occurred_at: "2026-10-02T10:00:00Z",
+    source: "dealer_crm",
+    visibility: "company",
+    metadata: { stage: "qualified", email: "private@example.test" },
+  }, { allowedMetadataKeys: ["stage", "email"] });
+  expect(explicitlyAllowed?.metadata).toEqual({ stage: "qualified" });
+});
+
 test("shared business event contract fails closed on missing scope or invalid time", () => {
   expect(normalizeBusinessEvent({
     event_id: "evt-1",
