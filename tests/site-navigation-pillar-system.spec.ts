@@ -78,10 +78,10 @@ test("shared Hermes account access is noindex and uses the canonical auth servic
     contentType: "application/json",
     body: JSON.stringify({ success: false, error: "unauthorized" }),
   }));
-  await page.goto("/services/hermes-connect/access/");
+  await page.goto("/services/hermes-connect/access/?lang=en");
 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
-  await expect(page.getByRole("heading", { name: "One account across Hermes." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One sign-in. A CRM matched to your business." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await expect(page.locator('form[data-access-form] input[name="email"]')).toBeVisible();
   await expect(page.locator('form[data-access-form] input[name="password"]')).toBeVisible();
