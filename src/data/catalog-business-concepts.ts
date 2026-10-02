@@ -24,6 +24,20 @@ export type CatalogBusinessConcept = {
   trust?: { source: string; rating: number; reviewCount: number; observedAt: string };
   channels: { label: string; url: string; direction: "primary" | "secondary" | "maps" }[];
   factsRequiringOwnerConfirmation: string[];
+  localeCopy?: {
+    uk: {
+      disclosure: string; heroKicker: string; heroTitle: string; heroLead: string;
+      requestLabel: string; claimLabel: string; truthTitle: string;
+      opportunityTitle: string; opportunityBody: string; requestTitle: string; requestBody: string;
+    };
+    en: {
+      disclosure: string; heroKicker: string; heroTitle: string; heroLead: string;
+      requestLabel: string; claimLabel: string; truthTitle: string;
+      opportunityTitle: string; opportunityBody: string; requestTitle: string; requestBody: string;
+    };
+  };
+  faq?: { question: string; answer: string }[];
+  semanticCore?: string[];
   sourceRef: string;
 };
 
@@ -57,6 +71,39 @@ export const chaykaStoreConcept = Object.freeze({
     { label: "Telegram · More Chay", url: "https://t.me/more_chay", direction: "secondary" }
   ],
   factsRequiringOwnerConfirmation: ["exact repair service menu", "prices", "repair turnaround", "warranty", "supported device models", "accessory inventory", "tea inventory"],
+  localeCopy: {
+    uk: {
+      disclosure: "Публічні та надані бізнесом дані + концепція презентації Hermes",
+      heroKicker: "Ремонт телефонів · Чайки",
+      heroTitle: "Телефон зламався? Почніть із Чайка Store.",
+      heroLead: "Локальна точка в Чайках. Зателефонуйте або напишіть, щоб уточнити ремонт, аксесуари та актуальну наявність.",
+      requestLabel: "Залишити запит",
+      claimLabel: "Власник? Підтвердити профіль",
+      truthTitle: "Факти, концепція та межі підтвердження",
+      opportunityTitle: "Перетворіть концепцію на власну систему зростання.",
+      opportunityBody: "Сайт, Google Maps, SEO/GEO, Hermes Connect CRM, SMM та автоматизацію можна підключати лише після перевірки власника та окремого погодження.",
+      requestTitle: "Потрібен ремонт або зв’язок із бізнесом?",
+      requestBody: "Hermes збереже джерело запиту. Сторінка не означає, що бізнес уже є клієнтом Hermes."
+    },
+    en: {
+      disclosure: "Verified/public and business-supplied data + Hermes presentation concept",
+      heroKicker: "Phone repair · Chaiky",
+      heroTitle: "Phone problem? Start with Chayka Store.",
+      heroLead: "A local business in Chaiky. Call or message to confirm repair, accessories and current availability.",
+      requestLabel: "Start request",
+      claimLabel: "Owner? Verify profile",
+      truthTitle: "Facts, concept and confirmation boundaries",
+      opportunityTitle: "Turn the concept into an owned growth system.",
+      opportunityBody: "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated only after owner verification and separate approval.",
+      requestTitle: "Need repair or contact with the business?",
+      requestBody: "Hermes preserves the request source. This page does not mean the business is already a Hermes customer."
+    }
+  },
+  faq: [
+    { question: "Чи можна уточнити ремонт телефону через цю сторінку?", answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом." },
+    { question: "Це офіційний сайт Чайка Store?", answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes." }
+  ],
+  semanticCore: ["ремонт телефонів Чайки", "ремонт смартфонів Чайки", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
   sourceRef: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924"
 } satisfies CatalogBusinessConcept);
 
