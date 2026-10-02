@@ -90,6 +90,7 @@ const chaykaConceptRoute = read("src/pages/businesses/ukraine/chaiky/chayka-stor
 const catalogConceptData = read("src/data/catalog-business-concepts.ts");
 const catalogRequestHelper = read("src/lib/catalog-request.ts");
 const catalogRequestPage = read("src/pages/businesses/request/index.astro");
+const catalogLeadPayload = read("src/lib/catalog-lead-payload.mjs");
 assert.match(catalogRequestHelper, /"catalog-business-request"/);
 assert.match(catalogRequestHelper, /business_id/);
 assert.match(catalogRequestHelper, /source_ref/);
@@ -110,8 +111,11 @@ assert.match(websiteConcept, /claim\/customer status changes only after verifica
 assert.match(websiteConcept, /Request a handoff to this business/);
 assert.doesNotMatch(websiteConcept, />Contact this business\.</);
 assert.match(catalogRequestPage, /catalog-business-request/);
-assert.match(catalogRequestPage, /catalog_business_id/);
-assert.match(catalogRequestPage, /catalog_source_ref/);
+assert.match(catalogRequestPage, /buildCatalogLeadContext/);
+assert.match(catalogLeadPayload, /catalog_business_id/);
+assert.match(catalogLeadPayload, /catalog_source_ref/);
+assert.match(catalogLeadPayload, /utm_source/);
+assert.match(catalogLeadPayload, /gclid/);
 assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 
 const catalogEventApi = read("functions/api/catalog-business-event.ts");
