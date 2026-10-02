@@ -1,5 +1,6 @@
 ---
 const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
+const isHermesCatalog = Astro.url.pathname === "/businesses/";
 const accessPath = "/services/hermes-connect/load-board/access/";
 const previewDemoLoads = [
   { origin: "Chicago, IL", destination: "Dallas, TX", equipment: "dry_van", pickup: "2–6 PM", delivery: "8 AM–12 PM", distanceMiles: 925, deadheadMiles: 24, weightLbs: 42000, lengthFeet: 53, rateAmount: 2450, commodity: "Consumer goods", loadType: "FTL" },
@@ -137,10 +138,11 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
   </section>
 )}
 
-{isCanonicalLoadBoard && (
-  <script is:inline define:vars={{ isCanonicalLoadBoard, accessPath, previewDemoLoads }}>
+{(isCanonicalLoadBoard || isHermesCatalog) && (
+  <script is:inline define:vars={{ isCanonicalLoadBoard, isHermesCatalog, accessPath, previewDemoLoads }}>
     (() => {
       const equipmentLabel = (value) => ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
+      const companyTypeLabel = (value) => ({ carrier: "Carrier", owner_operator: "Owner-Operator", fleet: "Fleet", dispatcher: "Dispatcher", broker: "Broker", shipper: "Shipper", dealer: "Dealer", other: "Business" }[String(value || "")] || "Business");
       const age = (value) => {
         const time = new Date(value || 0).getTime();
         if (!Number.isFinite(time) || time <= 0) return "recent";
@@ -155,6 +157,67 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         if (!Number.isFinite(amount) || amount <= 0) return "Rate on request";
         return new Intl.NumberFormat("en-US", { style: "currency", currency: record?.rateCurrency || "USD", maximumFractionDigits: 0 }).format(amount);
       };
+
+      if (isHermesCatalog) {
+        const enhanceCatalog = async () => {
+          const grid = document.querySelector('[data-catalog-grid]');
+          if (!(grid instanceof HTMLElement)) return;
+          try {
+            const response = await fetch('/api/catalog/companies', { headers: { Accept: 'application/json' } });
+            if (!response.ok) return;
+            const payload = await response.json();
+            const companies = Array.isArray(payload.companies) ? payload.companies : [];
+            const existingIds = new Set([...grid.querySelectorAll('[data-company-runtime-id]')].map((node) => node.getAttribute('data-company-runtime-id')));
+            const academyGrid = document.querySelector('[data-academy-catalog-grid]');
+            const academyTypes = new Set(['business_club', 'business_academy', 'online_school', 'courses', 'coaching', 'corporate_academy']);
+            for (const company of companies) {
+              const id = String(company?.id || '');
+              const academyOwnedElsewhere = academyGrid
+                && String(company?.countryCode || '').toUpperCase() === 'UA'
+                && academyTypes.has(String(company?.companyType || ''));
+              if (!id || company?.companyType === 'repair_shop' || company?.profileUrl || academyOwnedElsewhere || existingIds.has(id)) continue;
+
+              const card = document.createElement('article');
+              card.className = 'business-card business-card--runtime';
+              card.setAttribute('data-catalog-card', '');
+              card.setAttribute('data-company-runtime-id', id);
+              card.setAttribute('data-search-text', `${company.companyName || ''} ${company.companyType || ''} ${company.city || ''} ${company.state || ''}`.toLowerCase());
+
+              const top = document.createElement('div');
+              top.className = 'business-card__top';
+              const type = document.createElement('span');
+              type.textContent = companyTypeLabel(company.companyType);
+              const status = document.createElement('span');
+              status.textContent = String(company.verificationLabel || 'Self-submitted · verification pending');
+              top.append(type, status);
+
+              const title = document.createElement('h3');
+              title.textContent = String(company.companyName || 'Business');
+              const location = document.createElement('p');
+              location.textContent = [company.city, company.state].filter(Boolean).join(', ');
+              const boundary = document.createElement('p');
+              boundary.textContent = 'Company registered through Hermes Connect. A dedicated profile route remains pending verification.';
+              const actions = document.createElement('div');
+              actions.className = 'business-card__actions';
+              const meta = document.createElement('span');
+              meta.textContent = 'Hermes Connect public facts · owner-submitted';
+              actions.append(meta);
+              card.append(top, title, location, boundary, actions);
+              grid.appendChild(card);
+              existingIds.add(id);
+            }
+
+            const publishedCount = grid.querySelectorAll('[data-catalog-card]').length;
+            document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
+              node.textContent = String(publishedCount);
+            });
+            document.dispatchEvent(new CustomEvent('hermes:catalog-profiles-loaded'));
+          } catch {}
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => void enhanceCatalog(), { once: true });
+        else void enhanceCatalog();
+        return;
+      }
 
       if (!isCanonicalLoadBoard) return;
       const root = document.querySelector("[data-hlb-live-marketplace]");
@@ -448,6 +511,12 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
       window.setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 30_000);
     })();
   </script>
+)}
+
+{isHermesCatalog && (
+  <style is:global>
+    .business-card--runtime{border-style:dashed}
+  </style>
 )}
 
 {isCanonicalLoadBoard && (
