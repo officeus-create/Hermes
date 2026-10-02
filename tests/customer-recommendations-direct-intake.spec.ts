@@ -78,8 +78,7 @@ for (const item of cases) {
     await expect(page.locator('select[name="submitter_type"]')).toHaveValue(""); // These existing primary links have no role query.
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 
-    await page.goto(item.route);
-    await page.locator("[data-recommendation-demo]").click();
+    await page.goto(item.demo);
     await expect(page).toHaveURL(`${origin}${item.demo}`);
     await expect(page.locator('[data-load-board-form] select[name="submitter_type"]')).toHaveValue(item.demoRole);
   });
