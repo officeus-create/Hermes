@@ -480,10 +480,14 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     .tracking-consent-banner {
       top: auto;
       right: .5rem;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + .4rem);
       left: .5rem;
       width: auto;
-      padding: .5rem .58rem .56rem;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 2.1fr);
+      gap: .38rem;
+      align-items: center;
+      padding: .38rem .44rem;
       border-radius: 14px;
       max-height: none;
       overflow: visible;
@@ -507,20 +511,20 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     .tracking-consent-compact-copy {
       display: block;
       margin: 0;
-      font-size: .7rem;
-      line-height: 1.22;
+      font-size: .62rem;
+      line-height: 1.16;
     }
     .tracking-consent-actions {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: .36rem;
-      margin-top: .4rem;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+      gap: .3rem;
+      margin-top: 0;
     }
     .tracking-consent-actions .button {
-      min-height: 45px;
-      padding: .4rem .42rem;
-      font-size: .7rem;
-      line-height: 1.12;
+      min-height: 44px;
+      padding: .34rem .34rem;
+      font-size: .66rem;
+      line-height: 1.08;
     }
     .tracking-consent-policy-link {
       display: none;
