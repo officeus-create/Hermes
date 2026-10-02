@@ -70,7 +70,7 @@ test.describe("Hermes Connect Academy A1", () => {
     await page.getByLabel("Password", { exact: true }).last().fill("correct-horse-123");
 
     await Promise.all([
-      page.waitForURL(/\/services\/hermes-connect\/academy\/dashboard\/$/),
+      page.waitForURL(/\/services\/hermes-connect\/academy\/dashboard\/\?lang=en$/),
       page.getByRole("button", { name: "Create learner identity" }).click(),
     ]);
 
