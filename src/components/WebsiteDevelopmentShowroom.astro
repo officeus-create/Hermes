@@ -159,8 +159,9 @@ const stages = [
   }
   @media (max-width: 640px) {
     .website-showroom-frame { padding: .7rem; border-radius: 22px; }
-    .website-showroom-steps { grid-template-columns: 1fr 1fr; }
-    .website-showroom-step { min-height: 48px; transform: none !important; }
+    .website-showroom-steps { grid-template-columns: 1fr; gap: .45rem; }
+    .website-showroom-step { min-height: 48px; grid-template-columns: 32px 22px 1fr; transform: none !important; }
+    .website-showroom-step small { display: block; font-size: .68rem; }
     .website-showroom-browser-bar span { font-size: .55rem; }
     .website-showroom-canvas { min-height: 310px; padding: 1rem; }
     .website-showroom-panel { inset: 5.7rem 1rem 4.6rem; }
