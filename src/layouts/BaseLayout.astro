@@ -27,6 +27,7 @@ import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhanc
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import { HERMES_CONNECT_SOCIAL_CARD } from "../lib/hermes-connect-social-card";
+import HermesConnectCommandPalette from "../components/HermesConnectCommandPalette.astro";
 
 interface Props {
   title: string;
@@ -65,6 +66,7 @@ const {
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isRepairShopBookingRoute = Astro.url.pathname.replace(/\/+$/, "") === "/services/hermes-connect/repair-shops/booking";
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
+const isHermesConnectExperienceRoute = Astro.url.pathname.startsWith("/services/hermes-connect") || Astro.url.pathname.startsWith("/load-board");
 const CLARITY_BLOCKED_PATH_PREFIXES = [
   "/services/hermes-connect",
   "/logistics/carrier-onboarding",
@@ -275,6 +277,7 @@ const safeSchema = schema
     <!--email_off-->
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    {isHermesConnectExperienceRoute && <HermesConnectCommandPalette />}
     <LoadBoardCapacityEnhancer />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
     <TrackingConsent clarityEligible={clarityEligible} locale={locale} />
