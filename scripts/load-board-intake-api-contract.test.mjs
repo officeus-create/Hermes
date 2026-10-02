@@ -24,6 +24,11 @@ const indexNow = fs.readFileSync(new URL("../.github/workflows/indexnow-money-pa
 
 const forbiddenContactFields = /source_message_id|raw_evidence_ref|mailbox_email|credential_ref|contact_name|contact_email|email_address|phone_number|contact_phone/i;
 
+
+assert.match(indexNow, /node scripts\/indexnow-submit\.mjs/, "Money-page IndexNow workflow must reuse the canonical submitter");
+assert.match(indexNow, /public\/8e3c1f6a9d4b72c5e0a8f31d67b2c94e\.txt/, "Money-page workflow must verify the canonical ownership key");
+assert.doesNotMatch(indexNow, /ba5691c6d81930f628368f298384f48c|api\.indexnow\.org\/indexnow|curl --fail/, "Money-page workflow must not carry a second IndexNow transport or key");
+
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_sources/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_records/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_quarantine/);

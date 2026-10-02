@@ -14,7 +14,8 @@ on:
       - "src/pages/services/hermes-connect/repair-shops.astro"
       - "src/pages/services/hermes-connect/repair-shops/**"
       - "public/sitemap.xml"
-      - "public/ba5691c6d81930f628368f298384f48c.txt"
+      - "public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt"
+      - "scripts/indexnow-submit.mjs"
       - ".github/workflows/indexnow-money-pages.yml"
   workflow_dispatch:
 
@@ -23,65 +24,72 @@ permissions:
 
 jobs:
   submit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
+    env:
+      INDEXNOW_URLS: |
+        https://hermeslogisticsus.com/load-board/
+        https://hermeslogisticsus.com/load-board/providers/ship-cars/
+        https://hermeslogisticsus.com/load-board/providers/central-dispatch/
+        https://hermeslogisticsus.com/load-board/providers/super-dispatch/
+        https://hermeslogisticsus.com/load-board/providers/dat/
+        https://hermeslogisticsus.com/load-board/providers/truckstop/
+        https://hermeslogisticsus.com/load-board/providers/123loadboard/
+        https://hermeslogisticsus.com/load-board/providers/direct-freight/
+        https://hermeslogisticsus.com/load-board/equipment/car-hauler/
+        https://hermeslogisticsus.com/load-board/equipment/dry-van/
+        https://hermeslogisticsus.com/load-board/equipment/reefer/
+        https://hermeslogisticsus.com/load-board/equipment/flatbed/
+        https://hermeslogisticsus.com/load-board/equipment/step-deck/
+        https://hermeslogisticsus.com/load-board/equipment/hotshot/
+        https://hermeslogisticsus.com/load-board/equipment/power-only/
+        https://hermeslogisticsus.com/load-board/equipment/box-truck/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/fountain-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/
+        https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/
+        https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
+        https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
     steps:
-      - name: Submit canonical money pages to IndexNow
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Verify canonical public ownership key
         shell: bash
         run: |
-          set -euo pipefail
-          curl --fail --silent --show-error \
-            --request POST \
-            --header 'Content-Type: application/json; charset=utf-8' \
-            --data '{
-              "host": "hermeslogisticsus.com",
-              "key": "ba5691c6d81930f628368f298384f48c",
-              "keyLocation": "https://hermeslogisticsus.com/ba5691c6d81930f628368f298384f48c.txt",
-              "urlList": [
-                "https://hermeslogisticsus.com/load-board/",
-                "https://hermeslogisticsus.com/load-board/providers/ship-cars/",
-                "https://hermeslogisticsus.com/load-board/providers/central-dispatch/",
-                "https://hermeslogisticsus.com/load-board/providers/super-dispatch/",
-                "https://hermeslogisticsus.com/load-board/providers/dat/",
-                "https://hermeslogisticsus.com/load-board/providers/truckstop/",
-                "https://hermeslogisticsus.com/load-board/providers/123loadboard/",
-                "https://hermeslogisticsus.com/load-board/providers/direct-freight/",
-                "https://hermeslogisticsus.com/load-board/equipment/car-hauler/",
-                "https://hermeslogisticsus.com/load-board/equipment/dry-van/",
-                "https://hermeslogisticsus.com/load-board/equipment/reefer/",
-                "https://hermeslogisticsus.com/load-board/equipment/flatbed/",
-                "https://hermeslogisticsus.com/load-board/equipment/step-deck/",
-                "https://hermeslogisticsus.com/load-board/equipment/hotshot/",
-                "https://hermeslogisticsus.com/load-board/equipment/power-only/",
-                "https://hermeslogisticsus.com/load-board/equipment/box-truck/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/fountain-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/",
-                "https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/",
-                "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
-                "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/"
-              ]
-            }' \
-            https://api.indexnow.org/indexnow
+          test "$(tr -d '\r\n' < public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt)" = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e"
+
+      - name: Validate canonical payload
+        env:
+          INDEXNOW_DRY_RUN: "1"
+        run: node scripts/indexnow-submit.mjs
+
+      - name: Submit canonical money pages to IndexNow
+        run: node scripts/indexnow-submit.mjs
