@@ -15,6 +15,7 @@ import {
 } from "../../_lib/dealer-crm.mjs";
 import { ensureDealerTransportRequestSchema } from "../../_lib/dealer-transport-requests.mjs";
 import { ensureCompanyConnectionsSchema } from "../../_lib/company-connections.mjs";
+import { normalizeDealerActivityEvent } from "../../_lib/business-events.mjs";
 
 type Env = { DB?: any };
 type Context = { request: Request; env: Env };
@@ -145,13 +146,25 @@ async function listTeam(db: any, companyId: string) {
 
 async function listActivity(db: any, companyId: string) {
   const result = await db.prepare(`
-    SELECT id,event_type,entity_type,entity_id,summary,created_at
+    SELECT id,company_id,actor_specialist_id,event_type,entity_type,entity_id,summary,created_at
     FROM hermes_dealer_activity
     WHERE company_id = ?
     ORDER BY created_at DESC
     LIMIT 150
   `).bind(companyId).all();
-  return result?.results || [];
+  const rows = result?.results || [];
+  const events = rows
+    .map((row: any) => normalizeDealerActivityEvent(row, companyId))
+    .filter(Boolean);
+  const activity = rows.map((row: any) => ({
+    id: row.id,
+    event_type: row.event_type,
+    entity_type: row.entity_type,
+    entity_id: row.entity_id,
+    summary: row.summary,
+    created_at: row.created_at,
+  }));
+  return { activity, events };
 }
 
 async function dashboard(db: any, companyId: string) {
@@ -229,7 +242,7 @@ async function readModule(db: any, companyId: string, module: string) {
   if (module === "leads") return { leads: await listLeads(db, companyId) };
   if (module === "appointments") return { appointments: await listAppointments(db, companyId) };
   if (module === "team") return { team: await listTeam(db, companyId) };
-  if (module === "activity") return { activity: await listActivity(db, companyId) };
+  if (module === "activity") return await listActivity(db, companyId);
   if (module === "intelligence") return { intelligence: await intelligence(db, companyId) };
   return { dashboard: await dashboard(db, companyId) };
 }
