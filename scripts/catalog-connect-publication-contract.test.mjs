@@ -92,12 +92,26 @@ for (const [route, shopName] of [
   assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com|hello@thedapperwrench\.com/);
 }
 const websiteConcept = read("src/components/CatalogWebsiteConcept.astro");
+const chaykaConceptRoute = read("src/pages/businesses/ukraine/chaiky/chayka-store.astro");
+const catalogConceptData = read("src/data/catalog-business-concepts.ts");
 const catalogRequestHelper = read("src/lib/catalog-request.ts");
 const catalogRequestPage = read("src/pages/businesses/request/index.astro");
 assert.match(catalogRequestHelper, /"catalog-business-request"/);
 assert.match(catalogRequestHelper, /business_id/);
 assert.match(catalogRequestHelper, /source_ref/);
 assert.match(websiteConcept, /Request contact via Hermes/);
+assert.match(websiteConcept, /data-default-locale/);
+assert.match(websiteConcept, /data-uk/);
+assert.match(websiteConcept, /data-en/);
+assert.match(websiteConcept, /semanticCore/);
+assert.match(websiteConcept, /business\.faq/);
+assert.match(chaykaConceptRoute, /CatalogWebsiteConcept business=\{business\}/);
+assert.match(chaykaConceptRoute, /defaultLocale="uk"/);
+assert.doesNotMatch(chaykaConceptRoute, /data-lang|data-lead|form\?\.addEventListener/);
+assert.match(catalogConceptData, /localeCopy:/);
+assert.match(catalogConceptData, /Телефон зламався\? Почніть із Чайка Store\./);
+assert.match(catalogConceptData, /Phone problem\? Start with Chayka Store\./);
+assert.match(catalogConceptData, /semanticCore:/);
 assert.match(websiteConcept, /claim\/customer status changes only after verification/);
 assert.match(websiteConcept, /Request a handoff to this business/);
 assert.doesNotMatch(websiteConcept, />Contact this business\.</);
