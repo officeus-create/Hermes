@@ -47,6 +47,36 @@ const schema = [
     provider:{"@type":"Organization","name":"Hermes"},
     url:"https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/",
   },
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    itemListElement:[
+      {"@type":"ListItem",position:1,name:"Hermes",item:"https://hermeslogisticsus.com/"},
+      {"@type":"ListItem",position:2,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},
+      {"@type":"ListItem",position:3,name:"Marketing Growth Audit Example",item:"https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/"},
+    ],
+  },
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    mainEntity:[
+      {
+        "@type":"Question",
+        name:"What does a Hermes marketing growth audit measure?",
+        acceptedAnswer:{"@type":"Answer",text:"It connects public marketing signals to a diagnostic, CRM attribution, qualified lead actions, consultations, sales outcomes, delivery, and retention using defined evidence and source rules."},
+      },
+      {
+        "@type":"Question",
+        name:"Does the audit guarantee rankings, leads, or revenue?",
+        acceptedAnswer:{"@type":"Answer",text:"No. The example separates observed evidence from unknowns and does not promise rankings, leads, or revenue."},
+      },
+      {
+        "@type":"Question",
+        name:"When should CAC, LTV, and ROMI be used?",
+        acceptedAnswer:{"@type":"Answer",text:"Only after permitted spend, sales or revenue data, and attribution rules are connected well enough to support those calculations."},
+      },
+    ],
+  },
 ];
 ---
 <BaseLayout
