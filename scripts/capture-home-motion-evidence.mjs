@@ -47,5 +47,14 @@ try {
     results.push({...geometry,images});
     await context.close();
   }
+  const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
+  const touchPage=await touchContext.newPage();
+  await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+  await touchPage.evaluate(()=>document.fonts.ready);
+  await touchPage.getByRole('button',{name:'Continue without analytics',exact:true}).click();
+  await touchPage.locator('[data-home-explainer="logistics"]').screenshot({path:`${directory}/home-390-touch-logistics-explainer.png`,animations:'allow'});
+  if(await touchPage.evaluate(()=>document.documentElement.scrollWidth>innerWidth)) throw new Error('Home touch geometry failed at 390');
+  await touchContext.close();
+
   await writeFile(`${directory}/evidence.json`,JSON.stringify({sha:process.env.GITHUB_SHA,results},null,2)+'\n');
 } finally { await browser.close(); }
