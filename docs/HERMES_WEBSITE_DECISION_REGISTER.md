@@ -139,6 +139,14 @@ Execution sequence:
 
 Do not call V4 visually LIVE until the representative implementation is merged, deployed and publicly read back.
 
+## 2026-10-02 — V4 design-recovery continuation
+
+Recovered owner/Codex direction: this is a completion of V4, not a V5 redesign. Preserve the approved Pearl Home and its four architectural portals. Logistics Spatial Operations is the validated master-scene proof. The remaining public direction pages now promote their already-existing semantic engines into the same immediate post-hero signature position: Marketing = Attention & Demand, Technology = Digital Systems, Academy = Human Progress. No duplicate backend, new route family, fabricated live metric, or decorative cyberpunk layer is introduced.
+
+Website Development and Website Redesign remain capability showrooms and use the Pearl/light public header so the rejected dark-menu treatment does not return on those design-critical pages. Operational visual meaning stays in semantic HTML and existing interactive components; rich motion remains secondary to mobile, reduced-motion, SEO/accessibility, product truth, and conversion.
+
+Promotion still requires exact-head CI, 1440/390 visual evidence and production readback. MERGED is not LIVE_VERIFIED.
+
 ## 2026-09-30 — V4 representative release acceptance gate
 
 - #1574 replaced the superseded `HomeFourRooms` regression contract with the implemented Home Master Scene contract. Further V4 slices must preserve those assertions and add coverage for new behavior, including direct direction links, keyboard focus, reduced motion, privacy infrastructure and a light homepage payload.
