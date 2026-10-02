@@ -104,3 +104,12 @@ test("mobile command trigger opens the same searchable surface", async ({ page }
   await page.locator("[data-hc-command-input]").fill("repair");
   await expect(dialog.getByRole("link", { name: /Repair Shops/i })).toBeVisible();
 });
+
+test("command trigger does not collide with existing Load Board Search control", async ({ page }) => {
+  await page.route("**/api/hermes-connect/account", async (route) => {
+    await route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) });
+  });
+  await page.goto("/load-board/live-pilot/");
+  await expect(page.getByRole("button", { name: "Search", exact: true })).toHaveCount(1);
+  await expect(page.locator("[data-hc-command-trigger]")).toHaveAccessibleName("Open Hermes command palette");
+});
