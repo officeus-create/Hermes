@@ -17,7 +17,7 @@ test("website development explains the delivery workflow without changing the ca
   ];
 
   for (const [label, heading] of expected) {
-    const step = showroom.getByRole("button", { name: new RegExp(label) });
+    const step = showroom.getByRole("button", { name: label, exact: false });
     await step.click();
     await expect(step).toHaveAttribute("aria-pressed", "true");
     await expect(showroom.getByRole("heading", { name: heading })).toBeVisible();
@@ -36,7 +36,7 @@ test.describe("website development showroom mobile contract", () => {
     const showroom = page.locator("[data-website-showroom]");
     await expect(showroom).toBeVisible();
 
-    await showroom.getByRole("button", { name: /QA + human review/ }).tap();
+    await showroom.getByRole("button", { name: "QA + human review", exact: false }).tap();
     await expect(showroom.getByRole("heading", { name: "Check the system before it becomes a release." })).toBeVisible();
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
