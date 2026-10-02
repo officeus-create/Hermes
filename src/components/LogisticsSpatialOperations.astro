@@ -164,7 +164,7 @@ const stateLabels = {
   .logistics-spatial-heading > div:last-child > strong { display:block; color:#31526f; font-size:.8rem; line-height:1.5; }
   .logistics-spatial-frame { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(300px,.72fr); gap:1rem; padding:1rem; border:1px solid rgba(21,76,126,.14); border-radius:30px; background:#fff; box-shadow:0 28px 80px rgba(17,43,103,.08); }
   .logistics-spatial-map { position:relative; min-height:520px; overflow:hidden; border-radius:23px; background:linear-gradient(145deg,#102f49,#174a6d 48%,#1c5a73); color:#fff; }
-  .logistics-spatial-grid { position:absolute; inset:0; opacity:.2; background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px); background-size:44px 44px; transform:perspective(700px) rotateX(58deg) scale(1.5); transform-origin:center 80%; animation:logistics-grid-drift 11s ease-in-out infinite alternate; will-change:transform,background-position,opacity; }
+  .logistics-spatial-grid { position:absolute; inset:0; opacity:.2; background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px); background-size:44px 44px; transform:perspective(700px) rotateX(58deg) scale(1.5); transform-origin:center 80%; animation:logistics-grid-drift 11s ease-in-out infinite alternate; will-change:transform,opacity; }
   .logistics-spatial-ambient { position:absolute; inset:-14% -18%; z-index:1; pointer-events:none; opacity:.72; overflow:hidden; background:radial-gradient(circle at 18% 72%,rgba(121,217,255,.16),transparent 24%),radial-gradient(circle at 76% 24%,rgba(94,153,255,.11),transparent 23%),linear-gradient(180deg,rgba(255,255,255,.025),transparent 55%); animation:logistics-ambient-drift 9s ease-in-out infinite alternate; will-change:transform,opacity; }
   .logistics-spatial-ambient::before { content:""; position:absolute; top:-34%; left:-32%; width:24%; height:170%; background:linear-gradient(90deg,transparent,rgba(180,232,255,.14),transparent); transform:skewX(-16deg); filter:blur(5px); animation:logistics-light-sweep 10s cubic-bezier(.45,0,.2,1) infinite; }
   .logistics-spatial-ambient::after { content:""; position:absolute; left:9%; right:8%; bottom:9%; height:22%; border-radius:50%; background:radial-gradient(ellipse at center,rgba(95,205,255,.11),transparent 68%); animation:logistics-horizon-breathe 7s ease-in-out infinite alternate; }
@@ -212,12 +212,12 @@ const stateLabels = {
   .logistics-spatial-actions .button-ghost { color:#10204e; border-color:rgba(16,32,78,.18); }
   @keyframes logistics-route-flow { to { stroke-dashoffset:-38; } }
   @keyframes logistics-route-glow {
-    0%,100% { opacity:.72; filter:drop-shadow(0 0 6px rgba(121,217,255,.44)); }
-    50% { opacity:1; filter:drop-shadow(0 0 10px rgba(121,217,255,.68)); }
+    0%,100% { opacity:.72; }
+    50% { opacity:1; }
   }
   @keyframes logistics-grid-drift {
-    0% { opacity:.16; background-position:0 0,0 0; transform:perspective(700px) rotateX(58deg) translate3d(0,0,0) scale(1.5); }
-    100% { opacity:.23; background-position:10px 14px,10px 14px; transform:perspective(700px) rotateX(58deg) translate3d(0,8px,0) scale(1.52); }
+    0% { opacity:.16; transform:perspective(700px) rotateX(58deg) translate3d(0,0,0) scale(1.5); }
+    100% { opacity:.23; transform:perspective(700px) rotateX(58deg) translate3d(0,8px,0) scale(1.52); }
   }
   @keyframes logistics-ambient-drift {
     0% { opacity:.58; transform:translate3d(-1.2%,.4%,0) scale(1); }
@@ -269,7 +269,7 @@ const stateLabels = {
     .logistics-spatial-ambient::after,
     .logistics-spatial-route-live,
     .logistics-spatial-node::after { animation:none !important; }
-    .logistics-spatial-grid { opacity:.2; background-position:0 0,0 0; transform:perspective(700px) rotateX(58deg) scale(1.5); }
+    .logistics-spatial-grid { opacity:.2; transform:perspective(700px) rotateX(58deg) scale(1.5); }
     .logistics-spatial-ambient { opacity:.48; transform:none; }
     .logistics-spatial-ambient::before { opacity:.12; transform:translate3d(230%,0,0) skewX(-16deg); }
     .logistics-spatial-ambient::after { opacity:.35; transform:none; }
