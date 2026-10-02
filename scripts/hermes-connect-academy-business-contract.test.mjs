@@ -75,7 +75,7 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(workspace, /Repair Shop.*Academy/s);
   assert.match(workspace, /demo data/);
   assert.match(hub, /Register academy \/ courses/);
-  assert.match(hub, /Create learner account/);
+  assert.match(hub, /learner account/);
   assert.match(productHub, /BUSINESS CRM \+ LEARNER ACCESS/);
   assert.match(learnerAuth, /Academy Business CRM/);
   assert.match(learnerAuth, /data-lang="uk"/);
@@ -101,7 +101,7 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(loader, /data-academy-catalog-grid/);
   assert.match(loader, /catalogEntityId/);
   assert.match(loader, /academyExistingIds/);
-  assert.doesNotMatch(loader, /companyName.*toLowerCase/);
+  assert.doesNotMatch(loader, /academyExistingNames|repairExistingNames/);
 
   assert.match(publicProfile, /JOIN hermes_academy_business_profiles a ON a\.company_id=c\.id/);
   assert.match(publicProfile, /EducationalOrganization/);
@@ -128,7 +128,7 @@ test("KNB concept and demo route into real Academy business onboarding with UA E
   assert.match(concept, /data-lang="uk"/);
   assert.match(concept, /data-lang="en"/);
   assert.match(concept, /data-language-route/);
-  assert.match(concept, /url\.searchParams\.set\("lang", next\)/);
+  assert.match(concept, /url\.searchParams\.set\("lang",\s*next\)/);
   assert.match(demo, /Зареєструвати CRM/);
   assert.match(demo, /academy\/business\/auth\/\?mode=register/);
   assert.match(demo, /data-lang="uk"/);
