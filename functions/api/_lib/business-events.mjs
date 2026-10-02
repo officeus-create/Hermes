@@ -82,8 +82,6 @@ export function normalizeDealerActivityEvent(row, expectedCompanyId) {
     entity_type: row?.entity_type || "dealer_activity",
     entity_id: row?.entity_id || row?.id,
     company_id: companyId,
-    actor_type: row?.actor_specialist_id ? "specialist" : "",
-    actor_id: row?.actor_specialist_id,
     occurred_at: row?.created_at,
     source: "dealer_crm",
     visibility: "company",
