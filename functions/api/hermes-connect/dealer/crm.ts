@@ -146,7 +146,7 @@ async function listTeam(db: any, companyId: string) {
 
 async function listActivity(db: any, companyId: string) {
   const result = await db.prepare(`
-    SELECT id,company_id,actor_specialist_id,event_type,entity_type,entity_id,summary,created_at
+    SELECT id,company_id,event_type,entity_type,entity_id,summary,created_at
     FROM hermes_dealer_activity
     WHERE company_id = ?
     ORDER BY created_at DESC
