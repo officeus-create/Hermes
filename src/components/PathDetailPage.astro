@@ -13,6 +13,7 @@ import TechnologyCapabilityCatalog from "./TechnologyCapabilityCatalog.astro";
 import TechnologyInteractivePrototypes from "./TechnologyInteractivePrototypes.astro";
 import TechnologySolutionMockups from "./TechnologySolutionMockups.astro";
 import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
+import LogisticsSpatialOperations from "./LogisticsSpatialOperations.astro";
 import DepartmentTechnologyBridge from "./DepartmentTechnologyBridge.astro";
 import HermesPathEngine from "./HermesPathEngine.astro";
 
@@ -55,6 +56,7 @@ const directContactTitle = {
     </div>
   </section>
 
+  {isLogistics && <LogisticsSpatialOperations />}
   {isLogistics && <LogisticsAudienceHub />}
   {isLogistics && <HermesPathEngine />}
 
