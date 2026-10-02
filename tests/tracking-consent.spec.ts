@@ -153,9 +153,11 @@ test("mobile consent stays compact in a bottom dock and clear of every primary h
 
     const banner = page.locator("[data-consent-banner]");
     const primaryCta = page.locator(route.cta).first();
+    const primaryHeading = page.locator("h1").first();
 
     await expect(banner).toBeVisible();
     await expect(primaryCta).toBeVisible();
+    await expect(primaryHeading).toBeVisible();
     await expect(page.locator(".tracking-consent-detail")).toBeHidden();
     await expect(page.getByRole("button", { name: "Allow analytics" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Continue without analytics" })).toBeVisible();
@@ -163,14 +165,17 @@ test("mobile consent stays compact in a bottom dock and clear of every primary h
     const geometry = await page.evaluate(({ cta }) => {
       const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
       const ctaElement = document.querySelector<HTMLElement>(cta);
+      const headingElement = document.querySelector<HTMLElement>("h1");
       const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
       const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
-      if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
+      if (!bannerElement || !ctaElement || !headingElement || !acceptElement || !declineElement) return null;
       const bannerRect = bannerElement.getBoundingClientRect();
       const ctaRect = ctaElement.getBoundingClientRect();
+      const headingRect = headingElement.getBoundingClientRect();
       const acceptRect = acceptElement.getBoundingClientRect();
       const declineRect = declineElement.getBoundingClientRect();
       const overlap = bannerRect.left < ctaRect.right && bannerRect.right > ctaRect.left && bannerRect.top < ctaRect.bottom && bannerRect.bottom > ctaRect.top;
+      const headingOverlap = bannerRect.left < headingRect.right && bannerRect.right > headingRect.left && bannerRect.top < headingRect.bottom && bannerRect.bottom > headingRect.top;
       return {
         bannerHeight: bannerRect.height,
         bannerTop: bannerRect.top,
@@ -178,17 +183,21 @@ test("mobile consent stays compact in a bottom dock and clear of every primary h
         viewportHeight: window.innerHeight,
         ctaTop: ctaRect.top,
         ctaBottom: ctaRect.bottom,
+        headingTop: headingRect.top,
+        headingBottom: headingRect.bottom,
         overlap,
+        headingOverlap,
         acceptHeight: acceptRect.height,
         declineHeight: declineRect.height,
       };
     }, { cta: route.cta });
 
     expect(geometry, route.path).not.toBeNull();
-    expect(geometry!.bannerHeight, route.path).toBeLessThanOrEqual(120);
-    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(geometry!.viewportHeight - 140);
+    expect(geometry!.bannerHeight, route.path).toBeLessThanOrEqual(84);
+    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(geometry!.viewportHeight - 100);
     expect(geometry!.bannerBottom, route.path).toBeLessThanOrEqual(geometry!.viewportHeight);
     expect(geometry!.overlap, route.path).toBe(false);
+    expect(geometry!.headingOverlap, route.path).toBe(false);
     expect(geometry!.acceptHeight, route.path).toBeGreaterThanOrEqual(44);
     expect(geometry!.declineHeight, route.path).toBeGreaterThanOrEqual(44);
 
