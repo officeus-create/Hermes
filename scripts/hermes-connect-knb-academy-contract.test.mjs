@@ -6,9 +6,9 @@ test('KNB academy demo keeps client evidence and CRM structure explicit',()=>{
   assert.match(html,/Конс на Бі\$/);
   assert.match(html,/20–25/);
   assert.match(html,/CAC · LTV · ROMI/);
-  assert.match(html,/Lead → consultation conversion/);
-  assert.match(html,/Consultation → sale conversion/);
-  assert.match(html,/Course completion/);
+  assert.match(html,/Lead → consultation → enrollment → participation → continuation/);
+  assert.match(html,/Learning progress/);
+  assert.match(html,/Completion, NPS\/feedback, membership, repeat programs/);
   assert.match(html,/Brief recovered/);
   assert.match(html,/02\.10\.2026.*09:00/);
   assert.match(html,/Google Docs/);
