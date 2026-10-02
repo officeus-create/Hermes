@@ -1,0 +1,262 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import "../../../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Academy Business CRM | Hermes Connect"
+  description="Private Hermes Connect workspace for academies, courses, schools and business clubs."
+  robots="noindex,nofollow"
+  htmlLang="uk"
+  locale="uk"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/services/hermes-connect/" locale="uk" />
+    <main id="main-content" class="academy-app-shell">
+      <div class="academy-owner-toolbar">
+        <a href="/services/hermes-connect/" data-i18n="back">← Hermes Connect</a>
+        <div class="academy-owner-lang" aria-label="Language">
+          <button type="button" data-lang="uk" class="active">UA</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+      </div>
+
+      <div class="academy-app-alert" data-workspace-alert role="status"></div>
+
+      <section class="academy-app-hero" data-workspace-loading>
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Hermes Connect · Academy Business CRM</p>
+          <h1 data-i18n="loading">Завантажуємо ваш робочий простір…</h1>
+          <p data-i18n="loadingCopy">Перевіряємо Hermes-акаунт та профіль навчального бізнесу.</p>
+        </article>
+      </section>
+
+      <div class="academy-app-hidden" data-workspace-content>
+        <section class="academy-app-hero">
+          <article class="academy-app-card">
+            <p class="academy-app-eyebrow" data-i18n="ownerWorkspace">Робочий простір власника</p>
+            <h1><span data-business-name>Academy</span> · <span data-i18n="crm">Academy CRM</span></h1>
+            <p data-i18n="heroCopy">CRM адаптована під навчальний бізнес: продаж програм, учасники, потоки, навчання, завдання, перевірки, маркетинг, HR та повторні продажі працюють як один pipeline.</p>
+            <div class="academy-app-actions">
+              <a class="academy-app-button intelligence" href="#crm" data-i18n="openPipeline">Відкрити sales pipeline</a>
+              <a class="academy-app-button" data-catalog-link href="/businesses/" data-i18n="catalogProfile">Профіль у Catalog</a>
+              <a class="academy-app-button" href="/services/hermes-connect/academy/business/auth/" data-i18n="settings">Налаштування бізнесу</a>
+              <button class="academy-app-button" type="button" data-logout data-i18n="logout">Вийти</button>
+            </div>
+          </article>
+          <aside class="academy-app-card academy-app-dark">
+            <span class="academy-app-status" data-i18n="vertical">Academy vertical</span>
+            <h2 data-i18n="different">Не універсальна CRM.</h2>
+            <p data-i18n="differentCopy">Repair Shop отримує записи, автомобілі та графік СТО. Academy отримує ліди, консультації, учасників, cohorts, lessons, assignments, reviews і retention. Hermes identity спільна, робочий процес — різний.</p>
+          </aside>
+        </section>
+
+        <section class="academy-owner-kpis">
+          <article><span data-i18n="leads">Нові ліди</span><strong>12</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="consultations">Консультації</span><strong>6</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="learners">Активні учасники</span><strong>34</strong><small data-i18n="sample">demo data</small></article>
+          <article><span data-i18n="review">На перевірці</span><strong>8</strong><small data-i18n="sample">demo data</small></article>
+          <article><span>ROMI</span><strong>—</strong><small data-i18n="realOnly">лише з реальних даних</small></article>
+        </section>
+
+        <section class="academy-app-panel" id="crm">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">SALES CRM</p><h2 data-i18n="pipeline">Лід → консультація → програма → зарахування → навчання → renewal</h2></div><span class="academy-app-status" data-i18n="sampleBoard">Демо-дошка</span></div>
+          <div class="academy-owner-pipeline">
+            <div><b data-i18n="newLead">Нова заявка</b><article><strong>Demo · Ірина</strong><small>Instagram · SMB owner</small></article><article><strong>Demo · Максим</strong><small>Webinar · warm lead</small></article></div>
+            <div><b data-i18n="qualified">Кваліфікація</b><article><strong>Demo · Олена</strong><small data-i18n="need">Потреба: систематизація продажів</small></article></div>
+            <div><b data-i18n="consultBooked">Консультацію призначено</b><article><strong>Demo · Андрій</strong><small>Next action · 16:30</small></article></div>
+            <div><b data-i18n="consultDone">Консультацію проведено</b></div>
+            <div><b data-i18n="programSelected">Програму підібрано</b><article><strong>Demo · Сергій</strong><small data-i18n="programFit">Program fit · owner growth</small></article></div>
+            <div><b data-i18n="decision">Рішення / follow-up</b></div>
+            <div><b data-i18n="enrolled">Зарахований</b><article><strong>Demo · Наталія</strong><small>Cohort · 7-week growth</small></article></div>
+            <div><b data-i18n="activeLearner">Активний учасник</b></div>
+            <div><b data-i18n="completed">Завершив / alumni</b><article><strong>Demo · Віктор</strong><small>Completion · reviewed</small></article></div>
+            <div><b data-i18n="renewal">Renewal / наступна програма</b></div>
+          </div>
+        </section>
+
+        <section class="academy-owner-modules">
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">LEARNER 360</p><h2 data-i18n="learner360">Картка учасника</h2><ul><li data-i18n="source">Джерело ліда, менеджер і консультація</li><li data-i18n="progress">Прогрес за модулями та відвідування</li><li data-i18n="assignments">Домашні завдання і reviewer feedback</li><li data-i18n="baseline">Business KPI baseline / before → after</li><li data-i18n="retention">Завершення, feedback, наступна програма, клуб</li></ul></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">ACADEMY OPS</p><h2 data-i18n="delivery">Навчальний delivery</h2><ul><li data-i18n="cohorts">Потоки / cohorts</li><li data-i18n="lessons">Уроки та записи</li><li data-i18n="weekly">Щотижневі розбори</li><li>VIP sessions</li><li data-i18n="nextAction">Наступна дія по кожному учаснику</li></ul></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">MARKETING</p><h2>CAC · LTV · ROMI</h2><p data-i18n="marketingCopy">Канал → lead → consultation → sale → revenue. Фінансові показники не вигадуються: вони з’являються після підключення реальних витрат і CRM revenue.</p></article>
+          <article class="academy-app-panel"><p class="academy-app-eyebrow">HR / RECRUITING</p><h2 data-i18n="hiring">Команда академії</h2><p>Applicant → Screen → Interview → Test → Offer / No → Adaptation.</p><p data-i18n="hiringCopy">Recruiting зберігається окремо від learner progression та не перетворює навчальні оцінки на автоматичні кадрові рішення.</p></article>
+        </section>
+
+        <section class="academy-app-panel" id="workspace-access">
+          <div class="academy-owner-panel-head">
+            <div><p class="academy-app-eyebrow">TEAM ACCESS · RBAC</p><h2 data-i18n="accessTitle">Одна Academy CRM — різні робочі ролі.</h2></div>
+            <span class="academy-app-status" data-i18n="accessState">Product structure · permission backend pending</span>
+          </div>
+          <p data-i18n="accessCopy">Власник бачить весь бізнес-контур. Команді потрібен мінімально необхідний доступ за модулем: marketing не отримує приватні HR-рішення, sales не отримує reviewer power, а reviewer не отримує фінансові або кадрові права автоматично.</p>
+          <div class="academy-role-grid">
+            <article><span>OWNER</span><b data-i18n="roleOwner">Власник</b><small data-i18n="roleOwnerCopy">Business settings · programs · teams · reports · final approvals.</small></article>
+            <article><span>ADMIN</span><b data-i18n="roleAdmin">Адміністратор</b><small data-i18n="roleAdminCopy">Workspace configuration and approved operating support.</small></article>
+            <article><span>MARKETING</span><b>Marketing</b><small data-i18n="roleMarketingCopy">Campaigns · content attribution · funnel · KPI inputs.</small></article>
+            <article><span>SALES</span><b>Sales</b><small data-i18n="roleSalesCopy">Leads · diagnostics · consultations · deals · next actions.</small></article>
+            <article><span>HR</span><b>HR / Recruiting</b><small data-i18n="roleHrCopy">Vacancies · candidate stages · assessment templates · human decisions.</small></article>
+            <article><span>CURATOR</span><b data-i18n="roleCurator">Куратор</b><small data-i18n="roleCuratorCopy">Cohorts · attendance · assignments · participant follow-up.</small></article>
+            <article><span>REVIEWER</span><b>Reviewer</b><small data-i18n="roleReviewerCopy">Evidence review only within authorized program scope.</small></article>
+            <article><span>READ ONLY</span><b data-i18n="roleReadonly">Тільки перегляд</b><small data-i18n="roleReadonlyCopy">Selected dashboards and reports without operational writes.</small></article>
+          </div>
+          <p class="academy-owner-boundary" data-i18n="accessBoundary">Це цільова permission-модель для Academy Business. На поточній demo-стадії вона не заявляється як повністю активований multi-user RBAC: реальні team memberships і company-scoped permissions мають бути підключені окремо перед зберіганням client staff/candidate data.</p>
+        </section>
+
+        <section class="academy-app-panel" id="acquisition-control">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">ACQUISITION CONTROL</p><h2 data-i18n="acquisitionTitle">Social → offer → diagnostic → consultation → program.</h2></div><span class="academy-app-status" data-i18n="sampleBoard">Демо-дошка</span></div>
+          <p data-i18n="acquisitionCopy">Кожен lead зберігає source asset, campaign, CTA/entry offer, primary pain, diagnostic gap, recommended module і next action. Так marketing, sales і Academy бачать один і той самий customer journey.</p>
+          <div class="academy-acquisition-table">
+            <div class="academy-acq-head"><b data-i18n="acqSource">Джерело</b><b data-i18n="acqOffer">Entry offer</b><b data-i18n="acqGap">Diagnostic gap</b><b data-i18n="acqModule">Рекомендований модуль</b><b data-i18n="acqNext">Наступна дія</b></div>
+            <div><span>Instagram · Reel</span><span>Free business review · “+”</span><span>Sales system</span><span>W6 · Sales</span><span>Consultation</span></div>
+            <div><span>Instagram · Bio</span><span>Certificate 283€</span><span>Needs diagnosis</span><span>Pending</span><span>Business diagnostic</span></div>
+            <div><span>Threads · Content</span><span>Content unpacking video</span><span>Positioning / marketing</span><span>W1 · Marketing</span><span>Diagnostic → consult</span></div>
+            <div><span>TikTok · Profile</span><span>Consultation</span><span>Program fit</span><span>Pending diagnosis</span><span>Qualify</span></div>
+          </div>
+          <p class="academy-owner-boundary" data-i18n="acquisitionBoundary">Рядки вище — демонстрація структури attribution з публічних CTA, а не реальні leads КНБ. Реальні контакти, revenue і conversion з’являються лише після дозволеного підключення джерел.</p>
+        </section>
+
+        <section class="academy-app-panel" id="proof-registry">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">CLAIMS / PROOF REGISTRY</p><h2 data-i18n="proofTitle">Контроль доказів для marketing, site і sales.</h2></div><span class="academy-app-status" data-i18n="configurable">Налаштовується</span></div>
+          <p data-i18n="proofCopy">Кожен публічний result claim має source, observed_at, definition, evidence owner, approved wording і review date. Якщо джерела конфліктують, система не обирає цифру автоматично — статус переходить у Needs review.</p>
+          <div class="academy-proof-table">
+            <div><b data-i18n="proofClaim">Claim</b><b data-i18n="proofSource">Source</b><b data-i18n="proofState">State</b><b data-i18n="proofNext">Next action</b></div>
+            <div><span>Audience / participant scale</span><span>Multiple public pages</span><span>Needs review</span><span>Choose canonical evidence</span></div>
+            <div><span>Program outcome %</span><span>Client-owned claim</span><span>Needs definition</span><span>Population + period + method</span></div>
+            <div><span>Renewal / club continuation</span><span>Program page</span><span>Needs freshness</span><span>Confirm current cohort scope</span></div>
+          </div>
+          <p class="academy-owner-boundary" data-i18n="proofBoundary">Це governance-demo, а не висновок про достовірність конкретної client claim. Canonical wording затверджує уповноважена людина після evidence review.</p>
+        </section>
+
+        <section class="academy-owner-extended">
+          <article class="academy-app-panel">
+            <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">PROGRAMS & COHORTS</p><h2 data-i18n="programPortfolio">Портфель програм і потоки</h2></div><span class="academy-app-status" data-i18n="configurable">Налаштовується</span></div>
+            <p data-i18n="programPortfolioCopy">Кожна програма має свій sales fit, ціну після підключення billing, потоки, уроки, assignments, reviewer flow, completion і наступну пропозицію.</p>
+            <div class="academy-program-flow">
+              <div><span>01</span><b data-i18n="programCatalog">Каталог програм</b><small data-i18n="programCatalogCopy">Назва · формат · тривалість · eligibility</small></div>
+              <div><span>02</span><b data-i18n="cohortPlanning">Планування cohort</b><small data-i18n="cohortPlanningCopy">Старт · capacity · owner · schedule</small></div>
+              <div><span>03</span><b data-i18n="enrollment">Enrollment</b><small data-i18n="enrollmentCopy">Deal → learner → cohort</small></div>
+              <div><span>04</span><b data-i18n="deliveryReview">Delivery & review</b><small data-i18n="deliveryReviewCopy">Lessons · evidence · feedback</small></div>
+              <div><span>05</span><b data-i18n="completionRenewal">Completion & renewal</b><small data-i18n="completionRenewalCopy">Alumni · club · next program</small></div>
+            </div>
+          </article>
+
+          <article class="academy-app-panel">
+            <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">SALES MANAGEMENT</p><h2 data-i18n="salesHierarchy">Багаторівнева sales-структура</h2></div><span class="academy-app-status" data-i18n="configurable">Налаштовується</span></div>
+            <p data-i18n="salesHierarchyCopy">CRM підтримує до чотирьох рівнів sales-management для бізнесів, яким це потрібно. Назви ролей і права задає сам бізнес — структура не створює кадрові рішення автоматично.</p>
+            <div class="academy-sales-levels">
+              <div><span>L1</span><b data-i18n="levelRole">Роль бізнесу</b><small data-i18n="levelMetrics">Plan · conversion · next action</small></div>
+              <div><span>L2</span><b data-i18n="levelRole">Роль бізнесу</b><small data-i18n="levelMetrics">Plan · conversion · next action</small></div>
+              <div><span>L3</span><b data-i18n="levelRole">Роль бізнесу</b><small data-i18n="levelMetrics">Plan · conversion · next action</small></div>
+              <div><span>L4</span><b data-i18n="levelRole">Роль бізнесу</b><small data-i18n="levelMetrics">Plan · conversion · next action</small></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="academy-app-panel academy-executive-kpis">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">EXECUTIVE KPI DICTIONARY</p><h2 data-i18n="kpiDictionary">Спочатку визначення метрики — потім цифра.</h2></div><span class="academy-app-status" data-i18n="realOnly">лише з реальних даних</span></div>
+          <p data-i18n="kpiDictionaryCopy">Шаблон готовий до фінансових і комерційних показників, але значення залишаються порожніми, доки не підключене надійне джерело.</p>
+          <div class="academy-kpi-dictionary">
+            <div><b>Revenue</b><span>—</span></div><div><b>Profit</b><span>—</span></div>
+            <div><b>Lead → sale conversion</b><span>—</span></div><div><b>Average check</b><span>—</span></div>
+            <div><b>Sales productivity</b><span>—</span></div><div><b>Plan attainment</b><span>—</span></div>
+            <div><b>CAC</b><span>—</span></div><div><b>LTV</b><span>—</span></div>
+            <div><b>ROMI</b><span>—</span></div><div><b>Channel efficiency</b><span>—</span></div>
+            <div><b>Program completion</b><span>—</span></div><div><b>Renewal / next program</b><span>—</span></div>
+          </div>
+        </section>
+
+        <section class="academy-app-panel" id="candidate-assessment">
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">CANDIDATE ASSESSMENT</p><h2 data-i18n="assessmentTitle">Тестові завдання кандидатів — окремо від навчання студентів.</h2></div><span class="academy-app-status" data-i18n="assessmentTemplate">Шаблон · Marketing</span></div>
+          <p data-i18n="assessmentCopy">HR може створювати багаторазові assessment templates для конкретної ролі. Кандидат отримує brief, deadline, джерела, формат здачі та rubric; reviewer оцінює evidence, мислення й виконання, а фінальне кадрове рішення залишається за людиною.</p>
+
+          <div class="academy-assessment-head">
+            <div><small data-i18n="assessmentClient">Client / role</small><strong>Конс на Бі$ · Marketing candidate</strong></div>
+            <div><small data-i18n="assessmentDeadline">Deadline</small><strong>02.10.2026 · 09:00</strong></div>
+            <div><small data-i18n="assessmentFormat">Submission</small><strong>Google Docs + MindMap / схема</strong></div>
+            <div><small>Status</small><strong data-i18n="assessmentReady">Template ready</strong></div>
+          </div>
+
+          <div class="academy-assessment-grid">
+            <article>
+              <span>01</span>
+              <h3 data-i18n="assessmentTask1">Аналіз соціальної мережі</h3>
+              <p data-i18n="assessmentTask1Copy">Оберіть будь-яку соцмережу бізнесу, зробіть короткий аудит і сформулюйте, що б ви впровадили одразу як керівник напряму та які шляхи розвитку бачите.</p>
+              <div class="academy-assessment-sources">
+                <a href="https://www.instagram.com/konsnabis" target="_blank" rel="noopener noreferrer">Instagram</a>
+                <a href="https://youtube.com/@oleksandr_morozov_knb" target="_blank" rel="noopener noreferrer">YouTube</a>
+                <a href="https://www.tiktok.com/@konsnabis" target="_blank" rel="noopener noreferrer">TikTok</a>
+                <a href="https://www.facebook.com/share/17jqya6Sot/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">Facebook</a>
+                <a href="https://www.threads.com/@konsnabis" target="_blank" rel="noopener noreferrer">Threads</a>
+                <a href="https://t.me/+XSUYZOYC-Ws0OWFi" target="_blank" rel="noopener noreferrer">Telegram</a>
+              </div>
+            </article>
+            <article>
+              <span>02</span>
+              <h3 data-i18n="assessmentTask2">Воронка продажу програми</h3>
+              <p data-i18n="assessmentTask2Copy">Запропонуйте маркетингову воронку для базової 7-тижневої програми «Стратегія керованого зростання у бізнесі»: схема / MindMap, оффер, логіка переходів і пояснення, чому саме цей оффер.</p>
+              <div class="academy-assessment-flow">
+                <b>Reach</b><i>→</i><b>Engagement</b><i>→</i><b>Lead</b><i>→</i><b>Consultation</b><i>→</i><b>Sale</b><i>→</i><b>Program</b><i>→</i><b>Renewal</b>
+              </div>
+            </article>
+          </div>
+
+          <div class="academy-assessment-rubric">
+            <div><b data-i18n="rubric1">1 · Evidence & diagnosis</b><span>0–5</span><small data-i18n="rubric1Copy">Чи спирається висновок на факти, контент і метрики, а не на загальні фрази.</small></div>
+            <div><b data-i18n="rubric2">2 · Audience & positioning</b><span>0–5</span><small data-i18n="rubric2Copy">Чи зрозуміло, кому продаємо, яку проблему вирішуємо і чому це важливо.</small></div>
+            <div><b data-i18n="rubric3">3 · Funnel logic</b><span>0–5</span><small data-i18n="rubric3Copy">Чи пов’язані контент, lead magnet, консультація, продаж і retention в одну систему.</small></div>
+            <div><b data-i18n="rubric4">4 · Offer quality</b><span>0–5</span><small data-i18n="rubric4Copy">Чи конкретний оффер, чи є reason-to-believe і логічний CTA без необґрунтованих гарантій.</small></div>
+            <div><b data-i18n="rubric5">5 · KPI & measurement</b><span>0–5</span><small data-i18n="rubric5Copy">Чи визначені conversion, CAC, LTV/retention, revenue attribution та критерій успіху.</small></div>
+            <div><b data-i18n="rubric6">6 · Execution thinking</b><span>0–5</span><small data-i18n="rubric6Copy">Чи можна з роботи зробити 7/30/90-day plan з owners, priorities і next actions.</small></div>
+          </div>
+
+          <div class="academy-assessment-review">
+            <span>Submission URL · —</span>
+            <span>Reviewer · —</span>
+            <span>Score · — / 30</span>
+            <span data-i18n="assessmentDecision">Decision · Pending human review</span>
+          </div>
+        </section>
+
+        <p class="academy-owner-boundary" data-i18n="boundary">Поки що операційні картки та показники на цій сторінці — демонстраційна структура vertical. Бізнес-профіль і Hermes-акаунт зберігаються реально; CRM-модулі активуються поетапно без підміни demo-даних реальними.</p>
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const dict={
+    uk:{back:"← Hermes Connect",loading:"Завантажуємо ваш робочий простір…",loadingCopy:"Перевіряємо Hermes-акаунт та профіль навчального бізнесу.",ownerWorkspace:"Робочий простір власника",crm:"Academy CRM",heroCopy:"CRM адаптована під навчальний бізнес: продаж програм, учасники, потоки, навчання, завдання, перевірки, маркетинг, HR та повторні продажі працюють як один pipeline.",openPipeline:"Відкрити sales pipeline",catalogProfile:"Профіль у Catalog",settings:"Налаштування бізнесу",logout:"Вийти",vertical:"Academy vertical",different:"Не універсальна CRM.",differentCopy:"Repair Shop отримує записи, автомобілі та графік СТО. Academy отримує ліди, консультації, учасників, cohorts, lessons, assignments, reviews і retention. Hermes identity спільна, робочий процес — різний.",leads:"Нові ліди",consultations:"Консультації",learners:"Активні учасники",review:"На перевірці",sample:"demo data",realOnly:"лише з реальних даних",pipeline:"Лід → консультація → програма → зарахування → навчання → renewal",sampleBoard:"Демо-дошка",newLead:"Нова заявка",qualified:"Кваліфікація",need:"Потреба: систематизація продажів",consultBooked:"Консультацію призначено",consultDone:"Консультацію проведено",programSelected:"Програму підібрано",programFit:"Program fit · розвиток бізнесу",decision:"Рішення / follow-up",enrolled:"Зарахований",activeLearner:"Активний учасник",completed:"Завершив / alumni",renewal:"Renewal / наступна програма",learner360:"Картка учасника",source:"Джерело ліда, менеджер і консультація",progress:"Прогрес за модулями та відвідування",assignments:"Домашні завдання і reviewer feedback",baseline:"Business KPI baseline / before → after",retention:"Завершення, feedback, наступна програма, клуб",delivery:"Навчальний delivery",cohorts:"Потоки / cohorts",lessons:"Уроки та записи",weekly:"Щотижневі розбори",nextAction:"Наступна дія по кожному учаснику",marketingCopy:"Канал → lead → consultation → sale → revenue. Фінансові показники не вигадуються: вони з’являються після підключення реальних витрат і CRM revenue.",hiring:"Команда академії",hiringCopy:"Recruiting зберігається окремо від learner progression та не перетворює навчальні оцінки на автоматичні кадрові рішення.",accessTitle:"Одна Academy CRM — різні робочі ролі.",accessState:"Product structure · permission backend pending",accessCopy:"Власник бачить весь бізнес-контур. Команді потрібен мінімально необхідний доступ за модулем: marketing не отримує приватні HR-рішення, sales не отримує reviewer power, а reviewer не отримує фінансові або кадрові права автоматично.",roleOwner:"Власник",roleOwnerCopy:"Business settings · programs · teams · reports · final approvals.",roleAdmin:"Адміністратор",roleAdminCopy:"Workspace configuration and approved operating support.",roleMarketingCopy:"Campaigns · content attribution · funnel · KPI inputs.",roleSalesCopy:"Leads · diagnostics · consultations · deals · next actions.",roleHrCopy:"Vacancies · candidate stages · assessment templates · human decisions.",roleCurator:"Куратор",roleCuratorCopy:"Cohorts · attendance · assignments · participant follow-up.",roleReviewerCopy:"Evidence review only within authorized program scope.",roleReadonly:"Тільки перегляд",roleReadonlyCopy:"Selected dashboards and reports without operational writes.",accessBoundary:"Це цільова permission-модель для Academy Business. На поточній demo-стадії вона не заявляється як повністю активований multi-user RBAC: реальні team memberships і company-scoped permissions мають бути підключені окремо перед зберіганням client staff/candidate data.",acquisitionTitle:"Social → offer → diagnostic → consultation → program.",acquisitionCopy:"Кожен lead зберігає source asset, campaign, CTA/entry offer, primary pain, diagnostic gap, recommended module і next action. Так marketing, sales і Academy бачать один і той самий customer journey.",acqSource:"Джерело",acqOffer:"Entry offer",acqGap:"Diagnostic gap",acqModule:"Рекомендований модуль",acqNext:"Наступна дія",acquisitionBoundary:"Рядки вище — демонстрація структури attribution з публічних CTA, а не реальні leads КНБ. Реальні контакти, revenue і conversion з’являються лише після дозволеного підключення джерел.",proofTitle:"Контроль доказів для marketing, site і sales.",proofCopy:"Кожен публічний result claim має source, observed_at, definition, evidence owner, approved wording і review date. Якщо джерела конфліктують, система не обирає цифру автоматично — статус переходить у Needs review.",proofClaim:"Claim",proofSource:"Source",proofState:"State",proofNext:"Наступна дія",proofBoundary:"Це governance-demo, а не висновок про достовірність конкретної client claim. Canonical wording затверджує уповноважена людина після evidence review.",programPortfolio:"Портфель програм і потоки",configurable:"Налаштовується",programPortfolioCopy:"Кожна програма має свій sales fit, ціну після підключення billing, потоки, уроки, assignments, reviewer flow, completion і наступну пропозицію.",programCatalog:"Каталог програм",programCatalogCopy:"Назва · формат · тривалість · eligibility",cohortPlanning:"Планування cohort",cohortPlanningCopy:"Старт · capacity · owner · schedule",enrollment:"Enrollment",enrollmentCopy:"Deal → learner → cohort",deliveryReview:"Delivery & review",deliveryReviewCopy:"Lessons · evidence · feedback",completionRenewal:"Completion & renewal",completionRenewalCopy:"Alumni · club · next program",salesHierarchy:"Багаторівнева sales-структура",salesHierarchyCopy:"CRM підтримує до чотирьох рівнів sales-management для бізнесів, яким це потрібно. Назви ролей і права задає сам бізнес — структура не створює кадрові рішення автоматично.",levelRole:"Роль бізнесу",levelMetrics:"Plan · conversion · next action",kpiDictionary:"Спочатку визначення метрики — потім цифра.",kpiDictionaryCopy:"Шаблон готовий до фінансових і комерційних показників, але значення залишаються порожніми, доки не підключене надійне джерело.",assessmentTitle:"Тестові завдання кандидатів — окремо від навчання студентів.",assessmentTemplate:"Шаблон · Marketing",assessmentCopy:"HR може створювати багаторазові assessment templates для конкретної ролі. Кандидат отримує brief, deadline, джерела, формат здачі та rubric; reviewer оцінює evidence, мислення й виконання, а фінальне кадрове рішення залишається за людиною.",assessmentClient:"Client / role",assessmentDeadline:"Deadline",assessmentFormat:"Submission",assessmentReady:"Template ready",assessmentTask1:"Аналіз соціальної мережі",assessmentTask1Copy:"Оберіть будь-яку соцмережу бізнесу, зробіть короткий аудит і сформулюйте, що б ви впровадили одразу як керівник напряму та які шляхи розвитку бачите.",assessmentTask2:"Воронка продажу програми",assessmentTask2Copy:"Запропонуйте маркетингову воронку для базової 7-тижневої програми «Стратегія керованого зростання у бізнесі»: схема / MindMap, оффер, логіка переходів і пояснення, чому саме цей оффер.",rubric1:"1 · Evidence & diagnosis",rubric1Copy:"Чи спирається висновок на факти, контент і метрики, а не на загальні фрази.",rubric2:"2 · Audience & positioning",rubric2Copy:"Чи зрозуміло, кому продаємо, яку проблему вирішуємо і чому це важливо.",rubric3:"3 · Funnel logic",rubric3Copy:"Чи пов’язані контент, lead magnet, консультація, продаж і retention в одну систему.",rubric4:"4 · Offer quality",rubric4Copy:"Чи конкретний оффер, чи є reason-to-believe і логічний CTA без необґрунтованих гарантій.",rubric5:"5 · KPI & measurement",rubric5Copy:"Чи визначені conversion, CAC, LTV/retention, revenue attribution та критерій успіху.",rubric6:"6 · Execution thinking",rubric6Copy:"Чи можна з роботи зробити 7/30/90-day plan з owners, priorities і next actions.",assessmentDecision:"Decision · Pending human review",boundary:"Поки що операційні картки та показники на цій сторінці — демонстраційна структура vertical. Бізнес-профіль і Hermes-акаунт зберігаються реально; CRM-модулі активуються поетапно без підміни demo-даних реальними."},
+    en:{back:"← Hermes Connect",loading:"Loading your workspace…",loadingCopy:"Checking your Hermes account and education-business profile.",ownerWorkspace:"Owner workspace",crm:"Academy CRM",heroCopy:"CRM adapted to an education business: program sales, learners, cohorts, learning, assignments, reviews, marketing, HR, and repeat sales in one pipeline.",openPipeline:"Open sales pipeline",catalogProfile:"Catalog profile",settings:"Business settings",logout:"Log out",vertical:"Academy vertical",different:"Not a universal CRM.",differentCopy:"Repair Shops get appointments, vehicles, and shop scheduling. Academy gets leads, consultations, learners, cohorts, lessons, assignments, reviews, and retention. Hermes identity stays shared while workflow changes by vertical.",leads:"New leads",consultations:"Consultations",learners:"Active learners",review:"Awaiting review",sample:"demo data",realOnly:"real data only",pipeline:"Lead → consultation → program → enrollment → learning → renewal",sampleBoard:"Demo board",newLead:"New lead",qualified:"Qualified",need:"Need: sales systemization",consultBooked:"Consultation booked",consultDone:"Consultation completed",programSelected:"Program selected",programFit:"Program fit · business growth",decision:"Decision / follow-up",enrolled:"Enrolled",activeLearner:"Active learner",completed:"Completed / alumni",renewal:"Renewal / next program",learner360:"Learner 360",source:"Lead source, manager, and consultation",progress:"Module progress and attendance",assignments:"Assignments and reviewer feedback",baseline:"Business KPI baseline / before → after",retention:"Completion, feedback, next program, club",delivery:"Learning delivery",cohorts:"Cohorts",lessons:"Lessons and recordings",weekly:"Weekly reviews",nextAction:"Next action for every learner",marketingCopy:"Channel → lead → consultation → sale → revenue. Financial metrics are never fabricated; they appear after real spend and CRM revenue are connected.",hiring:"Academy team",hiringCopy:"Recruiting stays separate from learner progression and does not turn learning scores into automated employment decisions.",accessTitle:"One Academy CRM — different working roles.",accessState:"Product structure · permission backend pending",accessCopy:"The owner sees the full business system. Team members should receive only the minimum module access they need: marketing does not inherit private HR decisions, sales does not inherit reviewer power, and reviewers do not automatically receive financial or employment permissions.",roleOwner:"Owner",roleOwnerCopy:"Business settings · programs · teams · reports · final approvals.",roleAdmin:"Administrator",roleAdminCopy:"Workspace configuration and approved operating support.",roleMarketingCopy:"Campaigns · content attribution · funnel · KPI inputs.",roleSalesCopy:"Leads · diagnostics · consultations · deals · next actions.",roleHrCopy:"Vacancies · candidate stages · assessment templates · human decisions.",roleCurator:"Curator",roleCuratorCopy:"Cohorts · attendance · assignments · participant follow-up.",roleReviewerCopy:"Evidence review only within authorized program scope.",roleReadonly:"Read only",roleReadonlyCopy:"Selected dashboards and reports without operational writes.",accessBoundary:"This is the target permission model for Academy Business. At the current demo stage it is not presented as fully activated multi-user RBAC: real team memberships and company-scoped permissions must be connected separately before storing client staff or candidate data.",acquisitionTitle:"Social → offer → diagnostic → consultation → program.",acquisitionCopy:"Every lead keeps the source asset, campaign, CTA/entry offer, primary pain, diagnostic gap, recommended module, and next action so marketing, sales, and Academy share one customer journey.",acqSource:"Source",acqOffer:"Entry offer",acqGap:"Diagnostic gap",acqModule:"Recommended module",acqNext:"Next action",acquisitionBoundary:"The rows above demonstrate attribution structure using public CTAs; they are not real KNB leads. Real contacts, revenue, and conversion appear only after permitted data connections.",proofTitle:"Evidence control for marketing, site, and sales.",proofCopy:"Every public result claim keeps source, observed_at, definition, evidence owner, approved wording, and review date. When sources conflict, the system does not choose a number automatically; the state becomes Needs review.",proofClaim:"Claim",proofSource:"Source",proofState:"State",proofNext:"Next action",proofBoundary:"This is a governance demo, not a conclusion about whether a specific client claim is true. Canonical wording is approved by an authorized human after evidence review.",programPortfolio:"Program portfolio & cohorts",configurable:"Configurable",programPortfolioCopy:"Each program can have its own sales fit, price after billing is connected, cohorts, lessons, assignments, reviewer flow, completion, and next offer.",programCatalog:"Program catalog",programCatalogCopy:"Name · format · duration · eligibility",cohortPlanning:"Cohort planning",cohortPlanningCopy:"Start · capacity · owner · schedule",enrollment:"Enrollment",enrollmentCopy:"Deal → learner → cohort",deliveryReview:"Delivery & review",deliveryReviewCopy:"Lessons · evidence · feedback",completionRenewal:"Completion & renewal",completionRenewalCopy:"Alumni · club · next program",salesHierarchy:"Multi-level sales structure",salesHierarchyCopy:"CRM supports up to four sales-management levels for businesses that need them. Role names and permissions are defined by the business; the structure does not automate employment decisions.",levelRole:"Business-defined role",levelMetrics:"Plan · conversion · next action",kpiDictionary:"Define the metric before showing a number.",kpiDictionaryCopy:"The template is ready for financial and commercial KPI, but values stay blank until a trusted source is connected.",assessmentTitle:"Candidate test assignments stay separate from learner education.",assessmentTemplate:"Template · Marketing",assessmentCopy:"HR can create reusable assessment templates for a specific role. The candidate receives the brief, deadline, sources, submission format and rubric; a reviewer scores evidence, thinking and execution, while the final employment decision remains human.",assessmentClient:"Client / role",assessmentDeadline:"Deadline",assessmentFormat:"Submission",assessmentReady:"Template ready",assessmentTask1:"Social-channel analysis",assessmentTask1Copy:"Choose any business social channel, complete a concise audit, and explain what you would implement immediately as the channel lead and which growth paths you see.",assessmentTask2:"Program sales funnel",assessmentTask2Copy:"Propose a marketing funnel for the base seven-week “Managed Business Growth Strategy” program: diagram / MindMap, offer, transition logic, and why this offer should be used.",rubric1:"1 · Evidence & diagnosis",rubric1Copy:"Does the conclusion use observable facts, content and metrics rather than generic statements.",rubric2:"2 · Audience & positioning",rubric2Copy:"Is it clear who the offer is for, which problem it solves, and why it matters.",rubric3:"3 · Funnel logic",rubric3Copy:"Do content, lead magnet, consultation, sale and retention form one coherent system.",rubric4:"4 · Offer quality",rubric4Copy:"Is the offer specific, supported by a reason to believe, and paired with a logical CTA without unsupported guarantees.",rubric5:"5 · KPI & measurement",rubric5Copy:"Are conversion, CAC, LTV/retention, revenue attribution and success criteria defined.",rubric6:"6 · Execution thinking",rubric6Copy:"Can the work become a 7/30/90-day plan with owners, priorities and next actions.",assessmentDecision:"Decision · Pending human review",boundary:"For now, operating cards and metrics on this page are a vertical demo structure. The business profile and Hermes identity are persisted; CRM modules are activated incrementally without presenting demo data as real."}
+  } as const;
+  type Lang=keyof typeof dict;
+  const params=new URLSearchParams(location.search);let lang:Lang=params.get("lang")==="en"?"en":"uk";
+  const apply=(next:Lang)=>{lang=next;document.documentElement.lang=next;try{localStorage.setItem("hermes-connect-language",next)}catch{};document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/"]').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(n=>{const k=n.dataset.i18n as keyof typeof dict.uk;const v=dict[next][k];if(v)n.textContent=v});document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.classList.toggle("active",b.dataset.lang===next));};
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(b=>b.addEventListener("click",()=>{const next:Lang=b.dataset.lang==="en"?"en":"uk";const url=new URL(window.location.href);url.searchParams.set("lang",next);window.location.assign(url.pathname+url.search+url.hash);}));apply(lang);
+
+  const loading=document.querySelector<HTMLElement>("[data-workspace-loading]");const content=document.querySelector<HTMLElement>("[data-workspace-content]");const alert=document.querySelector<HTMLElement>("[data-workspace-alert]");
+  const json=async(url:string,options:RequestInit={})=>{const r=await fetch(url,{...options,headers:{Accept:"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});const p=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(p.error||`request_${r.status}`),{status:r.status,payload:p});return p;};
+  const fail=(message:string)=>{if(alert){alert.textContent=message;alert.className="academy-app-alert show error";}};
+  void(async()=>{
+    try{
+      await json("/api/auth/me");
+      const state=await json("/api/hermes-connect/academy/business");
+      if(!state.academyBusiness){location.assign("/services/hermes-connect/academy/business/auth/?mode=register");return;}
+      const b=state.academyBusiness;const name=document.querySelector<HTMLElement>("[data-business-name]");if(name)name.textContent=b.businessName||"Academy";
+      const link=document.querySelector<HTMLAnchorElement>("[data-catalog-link]");if(link)link.href=b.catalogOptIn?`/businesses/connect/academy/${encodeURIComponent(b.slug)}/`:"/businesses/";
+      loading?.classList.add("academy-app-hidden");content?.classList.remove("academy-app-hidden");
+    }catch(error:any){if(error?.status===401){location.assign("/services/hermes-connect/academy/business/auth/?mode=login");return;}fail(String(error?.message||"Could not load workspace"));}
+  })();
+  document.querySelector<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);location.assign("/services/hermes-connect/academy/business/auth/?mode=login");});
+</script>
+
+<style>
+  .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
+  .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
+  .academy-owner-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}.academy-owner-kpis article{padding:18px;border:1px solid rgba(148,163,184,.28);border-radius:18px;background:#fff}.academy-owner-kpis span,.academy-owner-kpis small{display:block}.academy-owner-kpis span{font-size:12px;color:#64748b}.academy-owner-kpis strong{display:block;margin:7px 0;font-size:28px}.academy-owner-kpis small{font-size:10px;color:#94a3b8}
+  .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
+  .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
+  @media(max-width:900px){.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
+  @media(max-width:620px){.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
+</style>
