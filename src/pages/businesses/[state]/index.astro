@@ -4,12 +4,18 @@ import DirectionProductNav from "../../../components/DirectionProductNav.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import { directoryStates, directoryCities, repairShopDirectory, type RepairShopDirectoryEntry } from "../../../data/repair-shop-directory";
+import InternationalBusinessCollection from "../../../components/InternationalBusinessCollection.astro";
+import { catalogConceptCountryRoutes, type CatalogConceptCountryRoute } from "../../../lib/catalog-concept-routes";
 
 type DirectoryState = (typeof directoryStates)[number];
 export function getStaticPaths(){
-  return directoryStates.map((state: DirectoryState)=>({params:{state:state.slug},props:{state}}));
+  const us = directoryStates.map((state: DirectoryState)=>({params:{state:state.slug},props:{kind:"us" as const,route:state}}));
+  const international = catalogConceptCountryRoutes.map((country: CatalogConceptCountryRoute)=>({params:{state:country.slug},props:{kind:"international" as const,route:country}}));
+  return [...us, ...international];
 }
-const {state}=Astro.props as { state: DirectoryState };
+const {kind,route}=Astro.props as { kind:"us"|"international"; route:DirectoryState|CatalogConceptCountryRoute };
+const state=route as DirectoryState;
+const internationalCountry=route as CatalogConceptCountryRoute;
 const rows: RepairShopDirectoryEntry[] = repairShopDirectory.filter((business)=>business.stateSlug===state.slug);
 const cities = directoryCities.filter((city)=>city.stateSlug===state.slug);
 const categories = [...new Set(rows.map((business)=>business.category))];
@@ -21,7 +27,17 @@ const schema=[
   {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes Catalog",item:"https://hermeslogisticsus.com/businesses/"},{"@type":"ListItem",position:2,name:state.name,item:stateUrl}]}
 ];
 ---
-<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema}>
+{kind === "international" ? <InternationalBusinessCollection
+  title={`Selected Businesses in ${internationalCountry.name} | Hermes Catalog`}
+  description={`Secondary Hermes Catalog discovery profiles in ${internationalCountry.name}, published only where source-bounded business evidence supports a useful local profile.`}
+  eyebrow={`Hermes Catalog · International · ${internationalCountry.name}`}
+  canonical={`https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/`}
+  businesses={internationalCountry.businesses}
+  breadcrumbs={[
+    { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
+    { name: internationalCountry.name, item: `https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/` }
+  ]}
+/> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema}>
 <SiteHeader theme="light" activePath="/businesses/"/><DirectionProductNav direction="catalog" theme="light" />
 <main class="state-page"><div class="shell">
   <a class="back" href="/businesses/">← Hermes Catalog</a>
@@ -31,7 +47,7 @@ const schema=[
   <section class="cities"><h2>Browse {state.name} by city</h2>{cities.map((city)=><a href={`/businesses/${city.stateSlug}/${city.citySlug}/`}><strong>{city.city}, {city.state}</strong><span>{rows.filter((business)=>business.citySlug===city.citySlug).length} profile</span></a>)}</section>
   <section class="evidence"><h2>How a listing becomes active</h2><p>Hermes first reconciles a business identity against bounded public evidence such as an official site, government or federal record, or established directory source. A public profile may then be published as unclaimed with its source boundary visible. The owner can claim the profile, verify or correct business details, and independently choose whether to activate Hermes Connect scheduling, CRM, team management, or public booking.</p><p>When a source cannot confirm a fact, Hermes leaves it unknown rather than inventing it. A Google Business Profile marked as “not confirmed” means only that the bounded research did not independently verify one; it is not proof that no Google listing exists.</p></section>
 </div></main><SiteFooter/>
-</BaseLayout>
+</BaseLayout>)}
 <style>
 .state-page{min-height:70vh;background:#f6f7f9;color:#172033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:110px 0 80px}.back{color:#47729e;text-decoration:none;font-weight:800}.eyebrow{margin:28px 0 8px;color:#2168a6;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:900}h1{max-width:850px;margin:0;font-size:clamp(36px,5vw,62px);line-height:1.04}header>p,.evidence p,.coverage>div>p{max-width:850px;color:#657286;line-height:1.65}.summary{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0}.summary div{min-width:150px;padding:18px;border:1px solid #e0e6ed;border-radius:15px;background:#fff}.summary strong{display:block;font-size:30px}.summary span{color:#718095;font-size:13px}.coverage{margin-top:30px;padding:22px;border:1px solid #e0e6ed;border-radius:18px;background:#fff}.coverage .eyebrow{margin-top:0}.coverage h2{margin:.2rem 0 .5rem}.coverage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.coverage-grid article{padding:16px;border-radius:13px;background:#f7f9fb}.coverage-grid h3{margin:0 0 8px;font-size:14px}.coverage-grid ul{margin:0;padding-left:18px;color:#647286;line-height:1.65;font-size:13px}.cities{display:grid;gap:12px;margin-top:30px}.cities h2{margin-bottom:2px}.cities>a{display:flex;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e0e6ed;border-radius:14px;background:#fff;color:#1e2d40;text-decoration:none}.cities span{color:#718095;font-size:13px}.evidence{max-width:900px;margin-top:32px;padding:22px;border:1px solid #dce5ef;border-radius:16px;background:#eef5fb}.evidence p:last-child{margin-bottom:0}@media(max-width:760px){.summary{display:grid;grid-template-columns:1fr 1fr}.coverage-grid{grid-template-columns:1fr}.cities>a{display:grid}}
 </style>
