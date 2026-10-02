@@ -16,6 +16,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "dealer-vehicle-transportation", path: "/logistics/dealer-vehicle-transportation/" },
   { id: "load-board", path: "/load-board/" },
   { id: "seo-service", path: "/services/seo/" },
+  { id: "website-development", path: "/services/website-development/" },
   { id: "hermes-connect-overview", path: "/services/hermes-connect/" },
   { id: "repair-shops", path: "/services/hermes-connect/repair-shops/" },
   { id: "repair-shop-auth", path: "/services/hermes-connect/repair-shops/auth/" },

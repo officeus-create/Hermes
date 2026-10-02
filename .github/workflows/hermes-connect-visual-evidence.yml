@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'src/components/HomeMasterScene.astro'
+      - 'src/components/WebsiteDevelopmentShowroom.astro'
+      - 'src/components/DigitalServicePage.astro'
       - 'src/lib/home-portal-motion.ts'
       - 'public/images/home-approved-20260930.webp'
       - 'scripts/capture-home-motion-evidence.mjs'
@@ -32,6 +34,8 @@ on:
       - 'src/styles/hermes-repair-private-mobile.css'
       - 'src/styles/hermes-brand-system.css'
       - 'src/pages/services/hermes-connect/**'
+      - 'src/pages/services/website-development/**'
+      - 'tests/website-development-showroom.spec.ts'
       - 'src/pages/paths/**'
       - 'scripts/capture-route-screenshots.mjs'
       - 'scripts/route-screenshot-contract.mjs'
