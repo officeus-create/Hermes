@@ -107,7 +107,10 @@ export function searchHermesResults(
     if (!current || match.score > current.score) deduped.set(key, match);
   }
 
-  return [...deduped.values()]
+  const matches = [...deduped.values()];
+  if (!term) return matches.slice(0, boundedLimit);
+
+  return matches
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, undefined, { sensitivity: "base" }))
     .slice(0, boundedLimit);
 }
