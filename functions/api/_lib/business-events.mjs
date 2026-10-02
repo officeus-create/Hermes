@@ -30,7 +30,7 @@ export function sanitizeBusinessEventMetadata(metadata, allowedKeys = []) {
   return safe;
 }
 
-export function normalizeBusinessEvent(input = {}) {
+export function normalizeBusinessEvent(input = {}, { allowedMetadataKeys = [] } = {}) {
   const eventId = clean(input.event_id, 160);
   const eventType = clean(input.event_type, 80).toLowerCase().replace(/[^a-z0-9_.:-]+/g, "_");
   const entityType = clean(input.entity_type, 80).toLowerCase().replace(/[^a-z0-9_.:-]+/g, "_");
@@ -63,7 +63,7 @@ export function normalizeBusinessEvent(input = {}) {
     visibility,
     summary: summary || null,
     correlation_id: correlationId || null,
-    metadata: sanitizeBusinessEventMetadata(input.metadata, input.allowed_metadata_keys || []),
+    metadata: sanitizeBusinessEventMetadata(input.metadata, allowedMetadataKeys),
   };
 }
 
