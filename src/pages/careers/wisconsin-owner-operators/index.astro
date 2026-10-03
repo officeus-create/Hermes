@@ -16,7 +16,7 @@ const title = vacancyIsCurrent
   ? "Wisconsin Owner-Operator Opportunities | Hermes Logistics"
   : "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
 const description = vacancyIsCurrent
-  ? "Review the verified Wisconsin owner-operator opportunity for operators with their own truck and trailer. See equipment fit, recruiting hours, honest terms, and the live 100Hires source."
+  ? "Review the verified Wisconsin owner-operator opportunity for operators with their own truck. Trailer and equipment eligibility are checked individually. See recruiting hours, honest terms, and the live 100Hires source."
   : "Review the Wisconsin owner-operator recruiting scope and check the current Hermes careers hub for verified publication status.";
 
 const equipment = [
@@ -27,7 +27,7 @@ const equipment = [
   "Car Hauler",
   "Hotshot",
   "Box Truck",
-  "Power Only",
+  "Power Only — trailer and operating arrangement reviewed individually",
   "Conestoga",
   "RGN / Lowboy",
   "Other commercial truck and trailer combinations",
@@ -58,7 +58,7 @@ const support = [
 const faq = [
   {
     question: "Is this a company-driver job?",
-    answer: "No. This verified opportunity is for Wisconsin owner-operators who already have their own truck and trailer. The final carrier or operating-program relationship and its terms are reviewed individually before onboarding.",
+    answer: "No. This verified opportunity is for Wisconsin owner-operators who already have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility are therefore confirmed individually before onboarding.",
   },
   {
     question: "Does Hermes force owner-operators to accept loads?",
@@ -75,7 +75,7 @@ const faq = [
 ];
 
 const jobDescription = [
-  "Hermes is reviewing Wisconsin owner-operators who have their own truck and trailer for compatible carrier or operating programs.",
+  "Hermes is reviewing Wisconsin owner-operators who have their own commercial truck for compatible carrier or operating programs. The source title says own truck and trailer; Power Only and other equipment arrangements are reviewed individually before eligibility is confirmed.",
   `Wisconsin markets: ${wisconsinMarkets.join(", ")}.`,
   `Equipment that may be considered: ${equipment.join(", ")}.`,
   "No forced dispatch. The owner-operator reviews the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.",
@@ -147,11 +147,11 @@ const schema = [
           />
           <p class="eyebrow">Hermes Logistics · Owner-Operator Recruiting — Wisconsin</p>
           <h1>{vacancy.title}</h1>
-          <p class="career-lead">Hermes is reviewing Wisconsin owner-operators who have their own truck and trailer. Equipment, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
+          <p class="career-lead">Hermes is reviewing Wisconsin owner-operators who have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
           <p class="career-updated">Verified live source · updated October 3, 2026</p>
           <div class="career-facts" aria-label="Opportunity facts">
             <span><MapPin size={18} aria-hidden="true" /> Wisconsin</span>
-            <span><Truck size={18} aria-hidden="true" /> Own truck and trailer</span>
+            <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
             <span><ShieldCheck size={18} aria-hidden="true" /> No forced dispatch</span>
           </div>
           {vacancyIsCurrent ? (
@@ -174,7 +174,7 @@ const schema = [
           <div>
             <p class="eyebrow">Verified vacancy sources</p>
             <h2 id="vacancy-sources-title">Use the source that is live today.</h2>
-            <p>As of October 3, 2026, 100Hires is the only external source verified live for this exact Wisconsin owner-operator opportunity. Other job boards are not listed here until the matching vacancy is publicly accessible.</p>
+            <p>As of October 3, 2026, the exact 100Hires vacancy link is the only external source verified live for this Wisconsin owner-operator opportunity. The separate 100Hires employer page currently reports no active postings, so it is shown only as an employer-profile reference and not as a complete vacancy directory.</p>
           </div>
           <article class="source-card">
             <span>Live external source</span>
@@ -184,8 +184,10 @@ const schema = [
               Open the 100Hires vacancy <ExternalLink size={17} aria-hidden="true" />
             </a>
             <a href={vacancy.sourceDirectoryUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-directory>
-              See all Hermes jobs on 100Hires <ExternalLink size={17} aria-hidden="true" />
+              Open the Hermes employer page on 100Hires <ExternalLink size={17} aria-hidden="true" />
             </a>
+            <small>The employer page said “There are no active job postings right now” at the October 3 source review. Use the exact vacancy link above for this role.</small>
+            <small>Publication eligibility is recalculated during each site build. It does not update static HTML automatically between builds; recruiting must reverify this source by October 10, 2026.</small>
           </article>
         </div>
       </section>
@@ -195,7 +197,7 @@ const schema = [
           <div class="section-heading">
             <p class="eyebrow">Who this is for</p>
             <h2 id="who-fits-title">Wisconsin owner-operators with commercial equipment.</h2>
-            <p>This is not a company-driver vacancy. The opportunity is for an owner-operator with a truck and trailer who can discuss equipment, home base, experience, safety history, preferred lanes, schedule, and operating support needs.</p>
+            <p>This is not a company-driver vacancy. The opportunity is for an owner-operator with their own commercial truck. Trailer requirements and Power Only eligibility are confirmed individually together with home base, experience, safety history, preferred lanes, schedule, and operating support needs.</p>
           </div>
           <div class="detail-grid">
             <article>
