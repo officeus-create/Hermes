@@ -33,6 +33,8 @@ test("homepage entry uses four architectural system scene and keeps the canonica
   await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);
   await expect(page.locator(".hero-media picture")).toHaveCount(0);
   await expect(page.locator(".home-portal-art picture")).toHaveCount(4);
-  await expect(page.locator(".home-portal-motion img")).toHaveCount(2);
+  await expect(page.locator(".home-portal-motion")).toHaveCount(2);
+  await expect(page.locator(".home-moving-truck .home-truck-rig")).toHaveCount(1);
+  await expect(page.locator(".home-moving-leaves img")).toHaveCount(1);
   await expect(page.locator(".home-master-stage video, .home-master-stage canvas")).toHaveCount(0);
 });
