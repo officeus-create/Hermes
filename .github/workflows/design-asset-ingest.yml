@@ -6,11 +6,14 @@ on:
     paths:
       - .github/workflows/design-asset-ingest.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/logistics-living-weather-equipment-replay-20261003
       - name: Download temporary Runway references
         shell: bash
         run: |
@@ -23,6 +26,24 @@ jobs:
           curl -L --fail --silent --show-error 'https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/a2cf96f9-8ab3-4f3b-a6f0-34451b4e5e6c/3b8de589-7943-4652-9541-6dacb0337eec/Photorealistic_vertical_aerial_drone_scene_for_a_premium_U_S.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMGEzNDMzOWNkODBiNjM5OCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTE5MzI0NH0.BeccZ76lW25aa1Ol_5VBCjBUksPvzNeY1c_NQL6DPng' -o assets/step-deck.png
           curl -L --fail --silent --show-error 'https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/45cb1802-bedf-4576-b359-a7fb114a0551/53ee6c85-5cfd-4195-932e-1090108e832f/Photorealistic_vertical_aerial_drone_scene_for_a_premium_U_S.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYjNiMjg0NTE1N2RkYTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTEzNzc0NX0.DQYrWUiFvK-bi8HLUPm2OfdIKcRBC_MAA3hvscKUqBQ' -o assets/hotshot.png
           file assets/*
+      - name: Convert, own and commit Hermes assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq webp
+          mkdir -p public/images/logistics-living
+          for source in assets/*.png; do
+            key="$(basename "$source" .png)"
+            cwebp -quiet -q 76 -resize 512 0 "$source" -o "public/images/logistics-living/$key-512.webp"
+            cwebp -quiet -q 78 -resize 887 0 "$source" -o "public/images/logistics-living/$key-887.webp"
+          done
+          rm -f .github/workflows/design-asset-ingest.yml
+          git config user.name "Hermes Design Automation"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add public/images/logistics-living .github/workflows/design-asset-ingest.yml
+          git commit -m "design(v4): own living Logistics scene assets"
+          git push origin HEAD:design/logistics-living-weather-equipment-replay-20261003
       - uses: actions/upload-artifact@v4
         with:
           name: runway-logistics-scenes
