@@ -501,8 +501,24 @@ module.exports = class CachePolicy {
         if (fields.includes('*')) {
             return false;
         }
+
+        const hasOwn = (headers, name) =>
+            Object.prototype.hasOwnProperty.call(headers, name);
+
         for (const name of fields) {
-            if (req.headers[name] !== this._reqHeaders[name]) return false;
+            // Header names that collide with Object.prototype (for example
+            // "constructor") must never match through inherited properties.
+            // If either side omitted such a header, fail closed and revalidate.
+            if (
+                Object.prototype.hasOwnProperty.call(Object.prototype, name) &&
+                (!hasOwn(req.headers, name) || !hasOwn(this._reqHeaders, name))
+            ) {
+                return false;
+            }
+
+            const incoming = hasOwn(req.headers, name) ? req.headers[name] : undefined;
+            const stored = hasOwn(this._reqHeaders, name) ? this._reqHeaders[name] : undefined;
+            if (incoming !== stored) return false;
         }
         return true;
     }
