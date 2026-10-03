@@ -54,6 +54,8 @@ test("Logistics keeps one living scene with six representative weather and equip
     "step-deck",
     "hotshot",
   ]);
+  expect(scenes.every((scene: { asset: string }) => scene.asset.startsWith("/images/logistics-living/") && scene.asset.endsWith("-887.webp"))).toBe(true);
+  await expect(root.locator("[data-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-887.webp");
 });
 
 
