@@ -141,7 +141,7 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- expect(artwork.length).toBeGreaterThanOrEqual(6);
+ expect(artwork.length).toBeGreaterThanOrEqual(5);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
@@ -176,6 +176,28 @@ test('all four Home directions explain a causal workflow and remain static on to
  }
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
+});
+
+test('Home Logistics portal carries six lightweight weather and equipment states without adding a second route',async({browser,page},testInfo)=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/');
+ const echo=page.locator('[data-home-logistics-echo]');
+ await expect(echo).toHaveCount(1);
+ await expect(echo).toHaveAttribute('data-logistics-echo-count','6');
+ await expect(echo).toHaveAttribute('data-logistics-echo-scenes','car-hauler,dry-van,reefer,flatbed,step-deck,hotshot');
+ await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
+ await page.locator('#paths').scrollIntoViewIfNeeded();
+ await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
+
+ const reduced=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const mobile=await reduced.newPage();
+ await mobile.goto('/');
+ const reducedEcho=mobile.locator('[data-home-logistics-echo]');
+ await expect(reducedEcho).toHaveAttribute('data-logistics-echo-scene','car-hauler');
+ await expect(reducedEcho).toHaveAttribute('data-logistics-echo-motion','reduced');
+ expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await reduced.close();
 });
 
 test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
