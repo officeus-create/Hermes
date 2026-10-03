@@ -1,4 +1,5 @@
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
+import { catalogBusinessConcepts } from "../../src/data/catalog-business-concepts.ts";
 import { CATALOG_EVENT_TYPES, recordCatalogBusinessEvent } from "./_lib/catalog-business-events.mjs";
 import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
 import { jsonResponse } from "./_lib/session.mjs";
@@ -15,9 +16,10 @@ const sameOriginRequest = (request: Request) => {
 const clean = (value: unknown, max: number) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
 
-const staticBusinessIds = new Set(
-  repairShopDirectory.map((entry) => `repair-shop:${entry.stateSlug}/${entry.citySlug}/${entry.slug}`)
-);
+const staticBusinessIds = new Set([
+  ...repairShopDirectory.map((entry) => `repair-shop:${entry.stateSlug}/${entry.citySlug}/${entry.slug}`),
+  ...catalogBusinessConcepts.map((entry) => entry.id),
+]);
 
 async function validCatalogBusinessId(db: any, value: string) {
   if (staticBusinessIds.has(value)) return true;
