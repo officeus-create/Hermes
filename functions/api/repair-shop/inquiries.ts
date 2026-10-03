@@ -10,9 +10,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureCatalogBusinessInquirySchema(env.DB);
   const now = new Date().toISOString();
-  await env.DB.prepare(
-    "DELETE FROM catalog_business_inquiries WHERE retention_until <= ?"
-  ).bind(now).run();
+  await env.DB.batch([
+    env.DB.prepare("DELETE FROM catalog_inquiry_delivery_receipts WHERE request_id IN (SELECT request_id FROM catalog_business_inquiries WHERE retention_until <= ?)").bind(now),
+    env.DB.prepare("DELETE FROM catalog_business_inquiries WHERE retention_until <= ?").bind(now),
+  ]);
 
   const requestedLimit = Number(new URL(request.url).searchParams.get("limit") || 0);
   const limit = Number.isInteger(requestedLimit) && requestedLimit > 0
