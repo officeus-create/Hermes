@@ -14,21 +14,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   marketing: {
     accent: "var(--hermes-marketing)",
     detail: "Website · SEO/GEO · customer acquisition",
-    flow: ["Signal", "Distribution", "Site action", "Evidence"],
+    flow: ["Content", "Search + social", "Site action", "Inquiry"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "02", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
-    flow: ["Brief", "Build", "QA", "Readback"],
+    flow: ["Request", "CRM context", "Automation", "Receipt"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "03", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
     detail: "U.S. logistics · sales · marketing · operations",
-    flow: ["Task", "Attempt", "Review", "Progression"],
+    flow: ["Lesson", "Practice", "Review", "Progression"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "04", crop: 818, goal: "Develop people",
   },
@@ -70,8 +70,8 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 </span>
               ))}
             </span>
-            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true" data-home-pillar-proof="attention"><i class="home-story-frame"><em>Content</em><b></b><b></b><b></b></i><i class="home-story-frame"><em>Search</em><b></b><b></b><b></b></i><i class="home-story-frame"><em>Site</em><b></b><b></b><b></b></i><i class="home-story-outcome">Inquiry</i></span>}
-            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><i class="home-system-node" data-label="Request"></i><i class="home-system-node" data-label="CRM"></i><i class="home-system-node" data-label="Auto"></i><i class="home-system-node" data-label="Receipt"></i></span>}
+            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true" data-home-pillar-proof="attention"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
+            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
             {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><span class="home-academy-track"><i>Logistics</i><i>Sales</i><i>Marketing</i><i>Operations</i></span></span>}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true"></i>{meta.goal}</small>
@@ -164,17 +164,15 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
 .home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
 .home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
-.home-story-frame em{position:absolute;left:10%;top:8%;color:#214f41;font:700 .46rem/1 var(--font-body);font-style:normal;letter-spacing:.08em;text-transform:uppercase}.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-of-type{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
+.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-of-type{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
 .home-story-frame:nth-child(2){transform:translate(9%,3%) rotate(3deg);background:#e8faf6}.home-story-frame:nth-child(2) b:first-child{background:linear-gradient(145deg,#7fbfc2,#30637c)}
 .home-story-frame:nth-child(3){transform:translate(17%,6%) rotate(10deg);background:#fff7ed}.home-story-frame:nth-child(3) b:first-child{background:linear-gradient(145deg,#f4c18b,#aa6d57)}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(3){animation:home-story-turn 2.4s ease-in-out 2}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(2){animation:home-story-turn 2.4s ease-in-out .35s 2}
-.home-story-outcome{position:absolute;left:115%;top:44%;padding:5px 7px;border:1px solid #dfffe9aa;border-radius:999px;background:#102c25d9;color:#fff;font:700 .46rem/1 var(--font-body);font-style:normal;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 6px 15px #123a2e42;opacity:.65;transform:translateX(-8px)}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-story-outcome{animation:home-demand-arrive 2.4s cubic-bezier(.16,1,.3,1) .7s 2}
-.home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
+.home-master-route-marketing:is(:hover,:focus-visible) .home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
 .home-system-scan{position:absolute;inset:0 auto 0 -22%;width:20%;background:linear-gradient(90deg,transparent,#ffe6aa70,transparent);opacity:0}
 .home-system-node{position:absolute;top:20%;left:12%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.58}
-.home-system-node::after{content:attr(data-label);position:absolute;left:12px;top:50%;transform:translateY(-50%);padding:3px 5px;border:1px solid #ffe2bd70;border-radius:999px;background:#33261ecc;color:#fff5e8;font:700 .42rem/1 var(--font-body);letter-spacing:.05em;white-space:nowrap}
+
 .home-system-node:nth-child(3){top:40%;left:34%}.home-system-node:nth-child(4){top:61%;left:57%}.home-system-node:nth-child(5){top:78%;left:77%}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-scan{animation:home-system-pass 2.5s ease-in-out 2}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-node{animation:home-system-breathe 1.5s ease-in-out 3}
@@ -194,7 +192,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 @keyframes home-story-turn{0%,100%{opacity:1;translate:0 0;rotate:0deg}40%{opacity:.85;translate:50% -12%;rotate:10deg}70%{opacity:.6;translate:95% -10%;rotate:14deg}}
-@keyframes home-demand-arrive{0%,100%{opacity:.45;transform:translateX(-8px)}45%,72%{opacity:1;transform:translateX(0)}}
+45%,72%{opacity:1;transform:translateX(0)}}
 @keyframes home-skill-progress{0%,100%{opacity:.55;transform:translateX(6px)}42%,70%{opacity:1;transform:translateX(0)}}
 @keyframes home-system-pass{0%,100%{opacity:0;translate:0 0}20%,74%{opacity:.9}82%{opacity:0;translate:650% 0}}
 @keyframes home-system-breathe{0%,100%{opacity:.55;scale:1}45%{opacity:1;scale:1.75}}
