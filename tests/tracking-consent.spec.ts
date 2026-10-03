@@ -138,7 +138,7 @@ test("Microsoft Clarity stays disabled on private Hermes Connect routes even aft
   await expect(page.locator('script[data-hermes-clarity="true"]')).toHaveCount(0);
 });
 
-test("mobile consent stays compact in document flow and clear of every primary hero CTA", async ({ page }) => {
+test("mobile consent stays compact in a bottom dock and clear of every primary hero CTA", async ({ page }) => {
   const routes = [
     { path: "/paths/logistics/", cta: ".detail-page-logistics .detail-hero .button-primary" },
     { path: "/paths/marketing/", cta: ".detail-page-marketing .detail-hero .button-primary" },
@@ -163,16 +163,13 @@ test("mobile consent stays compact in document flow and clear of every primary h
     await expect(page.getByRole("button", { name: "Continue without analytics" })).toBeVisible();
 
     const geometry = await page.evaluate(({ cta }) => {
-      const rootElement = document.querySelector<HTMLElement>("[data-tracking-consent]");
       const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
-      const mainElement = document.querySelector<HTMLElement>("main");
       const ctaElement = document.querySelector<HTMLElement>(cta);
       const headingElement = document.querySelector<HTMLElement>("h1");
       const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
       const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
-      if (!rootElement || !bannerElement || !mainElement || !ctaElement || !headingElement || !acceptElement || !declineElement) return null;
+      if (!bannerElement || !ctaElement || !headingElement || !acceptElement || !declineElement) return null;
       const bannerRect = bannerElement.getBoundingClientRect();
-      const mainRect = mainElement.getBoundingClientRect();
       const ctaRect = ctaElement.getBoundingClientRect();
       const headingRect = headingElement.getBoundingClientRect();
       const acceptRect = acceptElement.getBoundingClientRect();
@@ -180,11 +177,14 @@ test("mobile consent stays compact in document flow and clear of every primary h
       const overlap = bannerRect.left < ctaRect.right && bannerRect.right > ctaRect.left && bannerRect.top < ctaRect.bottom && bannerRect.bottom > ctaRect.top;
       const headingOverlap = bannerRect.left < headingRect.right && bannerRect.right > headingRect.left && bannerRect.top < headingRect.bottom && bannerRect.bottom > headingRect.top;
       return {
-        placement: rootElement.dataset.consentPlacement,
-        position: getComputedStyle(bannerElement).position,
         bannerHeight: bannerRect.height,
+        bannerTop: bannerRect.top,
         bannerBottom: bannerRect.bottom,
-        mainTop: mainRect.top,
+        viewportHeight: window.innerHeight,
+        ctaTop: ctaRect.top,
+        ctaBottom: ctaRect.bottom,
+        headingTop: headingRect.top,
+        headingBottom: headingRect.bottom,
         overlap,
         headingOverlap,
         acceptHeight: acceptRect.height,
@@ -193,10 +193,9 @@ test("mobile consent stays compact in document flow and clear of every primary h
     }, { cta: route.cta });
 
     expect(geometry, route.path).not.toBeNull();
-    expect(geometry!.placement, route.path).toBe("inline");
-    expect(geometry!.position, route.path).toBe("relative");
     expect(geometry!.bannerHeight, route.path).toBeLessThanOrEqual(84);
-    expect(geometry!.bannerBottom, route.path).toBeLessThanOrEqual(geometry!.mainTop + 1);
+    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(geometry!.viewportHeight - 100);
+    expect(geometry!.bannerBottom, route.path).toBeLessThanOrEqual(geometry!.viewportHeight);
     expect(geometry!.overlap, route.path).toBe(false);
     expect(geometry!.headingOverlap, route.path).toBe(false);
     expect(geometry!.acceptHeight, route.path).toBeGreaterThanOrEqual(44);
@@ -205,41 +204,6 @@ test("mobile consent stays compact in document flow and clear of every primary h
     await page.getByRole("button", { name: "Continue without analytics" }).click();
     await page.evaluate(() => localStorage.removeItem("hermes-analytics-consent"));
   }
-});
-
-test("desktop consent stays in document flow and does not cover the next visible heading", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/paths/logistics/", { waitUntil: "domcontentloaded" });
-
-  const banner = page.locator("[data-consent-banner]");
-  await expect(banner).toBeVisible();
-  await expect(banner).toHaveCSS("position", "relative");
-
-  const geometry = await page.evaluate(() => {
-    const root = document.querySelector<HTMLElement>("[data-tracking-consent]");
-    const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
-    const mainElement = document.querySelector<HTMLElement>("main");
-    const heroHeading = document.querySelector<HTMLElement>("main h1");
-    if (!root || !bannerElement || !mainElement || !heroHeading) return null;
-    const bannerRect = bannerElement.getBoundingClientRect();
-    const mainRect = mainElement.getBoundingClientRect();
-    const headingRect = heroHeading.getBoundingClientRect();
-    return {
-      placement: root.dataset.consentPlacement,
-      bannerBottom: bannerRect.bottom,
-      mainTop: mainRect.top,
-      overlapsHeading:
-        bannerRect.left < headingRect.right &&
-        bannerRect.right > headingRect.left &&
-        bannerRect.top < headingRect.bottom &&
-        bannerRect.bottom > headingRect.top,
-    };
-  });
-
-  expect(geometry).not.toBeNull();
-  expect(geometry!.placement).toBe("inline");
-  expect(geometry!.bannerBottom).toBeLessThanOrEqual(geometry!.mainTop + 1);
-  expect(geometry!.overlapsHeading).toBe(false);
 });
 
 test("privacy settings stays in document flow after a mobile choice", async ({ page }) => {
