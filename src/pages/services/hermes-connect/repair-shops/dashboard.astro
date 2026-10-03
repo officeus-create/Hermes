@@ -100,6 +100,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
           <article><strong id="report-request-starts">0</strong><span>Service-request starts</span></article>
           <article><strong id="report-crm-inquiries">0</strong><span>CRM inquiries</span></article>
           <article><strong id="report-booking-starts">0</strong><span>Booking starts</span></article>
+          <article><strong id="report-claim-starts">0</strong><span>Profile claim starts</span></article>
+          <article><strong id="report-growth-starts">0</strong><span>Growth-service starts</span></article>
           <article><strong id="report-crm-bookings">0</strong><span>CRM bookings · all sources</span></article>
         </div>
         <p id="catalog-report-note" class="privacy-note hidden">Views and CTA clicks are aggregate, consented first-party measurements. CRM bookings are shown as all workspace bookings because booking source attribution is not yet proven for every booking.</p>
@@ -144,7 +146,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
   type CatalogInquiry = { id:string; request_id:string; catalog_business_id:string; catalog_profile:string; business_name:string; contact_name:string; contact_email:string; contact_phone?:string|null; contact_whatsapp?:string|null; contact_telegram?:string|null; preferred_language?:string|null; preferred_contact_time?:string|null; message:string; services:string[]; status:string; internal_delivery_status:string; owner_delivery_status:string; owner_delivery_at?:string|null; created_at:string; updated_at:string };
-  type CatalogReport = { period:{days:number;start_day:string;end_day:string;timezone:string}; metrics:{consented_profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;request_starts:number;booking_starts:number;crm_inquiries:number;crm_bookings_created_all_sources:number} };
+  type CatalogReport = { period:{days:number;start_day:string;end_day:string;timezone:string}; metrics:{consented_profile_views:number;call_clicks:number;maps_clicks:number;website_clicks:number;request_starts:number;booking_starts:number;claim_starts:number;growth_starts:number;crm_inquiries:number;crm_bookings_created_all_sources:number} };
   type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
@@ -361,6 +363,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       "report-request-starts": report.metrics.request_starts,
       "report-crm-inquiries": report.metrics.crm_inquiries,
       "report-booking-starts": report.metrics.booking_starts,
+      "report-claim-starts": report.metrics.claim_starts,
+      "report-growth-starts": report.metrics.growth_starts,
       "report-crm-bookings": report.metrics.crm_bookings_created_all_sources,
     };
     for (const [id,value] of Object.entries(values)) {
