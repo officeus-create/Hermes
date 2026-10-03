@@ -174,7 +174,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       INSERT OR IGNORE INTO hermes_company_profiles (
         id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,
         country_code,timezone,public_source_ref,catalog_opt_in,catalog_status,load_board_access,created_at,updated_at
-      ) VALUES (?,?,?,?, 'other', ?,?,?,?,?,?,?,?,?,'self_submitted',0,?,?)
+      ) VALUES (?,?,?,?, 'other', ?,?,?,?,?,?,?,?,'self_submitted',0,?,?)
     `).bind(
       companyId,
       specialist.id,
