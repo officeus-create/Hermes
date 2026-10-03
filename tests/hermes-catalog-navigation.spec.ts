@@ -30,7 +30,7 @@ test("Catalog search filters the server-rendered evidence-backed profiles", asyn
   const input = page.locator("[data-catalog-input]");
   await input.fill("diesel");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(6);
-  await expect(page.locator("[data-catalog-count]")).toHaveText("6 searchable entries");
+  await expect(page.locator("[data-catalog-count]")).toHaveText("6 matching Catalog entries across business profiles, Hermes services, and strategy examples");
   await expect(page.getByRole("heading", { level: 3, name: "DieselHub Service Inc" })).toBeVisible();
   await input.fill("Sherwood");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(1);
