@@ -1353,3 +1353,27 @@ Initial PR1590 head 58236eca exposed two in-scope gates: raw HTML substring vali
 ## 2026-10-02 — Project31 SEO intake effective-mode copy (#346)
 
 Owner: sole Project31 successor in CURRENT_CHATS row105. Base `12d4a4a14c6137191364acdb440b26ff57e023ec`, branch `fix/project31-seo-intake-mode-copy-20261002`. Open PR comparison found no `SeoIntakeEnhancer.astro` or `ProductionContactMode.astro` overlap across 13 open PRs. This bounded change reads the final form mode after the existing production override: preview explains manual contact handoff, and live explains accepted-for-delivery without implying human receipt or qualification. Existing SEO prefill, hidden and required controls, recipient endpoint and analytics are unchanged. Mobile tests exercise both modes with a local build served under the production HTTPS host by Playwright routing and make no submission. Local build (388 pages) and `npm test` passed; local Chromium was unavailable and browser installation returned a truncated archive, so exact-head CI/mobile pixels and independent review remain mandatory before owner-authorized merge/deploy and production readback. No lead or receiver claim. Compounding: conversion expectation improved; canonical search ownership, routes, data and privacy preserved; reusable mode-source-of-truth pattern; no new content or product surface. Rollback: revert this bounded PR. Next owner: Project31 writer for CI repair if needed, independent reviewer for mobile evidence, then release owner.
+
+
+## 2026-10-04 — ChatGPT / Design V4 Home corporate product-theatre implementation
+
+- Owner directive: implement the refined Hermes visual direction after live-site and benchmark review; preserve one Hermes ecosystem and the existing Four directions information architecture.
+- Branch: `design/logistics-living-final-20261003`.
+- PR: #1655.
+- Current implementation commits in this continuation: `d14c26b` test-contract repair, `dd236bbe` corporate Home shell/mobile chapters, `d750c9a5` purposeful Marketing/Technology/Academy scene overlays, `1e4db47f` focused browser coverage.
+- Files changed in this continuation: `src/components/HomeMasterScene.astro`, `tests/home-approved-20260930.spec.ts`; existing branch already owns Logistics living-scene assets/tests/provenance.
+- Behavior delivered:
+  - Home shell moves from decorative gradient/script treatment to restrained Pearl/Ink corporate presentation;
+  - desktop keeps four clear direction pillars;
+  - mobile changes from a compressed 2×2 grid to four sequential chapters;
+  - Logistics keeps six representative aerial equipment/weather states;
+  - Marketing scene now exposes Content → Search → Site → Inquiry visual cues;
+  - Technology scene now exposes Request → CRM → Auto → Receipt system cues;
+  - Academy scene now exposes Logistics / Sales / Marketing / Operations capability cues alongside practice/review progression;
+  - semantic route links/workflows remain server-rendered and reduced-motion behavior remains mandatory.
+- Product truth: all scene states are illustrative. No live load/rate/capacity/telemetry, campaign performance, autonomous AI or learner outcome is claimed.
+- Ecosystem compounding scorecard: conversion/comprehension = improved direction recognition and mobile decision hierarchy; search = existing semantic four-route navigation retained; reusable architecture = existing V4 Scene Kit extended rather than a new design system; privacy/data = no new data or tracking; performance = no new runtime dependency and no new external media host.
+- Verification status at handoff write: local shell is unavailable in this connector-only execution. Exact-head GitHub Website checks, visual evidence and open-source quality/security must validate the final branch head; previous PR head was red because old browser assertions rejected the new Logistics-owned asset path and hovered the wrong remaining motion layer. Those test contracts were corrected before this handoff.
+- Risk / incomplete: Marketing/Technology/Academy now have purposeful deterministic scene overlays but do not yet have the same custom media-depth as Logistics. This is intentional staged V4 migration, not a claim that all page families are finished.
+- Release gate: review-only. No merge to `main`, production deploy or LIVE_VERIFIED claim without explicit owner approval plus exact-head green CI, 1440/390 visual review and production readback.
+- Next bounded task: after exact-head CI, inspect preview at 1440/390 and only then decide whether the representative Home slice is ready for owner merge approval; subsequent visual depth should derive from the same V4 system rather than create a parallel homepage.
