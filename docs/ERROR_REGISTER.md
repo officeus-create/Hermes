@@ -373,3 +373,17 @@ EVIDENCE: Fresh `npm ci --ignore-scripts` and `node scripts/dependency-audit-rep
 LESSON: A dependency audit exception is not a security fix. When no upstream release exists, preserve license/provenance, patch the smallest reachable behavior, force one dependency instance, and prove both the blocked exploit behavior and the legitimate behavior that must remain.
 
 REUSE_RULE: Do not remove this vendored override until an official `http-cache-semantics` release excludes GHSA-ch52-4w7c-c8xp and passes the repository regression. Replace the vendor only through a reviewed lockfile change with the same test retained.
+
+## 2026-10-03 — International Catalog pages had no visible parent-to-child navigation
+
+PROBLEM: Google URL Inspection reported `/businesses/ukraine/`, `/businesses/ukraine/chaiky/`, and `/businesses/ukraine/irpin/` as unknown with no crawl or referring URLs, even though each page returned HTTP 200, was self-canonical, indexable, and present in the sitemap.
+
+ROOT_CAUSE: The Catalog root linked directly to individual international profiles but skipped the country hub. The Ukraine hub listed profiles but did not expose the Chaiky and Irpin locality hubs. Locality pages rendered a generic back link to the root instead of a visible link to the Ukraine parent.
+
+WORKING_APPROACH: Preserve the existing URLs, profile facts, sitemap and secondary-market boundary. Add one generated country link on the Catalog root, generated locality links on the country hub, and a parent-country link on each locality hub. Derive every link from the existing route registry and breadcrumb data so new supported countries/localities inherit the same hierarchy.
+
+EVIDENCE: Fresh build produces 392 pages. The Catalog publication contract reads the generated HTML and proves the exact chain `/businesses/` → `/businesses/ukraine/` → `/businesses/ukraine/chaiky/` and `/businesses/ukraine/irpin/`, plus both locality pages back to Ukraine. Full static tests pass. GitHub exact-head checks, authorized release, production anchor readback and a later dated URL Inspection remain separate gates.
+
+REUSE_RULE: For every new indexable Catalog country or locality, require a visible two-way hierarchy in rendered HTML. Sitemap membership and direct profile links do not replace parent-to-child discovery.
+
+FOLLOW_UP: The first exact-head GitHub contracts job found a stale workflow-only assertion expecting the retired repair-only Catalog filter. Updated the assertion to verify the current explicit Repair branch plus bounded Ukraine Academy classification, and added that contract to ordinary `npm test` so local validation and CI cannot drift again. No runtime code changed for this follow-up.

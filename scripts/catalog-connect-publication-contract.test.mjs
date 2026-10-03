@@ -116,6 +116,15 @@ assert.match(genericCountryRoute, /catalogConceptCountryRoutes/);
 assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
+for (const [page, expectedHref] of [
+  ["dist/businesses/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/irpin/"],
+  ["dist/businesses/ukraine/chaiky/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/irpin/index.html", "/businesses/ukraine/"],
+]) {
+  assert.match(read(page), new RegExp(`href=["']${expectedHref.replaceAll("/", "\\/")}["']`));
+}
 assert.match(catalogConceptData, /localeCopy:/);
 assert.match(catalogConceptData, /Телефон зламався\? Почніть із Чайка Store\./);
 assert.match(catalogConceptData, /Phone problem\? Start with Chayka Store\./);
