@@ -46,3 +46,7 @@ assert.match(componentSource, /repair-shop-operations\.js/);
 assert.match(cleanupSource, /DELETE FROM repair_shop_booking_followups/);
 
 console.log("Repair Shop no-show and follow-up operating contract passed.");
+
+assert.match(profileSource, /review_url/);
+assert.match(profileSource, /invalid_review_url/);
+assert.match(operationsSource, /follow_up/);
