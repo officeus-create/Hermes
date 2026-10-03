@@ -15,6 +15,7 @@ for (const c of cases) {
     await page.goto(directionOwnerRoutes[c.locale].academy);
     const process = page.locator('.localized-owner-process');
     await expect(process.getByRole('heading', { level: 2 })).toHaveText(c.title);
+    await expect(process.getByRole('heading', { level: 2 })).toHaveCSS('color', 'rgb(255, 255, 255)');
     const cards = process.locator('article');
     await expect(cards).toHaveCount(4);
     await expect(cards.nth(0).getByRole('heading')).toHaveText(c.audience);
