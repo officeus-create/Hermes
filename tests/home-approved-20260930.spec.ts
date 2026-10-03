@@ -186,6 +186,7 @@ test('Home Logistics portal carries six lightweight weather and equipment states
  await expect(echo).toHaveCount(1);
  await expect(echo).toHaveAttribute('data-logistics-echo-count','6');
  await expect(echo).toHaveAttribute('data-logistics-echo-scenes','car-hauler,dry-van,reefer,flatbed,step-deck,hotshot');
+ await expect(page.locator('[data-home-logistics-scene-image]')).toHaveAttribute('src','/images/logistics-living/car-hauler-512.webp');
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
@@ -205,7 +206,7 @@ test('Home subjects use finite cycles, pause offscreen and settle to still artwo
  await page.setViewportSize({width:1440,height:1200});
  await page.goto('/');
  const layers=page.locator('[data-home-motion]');
- await expect(layers).toHaveCount(2);
+ await expect(layers).toHaveCount(1);
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','running');
  const timing=await layers.first().evaluate(node=>node.getAnimations()[0].effect!.getTiming());
@@ -219,7 +220,6 @@ test('Home subjects use finite cycles, pause offscreen and settle to still artwo
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await layers.evaluateAll(nodes=>nodes.forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
  await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await expect(layers.nth(1)).toHaveAttribute('data-motion-state','finished');
  await expect(layers.first()).toHaveCSS('opacity','1');
  await page.locator('footer').scrollIntoViewIfNeeded();
  await page.locator('#paths').scrollIntoViewIfNeeded();
