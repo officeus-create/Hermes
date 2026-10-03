@@ -11,6 +11,7 @@
     });
   };
   document.addEventListener('hermes:catalog-profiles-loaded', syncPublishedCount);
+  new MutationObserver(syncPublishedCount).observe(grid, { childList: true });
 
   const makeCard = (company, profileHref = "") => {
     const article = document.createElement('article');
