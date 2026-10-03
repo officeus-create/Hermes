@@ -33,6 +33,7 @@ type ProfileInput = {
   instagram_url?: unknown;
   facebook_url?: unknown;
   threads_url?: unknown;
+  review_url?: unknown;
   catalog_opt_in?: unknown;
   catalog_email_notifications_opt_in?: unknown;
 };
@@ -84,6 +85,17 @@ function normalizeWebsite(value: unknown) {
   }
 }
 
+function normalizePublicHttpsUrl(value: unknown) {
+  const raw = clean(value, 240);
+  if (!raw) return "";
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== "https:" || parsed.username || parsed.password) return null;
+    parsed.hash = "";
+    return parsed.toString().slice(0, 240);
+  } catch { return null; }
+}
+
 function normalizeSocialProfile(value: unknown, provider: "instagram" | "facebook" | "threads") {
   const raw = clean(value, 240);
   if (!raw) return "";
@@ -105,7 +117,7 @@ function normalizeSocialProfile(value: unknown, provider: "instagram" | "faceboo
 async function getProfile(db: any, ownerId: string) {
   return db
     .prepare(
-      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,instagram_url,facebook_url,threads_url,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,catalog_email_notifications_opt_in,catalog_email_notifications_opt_in_at,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
+      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,website,instagram_url,facebook_url,threads_url,review_url,catalog_opt_in,catalog_opt_in_at,catalog_published_at,seo_geo_started_at,next_seo_report_at,catalog_email_notifications_opt_in,catalog_email_notifications_opt_in_at,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
     )
     .bind(ownerId)
     .first();
@@ -178,6 +190,7 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const instagramUrl = normalizeSocialProfile(body.instagram_url !== undefined ? body.instagram_url : existing?.instagram_url ?? "", "instagram");
   const facebookUrl = normalizeSocialProfile(body.facebook_url !== undefined ? body.facebook_url : existing?.facebook_url ?? "", "facebook");
   const threadsUrl = normalizeSocialProfile(body.threads_url !== undefined ? body.threads_url : existing?.threads_url ?? "", "threads");
+  const reviewUrl = normalizePublicHttpsUrl(body.review_url !== undefined ? body.review_url : existing?.review_url ?? "");
   const catalogOptIn = typeof body.catalog_opt_in === "boolean"
     ? body.catalog_opt_in
     : Number(existing?.catalog_opt_in || 0) === 1;
@@ -194,6 +207,7 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   if (instagramUrl === null || facebookUrl === null || threadsUrl === null) {
     return jsonResponse(400, { success: false, error: "invalid_social_profile_url" });
   }
+  if (reviewUrl === null) return jsonResponse(400, { success: false, error: "invalid_review_url" });
 
   const now = new Date().toISOString();
   const previouslyListed = Number(existing?.catalog_opt_in || 0) === 1;
@@ -277,8 +291,8 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   }
 
   await env.DB.prepare(
-    "UPDATE repair_shops SET instagram_url=?,facebook_url=?,threads_url=? WHERE owner_specialist_id=?",
-  ).bind(instagramUrl || null, facebookUrl || null, threadsUrl || null, specialist.id).run();
+    "UPDATE repair_shops SET instagram_url=?,facebook_url=?,threads_url=?,review_url=? WHERE owner_specialist_id=?",
+  ).bind(instagramUrl || null, facebookUrl || null, threadsUrl || null, reviewUrl || null, specialist.id).run();
   const shop = await getProfile(env.DB, specialist.id);
   const phoneBecameAvailable = Boolean(phone) && (!existing || !clean(existing.phone, 32));
   if (phoneBecameAvailable) {
