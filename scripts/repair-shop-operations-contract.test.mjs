@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [statusSource, followupSchema, followupEndpoint, bookingSource, operationsSource, componentSource, cleanupSource] = await Promise.all([
+const [statusSource, followupSchema, followupEndpoint, bookingSource, operationsSource, componentSource, cleanupSource, profileSource, dashboardSource] = await Promise.all([
   readFile(new URL("../functions/api/repair-shop/bookings/[id]/status.ts", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/_lib/repair-shop-followups-schema.mjs", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/repair-shop/followups.ts", import.meta.url), "utf8"),
@@ -9,6 +9,8 @@ const [statusSource, followupSchema, followupEndpoint, bookingSource, operations
   readFile(new URL("../public/repair-shop-operations.js", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/repair-shop/cleanup-booking-smoke.ts", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/repair-shop/profile.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/repair-shops/dashboard.astro", import.meta.url), "utf8"),
 ]);
 
 assert.match(statusSource, /confirmed:\s*\["in_progress", "completed", "cancelled", "no_show"\]/);
@@ -49,4 +51,7 @@ console.log("Repair Shop no-show and follow-up operating contract passed.");
 
 assert.match(profileSource, /review_url/);
 assert.match(profileSource, /invalid_review_url/);
-assert.match(operationsSource, /follow_up/);
+assert.match(dashboardSource, /shop-review-url/);
+assert.match(dashboardSource, /Copy review link/);
+assert.match(dashboardSource, /booking\.status==="completed"/);
+assert.match(dashboardSource, /does not auto-send it/);
