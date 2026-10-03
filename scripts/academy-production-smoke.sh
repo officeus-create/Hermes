@@ -55,7 +55,7 @@ check_page() {
   grep -Fq "noindex,nofollow" "$body"
 }
 
-check_page "/services/hermes-connect/academy/" "One learner identity. One reviewed progression path."
+check_page "/services/hermes-connect/academy/" "Одна learner identity. Один шлях прогресу з перевіркою людиною."
 check_page "/services/hermes-connect/academy/auth/" "Use one Hermes account across the ecosystem."
 check_page "/services/hermes-connect/academy/dashboard/" "Loading your Academy state"
 check_page "/services/hermes-connect/academy/program/us-logistics-operations/" "U.S. Logistics Operations"
