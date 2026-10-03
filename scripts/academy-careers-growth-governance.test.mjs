@@ -20,17 +20,17 @@ const dist = join(root, "dist");
 const academy = await readFile(join(dist, "paths/academy/index.html"), "utf8");
 const careers = await readFile(join(dist, "logistics/careers/index.html"), "utf8");
 const carHaulingDispatcher = await readFile(join(dist, "careers/car-hauling-dispatcher/index.html"), "utf8");
+const wisconsinOwnerOperators = await readFile(join(dist, "careers/wisconsin-owner-operators/index.html"), "utf8");
 
 assert.ok(academy.includes("U.S. Logistics Operations"));
 assert.ok(academy.includes("Marketing"));
-assert.ok(academy.includes("Two public programs"));
+assert.ok(academy.includes("five Hermes Academy tracks"));
 assert.ok(academy.includes("Paid cohort"));
 assert.ok(academy.includes("Free practice opportunity"));
 assert.ok(academy.includes("No fixed price is published"));
 assert.ok(academy.includes("employment, income, clients, certification, promotion"));
-assert.ok(academy.includes("optional exercise inside the Marketing program, not a third Academy program"));
-assert.ok(!academy.includes("COO / Multi-business leadership"));
-assert.ok(!academy.includes("3 tracks"));
+assert.ok(academy.includes("optional exercise inside the Marketing learning track, not a separate learning track"));
+assert.ok(academy.includes("COO / Operations"));
 for (const prohibitedPrice of ["$999", "$400/month", "$600/month"]) {
   assert.ok(!academy.includes(prohibitedPrice), `Academy must not publish ${prohibitedPrice}`);
 }
@@ -46,13 +46,16 @@ const academySchemas = [...academy.matchAll(/<script[^>]+type=["']application\/l
   });
 const academyService = academySchemas.find((entity) => entity?.["@type"] === "Service");
 assert.ok(academyService, "Academy Service schema is required");
-assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing"]);
+assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]);
 
-assert.equal(publicVacancyRegistry.length, 1);
-assert.equal(verifiedOpenVacancies.length, 0);
-assert.ok(careers.includes("General careers inquiries are open. No verified public vacancy is listed today."));
-assert.ok(careers.includes("0</strong>"));
+assert.equal(publicVacancyRegistry.length, 2);
+assert.equal(verifiedOpenVacancies.length, 1);
+assert.ok(careers.includes("Verified public vacancies are open."));
+assert.ok(careers.includes("1</strong>"));
 assert.ok(!careers.includes('href="/careers/car-hauling-dispatcher/"'));
+assert.ok(careers.includes('href="/careers/wisconsin-owner-operators/"'));
+assert.ok(careers.includes('href="https://100hires.com/j/G4ek3eN"'));
+assert.ok(careers.includes("View on 100Hires"));
 assert.ok(careers.includes('href="/logistics/apply/?for=career"'));
 assert.ok(careers.includes("does not guarantee review timing, interview, training access, team placement, employment"));
 assert.ok(!careers.includes('"@type":"JobPosting"'));
@@ -80,6 +83,31 @@ assert.ok(!carHaulingDispatcher.includes("Submit through the current Work.ua vac
 assert.ok(carHaulingDispatcher.includes("do not submit through the expired Work.ua listing"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
+
+const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
+  .flatMap((match) => {
+    const parsed = JSON.parse(match[1]);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  });
+const ownerOperatorJobPostings = ownerOperatorSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
+assert.equal(ownerOperatorJobPostings.length, 1);
+assert.equal(ownerOperatorJobPostings[0].employmentType, "CONTRACTOR");
+assert.equal(ownerOperatorJobPostings[0].directApply, false);
+assert.equal(ownerOperatorJobPostings[0].sameAs, "https://100hires.com/j/G4ek3eN");
+assert.ok(wisconsinOwnerOperators.includes("Verified live source · updated October 3, 2026"));
+assert.ok(wisconsinOwnerOperators.includes("100Hires is the only external source verified live"));
+assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'));
+assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/c/hermeslogisticsus-com"'));
+assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
+assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"));
+assert.deepEqual(
+  [...wisconsinOwnerOperators.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1]),
+  ["+14142697377", "+14142697377"],
+);
+assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
+assert.ok(wisconsinOwnerOperators.includes("does not guarantee"));
+assert.ok(!wisconsinOwnerOperators.includes("guaranteed loads"));
+assert.ok(!wisconsinOwnerOperators.includes("guaranteed income"));
 
 const syntheticVacancy = {
   id: "fixture-role-001",
@@ -134,4 +162,4 @@ assert.ok(finalGrowthReadinessChecklist.some((item) => /Academy exposes only U.S
 assert.ok(finalGrowthReadinessChecklist.some((item) => /JobPosting is absent when none are verified open/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.some((item) => /Owner separately approves merge and production deployment/i.test(item)));
 
-console.log("academy/careers growth governance passed: two programs, verified vacancy registry, real JobPosting submission gate, privacy-safe recruiting preview, watchlist, scorecards, and owner release approval.");
+console.log("academy/careers growth governance passed: five learning tracks, one current Wisconsin owner-operator source, truthful JobPosting lifecycle, privacy-safe recruiting routes, watchlist, scorecards, and owner release approval.");
