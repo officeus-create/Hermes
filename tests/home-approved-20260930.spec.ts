@@ -178,6 +178,33 @@ test('all four Home directions explain a causal workflow and remain static on to
  await touch.close();
 });
 
+test('Home uses a quiet corporate shell and purposeful direction scenes',async({browser,page},testInfo)=>{
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/');
+ await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Content');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Search');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Site');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Inquiry');
+ for(const label of ['Request','CRM','Auto','Receipt']) {
+  await expect(page.locator(`[data-home-pillar-proof="systems"] [data-label="${label}"]`)).toHaveCount(1);
+ }
+ for(const label of ['Logistics','Sales','Marketing','Operations']) {
+  await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText(label);
+ }
+
+ const mobileContext=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const mobile=await mobileContext.newPage();
+ await mobile.goto('/');
+ const columns=await mobile.locator('.home-master-stage').evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
+ expect(columns).toBe(1);
+ const boxes=await mobile.locator('[data-home-route]').evaluateAll(nodes=>nodes.map(node=>node.getBoundingClientRect().toJSON()));
+ expect(boxes).toHaveLength(4);
+ for(let index=1;index<boxes.length;index++) expect(boxes[index].top).toBeGreaterThan(boxes[index-1].bottom);
+ expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await mobileContext.close();
+});
+
 test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1200});
