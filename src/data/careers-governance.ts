@@ -19,6 +19,8 @@ export interface PublicVacancyRecord {
   expiresAt?: string;
   applicationPath?: string;
   submissionUrl?: string;
+  submissionLabel?: string;
+  sourceDirectoryUrl?: string;
   ownerApprovedForPublication: boolean;
 }
 
@@ -43,6 +45,29 @@ export const publicVacancyRegistry: PublicVacancyRecord[] = [
     expiresAt: "2026-09-18",
     applicationPath: "/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers",
     submissionUrl: "https://www.work.ua/jobs/7362244/",
+    ownerApprovedForPublication: true,
+  },
+  {
+    id: "wisconsin-owner-operators-2026",
+    slug: "wisconsin-owner-operators",
+    title: "Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch",
+    status: "verified_open",
+    employmentType: "CONTRACTOR",
+    locationType: "onsite",
+    locationLabel: "Wisconsin · statewide owner-operator recruiting",
+    descriptionSourceIds: [
+      "100hires:492060",
+      "owner:2026-10-03:wisconsin-owner-operator-campaign",
+      "owner:2026-10-03:public-recruiting-phone-confirmed",
+    ],
+    compensationSourceIds: [],
+    datePosted: "2026-10-03",
+    reviewedAt: "2026-10-03",
+    expiresAt: "2026-10-10",
+    applicationPath: "/careers/wisconsin-owner-operators/#apply",
+    submissionUrl: "https://100hires.com/j/G4ek3eN",
+    submissionLabel: "100Hires",
+    sourceDirectoryUrl: "https://100hires.com/c/hermeslogisticsus-com",
     ownerApprovedForPublication: true,
   },
 ];
