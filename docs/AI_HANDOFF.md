@@ -1382,3 +1382,24 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Compounding scorecard: search visibility gains a semantic source-backed vacancy, internal links, sitemap entry and structured data; conversion gains one public phone/CTA and verified external source choices; durable knowledge gains provenance, TTL and regression coverage; scale reuses the existing careers registry and component; privacy excludes internal verification numbers; architecture adds no dependency or new runtime.
 - Remaining / open items: exact-head GitHub checks; explicit owner approval for merge/deploy; post-deploy desktop/mobile/public-source readback and later settled search measurement. No production or indexing result is claimed from local evidence.
 - Next step / what's needed from a human or the other agent: review exact branch head, then provide the repository-required specific merge/deploy approval. After release, verify the two public source links and phone on production and revalidate the vacancy no later than 2026-10-10.
+
+## 2026-10-04 — ChatGPT — current-main corporate Home slice
+
+- Owner directive: implement the refined Hermes corporate visual direction on top of the current production architecture, without replacing the four canonical business directions.
+- Branch: `design/home-corporate-v4-main-20261004`, created from current `main` `f40bb88fcaa2e3a884ca4de8009d63bef2c2a593`.
+- Scope: `src/components/HomeMasterScene.astro` + focused Home browser coverage only; no backend, route, canonical, schema, analytics owner or production deploy.
+- Presentation rule implemented: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`.
+- Home changes:
+  - public shell uses the shared Pearl/Ink corporate foundation instead of the prior decorative gradient/script treatment;
+  - desktop retains four canonical pillars and direct route links;
+  - mobile 390–700px becomes four sequential chapters rather than a compressed 2×2 grid;
+  - Marketing visual explains Content → Search → Site → Inquiry;
+  - Technology visual explains Request → CRM → Auto → Receipt;
+  - Academy visual exposes Logistics / Sales / Marketing / Operations within the existing practice/review/progression story;
+  - existing Logistics scene remains unchanged in this current-main slice so this PR does not depend on stale binary assets.
+- Focused test coverage verifies the Pearl shell, the three purposeful scene grammars, single-column 390px mobile layout and no horizontal overflow.
+- Logistics living-media note: the six owned aerial equipment/weather assets and deeper rotation remain isolated in draft PR #1655. That older branch is behind current main and is not a release dependency for this clean current-main slice; its assets should be replayed only after this shared shell is accepted and the binary lane is reconciled without overwriting newer main work.
+- Design governance note: PR #1657 carries the matching V4 doctrine/progressive-disclosure rules. Do not create V5 or another design owner.
+- Evidence boundary: these visuals explain workflows; they do not claim live logistics telemetry, campaign performance, autonomous AI actions, learner outcomes, conversion lift or revenue.
+- Release gate: draft/review only. Require exact-head build/static/browser/visual checks, 1440px + 390px preview inspection, then explicit owner approval before merge/deploy. `MERGED != DEPLOYED != LIVE_VERIFIED`.
+
