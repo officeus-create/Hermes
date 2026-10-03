@@ -23,6 +23,8 @@ assert.match(catalogOwnerApi, /catalog_opt_in=0,next_seo_report_at=NULL/);
 assert.doesNotMatch(catalogOwnerApi, /load_board_access|hermes_company_profiles/);
 assert.match(publicCatalogApi, /vertical_key='repair_shop'/);
 assert.match(publicCatalogApi, /profileUrl: `\/businesses\/connect\/repair-shop\//);
+assert.match(publicCatalogApi, /id: `repair-shop-crm:\${row\.id}`/);
+assert.doesNotMatch(publicCatalogApi, /id: `repair-shop:\${row\.id}`/);
 assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointment/);
 assert.match(publicProfile, /No private customer records, appointments or account details appear on this page/);
 assert.match(publicProfile, /does not indicate a Hermes customer relationship/);
@@ -114,6 +116,15 @@ assert.match(genericCountryRoute, /catalogConceptCountryRoutes/);
 assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
+for (const [page, expectedHref] of [
+  ["dist/businesses/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/irpin/"],
+  ["dist/businesses/ukraine/chaiky/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/irpin/index.html", "/businesses/ukraine/"],
+]) {
+  assert.match(read(page), new RegExp(`href=["']${expectedHref.replaceAll("/", "\\/")}["']`));
+}
 assert.match(catalogConceptData, /localeCopy:/);
 assert.match(catalogConceptData, /Телефон зламався\? Почніть із Чайка Store\./);
 assert.match(catalogConceptData, /Phone problem\? Start with Chayka Store\./);

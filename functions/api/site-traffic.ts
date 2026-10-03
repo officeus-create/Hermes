@@ -16,6 +16,7 @@ const BLOCKED_PREFIXES = [
   "/services/hermes-connect/repair-shops/dashboard",
   "/services/hermes-connect/repair-shops/password",
   "/services/hermes-connect/repair-shops/profile",
+  "/services/hermes-connect/academy/business",
 ];
 
 const normalizePath = (value: unknown) => {
@@ -30,6 +31,7 @@ export function siteTrafficRouteGroup(value: unknown) {
   if (BLOCKED_PREFIXES.some((prefix) => path === prefix || path.startsWith(prefix))) return null;
   if (path === "/") return "home";
   if (path.startsWith("/businesses/connect/repair-shop/")) return "catalog_crm_profile";
+  if (path.startsWith("/businesses/connect/academy/")) return "catalog_crm_profile";
   if (path.startsWith("/businesses/ukraine/")) return "catalog_international";
   if (path.startsWith("/businesses/")) return "catalog";
   if (path.startsWith("/services/hermes-connect/repair-shops/booking")) return "repair_shop_booking";

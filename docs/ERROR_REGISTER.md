@@ -357,3 +357,33 @@ ROOT_CAUSE: Inline visual markup affects accessible-name spacing; screenshot rev
 WORKING_APPROACH: Explicitly preserve the h1 accessible name “Four directions.” and retain the exact rendered-heading build gate; remove only its redundant raw-markup substring check. Capture individual hover portals under the artifact transfer limit, then refine decorative geometry from actual pixels.
 EVIDENCE: PR1590 first Website run 36854008608 failed the heading assertions; corrected head e265c252 Website 36854981058 passed, visual run 36854981146 passed with artifact 11158726272, and viewed desktop/mobile frames showed the crop issue. New visual adjustment requires its own current-head verification.
 LESSON/REUSE_RULE: Test computed accessible names after animating a single letter. Keep public headline text and contract checks semantic. Inspect hover and mobile pixels before accepting overlays; animation state alone does not establish visual quality.
+
+## 2026-10-03 — `http-cache-semantics` max-stale shared-cache disclosure gate
+
+PROBLEM: The required dependency audit blocked PR #1649 because `http-cache-semantics@4.2.0` is affected by GHSA-ch52-4w7c-c8xp / CVE-2026-93748. An attacker-controlled `Cache-Control: max-stale` request could make a shared cache reuse a response that must be revalidated, including responses with private `Set-Cookie`, `no-cache`, or `proxy-revalidate` semantics.
+
+ROOT_CAUSE: The package's `evaluateRequest()` stale-response branch honored request `max-stale` without rechecking whether the stored response was safe to reuse in a shared cache. The official npm registry still exposes 4.2.0 as latest and the advisory has no patched upstream version as of 2026-10-03.
+
+FAILED_APPROACH: Waiting for an unavailable upstream release, suppressing the advisory, or weakening the repository's high-severity audit gate would leave the vulnerable code reachable and turn a release check green without fixing the behavior. A direct file override without a declared root dependency also produced an invalid nested lockfile.
+
+WORKING_APPROACH: Vendor the exact BSD-2-Clause-licensed 4.2.0 source as `4.2.1-hermes.0`, add a narrow response-side guard before honoring `max-stale`, and pin every transitive consumer through the root dependency plus npm `$http-cache-semantics` override. Keep legitimate stale reuse for explicitly public cacheable responses. Add a regression test covering private cookies, `no-cache`, `proxy-revalidate`, and a permitted public stale response.
+
+EVIDENCE: Fresh `npm ci --ignore-scripts` and `node scripts/dependency-audit-report.mjs` report zero known vulnerabilities; the new regression test, `npm run build`, and the full static `npm test` pass. A local monolithic Playwright run exposed pre-existing Home/Connect branch drift and was stopped after 538 passes rather than changing the separately owned Home design; exact-head GitHub browser shards remain the release gate.
+
+LESSON: A dependency audit exception is not a security fix. When no upstream release exists, preserve license/provenance, patch the smallest reachable behavior, force one dependency instance, and prove both the blocked exploit behavior and the legitimate behavior that must remain.
+
+REUSE_RULE: Do not remove this vendored override until an official `http-cache-semantics` release excludes GHSA-ch52-4w7c-c8xp and passes the repository regression. Replace the vendor only through a reviewed lockfile change with the same test retained.
+
+## 2026-10-03 — International Catalog pages had no visible parent-to-child navigation
+
+PROBLEM: Google URL Inspection reported `/businesses/ukraine/`, `/businesses/ukraine/chaiky/`, and `/businesses/ukraine/irpin/` as unknown with no crawl or referring URLs, even though each page returned HTTP 200, was self-canonical, indexable, and present in the sitemap.
+
+ROOT_CAUSE: The Catalog root linked directly to individual international profiles but skipped the country hub. The Ukraine hub listed profiles but did not expose the Chaiky and Irpin locality hubs. Locality pages rendered a generic back link to the root instead of a visible link to the Ukraine parent.
+
+WORKING_APPROACH: Preserve the existing URLs, profile facts, sitemap and secondary-market boundary. Add one generated country link on the Catalog root, generated locality links on the country hub, and a parent-country link on each locality hub. Derive every link from the existing route registry and breadcrumb data so new supported countries/localities inherit the same hierarchy.
+
+EVIDENCE: Fresh build produces 392 pages. The Catalog publication contract reads the generated HTML and proves the exact chain `/businesses/` → `/businesses/ukraine/` → `/businesses/ukraine/chaiky/` and `/businesses/ukraine/irpin/`, plus both locality pages back to Ukraine. Full static tests pass. GitHub exact-head checks, authorized release, production anchor readback and a later dated URL Inspection remain separate gates.
+
+REUSE_RULE: For every new indexable Catalog country or locality, require a visible two-way hierarchy in rendered HTML. Sitemap membership and direct profile links do not replace parent-to-child discovery.
+
+FOLLOW_UP: The first exact-head GitHub contracts job found a stale workflow-only assertion expecting the retired repair-only Catalog filter. Updated the assertion to verify the current explicit Repair branch plus bounded Ukraine Academy classification, and added that contract to ordinary `npm test` so local validation and CI cannot drift again. No runtime code changed for this follow-up.
