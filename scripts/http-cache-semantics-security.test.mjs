@@ -70,6 +70,38 @@ try {
       `Vary wildcard must not return a cached response: ${JSON.stringify(vary)}`,
     );
   }
+
+  const prototypeVary = new CachePolicy(
+    request(),
+    response({ "cache-control": "public, max-age=3600", vary: "constructor" }),
+    { shared: true },
+  );
+  assert.equal(
+    prototypeVary.satisfiesWithoutRevalidation(request()),
+    false,
+    "Vary names inherited from Object.prototype must fail closed when not real request headers",
+  );
+  assert.equal(
+    prototypeVary.evaluateRequest(request()).response,
+    undefined,
+    "Prototype-colliding Vary names must not produce a cache hit from inherited properties",
+  );
+
+  const explicitPrototypeHeader = new CachePolicy(
+    request("", { constructor: "alpha" }),
+    response({ "cache-control": "public, max-age=3600", vary: "constructor" }),
+    { shared: true },
+  );
+  assert.equal(
+    explicitPrototypeHeader.satisfiesWithoutRevalidation(request("", { constructor: "alpha" })),
+    true,
+    "An explicit own header named constructor may match an identical explicit own header",
+  );
+  assert.equal(
+    explicitPrototypeHeader.satisfiesWithoutRevalidation(request("", { constructor: "beta" })),
+    false,
+    "Explicit own prototype-colliding headers must still compare by value",
+  );
 } finally {
   Date.now = now;
 }
