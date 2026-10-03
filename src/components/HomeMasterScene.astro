@@ -96,9 +96,9 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 </span>
               ))}
             </span>
-            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
-            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
-            {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i><i class="home-shelf-book"></i></span>}
+            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true" data-home-pillar-proof="attention"><i class="home-story-frame"><em>Content</em><b></b><b></b><b></b></i><i class="home-story-frame"><em>Search</em><b></b><b></b><b></b></i><i class="home-story-frame"><em>Site</em><b></b><b></b><b></b></i><i class="home-story-outcome">Inquiry</i></span>}
+            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><i class="home-system-node" data-label="Request"></i><i class="home-system-node" data-label="CRM"></i><i class="home-system-node" data-label="Auto"></i><i class="home-system-node" data-label="Receipt"></i></span>}
+            {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><span class="home-academy-track"><i>Logistics</i><i>Sales</i><i>Marketing</i><i>Operations</i></span></span>}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true"></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
@@ -259,28 +259,31 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
 .home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
 .home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
-.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-child{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
+.home-story-frame em{position:absolute;left:10%;top:8%;color:#214f41;font:700 .46rem/1 var(--font-body);font-style:normal;letter-spacing:.08em;text-transform:uppercase}.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-of-type{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
 .home-story-frame:nth-child(2){transform:translate(9%,3%) rotate(3deg);background:#e8faf6}.home-story-frame:nth-child(2) b:first-child{background:linear-gradient(145deg,#7fbfc2,#30637c)}
 .home-story-frame:nth-child(3){transform:translate(17%,6%) rotate(10deg);background:#fff7ed}.home-story-frame:nth-child(3) b:first-child{background:linear-gradient(145deg,#f4c18b,#aa6d57)}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(3){animation:home-story-turn 2.4s ease-in-out 2}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(2){animation:home-story-turn 2.4s ease-in-out .35s 2}
+.home-story-outcome{position:absolute;left:115%;top:44%;padding:5px 7px;border:1px solid #dfffe9aa;border-radius:999px;background:#102c25d9;color:#fff;font:700 .46rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;box-shadow:0 6px 15px #123a2e42;opacity:.65;transform:translateX(-8px)}
+.home-master-route-marketing:is(:hover,:focus-visible) .home-story-outcome{animation:home-demand-arrive 2.4s cubic-bezier(.16,1,.3,1) .7s 2}
 .home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
 .home-system-scan{position:absolute;inset:0 auto 0 -22%;width:20%;background:linear-gradient(90deg,transparent,#ffe6aa70,transparent);opacity:0}
-.home-system-node{position:absolute;top:25%;left:20%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.5}
-.home-system-node:nth-child(3){top:56%;left:57%}.home-system-node:nth-child(4){top:73%;left:79%}
+.home-system-node{position:absolute;top:20%;left:12%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.58}
+.home-system-node::after{content:attr(data-label);position:absolute;left:12px;top:50%;transform:translateY(-50%);padding:3px 5px;border:1px solid #ffe2bd70;border-radius:999px;background:#33261ecc;color:#fff5e8;font:700 .42rem/1 var(--font-body);letter-spacing:.05em;white-space:nowrap}
+.home-system-node:nth-child(3){top:40%;left:34%}.home-system-node:nth-child(4){top:61%;left:57%}.home-system-node:nth-child(5){top:78%;left:77%}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-scan{animation:home-system-pass 2.5s ease-in-out 2}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-node{animation:home-system-breathe 1.5s ease-in-out 3}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(3){animation-delay:.23s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(4){animation-delay:.46s}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(3){animation-delay:.18s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(4){animation-delay:.36s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(5){animation-delay:.54s}
 .home-learning-detail{inset:0;z-index:0}
 .home-book-page{position:absolute;left:54%;top:63%;width:32%;height:7%;border:1px solid #fffef0;border-radius:2px 8px 2px 2px;background:linear-gradient(105deg,#e7daf9d0,#fffdf1f0);box-shadow:0 5px 12px #3f2c6444;transform:skewY(-8deg) rotate(-8deg);transform-origin:8% 90%;opacity:0}
 .home-book-page svg{width:100%;height:100%;fill:none;stroke:#786391;stroke-width:1.5;stroke-linecap:round;opacity:.8}
 .home-book-page path{stroke-dasharray:90;stroke-dashoffset:90}
 .home-master-route-academy:is(:hover,:focus-visible) .home-book-page{animation:home-page-turn 2.8s ease-in-out 2}
 .home-master-route-academy:is(:hover,:focus-visible) .home-book-page path{animation:home-ink-write 2.8s ease-in-out 2}
-.home-shelf-book{position:absolute;right:8%;top:31%;width:1.8%;height:9%;border-radius:2px;background:linear-gradient(90deg,#b39cc6,#eee0f2,#b39cc6);box-shadow:0 1px 5px #4a346e5c;opacity:0;transform-origin:bottom}
-.home-shelf-book:nth-child(3){right:13%;height:8%;top:32%;background:linear-gradient(90deg,#a68fb7,#ebd9eb,#a68fb7)}.home-shelf-book:nth-child(4){right:18%;height:7%;top:33%;background:linear-gradient(90deg,#a792c2,#e2cde8,#a792c2)}
-.home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book{animation:home-book-choose 1.8s ease-in-out 2}
-.home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(3){animation-delay:.3s}.home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(4){animation-delay:.6s}
+.home-academy-track{position:absolute;right:6%;top:27%;display:grid;gap:5px;justify-items:end}
+.home-academy-track i{display:block;padding:4px 6px;border:1px solid #f2e7ffaa;border-radius:999px;background:#382b50cc;color:#fff;font:700 .44rem/1 var(--font-body);font-style:normal;letter-spacing:.05em;box-shadow:0 5px 12px #3f2c6444;opacity:.62;transform:translateX(6px)}
+.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i{animation:home-skill-progress 1.8s cubic-bezier(.16,1,.3,1) 2}
+.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(2){animation-delay:.18s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(3){animation-delay:.36s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(4){animation-delay:.54s}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
 @keyframes home-logistics-rain{to{background-position:-28px 45px}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
@@ -291,6 +294,8 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 @keyframes home-logistics-camera{from{transform:scale(1.015) translate3d(0,0,0)}to{transform:scale(1.055) translate3d(-.7%,-.9%,0)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 @keyframes home-story-turn{0%,100%{opacity:1;translate:0 0;rotate:0deg}40%{opacity:.85;translate:50% -12%;rotate:10deg}70%{opacity:.6;translate:95% -10%;rotate:14deg}}
+@keyframes home-demand-arrive{0%,100%{opacity:.45;transform:translateX(-8px)}45%,72%{opacity:1;transform:translateX(0)}}
+@keyframes home-skill-progress{0%,100%{opacity:.55;transform:translateX(6px)}42%,70%{opacity:1;transform:translateX(0)}}
 @keyframes home-system-pass{0%,100%{opacity:0;translate:0 0}20%,74%{opacity:.9}82%{opacity:0;translate:650% 0}}
 @keyframes home-system-breathe{0%,100%{opacity:.55;scale:1}45%{opacity:1;scale:1.75}}
 @keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
