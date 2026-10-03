@@ -53,7 +53,7 @@ const schema = [
           <span>Try:</span>
           {popularTerms.map((term) => <button type="button" data-catalog-query={term}>{term}</button>)}
         </div>
-        <p class="catalog-search-count" data-catalog-count>{usBusinesses.length + hermesCatalogOffers.length} primary U.S. searchable entries</p>
+        <p class="catalog-search-count" data-catalog-count>{usBusinesses.length} U.S. business profiles · {hermesCatalogOffers.length} Hermes service entries</p>
       </header>
 
       <HermesPromoRail context="catalog" />
@@ -205,7 +205,7 @@ const schema = [
       card.hidden = !matches;
       if (matches) visible += 1;
     });
-    if (count) count.textContent = `${visible} searchable entr${visible === 1 ? "y" : "ies"}`;
+    if (count) count.textContent = `${visible} matching Catalog entr${visible === 1 ? "y" : "ies"} across business profiles, Hermes services, and strategy examples`;
     if (empty) empty.hidden = visible !== 0;
   };
   form?.addEventListener("submit", (event) => { event.preventDefault(); applySearch(input?.value ?? ""); });
