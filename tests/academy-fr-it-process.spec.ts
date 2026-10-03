@@ -36,6 +36,16 @@ for (const c of cases) {
   test(`${c.locale} other direction owners retain their existing process`, async ({ page }) => {
     for (const direction of ['logistics', 'marketing', 'technology'] as const) {
       await page.goto(directionOwnerRoutes[c.locale][direction]);
+      if (c.locale === 'it' && direction !== 'logistics') {
+        const process = page.locator('.it-commercial-process');
+        await expect(process.getByRole('heading', { level: 2 })).toHaveText('Prima la diagnosi. Poi il lavoro che conta.');
+        await expect(process.locator('article')).toHaveCount(4);
+        await expect(process.locator('a')).toHaveCount(0);
+        await expect(process.locator('article h3')).toHaveText(direction === 'marketing'
+          ? ['Baseline', 'Priorità', 'Esecuzione', 'Apprendimento']
+          : ['Mappa del processo', 'Scope verificabile', 'Build e integrazione', 'Rilascio e iterazione']);
+        continue;
+      }
       const process = page.locator('.localized-owner-process');
       await expect(process.getByRole('heading', { level: 2 })).toHaveText(localizedDirectionUi[c.locale].processTitle);
       await expect(process.locator('article')).toHaveCount(4);
