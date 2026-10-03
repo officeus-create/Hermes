@@ -150,15 +150,6 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     const accept = root?.querySelector("[data-consent-accept]");
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
-    const mainContent = document.querySelector("main");
-
-    const placeConsentInFlow = () => {
-      if (!root || !mainContent?.parentNode || banner?.hidden) return;
-      if (root.nextElementSibling !== mainContent) {
-        mainContent.parentNode.insertBefore(root, mainContent);
-      }
-      root.dataset.consentPlacement = "inline";
-    };
 
     const SYNTHETIC_ANALYTICS_OVERRIDE = "_hermes_ga4_smoke";
     const SYNTHETIC_CLARITY_OVERRIDE = "_hermes_clarity_smoke";
@@ -317,7 +308,6 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
     const initialChoice = readChoice();
     applyChoice(initialChoice);
-    if (initialChoice === null) placeConsentInFlow();
 
     accept?.addEventListener("click", () => {
       saveChoice("granted");
@@ -341,7 +331,6 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       if (!banner) return;
       banner.hidden = false;
       settings.hidden = true;
-      placeConsentInFlow();
       banner.querySelector("button")?.focus();
     });
   })();
@@ -447,20 +436,16 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
   @media (min-width: 701px) {
     .tracking-consent-banner {
-      position: relative;
-      top: auto;
-      right: auto;
-      bottom: auto;
-      left: auto;
+      position: fixed;
       width: min(960px, calc(100vw - 2rem));
       display: grid;
       grid-template-columns: minmax(280px, 1fr) auto;
       gap: .8rem 1rem;
       align-items: center;
-      margin: .55rem auto .35rem;
+      margin: 0;
       padding: .62rem .72rem;
       border-radius: 14px;
-      box-shadow: 0 9px 26px rgba(11,13,18,.09);
+      box-shadow: 0 12px 34px rgba(11,13,18,.11);
     }
     .tracking-consent-eyebrow { display: none; }
     .tracking-consent-banner h2 {
@@ -493,19 +478,17 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
   @media (max-width: 700px) {
     .tracking-consent-banner {
-      position: relative;
       top: auto;
-      right: auto;
-      bottom: auto;
-      left: auto;
-      width: calc(100% - 1rem);
+      right: .5rem;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + .4rem);
+      left: .5rem;
+      width: auto;
       display: block;
-      margin: .4rem auto .25rem;
       padding: .3rem .4rem;
       border-radius: 14px;
       max-height: none;
       overflow: visible;
-      box-shadow: 0 9px 24px rgba(11,13,18,.11);
+      box-shadow: 0 12px 32px rgba(11,13,18,.16);
     }
     .tracking-consent-eyebrow,
     .tracking-consent-detail {
