@@ -201,6 +201,34 @@ test('Home Logistics portal carries six lightweight weather and equipment states
  await reduced.close();
 });
 
+test('Home presents one quiet corporate shell with purposeful Marketing, Technology and Academy scenes',async({browser,page},testInfo)=>{
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/');
+ await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Content');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Search');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Site');
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Inquiry');
+ await expect(page.locator('[data-home-pillar-proof="systems"] [data-label="Request"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-pillar-proof="systems"] [data-label="CRM"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-pillar-proof="systems"] [data-label="Auto"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-pillar-proof="systems"] [data-label="Receipt"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText('Logistics');
+ await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText('Sales');
+ await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText('Marketing');
+ await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText('Operations');
+
+ const mobileContext=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
+ const mobile=await mobileContext.newPage();
+ await mobile.goto('/');
+ expect(await mobile.locator('.home-master-stage').evaluate(node=>getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length)).toBe(1);
+ const boxes=await mobile.locator('[data-home-route]').evaluateAll(nodes=>nodes.map(node=>node.getBoundingClientRect().toJSON()));
+ expect(boxes).toHaveLength(4);
+ for(let i=1;i<boxes.length;i++) expect(boxes[i].top).toBeGreaterThan(boxes[i-1].bottom);
+ expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ await mobileContext.close();
+});
+
 test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1200});
