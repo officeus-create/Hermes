@@ -7,7 +7,7 @@ import DirectionProductNav from "./DirectionProductNav.astro";
 import { localizedOverviews } from "../data/localized-overviews";
 import { localeConfig } from "../data/locales";
 import { directionOwnerRoutes, getDirectionAlternates, type DirectionId, type LocalizedSiteLocale } from "../data/localized-direction-owners";
-import { localizedDirectionCopy, localizedDirectionUi } from "../data/localized-direction-copy";
+import { localizedAcademyProcess, localizedDirectionCopy, localizedDirectionUi } from "../data/localized-direction-copy";
 
 interface Props {
   locale: LocalizedSiteLocale;
@@ -20,6 +20,9 @@ const direction = overview.directions.find((item) => item.id === directionId);
 if (!direction) throw new Error(`Missing localized direction ${locale}:${directionId}`);
 const copy = localizedDirectionCopy[locale][directionId];
 const ui = localizedDirectionUi[locale];
+const processUi = directionId === "academy" && (locale === "fr" || locale === "it")
+  ? localizedAcademyProcess[locale]
+  : ui;
 const contactFields = {
   uk: { company: "Компанія / бізнес", country: "Країна / ринок", problem: "Поточна проблема", result: "Бажаний результат", direction: "Напрям Hermes" },
   ru: { company: "Компания / бизнес", country: "Страна / рынок", problem: "Текущая проблема", result: "Желаемый результат", direction: "Направление Hermes" },
@@ -110,11 +113,11 @@ const faqSchema = {
     <section class="section localized-owner-process" aria-labelledby="localized-owner-process-title">
       <div class="shell">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">{ui.processEyebrow}</p><h2 id="localized-owner-process-title">{ui.processTitle}</h2></div>
-          <p>{ui.processIntro}</p>
+          <div><p class="eyebrow">{processUi.processEyebrow}</p><h2 id="localized-owner-process-title">{processUi.processTitle}</h2></div>
+          <p>{processUi.processIntro}</p>
         </div>
         <div class="localized-owner-process-grid">
-          {ui.process.map((step) => <article><h3>{step.title}</h3><p>{step.body}</p></article>)}
+          {processUi.process.map((step) => <article><h3>{step.title}</h3><p>{step.body}</p>{step.link && <a href={step.link.href}>{step.link.label}</a>}</article>)}
         </div>
       </div>
     </section>
@@ -156,4 +159,5 @@ const faqSchema = {
 
 <style>
   .localized-owner{background:#f7f8fb;color:#141827}.localized-owner-hero{position:relative;min-height:720px;display:grid;align-items:end;overflow:hidden;color:#fff;background:#0a0d16}.localized-owner-hero-media{position:absolute;inset:0}.localized-owner-hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,10,18,.96),rgba(7,10,18,.78) 52%,rgba(7,10,18,.28)),linear-gradient(0deg,rgba(7,10,18,.56),transparent 52%)}.localized-owner-hero-media img{width:100%;height:100%;object-fit:cover}.localized-owner-hero-grid{position:relative;z-index:1;width:100%;padding-top:180px;padding-bottom:76px}.localized-owner-hero-grid>div{max-width:860px}.localized-owner-breadcrumb{display:flex;gap:.5rem;align-items:center;margin-bottom:1rem;font-size:.82rem;color:rgba(255,255,255,.72)}.localized-owner-breadcrumb a{color:inherit}.localized-owner-back{display:inline-flex;gap:.4rem;align-items:center;margin-bottom:1.5rem;color:#fff;text-decoration:none}.localized-owner h1{max-width:17ch;margin:.55rem 0 1rem;font-size:clamp(2.8rem,6vw,5.7rem);line-height:.98;letter-spacing:-.045em}.localized-owner-lead,.localized-owner-detail{max-width:72ch;line-height:1.7;color:rgba(255,255,255,.82)}.localized-owner-detail{margin-top:.65rem;color:rgba(255,255,255,.68)}.localized-owner .section{padding:clamp(4.5rem,8vw,7rem) 0}.localized-owner-scope-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-scope-grid article{display:grid;grid-template-columns:auto 1fr;gap:.8rem;padding:1.3rem;border:1px solid #dce2ec;border-radius:16px;background:#fff}.localized-owner-scope-grid article span{grid-column:1/-1;font-size:.76rem;font-weight:800;letter-spacing:.13em;color:#6b7388}.localized-owner-scope-grid article svg{color:#5d27d7}.localized-owner-scope-grid article h3{margin:0;font-size:1.05rem}.localized-owner-process{background:#101521;color:#fff}.localized-owner-process .section-heading>p{color:rgba(255,255,255,.7)}.localized-owner-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-process-grid article{padding:1.3rem;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(255,255,255,.045)}.localized-owner-process-grid h3{margin:0 0 .65rem;font-size:1.05rem}.localized-owner-process-grid p{margin:0;color:rgba(255,255,255,.7);line-height:1.62}.localized-owner-boundary-card{display:grid;grid-template-columns:auto 1fr;gap:1rem;max-width:1000px;padding:1.7rem;border:1px solid #d7ddea;border-radius:18px;background:#fff}.localized-owner-boundary-card svg{color:#4f35c8}.localized-owner-boundary-card h2{margin:.3rem 0 .7rem}.localized-owner-boundary-card p:last-child{margin:0;color:#59657b;line-height:1.7}.localized-owner-related{background:#fff}.localized-owner-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}.localized-owner-related-grid a{display:grid;grid-template-columns:1fr auto;gap:1rem;padding:1.25rem;border:1px solid #dce2ec;border-radius:16px;color:#171b28;text-decoration:none}.localized-owner-related-grid strong{font-size:1.05rem}.localized-owner-related-grid p{margin:.55rem 0 0;color:#657087;line-height:1.55}.localized-owner-related-grid svg{color:#5d27d7}.localized-owner-faq{background:#f1f3f8}.localized-owner-contact-card{display:flex;align-items:end;justify-content:space-between;gap:2rem;padding:2rem;border:1px solid #dce2ec;border-radius:18px;background:#fff}.localized-owner-contact-card h2{max-width:20ch;margin:.35rem 0 .7rem;font-size:clamp(2rem,4vw,3.5rem)}.localized-owner-contact-card p{max-width:68ch;color:#657087;line-height:1.65}@media(max-width:900px){.localized-owner-process-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.localized-owner-related-grid{grid-template-columns:1fr}.localized-owner-contact-card{display:grid}}@media(max-width:680px){.localized-owner-hero{min-height:680px}.localized-owner-hero-grid{padding-top:150px;padding-bottom:56px}.localized-owner h1{font-size:clamp(2.55rem,13vw,4.2rem)}.localized-owner-scope-grid,.localized-owner-process-grid{grid-template-columns:1fr}.localized-owner-boundary-card{grid-template-columns:1fr}.hero-actions{display:grid}.hero-actions .button{justify-content:center}}
+  .localized-owner-process-grid a{display:inline-block;margin-top:1rem;color:#fff;text-decoration:underline;text-underline-offset:.2em;overflow-wrap:anywhere}
 </style>
