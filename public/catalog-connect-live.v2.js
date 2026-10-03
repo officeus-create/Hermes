@@ -4,6 +4,14 @@
   const academyGrid = document.querySelector('[data-academy-catalog-grid]');
   if (!repairGrid && !academyGrid) return;
 
+  const syncPublishedCount = () => {
+    const publishedCount = grid ? grid.querySelectorAll('[data-catalog-card]').length : 0;
+    document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
+      node.textContent = String(publishedCount);
+    });
+  };
+  document.addEventListener('hermes:catalog-profiles-loaded', syncPublishedCount);
+
   const makeCard = (company, profileHref = "") => {
     const article = document.createElement('article');
     article.className = 'business-card';
@@ -105,12 +113,7 @@
         }
       }
 
-      const publishedCount = (grid ? grid.querySelectorAll('[data-catalog-card]').length : 0)
-        + (academyGrid ? academyGrid.querySelectorAll('[data-catalog-card]').length : 0);
-      document.querySelectorAll('[data-catalog-business-count]').forEach((node) => {
-        node.textContent = String(publishedCount);
-      });
-
+      syncPublishedCount();
       document.dispatchEvent(new CustomEvent('hermes:catalog-profiles-loaded'));
     })
     .catch(() => {});
