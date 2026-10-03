@@ -4,6 +4,88 @@ Status: **CANONICAL / CURRENT**
 Owner: Hermes Brand / Product / Website  
 Design governance mirror: Google Drive `HERMES DESIGN CONSTITUTION V4 — CURRENT`
 
+
+## 0. Corporate presentation doctrine — owner refinement 2026-10-04
+
+Hermes public presentation follows one sequence:
+
+`QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`
+
+The corporate shell stays calm, neutral, readable and confident. Product/service moments may become cinematic, but only one focal scene owns attention at a time. The visitor should understand the business direction before reading detailed copy.
+
+Psychology:
+- show **what this direction does** before explaining every feature;
+- show **a causal workflow** before listing tools;
+- show **evidence / maturity state** before asking for trust;
+- reveal deeper services progressively instead of placing the full catalog in the first viewport;
+- premium is created by restraint, composition, typography, motion quality and truthful proof — not by more gradients, effects or colors.
+
+### Home four-pillar rule
+
+The existing `Four directions` architecture is retained. Each pillar becomes a living business world, not a colored card.
+
+**Logistics — space / movement**
+- aerial/top-down road composition with protected text space;
+- representative freight equipment may rotate (for example car hauler, dry van, reefer, flatbed, step deck, hotshot);
+- environment may move through daylight, sunset/night, rain, wet-road reflection, snow/cloud/heat or roadside atmosphere;
+- scene changes explain freight diversity and movement, never fabricated live fleet/traffic/telemetry.
+
+**Marketing — attention / demand**
+- visualize business/source → content/search/social distribution → site action → attributed inquiry/qualification;
+- content surfaces and channel cues are secondary to the causal flow;
+- avoid logo confetti, generic influencer imagery and fabricated reach/lead counters.
+
+**Technology — information / systems**
+- visualize request/event → CRM/context → automation/system → human decision → receipt/outcome;
+- real Hermes Connect / Website Factory / QA patterns are preferred over generic code;
+- code may appear as one explanatory layer, never as the main proof of a technology company.
+
+**Academy — human capability**
+- visualize lesson/task → attempt/practice → review/correction → progression;
+- direction examples may rotate through Logistics, Sales, Marketing and Operations;
+- the visual story is capability growth, not generic graduation imagery.
+
+### Desktop disclosure
+
+Default state: direction, one-line promise and primary visual are readable without interaction.
+
+Hover/focus may reveal:
+1. 3–5 high-value capabilities;
+2. one short workflow;
+3. the next action.
+
+The semantic content remains in server-rendered markup. Hover is enhancement, never the only way to discover information.
+
+### Mobile adaptation
+
+Mobile is not a shrunken four-column desktop.
+
+- each direction becomes a clear sequential chapter/action;
+- use a static or short single-cycle scene rather than continuous heavy media;
+- keep the primary label, promise and CTA visible without hover;
+- secondary capability detail opens progressively;
+- preserve 44px touch targets, no horizontal overflow and reduced-motion equivalence.
+
+### Hermes Connect mobile operating rule
+
+Hermes Connect prioritizes work completion over spectacle.
+
+Light-first mobile navigation should converge on the smallest useful decision layer:
+- **Today** — what needs attention now;
+- **Inbox** — incoming work/signals;
+- **Customers** — customer/company context;
+- **Calendar** — time-bound work;
+- **More** — secondary modules/settings;
+- **Ask Hermes** — contextual intelligence entry, available without dominating the workspace.
+
+Rules:
+- do not expose every module simultaneously in the primary mobile navigation;
+- object detail opens on demand;
+- filters/actions use compact drawers/bottom sheets/context menus where appropriate;
+- dense Sales/Marketing/Finance/Operations/Integrations/Academy controls remain secondary until relevant;
+- one object, one current state, one primary next action per mobile decision surface.
+
+
 ## One Hermes / Four Visual Engines
 
 Hermes is one technology ecosystem. Logistics, Marketing, Technology and Academy are not four unrelated websites and must not become four copies of the same template with different accent colors.
