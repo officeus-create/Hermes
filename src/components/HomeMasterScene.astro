@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
+import LogisticsVehicleRig from "./LogisticsVehicleRig.astro";
 
 const flowStages = ["event", "system", "human", "outcome"] as const;
 const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
@@ -68,11 +69,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               >
                 <span class="home-logistics-weather"></span>
                 <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle">
-                  <span class="home-truck-rig">
-                    <i class="home-truck-trailer"></i>
-                    <i class="home-truck-load"></i>
-                    <i class="home-truck-cab"></i>
-                  </span>
+                  <LogisticsVehicleRig className="home-truck-rig" />
                 </span>
               </span>
             )}
@@ -192,29 +189,17 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
-.home-logistics-living .home-moving-truck{z-index:2;left:58%;top:44%;width:13%;aspect-ratio:34/104;transform:rotate(-18deg);transform-origin:center}
-.home-truck-rig{position:relative;display:block;width:100%;height:100%;filter:drop-shadow(0 5px 5px rgba(1,13,22,.42))}
-.home-truck-rig i{position:absolute;display:block;left:50%;transform:translateX(-50%);transition:all .6s cubic-bezier(.16,1,.3,1)}
-.home-truck-cab{bottom:0;width:78%;height:27%;border-radius:5px 5px 7px 7px;background:linear-gradient(180deg,#fff,#cfd9df);box-shadow:inset 0 -5px 0 rgba(19,52,68,.16)}
-.home-truck-cab::before{content:"";position:absolute;left:18%;right:18%;top:15%;height:25%;border-radius:2px;background:#31566b}
-.home-truck-trailer{top:1%;width:84%;height:68%;border-radius:4px;background:linear-gradient(180deg,#f0f5f8,#abbcc6);box-shadow:inset 0 0 0 1px rgba(255,255,255,.52)}
-.home-truck-load{top:11%;width:55%;height:9%;border-radius:2px;background:#5f7f91;opacity:0;box-shadow:0 16px 0 #8ba2ad,0 32px 0 #536d7a}
+.home-logistics-living .home-moving-truck{z-index:2;left:62%;top:49%;width:8.2%;aspect-ratio:56/150;transform:rotate(-20deg);transform-origin:center;transition:width .7s ease,filter .7s ease}
 [data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-echo-scene="car-hauler"] .home-truck-trailer{width:86%;height:69%;border:1px solid rgba(244,250,252,.95);background:rgba(36,55,65,.34);box-shadow:inset 0 0 0 1px rgba(17,40,52,.24)}
-[data-logistics-echo-scene="car-hauler"] .home-truck-load{opacity:1}
 [data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:repeating-linear-gradient(105deg,transparent 0 15px,rgba(214,239,249,.36) 16px 18px,transparent 19px 33px);animation:home-logistics-rain 1.2s linear infinite;opacity:.52}
 [data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 [data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
 [data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
-[data-logistics-echo-scene="reefer"] .home-truck-trailer::before{content:"";position:absolute;left:16%;right:16%;top:8%;height:7%;border-radius:2px;background:#557486}
 [data-logistics-echo-scene="flatbed"] .home-logistics-weather{background:radial-gradient(ellipse at 72% 23%,rgba(255,221,146,.38),transparent 30%),linear-gradient(180deg,rgba(191,126,72,.05),rgba(131,78,42,.18));animation:home-logistics-heat 3.2s ease-in-out infinite alternate;opacity:.64}
-[data-logistics-echo-scene="flatbed"] .home-truck-trailer{top:22%;height:46%;width:88%;border-radius:2px;background:linear-gradient(90deg,#654f39,#a9875d 48%,#654f39);box-shadow:inset 0 0 0 1px rgba(29,43,50,.45)}
 [data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
-[data-logistics-echo-scene="step-deck"] .home-truck-trailer{top:10%;height:59%;width:87%;clip-path:polygon(0 0,100% 0,100% 61%,82% 61%,82% 100%,18% 100%,18% 61%,0 61%);border-radius:2px;background:linear-gradient(90deg,#5d6870,#a8b0b4,#5d6870)}
 [data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
 [data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
-[data-logistics-echo-scene="hotshot"] .home-truck-trailer{top:17%;height:51%;width:80%;background:linear-gradient(90deg,#34444e,#87969d,#34444e)}
-[data-logistics-echo-scene="hotshot"] .home-truck-cab{width:88%;height:26%;border-radius:5px 5px 8px 8px}
+[data-logistics-echo-scene="hotshot"] .home-moving-truck{width:7.4%}
 .home-moving-leaves{left:47%;top:2.4%;width:27%;transform-origin:50% 100%}
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-road-flow{inset:23% 8% auto 26%;height:38%}
