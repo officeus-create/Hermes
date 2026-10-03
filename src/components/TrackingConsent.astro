@@ -150,6 +150,16 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     const accept = root?.querySelector("[data-consent-accept]");
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
+    const mobileConsentQuery = window.matchMedia("(max-width: 700px)");
+    const mainContent = document.querySelector("main");
+
+    const placeMobileConsentInFlow = () => {
+      if (!mobileConsentQuery.matches || !root || !mainContent?.parentNode || banner?.hidden) return;
+      if (root.nextElementSibling !== mainContent) {
+        mainContent.parentNode.insertBefore(root, mainContent);
+      }
+      root.dataset.mobilePlacement = "inline";
+    };
 
     const SYNTHETIC_ANALYTICS_OVERRIDE = "_hermes_ga4_smoke";
     const SYNTHETIC_CLARITY_OVERRIDE = "_hermes_clarity_smoke";
@@ -308,6 +318,11 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
     const initialChoice = readChoice();
     applyChoice(initialChoice);
+    if (initialChoice === null) placeMobileConsentInFlow();
+
+    mobileConsentQuery.addEventListener("change", () => {
+      if (!banner?.hidden) placeMobileConsentInFlow();
+    });
 
     accept?.addEventListener("click", () => {
       saveChoice("granted");
@@ -331,6 +346,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
       if (!banner) return;
       banner.hidden = false;
       settings.hidden = true;
+      placeMobileConsentInFlow();
       banner.querySelector("button")?.focus();
     });
   })();
@@ -478,17 +494,19 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
 
   @media (max-width: 700px) {
     .tracking-consent-banner {
+      position: relative;
       top: auto;
-      right: .5rem;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + .4rem);
-      left: .5rem;
-      width: auto;
+      right: auto;
+      bottom: auto;
+      left: auto;
+      width: calc(100% - 1rem);
       display: block;
+      margin: .4rem auto .25rem;
       padding: .3rem .4rem;
       border-radius: 14px;
       max-height: none;
       overflow: visible;
-      box-shadow: 0 12px 32px rgba(11,13,18,.16);
+      box-shadow: 0 9px 24px rgba(11,13,18,.11);
     }
     .tracking-consent-eyebrow,
     .tracking-consent-detail {
