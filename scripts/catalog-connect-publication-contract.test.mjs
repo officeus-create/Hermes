@@ -144,7 +144,6 @@ const catalogEventApi = read("functions/api/catalog-business-event.ts");
 const catalogEventSchema = read("functions/api/_lib/catalog-business-events.mjs");
 const catalogTelemetry = read("public/catalog-business-telemetry.js");
 const catalogWebsiteConcept = read("src/components/CatalogWebsiteConcept.astro");
-const catalogEventApi = read("functions/api/catalog-business-event.ts");
 const catalogReportApi = read("functions/api/repair-shop/catalog-report.ts");
 const repairDashboard = read("src/pages/services/hermes-connect/repair-shops/dashboard.astro");
 assert.match(staticDealerProfile, /data-catalog-event="call_click"/);
