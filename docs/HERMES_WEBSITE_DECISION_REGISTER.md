@@ -168,3 +168,48 @@ Approved image bytes were materialized locally with Library identity and viewed 
 Verification: local build 388 pages, zero errors/warnings; full npm test passed. Responsive screenshot pixels viewed at 390/430/768/1024/1440, no horizontal overflow. Regression QA found and fixed an inherited menu-display breakpoint conflict at 1024px, stale production-contact wording marker, a reduced-motion cascade conflict, masked-art ghost labels and light-footer text contrast. Existing source-label/geometry assertions were updated to the explicitly approved composition; canonical-route/SEO/privacy/form and no-JS/keyboard contracts remain. Final exact-head CI, parent independent screenshot QA and production readback remain release gates; do not claim LIVE from local evidence.
 
 Compounding scorecard: primary approved visual made functional; SEO existing owner/meta/schema/social/hreflang preserved; conversion compact CTA/contact route and Connect discovery; knowledge provenance and regression evidence; internal linking four canonical directions plus current Connect; scale responsive reuse only (no new URL family); AI/product no new platform; data/privacy no new fields/events/PII or delivery behavior; content reuse artwork source identity retained; architecture existing Astro/CSS/registry/analytics reused; deferred unrelated direction redesign, Catalog, Worker/D1/customer patches and accessibility debt. Rollback: revert this bounded Home/font/media/contract delta while retaining prior product/data work.
+
+## 2026-10-03 — One Brain visual-system/tooling reconciliation
+
+This entry records the owner-requested deep reconciliation of historical design work and current tools. It extends V4; it does not create V5.
+
+### Current conclusions
+
+- Preserve #1551 information architecture: four primary directions; Hermes Connect/Catalog/Insights secondary; account/sign-in utility.
+- Do not treat the four direction color markers as full visual identity. Direction identity comes from Visual Physics: Logistics=space, Marketing=attention, Technology=information, Academy=capability.
+- One major signature scene per page is the normal maximum; the rest of the page becomes calmer and product/content led.
+- Web Design and Website Development must function as capability showrooms, not generic agency pages.
+- Website/Insights is the canonical searchable owner for substantial news/evidence; Telegram/Threads/Instagram/Facebook are channel-native distribution/adaptation surfaces. Connector status must be labeled truthfully as LIVE / VERIFIED / DEMO / CONCEPT.
+- SEO/GEO/AEO/LLMO, semantic HTML, internal linking, schema, hreflang, canonical and mobile/accessibility remain design constraints.
+- If a paid visual provider becomes unavailable, continue toward the design goal using existing approved assets, native web technology, or license-reviewed open-source/GitHub alternatives instead of blocking the project.
+
+### Current tool-role snapshot
+
+Connected/available in the current design workflow: GitHub, Google Drive/Docs, Figma tooling, tldraw, Canva, HeyGen, Runway, Higgsfield, Descript, PostHog, Lovable, Replit and Base44.
+
+Use:
+- Figma = canonical design-system/master-frame layer.
+- tldraw = architecture, screenshot annotation and fast wireframes.
+- Higgsfield / Runway = art-direction and generated media experimentation.
+- HeyGen = presenter/avatar/multilingual explanation where a person is useful.
+- Descript = finishing, captions, B-roll and localization.
+- Canva = social/channel adaptation.
+- Lovable / Replit / Base44 = isolated prototypes only.
+- PostHog = existing behavior/experiment evidence; do not add another analytics owner without a real gap.
+- GitHub + Cloudflare = production ownership.
+
+Runway current connected workspace was verified with image models available and no available video models. Do not design a production dependency around unavailable Runway video.
+
+Opera Browser Connector is installed but the current browser-side connection was unavailable during this audit; live browser QA must not be claimed from that connector until Allow AI connection/sign-in is active.
+
+### GitHub/runtime direction
+
+The main website remains lean Astro/Tailwind/Lucide/Playwright. Existing MotionLayer/native Web APIs are the default for ordinary interaction.
+
+GSAP already exists in the Hermes Video Factory and is the preferred candidate for a bounded complex signature timeline when native motion is insufficient. Rive is the preferred candidate for a stateful Hermes Intelligence Knot/Core prototype. Three.js is optional only for an isolated proven 3D spatial/system need. dotLottie is optional for lightweight microanimation. Lenis/Theatre.js are not default dependencies.
+
+### Rejected operating pattern
+
+Do not add Webflow, Wix or WordPress as parallel website owners. Do not add Amplitude/Statsig merely to duplicate PostHog. Do not connect more creative tools simply to increase the tool count.
+
+The target is not “maximum effects.” The target is a recognizable, truthful, fast Hermes visual system whose media explains space, attention, information or capability and whose website itself proves the quality of Hermes Web Design / Website Development.
