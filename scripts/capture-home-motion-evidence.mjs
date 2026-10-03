@@ -47,8 +47,13 @@ try {
       for(const scene of logisticsScenes) {
         await page.evaluate((key)=>{
           const echo=document.querySelector('[data-home-logistics-echo]');
+          const route=document.querySelector('[data-route-id="logistics"]');
+          const image=document.querySelector('[data-home-logistics-scene-image]');
           if(echo) echo.setAttribute('data-logistics-echo-scene',key);
+          if(route) route.setAttribute('data-logistics-scene',key);
+          if(image) image.setAttribute('src',`/images/logistics-living/${key}-512.webp`);
         },scene);
+        await page.locator('[data-home-logistics-scene-image]').evaluate((image)=>image.complete ? true : new Promise((resolve)=>image.addEventListener('load',()=>resolve(true),{once:true})));
         await logisticsRoute.screenshot({path:`${directory}/home-1440-logistics-scene-${scene}.png`,animations:'disabled'});
       }
     }
