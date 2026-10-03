@@ -2,9 +2,9 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const homeFlows = {
  logistics: ["Request", "Route fit", "Human review", "Handoff"],
- marketing: ["Signal", "Distribution", "Site action", "Evidence"],
- technology: ["Brief", "Build", "QA", "Readback"],
- academy: ["Task", "Attempt", "Review", "Progression"],
+ marketing: ["Content", "Search + social", "Site action", "Inquiry"],
+ technology: ["Request", "CRM context", "Automation", "Receipt"],
+ academy: ["Lesson", "Practice", "Review", "Progression"],
 } as const;
 
 // CI Chromium can stop rAF after history restoration while the focused document,
@@ -182,13 +182,15 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
- await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Content');
- await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Search');
- await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Site');
- await expect(page.locator('[data-home-pillar-proof="attention"]')).toContainText('Inquiry');
- for(const label of ['Request','CRM','Auto','Receipt']) {
-  await expect(page.locator(`[data-home-pillar-proof="systems"] [data-label="${label}"]`)).toHaveCount(1);
- }
+ await expect(page.locator('[data-home-pillar-proof="attention"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content');
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Search + social');
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Inquiry');
+ await expect(page.locator('[data-home-pillar-proof="systems"]')).toHaveCount(1);
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Request');
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('CRM context');
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Automation');
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Receipt');
  for(const label of ['Logistics','Sales','Marketing','Operations']) {
   await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText(label);
  }
