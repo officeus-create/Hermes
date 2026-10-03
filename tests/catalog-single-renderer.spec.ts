@@ -44,7 +44,7 @@ for (const scenario of [
 
     await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
 
-    const primaryGrid = page.locator(".catalog-results .business-grid");
+    const primaryGrid = page.locator("[data-catalog-grid]");
     const repairLink = primaryGrid.locator(`a[href="${repairShop.profileUrl}"]`);
     const genericCard = primaryGrid.locator(`[data-company-runtime-id="${genericCompany.id}"]`);
     await expect(repairLink).toHaveCount(1);
