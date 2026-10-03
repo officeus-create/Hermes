@@ -224,7 +224,7 @@ test('Home subjects use finite cycles, pause offscreen and settle to still artwo
  await page.locator('footer').scrollIntoViewIfNeeded();
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await page.locator('[data-route-id="logistics"]').hover();
+ await page.locator('[data-route-id="marketing"]').hover();
  await expect(layers.first()).toHaveAttribute('data-motion-state','running');
 });
 
