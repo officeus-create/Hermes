@@ -41,6 +41,17 @@ try {
       }
     }
     await page.emulateMedia({reducedMotion:'reduce'});
+    if(width===1440) {
+      const logisticsScenes=['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot'];
+      const logisticsRoute=page.locator('[data-route-id="logistics"]');
+      for(const scene of logisticsScenes) {
+        await page.evaluate((key)=>{
+          const echo=document.querySelector('[data-home-logistics-echo]');
+          if(echo) echo.setAttribute('data-logistics-echo-scene',key);
+        },scene);
+        await logisticsRoute.screenshot({path:`${directory}/home-1440-logistics-scene-${scene}.png`,animations:'disabled'});
+      }
+    }
     await page.screenshot({path:`${directory}/home-${width}-reduced.png`,fullPage:false});
     const geometry=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,layers:[...document.querySelectorAll('[data-home-motion]')].map(node=>({kind:node.dataset.homeMotion,state:node.dataset.motionState,display:getComputedStyle(node).display,animations:node.getAnimations().length}))}));
     if(geometry.scrollWidth>width||geometry.layers.some(layer=>layer.display!=='block'||layer.animations!==0)) throw new Error(`Home motion geometry/reduced-motion failed at ${width}`);
