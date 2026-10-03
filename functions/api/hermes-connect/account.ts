@@ -9,18 +9,19 @@ import {
   listAcademyEnrollments,
 } from "../_lib/academy.mjs";
 import { ensureInternalAiSchema } from "../_lib/internal-ai.mjs";
+import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { getHrReviewerAccess } from "../_lib/hr.mjs";
 
 type Env = { DB?: any };
 
 type OwnedBusiness = {
-  key: "repair_shop" | "beauty_salon";
+  key: "repair_shop" | "beauty_salon" | "academy_business";
   kind: "owned_business";
   id: string;
   name: string;
   slug: string;
   href: string;
-  workspace_state: "live" | "private_foundation";
+  workspace_state: "live" | "private_foundation" | "academy_vertical";
 };
 
 type Workspace = {
@@ -53,6 +54,18 @@ async function getOwnedHermesCompany(db: any, ownerId: string) {
   `).bind(ownerId).first();
 }
 
+async function getOwnedAcademyBusiness(db: any, ownerId: string) {
+  await ensureHermesCompanyProfilesSchema(db);
+  await ensureAcademyBusinessProfilesSchema(db);
+  return db.prepare(`
+    SELECT c.id, c.company_name AS business_name, c.slug
+    FROM hermes_academy_business_profiles a
+    JOIN hermes_company_profiles c ON c.id = a.company_id
+    WHERE a.owner_specialist_id = ? AND c.owner_specialist_id = ?
+    LIMIT 1
+  `).bind(ownerId, ownerId).first();
+}
+
 async function getInternalAiAccess(db: any, specialistId: string) {
   await ensureInternalAiSchema(db);
   return db.prepare(`
@@ -71,9 +84,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
+    getOwnedAcademyBusiness(env.DB, specialist.id),
     getOwnedHermesCompany(env.DB, specialist.id),
     getAcademyLearnerProfile(env.DB, specialist.id),
     listAcademyEnrollments(env.DB, specialist.id),
@@ -103,6 +117,17 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(beautySalon.slug || ""),
       href: "/services/hermes-connect/beauty/workspace/",
       workspace_state: "private_foundation",
+    });
+  }
+  if (academyBusiness) {
+    ownedBusinesses.push({
+      key: "academy_business",
+      kind: "owned_business",
+      id: String(academyBusiness.id),
+      name: String(academyBusiness.business_name || "Academy"),
+      slug: String(academyBusiness.slug || ""),
+      href: "/services/hermes-connect/academy/business/workspace/",
+      workspace_state: "academy_vertical",
     });
   }
 
