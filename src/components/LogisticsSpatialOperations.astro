@@ -1,6 +1,5 @@
 ---
 import { ArrowRight, Boxes, MapPinned, Route, ScanSearch, ShieldCheck } from "@lucide/astro";
-import LogisticsVehicleRig from "./LogisticsVehicleRig.astro";
 
 const stages = [
   {
@@ -49,12 +48,12 @@ const stateLabels = {
 };
 
 const livingScenes = [
-  { key: "car-hauler", equipment: "Car Hauler", weather: "Clear sunrise", environment: "Open highway" },
-  { key: "dry-van", equipment: "Dry Van", weather: "Rain", environment: "Interstate corridor" },
-  { key: "reefer", equipment: "Reefer", weather: "Snow / cold", environment: "Northern route" },
-  { key: "flatbed", equipment: "Flatbed", weather: "Dry heat", environment: "Open-country freight" },
-  { key: "step-deck", equipment: "Step Deck", weather: "Cloud / mountain", environment: "Grade change" },
-  { key: "hotshot", equipment: "Hotshot", weather: "Dusk", environment: "Regional highway" },
+  { key: "car-hauler", equipment: "Car Hauler", weather: "Clear sunrise", environment: "Open highway", asset: "/images/logistics-living/car-hauler-887.webp" },
+  { key: "dry-van", equipment: "Dry Van", weather: "Rain", environment: "Interstate corridor", asset: "/images/logistics-living/dry-van-887.webp" },
+  { key: "reefer", equipment: "Reefer", weather: "Snow / cold", environment: "Northern route", asset: "/images/logistics-living/reefer-887.webp" },
+  { key: "flatbed", equipment: "Flatbed", weather: "Dry heat", environment: "Open-country freight", asset: "/images/logistics-living/flatbed-887.webp" },
+  { key: "step-deck", equipment: "Step Deck", weather: "Cloud / mountain", environment: "Grade change", asset: "/images/logistics-living/step-deck-887.webp" },
+  { key: "hotshot", equipment: "Hotshot", weather: "Dusk", environment: "Regional highway", asset: "/images/logistics-living/hotshot-887.webp" },
 ] as const;
 ---
 
@@ -84,14 +83,10 @@ const livingScenes = [
         <div class="logistics-spatial-grid" aria-hidden="true"></div>
         <div class="logistics-spatial-ambient" aria-hidden="true"></div>
         <div class="logistics-living-scene" aria-hidden="true">
-          <picture class="logistics-scene-art">
-            <source type="image/avif" srcset="/images/home-20261001/logistics-887.avif" />
-            <img src="/images/home-20261001/logistics-887.webp" width="887" height="1774" alt="" loading="lazy" decoding="async" />
-          </picture>
-          <div class="logistics-weather"></div>
-          <div class="logistics-aerial-vehicle">
-            <LogisticsVehicleRig />
+          <div class="logistics-scene-art">
+            <img data-logistics-scene-image src={livingScenes[0].asset} width="887" height="1589" alt="" loading="lazy" decoding="async" />
           </div>
+          <div class="logistics-weather"></div>
           <div class="logistics-scene-chip">
             <span data-logistics-scene-weather>{livingScenes[0].weather} · {livingScenes[0].environment}</span>
             <strong data-logistics-scene-equipment>{livingScenes[0].equipment}</strong>
@@ -161,7 +156,8 @@ const livingScenes = [
     const sceneEquipment = root.querySelector("[data-logistics-scene-equipment]");
     const sceneWeather = root.querySelector("[data-logistics-scene-weather]");
     const scenePayload = root.getAttribute("data-logistics-scenes");
-    const scenes: Array<{ key: string; equipment: string; weather: string; environment: string }> = scenePayload ? JSON.parse(scenePayload) : [];
+    const scenes: Array<{ key: string; equipment: string; weather: string; environment: string; asset: string }> = scenePayload ? JSON.parse(scenePayload) : [];
+    const sceneImage = root.querySelector<HTMLImageElement>("[data-logistics-scene-image]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const labels: Record<string, string> = {
       context: "REQUEST CONTEXT",
@@ -196,12 +192,21 @@ const livingScenes = [
       root.setAttribute("data-logistics-scene", scene.key);
       if (sceneEquipment) sceneEquipment.textContent = scene.equipment;
       if (sceneWeather) sceneWeather.textContent = `${scene.weather} · ${scene.environment}`;
+      if (sceneImage && !sceneImage.src.endsWith(scene.asset)) {
+        sceneImage.src = scene.asset;
+      }
+      const next = scenes[(index + 1) % scenes.length];
+      if (next) {
+        const preload = new Image();
+        preload.src = next.asset;
+      }
     };
 
     let sceneIndex = 0;
     let sceneTimer: number | undefined;
+    let sceneVisible = true;
     const startSceneLoop = () => {
-      if (reducedMotion.matches || scenes.length < 2 || sceneTimer) return;
+      if (reducedMotion.matches || !sceneVisible || document.hidden || scenes.length < 2 || sceneTimer) return;
       sceneTimer = window.setInterval(() => {
         sceneIndex = (sceneIndex + 1) % scenes.length;
         applyScene(sceneIndex);
@@ -212,6 +217,15 @@ const livingScenes = [
       window.clearInterval(sceneTimer);
       sceneTimer = undefined;
     };
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        sceneVisible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .15);
+        if (sceneVisible) startSceneLoop();
+        else stopSceneLoop();
+      }, { threshold: .15 });
+      observer.observe(root);
+    }
 
     reducedMotion.addEventListener("change", () => {
       if (reducedMotion.matches) {
@@ -247,29 +261,21 @@ const livingScenes = [
   .logistics-spatial-ambient::after { content:""; position:absolute; left:9%; right:8%; bottom:9%; height:22%; border-radius:50%; background:radial-gradient(ellipse at center,rgba(95,205,255,.11),transparent 68%); animation:logistics-horizon-breathe 7s ease-in-out infinite alternate; }
   .logistics-living-scene { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; background:#17384d; }
   .logistics-scene-art { position:absolute; inset:-4%; display:block; }
-  .logistics-scene-art img { display:block; width:108%; height:108%; object-fit:cover; object-position:50% 42%; filter:saturate(.9) brightness(.72) contrast(1.04); transform:scale(1.02); transition:filter 1s ease,transform 4.6s ease; }
+  .logistics-scene-art img { display:block; width:108%; height:108%; object-fit:cover; object-position:50% 50%; filter:saturate(.92) brightness(.72) contrast(1.04); transform:scale(1.02); animation:logistics-scene-camera 8.5s ease-in-out infinite alternate; transition:opacity .45s ease,filter .7s ease,transform .7s ease; }
   .logistics-living-scene::before { content:""; position:absolute; z-index:1; inset:0; background:linear-gradient(180deg,rgba(6,23,39,.18),rgba(6,23,39,.48)),radial-gradient(circle at 18% 22%,rgba(255,255,255,.15),transparent 30%); transition:background .9s ease,opacity .9s ease; }
   .logistics-weather { position:absolute; z-index:2; inset:-12%; opacity:.42; transition:opacity .9s ease,background .9s ease; }
-  .logistics-aerial-vehicle { position:absolute; z-index:3; left:53%; top:55%; width:42px; height:112px; transform:translate(-50%,-50%) rotate(-25deg); animation:logistics-truck-cruise 4.6s ease-in-out infinite; transition:width .65s ease,height .65s ease,filter .65s ease; }
   .logistics-scene-chip { position:absolute; z-index:4; right:1rem; bottom:1rem; display:grid; justify-items:end; gap:.2rem; max-width:50%; color:#fff; text-shadow:0 2px 10px rgba(5,21,32,.58); }
   .logistics-scene-chip span { font:600 .58rem/1.3 "IBM Plex Mono",monospace; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.76); }
   .logistics-scene-chip strong { font-size:.86rem; letter-spacing:.01em; }
-  [data-logistics-scene="car-hauler"] .logistics-scene-art img { filter:saturate(.92) brightness(.82) contrast(1.03) sepia(.06); transform:scale(1.025); }
   [data-logistics-scene="car-hauler"] .logistics-weather { background:radial-gradient(circle at 18% 15%,rgba(255,225,157,.72),transparent 28%),linear-gradient(130deg,transparent 55%,rgba(255,255,255,.1)); opacity:.48; }
-  [data-logistics-scene="dry-van"] .logistics-scene-art img { filter:saturate(.62) brightness(.64) contrast(1.08); transform:scale(1.035) translateY(.4%); }
   [data-logistics-scene="dry-van"] .logistics-weather { background:repeating-linear-gradient(103deg,transparent 0 16px,rgba(205,235,248,.42) 17px 19px,transparent 20px 35px); animation:logistics-rain 1.1s linear infinite; opacity:.62; }
   [data-logistics-scene="dry-van"] .logistics-living-scene::before { background:linear-gradient(180deg,rgba(10,28,42,.32),rgba(3,16,28,.58)); }
-  [data-logistics-scene="reefer"] .logistics-scene-art img { filter:grayscale(.35) saturate(.45) brightness(.92) contrast(.95); transform:scale(1.04) translateY(-.3%); }
   [data-logistics-scene="reefer"] .logistics-weather { background:radial-gradient(circle,#fff 0 1.2px,transparent 1.8px) 0 0/24px 28px,radial-gradient(circle,#eef8ff 0 1px,transparent 1.8px) 12px 8px/31px 32px; animation:logistics-snow 4.2s linear infinite; opacity:.76; }
   [data-logistics-scene="reefer"] .logistics-living-scene::before { background:linear-gradient(180deg,rgba(215,233,241,.12),rgba(68,100,118,.38)); }
-  [data-logistics-scene="flatbed"] .logistics-scene-art img { filter:sepia(.26) saturate(.9) brightness(.76) contrast(1.06); transform:scale(1.03) translateX(.3%); }
   [data-logistics-scene="flatbed"] .logistics-weather { background:radial-gradient(ellipse at 70% 24%,rgba(255,230,166,.44),transparent 28%),repeating-linear-gradient(92deg,transparent 0 25px,rgba(255,230,170,.06) 27px 30px); animation:logistics-heat 3.1s ease-in-out infinite alternate; opacity:.64; }
-  [data-logistics-scene="step-deck"] .logistics-scene-art img { filter:saturate(.58) brightness(.67) contrast(1.08); transform:scale(1.045) translateX(-.4%); }
   [data-logistics-scene="step-deck"] .logistics-weather { background:radial-gradient(ellipse at 20% 26%,rgba(240,248,248,.34),transparent 23%),radial-gradient(ellipse at 72% 21%,rgba(233,242,242,.38),transparent 30%); animation:logistics-cloud 7s ease-in-out infinite alternate; opacity:.72; }
-  [data-logistics-scene="hotshot"] .logistics-scene-art img { filter:saturate(.68) brightness(.5) contrast(1.1) sepia(.1); transform:scale(1.04) translateY(.5%); }
   [data-logistics-scene="hotshot"] .logistics-weather { background:radial-gradient(circle at 78% 20%,rgba(250,164,112,.42),transparent 24%),linear-gradient(180deg,rgba(18,35,59,.08),rgba(8,18,30,.44)); opacity:.82; }
   [data-logistics-scene="hotshot"] .logistics-living-scene::before { background:linear-gradient(180deg,rgba(8,25,45,.22),rgba(5,12,26,.62)); }
-  [data-logistics-scene="hotshot"] .logistics-aerial-vehicle { width:38px; height:102px; }
   .logistics-spatial-map::before,.logistics-spatial-map::after { content:""; position:absolute; z-index:1; border:1px solid rgba(255,255,255,.13); background:rgba(255,255,255,.045); border-radius:12px; transform:rotate(-7deg); }
   .logistics-spatial-map::before { width:190px; height:90px; left:16%; top:12%; }
   .logistics-spatial-map::after { width:220px; height:120px; right:10%; bottom:18%; transform:rotate(8deg); }
@@ -312,6 +318,7 @@ const livingScenes = [
   .logistics-spatial-actions h3 { max-width:720px; margin:.3rem 0 0; }
   .logistics-spatial-actions > div:last-child { display:flex; flex-wrap:wrap; gap:.7rem; justify-content:flex-end; }
   .logistics-spatial-actions .button-ghost { color:#10204e; border-color:rgba(16,32,78,.18); }
+  @keyframes logistics-scene-camera { from { transform:scale(1.015) translate3d(0,0,0); } to { transform:scale(1.055) translate3d(-.6%,-.8%,0); } }
   @keyframes logistics-route-flow { to { stroke-dashoffset:-38; } }
   @keyframes logistics-route-glow {
     0%,100% { opacity:.72; }
@@ -372,6 +379,7 @@ const livingScenes = [
     .logistics-spatial-actions .button { width:100%; justify-content:center; }
   }
   @media(prefers-reduced-motion:reduce) {
+    .logistics-scene-art img,
     .logistics-spatial-grid,
     .logistics-spatial-ambient,
     .logistics-spatial-ambient::before,
@@ -380,9 +388,8 @@ const livingScenes = [
     .logistics-spatial-node::after,
     .logistics-aerial-road::before,
     .logistics-aerial-road::after,
-    .logistics-aerial-vehicle,
     .logistics-weather { animation:none !important; }
-    .logistics-spatial-grid { opacity:.2; transform:perspective(700px) rotateX(58deg) scale(1.5); }
+    .logistics-scene-art img { animation:none !important; transform:scale(1.02) !important; }\n    .logistics-spatial-grid { opacity:.2; transform:perspective(700px) rotateX(58deg) scale(1.5); }
     .logistics-spatial-ambient { opacity:.48; transform:none; }
     .logistics-spatial-ambient::before { opacity:.12; transform:translate3d(230%,0,0) skewX(-16deg); }
     .logistics-spatial-ambient::after { opacity:.35; transform:none; }
