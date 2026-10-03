@@ -168,3 +168,10 @@ test("Academy owner workspace exposes bounded team-role structure without claimi
   assert.match(workspace, /not presented as fully activated multi-user RBAC/);
   assert.match(workspace, /company-scoped permissions/);
 });
+
+test("Academy business owner mutation enforces same-origin boundary", async () => {
+  const api = await read("functions/api/hermes-connect/academy/business.ts");
+  assert.match(api, /sameOriginMutation/);
+  assert.match(api, /same_origin_required/);
+  assert.match(api, /Sec-Fetch-Site/);
+});

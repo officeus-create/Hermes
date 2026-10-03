@@ -8,6 +8,10 @@ import {
 } from "../../_lib/academy-business-profiles.mjs";
 
 type Env = { DB?: any };
+const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
+const sameOriginMutation = (request: Request) =>
+  request.headers.get("Sec-Fetch-Site") !== "cross-site" &&
+  (!request.headers.get("Origin") || request.headers.get("Origin") === new URL(request.url).origin);
 
 const fold = (value: unknown) => String(value ?? "").normalize("NFKC").trim().toLocaleLowerCase("uk");
 
@@ -101,6 +105,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
+  if (!sameOriginMutation(request)) return jsonResponse(403, { success: false, error: "same_origin_required" }, privateHeaders);
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "authentication_required" });
@@ -295,5 +300,5 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       ? { listed: true, status: profile?.catalogStatus || "self_submitted", profileUrl: `/businesses/connect/academy/${encodeURIComponent(String(profile?.slug || canonicalSlug))}/` }
       : { listed: false, status: "opted_out", profileUrl: null },
     next_url: "/services/hermes-connect/academy/business/workspace/",
-  }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
+  }, privateHeaders);
 }
