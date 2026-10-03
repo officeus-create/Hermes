@@ -366,7 +366,7 @@ ROOT_CAUSE: The package's `evaluateRequest()` stale-response branch honored requ
 
 FAILED_APPROACH: Waiting for an unavailable upstream release, suppressing the advisory, or weakening the repository's high-severity audit gate would leave the vulnerable code reachable and turn a release check green without fixing the behavior. A direct file override without a declared root dependency also produced an invalid nested lockfile.
 
-WORKING_APPROACH: Vendor the exact MIT-licensed 4.2.0 source as `4.2.1-hermes.0`, add a narrow response-side guard before honoring `max-stale`, and pin every transitive consumer through the root dependency plus npm `$http-cache-semantics` override. Keep legitimate stale reuse for explicitly public cacheable responses. Add a regression test covering private cookies, `no-cache`, `proxy-revalidate`, and a permitted public stale response.
+WORKING_APPROACH: Vendor the exact BSD-2-Clause-licensed 4.2.0 source as `4.2.1-hermes.0`, add a narrow response-side guard before honoring `max-stale`, and pin every transitive consumer through the root dependency plus npm `$http-cache-semantics` override. Keep legitimate stale reuse for explicitly public cacheable responses. Add a regression test covering private cookies, `no-cache`, `proxy-revalidate`, and a permitted public stale response.
 
 EVIDENCE: Fresh `npm ci --ignore-scripts` and `node scripts/dependency-audit-report.mjs` report zero known vulnerabilities; the new regression test, `npm run build`, and the full static `npm test` pass. A local monolithic Playwright run exposed pre-existing Home/Connect branch drift and was stopped after 538 passes rather than changing the separately owned Home design; exact-head GitHub browser shards remain the release gate.
 
