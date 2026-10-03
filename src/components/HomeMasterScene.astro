@@ -51,12 +51,38 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             style={`--route-accent:${meta.accent}`}
             aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
-              <picture>
-                <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading={path.id === "logistics" || path.id === "marketing" ? "eager" : "lazy"} decoding="async" fetchpriority={path.id === "logistics" ? "high" : "auto"} />
-              </picture>
+              {path.id === "logistics" ? (
+                <img
+                  data-home-logistics-scene-image
+                  src="/images/logistics-living/car-hauler-512.webp"
+                  width="512"
+                  height="917"
+                  aria-hidden="true"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
+              ) : (
+                <picture>
+                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc((100vw - 30px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading={path.id === "marketing" ? "eager" : "lazy"} decoding="async" />
+                </picture>
+              )}
             </span>
-            {path.id === "logistics" && <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle"><img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="White delivery truck" decoding="async" /></span>}
+            {path.id === "logistics" && (
+              <span
+                class="home-logistics-living"
+                aria-hidden="true"
+                data-home-logistics-echo
+                data-logistics-echo-scene="car-hauler"
+                data-logistics-echo-count="6"
+                data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
+                data-logistics-echo-motion="idle"
+              >
+                <span class="home-logistics-weather"></span>
+              </span>
+            )}
             {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" aria-hidden="true" alt="Green leaves" decoding="async" /></span>}
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
@@ -91,6 +117,63 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 
   initializeHomePortalMotion();
 
+  const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
+  if (logisticsEcho && window.IntersectionObserver) {
+    const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
+    const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
+    const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-route-id='logistics']");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    let sceneIndex = 0;
+    let sceneTimer: number | undefined;
+    let visible = false;
+
+    const applyScene = () => {
+      const scene = scenes[sceneIndex];
+      logisticsEcho.dataset.logisticsEchoScene = scene;
+      if (logisticsRoute) logisticsRoute.dataset.logisticsScene = scene;
+      if (sceneImage) {
+        const nextSrc = `/images/logistics-living/${scene}-512.webp`;
+        if (!sceneImage.src.endsWith(nextSrc)) sceneImage.src = nextSrc;
+        const preload = new Image();
+        preload.src = `/images/logistics-living/${scenes[(sceneIndex + 1) % scenes.length]}-512.webp`;
+      }
+    };
+    const stop = () => {
+      if (sceneTimer) window.clearInterval(sceneTimer);
+      sceneTimer = undefined;
+    };
+    const update = () => {
+      if (reduced.matches) {
+        stop();
+        sceneIndex = 0;
+        applyScene();
+        logisticsEcho.dataset.logisticsEchoMotion = "reduced";
+        return;
+      }
+      if (!visible || document.hidden) {
+        stop();
+        logisticsEcho.dataset.logisticsEchoMotion = "paused";
+        return;
+      }
+      logisticsEcho.dataset.logisticsEchoMotion = "running";
+      if (sceneTimer) return;
+      sceneTimer = window.setInterval(() => {
+        sceneIndex = (sceneIndex + 1) % scenes.length;
+        applyScene();
+      }, 4600);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      visible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .2);
+      update();
+    }, { threshold: .2 });
+    observer.observe(logisticsEcho);
+    reduced.addEventListener("change", update);
+    document.addEventListener("visibilitychange", update);
+    applyScene();
+    update();
+  }
+
   document.querySelectorAll<HTMLAnchorElement>("[data-home-route]").forEach((link) => {
     link.addEventListener("click", () => {
       const id = link.dataset.routeId;
@@ -121,9 +204,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
+.home-master-route-logistics .home-portal-art img{object-position:center center;animation:home-logistics-camera 7.8s ease-in-out infinite alternate;transition:opacity .45s ease,filter .45s ease,transform .8s ease}
 .home-portal-motion{position:absolute;z-index:-2;pointer-events:none;display:block}
 .home-portal-motion img{display:block;width:100%;height:auto}
-.home-moving-truck{left:60%;top:47%;width:10.5%;transform:rotate(-18deg);transform-origin:center}
+.home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
+.home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
+.home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
+[data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
+[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:repeating-linear-gradient(105deg,transparent 0 15px,rgba(214,239,249,.36) 16px 18px,transparent 19px 33px);animation:home-logistics-rain 1.2s linear infinite;opacity:.52}
+[data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
+[data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
+[data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
+[data-logistics-echo-scene="flatbed"] .home-logistics-weather{background:radial-gradient(ellipse at 72% 23%,rgba(255,221,146,.38),transparent 30%),linear-gradient(180deg,rgba(191,126,72,.05),rgba(131,78,42,.18));animation:home-logistics-heat 3.2s ease-in-out infinite alternate;opacity:.64}
+[data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
+[data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
+[data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
 .home-moving-leaves{left:47%;top:2.4%;width:27%;transform-origin:50% 100%}
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-road-flow{inset:23% 8% auto 26%;height:38%}
@@ -187,8 +282,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book{animation:home-book-choose 1.8s ease-in-out 2}
 .home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(3){animation-delay:.3s}.home-master-route-academy:is(:hover,:focus-visible) .home-shelf-book:nth-child(4){animation-delay:.6s}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
+@keyframes home-logistics-rain{to{background-position:-28px 45px}}
+@keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
+@keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
+@keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
 @keyframes home-letter-hop{0%,70%,100%{transform:translateY(0) rotate(0)}28%{transform:translateY(-.16em) rotate(-8deg)}50%{transform:translateY(.02em) rotate(3deg)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
+@keyframes home-logistics-camera{from{transform:scale(1.015) translate3d(0,0,0)}to{transform:scale(1.055) translate3d(-.7%,-.9%,0)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 @keyframes home-story-turn{0%,100%{opacity:1;translate:0 0;rotate:0deg}40%{opacity:.85;translate:50% -12%;rotate:10deg}70%{opacity:.6;translate:95% -10%;rotate:14deg}}
 @keyframes home-system-pass{0%,100%{opacity:0;translate:0 0}20%,74%{opacity:.9}82%{opacity:0;translate:650% 0}}
@@ -211,5 +311,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
 @media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:2.6rem}.home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border-radius:26px}.home-master-route{padding:16px 12px;aspect-ratio:267/620}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.43rem}.home-live-path{display:none}.home-live-step{padding:4px 6px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.4rem}.home-live-step em{font-size:.5rem;line-height:1.05;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}}
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){
+.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-truck-rig i{transition:none!important}.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>

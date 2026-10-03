@@ -37,6 +37,28 @@ test("Marketing labels its signature scene as illustrative rather than live perf
   );
 });
 
+test("Logistics keeps one living scene with six representative weather and equipment states", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+  const root = page.locator("[data-logistics-spatial-operations]");
+  await expect(root).toHaveAttribute("data-logistics-scene-count", "6");
+  await expect(root).toContainText("Illustrative workflow — not live load, rate, capacity, demand, vehicle, telemetry, or ETA data.");
+
+  const payload = await root.getAttribute("data-logistics-scenes");
+  expect(payload).toBeTruthy();
+  const scenes = JSON.parse(payload || "[]");
+  expect(scenes.map((scene: { key: string }) => scene.key)).toEqual([
+    "car-hauler",
+    "dry-van",
+    "reefer",
+    "flatbed",
+    "step-deck",
+    "hotshot",
+  ]);
+  expect(scenes.every((scene: { asset: string }) => scene.asset.startsWith("/images/logistics-living/") && scene.asset.endsWith("-887.webp"))).toBe(true);
+  await expect(root.locator("[data-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-887.webp");
+});
+
+
 for (const route of ["/services/website-development/", "/services/website-redesign/"]) {
   test(`${route} keeps the approved Pearl/light capability-showroom header`, async ({ page }) => {
     await page.goto(route);
