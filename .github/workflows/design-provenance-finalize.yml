@@ -1,0 +1,49 @@
+name: Design provenance finalize
+on:
+  push:
+    branches:
+      - design/logistics-living-weather-equipment-replay-20261003
+    paths:
+      - .github/workflows/design-provenance-finalize.yml
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/logistics-living-weather-equipment-replay-20261003
+      - name: Record owned scene provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          manifest=Path("docs/compliance/media-provenance.json")
+          data=json.loads(manifest.read_text())
+          assets=data["assets"]
+          existing={item["path"] for item in assets}
+          for path in sorted(Path("public/images/logistics-living").glob("*.webp")):
+              rel=path.as_posix()
+              if rel in existing:
+                  continue
+              assets.append({
+                  "path": rel,
+                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                  "firstTrackedCommit": "DESIGN_V4_LOGISTICS_LIVING_20261003",
+                  "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+                  "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+                  "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
+                  "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+                  "publicationDecision": "CURRENT_USE_ALLOWED"
+              })
+          manifest.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n")
+          PY
+          rm -f .github/workflows/design-provenance-finalize.yml
+          git config user.name "Hermes Design Automation"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add docs/compliance/media-provenance.json .github/workflows/design-provenance-finalize.yml
+          git commit -m "docs(design): record living Logistics asset provenance"
+          git push origin HEAD:design/logistics-living-weather-equipment-replay-20261003
