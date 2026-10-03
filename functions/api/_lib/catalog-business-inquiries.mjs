@@ -3,7 +3,13 @@ const DELIVERY_STATES = new Set(["pending", "delivered", "failed", "skipped"]);
 async function ensureInquiryColumn(db, column, definition) {
   const result = await db.prepare("PRAGMA table_info(catalog_business_inquiries)").all();
   const names = new Set((result?.results ?? []).map((row) => String(row.name || "")));
-  if (!names.has(column)) await db.prepare(`ALTER TABLE catalog_business_inquiries ADD COLUMN ${definition}`).run();
+  if (!names.has(column)) {
+    try {await db.prepare(`ALTER TABLE catalog_business_inquiries ADD COLUMN ${definition}`).run();}
+    catch (error) {
+      const current=await db.prepare("PRAGMA table_info(catalog_business_inquiries)").all();
+      if (!(current?.results??[]).some(row=>row.name===column)) throw error;
+    }
+  }
 }
 
 export async function ensureCatalogBusinessInquirySchema(db) {
@@ -42,6 +48,16 @@ export async function ensureCatalogBusinessInquirySchema(db) {
   `).run();
   await ensureInquiryColumn(db, "owner_delivery_status", "owner_delivery_status TEXT NOT NULL DEFAULT 'skipped'");
   await ensureInquiryColumn(db, "owner_delivery_at", "owner_delivery_at TEXT");
+  await ensureInquiryColumn(db, "delivery_payload_json", "delivery_payload_json TEXT");
+  await db.prepare(`CREATE TABLE IF NOT EXISTS catalog_inquiry_delivery_receipts (
+    request_id TEXT NOT NULL REFERENCES catalog_business_inquiries(request_id) ON DELETE CASCADE,
+    recipient_kind TEXT NOT NULL CHECK(recipient_kind IN ('internal','owner')),
+    recipient_fingerprint TEXT,
+    state TEXT NOT NULL CHECK(state IN ('ready','sending','accepted','failed','uncertain','skipped')),
+    attempt_token TEXT, attempt_count INTEGER NOT NULL DEFAULT 0, attempted_at TEXT,
+    accepted_at TEXT, provider_message_id TEXT, error_code TEXT, updated_at TEXT NOT NULL,
+    PRIMARY KEY(request_id,recipient_kind)
+  )`).run();
   await db.prepare(
     "CREATE INDEX IF NOT EXISTS idx_catalog_business_inquiries_owner ON catalog_business_inquiries(owner_specialist_id, created_at DESC)"
   ).run();
@@ -59,7 +75,7 @@ async function byRequestId(db, requestId) {
            shop_id, owner_specialist_id, business_name, contact_name, contact_email, contact_phone,
            contact_whatsapp, contact_telegram, preferred_language, preferred_contact_time, message,
            services_json, attribution_json, status, internal_delivery_status, owner_delivery_status, owner_delivery_at, retention_until,
-           created_at, updated_at
+           created_at, updated_at, delivery_payload_json
     FROM catalog_business_inquiries
     WHERE request_id = ?
     LIMIT 1
@@ -72,22 +88,22 @@ export async function saveCatalogBusinessInquiry(db, input) {
   if (existing) {
     return {
       created: false,
-      conflict: String(existing.payload_hash || "") !== input.payloadHash,
+      conflict: String(existing.payload_hash || "") !== (String(existing.payload_hash || "").startsWith("v2:") ? input.payloadHash : (input.legacyPayloadHash || input.payloadHash)),
       row: existing,
     };
   }
 
   const id = "catalog_inquiry_" + crypto.randomUUID();
   try {
-    await db.prepare(`
+    const insert = db.prepare(`
       INSERT INTO catalog_business_inquiries (
         id, request_id, payload_hash, catalog_business_id, catalog_profile, catalog_source_ref,
         shop_id, owner_specialist_id, business_name, contact_name, contact_email, contact_phone,
         contact_whatsapp, contact_telegram, preferred_language, preferred_contact_time, message,
         services_json, attribution_json, status, internal_delivery_status, owner_delivery_status, owner_delivery_at, retention_until,
-        created_at, updated_at
+        created_at, updated_at, delivery_payload_json
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', 'pending', ?, NULL, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', 'pending', ?, NULL, ?, ?, ?, ?)
     `).bind(
       id,
       input.requestId,
@@ -112,13 +128,20 @@ export async function saveCatalogBusinessInquiry(db, input) {
       input.retentionUntil,
       input.createdAt,
       input.createdAt,
-    ).run();
+      input.deliveryPayload ? JSON.stringify(input.deliveryPayload) : null,
+    );
+    if (input.deliveryPayload) {
+      const receipt = (kind, state, fingerprint) => db.prepare(`INSERT INTO catalog_inquiry_delivery_receipts
+        (request_id,recipient_kind,state,recipient_fingerprint,updated_at) VALUES (?,?,?,?,?)`)
+        .bind(input.requestId,kind,state,fingerprint,input.createdAt);
+      await db.batch([insert,receipt('internal','ready',null),receipt('owner',input.ownerDeliveryStatus === 'pending' ? 'ready' : 'skipped',input.ownerFingerprint || null)]);
+    } else await insert.run();
   } catch (error) {
     const raced = await byRequestId(db, input.requestId);
     if (!raced) throw error;
     return {
       created: false,
-      conflict: String(raced.payload_hash || "") !== input.payloadHash,
+      conflict: String(raced.payload_hash || "") !== (String(raced.payload_hash || "").startsWith("v2:") ? input.payloadHash : (input.legacyPayloadHash || input.payloadHash)),
       row: raced,
     };
   }
@@ -127,7 +150,7 @@ export async function saveCatalogBusinessInquiry(db, input) {
 }
 
 export async function markCatalogBusinessInquiryInternalDelivery(db, requestId, state) {
-  if (!DELIVERY_STATES.has(state)) throw new Error("invalid_catalog_inquiry_delivery_state");
+  if (!["pending", "delivered", "failed"].includes(state)) throw new Error("invalid_catalog_inquiry_delivery_state");
   await ensureCatalogBusinessInquirySchema(db);
   await db.prepare(`
     UPDATE catalog_business_inquiries
