@@ -8,15 +8,19 @@ const now = Date.now;
 const baseTime = Date.parse("2026-10-03T00:00:00Z");
 Date.now = () => baseTime + 60_000;
 
-const request = (cacheControl = "") => ({
+const request = (cacheControl = "", extraHeaders = {}) => ({
   url: "https://example.test/private",
   method: "GET",
   headers: {
     host: "example.test",
+    ...extraHeaders,
     ...(cacheControl ? { "cache-control": cacheControl } : {}),
   },
 });
-const response = (headers) => ({ status: 200, headers: { date: new Date(baseTime).toUTCString(), ...headers } });
+const response = (headers) => ({
+  status: 200,
+  headers: { date: new Date(baseTime).toUTCString(), ...headers },
+});
 
 try {
   const privateCookie = new CachePolicy(
@@ -48,8 +52,58 @@ try {
     { shared: true },
   );
   assert.equal(publicStale.satisfiesWithoutRevalidation(request("max-stale=86400")), true);
+
+  for (const vary of [" * ", "accept-language, *", "*, accept-language"]) {
+    const wildcard = new CachePolicy(
+      request("", { "accept-language": "en-US" }),
+      response({ "cache-control": "public, max-age=3600", vary }),
+      { shared: true },
+    );
+    assert.equal(
+      wildcard.satisfiesWithoutRevalidation(request("", { "accept-language": "en-US" })),
+      false,
+      `Vary wildcard must never match: ${JSON.stringify(vary)}`,
+    );
+    assert.equal(
+      wildcard.evaluateRequest(request("", { "accept-language": "en-US" })).response,
+      undefined,
+      `Vary wildcard must not return a cached response: ${JSON.stringify(vary)}`,
+    );
+  }
+
+  const prototypeVary = new CachePolicy(
+    request(),
+    response({ "cache-control": "public, max-age=3600", vary: "constructor" }),
+    { shared: true },
+  );
+  assert.equal(
+    prototypeVary.satisfiesWithoutRevalidation(request()),
+    false,
+    "Vary names inherited from Object.prototype must fail closed when not real request headers",
+  );
+  assert.equal(
+    prototypeVary.evaluateRequest(request()).response,
+    undefined,
+    "Prototype-colliding Vary names must not produce a cache hit from inherited properties",
+  );
+
+  const explicitPrototypeHeader = new CachePolicy(
+    request("", { constructor: "alpha" }),
+    response({ "cache-control": "public, max-age=3600", vary: "constructor" }),
+    { shared: true },
+  );
+  assert.equal(
+    explicitPrototypeHeader.satisfiesWithoutRevalidation(request("", { constructor: "alpha" })),
+    true,
+    "An explicit own header named constructor may match an identical explicit own header",
+  );
+  assert.equal(
+    explicitPrototypeHeader.satisfiesWithoutRevalidation(request("", { constructor: "beta" })),
+    false,
+    "Explicit own prototype-colliding headers must still compare by value",
+  );
 } finally {
   Date.now = now;
 }
 
-console.log("http-cache-semantics max-stale security regression: passed");
+console.log("http-cache-semantics security regressions: passed");

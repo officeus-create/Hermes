@@ -35,7 +35,10 @@ for (const funnel of seoFunnels) {
       funnel.href,
     );
     await expect(page.getByRole("link", { name: funnel.supporting })).toHaveAttribute("href", funnel.href);
-    await expect(page.getByText(/automatically (?:send|sent|sending).*stor/i)).toBeVisible();
+    const intakeNote = page.locator(".digital-project-note");
+    await expect(intakeNote).toContainText("accepted for delivery, not human receipt or qualification");
+    await expect(intakeNote).toContainText("Preview environments remain non-sending");
+    await expect(intakeNote).not.toContainText(/automatically (?:send|sent|sending).*stor/i);
     await expect(page.locator('select[name="path"]')).toHaveValue("ProgressoPro");
     await expect(page.locator("[data-website-project-cta]")).toHaveCount(0);
   });

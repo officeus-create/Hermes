@@ -490,17 +490,35 @@ module.exports = class CachePolicy {
             return true;
         }
 
-        // A Vary header field-value of "*" always fails to match
-        if (this._resHeaders.vary === '*') {
-            return false;
-        }
-
         const fields = this._resHeaders.vary
             .trim()
             .toLowerCase()
             .split(/\s*,\s*/);
+
+        // RFC 9111: a Vary field-value containing "*" never matches.
+        // Parse the field list before checking so whitespace or mixed lists
+        // such as "Accept-Encoding, *" cannot bypass the wildcard rule.
+        if (fields.includes('*')) {
+            return false;
+        }
+
+        const hasOwn = (headers, name) =>
+            Object.prototype.hasOwnProperty.call(headers, name);
+
         for (const name of fields) {
-            if (req.headers[name] !== this._reqHeaders[name]) return false;
+            // Header names that collide with Object.prototype (for example
+            // "constructor") must never match through inherited properties.
+            // If either side omitted such a header, fail closed and revalidate.
+            if (
+                Object.prototype.hasOwnProperty.call(Object.prototype, name) &&
+                (!hasOwn(req.headers, name) || !hasOwn(this._reqHeaders, name))
+            ) {
+                return false;
+            }
+
+            const incoming = hasOwn(req.headers, name) ? req.headers[name] : undefined;
+            const stored = hasOwn(this._reqHeaders, name) ? this._reqHeaders[name] : undefined;
+            if (incoming !== stored) return false;
         }
         return true;
     }

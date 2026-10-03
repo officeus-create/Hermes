@@ -14,6 +14,21 @@ const checkIntake = async (page: Page, mode: "live" | "preview") => {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 };
 
+test("SEO service page source copy matches the production intake boundary", async ({ page }) => {
+  await page.goto("/services/seo/");
+
+  const note = page.locator(".digital-project-note");
+  await expect(note).toContainText("On production, the form submits the request through the Hermes intake");
+  await expect(note).toContainText("accepted for delivery, not human receipt or qualification");
+  await expect(note).toContainText("Preview environments remain non-sending");
+  await expect(note).not.toContainText("answers are not automatically sent or stored");
+
+  await expect(page.locator('a[data-seo-service-cta]').first()).toHaveAttribute(
+    "href",
+    "/paths/marketing/?service=seo#contact",
+  );
+});
+
 test("SEO preview explains the explicit handoff at 390px", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.goto("/paths/marketing/?service=seo#contact");

@@ -59,16 +59,15 @@
     "test:internal-ai-eval": "python3 scripts/ai/hermes-internal-ai-eval.test.py && node --experimental-strip-types scripts/internal-ai-approval-state.test.mjs",
     "test:cold-fair-outbound-guard": "node scripts/cold-fair-outbound-guard.test.mjs",
     "test:threads-brand-connector": "node scripts/threads-brand-connector.test.mjs",
-    "test:business-social-connectors": "node scripts/business-social-connectors.test.mjs",
-    "test:http-cache-semantics-security": "node scripts/http-cache-semantics-security.test.mjs"
+    "test:business-social-connectors": "node scripts/business-social-connectors.test.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^8.5.0",
     "@lucide/astro": "^1.24.0",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "7.2.8",
-    "tailwindcss": "^4.3.2",
-    "http-cache-semantics": "file:vendor/http-cache-semantics"
+    "http-cache-semantics": "file:vendor/http-cache-semantics",
+    "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",

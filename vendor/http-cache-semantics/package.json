@@ -1,17 +1,15 @@
 {
-    "name": "http-cache-semantics",
-    "version": "4.2.1-hermes.0",
-    "description": "Hermes-vendored security patch for GHSA-ch52-4w7c-c8xp; upstream 4.2.0 plus max-stale shared-cache reuse guard",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/kornelski/http-cache-semantics.git"
-    },
-    "main": "index.js",
-    "types": "index.js",
-    "files": [
-        "index.js"
-    ],
-    "author": "Kornel Lesi\u0144ski <npms2@geekhood.net> (https://kornel.ski/)",
-    "license": "BSD-2-Clause",
-    "private": true
+  "name": "http-cache-semantics",
+  "version": "4.2.1-hermes.1",
+  "description": "Hermes-vendored security patch for CVE-2026-93748 and CVE-2026-93750; upstream 4.2.0 plus max-stale and Vary wildcard guards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kornelski/http-cache-semantics.git"
+  },
+  "main": "index.js",
+  "types": "index.js",
+  "files": ["index.js"],
+  "author": "Kornel Lesiński <npms2@geekhood.net> (https://kornel.ski/)",
+  "license": "BSD-2-Clause",
+  "private": true
 }
