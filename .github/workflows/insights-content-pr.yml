@@ -30,19 +30,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          allowed='^(src/data/insights\.generated\.json|public/sitemap-insights\.xml|docs/release-manifest-deltas/2026-09-14-hermes-insights-blog\.json)$'
           changed="$(git diff --name-only origin/main...HEAD)"
           if [ -z "$changed" ]; then
             echo "No unpublished Insights delta; PR already merged or no content generated."
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          while IFS= read -r file; do
-            if ! [[ "$file" =~ $allowed ]]; then
-              echo "Blocked automation change outside generated Insights scope: $file"
-              exit 1
-            fi
-          done <<< "$changed"
+          # Blocked automation change outside generated Insights scope fails closed.
+          # Execute the standalone validator from trusted main, not content HEAD.
+          git show origin/main:scripts/insights-content-scope.mjs > "$RUNNER_TEMP/insights-content-scope.mjs"
+          node "$RUNNER_TEMP/insights-content-scope.mjs" origin/main HEAD
           echo "$changed"
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
