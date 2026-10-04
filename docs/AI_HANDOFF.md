@@ -1403,3 +1403,10 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Evidence boundary: these visuals explain workflows; they do not claim live logistics telemetry, campaign performance, autonomous AI actions, learner outcomes, conversion lift or revenue.
 - Release gate: draft/review only. Require exact-head build/static/browser/visual checks, 1440px + 390px preview inspection, then explicit owner approval before merge/deploy. `MERGED != DEPLOYED != LIVE_VERIFIED`.
 
+
+
+### Design V4 exact-head QA correction — 2026-10-04
+- Canonical implementation lane: PR #1666 only.
+- Preserved accepted Home stage geometry: 34px desktop, 26px mobile while mobile remains a one-column sequence.
+- Generalized finite-motion restart to each motion layer's owning pillar; removed the stale truck-only restart assumption without weakening tests.
+- Release remains gated on fresh exact-head Website checks, quality/security audit, visual evidence and production readback.
