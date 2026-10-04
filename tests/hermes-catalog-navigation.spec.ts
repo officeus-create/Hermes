@@ -30,11 +30,53 @@ test("Catalog search filters the server-rendered evidence-backed profiles", asyn
   const input = page.locator("[data-catalog-input]");
   await input.fill("diesel");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(6);
-  await expect(page.locator("[data-catalog-count]")).toHaveText("6 searchable entries");
+  await expect(page.locator("[data-catalog-count]")).toHaveText("6 matching Catalog entries across business profiles, Hermes services, and strategy examples");
   await expect(page.getByRole("heading", { level: 3, name: "DieselHub Service Inc" })).toBeVisible();
   await input.fill("Sherwood");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 3, name: "Sean's AutoPro Mobile" })).toBeVisible();
+});
+
+test("Catalog keeps live Hermes Connect business facets consistent with the rendered business grid", async ({ page }) => {
+  await page.route("**/api/catalog/companies", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        count: 1,
+        companies: [{
+          id: "repair-shop-crm:test-kittle",
+          companyName: "Kittle's Garage",
+          companyType: "repair_shop",
+          city: "North Little Rock",
+          state: "AR",
+          countryCode: "US",
+          source: "repair_shop_crm",
+          profileUrl: "/businesses/connect/repair-shop/kittle-s-garage-a146544/",
+          services: ["Brake inspection", "Computer & Engine Diagnostics"],
+          verificationLabel: "Self-submitted · verification pending",
+        }],
+      }),
+    });
+  });
+
+  await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { level: 3, name: "Kittle's Garage" })).toBeVisible();
+
+  await expect(page.locator("[data-catalog-business-count]").first()).toHaveText("16");
+  const category = page.locator('.category-grid [data-catalog-query="Auto Repair"]');
+  await expect(category).toContainText("2 profiles");
+
+  const arkansas = page.locator(".tile-map .state-tile").filter({
+    has: page.locator("strong", { hasText: /^AR$/ }),
+  });
+  await expect(arkansas).toContainText("5");
+  await expect(arkansas).toHaveAttribute("aria-label", "Arkansas: 5 business profiles");
+
+  await category.click();
+  await expect(page.locator("[data-catalog-input]")).toHaveValue("Auto Repair");
+  await expect(page.getByRole("heading", { level: 3, name: "Kittle's Garage" })).toBeVisible();
 });
 
 test("Catalog preserves evidence boundaries and free owner activation path", async ({ page }) => {
