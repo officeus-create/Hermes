@@ -1388,3 +1388,31 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Source review after #1664 identified three acceptance defects despite green CI: the visible own-truck-and-trailer wording conflicted with Power Only; the separate 100Hires employer page reported no active postings; and build-time expiry had been described too strongly as automatic.
 - The bounded follow-up preserves the exact live vacancy and public recruiting phone, states that the operator must own a commercial truck while trailer/Power Only eligibility is verified individually, relabels the employer-page link as a reference with its observed empty state, and explains that the review date is recalculated on site builds rather than changing static HTML by itself.
 - No external listing, form submission, homepage design, payment, account, application or recruiting decision changes. Run focused static/browser checks and exact-head release gates before a second owner-authorized merge/deploy; do not call #1664 production accepted until the correction is live and read back.
+
+## 2026-10-04 — ChatGPT — current-main corporate Home slice
+
+- Owner directive: implement the refined Hermes corporate visual direction on top of the current production architecture, without replacing the four canonical business directions.
+- Branch: `design/home-corporate-v4-main-20261004`, created from current `main` `f40bb88fcaa2e3a884ca4de8009d63bef2c2a593`.
+- Scope: `src/components/HomeMasterScene.astro` + focused Home browser coverage only; no backend, route, canonical, schema, analytics owner or production deploy.
+- Presentation rule implemented: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`.
+- Home changes:
+  - public shell uses the shared Pearl/Ink corporate foundation instead of the prior decorative gradient/script treatment;
+  - desktop retains four canonical pillars and direct route links;
+  - mobile 390–700px becomes four sequential chapters rather than a compressed 2×2 grid;
+  - Marketing visual explains Content → Search → Site → Inquiry;
+  - Technology visual explains Request → CRM → Auto → Receipt;
+  - Academy visual exposes Logistics / Sales / Marketing / Operations within the existing practice/review/progression story;
+  - Logistics now uses six owned aerial equipment scene pairs (car hauler, dry van, reefer, flatbed, step deck, hotshot) with restrained day/rain/snow/heat/cloud/dusk treatment; the scene rotates only while visible and stops to car-hauler under reduced motion.
+- Focused test coverage verifies the Pearl shell, all four purposeful scene grammars, six-state Logistics metadata/reduced-motion behavior, responsive owned asset loading, single-column 390px mobile layout and no horizontal overflow.
+- Logistics living-media note: the twelve owned Home asset derivatives (512/887 for six equipment states) were replayed onto this current-main branch through Git object/blob transfer, together with the matching media-provenance entries, without replaying stale donor code. Draft PR #1655 remains historical/donor evidence and is not a release dependency.
+- Design governance note: PR #1657 carries the matching V4 doctrine/progressive-disclosure rules. Do not create V5 or another design owner.
+- Evidence boundary: these visuals explain workflows; they do not claim live logistics telemetry, campaign performance, autonomous AI actions, learner outcomes, conversion lift or revenue.
+- Release gate: draft/review only. Require exact-head build/static/browser/visual checks, 1440px + 390px preview inspection, then explicit owner approval before merge/deploy. `MERGED != DEPLOYED != LIVE_VERIFIED`.
+
+
+
+### Design V4 exact-head QA correction — 2026-10-04
+- Canonical implementation lane: PR #1666 only.
+- Preserved accepted Home stage geometry: 34px desktop, 26px mobile while mobile remains a one-column sequence.
+- Generalized finite-motion restart to each motion layer's owning pillar; removed the stale truck-only restart assumption without weakening tests.
+- Release remains gated on fresh exact-head Website checks, quality/security audit, visual evidence and production readback.
