@@ -50,6 +50,7 @@ assert.match(licensing, /IBM Plex Mono/);
 assert.match(licensing, /Request licensing information/);
 
 const legal = await read("dist/legal-compliance/index.html");
+const legalSource = await read("src/pages/legal-compliance.astro");
 assert.match(legal, /Legal &amp; Compliance/);
 assert.match(legal, /Published now/);
 assert.match(legal, /Available on request/);
@@ -61,6 +62,10 @@ assert.match(legal, /Request data information/);
 assert.match(legal, /Request licensing information/);
 assert.match(legal, /Request terms before payment/);
 assert.match(legal, /Open privacy settings/);
+assert.match(legal, /site-header-light/);
+assert.match(legalSource, /background:radial-gradient\(circle at 84% 12%,rgba\(30,136,255,.10\),transparent 30rem\),#f7f6f3/);
+assert.match(legalSource, /background:#0b0d12; color:#fff/);
+assert.doesNotMatch(legalSource, /linear-gradient\(145deg,#07143d,#122b72/);
 
 const homepage = await read("dist/index.html");
 assert.match(homepage, /href="\/legal-compliance\/"/);
