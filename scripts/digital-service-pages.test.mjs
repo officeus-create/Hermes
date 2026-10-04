@@ -23,6 +23,9 @@ const routes = [
       "Does website development guarantee search rankings or leads?",
       "/services/seo-for-logistics-companies/",
       "/logistics/car-hauling-dispatch/",
+      "DEMO · SANITIZED",
+      "Semantic HTML",
+      "Production readback",
     ],
   },
   {
@@ -89,6 +92,7 @@ const schemaTypes = (html) => [...html.matchAll(/<script[^>]+type=["']applicatio
 const sitemap = await readFile(join(dist, "sitemap-digital-services.xml"), "utf8");
 const robots = await readFile(join(dist, "robots.txt"), "utf8");
 const home = await readFile(join(dist, "index.html"), "utf8");
+const websiteShowroomSource = await readFile(join(root, "src/components/WebsiteDevelopmentShowroom.astro"), "utf8");
 
 for (const page of routes) {
   const html = await readFile(join(dist, page.file), "utf8");
@@ -117,6 +121,9 @@ for (const page of routes) {
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-digital-services.xml"));
 assert.ok(home.includes('href="/services/website-development/"'), "homepage footer must link website development");
 assert.ok(home.includes('href="/services/seo/"'), "homepage footer must link SEO services");
+assert.ok(websiteShowroomSource.includes("DEMO · SANITIZED"), "website showroom must label its proof replay as demo/sanitized");
+assert.ok(websiteShowroomSource.includes("background: radial-gradient(circle at 80% 18%, rgba(26,115,232,.24)"), "website showroom may keep one bounded dark product-theatre scene");
+assert.ok(!websiteShowroomSource.includes("linear-gradient(145deg,#07143d,#122b72"), "website showroom must not restore the retired blue microsite shell");
 
 const serialized = routes.map((page) => page.required.join(" ")).join(" ").toLowerCase();
 for (const prohibited of ["guaranteed rankings", "guaranteed leads", "guaranteed revenue", "guaranteed roi"]) {
