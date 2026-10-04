@@ -906,14 +906,12 @@ class CarHaulingDeliveryCoordinatorCore {
 const worker = {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (!["/v1/send", "/v1/send-contract", "/v1/send-account"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
-    if (request.method !== "POST") return json(405, { ok: false, error: "method_not_allowed" });
+    const isCapabilitiesPath = url.pathname === "/v1/capabilities";
+    if (!["/v1/send", "/v1/send-contract", "/v1/send-account", "/v1/capabilities"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
+    if ((isCapabilitiesPath && request.method !== "GET") || (!isCapabilitiesPath && request.method !== "POST")) {
+      return json(405, { ok: false, error: "method_not_allowed" });
+    }
 
-    const isAccountPath = url.pathname === "/v1/send-account";
-    const accountTransportMode = clean(env.ACCOUNT_EMAIL_TRANSPORT, 40).toLowerCase() || "cloudflare";
-    const accountUsesGmail = isAccountPath && accountTransportMode === "gmail_api";
-    const serviceConfigurationMissing = !env.SALES_SENDER || (!accountUsesGmail && !env.EMAIL)
-      || (isAccountPath && !["cloudflare", "gmail_api"].includes(accountTransportMode));
     if (!env.LEAD_SERVICE_TOKEN) {
       return json(503, { ok: false, error: "service_not_configured" });
     }
@@ -921,6 +919,13 @@ const worker = {
     const authorization = request.headers.get("Authorization") || "";
     const authorized = await constantTimeEqual(authorization, `Bearer ${env.LEAD_SERVICE_TOKEN}`);
     if (!authorized) return json(401, { ok: false, error: "unauthorized" });
+    if (isCapabilitiesPath) return json(200, { ok: true, catalog_delivery_receipt_contract: "v1" });
+
+    const isAccountPath = url.pathname === "/v1/send-account";
+    const accountTransportMode = clean(env.ACCOUNT_EMAIL_TRANSPORT, 40).toLowerCase() || "cloudflare";
+    const accountUsesGmail = isAccountPath && accountTransportMode === "gmail_api";
+    const serviceConfigurationMissing = !env.SALES_SENDER || (!accountUsesGmail && !env.EMAIL)
+      || (isAccountPath && !["cloudflare", "gmail_api"].includes(accountTransportMode));
 
     if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
       return json(415, { ok: false, error: "content_type_required" });
