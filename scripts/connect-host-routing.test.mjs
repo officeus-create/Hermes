@@ -184,6 +184,19 @@ for (const origin of ["https://www.hermeslogisticsus.com", "http://www.hermeslog
 }
 
 {
+  const robots = "User-agent: *\\nAllow: /\\n";
+  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/robots.txt", {
+    body: robots,
+    contentType: "text/plain; charset=utf-8",
+  });
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), robots);
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000");
+  assert.equal(observed.assetRequests[0].pathname, "/robots.txt");
+}
+
+{
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/sw.js", { body: "self.addEventListener('fetch',()=>{});", contentType: "text/javascript" });
   await routeMiddleware(context);
   assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/sw.js");
