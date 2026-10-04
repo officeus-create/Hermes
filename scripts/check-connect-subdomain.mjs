@@ -1,8 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { classifyConnectObservations } from "./connect-subdomain-verifier.mjs";
+import {
+  classifyConnectObservations,
+  classifyConnectRootAssetObservations,
+  connectVerificationExitCode,
+} from "./connect-subdomain-verifier.mjs";
 
 const targetUrl = "https://connect.hermeslogisticsus.com/";
+const robotsUrl = new URL("/robots.txt", targetUrl).toString();
 const outputDir = path.resolve("artifacts");
 const allowedExpectations = new Set(["isolation", "release_pending", "approved_web_app"]);
 const requestedExpectation = process.env.CONNECT_EXPECTATION || "isolation";
@@ -36,13 +41,13 @@ const previousMarkers = [
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-async function fetchPublic() {
+async function fetchPublic(url, accept = "text/html,application/xhtml+xml") {
   const startedAt = Date.now();
   try {
-    const response = await fetch(targetUrl, {
+    const response = await fetch(url, {
       redirect: "follow",
       headers: {
-        accept: "text/html,application/xhtml+xml",
+        accept,
         "cache-control": "no-cache",
         pragma: "no-cache",
         "user-agent": "HermesConnectReleaseVerifier/1.3 (+public read-only deployment check)",
@@ -74,8 +79,12 @@ async function fetchPublic() {
 }
 
 const observations = [];
+const rootAssetObservations = [];
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
-  const fetched = await fetchPublic();
+  const [fetched, robotsFetched] = await Promise.all([
+    fetchPublic(targetUrl),
+    fetchPublic(robotsUrl, "text/plain,*/*;q=0.8"),
+  ]);
   const liveWebAppMarkers = Object.fromEntries(webAppMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
   const oldMarkers = Object.fromEntries(previousMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
   const title = fetched.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null;
@@ -93,10 +102,21 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
     previousMarkers: oldMarkers,
     error: fetched.error,
   });
+  rootAssetObservations.push({
+    attempt,
+    checkedAt: new Date().toISOString(),
+    status: robotsFetched.status,
+    finalUrl: robotsFetched.finalUrl,
+    contentType: robotsFetched.contentType,
+    durationMs: robotsFetched.durationMs,
+    body: robotsFetched.body,
+    error: robotsFetched.error,
+  });
   if (attempt < attempts) await sleep(delayMs);
 }
 
 const verification = classifyConnectObservations(observations, expectation);
+const rootAssetVerification = classifyConnectRootAssetObservations(rootAssetObservations);
 const { classification } = verification;
 
 const result = {
@@ -106,13 +126,18 @@ const result = {
   classification,
   verification,
   observations,
+  rootAsset: {
+    targetUrl: robotsUrl,
+    verification: rootAssetVerification,
+    observations: rootAssetObservations,
+  },
   boundaries: {
     publicGetOnly: true,
     noFormsSubmitted: true,
     noCookiesUsed: true,
     noCredentialsUsed: true,
     noPrivateDataCollected: true,
-    note: "This check identifies public HTML markers only. It does not reveal Cloudflare account, project, route, deployment, binding, or secret identifiers.",
+    note: "This check identifies public HTML markers and the public Connect robots root asset only. It does not reveal Cloudflare account, project, route, deployment, binding, or secret identifiers.",
   },
 };
 
@@ -123,6 +148,7 @@ await fs.writeFile(
 );
 
 const last = observations.at(-1);
+const lastRootAsset = rootAssetObservations.at(-1);
 const networkNote = verification.networkFailureCount > 0
   ? ` ${verification.networkFailureCount} transient fetch failure(s) were tolerated because ${verification.healthyCount}/${verification.totalCount} observations were healthy and consistent (required: ${verification.requiredHealthyCount}).`
   : "";
@@ -141,6 +167,11 @@ const interpretation = classification === "LIVE_APPROVED_WEB_APP"
         : classification === "UNRESOLVED_NETWORK_ACCESS"
           ? `- Only ${verification.healthyCount}/${verification.totalCount} requests were healthy; at least ${verification.requiredHealthyCount} healthy observations are required before a deployment conclusion is safe.`
           : "- The subdomain returned enough healthy responses, but at least one healthy response contained unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.";
+const rootAssetInterpretation = rootAssetVerification.classification === "ROOT_ASSET_HEALTHY"
+  ? "- Connect `/robots.txt` serves the expected root crawl-control asset with quorum."
+  : expectation === "approved_web_app"
+    ? "- Connect `/robots.txt` is not release-healthy. The approved-main verifier must fail until the root asset is live."
+    : "- Connect `/robots.txt` is not release-healthy in the current pre-release state; the approved-main verifier will enforce it after release.";
 
 const markdown = [
   "# Hermes Connect custom-domain verification",
@@ -151,6 +182,10 @@ const markdown = [
   `- Classification: **${classification}**`,
   `- Healthy observations: **${verification.healthyCount}/${verification.totalCount}** (required: ${verification.requiredHealthyCount})`,
   `- Transient network failures: **${verification.networkFailureCount}**`,
+  `- Root-asset classification: **${rootAssetVerification.classification}**`,
+  `- Healthy robots observations: **${rootAssetVerification.healthyCount}/${rootAssetVerification.totalCount}** (required: ${rootAssetVerification.requiredHealthyCount})`,
+  `- Last robots status: ${lastRootAsset?.status ?? "unavailable"}`,
+  `- Last robots final URL: ${lastRootAsset?.finalUrl ?? "unavailable"}`,
   `- HTTP status: ${last?.status ?? "unavailable"}`,
   `- Final URL: ${last?.finalUrl ?? "unavailable"}`,
   `- Last observed title: ${last?.title ?? "unavailable"}`,
@@ -159,12 +194,19 @@ const markdown = [
   "## Interpretation",
   "",
   interpretation,
+  rootAssetInterpretation,
   "",
   "## Observations",
   "",
   "| Attempt | Status | Title | Web App marker visible | Previous marker visible |",
   "| ---: | ---: | --- | --- | --- |",
   ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.webAppMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
+  "",
+  "## Connect robots observations",
+  "",
+  "| Attempt | Status | Final URL | Content type |",
+  "| ---: | ---: | --- | --- |",
+  ...rootAssetObservations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.finalUrl ?? "—"} | ${observation.contentType ?? "—"} |`),
   "",
   "> Read-only public verification. No application, account, booking, payment, subscription, cookie, credential, or private infrastructure identifier was created or accessed.",
   "",
@@ -173,8 +215,8 @@ const markdown = [
 await fs.writeFile(path.join(outputDir, "connect-subdomain-isolation.md"), markdown);
 console.log(markdown);
 
-if (classification === "UNRESOLVED_NETWORK_ACCESS") process.exitCode = 3;
-if (classification === "LIVE_UNKNOWN_CONTENT") process.exitCode = 5;
-if (classification === "LIVE_MIXED_CONNECT_STATE") process.exitCode = 6;
-if (expectation === "isolation" && classification === "LIVE_PR_HEAD_EXPOSED") process.exitCode = 2;
-if (expectation === "approved_web_app" && classification !== "LIVE_APPROVED_WEB_APP") process.exitCode = 4;
+process.exitCode = connectVerificationExitCode({
+  expectation,
+  classification,
+  rootAssetClassification: rootAssetVerification.classification,
+});

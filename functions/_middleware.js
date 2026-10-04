@@ -162,6 +162,10 @@ function canonicalConnectCompatibilityRedirect(incomingUrl) {
 }
 
 function connectAssetPath(pathname) {
+  if (pathname === "/robots.txt") {
+    return pathname;
+  }
+
   if (ACCESS_DOCUMENTS.has(pathname)) {
     return `${CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
   }

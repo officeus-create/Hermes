@@ -1,4 +1,10 @@
 const hasMarker = (markers) => Object.values(markers ?? {}).some(Boolean);
+const CONNECT_ROBOTS_URL = "https://connect.hermeslogisticsus.com/robots.txt";
+const APEX_SITEMAP_INDEX_URL = "https://hermeslogisticsus.com/sitemapindex.xml";
+
+function requiredHealthyObservationCount(totalCount) {
+  return Math.min(totalCount, Math.max(3, Math.ceil(totalCount * 0.8)));
+}
 
 export function classifyConnectObservations(observations, expectation) {
   if (!Array.isArray(observations) || observations.length === 0) {
@@ -8,10 +14,7 @@ export function classifyConnectObservations(observations, expectation) {
   const healthyObservations = observations.filter(
     (observation) => observation?.status === 200 && !observation?.error,
   );
-  const requiredHealthyCount = Math.min(
-    observations.length,
-    Math.max(3, Math.ceil(observations.length * 0.8)),
-  );
+  const requiredHealthyCount = requiredHealthyObservationCount(observations.length);
   const networkFailureCount = observations.length - healthyObservations.length;
 
   const anyWebAppVisible = healthyObservations.some((observation) => hasMarker(observation.webAppMarkers));
@@ -46,4 +49,44 @@ export function classifyConnectObservations(observations, expectation) {
     requiredHealthyCount,
     totalCount: observations.length,
   };
+}
+
+export function classifyConnectRootAssetObservations(observations) {
+  if (!Array.isArray(observations) || observations.length === 0) {
+    throw new Error("Connect root-asset verification requires at least one observation.");
+  }
+
+  const healthyObservations = observations.filter((observation) => (
+    observation?.status === 200
+    && !observation?.error
+    && observation?.finalUrl === CONNECT_ROBOTS_URL
+    && observation?.contentType?.toLowerCase().startsWith("text/plain")
+    && /^User-agent:\s*\*/mi.test(observation?.body ?? "")
+    && (observation?.body ?? "").includes(`Sitemap: ${APEX_SITEMAP_INDEX_URL}`)
+  ));
+  const requiredHealthyCount = requiredHealthyObservationCount(observations.length);
+
+  return {
+    classification: healthyObservations.length >= requiredHealthyCount
+      ? "ROOT_ASSET_HEALTHY"
+      : "ROOT_ASSET_UNHEALTHY",
+    healthyCount: healthyObservations.length,
+    failureCount: observations.length - healthyObservations.length,
+    requiredHealthyCount,
+    totalCount: observations.length,
+  };
+}
+
+export function connectVerificationExitCode({
+  expectation,
+  classification,
+  rootAssetClassification,
+}) {
+  if (classification === "UNRESOLVED_NETWORK_ACCESS") return 3;
+  if (classification === "LIVE_UNKNOWN_CONTENT") return 5;
+  if (classification === "LIVE_MIXED_CONNECT_STATE") return 6;
+  if (expectation === "isolation" && classification === "LIVE_PR_HEAD_EXPOSED") return 2;
+  if (expectation === "approved_web_app" && classification !== "LIVE_APPROVED_WEB_APP") return 4;
+  if (expectation === "approved_web_app" && rootAssetClassification !== "ROOT_ASSET_HEALTHY") return 7;
+  return 0;
 }
