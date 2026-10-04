@@ -23,11 +23,11 @@ for (const [name, token] of [
 ]) {
   assert(divisions.includes(token), `${name}: approved division token must drive the public path.`);
 }
-assert(divisions.includes(".detail-hero::before"), "Division color must create visible hero atmosphere, not only a tiny badge tint.");
-assert(divisions.includes(".detail-hero .button-primary"), "Division color must reach the primary hero CTA.");
-assert(divisions.includes(".detail-hero > img.detail-hero-media"), "Division color must reach hero media framing/glow.");
-assert(divisions.includes(".offering-grid article:hover"), "Division identity must continue into interactive content cards.");
-assert(divisions.includes(".hermes-connect-banner-actions a"), "Division identity must continue into the Hermes Connect CTA surface.");
+assert(divisions.includes("QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY"), "Public direction styling must declare the V4 presentation rule.");
+assert(divisions.includes("background: var(--hermes-obsidian)"), "Public direction hero CTA must use the quiet corporate Hermes action, not a direction-colored gradient.");
+assert(divisions.includes(".detail-hero > img.detail-hero-media"), "Direction color may remain as restrained hero-media framing.");
+assert(divisions.includes(".offering-grid article:hover"), "Direction identity may remain as a restrained interactive card signal.");
+assert(divisions.includes(".hermes-connect-banner-actions a"), "The explicit Hermes Connect bridge remains a product-theatre surface.");
 
 assert(connect.includes("--hc-blue: #00a8ff"), "Hermes Connect must keep Hermes Blue #00A8FF.");
 assert(connect.includes("--hc-violet: #7c5cff"), "Hermes Connect must keep Iris Violet #7C5CFF.");
