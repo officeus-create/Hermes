@@ -50,6 +50,8 @@ assert(appleton.includes("Design V4: quiet corporate shell"), "Appleton styles m
 assert(appleton.includes("background: radial-gradient(circle at 84% 16%, rgba(30,136,255,.12), transparent 30rem), #f7f6f3"), "Appleton hero must keep a Pearl corporate shell with restrained Logistics signal.");
 assert(appleton.includes(".appleton-planning { background: #0b0d12; color: #fff; }"), "Appleton may keep one bounded Focus Ink planning scene.");
 assert(appleton.includes(".appleton-carrier-note { border-block: 1px solid rgba(11,13,18,.08); background: #f7f6f3; color: #0b0d12; }"), "Appleton must not stack a second dark reading section after the focus scene.");
+assert(appleton.includes(".appleton-service-page .button-primary { border-color: #0b0d12; background: #0b0d12; color: #fff; box-shadow: none; }"), "Appleton primary actions must keep Ink/white contrast on the Pearl shell.");
+assert(appleton.includes(".appleton-hero .logistics-audience-actions .button:not(.button-primary) { border: 1px solid rgba(11,13,18,.16); background: #fff; color: #0b0d12; }"), "Appleton secondary hero actions must remain readable on the Pearl shell.");
 assert(!appleton.includes("#07113c"), "Appleton must not restore the retired full dark-blue page shell.");
 
 console.log("Approved Hermes division and Connect color application contract passed.");
