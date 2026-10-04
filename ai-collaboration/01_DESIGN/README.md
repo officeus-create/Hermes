@@ -3,8 +3,8 @@
 Use this file as the first stop for design work. Do not infer current approval state from an old screenshot board or historical document before checking the status below.
 
 ## 1. Current production operating truth
-1. `HERMES_BRAND_SYSTEM_2_0.md` — current cross-Hermes visual operating baseline.
-2. `DESIGN_MASTER_BACKLOG.md` — active simple-to-complex execution queue and owner/access dependencies.
+1. `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` — current V4 cross-Hermes visual authority: One Hermes / Four Visual Engines.
+2. `DESIGN_MASTER_BACKLOG.md` — current bounded website visual-system execution queue and owner/access dependencies.
 3. `DESIGN_REGRESSION_CHECKLIST.md` — required visual PR validation rules.
 4. `DIVISION_COLOR_CONTRACT_2026-09-01.md` — exact four-direction semantic color mapping.
 5. `DESIGN_TOKEN_AUDIT_2026-09-01.md` — canonical CSS token ownership.
@@ -43,7 +43,7 @@ Examples:
 When two design documents conflict, use this precedence:
 1. explicit later owner decision;
 2. current production code/assets + verified merged evidence;
-3. `HERMES_BRAND_SYSTEM_2_0.md` / current contracts;
+3. `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 / current contracts;
 4. current-state audits;
 5. historical design documents;
 6. exploratory boards/agent suggestions.

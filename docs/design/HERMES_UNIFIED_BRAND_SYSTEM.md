@@ -4,6 +4,88 @@ Status: **CANONICAL / CURRENT**
 Owner: Hermes Brand / Product / Website  
 Design governance mirror: Google Drive `HERMES DESIGN CONSTITUTION V4 — CURRENT`
 
+
+## 0. Corporate presentation doctrine — owner refinement 2026-10-04
+
+Hermes public presentation follows one sequence:
+
+`QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`
+
+The corporate shell stays calm, neutral, readable and confident. Product/service moments may become cinematic, but only one focal scene owns attention at a time. The visitor should understand the business direction before reading detailed copy.
+
+Psychology:
+- show **what this direction does** before explaining every feature;
+- show **a causal workflow** before listing tools;
+- show **evidence / maturity state** before asking for trust;
+- reveal deeper services progressively instead of placing the full catalog in the first viewport;
+- premium is created by restraint, composition, typography, motion quality and truthful proof — not by more gradients, effects or colors.
+
+### Home four-pillar rule
+
+The existing `Four directions` architecture is retained. Each pillar becomes a living business world, not a colored card.
+
+**Logistics — space / movement**
+- aerial/top-down road composition with protected text space;
+- representative freight equipment may rotate (for example car hauler, dry van, reefer, flatbed, step deck, hotshot);
+- environment may move through daylight, sunset/night, rain, wet-road reflection, snow/cloud/heat or roadside atmosphere;
+- scene changes explain freight diversity and movement, never fabricated live fleet/traffic/telemetry.
+
+**Marketing — attention / demand**
+- visualize business/source → content/search/social distribution → site action → attributed inquiry/qualification;
+- content surfaces and channel cues are secondary to the causal flow;
+- avoid logo confetti, generic influencer imagery and fabricated reach/lead counters.
+
+**Technology — information / systems**
+- visualize request/event → CRM/context → automation/system → human decision → receipt/outcome;
+- real Hermes Connect / Website Factory / QA patterns are preferred over generic code;
+- code may appear as one explanatory layer, never as the main proof of a technology company.
+
+**Academy — human capability**
+- visualize lesson/task → attempt/practice → review/correction → progression;
+- direction examples may rotate through Logistics, Sales, Marketing and Operations;
+- the visual story is capability growth, not generic graduation imagery.
+
+### Desktop disclosure
+
+Default state: direction, one-line promise and primary visual are readable without interaction.
+
+Hover/focus may reveal:
+1. 3–5 high-value capabilities;
+2. one short workflow;
+3. the next action.
+
+The semantic content remains in server-rendered markup. Hover is enhancement, never the only way to discover information.
+
+### Mobile adaptation
+
+Mobile is not a shrunken four-column desktop.
+
+- each direction becomes a clear sequential chapter/action;
+- use a static or short single-cycle scene rather than continuous heavy media;
+- keep the primary label, promise and CTA visible without hover;
+- secondary capability detail opens progressively;
+- preserve 44px touch targets, no horizontal overflow and reduced-motion equivalence.
+
+### Hermes Connect mobile operating rule
+
+Hermes Connect prioritizes work completion over spectacle.
+
+Light-first mobile navigation should converge on the smallest useful decision layer:
+- **Today** — what needs attention now;
+- **Inbox** — incoming work/signals;
+- **Customers** — customer/company context;
+- **Calendar** — time-bound work;
+- **More** — secondary modules/settings;
+- **Ask Hermes** — contextual intelligence entry, available without dominating the workspace.
+
+Rules:
+- do not expose every module simultaneously in the primary mobile navigation;
+- object detail opens on demand;
+- filters/actions use compact drawers/bottom sheets/context menus where appropriate;
+- dense Sales/Marketing/Finance/Operations/Integrations/Academy controls remain secondary until relevant;
+- one object, one current state, one primary next action per mobile decision surface.
+
+
 ## One Hermes / Four Visual Engines
 
 Hermes is one technology ecosystem. Logistics, Marketing, Technology and Academy are not four unrelated websites and must not become four copies of the same template with different accent colors.
@@ -568,3 +650,49 @@ The design system should compound proof:
 `FACT / RESULT → EVIDENCE → WEBSITE OWNER / CASE STUDY / INSIGHT → SOCIAL DERIVATIVES → ATTRIBUTED RETURN → NEW BUSINESS EVIDENCE`
 
 Customer case studies require real permission and bounded claims. Internal releases may become public technology proof after sanitization.
+
+## 26. WOW WITH PURPOSE gate
+
+Hermes does not optimize for the maximum number of effects. A high-cost visual or motion treatment must explain at least one of the four canonical movements:
+
+1. **Space** — Logistics: route, distance, equipment, capacity, location or operational movement.
+2. **Attention** — Marketing: content, search, distribution, traffic, lead or attribution movement.
+3. **Information** — Technology: input, data, API, AI processing, system state, build/deploy or output movement.
+4. **Capability** — Academy: learning, practice, feedback, score, responsibility or career-progress movement.
+
+If a proposed animation, video, 3D object, particle field, parallax treatment or generated scene explains none of these, remove it or keep it in prototype-only exploration.
+
+A page may still use quiet editorial or human media without animation. “No signature scene” is a valid design decision for editorial, legal, contact, auth and utility surfaces.
+
+## 27. Capability-showroom requirement for Web Design / Website Development
+
+Web Design and Website Development are not ordinary agency brochure pages. They are public proof surfaces for Hermes' own design and engineering practice.
+
+The visitor should be able to see, without exposing private data:
+
+- visual-system thinking and component discipline;
+- responsive behavior;
+- accessibility and reduced-motion behavior;
+- semantic HTML and structured content;
+- build/test/visual-QA evidence;
+- SEO/GEO/entity/internal-link architecture;
+- approved deployment/measurement flow;
+- current truthful automation/connectors only when their maturity state is clearly labeled.
+
+The public page may demonstrate a sanitized deterministic replay of Website Factory / build / QA / distribution logic. It must not expose private owner drafts, credentials, customer records or unverified live integrations.
+
+## 28. Tool/provider resilience
+
+Creative SaaS tools accelerate asset creation; they are not a runtime dependency or design authority.
+
+When access, credits or a provider capability ends:
+
+1. preserve the approved Hermes-owned output and its provenance where licensing allows;
+2. identify the design function that is actually needed, not the provider brand;
+3. search maintained open-source/GitHub alternatives with commercially compatible licensing;
+4. prefer native HTML/CSS/SVG/Web APIs when they can meet the requirement;
+5. prototype any new runtime in an isolated slice;
+6. verify mobile/Safari, accessibility, bundle/render cost and reduced-motion fallback;
+7. accept a static or simpler fallback rather than block release or ship unstable spectacle.
+
+Do not add an open-source repository merely because its demo looks impressive. The repository must solve a named Hermes design function and pass provenance/performance review.

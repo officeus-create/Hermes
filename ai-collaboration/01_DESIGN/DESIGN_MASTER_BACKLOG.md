@@ -1,6 +1,45 @@
 # Hermes Design — Master Backlog
 
-Last updated: 2026-09-04
+## CURRENT OWNER OVERRIDE — 2026-10-03
+
+**BOUNDED WEBSITE VISUAL-SYSTEM LANE = OPEN.** This supersedes the older `CLOSED / MAINTENANCE_ONLY` routing below only for the explicit owner-directed website visual-system work.
+
+This is NOT permission for an unbounded redesign and does not reopen historical Design 4/P4 experiments.
+
+Current execution scope:
+1. preserve the V4 shared Hermes system and #1551 information architecture;
+2. Home Master Scene + Logistics Spatial Operations master scene are the first representative pair;
+3. Web Design / Website Development become capability showrooms using sanitized truthful Hermes proof;
+4. then derive Marketing Attention & Demand, Technology Digital Systems and Academy Human Progress from the same V4 Scene Kit;
+5. exact-head CI + 390/430/768/1024/1440 visual QA + mobile/accessibility/performance + SEO/GEO non-regression are release gates;
+6. production propagation happens only after representative acceptance / LIVE_VERIFIED evidence.
+
+Do not create a second backlog. New visual/tool ideas go through `REFERENCE → PROTOTYPE → SELECTED → IMPLEMENTED → LIVE_VERIFIED → MEASURED → RETAIN/ITERATE/RETIRE`.
+
+Current design authority: `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 + One Brain / Drive current design constitution. Older closure text remains historical provenance for the prior bounded queue.
+
+
+
+### Owner implementation refinement — 2026-10-04
+
+The current website direction is now explicit:
+
+`QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`
+
+Execution continues through the existing V4 lane; do not create V5 or a second design backlog.
+
+1. **Home / Logistics first** — finish and independently verify PR #1655 living Logistics states on current evidence.
+2. **Home / Marketing** — causal attention→distribution→site action→evidence scene; no social-logo confetti.
+3. **Home / Technology** — real Hermes system replay (event→CRM/context→automation→human action→receipt); code is secondary.
+4. **Home / Academy** — lesson/task→practice→review→progression, with Logistics/Sales/Marketing/Operations examples.
+5. **Mobile Home** — sequential chapters, not a compressed desktop grid; no hover dependency.
+6. **Hermes Connect mobile** — progressive disclosure with Today / Inbox / Customers / Calendar / More and contextual Ask Hermes; light-first, task-first.
+7. Then migrate commercial page families incrementally using the same Scene Kit and evidence-state grammar.
+
+The visual differentiation of the four directions comes primarily from scene content, motion and information physics, not from four loud page-color themes.
+
+
+Last updated: 2026-10-04
 
 ## Queue state
 
