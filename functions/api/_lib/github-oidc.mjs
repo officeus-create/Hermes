@@ -21,6 +21,12 @@ const FIRST5_ACTIVATION_IDENTITY = {
   allowedEvents: new Set(["issue_comment"]),
 };
 
+const REPAIR_ACCESS_PROOF_IDENTITY = {
+  audience: "hermes-connect-repair-access-proof",
+  workflowRef: "officeus-create/Hermes/.github/workflows/repair-access-state-production-proof.yml@refs/heads/main",
+  allowedEvents: new Set(["issue_comment"]),
+};
+
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -62,6 +68,10 @@ export function validateGitHubCabinetAuditOidcClaims(claims, now = new Date()) {
 
 export function validateGitHubFirst5ActivationOidcClaims(claims, now = new Date()) {
   return validateClaimsForIdentity(claims, FIRST5_ACTIVATION_IDENTITY, now);
+}
+
+export function validateGitHubRepairAccessProofOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, REPAIR_ACCESS_PROOF_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -112,6 +122,10 @@ export async function verifyGitHubCabinetAuditOidcToken(token, now = new Date())
 
 export async function verifyGitHubFirst5ActivationOidcToken(token, now = new Date()) {
   return verifyGitHubOidcToken(token, validateGitHubFirst5ActivationOidcClaims, now);
+}
+
+export async function verifyGitHubRepairAccessProofOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubRepairAccessProofOidcClaims, now);
 }
 
 export function bearerToken(request) {
