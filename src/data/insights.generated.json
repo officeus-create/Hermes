@@ -1,5 +1,120 @@
 [
   {
+    "id": "meta-muse-small-business-september-2026",
+    "direction": "marketing",
+    "slug": "meta-muse-small-business-marketing-automation-september-2026",
+    "title": "Meta Muse for Small Business: What Marketers Should Control | Hermes Insights",
+    "description": "Meta announced Muse for Small Business on September 29, 2026, with connections to Facebook, Instagram and third-party business tools plus approval gates for publishing, sending and spending. Hermes translates the launch into a controlled marketing-automation checklist.",
+    "eyebrow": "Marketing Automation Update · September 2026",
+    "h1": "Meta says Muse can work across business tools. What should small businesses automate first?",
+    "conciseAnswer": "Meta announced Muse for Small Business on September 29, 2026 and says it can connect to Facebook and Instagram business accounts plus tools such as Canva, HighLevel, Shopify, Slack, Stripe, QuickBooks and others. Meta also says nothing publishes, sends or spends without the user's approval. The practical move is to test one bounded workflow with defined data access, permitted actions, human review and an owned KPI rather than turning an agent loose across the whole business.",
+    "explanation": [
+      "What changed: Meta announced Muse for Small Business on September 29, 2026. Meta says the product can connect to Instagram professional-account analytics, Facebook Pages and Meta ad accounts, as well as a wider set of business tools including Asana, Canva, HighLevel, Intuit QuickBooks, Klaviyo, Shopify, Slack, Stripe, Zoom and others. Meta's announcement also states that nothing publishes, sends or spends without user approval.",
+      "Why it matters: the important shift is not simply that another AI assistant exists. Small-business marketing operations are moving toward agents that can see context across multiple tools and propose or execute work. That can reduce handoff friction, but it also increases the need to define which data an agent may access, which actions it may take, where human approval is mandatory and which system remains the business source of truth. Historical Hermes marketing material contributes only the anonymized pattern that owned channels, controlled publishing and measurable handoffs matter; it is not used to claim current Meta capabilities.",
+      "What to do: choose one bounded workflow first. Examples include drafting responses to frequently asked questions, preparing a lead-qualification handoff, summarizing approved campaign data, or assembling a content brief from already-authorized sources. Define the connected data, the action boundary, the required approval step and one owned success metric such as qualified inquiries, completed appointments or another verified business outcome. Keep the website, CRM and analytics layer as independent evidence rather than treating agent activity as success by itself.",
+      "Result: a business can evaluate Muse as controlled infrastructure instead of a broad promise of more AI. The useful test is whether one approved workflow becomes faster or more reliable without weakening data governance or attribution. Meta's launch announcement is a product statement, not a guarantee of revenue, reach, lead volume or conversion improvement. Source/date: Meta Newsroom, September 29, 2026."
+    ],
+    "takeaways": [
+      "Meta announced Muse for Small Business on September 29, 2026",
+      "Meta says Muse can connect to Facebook and Instagram business surfaces plus multiple third-party business tools",
+      "Meta states that publishing, sending and spending require user approval",
+      "Start with one bounded workflow, explicit permissions, human review and an owned KPI"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect agent-assisted workflows to owned marketing, search visibility and measurable conversion.",
+        "href": "/paths/marketing/"
+      },
+      {
+        "title": "Hermes Technology",
+        "body": "Review the technology direction for governed automation, websites, CRM and business systems.",
+        "href": "/paths/technology/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "Keep customer records and workflow ownership separate from platform-level marketing automation.",
+        "href": "/hermes-connect/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "secondaryAction": {
+      "label": "Review Hermes Technology",
+      "href": "/paths/technology/"
+    },
+    "sourceLabel": "Meta Newsroom — The Future Is for Everyone: Muse for Small Business",
+    "sourceUrl": "https://about.fb.com/news/2026/09/introducing-muse-small-business/",
+    "sourcePublishedAt": "2026-09-29",
+    "datePublished": "2026-09-30",
+    "dateModified": "2026-09-30",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Meta Muse small business",
+      "AI marketing automation",
+      "Facebook Instagram business AI",
+      "small business AI agent",
+      "marketing workflow automation",
+      "Meta business agent"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta September 29 Muse for Small Business announcement",
+        "use": "primary",
+        "url": "https://about.fb.com/news/2026/09/introducing-muse-small-business/",
+        "observedAt": "2026-09-30",
+        "eventDate": "2026-09-29",
+        "notes": "Primary Meta source for the launch, listed connectors, business-account context and approval boundary for publish, send and spend actions."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for an anonymized operating pattern around owned channels, controlled publishing and measurable handoffs. No private messages, client data, credentials or commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing operating material",
+      "nowPeriod": "September 2026",
+      "summary": "Historical Hermes marketing work treated owned channels, controlled publishing and measurable handoffs as connected operating concerns; Meta's September 29 launch adds a current agent-and-connectors layer, while all current product capabilities come only from Meta's dated public announcement.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://about.fb.com/news/2026/09/introducing-muse-small-business/"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+13 search value",
+        "+9 internal-link fit"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
@@ -973,86 +1088,74 @@
     "id": "eia-diesel-route-planning-september-2026",
     "direction": "logistics",
     "slug": "diesel-price-route-planning-september-2026",
-    "title": "U.S. Diesel at $6.529/Gallon: Carrier Route Planning | Hermes",
-    "description": "EIA reported U.S. on-highway diesel at $6.529 per gallon for September 21, 2026, up $0.244 in one week. Hermes connects the latest fuel move to deadhead control, lane economics, and carrier rate decisions.",
+    "title": "U.S. Diesel Falls to $6.382/Gallon: Route Planning Update | Hermes",
+    "description": "EIA reported U.S. on-highway diesel at $6.382 per gallon for September 28, 2026, down $0.147 in one week but still $2.628 above a year earlier. Hermes updates the existing route-planning analysis without creating a duplicate fuel-price page.",
     "eyebrow": "Logistics Cost Update · September 2026",
-    "h1": "U.S. diesel reached $6.529 per gallon. What changes for carrier route planning?",
-    "conciseAnswer": "EIA reported the U.S. average on-highway diesel price at $6.529 per gallon for September 21, 2026, up $0.244 from $6.285 one week earlier and $2.780 above the year-earlier level. That does not create one universal rate target, but it makes empty miles, reload probability, route selection, timing, and fuel assumptions more important in every load decision.",
+    "h1": "Diesel eased to $6.382 per gallon after the prior week's spike. What should carriers change?",
+    "conciseAnswer": "EIA reported the U.S. on-highway diesel average at $6.382 per gallon for September 28, 2026, down $0.147 from the prior week but still $2.628 above a year earlier. The useful operating response is not to treat the weekly decline as a universal cost reset: regional prices still differed materially, so carriers should keep deadhead, fuel, tolls, timing, equipment fit and the likely next reload inside the same route-economics calculation.",
     "explanation": [
-      "What changed: the U.S. Energy Information Administration released its September 22 update with a national on-highway diesel average of $6.529 per gallon for September 21, up from $6.285 on September 14. The one-week increase was $0.244 per gallon, and the national average was $2.780 above the year-earlier level. Regional prices also remained materially different, so one national number should be treated as a cost benchmark rather than a lane quote.",
-      "Why it matters: fuel exposure compounds weak route decisions. Historical Hermes dispatch material repeatedly treated route planning, deadhead reduction, broker negotiation, pickup and delivery verification, and the next reload as connected operating decisions. With a higher fuel benchmark, an attractive loaded rate can still produce weak economics if the truck travels too far empty, lands in a weak reload area, waits through an inefficient appointment window, or must reposition again after delivery. The archive contributes the decision pattern only; no old promised rate, commission, earnings level, customer detail, or tool claim is reused as current truth.",
-      "What to do: calculate the movement as a route, not as a headline rate. Separate loaded miles from deadhead to pickup and likely repositioning after delivery. Use a current fuel assumption appropriate to the truck and route, then account for tolls, time, equipment fit, appointment risk, payment terms, and the quality of the next move. Where regional fuel prices differ substantially, update the route assumption instead of applying the national average mechanically.",
-      "Result: the carrier or dispatcher gets a repeatable operating decision instead of a reactive fuel rule. A counteroffer can be tied to actual route economics—empty-mile exposure, timing, equipment, destination and current fuel assumptions—rather than simply citing a national diesel headline. That makes the load review more defensible without claiming every broker, lane or customer should absorb the same adjustment.",
-      "Then versus now: Hermes historical operating material already emphasized reducing deadhead and understanding where the truck can go next. The September 21, 2026 EIA data increases the cost of getting those decisions wrong, but it does not change the method: verify the lane, model the full movement, compare realistic alternatives, negotiate from the operating picture, and re-check assumptions when fuel or market conditions move."
+      "What changed: EIA's September 29 release put the U.S. on-highway diesel average at $6.382 per gallon for September 28, down $0.147 from $6.529 one week earlier. The pullback came after a sharp two-week run-up, but the national average was still $2.628 above the year-earlier level. Regional direction was not uniform: the Gulf Coast fell $0.222 week over week, the Midwest fell $0.154, while the Rocky Mountain region rose $0.067.",
+      "Why it matters: one national fuel number can hide meaningful lane-level cost differences. A carrier operating between regions can face a different effective fuel burden depending on where the truck buys fuel, how much deadhead is required, where the delivery lands and what reload options exist there. Historical Hermes logistics material is used only for the anonymized operating pattern that route planning, deadhead control, negotiation and reload planning belong in one decision chain; no old rates, earnings, contacts or private commercial figures are carried forward as current facts.",
+      "What to do: refresh the fuel assumption in the load calculation with the current region or route, separate loaded miles from deadhead to pickup and repositioning after delivery, include tolls and time constraints, and compare the likely destination reload before accepting or countering. The weekly national decline is useful context, but it should not be interpreted as proof that every lane is suddenly cheaper to run.",
+      "Result: the carrier gets a current, repeatable route-economics check instead of reacting to the direction of one national headline. The September 29 EIA release supports an updated fuel input and shows why regional verification still matters. Source/date: U.S. Energy Information Administration, released September 29, 2026 for prices dated September 28, 2026."
     ],
     "takeaways": [
-      "EIA put the U.S. on-highway diesel average at $6.529 per gallon for September 21, up $0.244 week over week",
-      "The national average was $2.780 per gallon above the year-earlier level",
-      "High diesel prices increase the importance of deadhead and reload planning; they do not create one universal carrier rate",
-      "Evaluate the full movement: loaded miles, empty miles, fuel, tolls, timing, equipment fit, payment terms and the likely next load"
+      "EIA reported U.S. on-highway diesel at $6.382 per gallon for September 28, 2026",
+      "The national average fell $0.147 week over week but remained $2.628 above the year-earlier level",
+      "Regional moves differed: Gulf Coast and Midwest prices fell while the Rocky Mountain average rose",
+      "Use the current fuel number inside full route economics with deadhead, tolls, timing and reload probability"
     ],
     "faq": [
       {
-        "question": "Does $6.529 diesel mean every load rate should rise by the same amount?",
-        "answer": "No. The EIA figure is a national fuel-price benchmark, not a lane-specific rate instruction. The effect on a load depends on the truck, miles, deadhead, route, timing, equipment, tolls, reload options and other operating costs."
+        "question": "Does the $0.147 weekly diesel decline mean carriers should immediately lower every rate target?",
+        "answer": "No. EIA reports fuel prices, not freight rates. A real load decision still depends on lane demand, deadhead, tolls, timing, equipment, payment terms, operating costs and the next reload."
       },
       {
-        "question": "How much did the national diesel average change in one week?",
-        "answer": "EIA reported $6.529 per gallon for September 21, 2026 versus $6.285 on September 14, an increase of $0.244 per gallon."
+        "question": "Why use regional diesel prices instead of only the national average?",
+        "answer": "Because EIA's September 28 data showed different week-over-week movements by region. Route economics can therefore differ depending on where the truck buys fuel and where it operates."
       },
       {
-        "question": "Why does deadhead matter more when fuel is expensive?",
-        "answer": "Empty miles consume fuel and time without producing loaded revenue. When the fuel assumption rises, unnecessary positioning and weak reload planning can have a larger effect on the economics of the full trip."
-      },
-      {
-        "question": "What does the historical Hermes archive add to this update?",
-        "answer": "The archive shows that Hermes dispatch training and operations historically treated route planning, deadhead reduction, load fit and negotiation as connected decisions. It is used only as anonymized operating context; old rates, commissions, earnings claims and private details are not treated as current facts."
+        "question": "What historical Hermes evidence is used in this update?",
+        "answer": "Only the anonymized operating pattern that route planning, deadhead control, negotiation and reload planning are connected decisions. No private contacts, load details, historical rates, earnings claims or commercial guarantees are reused."
       }
     ],
     "related": [
       {
-        "title": "RPM calculator",
-        "body": "Use the Hermes rate-per-mile calculator as one input to a complete lane and cost review.",
+        "title": "RPM Calculator",
+        "body": "Use the current fuel assumption as one input in a full rate-per-mile and route-economics check.",
         "href": "/logistics/resources/rpm-calculator/"
       },
       {
         "title": "Owner-Operator Dispatch Support",
-        "body": "Review the Hermes owner-operator path for load review, route context and carrier decision support.",
+        "body": "Review the carrier operating path for load selection, route planning and dispatch support.",
         "href": "/logistics/owner-operator-dispatch-support/"
       },
       {
-        "title": "Car Hauler Capacity Checklist",
-        "body": "Prepare equipment, route, timing, authority and capacity details before evaluating car-hauling opportunities.",
-        "href": "/logistics/resources/car-hauler-capacity-checklist/"
-      },
-      {
-        "title": "Hermes Logistics",
-        "body": "Continue to the canonical Hermes Logistics direction and carrier resources.",
-        "href": "/paths/logistics/"
+        "title": "Hermes Load Board",
+        "body": "Use lane-level load evidence separately from national fuel-price context.",
+        "href": "/load-board/"
       }
     ],
     "primaryAction": {
-      "label": "Review RPM Calculator",
+      "label": "Open RPM Calculator",
       "href": "/logistics/resources/rpm-calculator/"
     },
     "secondaryAction": {
-      "label": "Explore Owner-Operator Support",
-      "href": "/logistics/owner-operator-dispatch-support/"
+      "label": "Explore Hermes Logistics",
+      "href": "/paths/logistics/"
     },
     "sourceLabel": "U.S. Energy Information Administration — Gasoline and Diesel Fuel Update",
     "sourceUrl": "https://www.eia.gov/petroleum/gasdiesel/",
-    "sourcePublishedAt": "2026-09-22",
+    "sourcePublishedAt": "2026-09-29",
     "datePublished": "2026-09-17",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-09-30",
     "authorName": "Hermes Editorial Team",
     "keywords": [
-      "diesel price 2026",
+      "diesel price September 2026",
       "truck fuel cost",
       "carrier route planning",
-      "deadhead reduction",
-      "owner operator load planning",
-      "diesel price per gallon",
-      "freight rate negotiation",
+      "deadhead cost",
+      "owner operator fuel cost",
       "EIA diesel price"
     ],
     "contentTier": "standalone",
@@ -1068,22 +1171,22 @@
         "label": "U.S. EIA weekly on-highway diesel price data",
         "use": "primary",
         "url": "https://www.eia.gov/petroleum/gasdiesel/",
-        "observedAt": "2026-09-23",
-        "eventDate": "2026-09-21",
-        "notes": "Current dated public source for national and regional diesel prices, released September 22, 2026."
+        "observedAt": "2026-09-30",
+        "eventDate": "2026-09-28",
+        "notes": "Primary dated source for the September 28 national and regional on-highway diesel prices, released September 29, 2026."
       },
       {
         "sourceId": "TG-002",
         "kind": "first_party_historical",
         "label": "Hermes historical logistics operating archive",
         "use": "context_only",
-        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, load selection and negotiation. No private chat details are republished."
+        "notes": "Anonymized historical pattern evidence for route planning, deadhead control, negotiation and reload planning. No private chat details, contacts, loads, rates or commercial figures are republished."
       }
     ],
     "historicalComparison": {
       "thenPeriod": "2021–2026 historical Hermes operating archive",
       "nowPeriod": "September 2026",
-      "summary": "Historical Hermes dispatch material emphasized route planning, deadhead control and negotiation; current EIA fuel data increases the cost sensitivity of those same operating decisions without making old commercial terms current.",
+      "summary": "Historical Hermes dispatch material treated route planning, deadhead control, negotiation and reload planning as connected decisions; EIA's September 29 fuel update refreshes the current cost input without making any historical commercial term current.",
       "evidenceSourceIds": [
         "TG-002",
         "PUBLIC-WEB-CURRENT"
@@ -1091,14 +1194,14 @@
       "currentVerificationUrl": "https://www.eia.gov/petroleum/gasdiesel/"
     },
     "publicationScore": {
-      "score": 97,
-      "recommendation": "standalone_historical",
+      "score": 85,
+      "recommendation": "standalone",
       "reasons": [
         "+20 freshness",
         "+20 source authority",
-        "+19 first-party evidence",
-        "+15 historical comparison",
-        "+13 search value",
+        "+15 first-party evidence",
+        "+10 historical comparison",
+        "+10 search value",
         "+10 internal-link fit"
       ]
     },
