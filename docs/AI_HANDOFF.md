@@ -1396,9 +1396,9 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
   - Marketing visual explains Content → Search → Site → Inquiry;
   - Technology visual explains Request → CRM → Auto → Receipt;
   - Academy visual exposes Logistics / Sales / Marketing / Operations within the existing practice/review/progression story;
-  - existing Logistics scene remains unchanged in this current-main slice so this PR does not depend on stale binary assets.
-- Focused test coverage verifies the Pearl shell, the three purposeful scene grammars, single-column 390px mobile layout and no horizontal overflow.
-- Logistics living-media note: the six owned aerial equipment/weather assets and deeper rotation remain isolated in draft PR #1655. That older branch is behind current main and is not a release dependency for this clean current-main slice; its assets should be replayed only after this shared shell is accepted and the binary lane is reconciled without overwriting newer main work.
+  - Logistics now uses six owned aerial equipment scene pairs (car hauler, dry van, reefer, flatbed, step deck, hotshot) with restrained day/rain/snow/heat/cloud/dusk treatment; the scene rotates only while visible and stops to car-hauler under reduced motion.
+- Focused test coverage verifies the Pearl shell, all four purposeful scene grammars, six-state Logistics metadata/reduced-motion behavior, responsive owned asset loading, single-column 390px mobile layout and no horizontal overflow.
+- Logistics living-media note: the twelve owned Home asset derivatives (512/887 for six equipment states) were replayed onto this current-main branch through Git object/blob transfer, together with the matching media-provenance entries, without replaying stale donor code. Draft PR #1655 remains historical/donor evidence and is not a release dependency.
 - Design governance note: PR #1657 carries the matching V4 doctrine/progressive-disclosure rules. Do not create V5 or another design owner.
 - Evidence boundary: these visuals explain workflows; they do not claim live logistics telemetry, campaign performance, autonomous AI actions, learner outcomes, conversion lift or revenue.
 - Release gate: draft/review only. Require exact-head build/static/browser/visual checks, 1440px + 390px preview inspection, then explicit owner approval before merge/deploy. `MERGED != DEPLOYED != LIVE_VERIFIED`.
