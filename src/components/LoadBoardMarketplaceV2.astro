@@ -188,7 +188,18 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       if (state.sort === "rpm") ordered.sort((a, b) => rowRpm(b) - rowRpm(a));
       if (state.sort === "lane") ordered.sort((a, b) => (a.textContent || "").localeCompare(b.textContent || ""));
       ordered.forEach((row) => container.appendChild(row));
-      if (resultCopy) resultCopy.textContent = `${visible} ${activeTab === "trucks" ? "truck" : "load"} rows match this view`;
+      if (resultCopy) {
+        const isPreview = (row: HTMLElement) => row.classList.contains("hlb-structural-preview") || row.classList.contains("lbv2-truck-preview");
+        const previewCount = ordered.filter(isPreview).length;
+        const liveCount = visible - previewCount;
+        const label = (count: number, kind: string) => `${count} ${kind} row${count === 1 ? "" : "s"}`;
+        const liveKind = `live ${activeTab === "trucks" ? "truck" : "load"}`;
+        resultCopy.textContent = liveCount && previewCount
+          ? `${label(liveCount, liveKind)} and ${label(previewCount, "preview")} match this view`
+          : previewCount || rows.every(isPreview)
+            ? `${label(previewCount, "preview")} ${previewCount === 1 ? "matches" : "match"} this view`
+            : `${label(liveCount, liveKind)} ${liveCount === 1 ? "matches" : "match"} this view`;
+      }
     };
 
     searchForm?.addEventListener("submit", (event) => { event.preventDefault(); applyFilters(); });
