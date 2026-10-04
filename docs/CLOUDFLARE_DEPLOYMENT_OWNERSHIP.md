@@ -82,7 +82,7 @@ Permanent rule:
 
 `GENERIC PREVIEW = DELIVERY OFF + PREVIEW KV + NO PRODUCTION D1 + NO PRODUCTION EMAIL SERVICE`
 
-Do not restore Production D1 to arbitrary PR Preview merely to eliminate `database_not_configured` or satisfy a QA checklist. D1-backed release acceptance belongs to bounded exact-main production synthetic/operator proof with cleanup and evidence under #960; #961 is closed. If a true staging database is required later, open a new current-state architecture task with an explicit trust/data/auth/secrets boundary.
+Do not restore Production D1 to arbitrary PR Preview merely to eliminate `database_not_configured` or satisfy a QA checklist. D1-backed release acceptance belongs to bounded exact-main production synthetic/operator proof with cleanup and evidence under #960; #961 is closed. The #960 proof uses a workflow-bound short-lived GitHub OIDC identity to call a private production operator endpoint backed by the existing Pages DB binding, so it does not require persistent Cloudflare Pages-read/D1 tokens or account context. If a true staging database is required later, open a new current-state architecture task with an explicit trust/data/auth/secrets boundary.
 
 ## Historical duplicate generic Worker — CLOSED
 
