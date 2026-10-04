@@ -2,12 +2,12 @@
 import { ArrowRight, CheckCircle2, FileText, LayoutTemplate, MonitorSmartphone, SearchCheck, ShieldCheck } from "@lucide/astro";
 
 const stages = [
-  { key: "context", label: "Business context", title: "Start with what the company actually needs.", body: "Clarify audiences, services, evidence, languages, customer actions, privacy boundaries, integrations, and the business result the website should support.", icon: FileText },
-  { key: "brief", label: "Brief + architecture", title: "Turn discovery into a controlled build plan.", body: "Map page ownership, navigation, conversion paths, internal links, content responsibilities, technical requirements, and the approved project scope before implementation.", icon: LayoutTemplate },
-  { key: "build", label: "Design + build", title: "Build the responsive product around the approved plan.", body: "Create the interface, reusable components, responsive behavior, crawlable content, contact paths, and only the integrations included in scope.", icon: MonitorSmartphone },
-  { key: "qa", label: "QA + human review", title: "Check the system before it becomes a release.", body: "Run build, browser, mobile, keyboard, accessibility, privacy, content, form, link, and regression checks while a human reviews claims and release readiness.", icon: ShieldCheck },
-  { key: "search", label: "Search + release", title: "Protect discoverability while moving toward production.", body: "Validate metadata, canonical ownership, structured data where supported, internal links, sitemap/indexability rules, analytics boundaries, and controlled deployment evidence.", icon: SearchCheck },
-  { key: "evidence", label: "Evidence + next step", title: "Use real readback to decide what changes next.", body: "After release, use production readback, Search Console, privacy-safe analytics, inquiries, user feedback, errors, and operating capacity to prioritize the next bounded improvement.", icon: CheckCircle2 },
+  { key: "context", label: "Business context", title: "Start with what the company actually needs.", body: "Clarify audiences, services, evidence, languages, customer actions, privacy boundaries, integrations, and the business result the website should support.", icon: FileText, signals: ["Audiences", "Services", "Primary action"] },
+  { key: "brief", label: "Brief + architecture", title: "Turn discovery into a controlled build plan.", body: "Map page ownership, navigation, conversion paths, internal links, content responsibilities, technical requirements, and the approved project scope before implementation.", icon: LayoutTemplate, signals: ["Page owners", "Navigation", "Internal links"] },
+  { key: "build", label: "Design + build", title: "Build the responsive product around the approved plan.", body: "Create the interface, reusable components, responsive behavior, crawlable content, contact paths, and only the integrations included in scope.", icon: MonitorSmartphone, signals: ["Components", "Semantic HTML", "Responsive"] },
+  { key: "qa", label: "QA + human review", title: "Check the system before it becomes a release.", body: "Run build, browser, mobile, keyboard, accessibility, privacy, content, form, link, and regression checks while a human reviews claims and release readiness.", icon: ShieldCheck, signals: ["Mobile", "Keyboard", "Regression"] },
+  { key: "search", label: "Search + release", title: "Protect discoverability while moving toward production.", body: "Validate metadata, canonical ownership, structured data where supported, internal links, sitemap/indexability rules, analytics boundaries, and controlled deployment evidence.", icon: SearchCheck, signals: ["Canonical", "Schema", "Sitemap"] },
+  { key: "evidence", label: "Evidence + next step", title: "Use real readback to decide what changes next.", body: "After release, use production readback, Search Console, privacy-safe analytics, inquiries, user feedback, errors, and operating capacity to prioritize the next bounded improvement.", icon: CheckCircle2, signals: ["Production readback", "Search evidence", "Inquiries"] },
 ];
 ---
 
@@ -39,7 +39,7 @@ const stages = [
 
       <div class="website-showroom-stage" aria-label="Sample website delivery visualization">
         <div class="website-showroom-browser" aria-hidden="true">
-          <div class="website-showroom-browser-bar"><i></i><i></i><i></i><span>HERMES / WEBSITE DELIVERY · SAMPLE</span></div>
+          <div class="website-showroom-browser-bar"><i></i><i></i><i></i><span>HERMES / WEBSITE DELIVERY</span><strong>DEMO · SANITIZED</strong></div>
           <div class="website-showroom-canvas">
             <div class="website-showroom-route" aria-hidden="true">
               {stages.map((stage, index) => <span data-route-node={stage.key} class:list={{ active: index === 0 }}>{index + 1}</span>)}
@@ -49,8 +49,8 @@ const stages = [
                 <span class="website-showroom-panel-label">STEP 0{index + 1}</span>
                 <h3>{stage.label}</h3>
                 <p>{stage.title}</p>
-                <div class="website-showroom-mini-ui">
-                  <span></span><span></span><span></span>
+                <div class="website-showroom-mini-ui" aria-label={"Demo signals for " + stage.label}>
+                  {stage.signals.map((signal) => <span>{signal}</span>)}
                   <strong>{index < 3 ? "Build state" : index === 3 ? "Review gate" : index === 4 ? "Release gate" : "Evidence loop"}</strong>
                 </div>
               </article>
@@ -109,47 +109,48 @@ const stages = [
 </script>
 
 <style>
-  .website-showroom { background: #f7f9ff; }
+  .website-showroom { background: #f7f6f3; color:#0b0d12; }
   .website-showroom-heading { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 6rem); align-items: end; margin-bottom: 2rem; }
   .website-showroom-heading h2 { max-width: 720px; margin-bottom: 0; }
-  .website-showroom-heading > p { max-width: 720px; margin: 0; color: #526181; line-height: 1.7; }
-  .website-showroom-frame { display: grid; grid-template-columns: minmax(240px, .72fr) minmax(0, 1.55fr); gap: 1rem; padding: 1rem; border: 1px solid rgba(28,62,141,.13); border-radius: 28px; background: rgba(255,255,255,.82); box-shadow: 0 28px 80px rgba(17,43,103,.08); }
+  .website-showroom-heading > p { max-width: 720px; margin: 0; color: #626977; line-height: 1.7; }
+  .website-showroom-frame { display: grid; grid-template-columns: minmax(240px, .72fr) minmax(0, 1.55fr); gap: 1rem; padding: 1rem; border: 1px solid rgba(11,13,18,.10); border-radius: 30px; background: rgba(255,255,255,.9); box-shadow: 0 28px 80px rgba(11,13,18,.07); }
   .website-showroom-steps { display: grid; gap: .55rem; list-style: none; margin: 0; padding: 0; align-content: start; }
-  .website-showroom-step { width: 100%; display: grid; grid-template-columns: 34px 22px 1fr; gap: .7rem; align-items: center; padding: .9rem; border: 1px solid transparent; border-radius: 17px; background: transparent; color: #10204e; text-align: left; cursor: pointer; transition: background .35s ease, border-color .35s ease, transform .35s ease; }
-  .website-showroom-step:hover, .website-showroom-step:focus-visible, .website-showroom-step[aria-pressed="true"] { border-color: rgba(49,95,215,.18); background: #eef3ff; transform: translateX(4px); outline: none; }
-  .website-showroom-step-number { font-size: .72rem; letter-spacing: .12em; color: #315fd7; }
-  .website-showroom-step svg { color: #315fd7; }
+  .website-showroom-step { width: 100%; display: grid; grid-template-columns: 34px 22px 1fr; gap: .7rem; align-items: center; padding: .9rem; border: 1px solid transparent; border-radius: 17px; background: transparent; color: #0b0d12; text-align: left; cursor: pointer; transition: background .35s ease, border-color .35s ease, transform .35s ease; }
+  .website-showroom-step:hover, .website-showroom-step:focus-visible, .website-showroom-step[aria-pressed="true"] { border-color: rgba(26,115,232,.18); background: #eef3f7; transform: translateX(4px); outline: none; }
+  .website-showroom-step-number { font-size: .72rem; letter-spacing: .12em; color: #1a73e8; }
+  .website-showroom-step svg { color: #1a73e8; }
   .website-showroom-step strong, .website-showroom-step small { display: block; }
   .website-showroom-step strong { font-size: .92rem; }
-  .website-showroom-step small { margin-top: .2rem; color: #6a7590; font-size: .72rem; line-height: 1.35; }
+  .website-showroom-step small { margin-top: .2rem; color: #707784; font-size: .72rem; line-height: 1.35; }
   .website-showroom-stage { min-width: 0; }
-  .website-showroom-browser { overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 23px; background: #07143d; box-shadow: inset 0 0 0 1px rgba(255,255,255,.03); }
+  .website-showroom-browser { overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 24px; background: #0b0d12; box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 24px 60px rgba(11,13,18,.18); }
   .website-showroom-browser-bar { display: flex; gap: .38rem; align-items: center; min-height: 46px; padding: 0 1rem; border-bottom: 1px solid rgba(255,255,255,.09); color: rgba(255,255,255,.62); font-size: .67rem; letter-spacing: .12em; }
   .website-showroom-browser-bar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.22); }
   .website-showroom-browser-bar span { margin-left: .45rem; }
-  .website-showroom-canvas { position: relative; min-height: 360px; padding: clamp(1.2rem, 4vw, 2.5rem); background: radial-gradient(circle at 80% 18%, rgba(75,112,255,.28), transparent 28%), linear-gradient(145deg,#07143d,#122b72 70%,#173b89); color: white; }
+  .website-showroom-browser-bar strong { margin-left:auto; padding:.34rem .55rem; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.07); color:rgba(255,255,255,.78); font-size:.58rem; letter-spacing:.12em; white-space:nowrap; }
+  .website-showroom-canvas { position: relative; min-height: 360px; padding: clamp(1.2rem, 4vw, 2.5rem); background: radial-gradient(circle at 80% 18%, rgba(26,115,232,.24), transparent 29%), linear-gradient(145deg,#0b0d12,#172033 72%,#102a4f); color: white; }
   .website-showroom-route { display: grid; grid-template-columns: repeat(6, 1fr); gap: .45rem; position: relative; z-index: 2; }
   .website-showroom-route::before { content: ""; position: absolute; left: 3%; right: 3%; top: 50%; height: 2px; background: rgba(255,255,255,.13); transform: translateY(-50%); }
-  .website-showroom-route span { position: relative; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; margin: auto; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; background: #102151; color: rgba(255,255,255,.6); font-size: .72rem; transition: background .45s ease, color .45s ease, box-shadow .45s ease; }
-  .website-showroom-route span.active { background: #fff; color: #173c9a; box-shadow: 0 0 0 7px rgba(255,255,255,.08); }
+  .website-showroom-route span { position: relative; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; margin: auto; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; background: #172033; color: rgba(255,255,255,.6); font-size: .72rem; transition: background .45s ease, color .45s ease, box-shadow .45s ease; }
+  .website-showroom-route span.active { background: #fff; color: #0b0d12; box-shadow: 0 0 0 7px rgba(255,255,255,.08); }
   .website-showroom-panel { position: absolute; inset: 6.5rem clamp(1.2rem,4vw,2.5rem) 4.8rem; display: grid; align-content: center; opacity: 0; transform: translateY(16px) scale(.985); pointer-events: none; transition: opacity .55s ease, transform .55s ease; }
   .website-showroom-panel.active { opacity: 1; transform: translateY(0) scale(1); }
-  .website-showroom-panel-label { font-size: .72rem; letter-spacing: .14em; color: #9eb7ff; }
+  .website-showroom-panel-label { font-size: .72rem; letter-spacing: .14em; color: #9cc5ff; }
   .website-showroom-panel h3 { margin: .5rem 0 .7rem; font-size: clamp(2rem, 5vw, 4.2rem); letter-spacing: -.045em; }
   .website-showroom-panel > p { max-width: 650px; margin: 0; color: rgba(255,255,255,.74); font-size: 1.02rem; }
-  .website-showroom-mini-ui { display: grid; grid-template-columns: 1fr .72fr .45fr auto; gap: .55rem; align-items: center; margin-top: 1.3rem; max-width: 620px; padding: .8rem; border: 1px solid rgba(255,255,255,.11); border-radius: 14px; background: rgba(255,255,255,.07); }
-  .website-showroom-mini-ui span { height: 8px; border-radius: 999px; background: rgba(255,255,255,.22); }
-  .website-showroom-mini-ui strong { padding: .42rem .65rem; border-radius: 999px; background: rgba(143,177,255,.17); color: #dce6ff; font-size: .7rem; white-space: nowrap; }
+  .website-showroom-mini-ui { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: 1.3rem; max-width: 680px; padding: .8rem; border: 1px solid rgba(255,255,255,.11); border-radius: 14px; background: rgba(255,255,255,.07); }
+  .website-showroom-mini-ui span { display:inline-flex; align-items:center; min-height:30px; padding:.42rem .62rem; border:1px solid rgba(255,255,255,.10); border-radius:999px; background:rgba(255,255,255,.06); color:rgba(255,255,255,.76); font-size:.67rem; white-space:nowrap; }
+  .website-showroom-mini-ui strong { margin-left:auto; padding: .42rem .65rem; border-radius: 999px; background: rgba(26,115,232,.18); color: #e3efff; font-size: .7rem; white-space: nowrap; }
   .website-showroom-human { position: absolute; left: clamp(1.2rem,4vw,2.5rem); bottom: 1.4rem; display: inline-flex; gap: .55rem; align-items: center; color: rgba(255,255,255,.7); font-size: .78rem; }
   .website-showroom-semantic { position: relative; min-height: 180px; padding: 1.25rem 1.1rem .35rem; }
   .website-showroom-explanation { display: none; }
   .website-showroom-explanation.active { display: block; }
   .website-showroom-explanation h3 { margin: .4rem 0 .6rem; font-size: clamp(1.35rem, 2.5vw, 2rem); }
-  .website-showroom-explanation > p:last-child { max-width: 780px; color: #526181; line-height: 1.65; }
-  .website-showroom-proof { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2rem; align-items: center; margin-top: 1rem; padding: 1.35rem 1.5rem; border: 1px solid rgba(28,62,141,.13); border-radius: 20px; background: #fff; }
+  .website-showroom-explanation > p:last-child { max-width: 780px; color: #626977; line-height: 1.65; }
+  .website-showroom-proof { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2rem; align-items: center; margin-top: 1rem; padding: 1.35rem 1.5rem; border: 1px solid rgba(11,13,18,.10); border-radius: 22px; background: #fff; }
   .website-showroom-proof h3 { margin: .3rem 0 .45rem; }
-  .website-showroom-proof p { margin: 0; color: #526181; line-height: 1.6; }
-  .website-showroom-proof .button { white-space: nowrap; color: #10204e; border-color: rgba(16,32,78,.18); }
+  .website-showroom-proof p { margin: 0; color: #626977; line-height: 1.6; }
+  .website-showroom-proof .button { white-space: nowrap; color: #0b0d12; border-color: rgba(11,13,18,.18); }
   @media (max-width: 900px) {
     .website-showroom-heading, .website-showroom-proof { grid-template-columns: 1fr; }
     .website-showroom-frame { grid-template-columns: 1fr; }
@@ -167,8 +168,8 @@ const stages = [
     .website-showroom-panel { inset: 5.7rem 1rem 4.6rem; }
     .website-showroom-panel h3 { font-size: clamp(1.8rem, 10vw, 3rem); }
     .website-showroom-panel > p { font-size: .9rem; }
-    .website-showroom-mini-ui { grid-template-columns: 1fr .7fr auto; }
-    .website-showroom-mini-ui span:nth-child(3) { display: none; }
+    .website-showroom-mini-ui strong { width:100%; margin-left:0; justify-content:center; }
+    .website-showroom-mini-ui span { flex:1 1 auto; justify-content:center; }
     .website-showroom-route span { width: 26px; height: 26px; font-size: .65rem; }
     .website-showroom-human { left: 1rem; bottom: 1.1rem; }
   }
