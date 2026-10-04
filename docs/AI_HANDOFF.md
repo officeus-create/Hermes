@@ -1383,6 +1383,12 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Remaining / open items: exact-head GitHub checks; explicit owner approval for merge/deploy; post-deploy desktop/mobile/public-source readback and later settled search measurement. No production or indexing result is claimed from local evidence.
 - Next step / what's needed from a human or the other agent: review exact branch head, then provide the repository-required specific merge/deploy approval. After release, verify the two public source links and phone on production and revalidate the vacancy no later than 2026-10-10.
 
+## 2026-10-04 — Codex — Wisconsin vacancy post-merge truth correction
+
+- Source review after #1664 identified three acceptance defects despite green CI: the visible own-truck-and-trailer wording conflicted with Power Only; the separate 100Hires employer page reported no active postings; and build-time expiry had been described too strongly as automatic.
+- The bounded follow-up preserves the exact live vacancy and public recruiting phone, states that the operator must own a commercial truck while trailer/Power Only eligibility is verified individually, relabels the employer-page link as a reference with its observed empty state, and explains that the review date is recalculated on site builds rather than changing static HTML by itself.
+- No external listing, form submission, homepage design, payment, account, application or recruiting decision changes. Run focused static/browser checks and exact-head release gates before a second owner-authorized merge/deploy; do not call #1664 production accepted until the correction is live and read back.
+
 ## 2026-10-04 — ChatGPT — current-main corporate Home slice
 
 - Owner directive: implement the refined Hermes corporate visual direction on top of the current production architecture, without replacing the four canonical business directions.
