@@ -103,8 +103,8 @@ assert.equal(
 );
 assert.match(
   aiProjectState.platform_and_owner_gates?.repair_shop_access_proof_960 ?? "",
-  /BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS.*DEDICATED_PAGES_READ.*D1.*ACCOUNT_CONTEXT_REQUIRED.*961_CLOSED/,
-  "#960 must own the bounded production D1/operator proof with dedicated least-privilege Cloudflare inputs.",
+  /OIDC_OPERATOR_PROOF_CODE_READY.*PRODUCTION_RECEIPT.*961_CLOSED.*NO_PERSISTENT_CLOUDFLARE_TOKEN_REQUIRED/,
+  "#960 must own the bounded production D1/operator proof through workflow-bound GitHub OIDC without persistent Cloudflare proof credentials.",
 );
 assert.match(
   aiProjectState.platform_and_owner_gates?.password_reset_email_611 ?? "",
@@ -118,8 +118,8 @@ assert.match(
 );
 assert.match(
   (aiProjectState.execution_priorities ?? []).join("\n"),
-  /#961 is closed[\s\S]*owner issue #960/,
-  "Current execution priorities must route the bounded D1/operator proof to #960 and keep #961 closed.",
+  /#961 is closed[\s\S]*owner issue #960[\s\S]*GitHub OIDC/,
+  "Current execution priorities must route the bounded D1/operator proof to #960 through GitHub OIDC and keep #961 closed.",
 );
 assert.doesNotMatch(
   (aiProjectState.execution_priorities ?? []).join("\n"),
