@@ -1,5 +1,22 @@
 import assert from "node:assert/strict";
-import { classifyConnectObservations } from "./connect-subdomain-verifier.mjs";
+import * as connectVerifier from "./connect-subdomain-verifier.mjs";
+
+const {
+  classifyConnectObservations,
+  classifyConnectRootAssetObservations,
+  connectVerificationExitCode,
+} = connectVerifier;
+
+assert.equal(
+  typeof classifyConnectRootAssetObservations,
+  "function",
+  "Connect verification must expose a root-asset quorum classifier",
+);
+assert.equal(
+  typeof connectVerificationExitCode,
+  "function",
+  "Connect verification must expose its release acceptance decision",
+);
 
 const webApp = () => ({
   status: 200,
@@ -58,5 +75,73 @@ assert.equal(isolation.classification, "LIVE_PR_HEAD_EXPOSED");
 
 const previousOnly = classifyConnectObservations(Array.from({ length: 6 }, previous), "approved_web_app");
 assert.equal(previousOnly.classification, "LIVE_PREVIOUS_CONNECT");
+
+const healthyRobots = () => ({
+  status: 200,
+  finalUrl: "https://connect.hermeslogisticsus.com/robots.txt",
+  contentType: "text/plain; charset=utf-8",
+  body: "User-agent: *\nAllow: /\nSitemap: https://hermeslogisticsus.com/sitemapindex.xml\n",
+  error: null,
+});
+const missingRobots = () => ({
+  status: 404,
+  finalUrl: "https://connect.hermeslogisticsus.com/robots.txt",
+  contentType: "text/html; charset=utf-8",
+  body: "Not found",
+  error: null,
+});
+
+const robotsHealthy = classifyConnectRootAssetObservations([
+  ...Array.from({ length: 5 }, healthyRobots),
+  networkFailure(),
+]);
+assert.equal(robotsHealthy.classification, "ROOT_ASSET_HEALTHY");
+assert.equal(robotsHealthy.healthyCount, 5);
+assert.equal(robotsHealthy.requiredHealthyCount, 5);
+
+const robotsMissing = classifyConnectRootAssetObservations([
+  ...Array.from({ length: 5 }, missingRobots),
+  healthyRobots(),
+]);
+assert.equal(robotsMissing.classification, "ROOT_ASSET_UNHEALTHY");
+assert.equal(robotsMissing.healthyCount, 1);
+
+const wrongContent = classifyConnectRootAssetObservations([
+  ...Array.from({ length: 6 }, () => ({
+    ...healthyRobots(),
+    contentType: "text/html; charset=utf-8",
+    body: "<html><title>Not robots</title></html>",
+  })),
+]);
+assert.equal(wrongContent.classification, "ROOT_ASSET_UNHEALTHY");
+
+const redirectedRobots = classifyConnectRootAssetObservations([
+  ...Array.from({ length: 6 }, () => ({
+    ...healthyRobots(),
+    finalUrl: "https://hermeslogisticsus.com/robots.txt",
+  })),
+]);
+assert.equal(redirectedRobots.classification, "ROOT_ASSET_UNHEALTHY");
+
+assert.equal(connectVerificationExitCode({
+  expectation: "approved_web_app",
+  classification: "LIVE_APPROVED_WEB_APP",
+  rootAssetClassification: "ROOT_ASSET_HEALTHY",
+}), 0);
+assert.equal(connectVerificationExitCode({
+  expectation: "approved_web_app",
+  classification: "LIVE_APPROVED_WEB_APP",
+  rootAssetClassification: "ROOT_ASSET_UNHEALTHY",
+}), 7);
+assert.equal(connectVerificationExitCode({
+  expectation: "release_pending",
+  classification: "LIVE_PREVIOUS_CONNECT",
+  rootAssetClassification: "ROOT_ASSET_UNHEALTHY",
+}), 0);
+assert.equal(connectVerificationExitCode({
+  expectation: "approved_web_app",
+  classification: "LIVE_PREVIOUS_CONNECT",
+  rootAssetClassification: "ROOT_ASSET_HEALTHY",
+}), 4);
 
 console.log("Connect subdomain verifier quorum contract passed.");
