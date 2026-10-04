@@ -1,5 +1,13 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { onRequestGet } from "../functions/businesses/connect/repair-shop/[slug].ts";
+
+const catalogProfileSource = fs.readFileSync(
+  path.join(process.cwd(), "src/pages/businesses/[state]/[city]/[slug].astro"),
+  "utf8",
+);
+assert.match(catalogProfileSource, /href="\/logistics\/car-hauling-dispatch\/">Car-hauling dispatch support/);
 
 const shop = {
   id: "shop-qa",
@@ -70,4 +78,4 @@ assert.doesNotMatch(html, /client_name|vin|mileage/);
 
 assert.equal((await onRequestGet({ env: {}, params: { slug: shop.slug } })).status, 503);
 assert.equal((await onRequestGet({ env: { DB: db }, params: { slug: "bad/slug" } })).status, 404);
-console.log("Catalog Repair Shop public route contract OK");
+console.log("Catalog Repair Shop public route and carrier handoff contract OK");

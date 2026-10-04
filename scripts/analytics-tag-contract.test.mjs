@@ -6,6 +6,7 @@ const layout = fs.readFileSync(path.join(root, "src/layouts/BaseLayout.astro"), 
 const consent = fs.readFileSync(path.join(root, "src/components/TrackingConsent.astro"), "utf8");
 const connectConsent = fs.readFileSync(path.join(root, "public/demos/hermes-connect/connect-analytics-consent.mjs"), "utf8");
 const analytics = fs.readFileSync(path.join(root, "src/lib/analytics.ts"), "utf8");
+const conversionEnhancer = fs.readFileSync(path.join(root, "public/seo4-conversion-enhancer.js"), "utf8");
 const headers = fs.readFileSync(path.join(root, "public/_headers"), "utf8");
 const vendorRegistry = JSON.parse(fs.readFileSync(path.join(root, "docs/compliance/vendor-registry.json"), "utf8"));
 const vendorsById = new Map(vendorRegistry.vendors.map((vendor) => [vendor.id, vendor]));
@@ -31,6 +32,11 @@ assert.match(analytics, /Object\.entries\(payload\)\.filter\(\(\[, value\]\)\s*=
 assert.match(analytics, /window\.dataLayer\.push\(\{\s*event:\s*name,\s*\.\.\.parameters\s*\}\)/);
 assert.match(analytics, /gtag\?\.\("event",\s*name,\s*parameters\)/);
 assert.doesNotMatch(analytics, /gtag\?\.\("event",\s*name,\s*payload\)/);
+assert.match(conversionEnhancer, /carrierDispatchPath\s*=\s*"\/logistics\/car-hauling-dispatch\/"/);
+assert.match(conversionEnhancer, /event:\s*"carrier_dispatch_page_view"/);
+assert.match(conversionEnhancer, /service_group:\s*"car_hauling_dispatch"/);
+assert.match(conversionEnhancer, /carrierDispatchMeasurementStarted\s*\|\|\s*!analyticsConsentGranted\(\)\s*\|\|\s*!isCarrierDispatchPath\(\)/);
+assert.match(conversionEnhancer, /if\s*\(analyticsConsentGranted\(\)\)\s*setupCarrierDispatchMeasurement\(\)/);
 const allowed = new Set(["event", "page_group", "page_path", "module_id", "platform_id", "category_id"]);
 const files = ["public/demos/hermes-connect/app.mjs","public/demos/hermes-connect/load-analyzer/app.mjs","public/demos/hermes-connect/search-opportunity-radar/app.mjs","public/demos/hermes-connect/revenue-dashboard/app.mjs","public/demos/hermes-connect/multi-car-planner/app.mjs","public/demos/hermes-connect/logistics-seo-analyzer/app.mjs"];
 for (const f of files) { const source = fs.readFileSync(path.join(root,f),"utf8"); const payloads=[...source.matchAll(/window\.dataLayer\.push\(\{([\s\S]*?)\}\);/g)]; assert.ok(payloads.length>=1); for(const p of payloads){ const body=p[1]; const explicit=[...body.matchAll(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)].map(m=>m[1]); const keys=new Set([...explicit,...(/^\s*event\s*,/m.test(body)?["event"]:[])]); assert.ok(keys.has("event")); for(const k of keys) assert.ok(allowed.has(k),`${f}: ${k}`); }}
