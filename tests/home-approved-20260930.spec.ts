@@ -202,6 +202,8 @@ test('Home Logistics carries six owned equipment and weather states without chan
  const transitionMs=await scenes.first().evaluate(node=>parseFloat(getComputedStyle(node).transitionDuration)*1000);
  expect(transitionMs).toBeGreaterThanOrEqual(700);
  expect(transitionMs).toBeLessThanOrEqual(800);
+ const geometryBefore=await scenes.first().boundingBox();
+ expect(geometryBefore).not.toBeNull();
  const decoded=await page.evaluate(async()=>{
   const names=['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot'];
   return Promise.all(names.map(async(name)=>{
@@ -220,7 +222,10 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await page.waitForTimeout(80);
  const transitioning=await scenes.evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).opacity)));
  expect(transitioning.every(value=>value>0&&value<1)).toBe(true);
+ expect(transitioning.reduce((sum,value)=>sum+value,0)).toBeGreaterThan(0.9);
  await page.waitForTimeout(800);
+ const geometryAfter=await scenes.first().boundingBox();
+ expect(geometryAfter).toEqual(geometryBefore);
  const settledScene=await activeScene.getAttribute('data-logistics-scene-ready');
  expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));
  await expect(activeScene).toHaveCSS('opacity','1');
