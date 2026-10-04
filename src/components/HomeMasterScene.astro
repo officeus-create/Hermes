@@ -135,10 +135,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         sceneImage.src = `/images/logistics-living/${scene}-512.webp`;
         sceneImage.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-887.webp 887w`;
         const next = scenes[(sceneIndex + 1) % scenes.length];
-        for (const width of [512, 887]) {
-          const preload = new Image();
-          preload.src = `/images/logistics-living/${next}-${width}.webp`;
-        }
+        const preload = new Image();
+        preload.sizes = sceneImage.sizes;
+        preload.srcset = `/images/logistics-living/${next}-512.webp 512w, /images/logistics-living/${next}-887.webp 887w`;
+        preload.src = `/images/logistics-living/${next}-512.webp`;
       }
     };
     const stop = () => {
