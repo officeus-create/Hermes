@@ -10,6 +10,7 @@ class MemoryKv {
 }
 
 const serviceCalls = [];
+let capabilityCalls = 0;
 const db = new MemoryD1();
 const serviceToken = "test-service-token-with-sufficient-length";
 const env = {
@@ -21,6 +22,12 @@ const env = {
   LEAD_EMAIL_SERVICE: {
     async fetch(input, init) {
       const request = input instanceof Request ? input : new Request(input, init);
+      if (new URL(request.url).pathname === "/v1/capabilities") {
+        capabilityCalls += 1;
+        assert.equal(request.method, "GET");
+        assert.equal(request.headers.get("Authorization"), `Bearer ${serviceToken}`);
+        return Response.json({ ok: true, catalog_delivery_receipt_contract: "v1" });
+      }
       serviceCalls.push({
         url: request.url,
         authorization: request.headers.get("Authorization"),
@@ -178,6 +185,7 @@ const catalogRequest = await onRequest({
   env,
 });
 assert.equal(catalogRequest.status, 200);
+assert.equal(capabilityCalls, 1);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [CATALOG]");
 assert.match(serviceCalls.at(-1).payload.text, /Catalog business ID: catalog-ua-chayka-store/);
 assert.match(serviceCalls.at(-1).payload.text, /Catalog profile: \/businesses\/ukraine\/chaiky\/chayka-store\//);

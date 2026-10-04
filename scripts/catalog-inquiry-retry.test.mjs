@@ -11,13 +11,18 @@ globalThis.fetch=async()=>{throw Error('UNMOCKED NETWORK');};
 const id='catalog_retry_example_12345';
 const base={request_id:id,submitted_at:'2026-09-30T00:00:00Z',source_path:'/businesses/request/',interest:'Hermes Catalog',name:'Example Customer',email:'customer@example.com',company:'Example Garage',city_country:'Example, AR',phone:'+1 555 123 4567',whatsapp:'',telegram:'',website_or_social:'https://example.com',planning_budget:'Not sure yet',planning_horizon:'Not sure yet',preferred_language:'English',preferred_contact_time:'Morning',services:['Catalog business request'],message:'Please discuss repairs for this example vehicle.',catalog_business_id:'repair-shop-crm:example-shop',catalog_profile:'/businesses/connect/repair-shop/example-garage/',catalog_source_ref:'',consent:true,attribution:{utm_source:'example'}};
 class Kv{values=new Map();async get(k){return this.values.get(k)||null;}async put(k,v){this.values.set(k,v);}}
-async function fixture({optIn=true,modes={}}={}){
+async function fixture({optIn=true,modes={},capability='v1'}={}){
  const db=new MemoryD1();await ensureRepairShopProfileSchema(db);await ensureCatalogBusinessInquirySchema(db);
  await db.prepare('CREATE TABLE specialists(id TEXT PRIMARY KEY,email TEXT,role TEXT)').run();
  await db.prepare("INSERT INTO specialists VALUES('example-owner','owner@example.com','Shop Owner')").run();
  await db.prepare(`INSERT INTO repair_shops(id,owner_specialist_id,name,slug,city,state,timezone,created_at,updated_at,catalog_opt_in,catalog_email_notifications_opt_in) VALUES('example-shop','example-owner','Example Garage','example-garage','Example','AR','America/Chicago','2026-09-30','2026-09-30',1,?)`).bind(optIn?1:0).run();
- const calls=[],counts={internal:0,owner:0},kv=new Kv();
+ const calls=[],counts={internal:0,owner:0},kv=new Kv();let capabilityCalls=0;
  const env={DB:db,LEAD_LIMITS:kv,LEAD_DELIVERY_MODE:'live',LEAD_SERVICE_TOKEN:'synthetic-test-token',LEAD_EMAIL_SERVICE:{async fetch(url,init){
+  if(new URL(url).pathname==='/v1/capabilities'){
+   capabilityCalls++;
+   if(capability==='missing')return Response.json({ok:false,error:'not_found'},{status:404});
+   return Response.json({ok:true,catalog_delivery_receipt_contract:capability});
+  }
   const p=JSON.parse(init.body),kind=p.delivery_key.split(':')[1];calls.push(p);const n=counts[kind]++;
   const mode=modes[kind]?.[n]||'accepted';
   const fingerprint=await recipientFingerprint(p.delivery_key,p.recipient_identity||'',p.recipient_email||'internal@example.com');
@@ -32,8 +37,17 @@ async function fixture({optIn=true,modes={}}={}){
  const send=async(payload=base)=>{const response=await onRequest({env,request:new Request('https://hermeslogisticsus.com/api/business-lead',{method:'POST',headers:{Origin:'https://hermeslogisticsus.com','Content-Type':'application/json','Idempotency-Key':payload.request_id,'CF-Connecting-IP':'192.0.2.123'},body:JSON.stringify(payload)})});return {status:response.status,body:await response.json()};};
  const receipts=()=>readReceipts(db,id);
  const rows=()=>Number(db.sqlite.prepare('SELECT COUNT(*) n FROM catalog_business_inquiries').get().n);
- return {db,env,kv,calls,counts,send,receipts,rows};
+ return {db,env,kv,calls,counts,send,receipts,rows,get capabilityCalls(){return capabilityCalls;}};
 }
+test('missing or mismatched Worker capability never claims or sends',async()=>{
+ for(const capability of ['missing','v0']){
+  const f=await fixture({capability});const r=await f.send();const receipts=await f.receipts();
+  assert.equal(r.status,503);assert.equal(r.body.error,'worker_contract_unavailable');assert.equal(r.body.retryable,true);
+  assert.equal(f.capabilityCalls,1);assert.deepEqual(f.counts,{internal:0,owner:0});assert.equal(f.calls.length,0);
+  assert.equal(receipts.internal.state,'ready');assert.equal(receipts.internal.attempt_count,0);
+  assert.equal(receipts.owner.state,'ready');assert.equal(receipts.owner.attempt_count,0);
+ }
+});
 test('owner definite failure retries same ID without internal repeat',async()=>{
  const f=await fixture({modes:{owner:['failed','accepted']}});let r=await f.send();assert.equal(r.status,503);assert.equal(r.body.retryable,true);r=await f.send();assert.equal(r.status,200);assert.deepEqual(f.counts,{internal:1,owner:2});assert.equal(f.rows(),1);r=await f.send();assert.equal(r.body.duplicate,true);assert.deepEqual(f.counts,{internal:1,owner:2});
 });

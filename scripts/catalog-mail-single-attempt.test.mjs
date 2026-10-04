@@ -26,6 +26,24 @@ const run = async (input, overrides = {}, path = input.delivery_key === "catalog
   return { status: response.status, receipt: await response.json() };
 };
 
+let capabilityTransportAttempts = 0;
+const capabilityEnv = { ...env, EMAIL: { async send() { capabilityTransportAttempts += 1; } } };
+const capabilityResponse = await worker.fetch(new Request("https://synthetic.internal/v1/capabilities", {
+  method: "GET",
+  headers: { Authorization: `Bearer ${env.LEAD_SERVICE_TOKEN}` },
+}), capabilityEnv);
+assert.equal(capabilityResponse.status, 200);
+assert.deepEqual(await capabilityResponse.json(), {
+  ok: true,
+  catalog_delivery_receipt_contract: "v1",
+});
+const unauthorizedCapability = await worker.fetch(new Request("https://synthetic.internal/v1/capabilities", {
+  method: "GET",
+  headers: { Authorization: "Bearer wrong-synthetic-token" },
+}), capabilityEnv);
+assert.equal(unauthorizedCapability.status, 401);
+assert.equal(capabilityTransportAttempts, 0, "capability discovery is side-effect-free");
+
 for (const key of ["catalog:internal", "catalog:owner"]) {
   for (const failure of [Object.assign(new Error("synthetic timeout"), { name: "TimeoutError" }), Object.assign(new Error("synthetic unavailable"), { status: 503 }), Object.assign(new Error("synthetic network"), { code: "ECONNRESET" }), Object.assign(new Error("unclassified"), { status: 429 })]) {
     let attempts = 0;
