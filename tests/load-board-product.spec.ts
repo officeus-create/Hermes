@@ -11,7 +11,7 @@ test("main navigation uses the four clear business labels", async ({ page, isMob
   await expect(nav.getByRole("link", { name: "Logistics", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Marketing", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Academy", exact: true })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "IT", exact: true })).toHaveAttribute("href", "/paths/technology/");
+  await expect(nav.getByRole("link", { name: "Technology", exact: true })).toHaveAttribute("href", "/paths/technology/");
 });
 
 test("Logistics exposes canonical Load Board first and keeps the audience hierarchy clear", async ({ page }) => {
@@ -34,7 +34,7 @@ test("Logistics exposes canonical Load Board first and keeps the audience hierar
   await expect(page.getByRole("link", { name: /Open Hermes Load Board/ })).toHaveAttribute("href", "/load-board/");
 });
 
-test("IT presents canonical Load Board as a Hermes software product", async ({ page }) => {
+test("Technology presents canonical Load Board as a Hermes software product", async ({ page }) => {
   await page.goto("/paths/technology/");
   await expect(page.getByRole("heading", { name: "Load Board is one of the products we build and operate." })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open Hermes Load Board/ })).toHaveAttribute("href", "/load-board/");
