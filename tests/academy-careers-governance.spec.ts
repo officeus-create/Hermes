@@ -82,12 +82,19 @@ test.describe("Academy and careers governance", () => {
     await expect(page.locator("h1")).toHaveText("Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch");
     await expect(page.getByText("Verified live source · updated October 3, 2026", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: /View and apply on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
-    await expect(page.getByRole("link", { name: /See all Hermes jobs on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/c/hermeslogisticsus-com");
+    await expect(page.getByRole("link", { name: /Open the Hermes employer page on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/c/hermeslogisticsus-com");
+    await expect(page.getByText(/employer-profile reference and not as a complete vacancy directory/)).toBeVisible();
+    await expect(page.getByText(/There are no active job postings right now/)).toBeVisible();
+    await expect(page.getByText(/does not update static HTML automatically between builds/)).toBeVisible();
     await expect(page.getByRole("link", { name: /Call recruiting/ })).toHaveAttribute("href", "tel:+14142697377");
     await expect(page.getByText("+1 (414) 269-7377", { exact: true })).toBeVisible();
     await expect(page.getByText("Milwaukee", { exact: true })).toBeVisible();
     await expect(page.getByText("Madison", { exact: true })).toBeVisible();
     await expect(page.getByText("No forced dispatch. No invented income promise.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Power Only — trailer and operating arrangement reviewed individually", { exact: true })).toBeVisible();
+    const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
+    await companyDriverFaq.locator("summary").click();
+    await expect(companyDriverFaq.getByText(/Trailer and equipment eligibility are therefore confirmed individually/)).toBeVisible();
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(2);
     for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
       expect(href).toBe("tel:+14142697377");
