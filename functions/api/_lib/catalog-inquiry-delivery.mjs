@@ -2,6 +2,15 @@ import {readReceipts,resolveStoredOwner,skipUnsentOwner,claimReceipt,settleRecei
 
 const validEmail=value=>typeof value==='string'&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const validFingerprint=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
+async function supportsReceiptContract(env) {
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),3000);
+ try {
+  const response=await env.LEAD_EMAIL_SERVICE.fetch('https://lead-email.internal/v1/capabilities',{
+   method:'GET',headers:{Authorization:`Bearer ${env.LEAD_SERVICE_TOKEN}`,'Cache-Control':'no-store'},signal:controller.signal});
+  const body=await response.json();
+  return response.ok&&body?.catalog_delivery_receipt_contract==='v1';
+ } catch {return false;} finally {clearTimeout(timer);}
+}
 function messageFor(p,kind) {
  if(kind==='owner')return [
   'New customer inquiry from your Hermes Catalog profile',`Business: ${p.company}`,`Customer: ${p.name}`,`Email: ${p.email}`,
@@ -44,6 +53,9 @@ export async function deliverCatalogInquiry(env,row,linked,currentRate,rateKey) 
  let receipts=await readReceipts(env.DB,row.request_id);
  if(!row.delivery_payload_json&&Object.values(receipts).some(r=>!['accepted','skipped'].includes(r.state)))return outcome(row,linked,receipts,false);
  if(['ready','failed'].includes(receipts.internal.state)&&currentRate>=5)return {status:429,payload:{success:false,error:'rate_limit_exceeded',request_id:row.request_id,crm_saved:true,crm_linked:linked,retryable:true}};
+ const deliveryReady=Object.values(receipts).some(r=>['ready','failed'].includes(r.state));
+ if(deliveryReady&&!await supportsReceiptContract(env))return {status:503,payload:{success:false,request_id:row.request_id,crm_saved:true,crm_linked:linked,
+  delivery:{internal:receipts.internal.state,owner:receipts.owner.state},error:'worker_contract_unavailable',retryable:true}};
  let attempted=false;
  if(['ready','failed'].includes(receipts.internal.state)&&row.delivery_payload_json){
   const claimedInternal=await deliver(env,row,'internal',receipts.internal.recipient_fingerprint,null);
