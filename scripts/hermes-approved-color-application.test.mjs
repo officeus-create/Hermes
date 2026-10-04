@@ -9,6 +9,8 @@ const brand = await text("src/styles/hermes-brand-system.css");
 const divisions = await text("src/styles/hermes-connect-division-context.css");
 const connect = await text("src/styles/hermes-connect-brand-visuals.css");
 const workspaces = await text("src/styles/hermes-connect-workspace-colors.css");
+const appleton = await text("src/styles/features/appleton.css");
+const appletonPage = await text("src/pages/logistics/appleton-wi-vehicle-transport.astro");
 
 assert(brand.includes("--hermes-logistics: #1e88ff"), "Logistics must keep owner-approved #1E88FF.");
 assert(brand.includes("--hermes-marketing: #00c853"), "Marketing must keep owner-approved #00C853.");
@@ -42,5 +44,12 @@ assert(workspaces.includes(".hc-account-workspace.academy") && workspaces.includ
 assert(workspaces.includes(".hc-account-workspace.ai") && workspaces.includes("--hermes-technology"), "AI/IT workspace cue must be orange.");
 assert(workspaces.includes(".hc-account-workspace.beauty") && workspaces.includes("--hc-cyan"), "Beauty may use a Connect-family cyan UI cue but no invented canonical Beauty token.");
 assert(!brand.includes("--hermes-beauty:"), "Do not invent a canonical Beauty brand color without owner approval.");
+
+assert(appletonPage.includes('<SiteHeader theme="light" activePath="/paths/logistics/" />'), "Appleton commercial owner must use the light corporate header.");
+assert(appleton.includes("Design V4: quiet corporate shell"), "Appleton styles must declare the bounded V4 presentation intent.");
+assert(appleton.includes("background: radial-gradient(circle at 84% 16%, rgba(30,136,255,.12), transparent 30rem), #f7f6f3"), "Appleton hero must keep a Pearl corporate shell with restrained Logistics signal.");
+assert(appleton.includes(".appleton-planning { background: #0b0d12; color: #fff; }"), "Appleton may keep one bounded Focus Ink planning scene.");
+assert(appleton.includes(".appleton-carrier-note { border-block: 1px solid rgba(11,13,18,.08); background: #f7f6f3; color: #0b0d12; }"), "Appleton must not stack a second dark reading section after the focus scene.");
+assert(!appleton.includes("#07113c"), "Appleton must not restore the retired full dark-blue page shell.");
 
 console.log("Approved Hermes division and Connect color application contract passed.");
