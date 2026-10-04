@@ -137,3 +137,30 @@ test("Logistics hero title remains contained on a 1440px viewport", async ({ pag
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.heroRight + 1);
   expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.viewportWidth);
 });
+
+
+test("primary Logistics and Technology heroes use owned scene-led artwork", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+  await expect(page.locator(".detail-page-logistics .detail-hero-media")).toHaveAttribute(
+    "src",
+    "/images/logistics-living/car-hauler-887.webp",
+  );
+
+  await page.goto("/paths/technology/");
+  await expect(page.locator(".detail-page-technology .detail-hero-media")).toHaveAttribute(
+    "src",
+    "/images/home-20261001/technology-887.webp",
+  );
+});
+
+test("Technology naming stays canonical across the primary and direction navigation", async ({ page }) => {
+  await page.goto("/paths/technology/");
+
+  await expect(page.locator(".desktop-nav").getByRole("link", { name: "Technology", exact: true })).toHaveAttribute(
+    "href",
+    "/paths/technology/",
+  );
+  await expect(page.locator("[data-direction-product-nav='technology'] .direction-product-nav__brand span")).toHaveText(
+    "Hermes Technology",
+  );
+});
