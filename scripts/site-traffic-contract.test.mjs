@@ -18,7 +18,9 @@ assert.equal(siteTrafficRouteGroup("/api/catalog/companies"), null);
 assert.equal(siteTrafficRouteGroup("https://example.com/"), null);
 
 const api = readFileSync(new URL("../functions/api/site-traffic.ts", import.meta.url), "utf8");
+const publicApi = readFileSync(new URL("../functions/api/site-traffic-public.ts", import.meta.url), "utf8");
 const collector = readFileSync(new URL("../src/components/SiteTrafficCollector.astro", import.meta.url), "utf8");
+const publicCounter = readFileSync(new URL("../src/components/PublicTrafficCounter.astro", import.meta.url), "utf8");
 const dashboard = readFileSync(new URL("../src/pages/internal/site-traffic.astro", import.meta.url), "utf8");
 const layout = readFileSync(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8");
 
@@ -29,6 +31,14 @@ assert.match(api, /PRIMARY KEY\(day, route_group\)/);
 assert.match(api, /sessions INTEGER NOT NULL DEFAULT 0/);
 assert.match(api, /ALTER TABLE hermes_site_traffic_daily ADD COLUMN sessions/);
 assert.doesNotMatch(api, /CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|client_email|client_phone/);
+
+assert.doesNotMatch(publicApi, /requireInternalOwner/);
+assert.match(publicApi, /page_views_today/);
+assert.match(publicApi, /page_views_month/);
+assert.match(publicApi, /sessions_today/);
+assert.match(publicApi, /monthStart/);
+assert.match(publicApi, /Visitor sessions are consented browser sessions, not unique people/);
+assert.doesNotMatch(publicApi, /route_group|daily:|CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|email|phone/);
 
 assert.match(collector, /localStorage\.getItem\(CONSENT_KEY\) === "granted"/);
 assert.match(collector, /navigator\.webdriver === true/);
@@ -42,6 +52,13 @@ assert.match(dashboard, /fetch\("\/api\/site-traffic"/);
 assert.match(dashboard, /consented first-party traffic/i);
 assert.match(dashboard, /Browser sessions · 28 days/);
 assert.match(dashboard, /International Catalog \/ SEO-GEO discovery/);
+assert.match(publicCounter, /\/api\/site-traffic-public/);
+assert.match(publicCounter, /visitor sessions today/i);
+assert.match(publicCounter, /views today/i);
+assert.match(publicCounter, /views this month/i);
+assert.match(publicCounter, /browser sessions are not unique people/i);
 assert.match(layout, /<SiteTrafficCollector \/>/);
+assert.match(layout, /<PublicTrafficCounter \/>/);
+assert.match(layout, /PUBLIC_TRAFFIC_BLOCKED_PREFIXES/);
 
 console.log("Owner site traffic counter contract OK");
