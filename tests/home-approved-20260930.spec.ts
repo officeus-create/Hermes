@@ -187,13 +187,21 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  const echo=page.locator('[data-home-logistics-echo]');
- const scene=page.locator('[data-home-logistics-scene-image]');
+ const scenes=page.locator('[data-home-logistics-scene-image]');
+ const weatherLayers=page.locator('[data-home-logistics-weather-layer]');
+ const activeScene=page.locator('[data-home-logistics-scene-image][data-logistics-layer-state="active"]');
  await expect(echo).toHaveCount(1);
+ await expect(scenes).toHaveCount(2);
+ await expect(weatherLayers).toHaveCount(2);
  await expect(echo).toHaveAttribute('data-logistics-echo-count','6');
  await expect(echo).toHaveAttribute('data-logistics-echo-scenes','car-hauler,dry-van,reefer,flatbed,step-deck,hotshot');
- await expect(scene).toHaveAttribute('src','/images/logistics-living/car-hauler-512.webp');
- await expect(scene).toHaveAttribute('srcset',/car-hauler-887\.webp 887w/);
- await expect(scene).toHaveAttribute('data-logistics-scene-ready','car-hauler');
+ await expect(activeScene).toHaveCount(1);
+ await expect(activeScene).toHaveAttribute('src','/images/logistics-living/car-hauler-512.webp');
+ await expect(activeScene).toHaveAttribute('srcset',/car-hauler-887\.webp 887w/);
+ await expect(activeScene).toHaveAttribute('data-logistics-scene-ready','car-hauler');
+ const transitionMs=await scenes.first().evaluate(node=>parseFloat(getComputedStyle(node).transitionDuration)*1000);
+ expect(transitionMs).toBeGreaterThanOrEqual(700);
+ expect(transitionMs).toBeLessThanOrEqual(800);
  const decoded=await page.evaluate(async()=>{
   const names=['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot'];
   return Promise.all(names.map(async(name)=>{
@@ -208,30 +216,38 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
- const settledScene=await scene.getAttribute('data-logistics-scene-ready');
+ await expect.poll(async()=>activeScene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ const transitioning=await scenes.evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).opacity)));
+ expect(transitioning.every(value=>value>0&&value<1)).toBe(true);
+ await page.waitForTimeout(800);
+ const settledScene=await activeScene.getAttribute('data-logistics-scene-ready');
  expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));
- expect(await scene.evaluate(node=>{const image=node as HTMLImageElement;return image.complete&&image.naturalWidth>0&&getComputedStyle(image).visibility!=='hidden';})).toBe(true);
+ await expect(activeScene).toHaveCSS('opacity','1');
+ await expect(page.locator('[data-home-logistics-scene-image][data-logistics-layer-state="idle"]')).toHaveCSS('opacity','0');
+ expect(await activeScene.evaluate(node=>{const image=node as HTMLImageElement;return image.complete&&image.naturalWidth>0&&getComputedStyle(image).visibility!=='hidden';})).toBe(true);
 
  const reduced=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
  const mobile=await reduced.newPage();
  await mobile.goto('/');
  const reducedEcho=mobile.locator('[data-home-logistics-echo]');
+ const reducedActive=mobile.locator('[data-home-logistics-scene-image][data-logistics-layer-state="active"]');
  await expect(reducedEcho).toHaveAttribute('data-logistics-echo-scene','car-hauler');
  await expect(reducedEcho).toHaveAttribute('data-logistics-echo-motion','reduced');
+ await expect(reducedActive).toHaveAttribute('data-logistics-scene-ready','car-hauler');
+ await expect(reducedActive).toHaveCSS('transition-duration','0s');
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await reduced.close();
 });
 
 test('Home dusk Logistics polish keeps Hotshot readable without flattening the scene',async({page})=>{
  await page.goto('/');
- const echo=page.locator('[data-home-logistics-echo]');
- const scene=page.locator('[data-home-logistics-scene-image]');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','hotshot'));
- await scene.evaluate(node=>node.setAttribute('data-logistics-scene-ready','hotshot'));
- await expect(echo.locator('.home-logistics-weather')).toHaveCSS('opacity','0.58');
- expect(await echo.evaluate(node=>getComputedStyle(node,'::before').opacity)).toBe('0.68');
- await expect(scene).toHaveCSS('filter','brightness(1.04)');
+ const activeWeather=page.locator('[data-home-logistics-weather-layer][data-logistics-layer-state="active"]');
+ const activeScene=page.locator('[data-home-logistics-scene-image][data-logistics-layer-state="active"]');
+ await activeWeather.evaluate(node=>node.setAttribute('data-logistics-echo-scene','hotshot'));
+ await activeScene.evaluate(node=>node.setAttribute('data-logistics-scene-ready','hotshot'));
+ await expect(activeWeather.locator('.home-logistics-weather')).toHaveCSS('opacity','0.58');
+ expect(await activeWeather.evaluate(node=>getComputedStyle(node,'::before').opacity)).toBe('0.68');
+ await expect(activeScene).toHaveCSS('filter','brightness(1.04)');
 });
 
 test('Home uses a quiet corporate shell and purposeful direction scenes',async({browser,page},testInfo)=>{
