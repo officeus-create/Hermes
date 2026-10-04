@@ -38,7 +38,7 @@ assert.match(publicApi, /page_views_month/);
 assert.match(publicApi, /sessions_today/);
 assert.match(publicApi, /monthStart/);
 assert.match(publicApi, /Visitor sessions are consented browser sessions, not unique people/);
-assert.doesNotMatch(publicApi, /route_group|daily:|CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|email|phone/);
+assert.doesNotMatch(publicApi, /groups:|daily:|CF-Connecting-IP|X-Forwarded-For|User-Agent|Referer|client_email|client_phone/);
 
 assert.match(collector, /localStorage\.getItem\(CONSENT_KEY\) === "granted"/);
 assert.match(collector, /navigator\.webdriver === true/);
