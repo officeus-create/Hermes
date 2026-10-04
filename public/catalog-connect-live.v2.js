@@ -60,12 +60,16 @@
       tile.append(countNode);
     }
     countNode.textContent = String(nextCount);
-    tile.classList.add('active');
+    const hasStatePage = tile instanceof HTMLAnchorElement && tile.hasAttribute('href');
+    tile.classList.toggle('active', hasStatePage);
+    tile.classList.toggle('has-profiles', !hasStatePage);
     tile.classList.remove('pending');
     const currentLabel = tile.getAttribute('aria-label') || tile.getAttribute('title') || normalizedState;
     const stateName = currentLabel.split(':')[0]?.trim() || normalizedState;
-    tile.setAttribute('aria-label', `${stateName}: ${nextCount} business profile${nextCount === 1 ? '' : 's'}`);
-    tile.removeAttribute('title');
+    const label = `${stateName}: ${nextCount} business profile${nextCount === 1 ? '' : 's'}${hasStatePage ? '' : '; available in catalog search; state directory page unavailable'}`;
+    tile.setAttribute('aria-label', label);
+    if (hasStatePage) tile.removeAttribute('title');
+    else tile.setAttribute('title', label);
   };
 
   const makeCard = (company, profileHref = "") => {
@@ -156,14 +160,12 @@
           && String(company?.countryCode || '').toUpperCase() === 'UA'
           && ['business_club','business_academy','online_school','courses','coaching','corporate_academy'].includes(String(company?.companyType || ''));
 
-        if (company?.companyType === 'repair_shop' && repairGrid && repairHref && !repairExistingIds.has(id)) {
+        if (company?.companyType === 'repair_shop' && String(company?.countryCode || '').trim().toUpperCase() === 'US' && repairGrid && repairHref && !repairExistingIds.has(id)) {
           const rendered = makeCard(company, repairHref);
           repairGrid.append(rendered.article);
           repairExistingIds.add(id);
-          if (String(company?.countryCode || 'US').toUpperCase() === 'US') {
-            reconcileCategoryCount(rendered.typeLabel);
-            reconcileStateCount(company?.state);
-          }
+          reconcileCategoryCount(rendered.typeLabel);
+          reconcileStateCount(company?.state);
           continue;
         }
         if (company?.companyType === 'academy_business' && academyGrid && academyHref && !academyExistingIds.has(id)) {
