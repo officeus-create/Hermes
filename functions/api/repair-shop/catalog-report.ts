@@ -116,6 +116,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       website_clicks: totals.website_click || 0,
       request_starts: totals.request_start || 0,
       booking_starts: totals.booking_start || 0,
+      claim_starts: totals.claim_start || 0,
+      growth_starts: totals.growth_start || 0,
       crm_inquiries: Number(inquirySummary?.total || 0),
       crm_inquiries_new: Number(inquirySummary?.new_count || 0),
       crm_inquiries_contacted: Number(inquirySummary?.contacted_count || 0),

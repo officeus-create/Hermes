@@ -65,7 +65,8 @@ const indexedChildSitemapFiles = [
 // September 28 adds Little Rock, Guy and Cedarville locality pages plus three unclaimed Arkansas profiles.
 // September 29 adds three bounded secondary international discovery profiles plus the Irpin locality hub.
 // October 1 adds one intentional indexable Marketing Growth Audit Example in Hermes Catalog; the KNB branded concept remains noindex.
-const nonInsightsExpectedPageUrlCount = 297;
+// October 3 adds one verified Wisconsin owner-operator vacancy owner linked from the existing careers hub.
+const nonInsightsExpectedPageUrlCount = 298;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;

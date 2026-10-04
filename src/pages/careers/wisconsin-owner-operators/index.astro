@@ -1,0 +1,338 @@
+---
+import { ArrowRight, Check, Clock3, ExternalLink, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { isVacancyEligibleForJobPosting, publicVacancyRegistry } from "../../../data/careers-governance";
+
+const vacancy = publicVacancyRegistry.find((item) => item.slug === "wisconsin-owner-operators");
+if (!vacancy) throw new Error("Wisconsin Owner-Operators vacancy record is missing from careers governance.");
+
+const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
+const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
+const sourceUrl = vacancy.submissionUrl!;
+const title = vacancyIsCurrent
+  ? "Wisconsin Owner-Operator Opportunities | Hermes Logistics"
+  : "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
+const description = vacancyIsCurrent
+  ? "Review the verified Wisconsin owner-operator opportunity for operators with their own truck. Trailer and equipment eligibility are checked individually. See recruiting hours, honest terms, and the live 100Hires source."
+  : "Review the Wisconsin owner-operator recruiting scope and check the current Hermes careers hub for verified publication status.";
+
+const equipment = [
+  "Dry Van",
+  "Reefer",
+  "Flatbed",
+  "Step Deck",
+  "Car Hauler",
+  "Hotshot",
+  "Box Truck",
+  "Power Only — trailer and operating arrangement reviewed individually",
+  "Conestoga",
+  "RGN / Lowboy",
+  "Other commercial truck and trailer combinations",
+];
+
+const wisconsinMarkets = [
+  "Milwaukee",
+  "Madison",
+  "Green Bay",
+  "Appleton",
+  "Kenosha",
+  "Racine",
+  "Waukesha",
+  "Eau Claire",
+  "Oshkosh",
+  "Wausau",
+  "Statewide Wisconsin",
+];
+
+const support = [
+  "Load search and booking support where the applicable carrier program permits",
+  "Rate negotiation and broker or shipper communication",
+  "Route, pickup, and delivery coordination",
+  "Rate Confirmation and paperwork support",
+  "A fit discussion when the owner-operator already works with a dispatcher",
+];
+
+const faq = [
+  {
+    question: "Is this a company-driver job?",
+    answer: "No. This verified opportunity is for Wisconsin owner-operators who already have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility are therefore confirmed individually before onboarding.",
+  },
+  {
+    question: "Does Hermes force owner-operators to accept loads?",
+    answer: "No. The published opportunity states no forced dispatch. The owner-operator keeps the final decision on a load after reviewing the rate, route, and operating conditions where the applicable carrier program permits.",
+  },
+  {
+    question: "Does this opportunity guarantee loads or income?",
+    answer: "No. The opportunity does not guarantee loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time. Compensation, deductions, authority arrangements, carrier requirements, and final terms are discussed individually.",
+  },
+  {
+    question: "Where is the verified external vacancy source?",
+    answer: "The currently verified external source is the live 100Hires listing linked on this page. Hermes adds another source only after that exact vacancy is publicly accessible and read back as current.",
+  },
+];
+
+const jobDescription = [
+  "Hermes is reviewing Wisconsin owner-operators who have their own commercial truck for compatible carrier or operating programs. The source title says own truck and trailer; Power Only and other equipment arrangements are reviewed individually before eligibility is confirmed.",
+  `Wisconsin markets: ${wisconsinMarkets.join(", ")}.`,
+  `Equipment that may be considered: ${equipment.join(", ")}.`,
+  "No forced dispatch. The owner-operator reviews the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.",
+  "Compensation, percentage, carrier requirements, authority arrangements, deductions, and final operating terms are discussed individually. No loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time are guaranteed.",
+  "Application route: review the live 100Hires source or call Owner-Operator Recruiting — Wisconsin during the published Central Time hours.",
+].join("\n\n");
+
+const schema = [
+  ...(vacancyIsCurrent ? [{
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: vacancy.title,
+    description: jobDescription,
+    datePosted: vacancy.datePosted,
+    validThrough: `${vacancy.expiresAt}T23:59:59Z`,
+    employmentType: vacancy.employmentType,
+    directApply: false,
+    url: canonicalUrl,
+    sameAs: sourceUrl,
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressRegion: "Wisconsin",
+        addressCountry: "US",
+      },
+    },
+    applicantLocationRequirements: { "@type": "AdministrativeArea", name: "Wisconsin, United States" },
+    hiringOrganization: {
+      "@type": "Organization",
+      "@id": "https://hermeslogisticsus.com/#organization",
+      name: "Hermes Logistics LLC",
+      sameAs: "https://hermeslogisticsus.com/",
+    },
+  }] : []),
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Careers", item: "https://hermeslogisticsus.com/logistics/careers/" },
+      { "@type": "ListItem", position: 3, name: "Wisconsin Owner-Operators", item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="owner-operator-career-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="career-hero">
+        <div class="shell">
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Careers", href: "/logistics/careers/" },
+            ]}
+            current="Wisconsin Owner-Operators"
+          />
+          <p class="eyebrow">Hermes Logistics · Owner-Operator Recruiting — Wisconsin</p>
+          <h1>{vacancy.title}</h1>
+          <p class="career-lead">Hermes is reviewing Wisconsin owner-operators who have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
+          <p class="career-updated">Verified live source · updated October 3, 2026</p>
+          <div class="career-facts" aria-label="Opportunity facts">
+            <span><MapPin size={18} aria-hidden="true" /> Wisconsin</span>
+            <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
+            <span><ShieldCheck size={18} aria-hidden="true" /> No forced dispatch</span>
+          </div>
+          {vacancyIsCurrent ? (
+            <div class="career-actions" id="apply">
+              <a class="button button-primary" href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-job-apply>
+                View and apply on 100Hires <ExternalLink size={18} aria-hidden="true" />
+              </a>
+              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Call recruiting</a>
+            </div>
+          ) : (
+            <div class="career-actions">
+              <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section class="section source-section" aria-labelledby="vacancy-sources-title">
+        <div class="shell split-grid">
+          <div>
+            <p class="eyebrow">Verified vacancy sources</p>
+            <h2 id="vacancy-sources-title">Use the source that is live today.</h2>
+            <p>As of October 3, 2026, the exact 100Hires vacancy link is the only external source verified live for this Wisconsin owner-operator opportunity. The separate 100Hires employer page currently reports no active postings, so it is shown only as an employer-profile reference and not as a complete vacancy directory.</p>
+          </div>
+          <article class="source-card">
+            <span>Live external source</span>
+            <h3>100Hires</h3>
+            <p>Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch</p>
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-source>
+              Open the 100Hires vacancy <ExternalLink size={17} aria-hidden="true" />
+            </a>
+            <a href={vacancy.sourceDirectoryUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-directory>
+              Open the Hermes employer page on 100Hires <ExternalLink size={17} aria-hidden="true" />
+            </a>
+            <small>The employer page said “There are no active job postings right now” at the October 3 source review. Use the exact vacancy link above for this role.</small>
+            <small>Publication eligibility is recalculated during each site build. It does not update static HTML automatically between builds; recruiting must reverify this source by October 10, 2026.</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="section details-section" aria-labelledby="who-fits-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">Who this is for</p>
+            <h2 id="who-fits-title">Wisconsin owner-operators with commercial equipment.</h2>
+            <p>This is not a company-driver vacancy. The opportunity is for an owner-operator with their own commercial truck. Trailer requirements and Power Only eligibility are confirmed individually together with home base, experience, safety history, preferred lanes, schedule, and operating support needs.</p>
+          </div>
+          <div class="detail-grid">
+            <article>
+              <Truck size={22} aria-hidden="true" />
+              <h3>Equipment considered</h3>
+              <ul>{equipment.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
+            </article>
+            <article>
+              <MapPin size={22} aria-hidden="true" />
+              <h3>Wisconsin coverage</h3>
+              <ul>{wisconsinMarkets.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
+            </article>
+            <article>
+              <ShieldCheck size={22} aria-hidden="true" />
+              <h3>Support may include</h3>
+              <ul>{support.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section recruiting-section" aria-labelledby="recruiting-contact-title">
+        <div class="shell recruiting-grid">
+          <div>
+            <p class="eyebrow">Public recruiting contact</p>
+            <h2 id="recruiting-contact-title">Owner-Operator Recruiting — Wisconsin</h2>
+            <a class="recruiting-phone" href="tel:+14142697377">+1 (414) 269-7377</a>
+            <p>The recruiting number is candidate-facing. Account-verification numbers are not published on this page.</p>
+          </div>
+          <div class="hours-card">
+            <Clock3 size={24} aria-hidden="true" />
+            <div>
+              <h3>Call hours · Central Time</h3>
+              <p><strong>Monday–Friday:</strong> after 2:15 PM CT</p>
+              <p><strong>Saturday–Sunday:</strong> 10:00 AM–9:00 PM CT</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section terms-section" aria-labelledby="terms-title">
+        <div class="shell split-grid">
+          <div>
+            <p class="eyebrow">Operating terms</p>
+            <h2 id="terms-title">No forced dispatch. No invented income promise.</h2>
+            <p>The owner-operator keeps the final decision on the loads they run. Review the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>
+            <p>Compensation, percentage, carrier-specific requirements, authority arrangements, deductions, and final operating terms are discussed individually by phone before onboarding.</p>
+          </div>
+          <aside class="boundary-card">
+            <h3>This posting does not guarantee:</h3>
+            <ul>
+              <li>Loads, income, weekly gross, or miles</li>
+              <li>Dedicated freight or universal weekend home time</li>
+              <li>Operating authority, insurance, or acceptance into a carrier program</li>
+              <li>A specific rate, lane, start date, or onboarding result</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section resources-section" aria-labelledby="resources-title">
+        <div class="shell">
+          <p class="eyebrow">Verified Hermes resources</p>
+          <h2 id="resources-title">Review the operation before choosing the next step.</h2>
+          <div class="resource-grid">
+            <a href="/logistics/owner-operator-dispatch-support/"><h3>Owner-Operator Support</h3><p>Review the business-to-business dispatch and back-office support scope.</p><span>Open support overview <ArrowRight size={16} aria-hidden="true" /></span></a>
+            <a href="/load-board/"><h3>Hermes Load Board</h3><p>Use decision-support infrastructure without treating preview rows as guaranteed freight.</p><span>Open Load Board <ArrowRight size={16} aria-hidden="true" /></span></a>
+            <a href="/logistics/resources/rpm-calculator/"><h3>RPM & Profitability</h3><p>Compare revenue-per-mile assumptions before accepting an operating opportunity.</p><span>Open calculator <ArrowRight size={16} aria-hidden="true" /></span></a>
+            <a href="/logistics/new-authority-car-hauler-support/"><h3>New Authority Readiness</h3><p>Review readiness support without assuming automatic authority or freight access.</p><span>Review readiness <ArrowRight size={16} aria-hidden="true" /></span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section faq-section" aria-labelledby="faq-title">
+        <div class="shell faq-grid">
+          <div><p class="eyebrow">Common questions</p><h2 id="faq-title">Before you contact recruiting.</h2></div>
+          <div>{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .owner-operator-career-page { background: #f7f9fc; color: #14213d; }
+  .career-hero { padding: clamp(6.5rem, 11vw, 9rem) 0 clamp(3.5rem, 8vw, 6rem); background: radial-gradient(circle at 82% 18%, rgba(71,110,255,.24), transparent 32%), #071038; color: white; }
+  .career-hero h1 { max-width: 18ch; margin: .7rem 0 1rem; font-size: clamp(2.5rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.045em; }
+  .career-lead { max-width: 780px; color: #d8e2ff; font-size: clamp(1.05rem, 1.7vw, 1.25rem); line-height: 1.7; }
+  .career-updated { margin-top: 1rem; color: #aebdff; font-weight: 750; }
+  .career-facts, .career-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+  .career-facts span { display: inline-flex; align-items: center; gap: .5rem; padding: .65rem .8rem; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.08); }
+  .career-actions .button:not(.button-primary) { color: white; border-color: rgba(255,255,255,.45); }
+  .split-grid, .recruiting-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+  .source-section { background: white; }
+  .source-section h2, .section-heading h2, .recruiting-section h2, .terms-section h2, .resources-section h2, .faq-section h2 { max-width: 18ch; margin: .4rem 0 1rem; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.02; letter-spacing: -.035em; }
+  .source-section p, .section-heading p, .recruiting-section p, .terms-section p, .resource-grid p, .faq-section p { color: #526181; line-height: 1.7; }
+  .source-card, .hours-card, .boundary-card { padding: 1.4rem; border: 1px solid rgba(28,62,141,.14); border-radius: 18px; background: #f7f9fc; }
+  .source-card > span { color: #166534; font-size: .8rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+  .source-card h3 { margin: .45rem 0; font-size: 1.5rem; }
+  .source-card a { display: flex; align-items: center; gap: .45rem; min-height: 44px; color: #1746b3; font-weight: 800; text-underline-offset: 4px; }
+  .section-heading { max-width: 820px; margin-bottom: 1.5rem; }
+  .detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .detail-grid article { padding: 1.25rem; border: 1px solid rgba(28,62,141,.14); border-radius: 18px; background: white; }
+  .detail-grid article > svg { color: #315fd7; }
+  .detail-grid h3 { margin: .8rem 0; color: #122b72; }
+  .detail-grid ul, .boundary-card ul { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+  .detail-grid li { display: flex; gap: .5rem; align-items: flex-start; color: #526181; line-height: 1.45; }
+  .detail-grid li svg { flex: none; margin-top: .15rem; color: #267548; }
+  .recruiting-section { background: #eef3ff; }
+  .recruiting-phone { display: inline-block; margin: .2rem 0 .7rem; color: #122b72; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 850; }
+  .hours-card { display: flex; gap: 1rem; background: white; }
+  .hours-card svg { flex: none; color: #315fd7; }
+  .hours-card h3 { margin: 0 0 .75rem; }
+  .hours-card p { margin: .35rem 0; }
+  .terms-section { background: white; }
+  .boundary-card { border-left: 5px solid #315fd7; }
+  .boundary-card h3 { margin-top: 0; }
+  .boundary-card li { color: #526181; line-height: 1.55; }
+  .boundary-card li::before { content: "No — "; color: #b42318; font-weight: 800; }
+  .resource-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; }
+  .resource-grid a { display: flex; flex-direction: column; min-height: 230px; padding: 1.2rem; border: 1px solid rgba(28,62,141,.14); border-radius: 18px; background: white; color: inherit; text-decoration: none; }
+  .resource-grid h3 { margin: 0 0 .6rem; color: #122b72; }
+  .resource-grid span { display: inline-flex; align-items: center; gap: .35rem; margin-top: auto; color: #1746b3; font-weight: 800; }
+  .faq-section { background: white; }
+  .faq-grid { display: grid; grid-template-columns: minmax(220px, .6fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); }
+  .faq-section details { border-top: 1px solid #dce4ed; }
+  .faq-section details:last-child { border-bottom: 1px solid #dce4ed; }
+  .faq-section summary { cursor: pointer; padding: 1rem 0; color: #122b72; font-weight: 800; }
+  .faq-section details p { margin: 0 0 1rem; }
+  @media (max-width: 900px) { .detail-grid, .resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 720px) {
+    .split-grid, .recruiting-grid, .faq-grid, .detail-grid, .resource-grid { grid-template-columns: 1fr; }
+    .career-hero { padding-top: 6rem; }
+    .career-actions .button { width: 100%; justify-content: center; }
+    .resource-grid a { min-height: 0; }
+  }
+</style>
