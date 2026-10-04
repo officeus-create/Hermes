@@ -30,6 +30,13 @@ const first5ActivationClaims = {
   event_name: "issue_comment",
 };
 
+const repairAccessProofClaims = {
+  ...baseClaims,
+  aud: "hermes-connect-repair-access-proof",
+  workflow_ref: "officeus-create/Hermes/.github/workflows/repair-access-state-production-proof.yml@refs/heads/main",
+  event_name: "issue_comment",
+};
+
 test("weekly reminder scheduler accepts only the expected GitHub Actions identity", async () => {
   expect(oidc.validateGitHubOidcClaims(baseClaims, now)).toBe(true);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
@@ -77,6 +84,15 @@ test("First-5 activation identity cannot be substituted with reminder or cabinet
   expect(oidc.validateGitHubFirst5ActivationOidcClaims(cabinetAuditClaims, now)).toBe(false);
   expect(oidc.validateGitHubCabinetAuditOidcClaims(first5ActivationClaims, now)).toBe(false);
   expect(oidc.validateGitHubOidcClaims(first5ActivationClaims, now)).toBe(false);
+});
+
+test("repair access proof accepts only its exact main issue-comment workflow identity", async () => {
+  expect(oidc.validateGitHubRepairAccessProofOidcClaims(repairAccessProofClaims, now)).toBe(true);
+  expect(oidc.validateGitHubRepairAccessProofOidcClaims({ ...repairAccessProofClaims, aud: first5ActivationClaims.aud }, now)).toBe(false);
+  expect(oidc.validateGitHubRepairAccessProofOidcClaims({ ...repairAccessProofClaims, workflow_ref: first5ActivationClaims.workflow_ref }, now)).toBe(false);
+  expect(oidc.validateGitHubRepairAccessProofOidcClaims({ ...repairAccessProofClaims, event_name: "workflow_dispatch" }, now)).toBe(false);
+  expect(oidc.validateGitHubRepairAccessProofOidcClaims({ ...repairAccessProofClaims, ref: "refs/heads/feature" }, now)).toBe(false);
+  expect(oidc.validateGitHubFirst5ActivationOidcClaims(repairAccessProofClaims, now)).toBe(false);
 });
 
 test("cabinet audit workflow no longer depends on password artifacts or login cookies", async () => {
