@@ -128,18 +128,36 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     let sceneTimer: number | undefined;
     let visible = false;
 
-    const applyScene = () => {
+    let sceneRequest = 0;
+    const preloadScene = (scene: (typeof scenes)[number]) => {
+      if (!sceneImage) return Promise.resolve();
+      const candidate = new Image();
+      candidate.sizes = sceneImage.sizes;
+      candidate.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-887.webp 887w`;
+      candidate.src = `/images/logistics-living/${scene}-512.webp`;
+      if (candidate.decode) return candidate.decode();
+      return new Promise<void>((resolve, reject) => {
+        candidate.addEventListener("load", () => resolve(), { once: true });
+        candidate.addEventListener("error", () => reject(new Error(`Failed to decode ${scene}`)), { once: true });
+      });
+    };
+    const applyScene = async () => {
       const scene = scenes[sceneIndex];
-      logisticsEcho.dataset.logisticsEchoScene = scene;
+      const request = ++sceneRequest;
       if (sceneImage) {
+        try {
+          await preloadScene(scene);
+        } catch {
+          return;
+        }
+        if (request !== sceneRequest) return;
         sceneImage.src = `/images/logistics-living/${scene}-512.webp`;
         sceneImage.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-887.webp 887w`;
-        const next = scenes[(sceneIndex + 1) % scenes.length];
-        const preload = new Image();
-        preload.sizes = sceneImage.sizes;
-        preload.srcset = `/images/logistics-living/${next}-512.webp 512w, /images/logistics-living/${next}-887.webp 887w`;
-        preload.src = `/images/logistics-living/${next}-512.webp`;
+        sceneImage.dataset.logisticsSceneReady = scene;
       }
+      logisticsEcho.dataset.logisticsEchoScene = scene;
+      const next = scenes[(sceneIndex + 1) % scenes.length];
+      void preloadScene(next).catch(() => undefined);
     };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
@@ -267,7 +285,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-story-frame:nth-child(3){transform:translate(17%,6%) rotate(10deg);background:#fff7ed}.home-story-frame:nth-child(3) b:first-child{background:linear-gradient(145deg,#f4c18b,#aa6d57)}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(3){animation:home-story-turn 2.4s ease-in-out 2}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(2){animation:home-story-turn 2.4s ease-in-out .35s 2}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
+.home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
 .home-system-scan{position:absolute;inset:0 auto 0 -22%;width:20%;background:linear-gradient(90deg,transparent,#ffe6aa70,transparent);opacity:0}
 .home-system-node{position:absolute;top:20%;left:12%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.58}
 
@@ -314,7 +332,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.43rem}.home-live-path{display:none}.home-live-step{padding:4px 6px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.4rem}.home-live-step em{font-size:.5rem;line-height:1.05;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-academy-track{gap:6px;right:4%}.home-academy-track i{padding:5px 7px;font-size:.6rem;line-height:1.1}}
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>
