@@ -1,6 +1,8 @@
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { ensureRepairShopProfileSchema } from "./_lib/repair-shop-schema.mjs";
-import { saveCatalogBusinessInquiry, markCatalogBusinessInquiryInternalDelivery, markCatalogBusinessInquiryOwnerDelivery } from "./_lib/catalog-business-inquiries.mjs";
+import { saveCatalogBusinessInquiry } from "./_lib/catalog-business-inquiries.mjs";
+import { deliverCatalogInquiry } from "./_lib/catalog-inquiry-delivery.mjs";
+import { recipientFingerprint } from "./_lib/catalog-inquiry-receipts.mjs";
 
 type KvNamespace = {
   get(key: string): Promise<string | null>;
@@ -65,7 +67,6 @@ type BusinessLeadInput = {
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
 const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
-const ACCOUNT_EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send-account";
 const MAX_BODY_BYTES = 16_000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
@@ -199,45 +200,17 @@ async function resolveCatalogRepairShop(db: any, catalogBusinessId: string, cata
   return { linked: false, trusted: false, businessName: "" };
 }
 
-async function resolveCatalogOwnerEmail(db: any, ownerSpecialistId: string) {
+async function resolveCatalogOwnerEmail(db: any, ownerSpecialistId: string, shopId: string) {
   if (!ownerSpecialistId) return "";
   const shop = await db.prepare(
-    "SELECT catalog_email_notifications_opt_in FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1"
-  ).bind(ownerSpecialistId).first();
+    "SELECT catalog_email_notifications_opt_in FROM repair_shops WHERE owner_specialist_id = ? AND id = ? LIMIT 1"
+  ).bind(ownerSpecialistId, shopId).first();
   if (Number(shop?.catalog_email_notifications_opt_in || 0) !== 1) return "";
   const row = await db.prepare(
     "SELECT email, role FROM specialists WHERE id = ? LIMIT 1"
   ).bind(ownerSpecialistId).first();
   const email = clean(row?.email, 320).toLowerCase();
   return String(row?.role || "") === "Shop Owner" && isEmail(email) ? email : "";
-}
-
-async function deliverCatalogOwnerInquiry(env: Env, requestId: string, recipientEmail: string, text: string) {
-  if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN || !recipientEmail) return false;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT_MS);
-  try {
-    const response = await env.LEAD_EMAIL_SERVICE.fetch(ACCOUNT_EMAIL_SERVICE_URL, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.LEAD_SERVICE_TOKEN}`,
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-      body: JSON.stringify({
-        request_id: `${requestId}_owner`.slice(0, 80),
-        subject: "[HERMES CATALOG] [CUSTOMER INQUIRY]",
-        recipient_email: recipientEmail,
-        text,
-      }),
-      signal: controller.signal,
-    });
-    return response.ok;
-  } catch {
-    return false;
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 const getServices = (value: unknown) => {
@@ -356,25 +329,45 @@ export async function onRequestPost({ request, env }: Context) {
     (catalogBusinessRequest && (!catalogBusinessId || !catalogProfile)) ||
     message.length < 10;
 
-  if (invalid) return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
+  if (invalid) {
+    // Only a correlated, provably unpersisted Catalog rejection may unlock correction.
+    // Existing inquiries or a failed lookup remain unresolved, never eligible for a new ID.
+    if (catalogBusinessRequest && isRequestId(requestId) && requestId === headerRequestId && env.DB) {
+      try {
+        const existing = await env.DB.prepare("SELECT request_id FROM catalog_business_inquiries WHERE request_id = ? LIMIT 1").bind(requestId).first();
+        if (!existing) return json(allowedOrigin, 400, {
+          success: false, request_id: requestId, error: "invalid_lead",
+          delivery_status: "rejected", crm_saved: false, correction_allowed: true, retryable: false,
+        });
+      } catch { /* Absence could not be established: preserve the conservative response. */ }
+    }
+    return json(allowedOrigin, 400, { success: false, request_id: requestId, error: "invalid_lead" });
+  }
 
   const requestKey = `business-lead:id:${await hash(requestId)}`;
   const alreadyDelivered = await env.LEAD_LIMITS.get(requestKey);
-  let catalogRecord: { linked: boolean; ownerEmail: string } | null = null;
+  let catalogRecord: { linked: boolean; ownerEmail: string; row: any } | null = null;
   if (catalogBusinessRequest) {
     if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "catalog_crm_not_configured" });
     try {
       const repairShop = await resolveCatalogRepairShop(env.DB, catalogBusinessId, catalogProfile, catalogSourceRef);
-      const payloadHash = await hash(JSON.stringify({
+      const legacyPayloadHash = await hash(JSON.stringify({
         catalogBusinessId, catalogProfile: normalizeCatalogProfilePath(catalogProfile), catalogSourceRef,
         name, email, phone, whatsapp, telegram, message, services,
       }));
       const createdAt = new Date().toISOString();
       const retentionUntil = new Date(Date.now() + CATALOG_INQUIRY_RETENTION_MS).toISOString();
-      const ownerEmail = repairShop.linked ? await resolveCatalogOwnerEmail(env.DB, repairShop.ownerSpecialistId || "") : "";
+      const ownerEmail = repairShop.linked ? await resolveCatalogOwnerEmail(env.DB, repairShop.ownerSpecialistId || "", repairShop.shopId || "") : "";
+      const canonicalPayload = {interest,name,email,company,cityCountry,phone,whatsapp,telegram,websiteOrSocial,
+        planningBudget,planningHorizon,preferredLanguage,preferredContactTime,services,message,catalogBusinessId,
+        catalogProfile:normalizeCatalogProfilePath(catalogProfile),catalogSourceRef,sourcePath,attribution};
+      const payloadHash = "v2:" + await hash(JSON.stringify(canonicalPayload));
       const saved = await saveCatalogBusinessInquiry(env.DB, {
         requestId,
         payloadHash,
+        legacyPayloadHash,
+        deliveryPayload: {...canonicalPayload,requestId},
+        ownerFingerprint: ownerEmail ? await recipientFingerprint("catalog:owner", repairShop.ownerSpecialistId || "", ownerEmail) : "",
         catalogBusinessId,
         catalogProfile: normalizeCatalogProfilePath(catalogProfile) || catalogProfile,
         catalogSourceRef,
@@ -396,10 +389,20 @@ export async function onRequestPost({ request, env }: Context) {
         createdAt,
       });
       if (saved.conflict) return json(allowedOrigin, 409, { success: false, error: "request_id_payload_conflict" });
-      catalogRecord = { linked: Boolean(repairShop.linked), ownerEmail };
+      catalogRecord = { linked: Boolean(repairShop.linked), ownerEmail, row: saved.row };
     } catch (error) {
-      console.error("catalog_inquiry_persist_failed", { request_id: requestId, error: error instanceof Error ? error.message : "unknown_error" });
+      console.error("catalog_inquiry_persist_failed");
       return json(allowedOrigin, 503, { success: false, error: "catalog_crm_temporarily_unavailable" });
+    }
+  }
+  if (catalogRecord) {
+    const rateKey = `business-lead:rate:${await hash(request.headers.get("CF-Connecting-IP") || "unknown")}`;
+    try {
+      const result = await deliverCatalogInquiry(env, catalogRecord.row, catalogRecord.linked, Number(await env.LEAD_LIMITS.get(rateKey) || "0"), rateKey);
+      return json(allowedOrigin, result.status, result.payload);
+    } catch {
+      console.error("catalog_inquiry_receipt_unavailable");
+      return json(allowedOrigin, 503, {success:false,request_id:requestId,crm_saved:true,crm_linked:catalogRecord.linked,error:"delivery_review_required",retryable:false});
     }
   }
   if (alreadyDelivered) {
@@ -407,7 +410,6 @@ export async function onRequestPost({ request, env }: Context) {
       success: true,
       duplicate: true,
       request_id: requestId,
-      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
     });
   }
 
@@ -479,7 +481,6 @@ export async function onRequestPost({ request, env }: Context) {
     });
 
     if (!serviceResponse.ok) {
-      if (catalogRecord && env.DB) await markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "failed").catch(() => undefined);
       if ([429, 503, 504].includes(serviceResponse.status)) {
         return json(allowedOrigin, 503, { success: false, error: "delivery_temporarily_unavailable" });
       }
@@ -489,39 +490,13 @@ export async function onRequestPost({ request, env }: Context) {
     await Promise.all([
       env.LEAD_LIMITS.put(requestKey, "delivered", { expirationTtl: 24 * 60 * 60 }),
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
-      ...(catalogRecord && env.DB ? [markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "delivered")] : []),
     ]);
-
-    if (catalogRecord?.ownerEmail && env.DB) {
-      const ownerText = [
-        "New customer inquiry from your Hermes Catalog profile",
-        "-----------------------------------------------------",
-        `Business: ${company}`,
-        `Customer: ${name}`,
-        `Email: ${email}`,
-        `Phone: ${phone || "not provided"}`,
-        `Preferred contact time: ${preferredContactTime}`,
-        `Requested services: ${services.join(", ")}`,
-        "",
-        message,
-        "",
-        `Catalog profile: ${normalizeCatalogProfilePath(catalogProfile) || catalogProfile}`,
-        `Hermes request ID: ${requestId}`,
-        "Hermes is not charging your business for this Catalog lead.",
-        "Claiming the Catalog profile or purchasing Hermes services is optional and remains a separate decision.",
-        "This message was sent because Catalog email notifications were explicitly enabled in the authenticated shop workspace.",
-      ].join("\n").slice(0, 12_000);
-      const ownerDelivered = await deliverCatalogOwnerInquiry(env, requestId, catalogRecord.ownerEmail, ownerText);
-      await markCatalogBusinessInquiryOwnerDelivery(env.DB, requestId, ownerDelivered ? "delivered" : "failed").catch(() => undefined);
-    }
 
     return json(allowedOrigin, 200, {
       success: true,
       request_id: requestId,
-      ...(catalogRecord ? { crm_saved: true, crm_linked: catalogRecord.linked } : {}),
     });
   } catch (error) {
-    if (catalogRecord && env.DB) await markCatalogBusinessInquiryInternalDelivery(env.DB, requestId, "failed").catch(() => undefined);
     if (error instanceof DOMException && error.name === "AbortError") {
       return json(allowedOrigin, 503, { success: false, error: "delivery_temporarily_unavailable" });
     }

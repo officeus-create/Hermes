@@ -1,28 +1,12 @@
 import assert from "node:assert/strict";
-import { DatabaseSync } from "node:sqlite";
+import { MemoryD1 } from "./helpers/catalog-memory-d1.mjs";
+import { recipientFingerprint } from "../functions/api/_lib/catalog-inquiry-receipts.mjs";
 import { onRequest } from "../functions/api/business-lead.ts";
 
 class MemoryKv {
   values = new Map();
   async get(key) { return this.values.get(key) ?? null; }
   async put(key, value) { this.values.set(key, value); }
-}
-
-class D1Statement {
-  constructor(statement, args = []) { this.statement = statement; this.args = args; }
-  bind(...args) { return new D1Statement(this.statement, args); }
-  async run() { this.statement.run(...this.args); return { success: true }; }
-  async first() { return this.statement.get(...this.args) ?? null; }
-  async all() { return { results: this.statement.all(...this.args) }; }
-}
-class MemoryD1 {
-  constructor() { this.sqlite = new DatabaseSync(":memory:"); }
-  prepare(sql) { return new D1Statement(this.sqlite.prepare(sql)); }
-  async batch(statements) {
-    const results = [];
-    for (const statement of statements) results.push(await statement.run());
-    return results;
-  }
 }
 
 const serviceCalls = [];
@@ -42,6 +26,21 @@ const env = {
         authorization: request.headers.get("Authorization"),
         payload: await request.json(),
       });
+      const payload = serviceCalls.at(-1).payload;
+      if (payload.delivery_key) {
+        return Response.json({
+          ok: true,
+          request_id: payload.request_id,
+          delivery_key: payload.delivery_key,
+          delivery_status: "accepted",
+          recipient_fingerprint: await recipientFingerprint(
+            payload.delivery_key,
+            payload.recipient_identity || "",
+            payload.recipient_email || "internal@example.com",
+          ),
+          provider_message_id: "mock-message",
+        }, { status: 202 });
+      }
       return Response.json({ ok: true }, { status: 202 });
     },
   },

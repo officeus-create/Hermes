@@ -1389,30 +1389,23 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - The bounded follow-up preserves the exact live vacancy and public recruiting phone, states that the operator must own a commercial truck while trailer/Power Only eligibility is verified individually, relabels the employer-page link as a reference with its observed empty state, and explains that the review date is recalculated on site builds rather than changing static HTML by itself.
 - No external listing, form submission, homepage design, payment, account, application or recruiting decision changes. Run focused static/browser checks and exact-head release gates before a second owner-authorized merge/deploy; do not call #1664 production accepted until the correction is live and read back.
 
-## 2026-10-04 — ChatGPT — current-main corporate Home slice
 
-- Owner directive: implement the refined Hermes corporate visual direction on top of the current production architecture, without replacing the four canonical business directions.
-- Branch: `design/home-corporate-v4-main-20261004`, created from current `main` `f40bb88fcaa2e3a884ca4de8009d63bef2c2a593`.
-- Scope: `src/components/HomeMasterScene.astro` + focused Home browser coverage only; no backend, route, canonical, schema, analytics owner or production deploy.
-- Presentation rule implemented: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY`.
-- Home changes:
-  - public shell uses the shared Pearl/Ink corporate foundation instead of the prior decorative gradient/script treatment;
-  - desktop retains four canonical pillars and direct route links;
-  - mobile 390–700px becomes four sequential chapters rather than a compressed 2×2 grid;
-  - Marketing visual explains Content → Search → Site → Inquiry;
-  - Technology visual explains Request → CRM → Auto → Receipt;
-  - Academy visual exposes Logistics / Sales / Marketing / Operations within the existing practice/review/progression story;
-  - Logistics now uses six owned aerial equipment scene pairs (car hauler, dry van, reefer, flatbed, step deck, hotshot) with restrained day/rain/snow/heat/cloud/dusk treatment; the scene rotates only while visible and stops to car-hauler under reduced motion.
-- Focused test coverage verifies the Pearl shell, all four purposeful scene grammars, six-state Logistics metadata/reduced-motion behavior, responsive owned asset loading, single-column 390px mobile layout and no horizontal overflow.
-- Logistics living-media note: the twelve owned Home asset derivatives (512/887 for six equipment states) were replayed onto this current-main branch through Git object/blob transfer, together with the matching media-provenance entries, without replaying stale donor code. Draft PR #1655 remains historical/donor evidence and is not a release dependency.
-- Design governance note: PR #1657 carries the matching V4 doctrine/progressive-disclosure rules. Do not create V5 or another design owner.
-- Evidence boundary: these visuals explain workflows; they do not claim live logistics telemetry, campaign performance, autonomous AI actions, learner outcomes, conversion lift or revenue.
-- Release gate: draft/review only. Require exact-head build/static/browser/visual checks, 1440px + 390px preview inspection, then explicit owner approval before merge/deploy. `MERGED != DEPLOYED != LIVE_VERIFIED`.
+## 2026-10-04 — Codex / Project31 SEO owner — Load Board filter count truthfulness
+
+- Problem/root cause: the view filter counted preview examples as generic load/truck rows, which made a 60-row preview appear like current inventory while public active-load readback was zero. The old `${visible}` label did not identify the source of rows.
+- Working approach: classify already-rendered preview rows; show preview-only counts explicitly and split mixed live/preview counts. Keep approved live count, inventory rendering, access rights, API and CTA behavior as implemented. No synthetic submission or available-load claim.
+- Evidence/verification: fresh main `8b8cd360bbed6ccd3be801601997d387300928ae` and open PR scope checked; component and browser regression added for zero active rows, mixed live/preview, 390×844 width and no POST. Local Astro build passed; full local npm test hung in unrelated Catalog contract and local Playwright preview server did not start in the sandbox. Exact-head CI and branch preview remain the acceptance gate.
+- Compounding scorecard: search/content truth improved in the existing indexed Load Board surface; conversion retains its existing CTA; reusable label logic and browser regression protect the boundary; privacy and architecture unchanged, no new dependency.
+- Risk/next step: Marketing SEO independently checks exact-head preview at 390×844, filtered labels and live count without submission. Repository owner confirms merge/deploy only after green exact-head CI and independent QA; then public production readback. No merge/deploy claimed here.
 
 
+## 2026-10-04 — ChatGPT — Design V4 current-main reconciliation
 
-### Design V4 exact-head QA correction — 2026-10-04
-- Canonical implementation lane: PR #1666 only.
-- Preserved accepted Home stage geometry: 34px desktop, 26px mobile while mobile remains a one-column sequence.
-- Generalized finite-motion restart to each motion layer's owning pillar; removed the stale truck-only restart assumption without weakening tests.
-- Release remains gated on fresh exact-head Website checks, quality/security audit, visual evidence and production readback.
+- Canonical implementation lane remains PR #1666 only; do not create a parallel Home/design PR.
+- Owner-approved presentation rule: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY` with the existing four canonical directions preserved.
+- Current Home work keeps semantic route links/copy intact for SEO while upgrading the four visual worlds; mobile remains four sequential chapters.
+- Logistics living scene now uses six owned local equipment states and decode-before-swap behavior so weather/equipment transitions retain the previous settled image until the next asset is decoded; reduced motion returns to static car-hauler.
+- 390px workflow/Academy explanatory labels were raised to a readable size without changing routes or introducing horizontal overflow.
+- A stray Marketing selector that accidentally scoped the Technology system display geometry was corrected to the shared system-display component.
+- Branch reconciled with current main after #1667 so Load Board truth-labeling and newer Catalog/lead-delivery work are preserved.
+- Release gate remains exact-head Website checks + visual evidence + 1440/390 review + explicit owner release approval; `MERGED != DEPLOYED != LIVE_VERIFIED`.
