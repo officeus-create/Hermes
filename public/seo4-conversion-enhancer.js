@@ -7,7 +7,9 @@
   };
 
   const carrierGeoRoot = "/logistics/car-hauler-loads/";
+  const carrierDispatchPath = "/logistics/car-hauling-dispatch/";
   const isCarrierGeoPath = () => window.location.pathname === carrierGeoRoot || window.location.pathname.startsWith(carrierGeoRoot);
+  const isCarrierDispatchPath = () => window.location.pathname === carrierDispatchPath;
   const analyticsConsentGranted = () => document.documentElement.dataset.analyticsConsent === "granted";
   const carrierGeoEventBase = () => ({
     audience_type: "carrier",
@@ -39,6 +41,8 @@
   };
   let carrierGeoMeasurementStarted = false;
   let carrierGeoConsentObserver = null;
+  let carrierDispatchMeasurementStarted = false;
+  let carrierDispatchConsentObserver = null;
 
   const refreshLoadBoardDemoLabels = () => {
     if (window.location.pathname !== "/load-board/") return;
@@ -172,10 +176,43 @@
     });
   };
 
+  const setupCarrierDispatchMeasurement = () => {
+    if (carrierDispatchMeasurementStarted || !analyticsConsentGranted() || !isCarrierDispatchPath()) return;
+
+    carrierDispatchMeasurementStarted = true;
+    carrierDispatchConsentObserver?.disconnect();
+    carrierDispatchConsentObserver = null;
+    pushEvent({
+      event: "carrier_dispatch_page_view",
+      audience_type: "carrier",
+      page_group: "logistics_service",
+      service_group: "car_hauling_dispatch",
+      page_path: carrierDispatchPath,
+    });
+  };
+
+  const setupCarrierDispatchMeasurementWhenAllowed = () => {
+    if (!isCarrierDispatchPath()) return;
+    if (analyticsConsentGranted()) {
+      setupCarrierDispatchMeasurement();
+      return;
+    }
+    if (!("MutationObserver" in window) || carrierDispatchConsentObserver) return;
+
+    carrierDispatchConsentObserver = new MutationObserver(() => {
+      if (analyticsConsentGranted()) setupCarrierDispatchMeasurement();
+    });
+    carrierDispatchConsentObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-analytics-consent"],
+    });
+  };
+
   const applyDomReadyEnhancements = () => {
     applyRepairAuthMode();
     applyAccessibilityRoles();
     setupCarrierGeoMeasurementWhenAllowed();
+    setupCarrierDispatchMeasurementWhenAllowed();
   };
 
   if (document.readyState === "loading") {
