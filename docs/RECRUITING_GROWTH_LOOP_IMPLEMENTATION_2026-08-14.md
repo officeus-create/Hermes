@@ -51,4 +51,4 @@ After current Connect production is independently verified, implement:
 - board→Connect→qualified/hired funnel measurement;
 - 7d/28d retained candidate-user cohort.
 
-100Hires example jobs/applications are test data and are not a production candidate source of truth.
+Historical 100Hires example jobs/applications remain test data and are not a production candidate source of truth. This boundary does not apply to the separately verified public vacancy `https://100hires.com/j/G4ek3eN`, observed HTTP 200 on 2026-10-03 with public JobPosting data for the owner-approved Wisconsin Owner-Operator campaign. That exact listing and its employer directory may be used as public source links while the bounded recruiting review remains current; candidate receipt and hiring outcomes remain separate evidence.

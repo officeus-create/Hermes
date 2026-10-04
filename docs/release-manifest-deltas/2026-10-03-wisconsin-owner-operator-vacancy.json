@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-03-wisconsin-owner-operator-vacancy",
+  "generated_at": "2026-10-03T22:30:00Z",
+  "status": "COMPLETE_PENDING_DEPLOYMENT",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/careers/wisconsin-owner-operators/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/careers/wisconsin-owner-operators/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-approved merge/deploy, production source-link readback, and a fresh vacancy review by 2026-10-10.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

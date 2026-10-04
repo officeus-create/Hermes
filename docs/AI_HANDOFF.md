@@ -1369,3 +1369,43 @@ Current Search Console inspection: Ukraine, Chaiky and Irpin Catalog hubs are pu
 The same #1649 branch now generates visible root → country → locality navigation from the existing Catalog route registry, plus locality → country return links. No profile facts, publication authorization, sitemap or homepage design changed. Local build (392 pages), exact generated-anchor contract and full static suite pass. Do not claim indexing from source readiness; after authorized merge/deploy, read the public anchors and run a dated inspection later. Kittle promotion remains held pending publication authorization.
 
 CI follow-up: the first security commit exposed one stale workflow-only assertion in `load-board-curtain-funnel.test.mjs`; the runtime had already evolved from repair-only filtering to explicit Repair plus bounded Ukraine Academy classification. The assertion now checks the actual two safe branches and the workflow-only contract is also included in ordinary `npm test`. Runtime behavior is unchanged; targeted and full static tests pass.
+
+## 2026-10-03 — Codex — Wisconsin owner-operator vacancy and source directory
+
+- Branch: `feat/hr-vacancy-sources-20261004`, based on `main` `0b8dd39f02b2fc93d245b2c0ac9d9e9b52b391f6`.
+- Commit(s): remote implementation commit `8fa4daabca0520f8d959dea2727efd12da5dac79`.
+- PR: draft [#1664](https://github.com/officeus-create/Hermes/pull/1664); merge/deploy remain behind the repository's explicit owner gate.
+- What was done: Registered the verified 100Hires Wisconsin owner-operator listing in the existing fail-closed careers registry; exposed it on `/logistics/careers/`; added a server-rendered `/careers/wisconsin-owner-operators/` page with exact vacancy and employer-directory source links, the public Wisconsin recruiting phone and hours, statewide/city/equipment context, truthful eligibility boundaries, related Hermes resources, visible review date, `JobPosting`, `FAQPage` and breadcrumb schema; added the route to the controlled sitemap. Internal verification numbers are not published. No homepage design, form delivery, paid placement, Indeed state or external listing was changed.
+- Source/readiness boundary: the only verified live source is `https://100hires.com/j/G4ek3eN`; the all-jobs source is `https://100hires.com/c/hermeslogisticsus-com`. The site record fails closed after the 2026-10-10 review date unless reverified. This branch does not claim applications, hires, rankings, traffic or revenue.
+- Files changed: careers registry/status panel; new vacancy page; controlled sitemap/index; careers governance and recruiting docs; release-manifest delta; focused static/browser tests; error register; this handoff.
+- Tests run (and result): final `npm run build` passed with zero Astro errors and 393 generated pages; full `npm test` passed, including 304 unique sitemap URLs and zero broken internal links; focused careers Playwright passed 8/8 at desktop/mobile; desktop 1440px and mobile 390px screenshots were inspected locally with no page overflow. Full Playwright reached 1,923 passed/16 skipped/5 failed; three timing failures passed on serial rerun, while the unrelated pre-existing `/paths/technology/` tracking-consent/hero-CTA overlap reproduced on desktop/mobile and is recorded as `ERR-UX-TECH-001` rather than changed here.
+- Compounding scorecard: search visibility gains a semantic source-backed vacancy, internal links, sitemap entry and structured data; conversion gains one public phone/CTA and verified external source choices; durable knowledge gains provenance, TTL and regression coverage; scale reuses the existing careers registry and component; privacy excludes internal verification numbers; architecture adds no dependency or new runtime.
+- Remaining / open items: exact-head GitHub checks; explicit owner approval for merge/deploy; post-deploy desktop/mobile/public-source readback and later settled search measurement. No production or indexing result is claimed from local evidence.
+- Next step / what's needed from a human or the other agent: review exact branch head, then provide the repository-required specific merge/deploy approval. After release, verify the two public source links and phone on production and revalidate the vacancy no later than 2026-10-10.
+
+## 2026-10-04 — Codex — Wisconsin vacancy post-merge truth correction
+
+- Source review after #1664 identified three acceptance defects despite green CI: the visible own-truck-and-trailer wording conflicted with Power Only; the separate 100Hires employer page reported no active postings; and build-time expiry had been described too strongly as automatic.
+- The bounded follow-up preserves the exact live vacancy and public recruiting phone, states that the operator must own a commercial truck while trailer/Power Only eligibility is verified individually, relabels the employer-page link as a reference with its observed empty state, and explains that the review date is recalculated on site builds rather than changing static HTML by itself.
+- No external listing, form submission, homepage design, payment, account, application or recruiting decision changes. Run focused static/browser checks and exact-head release gates before a second owner-authorized merge/deploy; do not call #1664 production accepted until the correction is live and read back.
+
+
+## 2026-10-04 — Codex / Project31 SEO owner — Load Board filter count truthfulness
+
+- Problem/root cause: the view filter counted preview examples as generic load/truck rows, which made a 60-row preview appear like current inventory while public active-load readback was zero. The old `${visible}` label did not identify the source of rows.
+- Working approach: classify already-rendered preview rows; show preview-only counts explicitly and split mixed live/preview counts. Keep approved live count, inventory rendering, access rights, API and CTA behavior as implemented. No synthetic submission or available-load claim.
+- Evidence/verification: fresh main `8b8cd360bbed6ccd3be801601997d387300928ae` and open PR scope checked; component and browser regression added for zero active rows, mixed live/preview, 390×844 width and no POST. Local Astro build passed; full local npm test hung in unrelated Catalog contract and local Playwright preview server did not start in the sandbox. Exact-head CI and branch preview remain the acceptance gate.
+- Compounding scorecard: search/content truth improved in the existing indexed Load Board surface; conversion retains its existing CTA; reusable label logic and browser regression protect the boundary; privacy and architecture unchanged, no new dependency.
+- Risk/next step: Marketing SEO independently checks exact-head preview at 390×844, filtered labels and live count without submission. Repository owner confirms merge/deploy only after green exact-head CI and independent QA; then public production readback. No merge/deploy claimed here.
+
+
+## 2026-10-04 — ChatGPT — Design V4 current-main reconciliation
+
+- Canonical implementation lane remains PR #1666 only; do not create a parallel Home/design PR.
+- Owner-approved presentation rule: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY` with the existing four canonical directions preserved.
+- Current Home work keeps semantic route links/copy intact for SEO while upgrading the four visual worlds; mobile remains four sequential chapters.
+- Logistics living scene now uses six owned local equipment states and decode-before-swap behavior so weather/equipment transitions retain the previous settled image until the next asset is decoded; reduced motion returns to static car-hauler.
+- 390px workflow/Academy explanatory labels were raised to a readable size without changing routes or introducing horizontal overflow.
+- A stray Marketing selector that accidentally scoped the Technology system display geometry was corrected to the shared system-display component.
+- Branch reconciled with current main after #1667 so Load Board truth-labeling and newer Catalog/lead-delivery work are preserved.
+- Release gate remains exact-head Website checks + visual evidence + 1440/390 review + explicit owner release approval; `MERGED != DEPLOYED != LIVE_VERIFIED`.

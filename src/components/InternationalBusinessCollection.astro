@@ -76,7 +76,7 @@ const schema = [
       <section class="grid">
         {businesses.map((business) => (
           <article>
-            <div class="top"><span>{business.vertical.replaceAll("_", " ")}</span><span>{business.status}</span></div>
+            <div class="top"><span>{business.primaryIntent}</span><span>{business.status}</span></div>
             <h2>{business.name}</h2>
             <p>{business.primaryIntent} · {business.locality}, {business.region}</p>
             <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
