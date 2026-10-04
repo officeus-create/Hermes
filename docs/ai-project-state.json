@@ -155,7 +155,7 @@
     "ceo_qa_671": "EXISTING_QA_IDENTITY_PRESERVED_DO_NOT_REPROVISION_AUTHENTICATED_OWNER_READBACK_REQUIRES_SECURE_SESSION_CREDENTIAL_HANDOFF",
     "owner_mac_internal_ai": "MACBOOK_RETIRED_DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE_REQUIRES_NEW_AUTHORIZED_ENDPOINT_OR_HANDOFF",
     "design_visual_work": "ROUTE_DESIGN_5",
-    "repair_shop_access_proof_960": "BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS_DEDICATED_PAGES_READ_D1_AND_ACCOUNT_CONTEXT_REQUIRED_961_CLOSED"
+    "repair_shop_access_proof_960": "OIDC_OPERATOR_PROOF_CODE_READY_REQUIRES_EXACT_HEAD_CI_MERGE_AND_PRODUCTION_RECEIPT_961_CLOSED_NO_PERSISTENT_CLOUDFLARE_TOKEN_REQUIRED"
   },
   "one_brain_security": {
     "canonical_core_state": "CANONICAL_GLOBAL_CORE_NO_ANONYMOUS_GRANT_OBSERVED_IN_LAST_VERIFIED_READ",
@@ -226,7 +226,7 @@
     "product_files_modified": false
   },
   "execution_priorities": [
-    "#961 is closed. Run the bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup only through owner issue #960 using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
+    "#961 is closed. Run the bounded production repair_shop_access transition -> owner/API readback -> production D1-binding readback -> cleanup only through owner issue #960 using the workflow-bound GitHub OIDC operator; no persistent Cloudflare Pages/D1 API token or account context is required.",
     "After a successful exact-main deploy, require production readback before calling current code live.",
     "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
     "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",
