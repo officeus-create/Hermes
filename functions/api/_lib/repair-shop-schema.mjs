@@ -49,6 +49,7 @@ async function applyRepairShopProfileSchema(db) {
   await ensureOptionalColumn(db, "instagram_url", "instagram_url TEXT");
   await ensureOptionalColumn(db, "facebook_url", "facebook_url TEXT");
   await ensureOptionalColumn(db, "threads_url", "threads_url TEXT");
+  await ensureOptionalColumn(db, "review_url", "review_url TEXT");
   await ensureOptionalColumn(db, "catalog_opt_in", "catalog_opt_in INTEGER NOT NULL DEFAULT 0");
   await ensureOptionalColumn(db, "catalog_opt_in_at", "catalog_opt_in_at TEXT");
   await ensureOptionalColumn(db, "catalog_published_at", "catalog_published_at TEXT");

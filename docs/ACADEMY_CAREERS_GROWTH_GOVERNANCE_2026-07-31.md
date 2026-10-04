@@ -28,14 +28,18 @@ The current website publishes no fixed Academy price and accepts no Academy paym
 
 The central `/logistics/careers/` route accepts a general professional-interest inquiry for manual review.
 
-The current verified public vacancy registry is empty. Therefore:
+Current evidence update, 2026-10-03: one owner-approved Wisconsin owner-operator opportunity is publicly verified on 100Hires. The careers hub may list that exact source and a matching Hermes role page while its bounded publication review remains current. The older Car Hauling Dispatcher record stays expired and must not regain active CTAs or `JobPosting` schema without a fresh owner review.
 
-- no specific public vacancy page is created;
-- no salary, commission, benefits, schedule, country eligibility, or employment type is invented;
-- no `JobPosting` schema is emitted;
-- a general inquiry is not represented as an application to an open role.
+The current page therefore:
 
-A future vacancy may use `JobPosting` only when the role is verified open, owner-approved, and has complete employment type, location, description sources, application route, review date, and valid-through date.
+- lists only the verified Wisconsin owner-operator opportunity;
+- links the exact live 100Hires vacancy and public 100Hires employer directory;
+- publishes the approved public recruiting number, location, equipment scope, call hours, and no-forced-dispatch boundary;
+- withholds compensation figures and every load, income, mileage, freight, authority, insurance, acceptance, and schedule guarantee;
+- keeps internal account-verification numbers private;
+- records a bounded review date and requires Recruiting to verify the source again before a later site build may continue active-vacancy treatment; the static HTML does not change automatically between builds.
+
+A vacancy may use `JobPosting` only when the role is verified open, owner-approved, and has complete employment type, location, description sources, application route, review date, and valid-through date.
 
 ## Career privacy and conversion
 

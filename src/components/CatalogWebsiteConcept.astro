@@ -37,10 +37,10 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
       <h1 data-uk={localized?.uk.heroTitle} data-en={localized?.en.heroTitle}>{copy?.heroTitle ?? business.name}</h1>
       <p data-uk={localized?.uk.heroLead} data-en={localized?.en.heroLead}>{copy?.heroLead ?? "This is a Hermes presentation of how the business could be structured online. Owner-confirmed facts remain separate from proposed website and growth features."}</p>
       <div class="actions">
-        <a class="primary" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>
-        {mapChannel && <a href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}
-        <a href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>
-        {claimHref && <a href={claimHref} data-uk={localized?.uk.claimLabel} data-en={localized?.en.claimLabel}>{copy?.claimLabel ?? "Claim / verify"}</a>}
+        <a class="primary" data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>
+        {mapChannel && <a data-catalog-event="maps_click" href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}
+        <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>
+        {claimHref && <a data-catalog-event="claim_start" href={claimHref} data-uk={localized?.uk.claimLabel} data-en={localized?.en.claimLabel}>{copy?.claimLabel ?? "Claim / verify"}</a>}
       </div>
       {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}
     </div>
@@ -59,11 +59,11 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
   </section>
   <section class="opportunity">
     <div><p class="kicker">HERMES OPPORTUNITY</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
-    <div class="offer-grid">{growthLinks.map((item)=><a href={item.href}>{item.label}</a>)}</div>
+    <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href}>{item.label}</a>)}</div>
   </section>
   <section id="catalog-request" class="request">
     <div><p class="kicker">REAL CUSTOMER REQUEST</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
-    <a class="request-link" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>
+    <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>
   </section>
   {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2>{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>}
   {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker">SEO / GEO FOUNDATION</p><h2>Semantic core + local intent</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
@@ -84,3 +84,4 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     });
   }
 </script>
+<script is:inline src="/catalog-business-telemetry.js" data-catalog-business-id={business.id}></script>

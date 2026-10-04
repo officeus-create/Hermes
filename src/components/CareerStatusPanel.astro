@@ -47,7 +47,14 @@ const screening = [
               <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
               <h3>{vacancy.title}</h3>
               <p>{vacancy.locationLabel}</p>
-              <a class="button button-primary" href={`/careers/${vacancy.slug}/`}>View vacancy <ArrowRight size={17} aria-hidden="true" /></a>
+              <div class="career-vacancy-actions">
+                <a class="button button-primary" href={`/careers/${vacancy.slug}/`}>View vacancy <ArrowRight size={17} aria-hidden="true" /></a>
+                {vacancy.submissionLabel && vacancy.submissionUrl && (
+                  <a class="button" href={vacancy.submissionUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-source>
+                    View on {vacancy.submissionLabel} <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </div>
             </article>
           ))}
         </div>
@@ -103,6 +110,7 @@ const screening = [
   .career-vacancy-list article { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(28,62,141,.14); }
   .career-vacancy-list article h3 { margin: .25rem 0 .4rem; color: #122b72; }
   .career-vacancy-list article p { margin: 0 0 .8rem; color: #526181; }
+  .career-vacancy-actions { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; }
   .career-status-layout ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
   .career-status-layout li { display: flex; gap: .75rem; align-items: flex-start; padding: 1rem; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); line-height: 1.55; color: #344567; }
   .career-status-layout li svg { flex: none; margin-top: .15rem; color: #315fd7; }
