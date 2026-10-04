@@ -14,6 +14,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "carrier-signing", path: "/sign/" },
   { id: "carrier-onboarding", path: "/logistics/carrier-onboarding/" },
   { id: "dealer-vehicle-transportation", path: "/logistics/dealer-vehicle-transportation/" },
+  { id: "appleton-vehicle-transport", path: "/logistics/appleton-wi-vehicle-transport/" },
   { id: "load-board", path: "/load-board/" },
   { id: "seo-service", path: "/services/seo/" },
   { id: "website-development", path: "/services/website-development/" },
