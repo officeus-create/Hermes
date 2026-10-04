@@ -68,10 +68,10 @@ for (const direction of directions) {
 
     expect(visual).not.toBeNull();
     expect(visual!.pathSignal).toBe(direction.hex);
-    expect(visual!.heroColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
     expect(visual!.heroBackgroundImage).not.toBe("none");
-    expect(visual!.primaryBackgroundImage).not.toBe("none");
-    expect(visual!.primaryColor).toBe("rgb(7, 16, 26)");
+    expect(visual!.primaryBackgroundImage).toBe("none");
+    expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
     expect(visual!.primaryRadius).toBe("12px");
     expect(visual!.mediaRadius).toBe(expectedMediaRadius);
     expect(visual!.headerColor).toBe("rgb(11, 13, 18)");
