@@ -216,7 +216,8 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect.poll(async()=>activeScene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ await expect.poll(async()=>activeScene.getAttribute('data-logistics-scene-ready'),{timeout:7000,intervals:[50]}).not.toBe('car-hauler');
+ await page.waitForTimeout(80);
  const transitioning=await scenes.evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).opacity)));
  expect(transitioning.every(value=>value>0&&value<1)).toBe(true);
  await page.waitForTimeout(800);
