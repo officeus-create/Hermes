@@ -388,3 +388,17 @@ EVIDENCE: Fresh build produces 392 pages. The Catalog publication contract reads
 REUSE_RULE: For every new indexable Catalog country or locality, require a visible two-way hierarchy in rendered HTML. Sitemap membership and direct profile links do not replace parent-to-child discovery.
 
 FOLLOW_UP: The first exact-head GitHub contracts job found a stale workflow-only assertion expecting the retired repair-only Catalog filter. Updated the assertion to verify the current explicit Repair branch plus bounded Ukraine Academy classification, and added that contract to ordinary `npm test` so local validation and CI cannot drift again. No runtime code changed for this follow-up.
+
+## 2026-10-04 — Connect hostname routed `/robots.txt` into a missing demo asset
+
+STATUS: SOURCE FIXED ON REVIEW BRANCH; PRODUCTION UNCHANGED.
+
+PROBLEM: A fresh remote-Mac series returned 20/20 HTTP 200 responses for the apex `/robots.txt`, while `https://connect.hermeslogisticsus.com/robots.txt` returned 20/20 HTTP 404 responses.
+
+ROOT_CAUSE: `connectAssetPath()` treated every unlisted Connect path as a demo-relative asset and rewrote `/robots.txt` to `/demos/hermes-connect/robots.txt`. The repository already owns the correct public crawl-control file at `/robots.txt`.
+
+WORKING_APPROACH: Route only the Connect `/robots.txt` request to the existing root public asset. Preserve all existing Connect compatibility redirects, PWA/demo/API routing, HSTS handling, and apex behavior. A regression test first reproduced the wrong asset pathname, then passed after the bounded routing change.
+
+EVIDENCE: Focused test failed before the implementation with actual `/demos/hermes-connect/robots.txt` versus expected `/robots.txt`, then passed. `npm run build` and the complete `npm test` suite pass. Full Playwright is not locally accepted: Astro 7.2.8 first auto-backgrounded preview in the detected agent environment; with `ASTRO_PREVIEW_BACKGROUND=0`, Playwright reached test launch but the required Chromium 1228 binary was absent. Its official download returned a zero-byte/truncated archive in this execution environment. Exact-head CI remains required before merge or deploy.
+
+REUSE_RULE: Crawl-control and other hostname-root assets need explicit middleware contracts for every owned hostname. Verify apex and subdomain paths independently in production; apex success does not establish Connect success.
