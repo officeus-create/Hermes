@@ -1397,3 +1397,15 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Evidence/verification: fresh main `8b8cd360bbed6ccd3be801601997d387300928ae` and open PR scope checked; component and browser regression added for zero active rows, mixed live/preview, 390×844 width and no POST. Local Astro build passed; full local npm test hung in unrelated Catalog contract and local Playwright preview server did not start in the sandbox. Exact-head CI and branch preview remain the acceptance gate.
 - Compounding scorecard: search/content truth improved in the existing indexed Load Board surface; conversion retains its existing CTA; reusable label logic and browser regression protect the boundary; privacy and architecture unchanged, no new dependency.
 - Risk/next step: Marketing SEO independently checks exact-head preview at 390×844, filtered labels and live count without submission. Repository owner confirms merge/deploy only after green exact-head CI and independent QA; then public production readback. No merge/deploy claimed here.
+
+
+## 2026-10-04 — ChatGPT — Design V4 current-main reconciliation
+
+- Canonical implementation lane remains PR #1666 only; do not create a parallel Home/design PR.
+- Owner-approved presentation rule: `QUIET CORPORATION → PRODUCT THEATRE → OPERATIONAL CLARITY` with the existing four canonical directions preserved.
+- Current Home work keeps semantic route links/copy intact for SEO while upgrading the four visual worlds; mobile remains four sequential chapters.
+- Logistics living scene now uses six owned local equipment states and decode-before-swap behavior so weather/equipment transitions retain the previous settled image until the next asset is decoded; reduced motion returns to static car-hauler.
+- 390px workflow/Academy explanatory labels were raised to a readable size without changing routes or introducing horizontal overflow.
+- A stray Marketing selector that accidentally scoped the Technology system display geometry was corrected to the shared system-display component.
+- Branch reconciled with current main after #1667 so Load Board truth-labeling and newer Catalog/lead-delivery work are preserved.
+- Release gate remains exact-head Website checks + visual evidence + 1440/390 review + explicit owner release approval; `MERGED != DEPLOYED != LIVE_VERIFIED`.
