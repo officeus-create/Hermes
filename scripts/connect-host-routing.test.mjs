@@ -184,7 +184,7 @@ for (const origin of ["https://www.hermeslogisticsus.com", "http://www.hermeslog
 }
 
 {
-  const robots = "User-agent: *\\nAllow: /\\n";
+  const robots = "User-agent: *\nAllow: /\n";
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/robots.txt", {
     body: robots,
     contentType: "text/plain; charset=utf-8",
