@@ -95,9 +95,12 @@ assert.equal(ownerOperatorJobPostings[0].employmentType, "CONTRACTOR");
 assert.equal(ownerOperatorJobPostings[0].directApply, false);
 assert.equal(ownerOperatorJobPostings[0].sameAs, "https://100hires.com/j/G4ek3eN");
 assert.ok(wisconsinOwnerOperators.includes("Verified live source · updated October 3, 2026"));
-assert.ok(wisconsinOwnerOperators.includes("100Hires is the only external source verified live"));
+assert.ok(wisconsinOwnerOperators.includes("exact 100Hires vacancy link is the only external source verified live"));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/c/hermeslogisticsus-com"'));
+assert.ok(wisconsinOwnerOperators.includes("employer-profile reference and not as a complete vacancy directory"));
+assert.ok(wisconsinOwnerOperators.includes("There are no active job postings right now"));
+assert.ok(wisconsinOwnerOperators.includes("does not update static HTML automatically between builds"));
 assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
 assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"));
 assert.deepEqual(
@@ -105,6 +108,8 @@ assert.deepEqual(
   ["+14142697377", "+14142697377"],
 );
 assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
+assert.ok(wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));
+assert.ok(wisconsinOwnerOperators.includes("Trailer and equipment eligibility are therefore confirmed individually"));
 assert.ok(wisconsinOwnerOperators.includes("does not guarantee"));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed loads"));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed income"));

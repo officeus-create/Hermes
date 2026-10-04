@@ -37,7 +37,7 @@ The current page therefore:
 - publishes the approved public recruiting number, location, equipment scope, call hours, and no-forced-dispatch boundary;
 - withholds compensation figures and every load, income, mileage, freight, authority, insurance, acceptance, and schedule guarantee;
 - keeps internal account-verification numbers private;
-- automatically suppresses active-vacancy treatment after the bounded review date unless Recruiting verifies the source again.
+- records a bounded review date and requires Recruiting to verify the source again before a later site build may continue active-vacancy treatment; the static HTML does not change automatically between builds.
 
 A vacancy may use `JobPosting` only when the role is verified open, owner-approved, and has complete employment type, location, description sources, application route, review date, and valid-through date.
 
