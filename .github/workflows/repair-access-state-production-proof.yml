@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   issues: write
 
 concurrency:
@@ -17,7 +18,7 @@ jobs:
     if: >-
       github.event.issue.number == 960 &&
       github.event.comment.body == '/verify-repair-access-state' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      github.event.comment.author_association == 'OWNER'
     name: Verify production repair_shop_access transition
     runs-on: ubuntu-latest
     environment: production
@@ -25,9 +26,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
-      CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_READ_TOKEN }}
-      CLOUDFLARE_D1_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+      OIDC_AUDIENCE: hermes-connect-repair-access-proof
 
     steps:
       - name: Check out current main
@@ -44,10 +43,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Request short-lived GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="${RUNNER_TEMP}/oidc-response.json"
+          separator='?'
+          if [[ "${ACTIONS_ID_TOKEN_REQUEST_URL}" == *'?'* ]]; then separator='&'; fi
+          curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}${separator}audience=${OIDC_AUDIENCE}" \
+            -o "${response_file}"
+          token="$(jq -r '.value // empty' "${response_file}")"
+          if [ -z "${token}" ]; then
+            echo "GitHub OIDC token request failed."
+            exit 1
+          fi
+          echo "::add-mask::${token}"
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
+
       - name: Run bounded synthetic access-state proof
         id: proof
         continue-on-error: true
         shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
         run: bash scripts/run-repair-shop-access-state-production-proof.sh
 
       - name: Publish sanitized proof result
@@ -61,13 +83,13 @@ jobs:
           checked_sha="$(git rev-parse HEAD)"
           safe_class="${PROOF_CLASS:-not_run}"
           case "$safe_class" in
-            pass|github_release_evidence_unavailable|stale_main|production_parity_required|blocked_cloudflare_account_access|blocked_cloudflare_pages_read|production_db_binding_missing|synthetic_cleanup_unavailable|blocked_cloudflare_d1_write|synthetic_identity_setup_failed|synthetic_login_failed|trialing_readback_failed|stale_main_before_transition|d1_access_transition_failed|owner_founding_readback_failed|d1_founding_readback_failed|synthetic_cleanup_failed|cleanup_readback_failed|stale_main_after_proof|not_run) ;;
+            pass|github_release_evidence_unavailable|stale_main|production_parity_required|operator_not_authorized|synthetic_setup_failed|synthetic_login_failed|trialing_readback_failed|stale_main_before_transition|access_transition_failed|owner_founding_readback_failed|d1_founding_readback_failed|synthetic_cleanup_failed|cleanup_readback_failed|stale_main_after_proof|not_run) ;;
             *) safe_class="unexpected_failure" ;;
           esac
 
           if [[ "$PROOF_OUTCOME" == "success" && "$safe_class" == "pass" ]]; then
             overall="PASS"
-            summary="A fixed synthetic Repair Shop owner and shop were created through the authorized production D1 operator path, authenticated through the normal product login/session path, observed persisted trialing state, transitioned only the synthetic access row to founding, read founding back through the owner API and D1, and were fully cleaned up. This is synthetic operational evidence only — not a customer, payment, invoice, activation, or revenue event."
+            summary="A fixed synthetic Repair Shop owner/shop was created through a workflow-bound GitHub OIDC operator using the existing production DB binding, authenticated through the normal product login/session path, observed persisted trialing state, transitioned only that synthetic access row to founding, read founding back through both the owner API and the production D1 binding, and was fully cleaned up. This is synthetic operational evidence only — not a customer, payment, invoice, activation, or revenue event."
           else
             overall="FAIL"
             summary="Production repair_shop_access operator proof is incomplete. Do not claim paid/manual activation operationally proven from this run."
@@ -78,11 +100,11 @@ jobs:
 
           ${summary}
 
-          - checked repository revision: \`${checked_sha}\`
-          - privacy-safe classification: \`${safe_class}\`
+          - checked repository revision: `${checked_sha}`
+          - privacy-safe classification: `${safe_class}`
           - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
-          Guardrails: the workflow is command-gated to issue #960 and owner/member/collaborator authors, requires an already-successful exact-main controlled Pages deploy, discovers the existing production DB binding at runtime, writes only an isolated fixed synthetic smoke identity/shop/access row, aborts before the founding transition if main moves, and performs scoped D1 cleanup. No Cloudflare token, account ID, D1 database ID, password/hash/salt, session, shop ID, real customer data, invoice data, or payment data is published.
+          Guardrails: the workflow is command-gated to issue #960 and the repository OWNER, requires an already-successful exact-main controlled Pages deploy, uses a short-lived GitHub OIDC identity pinned to this exact main-branch workflow, writes only an isolated synthetic owner/shop/access row through the already-bound production D1, and performs scoped cleanup. No persistent Cloudflare API token, account ID, D1 database ID, password/hash/salt, session, shop ID, real customer data, invoice data, or payment data is published.
           EOF
 
           gh issue comment 960 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/repair-access-state-proof.md"
