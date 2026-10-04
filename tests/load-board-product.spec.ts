@@ -118,6 +118,38 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(refresh).toHaveText("Refresh now");
 });
 
+test("Load Board filter count identifies preview-only rows when active inventory is zero", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST") writes.push(request.url());
+  });
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) }));
+  await page.goto("/load-board/");
+  const result = page.locator("[data-lbv2-result-copy]");
+  await expect(page.locator("[data-live-load-count]")).toHaveText("0");
+  await expect(result).toHaveText("60 preview rows match this view");
+  await page.locator('[data-lbv2-tab="trucks"]').click();
+  await expect(result).toHaveText("6 preview rows match this view");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  expect(writes).toEqual([]);
+});
+
+test("Load Board filter count separates approved live rows from public preview examples", async ({ page }) => {
+  const now = new Date().toISOString();
+  const future = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+  await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [{ id: "approved-load-fixture", type: "load", equipment: "dry_van", origin: "Boise, ID", destination: "Reno, NV", pickupWindow: "Today", source: "Approved source", observedAt: now, expiresAt: future }] }) }));
+  await page.route("**/api/load-board/active?type=capacity", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) }));
+  await page.route("**/api/load-board/summary", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 1, available_trucks: 0 }) }));
+  await page.goto("/load-board/");
+  const result = page.locator("[data-lbv2-result-copy]");
+  await expect(result).toHaveText("1 live load row and 59 preview rows match this view");
+  await page.locator('[data-lbv2-search-form] input[name="origin"]').fill("Boise");
+  await expect(result).toHaveText("1 live load row matches this view");
+  await expect(page.locator("[data-live-load-count]")).toHaveText("1");
+});
+
 
 test("Trucks tab shows a sanitized historical email-feed preview when no approved live capacity exists", async ({ page }) => {
   await page.route("**/api/load-board/active?type=load", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [], load_board_access: false, audience: "public" }) }));
