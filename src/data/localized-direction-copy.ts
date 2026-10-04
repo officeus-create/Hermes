@@ -18,7 +18,7 @@ export type LocalizedDirectionUi = {
   processEyebrow: string;
   processTitle: string;
   processIntro: string;
-  process: Array<{ title: string; body: string }>;
+  process: Array<{ title: string; body: string; link?: { label: string; href: string } }>;
   boundaryEyebrow: string;
   boundaryTitle: string;
   relatedEyebrow: string;
@@ -383,4 +383,71 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
       ],
     },
   },
+};
+
+// These two Academy hubs use the existing U.S. Logistics program as a concrete starting example.
+// Other locales and direction owners retain their shared process copy.
+export const localizedAcademyProcess: Record<"fr" | "it", Pick<LocalizedDirectionUi, "processEyebrow" | "processTitle" | "processIntro" | "process">> = {
+  "fr": {
+    "processEyebrow": "Comment commencer",
+    "processTitle": "Commencer par la logistique des États-Unis.",
+    "processIntro": "L'Academy présente plusieurs parcours. Voici un point de départ concret pour comprendre ou soutenir les opérations logistiques sur le marché américain.",
+    "process": [
+      {
+        "title": "1. À qui s'adresse ce parcours ?",
+        "body": "Aux débutants qui souhaitent comprendre les rôles et les processus, aux professionnels bilingues et aux participants qui veulent renforcer leurs compétences en dispatch ou en ventes. Une expérience logistique préalable n'est pas nécessaire pour envoyer une demande."
+      },
+      {
+        "title": "2. Vérifier votre préparation",
+        "body": "Les appels en direct, les négociations et la communication avec les transporteurs ou brokers américains exigent un anglais parlé B2 ou supérieur. Les activités sans communication en direct peuvent être évaluées séparément. Le niveau adapté dépend aussi des horaires, de la discipline, de l'expérience récente et du format approuvé."
+      },
+      {
+        "title": "3. Lire une ressource publique",
+        "body": "Consultez la grille de questions du guide sur le dispatch délégué et le dispatch assuré par le transporteur, disponible en anglais. Notez qui assume chaque responsabilité, comment l'approbation du transporteur fonctionne et ce qui se passe en cas d'imprévu.",
+        "link": {
+          "label": "Ouvrir la grille de questions en anglais",
+          "href": "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/#decision-checks-title"
+        }
+      },
+      {
+        "title": "4. Consulter le programme et envoyer une demande",
+        "body": "Consultez le programme de logistique USA en français, puis utilisez son lien de demande de formation. Indiquez votre objectif, votre niveau d'anglais, votre expérience et vos disponibilités. Le format adapté est vérifié par l'équipe ; une demande ne réserve pas de place et ne vaut pas admission.",
+        "link": {
+          "label": "Voir le programme de logistique USA en français",
+          "href": "https://hermeslogisticsus.com/fr/academy/us-logistics-operations/"
+        }
+      }
+    ]
+  },
+  "it": {
+    "processEyebrow": "Come iniziare",
+    "processTitle": "Iniziare dalla logistica degli Stati Uniti.",
+    "processIntro": "L'Academy presenta diversi percorsi. Ecco un punto di partenza concreto per comprendere o supportare le operazioni logistiche nel mercato statunitense.",
+    "process": [
+      {
+        "title": "1. A chi si rivolge questo percorso?",
+        "body": "Ai principianti che vogliono comprendere ruoli e processi, ai professionisti bilingui e a chi vuole rafforzare le proprie competenze nel dispatch o nelle vendite. Non è necessaria un'esperienza logistica precedente per inviare una richiesta."
+      },
+      {
+        "title": "2. Verificare la propria preparazione",
+        "body": "Le chiamate dal vivo, le negoziazioni e la comunicazione con carrier o broker statunitensi richiedono inglese parlato B2 o superiore. Le attività senza comunicazione dal vivo possono essere valutate separatamente. Il livello adatto dipende anche dagli orari, dalla disciplina, dall'esperienza recente e dal formato approvato."
+      },
+      {
+        "title": "3. Leggere una risorsa pubblica",
+        "body": "Consultate la lista di domande della guida sul dispatch delegato e sul dispatch gestito dal carrier, disponibile in inglese. Annotate chi assume ogni responsabilità, come funziona l'approvazione del carrier e cosa succede in caso di imprevisti.",
+        "link": {
+          "label": "Aprire la lista di domande in inglese",
+          "href": "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/#decision-checks-title"
+        }
+      },
+      {
+        "title": "4. Consultare il programma e inviare una richiesta",
+        "body": "Consultate il programma di logistica USA in italiano, poi utilizzate il suo link per richiedere informazioni sulla formazione. Indicate obiettivo, livello di inglese, esperienza e disponibilità. Il team verifica il formato adatto; una richiesta non riserva un posto e non equivale all'ammissione.",
+        "link": {
+          "label": "Vedere il programma di logistica USA in italiano",
+          "href": "https://hermeslogisticsus.com/it/academy/us-logistics-operations/"
+        }
+      }
+    ]
+  }
 };
