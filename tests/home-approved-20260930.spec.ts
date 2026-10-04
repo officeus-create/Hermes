@@ -223,6 +223,17 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await reduced.close();
 });
 
+test('Home dusk Logistics polish keeps Hotshot readable without flattening the scene',async({page})=>{
+ await page.goto('/');
+ const echo=page.locator('[data-home-logistics-echo]');
+ const scene=page.locator('[data-home-logistics-scene-image]');
+ await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','hotshot'));
+ await scene.evaluate(node=>node.setAttribute('data-logistics-scene-ready','hotshot'));
+ await expect(echo.locator('.home-logistics-weather')).toHaveCSS('opacity','0.58');
+ expect(await echo.evaluate(node=>getComputedStyle(node,'::before').opacity)).toBe('0.68');
+ await expect(scene).toHaveCSS('filter','brightness(1.04)');
+});
+
 test('Home uses a quiet corporate shell and purposeful direction scenes',async({browser,page},testInfo)=>{
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
