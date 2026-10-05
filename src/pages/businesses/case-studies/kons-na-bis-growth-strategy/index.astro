@@ -206,13 +206,26 @@ const schema = [
         <p class="eyebrow">HERMES MARKETING + CONNECT</p>
         <h2>Потрібен такий самий social → CRM → revenue розбір для іншого бізнесу?</h2>
         <p>Hermes може почати з public-source audit, побудувати measurement contract і 90-day roadmap, а CRM-поля визначити до масштабування реклами.</p>
-        <a href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_growth_strategy&utm_content=final_cta">Запросити аудит →</a>
+        <a href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_growth_strategy&utm_content=final_cta" data-public-case-cta="final">Запросити аудит →</a>
       </section>
     </div>
   </main>
 
   <SiteFooter />
 </BaseLayout>
+
+<script>
+  import { trackCaseOpened, trackEvent } from "../../../../lib/analytics";
+  trackCaseOpened("knb_growth_strategy_public");
+  document.querySelectorAll<HTMLAnchorElement>("[data-public-case-cta]").forEach((link) => link.addEventListener("click", () => {
+    trackEvent("case_study_cta", {
+      caseId: "knb_growth_strategy_public",
+      destination: link.pathname,
+      action: "request_similar_audit",
+      placement: link.dataset.publicCaseCta || "unknown",
+    });
+  }));
+</script>
 
 <style>
   .knb-public-case{min-height:70vh;background:radial-gradient(circle at 90% 3%,rgba(89,92,246,.11),transparent 30rem),#f5f7fa;color:#172033}
