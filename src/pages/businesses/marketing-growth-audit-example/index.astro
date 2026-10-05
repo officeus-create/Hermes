@@ -7,7 +7,7 @@ const funnel = [
   {n:"01",uk:"Увага",en:"Attention",ukc:"Short-form / long-form контент за pain-кластерами клієнта.",enc:"Short-form / long-form content grouped by customer pain."},
   {n:"02",uk:"Вимірюваний CTA",en:"Trackable CTA",ukc:"Одна primary action на asset + campaign_id.",enc:"One primary action per asset + campaign_id."},
   {n:"03",uk:"Діагностика",en:"Diagnostic",ukc:"Baseline + головний gap + перші три дії.",enc:"Baseline + primary gap + first three actions."},
-  {n:"04",uk:"CRM-контекст",en:"CRM context",ukc:"Source, pain, stage, offer, owner і next action.",enc:"Source, pain, stage, offer, owner, next action."},
+  {n:"04",uk:"Контекст переходу",en:"Handoff context",ukc:"Джерело, проблема й baseline переживають перехід між каналами без публікації приватної CRM-структури.",enc:"Source, problem and baseline survive the channel handoff without exposing private CRM structure."},
   {n:"05",uk:"Консультація",en:"Consultation",ukc:"Fit, economics, objection і decision.",enc:"Fit, economics, objection, decision."},
   {n:"06",uk:"Основний оффер",en:"Core offer",ukc:"Програма / послуга, що відповідає діагностованому gap.",enc:"Program / service matched to the diagnosed gap."},
   {n:"07",uk:"Delivery",en:"Delivery",ukc:"Cohort / project / implementation evidence.",enc:"Cohort / project / implementation evidence."},
@@ -25,7 +25,7 @@ const metrics = [
 ];
 
 const phases = [
-  {window:"0–7 днів",uk:"Інструментувати",en:"Instrument",ukc:"Єдиний словник CTA, UTM/campaign rules, CRM source fields, proof ledger і baseline dashboard.",enc:"Unify CTA vocabulary, UTM/campaign rules, CRM source fields, proof ledger and baseline dashboard."},
+  {window:"0–7 днів",uk:"Інструментувати",en:"Instrument",ukc:"Єдиний словник CTA, UTM/campaign rules, attribution continuity і baseline dashboard.",enc:"Unify CTA vocabulary, UTM/campaign rules, attribution continuity and the baseline dashboard."},
   {window:"8–30 днів",uk:"Навчитися на даних",en:"Learn",ukc:"Розкласти content за pain × funnel stage, порівнювати winners/losers, стандартизувати diagnostic і consultation handoff.",enc:"Map content by pain × funnel stage, compare winners/losers, standardize diagnostic and consultation handoff."},
   {window:"31–90 днів",uk:"Масштабувати",en:"Scale",ukc:"Розширювати proven hooks, retarget qualified audiences і зв’язати delivery/renewal з acquisition source.",enc:"Expand proven hooks, retarget qualified audiences, connect delivery/renewal back to acquisition source."},
 ];
@@ -141,7 +141,7 @@ const schema = [
           </div>
           <ul>
             <li data-i18n="o1">користь до покупки;</li>
-            <li data-i18n="o2">структуровані CRM-дані;</li>
+            <li data-i18n="o2">структурований attribution context;</li>
             <li data-i18n="o3">персональний program/service fit;</li>
             <li data-i18n="o4">чистіша attribution та follow-up.</li>
           </ul>
@@ -177,33 +177,30 @@ const schema = [
       </section>
 
       <section class="panel">
-        <div class="head"><div><p class="eyebrow">08 · CRM FIELD MAP</p><h2 data-i18n="crmTitle">Що має пережити перехід із social у sales.</h2></div></div>
-        <div class="chips">{["source_channel","content_id","campaign_id","CTA / keyword","entry_offer","primary pain","diagnostic_primary_gap","baseline","recommended_module/service","reason_to_believe","business stage","owner / manager","consultation status","objection","sale / revenue","delivery","completion","renewal"].map(x=><span>{x}</span>)}</div>
-        <p class="note" data-i18n="crmNote">Instagram → Telegram → form → consultation не повинні створювати чотири різні контакти. Один buyer має одну identity та історію touchpoints.</p>
-      </section>
-
-      <section class="panel">
-        <div class="head"><div><p class="eyebrow">09 · CANDIDATE ASSESSMENT</p><h2 data-i18n="assessmentTitle">Той самий метод можна використовувати для тесту маркетолога в CRM.</h2></div></div>
-        <div class="assessment">
-          <span>Evidence & diagnosis · 0–5</span>
-          <span>Audience & positioning · 0–5</span>
-          <span>Funnel logic · 0–5</span>
-          <span>Offer quality · 0–5</span>
-          <span>KPI & measurement · 0–5</span>
-          <span>Execution thinking · 0–5</span>
+        <div class="head"><div><p class="eyebrow">08 · MEASUREMENT CONTINUITY</p><h2 data-i18n="crmTitle">Що має пережити перехід із social у sales — без публікації приватної CRM-схеми.</h2></div></div>
+        <div class="proof-grid">
+          <article><b>Source continuity</b><small>Який content/channel почав measurable action.</small></article>
+          <article><b>Problem baseline</b><small>Яку проблему й стартову точку зафіксовано до рекомендації.</small></article>
+          <article><b>Consultation outcome</b><small>Чи був fit, decision і коректний next step.</small></article>
+          <article><b>Delivery link</b><small>Чи можна зв’язати purchase з реальною участю без публікації private data.</small></article>
+          <article><b>Verified outcome</b><small>Before/after тільки за однаковою definition і перевіреним source.</small></article>
+          <article><b>Retention</b><small>Completion, repeat action або renewal вимірюються окремо.</small></article>
         </div>
-        <p class="note" data-i18n="assessmentCopy">Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment не змішується з learner progress і не робить кадрове рішення автоматично.</p>
+        <p class="note" data-i18n="crmNote">Instagram → Telegram → form → consultation не повинні втрачати attribution. Внутрішні CRM-поля, персональні дані й team routing залишаються приватними.</p>
       </section>
 
       <section class="panel proof">
-        <div class="head"><div><p class="eyebrow">10 · PROOF GOVERNANCE</p><h2 data-i18n="proofTitle">Перед масштабуванням — одна canonical версія кожного claim.</h2></div></div>
+        <div class="head"><div><p class="eyebrow">09 · EVIDENCE BOUNDARY</p><h2 data-i18n="proofTitle">Public facts, recommendations and unknowns мають бути розділені.</h2></div></div>
         <div class="proof-grid">
-          <article><b>Claim</b><small data-i18n="p1">Що саме говоримо публічно.</small></article>
-          <article><b>Source</b><small data-i18n="p2">URL / CRM / document + observed_at.</small></article>
-          <article><b>Definition</b><small data-i18n="p3">Population, period, calculation.</small></article>
-          <article><b>Owner</b><small data-i18n="p4">Хто відповідає за evidence.</small></article>
-          <article><b>Approved wording</b><small data-i18n="p5">Що дозволено site/social/sales.</small></article>
-          <article><b>Review date</b><small data-i18n="p6">Коли перевіряти повторно.</small></article>
+          <article><b>Observed</b><small data-i18n="p1">Публічний факт із джерелом і датою спостереження.</small></article>
+          <article><b>Recommended</b><small data-i18n="p2">Пропозиція Hermes, а не твердження про поточну практику клієнта.</small></article>
+          <article><b>Unknown</b><small data-i18n="p3">Приватна аналітика або результат, для якого немає дозволеного джерела.</small></article>
+          <article><b>No guarantee</b><small data-i18n="p4">Не обіцяємо rankings, leads, sales або revenue.</small></article>
+          <article><b>Private by default</b><small data-i18n="p5">Контакти, CRM records, budgets і team routing не публікуються.</small></article>
+          <article><b>Reviewable</b><small data-i18n="p6">Змінні факти перевіряються перед повторним використанням.</small></article>
+        </div>
+        <div class="actions" style="margin-top:18px">
+          <a href="/businesses/case-studies/kons-na-bis-growth-strategy/">Подивитися source-bounded KNB case →</a>
         </div>
       </section>
 
@@ -228,7 +225,7 @@ const schema = [
       <section class="cta">
         <p class="eyebrow">HERMES MARKETING + CONNECT</p>
         <h2 data-i18n="ctaTitle">Хочете такий самий аудит для свого бізнесу?</h2>
-        <p data-i18n="ctaCopy">Ми можемо почати з public-source audit, скласти 90-day media plan і показати, які CRM-поля та attribution потрібні до масштабування.</p>
+        <p data-i18n="ctaCopy">Ми можемо почати з public-source audit, скласти 90-day media plan і визначити, які attribution signals та measurement boundaries потрібні до масштабування.</p>
         <a class="primary" href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=strategy_case&utm_campaign=marketing_growth_audit_example&utm_content=final_cta" data-case-cta="final" data-i18n="cta">Запросити аудит →</a>
       </section>
     </div>
@@ -244,7 +241,7 @@ const schema = [
   }));
   const d={
     uk:{back:"← Hermes Catalog",title:"Social → CRM → Revenue",lead:"Приклад того, що ми рекомендуємо бізнесу після маркетингового аудиту: не “більше постів”, а одна вимірювана система від контенту до продажу, delivery та повторної покупки.",seeMethod:"Подивитися метод",requestAudit:"Замовити подібний аудит →",truth1:"Public signals ≠ private analytics",truth2:"Unknown ≠ zero",truth3:"Human-approved claims",truth4:"Без гарантій ranking, leads або revenue",auditTitle:"Що ми перевіряємо до того, як радити tactic.",a1:"Audience & positioning",a1c:"Хто покупець, яка проблема, який stage of awareness і чому оффер має бути релевантним саме зараз.",a2:"Content architecture",a2c:"Pain → insight → proof → conversion → retention. Кожен asset має зрозумілу роль у funnel.",a3:"CTA & attribution",a3c:"Один primary CTA на asset, campaign_id, UTM/keyword convention та downstream CRM outcome.",a4:"Proof consistency",a4c:"Claim → source → observed_at → definition → approved wording → review date.",channelsTitle:"Канали мають різні ролі, але одну customer identity.",ch1:"Attention, hooks, cases, objections, short-form testing.",ch2:"Depth, trust, education, long-form intent and searchable proof.",ch3:"Fast hypothesis testing, opinions, questions and conversation starters.",ch4:"Nurture, follow-up, event/program reminders and retention.",ch5:"Canonical offer, proof, diagnostic, conversion and consent.",ch6:"Одна lead/customer identity через усі канали і next actions.",offerTitle:"Не винаходити lead magnet, якщо в бізнесу вже є сильний diagnostic entry point.",offer:"“Знайдемо головне вузьке місце росту, зафіксуємо baseline і дамо персональну карту перших 3 дій.”",offerCopy:"Після діагностики sales бачить контекст, а клієнт — reason-to-believe. Основний продукт пропонується тільки після problem-fit, а не замість нього.",o1:"користь до покупки;",o2:"структуровані CRM-дані;",o3:"персональний program/service fit;",o4:"чистіша attribution та follow-up.",funnelTitle:"Воронка закінчується бізнес-результатом, не охопленням.",riskTitle:"Шість зон, де маркетинг може втрачати гроші ще до оптимізації funnel.",metricsTitle:"Шість контрольних рівнів замість vanity metrics.",metricNote:"CAC/LTV/ROMI не заповнюються “для красивого дашборду”. Вони з’являються після дозволеного підключення spend, sales/revenue та attribution rules.",planTitle:"Спочатку instrumentation, потім learning, потім scale.",crmTitle:"Що має пережити перехід із social у sales.",crmNote:"Instagram → Telegram → form → consultation не повинні створювати чотири різні контакти. Один buyer має одну identity та історію touchpoints.",assessmentTitle:"Той самий метод можна використовувати для тесту маркетолога в CRM.",assessmentCopy:"Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment не змішується з learner progress і не робить кадрове рішення автоматично.",proofTitle:"Перед масштабуванням — одна canonical версія кожного claim.",p1:"Що саме говоримо публічно.",p2:"URL / CRM / document + observed_at.",p3:"Population, period, calculation.",p4:"Хто відповідає за evidence.",p5:"Що дозволено site/social/sales.",p6:"Коли перевіряти повторно.",ctaTitle:"Хочете такий самий аудит для свого бізнесу?",ctaCopy:"Ми можемо почати з public-source audit, скласти 90-day media plan і показати, які CRM-поля та attribution потрібні до масштабування.",cta:"Запросити аудит →"},
-    en:{back:"← Hermes Catalog",title:"Social → CRM → Revenue",lead:"An example of what Hermes recommends after a marketing audit: not simply more posts, but one measurable system from content to sale, delivery, and repeat purchase.",seeMethod:"See the method",requestAudit:"Request a similar audit →",truth1:"Public signals ≠ private analytics",truth2:"Unknown ≠ zero",truth3:"Human-approved claims",truth4:"No guaranteed rankings, leads or revenue",auditTitle:"What we check before recommending a tactic.",a1:"Audience & positioning",a1c:"Who buys, which problem matters, the awareness stage, and why the offer is relevant now.",a2:"Content architecture",a2c:"Pain → insight → proof → conversion → retention. Every asset has a clear funnel role.",a3:"CTA & attribution",a3c:"One primary CTA per asset, campaign_id, UTM/keyword convention, and downstream CRM outcome.",a4:"Proof consistency",a4c:"Claim → source → observed_at → definition → approved wording → review date.",channelsTitle:"Channels have different jobs but one customer identity.",ch1:"Attention, hooks, cases, objections, short-form testing.",ch2:"Depth, trust, education, long-form intent and searchable proof.",ch3:"Fast hypothesis testing, opinions, questions and conversation starters.",ch4:"Nurture, follow-up, event/program reminders and retention.",ch5:"Canonical offer, proof, diagnostic, conversion and consent.",ch6:"One lead/customer identity across every channel and next action.",offerTitle:"Do not invent another lead magnet when the business already has a strong diagnostic entry point.",offer:"“We identify the main growth bottleneck, record the baseline, and give a personal map of the first three actions.”",offerCopy:"After the diagnostic, sales has context and the buyer has a reason to believe. The core product is offered after problem-fit, not instead of it.",o1:"value before purchase;",o2:"structured CRM data;",o3:"personalized program/service fit;",o4:"cleaner attribution and follow-up.",funnelTitle:"The funnel ends in a business outcome, not reach.",riskTitle:"Six areas where marketing can lose money before funnel optimization.",metricsTitle:"Six control levels instead of vanity metrics.",metricNote:"CAC/LTV/ROMI are not filled for dashboard aesthetics. They appear after permitted spend, sales/revenue and attribution sources are connected.",planTitle:"Instrument first, learn second, scale third.",crmTitle:"What must survive the handoff from social to sales.",crmNote:"Instagram → Telegram → form → consultation should not create four different contacts. One buyer keeps one identity and touchpoint history.",assessmentTitle:"The same method can become a marketer candidate test inside CRM.",assessmentCopy:"Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment stays separate from learner progress and does not automate hiring.",proofTitle:"Before scaling, keep one canonical version of every claim.",p1:"Exactly what we say publicly.",p2:"URL / CRM / document + observed_at.",p3:"Population, period, calculation.",p4:"Who owns the evidence.",p5:"What site/social/sales may use.",p6:"When it must be reviewed again.",ctaTitle:"Want the same type of audit for your business?",ctaCopy:"We can start with a public-source audit, build a 90-day media plan, and show which CRM fields and attribution rules should exist before scaling.",cta:"Request an audit →"}
+    en:{back:"← Hermes Catalog",title:"Social → CRM → Revenue",lead:"An example of what Hermes recommends after a marketing audit: not simply more posts, but one measurable system from content to sale, delivery, and repeat purchase.",seeMethod:"See the method",requestAudit:"Request a similar audit →",truth1:"Public signals ≠ private analytics",truth2:"Unknown ≠ zero",truth3:"Human-approved claims",truth4:"No guaranteed rankings, leads or revenue",auditTitle:"What we check before recommending a tactic.",a1:"Audience & positioning",a1c:"Who buys, which problem matters, the awareness stage, and why the offer is relevant now.",a2:"Content architecture",a2c:"Pain → insight → proof → conversion → retention. Every asset has a clear funnel role.",a3:"CTA & attribution",a3c:"One primary CTA per asset, campaign_id, UTM/keyword convention, and downstream CRM outcome.",a4:"Proof consistency",a4c:"Claim → source → observed_at → definition → approved wording → review date.",channelsTitle:"Channels have different jobs but one customer identity.",ch1:"Attention, hooks, cases, objections, short-form testing.",ch2:"Depth, trust, education, long-form intent and searchable proof.",ch3:"Fast hypothesis testing, opinions, questions and conversation starters.",ch4:"Nurture, follow-up, event/program reminders and retention.",ch5:"Canonical offer, proof, diagnostic, conversion and consent.",ch6:"One lead/customer identity across every channel and next action.",offerTitle:"Do not invent another lead magnet when the business already has a strong diagnostic entry point.",offer:"“We identify the main growth bottleneck, record the baseline, and give a personal map of the first three actions.”",offerCopy:"After the diagnostic, sales has context and the buyer has a reason to believe. The core product is offered after problem-fit, not instead of it.",o1:"value before purchase;",o2:"structured attribution context;",o3:"personalized program/service fit;",o4:"cleaner attribution and follow-up.",funnelTitle:"The funnel ends in a business outcome, not reach.",riskTitle:"Six areas where marketing can lose money before funnel optimization.",metricsTitle:"Six control levels instead of vanity metrics.",metricNote:"CAC/LTV/ROMI are not filled for dashboard aesthetics. They appear after permitted spend, sales/revenue and attribution sources are connected.",planTitle:"Instrument first, learn second, scale third.",crmTitle:"What must survive the handoff from social to sales.",crmNote:"Instagram → Telegram → form → consultation should not create four different contacts. One buyer keeps one identity and touchpoint history.",assessmentTitle:"The same method can become a marketer candidate test inside CRM.",assessmentCopy:"Brief → deadline → sources → Google Docs / MindMap → reviewer score → human decision. Assessment stays separate from learner progress and does not automate hiring.",proofTitle:"Before scaling, keep one canonical version of every claim.",p1:"Exactly what we say publicly.",p2:"URL / CRM / document + observed_at.",p3:"Population, period, calculation.",p4:"Who owns the evidence.",p5:"What site/social/sales may use.",p6:"When it must be reviewed again.",ctaTitle:"Want the same type of audit for your business?",ctaCopy:"We can start with a public-source audit, build a 90-day media plan, and show which CRM fields and attribution rules should exist before scaling.",cta:"Request an audit →"}
   } as const;
   type Lang=keyof typeof d;
   const params=new URLSearchParams(location.search);
