@@ -24,14 +24,15 @@ export type CatalogConceptBusinessRoute = {
 
 const countryName = (business: CatalogBusinessConcept) => {
   if (business.countryCode === "UA") return "Ukraine";
-  if (business.countryCode === "US") return "United States";
+  if (business.countryCode === "US") return business.region;
   return business.countrySlug.replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 };
 
 const international = catalogBusinessConcepts.filter((business) => business.market === "international");
+const routedConcepts = catalogBusinessConcepts;
 
 export const catalogConceptBusinessRoutes: readonly CatalogConceptBusinessRoute[] = Object.freeze(
-  international.map((business) => ({
+  routedConcepts.map((business) => ({
     countrySlug: business.countrySlug,
     localitySlug: business.localitySlug,
     slug: business.slug,
@@ -47,11 +48,11 @@ export const catalogConceptCountryRoutes: readonly CatalogConceptCountryRoute[] 
 );
 
 export const catalogConceptLocalityRoutes: readonly CatalogConceptLocalityRoute[] = Object.freeze(
-  [...new Map(international.map((business) => [
+  [...new Map(routedConcepts.map((business) => [
     `${business.countrySlug}/${business.localitySlug}`,
     { countrySlug: business.countrySlug, localitySlug: business.localitySlug },
   ])).values()].map(({ countrySlug, localitySlug }) => {
-    const businesses = international.filter((business) =>
+    const businesses = routedConcepts.filter((business) =>
       business.countrySlug === countrySlug && business.localitySlug === localitySlug
     );
     const first = businesses[0];
