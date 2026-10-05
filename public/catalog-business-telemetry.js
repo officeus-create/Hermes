@@ -34,6 +34,23 @@
     });
   };
 
+  const ATTRIBUTION_KEYS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","gclid","gbraid","wbraid","fbclid"];
+
+  const preserveRequestAttribution = () => {
+    const incoming = new URLSearchParams(window.location.search);
+    const values = ATTRIBUTION_KEYS
+      .map((key) => [key, incoming.get(key)])
+      .filter(([, value]) => Boolean(value));
+    if (!values.length) return;
+    document.querySelectorAll('a[href*="/businesses/request/"]').forEach((node) => {
+      if (!(node instanceof HTMLAnchorElement)) return;
+      const url = new URL(node.href, window.location.origin);
+      if (url.origin !== window.location.origin || url.pathname !== "/businesses/request/") return;
+      for (const [key, value] of values) if (!url.searchParams.has(key) && value) url.searchParams.set(key, value);
+      node.href = url.pathname + url.search + url.hash;
+    });
+  };
+
   const bindClicks = () => {
     document.querySelectorAll("[data-catalog-event]").forEach((node) => {
       if (!(node instanceof HTMLElement) || node.dataset.catalogTelemetryBound === "true") return;
@@ -46,6 +63,7 @@
   };
 
   const start = () => {
+    preserveRequestAttribution();
     bindClicks();
     send("profile_view", true);
     const observer = new MutationObserver(() => {
