@@ -114,7 +114,12 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "Етап 1: доступи + evidence map + baseline. Етап 2: organic programming і content matrix. Етап 3: repeatable winners і controlled paid learning. Етап 4: signal gate, offer/funnel hypothesis. Етап 5: CRM attribution і consultation workflow. Етап 6: sale/delivery/outcome feedback loop. Робочий горизонт плану — 3–6 місяців, а не обіцянка миттєвого результату.",
           "Stage 1: access + evidence map + baseline. Stage 2: organic programming and content matrix. Stage 3: repeatable winners and controlled paid learning. Stage 4: signal gate and offer/funnel hypothesis. Stage 5: CRM attribution and consultation workflow. Stage 6: sale/delivery/outcome feedback loop. The operating horizon is 3–6 months rather than a promise of instant results."
-        )
+        ),
+        bullets: [
+          t("Планувальний production target для organic programming — 120 short-form відео на місяць; це робоча гіпотеза потужності, а не твердження про поточний обсяг КНБ.", "Planning production target for organic programming: 120 short-form videos per month; this is an operating capacity hypothesis, not a claim about KNB's current output."),
+          t("Формати: Reels, Stories і каруселі. Instagram creative може розподілятися у Facebook і Threads з тим самим content_id; Instagram/Facebook Stories дублюються як distribution test, а не як доказ додаткового reach.", "Formats: Reels, Stories, and carousels. Instagram creative can be distributed to Facebook and Threads under the same content_id; Instagram/Facebook Stories can be duplicated as a distribution test, not as proof of incremental reach."),
+          t("Текст, hook, мова і географія — окремі programming variables. Географічну якість аудиторії перевіряємо в Insights до будь-якого paid scaling.", "Copy, hook, language, and geography are explicit programming variables. Audience geography is verified in Insights before any paid scaling.")
+        ]
       },
       {
         number: 10,
@@ -128,14 +133,15 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         number: 11,
         title: t("Доступний перший крок", "Available first step"),
         body: t(
-          "Підтвердити owner-access до потрібної аналітики, одну бізнес-ціль і один measurable path. Після цього формується 3–6 month media plan. Paid/offer запуск не рекомендується до readiness gate.",
-          "Confirm owner access to the required analytics, one business goal, and one measurable path. From there, build the 3–6 month media plan. Paid/offer launch is not recommended before the readiness gate."
+          "Підтвердити owner-access до Meta Business Suite, Instagram Insights / Ads Manager та іншої потрібної аналітики, одну бізнес-ціль і один measurable path. Після цього формується 3–6 month media plan. Paid/offer запуск не рекомендується до readiness gate.",
+          "Confirm owner access to Meta Business Suite, Instagram Insights / Ads Manager, and the other required analytics, one business goal, and one measurable path. From there, build the 3–6 month media plan. Paid/offer launch is not recommended before the readiness gate."
         )
       }
     ],
     crmFields: [
-      "source_channel","content_id","campaign_id","cta_keyword","entry_offer",
-      "primary_pain","baseline","recommended_module","manager","consultation_status",
+      "source_channel","content_id","content_format","campaign_id","cta_keyword","entry_offer",
+      "organic_state","paid_learning_state","audience_geo","primary_pain","diagnostic_primary_gap",
+      "baseline","recommended_module","reason_to_believe","business_stage","manager","consultation_status",
       "program_fit","objection","sale_revenue","cohort","completion","renewal"
     ],
     trainingMethod: [
