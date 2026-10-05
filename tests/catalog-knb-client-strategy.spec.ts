@@ -7,7 +7,9 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
 
   const officialProgram = page.getByRole("link", { name: "Перейти до програми", exact: true }).first();
   await expect(officialProgram).toHaveAttribute("href", "https://biznes-club-knb.com/zrostannia-u-biznesi");
-  await expect(page.getByRole("link", { name: "Запросити повний аудит Hermes", exact: true })).toHaveAttribute("href", /type=marketing-package/);
+  const fullAudit = page.getByRole("link", { name: "Запросити повний аудит Hermes", exact: true });
+  await expect(fullAudit).toHaveAttribute("href", /type=marketing-package/);
+  const fullAuditHref = await fullAudit.getAttribute("href");
   await expect(page.getByRole("link", { name: "Зареєструвати Academy workspace →", exact: true })).toHaveAttribute("href", /\/services\/hermes-connect\/academy\/business\/auth\//);
 
   const strategy = page.locator('[data-client-strategy="catalog-ua-kons-na-bis-bila-tserkva"]');
@@ -38,4 +40,12 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await expect(strategy).toContainText("120 short-form videos per month");
   await expect(page.getByRole("heading", { name: "What has Hermes prepared for KNB?", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Register Academy workspace →", exact: true })).toBeVisible();
+
+  await page.goto(fullAuditHref ?? "/businesses/request/?type=marketing-package", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-catalog-request]")).toHaveAttribute("data-request-type", "marketing-package");
+  await expect(page.locator("[data-marketing-budget]")).toBeVisible();
+  await expect(page.locator('select[name="planning_budget"]')).toBeRequired();
+  await expect(page.locator("[data-message-label]")).toHaveText("Primary business goal / what should Hermes review?");
+  await expect(page.locator('textarea[name="message"]')).toHaveValue(/primary business goal/i);
+  await expect(page.getByRole("heading", { name: /marketing audit \/ media plan/i })).toBeVisible();
 });
