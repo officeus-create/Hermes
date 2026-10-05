@@ -399,7 +399,11 @@
     "cloudflare_access": {
       "opera_dashboard": "SIGN_IN_REQUIRED",
       "local_wrangler_auth": "NO_TOKEN_OR_WRANGLER_AUTH_CONTEXT_OBSERVED",
-      "conclusion": "SCOPED_AUTH_ACCESS_GAP__PUBLIC_GITHUB_PRODUCTION_EVIDENCE_MAY_BE_USED_BUT_DASHBOARD_D1_BINDING_PROOF_REMAINS_UNKNOWN"
+      "conclusion": "SCOPED_AUTH_ACCESS_GAP__PUBLIC_GITHUB_PRODUCTION_EVIDENCE_MAY_BE_USED_BUT_DASHBOARD_D1_BINDING_PROOF_REMAINS_UNKNOWN",
+      "status": "D1_OPERATOR_PROOF_ACCESS_GAP__NOT_A_PAGES_RELEASE_BLOCKER",
+      "pages_release_dependency": false,
+      "current_scope": "Scoped owner/admin Cloudflare access is needed only for bounded dashboard/D1/bindings/operator proof where existing GitHub release evidence is insufficient.",
+      "resume_trigger": "Authorized scoped Cloudflare auth/connector becomes available or an existing owner lane requires exact D1/binding evidence."
     },
     "old_prs": {
       "871": "CLOSED_UNMERGED_2026_09_01",
@@ -411,6 +415,18 @@
       "887": "CLOSED_UNMERGED_2026_09_01",
       "910": "MERGED_2026_09_01",
       "911": "CLOSED_UNMERGED_2026_08_31"
+    },
+    "antigravity_import": {
+      "status": "ARCHIVE_RECOVERY_ONLY_NOT_CURRENT_EXECUTION_BLOCKER",
+      "reason": "The 2026-08-31 local AntiGravity DB/JSONL sources are absent from the current authorized Mac and exact Drive filename search. Current GitHub/One Brain reconciliation can and did proceed from authoritative live/cloud sources, so missing legacy local files must not block current operations.",
+      "resume_trigger": "Only if an actual backup/source is recovered and unique knowledge not already represented in One Brain is proven.",
+      "forbidden": "Do not recreate, infer, or repeatedly scan for missing historical source data."
+    },
+    "current_dependency_resolution": {
+      "drive_acl": "#431 remains one owner/admin security gate.",
+      "antigravity_import": "SUPERSEDED_AS_CURRENT_PREREQUISITE",
+      "cloudflare_dashboard": "SUPERSEDED_AS_GENERIC_PAGES_PREREQUISITE; bounded D1 proof only",
+      "github_state_refresh": "#1686 current governance lane"
     }
   }
 }
