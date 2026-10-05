@@ -15,11 +15,13 @@ import { catalogConceptCountryRoutes } from "../../lib/catalog-concept-routes";
 
 const directoryUrl = "https://hermeslogisticsus.com/businesses/";
 const usBusinesses = repairShopDirectory.filter((business) => business.country === "US");
+const usClientConcepts: readonly CatalogBusinessConcept[] = catalogBusinessConcepts.filter((business) => business.market === "us");
 const internationalBusinesses: readonly CatalogBusinessConcept[] = catalogBusinessConcepts.filter((business) => business.market === "international");
 const stateCounts = new Map<string, number>();
 for (const business of usBusinesses) stateCounts.set(business.stateSlug, (stateCounts.get(business.stateSlug) ?? 0) + 1);
+for (const business of usClientConcepts) stateCounts.set(business.countrySlug, (stateCounts.get(business.countrySlug) ?? 0) + 1);
 const categoryCounts = [...new Map(usBusinesses.map((business) => [business.category, usBusinesses.filter((item) => item.category === business.category).length])).entries()];
-const popularTerms = [...new Set(["Website development", "Local SEO", "Hermes Connect CRM", "Load Board", ...usBusinesses.flatMap((business) => [business.category, ...business.services])])].slice(0, 9);
+const popularTerms = [...new Set(["Website development", "Local SEO", "Hermes Connect CRM", "Load Board", ...usBusinesses.flatMap((business) => [business.category, ...business.services]), ...usClientConcepts.flatMap((business) => [business.primaryIntent, ...business.services])])].slice(0, 12);
 const academyLocalizedSamples = academyCountryRegistry.filter((country) => country.localizationState === "launch_ready");
 const ecosystem = [
   { id: "logistics", label: "Logistics", title: "Keep business discovery close to real transportation operations.", body: "Repair and service discovery can support carriers, fleets and drivers while Hermes Logistics remains a separate operating relationship.", href: "/paths/logistics/", cta: "Explore Logistics" },
@@ -28,7 +30,7 @@ const ecosystem = [
   { id: "academy", label: "Academy", title: "Connect business owners and teams with practical learning.", body: "Hermes Academy remains the education layer for logistics, marketing, IT, sales and operations skills rather than being folded into the directory itself.", href: "/paths/academy/", cta: "Explore Academy" },
 ];
 const schema = [
-  { "@context": "https://schema.org", "@type": "CollectionPage", name: "Hermes Catalog", alternateName: "Hermes Business Directory", url: directoryUrl, description: "Evidence-backed public business discovery with owner claim state and optional Hermes Connect activation.", mainEntity: { "@type": "ItemList", itemListElement: usBusinesses.map((business: RepairShopDirectoryEntry, index: number) => ({ "@type": "ListItem", position: index + 1, url: `https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`, name: business.businessName })) } },
+  { "@context": "https://schema.org", "@type": "CollectionPage", name: "Hermes Catalog", alternateName: "Hermes Business Directory", url: directoryUrl, description: "Evidence-backed public business discovery with owner claim state and optional Hermes Connect activation.", mainEntity: { "@type": "ItemList", itemListElement: [...usBusinesses.map((business: RepairShopDirectoryEntry, index: number) => ({ "@type": "ListItem", position: index + 1, url: `https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`, name: business.businessName })), ...usClientConcepts.map((business, index) => ({ "@type": "ListItem", position: usBusinesses.length + index + 1, url: `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`, name: business.name }))] } },
   { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Hermes Catalog", item: directoryUrl }] },
 ];
 ---
@@ -53,7 +55,7 @@ const schema = [
           <span>Try:</span>
           {popularTerms.map((term) => <button type="button" data-catalog-query={term}>{term}</button>)}
         </div>
-        <p class="catalog-search-count" data-catalog-count>{usBusinesses.length + hermesCatalogOffers.length} primary U.S. searchable entries</p>
+        <p class="catalog-search-count" data-catalog-count>{usBusinesses.length + usClientConcepts.length + hermesCatalogOffers.length} primary U.S. searchable entries</p>
       </header>
 
       <HermesPromoRail context="catalog" />
@@ -61,7 +63,7 @@ const schema = [
       <MarketingPackageSelector />
 
       <section class="catalog-overview" aria-label="Hermes Catalog scope">
-        <article><strong data-catalog-business-count>{usBusinesses.length}</strong><span>primary U.S. business profiles</span></article>
+        <article><strong data-catalog-business-count>{usBusinesses.length + usClientConcepts.length}</strong><span>primary U.S. business profiles</span></article>
         <article><strong>{hermesCatalogOffers.length}</strong><span>Hermes-owned service entries</span></article>
         <article><strong>110</strong><span>Academy country targets in the expansion registry</span></article>
         <article><strong>{priorityGrowthCities.length}</strong><span>priority global growth cities — not office claims</span></article>
@@ -84,7 +86,7 @@ const schema = [
       <section class="catalog-results" aria-labelledby="catalog-results-title">
         <div class="section-heading">
           <div><p class="eyebrow">Primary market · United States</p><h2 id="catalog-results-title">U.S. businesses you can discover now</h2></div>
-          <p><span data-catalog-business-count>{usBusinesses.length}</span> published U.S. business profiles</p>
+          <p><span data-catalog-business-count>{usBusinesses.length + usClientConcepts.length}</span> published U.S. business profiles</p>
         </div>
         <div class="business-grid" data-catalog-grid>
           {usBusinesses.map((business) => (
@@ -94,6 +96,15 @@ const schema = [
               <p>{business.city}, {business.state} · {business.serviceArea[0]}</p>
               <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
               <div class="business-card__actions"><a href={`/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`}>View profile</a><span>{business.bookingEnabled ? "Online booking available" : "Booking after owner activation"}</span></div>
+            </article>
+          ))}
+          {usClientConcepts.map((business) => (
+            <article class="business-card" data-catalog-card data-search-text={[business.name, business.primaryIntent, business.locality, business.region, ...business.services, ...(business.semanticCore ?? [])].join(" ").toLowerCase()}>
+              <div class="business-card__top"><span>{business.primaryIntent}</span><span>{business.status === "client" ? "Client" : business.status === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
+              <h3>{business.name}</h3>
+              <p>{business.locality}, {business.region} · {business.countryCode}</p>
+              <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
+              <div class="business-card__actions"><a href={`/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`}>View profile</a><span>{business.status === "client" ? "Client profile · Digital Audit" : "Catalog profile"}</span></div>
             </article>
           ))}
         </div>
@@ -168,7 +179,7 @@ const schema = [
         <p class="country-source-note">Future localized lesson/examples may be adapted from approved Hermes training and recruiting evidence, including historical Telegram/email/work sources, only after anonymization, current-fact reconciliation and privacy review. Raw candidate messages, personal data and unverified employment promises do not become public SEO content.</p>
       </section>
 
-      <section class="cities" aria-labelledby="cities-title"><div class="section-heading"><div><p class="eyebrow">Live locations</p><h2 id="cities-title">Browse cities with published profiles</h2></div></div>{directoryCities.filter((city) => usBusinesses.some((business) => business.stateSlug === city.stateSlug && business.citySlug === city.citySlug)).map((city: (typeof directoryCities)[number]) => <a href={`/businesses/${city.stateSlug}/${city.citySlug}/`}><strong>{city.city}, {city.state}</strong><span>{usBusinesses.filter((business: RepairShopDirectoryEntry) => business.stateSlug === city.stateSlug && business.citySlug === city.citySlug).length} business profile</span></a>)}</section>
+      <section class="cities" aria-labelledby="cities-title"><div class="section-heading"><div><p class="eyebrow">Live locations</p><h2 id="cities-title">Browse cities with published profiles</h2></div></div>{directoryCities.filter((city) => usBusinesses.some((business) => business.stateSlug === city.stateSlug && business.citySlug === city.citySlug)).map((city: (typeof directoryCities)[number]) => <a href={`/businesses/${city.stateSlug}/${city.citySlug}/`}><strong>{city.city}, {city.state}</strong><span>{usBusinesses.filter((business: RepairShopDirectoryEntry) => business.stateSlug === city.stateSlug && business.citySlug === city.citySlug).length} business profile</span></a>)}{usClientConcepts.map((business) => <a href={`/businesses/${business.countrySlug}/${business.localitySlug}/`}><strong>{business.locality}, {business.region}</strong><span>Client business profile</span></a>)}</section>
 
       <section class="owner-panel" id="business-owners" aria-labelledby="business-owner-title">
         <div><p class="eyebrow">Own a business?</p><h2 id="business-owner-title">Start free. Claim only what is yours.</h2><p>A public profile can exist before a business becomes a Hermes customer. An authorized owner can verify or correct the public facts and then independently decide whether to activate Hermes Connect or any paid growth service.</p></div>
