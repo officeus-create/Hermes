@@ -211,7 +211,7 @@ export const konsNaBisConcept = Object.freeze({
   secondaryIntent: "7-тижнева програма «Стратегія керованого зростання у бізнесі»",
   featuredOffer: {
     name: "Стратегія керованого зростання у бізнесі",
-    url: "https://biznes-club-knb.com/strategiya-kerovanogo-zrosty",
+    url: "https://biznes-club-knb.com/zrostannia-u-biznesi",
     description: "Комплексна онлайн-програма для підприємців із супроводом; офіційний опис програми заявляє 7-тижневий формат.",
     duration: "7 тижнів"
   },
