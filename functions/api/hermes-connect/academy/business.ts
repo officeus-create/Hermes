@@ -1,5 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../../_lib/session.mjs";
 import { companySlug, ensureHermesCompanyProfilesSchema } from "../../_lib/hermes-company-profiles.mjs";
+import { catalogProjectionPath } from "../../_lib/catalog-public-projection.mjs";
 import {
   academyBusinessSlug,
   cleanAcademyBusinessText,
@@ -292,12 +293,17 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const row = await academyBusinessForOwner(env.DB, specialist.id);
   const profile = safeProfile(row);
+  const publicProfileUrl = catalogProjectionPath({
+    vertical: "academy_business",
+    website: profile?.website || website,
+    slug: profile?.slug || canonicalSlug,
+  });
   return jsonResponse(200, {
     success: true,
     academyBusiness: profile,
     canonicalCompany: { id: profile?.companyId || companyId, slug: profile?.slug || canonicalSlug },
     catalog: catalogOptIn
-      ? { listed: true, status: profile?.catalogStatus || "self_submitted", profileUrl: `/businesses/connect/academy/${encodeURIComponent(String(profile?.slug || canonicalSlug))}/` }
+      ? { listed: true, status: profile?.catalogStatus || "self_submitted", profileUrl: publicProfileUrl }
       : { listed: false, status: "opted_out", profileUrl: null },
     next_url: "/services/hermes-connect/academy/business/workspace/",
   }, privateHeaders);

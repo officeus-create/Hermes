@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { onRequestGet, onRequestPost } from "../functions/api/hermes-connect/academy/business.ts";
+import { onRequestGet as onPublicAcademyCatalogGet } from "../functions/businesses/connect/academy/[slug].ts";
 import { ensureHermesCompanyProfilesSchema } from "../functions/api/_lib/hermes-company-profiles.mjs";
 
 function makeD1() {
@@ -192,5 +193,54 @@ test("Academy setup does not overwrite an unrelated company that wins a concurre
   assert.equal(company.website, "https://concurrent.example/");
   assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_academy_business_profiles").get().count, 0);
 
+  sqlite.close();
+});
+
+
+test("KNB Academy onboarding reuses its curated canonical Catalog owner and keeps Load Board off", async () => {
+  const { sqlite, db } = makeD1();
+  const { token } = seedIdentity(sqlite, "specialist-knb-owner", "knb-owner-session");
+  const payload = {
+    businessName: "Конс на Бі$",
+    academyType: "business_club",
+    city: "Біла Церква",
+    region: "Київська область",
+    countryCode: "UA",
+    website: "https://kons-na-bis.com/",
+    phone: "+380671155111",
+    timezone: "Europe/Kyiv",
+    catalogOptIn: true,
+  };
+
+  const saved = await onRequestPost({ request: postRequest(token, payload), env: { DB: db } });
+  assert.equal(saved.status, 200);
+  const body = await saved.json();
+  assert.equal(body.success, true);
+  assert.equal(body.catalog.listed, true);
+  assert.equal(body.catalog.profileUrl, "/businesses/ukraine/bila-tserkva/kons-na-bis/");
+  assert.ok(body.canonicalCompany.id);
+
+  const canonical = sqlite.prepare(
+    "SELECT id,catalog_opt_in,load_board_access FROM hermes_company_profiles WHERE owner_specialist_id=?"
+  ).get("specialist-knb-owner");
+  assert.equal(canonical.id, body.canonicalCompany.id);
+  assert.equal(Number(canonical.catalog_opt_in), 1);
+  assert.equal(Number(canonical.load_board_access), 0);
+
+  const readback = await onRequestGet({ request: getRequest(token), env: { DB: db } });
+  assert.equal(readback.status, 200);
+  const readbackBody = await readback.json();
+  assert.equal(readbackBody.academyBusiness.companyId, body.canonicalCompany.id);
+  assert.equal(readbackBody.academyBusiness.catalogOptIn, true);
+
+  const runtime = await onPublicAcademyCatalogGet({
+    env: { DB: db },
+    params: { slug: body.canonicalCompany.slug },
+  });
+  assert.equal(runtime.status, 308);
+  assert.equal(runtime.headers.get("location"), "https://hermeslogisticsus.com/businesses/ukraine/bila-tserkva/kons-na-bis/");
+
+  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_company_profiles").get().count, 1);
+  assert.equal(sqlite.prepare("SELECT COUNT(*) AS count FROM hermes_academy_business_profiles").get().count, 1);
   sqlite.close();
 });

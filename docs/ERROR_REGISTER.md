@@ -405,3 +405,54 @@ EVIDENCE: Focused test failed before the implementation with actual `/demos/herm
 FOLLOW_UP: The existing post-merge Connect production verifier previously accepted the approved Web App without checking hostname-root crawl control. It now samples `/robots.txt` alongside the page, applies the same 80% quorum, and fails the `approved_web_app` release gate unless the exact Connect URL returns HTTP 200 `text/plain` with wildcard `User-agent` and the canonical sitemap declaration. The classifier and exit decision were added test-first. A fresh remote-Mac pre-release baseline still showed apex robots 6/6 HTTP 200 and Connect robots 6/6 HTTP 404, proving the new gate detects the unreleased state rather than converting it into a false live claim.
 
 REUSE_RULE: Crawl-control and other hostname-root assets need explicit middleware contracts for every owned hostname. Verify apex and subdomain paths independently in production; apex success does not establish Connect success.
+
+
+## 2026-10-05 — KNB client Catalog work was noindex despite the organic objective
+
+STATUS: SOURCE FIXED ON PR #1681; PRODUCTION UNCHANGED.
+
+PROBLEM: The recovered «Конс на Бі$» marketing assessment, Academy CRM demo, and client strategy page existed, but the client-specific strategy page was intentionally `noindex,nofollow` and the KNB entity/product did not have an indexable Catalog profile in the business-directory sitemap. The generic Marketing Growth Audit example was indexable, so the reusable Hermes methodology could rank while the actual client/product discovery objective remained incomplete.
+
+ROOT_CAUSE: The initial safety boundary correctly kept an unapproved client strategy concept out of search, but the follow-up step was never completed: create a separate source-bounded public Catalog entity/profile that can be indexed without presenting Hermes' internal strategy, demo KPI, or unapproved claims as the client's official site.
+
+WORKING_APPROACH: Keep the detailed marketing assessment and CRM demo noindex. Add KNB to the existing international Catalog registry as a verified client workstream, generate the visible Hermes Catalog → Ukraine → Bila Tserkva → KNB hierarchy, expose only official/public entity facts and a direct official link to the seven-week «Стратегія керованого зростання у бізнесі» program, add sitemap membership and Course/EducationalOrganization semantics, and leave price, cohort dates, schedules, result claims, and final presentation approval explicitly evidence-gated.
+
+EVIDENCE: PR #1681 branch `feat/catalog-knb-organic-profile-20261005`. Initial exact-head CI correctly failed because the shared Hermes Connect vertical preview did not yet support the new `business_academy` enum; commit `0adbb70654145dafab0b87a2d741f1be94555e74` adds the missing vertical mapping rather than suppressing Astro type checks. The next exact-head CI remains the release gate.
+
+LESSON: A noindex strategy/demo is not an organic Catalog deliverable. Privacy/approval-safe review surfaces and search-owned public entity pages are separate artifacts with different evidence boundaries.
+
+REUSE_RULE: For a client Catalog task whose goal includes organic discovery, require a distinct indexable source-bounded owner/entity page with visible parent-child internal links, sitemap ownership, verified public facts, explicit official-source links, and regression tests. Keep internal audits, CRM demos, candidate assessments, private metrics, and unapproved strategy noindex.
+
+
+## 2026-10-05 — KNB marketing case incorrectly treated funnel/offer as the next social step
+
+STATUS: SOURCE CORRECTED ON PR #1681; PRODUCTION UNCHANGED.
+
+PROBLEM: The recovered KNB candidate brief asked for a social audit plus a funnel/offer. Earlier Hermes strategy surfaces answered the request literally and promoted an offer-first path. That was not evidence-safe: a public profile cannot expose complete Meta reach, engagement, retention, audience quality, paid/organic split, ad-learning state, CAC, or downstream CRM sales.
+
+ROOT_CAUSE: The assignment text was treated as the execution sequence instead of as a test of strategic judgment. The missing gate was whether the candidate would identify that a validated social offer is impossible before owner analytics, organic programming, a stable baseline, and controlled paid learning.
+
+WORKING_APPROACH: Preserve the original KNB assignment wording, but score the reasoning differently. Canonical sequence is public/internal audit → organic programming → stable organic baseline → controlled paid learning on repeatable organic winners → signal gate → offer hypothesis → CRM attribution → consultation/sale → delivery/outcome. The four-column training method is also canonical: leave column 1 blank; fill 2 Awareness, 3 Understanding, 4 Application; then return to 1 and write leading questions so content follows Question → Awareness → Understanding → Application.
+
+CATALOG_REUSE: Business Catalog profiles can expose a source-bounded Digital Audit layer with channel icons/cards (Website, Google where known, Instagram, Facebook, Threads, TikTok, YouTube, Telegram). Each card must distinguish observed public facts, private-analytics requirements, and the recommended next step. Do not create thin per-channel doorway pages: keep the channel audit on the canonical business profile and link to one reusable Hermes marketing-audit methodology page plus a full-audit CTA.
+
+REUSE_RULE: Audit ≠ Funnel. Never convert public social observations into a validated offer, shadowban/bot claim, CAC/ROMI conclusion, or paid-media recommendation. Internal analytics and evidence gates determine when paid learning and offer tests are allowed.
+
+
+## 2026-10-05 — Shared Catalog route normalized repair-only data before the route-kind gate
+
+STATUS: SOURCE FIXED ON PR #1681; PRODUCTION UNCHANGED.
+
+PROBLEM: After adding Digital Health to US static repair/dealer profiles, the shared `/businesses/[state]/[city]/[slug]` prerender failed on an international concept route with `Cannot read properties of undefined (reading 'flatMap')`.
+
+ROOT_CAUSE: The file serves a union of `repair | concept` route props. A repair-specific normalization object called `business.sources.flatMap(...)` before the render branch checked `kind`. International concept businesses use a different evidence model and do not expose the repair-directory `sources` array.
+
+FAILED_APPROACH: Relying on the later JSX branch to protect type-specific preprocessing. Top-level Astro preprocessing runs before the conditional renderer, so data access must be gated before it executes.
+
+WORKING_APPROACH: Gate both repair-only website/source normalization and `sources.flatMap` with `kind === "repair"`; concept routes receive an empty normalized repair channel list and continue through their dedicated `CatalogConceptRoute` renderer. Add a regression contract that requires the route-kind guard.
+
+EVIDENCE: Exact-head visual-evidence build for commit `a598e5e244849085289886f3bc0ae81d27f5a1cc` failed during prerender of `/businesses/ukraine/chaiky/chayka-store`. Commit `36c76fc1ecc94cea0a4c02d604e24dec6f95b630` gates repair normalization by route kind; commit `2f5ec2fe0413b20d64983b30349f3d359850599d` adds the regression guard.
+
+LESSON: A conditional renderer does not protect top-level preprocessing in a union route.
+
+REUSE_RULE: For any shared Astro/SSR route with multiple prop shapes, perform the discriminator check before reading shape-specific arrays, objects, or methods. Regression tests should assert the discriminator is part of the normalization contract, not only the final render branch.

@@ -1,0 +1,36 @@
+---
+import type { CatalogClientStrategy } from "../data/catalog-client-strategy";
+type Locale = "uk" | "en";
+interface Props { strategy: CatalogClientStrategy; defaultLocale?: Locale; }
+const { strategy, defaultLocale = "uk" } = Astro.props;
+const txt = (value: {uk:string;en:string}) => value[defaultLocale];
+---
+<section class="client-strategy" data-client-strategy={strategy.businessId}>
+  <header>
+    <div>
+      <p class="kicker">CLIENT STRATEGY · CANONICAL</p>
+      <h2 data-uk="Повна логіка роботи з клієнтом" data-en="Full client strategy">{defaultLocale==="uk"?"Повна логіка роботи з клієнтом":"Full client strategy"}</h2>
+      <p data-uk="Audit, growth logic, CRM attribution і acceptance зібрані в одному профілі." data-en="Audit, growth logic, CRM attribution, and acceptance are consolidated in one profile.">{defaultLocale==="uk"
+        ?"Audit, growth logic, CRM attribution і acceptance зібрані в одному профілі."
+        :"Audit, growth logic, CRM attribution, and acceptance are consolidated in one profile."}</p>
+    </div>
+    <span>{strategy.observedAt}</span>
+  </header>
+  <div class="sequence">{strategy.sequence.map((step,index)=><div><i>{index+1}</i><b data-uk={step.uk} data-en={step.en}>{txt(step)}</b></div>)}</div>
+  <details open>
+    <summary data-uk="11 блоків стратегії" data-en="11 strategy blocks">{defaultLocale==="uk"?"11 блоків стратегії":"11 strategy blocks"}</summary>
+    <div class="blocks">{strategy.blocks.map((block)=><article>
+      <strong>{String(block.number).padStart(2,"0")}</strong>
+      <div><h3 data-uk={block.title.uk} data-en={block.title.en}>{txt(block.title)}</h3><p data-uk={block.body.uk} data-en={block.body.en}>{txt(block.body)}</p>{block.bullets?.length && <ul>{block.bullets.map((item)=><li data-uk={item.uk} data-en={item.en}>{txt(item)}</li>)}</ul>}</div>
+    </article>)}</div>
+  </details>
+  {strategy.scopes?.length && <div class="scopes">{strategy.scopes.map((scope)=><article><b data-uk={scope.name.uk} data-en={scope.name.en}>{txt(scope.name)}</b><p data-uk={scope.outcome.uk} data-en={scope.outcome.en}>{txt(scope.outcome)}</p><small data-uk={scope.boundary.uk} data-en={scope.boundary.en}>{txt(scope.boundary)}</small></article>)}</div>}
+  <details><summary>CRM attribution model</summary><div class="fields">{strategy.crmFields.map((field)=><code>{field}</code>)}</div></details>
+  {strategy.trainingMethod?.length && <details><summary data-uk="Метод кандидата / контенту" data-en="Candidate / content method">{defaultLocale==="uk"?"Метод кандидата / контенту":"Candidate / content method"}</summary><ol>{strategy.trainingMethod.map((item)=><li data-uk={item.uk} data-en={item.en}>{txt(item)}</li>)}</ol></details>}
+  <p class="boundary" data-uk="Public sources не замінюють internal analytics. Unknown ≠ zero. Paid, offer, CAC/LTV/ROMI та outcome не є підтвердженими без дозволених даних." data-en="Public sources do not replace internal analytics. Unknown ≠ zero. Paid performance, offer validation, CAC/LTV/ROMI, and outcomes are not verified without permitted data.">{defaultLocale==="uk"
+    ?"Public sources не замінюють internal analytics. Unknown ≠ zero. Paid, offer, CAC/LTV/ROMI та outcome не є підтвердженими без дозволених даних."
+    :"Public sources do not replace internal analytics. Unknown ≠ zero. Paid performance, offer validation, CAC/LTV/ROMI, and outcomes are not verified without permitted data."}</p>
+</section>
+<style>
+.client-strategy{display:grid;gap:14px;padding:28px;border:1px solid #d9e0dc;border-radius:22px;background:#fff}.client-strategy header{display:flex;justify-content:space-between;gap:18px}.client-strategy h2{margin:5px 0;font-size:clamp(28px,4vw,42px)}.client-strategy header p{color:#64706b}.kicker{font-size:10px!important;font-weight:900;letter-spacing:.12em;color:#477568!important}.sequence{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.sequence div{display:flex;gap:8px;padding:11px;border:1px solid #e1e6e3;border-radius:11px}.sequence i{font-style:normal;font-weight:900;color:#315e51}.sequence b{font-size:11px}.client-strategy details{border:1px solid #e0e5e2;border-radius:13px;background:#fbfcfb}.client-strategy summary{padding:13px;font-weight:900;cursor:pointer}.blocks{display:grid;gap:7px;padding:0 11px 11px}.blocks article{display:grid;grid-template-columns:36px 1fr;gap:10px;padding:13px;border:1px solid #e7ebe8;border-radius:11px;background:#fff}.blocks h3{margin:0 0 5px}.blocks p,.blocks li{font-size:12px;line-height:1.55;color:#64706b}.scopes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.scopes article{padding:13px;border:1px solid #e1e6e3;border-radius:11px}.scopes p,.scopes small{font-size:11px;color:#64706b}.fields{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 12px}.fields code{padding:5px 7px;border:1px solid #dfe5e1;border-radius:999px;background:#fff;font-size:10px}.client-strategy ol{padding:0 32px 12px 40px;color:#64706b}.boundary{margin:0;padding:13px;border-radius:11px;background:#fff7e6;color:#765610;font-size:11px}@media(max-width:760px){.sequence{grid-template-columns:1fr 1fr}.scopes{grid-template-columns:1fr}.client-strategy header{display:block}}@media(max-width:500px){.sequence{grid-template-columns:1fr}.client-strategy{padding:18px}.blocks article{grid-template-columns:1fr}}
+</style>

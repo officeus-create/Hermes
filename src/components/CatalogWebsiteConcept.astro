@@ -2,6 +2,9 @@
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 import { buildCatalogRequestHref } from "../lib/catalog-request";
 import CatalogWebsiteDemo from "./CatalogWebsiteDemo.astro";
+import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
+import CatalogClientStrategy from "./CatalogClientStrategy.astro";
+import { getCatalogClientStrategy } from "../data/catalog-client-strategy";
 
 type ConceptLocale = "uk" | "en";
 type Props = { business: CatalogBusinessConcept; profileUrl: string; conceptCTA?: boolean; defaultLocale?: ConceptLocale; };
@@ -18,16 +21,28 @@ const requestContext = {
   sourceRef: business.sourceRef,
 };
 const businessRequestHref = buildCatalogRequestHref("catalog-business-request", requestContext);
+const auditRequestHref = buildCatalogRequestHref("marketing-package", requestContext, "Digital marketing audit");
 const claimHref = business.status === "unclaimed" ? buildCatalogRequestHref("claim", requestContext) : "";
-const growthLinks = ["Website / redesign","Google Maps","SEO / GEO","Hermes CRM","SMM","Automation"]
-  .map((label)=>({ label, href: buildCatalogRequestHref("catalog-growth", requestContext, label) }));
+const growthLinks = [
+  { uk:"Сайт / редизайн", en:"Website / redesign" },
+  { uk:"Google Maps", en:"Google Maps" },
+  { uk:"SEO / GEO", en:"SEO / GEO" },
+  { uk:"Hermes CRM", en:"Hermes CRM" },
+  { uk:"SMM", en:"SMM" },
+  { uk:"Автоматизація", en:"Automation" }
+].map((item)=>({ ...item, href: buildCatalogRequestHref("catalog-growth", requestContext, item.en) }));
 const localized = business.localeCopy;
 const copy = localized?.[defaultLocale];
+const clientStrategy = getCatalogClientStrategy(business.id);
+const isClientProfile = business.status === "client";
+const academyRegistrationHref = business.vertical === "business_academy"
+  ? `/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=${encodeURIComponent(business.slug)}&lang=uk`
+  : "";
 const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
 ---
 {conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
   <div class="concept-disclosure">
-    <strong>Hermes Catalog · Website Concept</strong>
+    <strong data-uk={isClientProfile?"Hermes Catalog · Стратегія клієнта":"Hermes Catalog · Концепція сайту"} data-en={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}>{isClientProfile?label("Hermes Catalog · Стратегія клієнта","Hermes Catalog · Client Strategy"):label("Hermes Catalog · Концепція сайту","Hermes Catalog · Website Concept")}</strong>
     <span data-uk={localized?.uk.disclosure} data-en={localized?.en.disclosure}>{copy?.disclosure ?? "Verified/public business data + Hermes presentation concept"}</span>
     {localized && <nav class="locale-switch" aria-label="Concept language"><a href="?lang=uk" lang="uk">UA</a><a href="?lang=en" lang="en">EN</a></nav>}
   </div>
@@ -37,39 +52,71 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
       <h1 data-uk={localized?.uk.heroTitle} data-en={localized?.en.heroTitle}>{copy?.heroTitle ?? business.name}</h1>
       <p data-uk={localized?.uk.heroLead} data-en={localized?.en.heroLead}>{copy?.heroLead ?? "This is a Hermes presentation of how the business could be structured online. Owner-confirmed facts remain separate from proposed website and growth features."}</p>
       <div class="actions">
-        <a class="primary" data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>
+        {isClientProfile && business.featuredOffer
+          ? <a class="primary" href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk={localized?.uk.requestLabel ?? "Перейти до офіційної програми"} data-en={localized?.en.requestLabel ?? "Open official program"}>{copy?.requestLabel ?? label("Перейти до офіційної програми","Open official program")}</a>
+          : <a class="primary" data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>}
+        {isClientProfile && <a data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>}
         {mapChannel && <a data-catalog-event="maps_click" href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}
-        <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>
+        {isClientProfile
+          ? <a data-catalog-event="growth_start" href={auditRequestHref} data-uk="Запросити повний аудит Hermes" data-en="Request a full Hermes audit">{label("Запросити повний аудит Hermes","Request a full Hermes audit")}</a>
+          : <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>}
         {claimHref && <a data-catalog-event="claim_start" href={claimHref} data-uk={localized?.uk.claimLabel} data-en={localized?.en.claimLabel}>{copy?.claimLabel ?? "Claim / verify"}</a>}
       </div>
       {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}
     </div>
-    <aside><small>HERMES CONCEPT</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} · claim/customer status changes only after verification</span></aside>
+    <aside><small data-uk={isClientProfile?"КЛІЄНТСЬКИЙ ПРОФІЛЬ":"КОНЦЕПЦІЯ HERMES"} data-en={isClientProfile?"CLIENT PROFILE":"HERMES CONCEPT"}>{isClientProfile?label("КЛІЄНТСЬКИЙ ПРОФІЛЬ","CLIENT PROFILE"):label("КОНЦЕПЦІЯ HERMES","HERMES CONCEPT")}</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span data-uk={`${business.status.toUpperCase()} · статус клієнта / claim змінюється тільки після перевірки`} data-en={`${business.status.toUpperCase()} · claim/customer status changes only after verification`}>{label(`${business.status.toUpperCase()} · статус клієнта / claim змінюється тільки після перевірки`,`${business.status.toUpperCase()} · claim/customer status changes only after verification`)}</span></aside>
   </section>
   <section class="concept-grid">
-    <article><p class="kicker">PRIMARY INTENT</p><h2>{business.primaryIntent}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>
-    {business.secondaryIntent && <article class="secondary"><p class="kicker">SECONDARY DIRECTION</p><h2>{business.secondaryIntent}</h2><div class="channel-list">{secondaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>}
+    <article><p class="kicker" data-uk="ОСНОВНИЙ НАПРЯМ" data-en="PRIMARY INTENT">{label("ОСНОВНИЙ НАПРЯМ","PRIMARY INTENT")}</p><h2 data-uk={business.primaryIntent} data-en={business.primaryIntentEn ?? business.primaryIntent}>{label(business.primaryIntent,business.primaryIntentEn ?? business.primaryIntent)}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>
+    {business.secondaryIntent && <article class="secondary"><p class="kicker" data-uk="ДОДАТКОВИЙ НАПРЯМ" data-en="SECONDARY DIRECTION">{label("ДОДАТКОВИЙ НАПРЯМ","SECONDARY DIRECTION")}</p><h2 data-uk={business.secondaryIntent} data-en={business.secondaryIntentEn ?? business.secondaryIntent}>{label(business.secondaryIntent,business.secondaryIntentEn ?? business.secondaryIntent)}</h2><div class="channel-list">{secondaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>}
   </section>
+  {business.featuredOffer && <section class="featured-offer">
+    <div><p class="kicker" data-uk="ОСНОВНА ПРОГРАМА / ПРОДУКТ" data-en="FEATURED PROGRAM / PRODUCT">{label("ОСНОВНА ПРОГРАМА / ПРОДУКТ","FEATURED PROGRAM / PRODUCT")}</p><h2 data-uk={business.featuredOffer.name} data-en={business.featuredOffer.nameEn ?? business.featuredOffer.name}>{label(business.featuredOffer.name,business.featuredOffer.nameEn ?? business.featuredOffer.name)}</h2><p data-uk={business.featuredOffer.description} data-en={business.featuredOffer.descriptionEn ?? business.featuredOffer.description}>{label(business.featuredOffer.description,business.featuredOffer.descriptionEn ?? business.featuredOffer.description)}</p></div>
+    <div class="featured-action">{business.featuredOffer.duration && <span data-uk={business.featuredOffer.duration} data-en={business.featuredOffer.durationEn ?? business.featuredOffer.duration}>{label(business.featuredOffer.duration,business.featuredOffer.durationEn ?? business.featuredOffer.duration)}</span>}<a href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk="Офіційна сторінка програми ↗" data-en="Official program page ↗">{label("Офіційна сторінка програми ↗","Official program page ↗")}</a></div>
+  </section>}
   <section class="truth">
-    <div><p class="kicker">BUSINESS TRUTH</p><h2 data-uk={localized?.uk.truthTitle} data-en={localized?.en.truthTitle}>{copy?.truthTitle ?? "Structured once. Reused across Hermes."}</h2></div>
+    <div><p class="kicker" data-uk="ПІДТВЕРДЖЕНІ ФАКТИ" data-en="BUSINESS TRUTH">{label("ПІДТВЕРДЖЕНІ ФАКТИ","BUSINESS TRUTH")}</p><h2 data-uk={localized?.uk.truthTitle} data-en={localized?.en.truthTitle}>{copy?.truthTitle ?? "Structured once. Reused across Hermes."}</h2></div>
     <div>
       <div class="truth-labels"><span data-state="verified">{label("Підтверджені / публічні факти","Verified / public facts")}</span><span data-state="concept">{label("Концепція Hermes","Hermes concept")}</span><span data-state="owner">{label("Потрібне підтвердження власника","Owner confirmation required")}</span></div>
-      <dl><div><dt>Address</dt><dd>{business.address}, {business.locality}, {business.region}, {business.postalCode}</dd></div><div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div><div><dt>Needs owner confirmation</dt><dd>{business.factsRequiringOwnerConfirmation.join(" · ")}</dd></div></dl>
+      <dl><div><dt data-uk="Адреса" data-en="Address">{label("Адреса","Address")}</dt><dd>{business.address}, {business.locality}, {business.region}, {business.postalCode}</dd></div><div><dt data-uk="Розклад" data-en="Hours">{label("Розклад","Hours")}</dt><dd data-uk={business.hours.join(" · ")} data-en={(business.hoursEn ?? business.hours).join(" · ")}>{label(business.hours.join(" · "),(business.hoursEn ?? business.hours).join(" · "))}</dd></div><div><dt data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">{label("Потрібне підтвердження власника","Needs owner confirmation")}</dt><dd data-uk={business.factsRequiringOwnerConfirmation.join(" · ")} data-en={(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · ")}>{label(business.factsRequiringOwnerConfirmation.join(" · "),(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · "))}</dd></div></dl>
     </div>
   </section>
+  {(business.strategyPreviewUrl || business.crmPreviewUrl) && <section class="prepared-work">
+    <div>
+      <p class="kicker" data-uk="ПІДГОТОВЛЕНА РОБОТА HERMES" data-en="PREPARED HERMES WORK">{label("ПІДГОТОВЛЕНА РОБОТА HERMES","PREPARED HERMES WORK")}</p>
+      <h2>{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
+      <p>{clientStrategy ? label(
+        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records.",
+        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
+      ) : label(
+        "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.",
+        "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately."
+      )}</p>
+    </div>
+    <div class="prepared-links">
+      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
+      {business.crmPreviewUrl && <a href={business.crmPreviewUrl}>{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
+      {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати Academy workspace →" data-en="Register Academy workspace →">{label("Зареєструвати Academy workspace →","Register Academy workspace →")}</a>}
+    </div>
+  </section>}
+  <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale={defaultLocale} />
+  {clientStrategy && <CatalogClientStrategy strategy={clientStrategy} defaultLocale={defaultLocale} />}
   <section class="opportunity">
-    <div><p class="kicker">HERMES OPPORTUNITY</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
-    <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href}>{item.label}</a>)}</div>
+    <div><p class="kicker" data-uk="МОЖЛИВОСТІ HERMES" data-en="HERMES OPPORTUNITY">{label("МОЖЛИВОСТІ HERMES","HERMES OPPORTUNITY")}</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
+    <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href} data-uk={item.uk} data-en={item.en}>{label(item.uk,item.en)}</a>)}</div>
   </section>
   <section id="catalog-request" class="request">
-    <div><p class="kicker">REAL CUSTOMER REQUEST</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
-    <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>
+    <div><p class="kicker" data-uk={isClientProfile?"ОФІЦІЙНИЙ ШЛЯХ ДО ПРОГРАМИ":"ЗАПИТ КЛІЄНТА"} data-en={isClientProfile?"OFFICIAL PROGRAM PATH":"REAL CUSTOMER REQUEST"}>{isClientProfile?label("ОФІЦІЙНИЙ ШЛЯХ ДО ПРОГРАМИ","OFFICIAL PROGRAM PATH"):label("ЗАПИТ КЛІЄНТА","REAL CUSTOMER REQUEST")}</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
+    {isClientProfile && business.featuredOffer
+      ? <a class="request-link" href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Open official program"} →</a>
+      : <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>}
   </section>
-  {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2>{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>}
-  {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker">SEO / GEO FOUNDATION</p><h2>Semantic core + local intent</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
+  {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2 data-uk="Перед зверненням" data-en="Before you contact">{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3 data-uk={item.question} data-en={item.questionEn ?? item.question}>{label(item.question,item.questionEn ?? item.question)}</h3><p data-uk={item.answer} data-en={item.answerEn ?? item.answer}>{label(item.answer,item.answerEn ?? item.answer)}</p></article>)}</section>}
+  {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker" data-uk="SEO / GEO ОСНОВА" data-en="SEO / GEO FOUNDATION">{label("SEO / GEO ОСНОВА","SEO / GEO FOUNDATION")}</p><h2 data-uk="Семантичне ядро + локальний намір" data-en="Semantic core + local intent">{label("Семантичне ядро + локальний намір","Semantic core + local intent")}</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
 </section>}
 <style>
-.catalog-concept{display:grid;gap:16px}.concept-disclosure,.concept-hero,.concept-grid article,.truth,.opportunity,.request,.faq,.seo-foundation{border:1px solid #dde3df;border-radius:22px;background:#fff}.concept-disclosure{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 18px;background:#17211e;color:#fff}.concept-disclosure span{opacity:.72;font-size:12px}.locale-switch{display:flex;gap:6px}.locale-switch a{padding:5px 8px;border:1px solid rgba(255,255,255,.3);border-radius:999px;color:#fff;text-decoration:none;font-size:11px;font-weight:900}.concept-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;padding:44px}.concept-hero h1{font-size:clamp(48px,7vw,84px);line-height:.95;letter-spacing:-.055em;margin:8px 0 20px}.concept-hero p{color:#64706b;line-height:1.65}.concept-hero aside{min-height:330px;padding:32px;border-radius:28px;background:linear-gradient(155deg,#18231f,#2d5448);color:#fff;display:flex;flex-direction:column;justify-content:center}.concept-hero aside strong{font-size:46px;line-height:.96;margin:18px 0}.concept-hero aside span{opacity:.55}.kicker{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#477568}.actions,.channel-list,.proof,.offer-grid,.signal-list,.truth-labels{display:flex;gap:9px;flex-wrap:wrap}.actions a,.channel-list a,.offer-grid a,.request-link{padding:11px 13px;border:1px solid #ccd5d1;border-radius:11px;text-decoration:none;color:#20302b;background:#fff;font-weight:800}.actions .primary,.request-link{background:#17211e;color:#fff}.proof{margin-top:18px}.proof span,.signal-list span,.truth-labels span{padding:8px 10px;background:#f6f8f7;border-radius:999px}.truth-labels span{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.truth-labels [data-state="verified"]{background:#eaf7ef;color:#236b42}.truth-labels [data-state="concept"]{background:#eef2fb;color:#315b9c}.truth-labels [data-state="owner"]{background:#fff4d7;color:#79590a}.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.concept-grid article,.truth,.opportunity,.request,.faq,.seo-foundation{padding:28px}.concept-grid h2,.truth h2,.opportunity h2,.request h2,.faq h2,.seo-foundation h2{font-size:clamp(28px,4vw,42px);margin:8px 0 14px}.secondary{background:#f2eee4!important}.truth,.opportunity,.request{display:grid;grid-template-columns:.85fr 1.15fr;gap:28px}.truth dl{margin:14px 0 0}.truth dl div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:9px 0;border-top:1px solid #edf0ee}.truth dd{margin:0}.request-link{display:inline-flex;align-items:center;justify-self:end;align-self:center;min-height:46px}.faq article+article{border-top:1px solid #edf0ee;margin-top:14px;padding-top:14px}.faq h3{margin:0 0 6px}.faq p{margin:0;color:#64706b;line-height:1.6}.seo-foundation{margin-bottom:60px}@media(max-width:760px){.concept-disclosure{align-items:flex-start;flex-direction:column}.concept-hero,.concept-grid,.truth,.opportunity,.request{grid-template-columns:1fr}.concept-hero{padding:26px}.concept-hero aside{min-height:230px}.truth dl div{grid-template-columns:1fr}.request-link{justify-self:start}}
+.prepared-work{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;padding:28px}.prepared-work h2{margin:5px 0 10px;font-size:clamp(24px,3.4vw,36px)}.prepared-work p{color:#64706b;line-height:1.65}.prepared-links{display:grid;gap:10px;align-content:center}.prepared-links a{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;border:1px solid #ccd5d1;border-radius:12px;color:#24483e;text-decoration:none;font-weight:850;font-size:12px;background:#fbfcfb}
+.catalog-concept{display:grid;gap:16px}.concept-disclosure,.concept-hero,.concept-grid article,.featured-offer,.truth,.prepared-work,.opportunity,.request,.faq,.seo-foundation{border:1px solid #dde3df;border-radius:22px;background:#fff}.concept-disclosure{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 18px;background:#17211e;color:#fff}.concept-disclosure span{opacity:.72;font-size:12px}.locale-switch{display:flex;gap:6px}.locale-switch a{padding:5px 8px;border:1px solid rgba(255,255,255,.3);border-radius:999px;color:#fff;text-decoration:none;font-size:11px;font-weight:900}.concept-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;padding:44px}.concept-hero h1{font-size:clamp(48px,7vw,84px);line-height:.95;letter-spacing:-.055em;margin:8px 0 20px}.concept-hero p{color:#64706b;line-height:1.65}.concept-hero aside{min-height:330px;padding:32px;border-radius:28px;background:linear-gradient(155deg,#18231f,#2d5448);color:#fff;display:flex;flex-direction:column;justify-content:center}.concept-hero aside strong{font-size:46px;line-height:.96;margin:18px 0}.concept-hero aside span{opacity:.55}.kicker{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#477568}.actions,.channel-list,.proof,.offer-grid,.signal-list,.truth-labels{display:flex;gap:9px;flex-wrap:wrap}.actions a,.channel-list a,.offer-grid a,.request-link{padding:11px 13px;border:1px solid #ccd5d1;border-radius:11px;text-decoration:none;color:#20302b;background:#fff;font-weight:800}.actions .primary,.request-link{background:#17211e;color:#fff}.proof{margin-top:18px}.proof span,.signal-list span,.truth-labels span{padding:8px 10px;background:#f6f8f7;border-radius:999px}.truth-labels span{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.truth-labels [data-state="verified"]{background:#eaf7ef;color:#236b42}.truth-labels [data-state="concept"]{background:#eef2fb;color:#315b9c}.truth-labels [data-state="owner"]{background:#fff4d7;color:#79590a}.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.concept-grid article,.featured-offer,.truth,.opportunity,.request,.faq,.seo-foundation{padding:28px}.concept-grid h2,.featured-offer h2,.truth h2,.opportunity h2,.request h2,.faq h2,.seo-foundation h2{font-size:clamp(28px,4vw,42px);margin:8px 0 14px}.featured-offer{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}.featured-offer p{color:#64706b;line-height:1.6}.featured-action{display:grid;gap:8px;justify-items:start}.featured-action span{padding:7px 9px;border-radius:999px;background:#eef5f2;color:#355b50;font-size:11px;font-weight:850}.featured-action a{padding:10px 12px;border:1px solid #ccd5d1;border-radius:10px;color:#24483e;text-decoration:none;font-weight:850}.secondary{background:#f2eee4!important}.truth,.opportunity,.request{display:grid;grid-template-columns:.85fr 1.15fr;gap:28px}.truth dl{margin:14px 0 0}.truth dl div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:9px 0;border-top:1px solid #edf0ee}.truth dd{margin:0}.request-link{display:inline-flex;align-items:center;justify-self:end;align-self:center;min-height:46px}.faq article+article{border-top:1px solid #edf0ee;margin-top:14px;padding-top:14px}.faq h3{margin:0 0 6px}.faq p{margin:0;color:#64706b;line-height:1.6}.seo-foundation{margin-bottom:60px}@media(max-width:760px){.prepared-work{grid-template-columns:1fr}}@media(max-width:760px){.concept-disclosure{align-items:flex-start;flex-direction:column}.concept-hero,.concept-grid,.featured-offer,.truth,.opportunity,.request{grid-template-columns:1fr}.concept-hero{padding:26px}.concept-hero aside{min-height:230px}.truth dl div{grid-template-columns:1fr}.request-link{justify-self:start}}
 </style>
 <script>
   const root = document.querySelector<HTMLElement>("[data-business-id]");
@@ -78,6 +125,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     const requested = params.get("lang");
     const fallback = root.dataset.defaultLocale === "uk" ? "uk" : "en";
     const locale = requested === "uk" || requested === "en" ? requested : fallback;
+    document.documentElement.lang = locale;
     root.querySelectorAll<HTMLElement>("[data-uk][data-en]").forEach((node) => {
       const next = locale === "uk" ? node.dataset.uk : node.dataset.en;
       if (next) node.textContent = next;

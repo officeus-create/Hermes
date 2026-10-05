@@ -59,6 +59,10 @@ on:
       - 'scripts/repair-russian-private-contract.test.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
 
+concurrency:
+  group: hermes-connect-visual-evidence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
