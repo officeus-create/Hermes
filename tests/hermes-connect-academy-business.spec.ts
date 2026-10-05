@@ -13,8 +13,10 @@ test("KNB Academy owner path defaults to Ukrainian, prefills bounded public fact
   await expect(page.locator('select[name="academyType"]')).toHaveValue("business_club");
   await expect(page.locator('input[name="website"]')).toHaveValue("https://kons-na-bis.com/");
   await expect(page.locator('input[name="countryCode"]')).toHaveValue("UA");
-  await expect(page.locator('input[name="city"]')).toHaveValue("");
-  await expect(page.locator('input[name="phone"]')).toHaveValue("");
+  await expect(page.locator('input[name="city"]')).toHaveValue("Біла Церква");
+  await expect(page.locator('input[name="region"]')).toHaveValue("Київська область");
+  await expect(page.locator('input[name="phone"]')).not.toHaveValue("");
+  await expect(page.locator('input[name="timezone"]')).toHaveValue("Europe/Kyiv");
   await expect(page.locator('input[name="catalogOptIn"]')).not.toBeChecked();
 
   await page.getByRole("button", { name: "EN", exact: true }).click();
