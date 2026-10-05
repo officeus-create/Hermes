@@ -27,7 +27,7 @@ export type CatalogBusinessConcept = {
   status: "unclaimed" | "claimed" | "client";
   market: "us" | "international";
   catalogPriority: "primary" | "secondary";
-  vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail" | "business_academy";
+  vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail" | "business_academy" | "junk_removal";
   schemaType: "LocalBusiness" | "Restaurant" | "HairSalon" | "Florist" | "Store" | "EducationalOrganization";
   primaryIntent: string;
   secondaryIntent?: string;
@@ -405,12 +405,198 @@ export const konsNaBisConcept = Object.freeze({
   sourceRef: "OFFICIAL-KNB-SITE-POLICY-PROGRAM-20261005"
 } satisfies CatalogBusinessConcept);
 
+export const mzmJunkRemovalConcept = Object.freeze({
+  id: "catalog-us-mzm-junk-removal-roseville",
+  slug: "mzm-junk-removal",
+  countrySlug: "california",
+  localitySlug: "roseville",
+  name: "MZM Junk Removal",
+  status: "client",
+  market: "us",
+  catalogPriority: "primary",
+  vertical: "junk_removal",
+  schemaType: "LocalBusiness",
+  primaryIntent: "Junk removal, hauling and cleanouts in Roseville and Greater Sacramento",
+  secondaryIntent: "Same-day and next-day residential, commercial and construction debris removal",
+  crmPreviewUrl: "/demos/hermes-connect/mzm-junk-removal.html",
+  phone: "+1 279-239-1800",
+  address: "906 Main St",
+  locality: "Roseville",
+  region: "California",
+  postalCode: "95678",
+  countryCode: "US",
+  hours: ["Daily 3:00 AM–7:00 PM"],
+  schemaHours: ["Mo-Su 03:00-19:00"],
+  website: "https://mzm-junk-removal.com/",
+  services: [
+    "Junk removal",
+    "Furniture removal",
+    "Appliance removal",
+    "Mattress removal",
+    "Garage cleanout",
+    "Estate cleanout",
+    "Eviction cleanout",
+    "Property cleanout",
+    "Office cleanout",
+    "Storage unit cleanout",
+    "Construction debris removal",
+    "Yard debris cleanout",
+    "Shed removal"
+  ],
+  trust: { source: "Google Business Profile", rating: 5.0, reviewCount: 46, observedAt: "2026-10-05" },
+  channels: [
+    { label: "Official website", url: "https://mzm-junk-removal.com/", direction: "primary" },
+    { label: "Google Maps", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20906%20Main%20St%20Roseville%20CA%2095678", direction: "maps" },
+    { label: "Thumbtack", url: "https://www.thumbtack.com/ca/roseville/junk-removal/mzm-junk-removal/service/574285364726562823", direction: "secondary" }
+  ],
+  digitalAudit: {
+    observedAt: "2026-10-05",
+    summary: {
+      uk: "Публічні джерела вже показують сильну основу: локальний сайт, Google presence, Thumbtack, city/service coverage, before/after та відгуки. Але рішення про масштабування мають спиратися на owner analytics і CRM attribution, а не лише на публічні лічильники.",
+      en: "Public sources already show a strong foundation: a local website, Google presence, Thumbtack, city/service coverage, before/after proof, and reviews. Growth decisions still need owner analytics and CRM attribution rather than public counters alone."
+    },
+    prerequisite: {
+      uk: "Зберігаємо source/query/city/service/landing page у CRM → вимірюємо organic baseline → тестуємо paid тільки на підтверджених сигналах → після signal gate формуємо offer/funnel і масштабуємо.",
+      en: "Preserve source/query/city/service/landing page in CRM → measure the organic baseline → run paid learning only on proven signals → build the offer/funnel after the signal gate and then scale."
+    },
+    sequence: [
+      { uk: "1 · Public + internal audit", en: "1 · Public + internal audit" },
+      { uk: "2 · SEO/local/social organic baseline", en: "2 · SEO/local/social organic baseline" },
+      { uk: "3 · Controlled paid learning on proven signals", en: "3 · Controlled paid learning on proven signals" },
+      { uk: "4 · Signal gate → offer + funnel", en: "4 · Signal gate → offer + funnel" },
+      { uk: "5 · CRM attribution → booked job → revenue → review", en: "5 · CRM attribution → booked job → revenue → review" }
+    ],
+    findings: [
+      {
+        platform: "website", label: "Website", url: "https://mzm-junk-removal.com/", state: "observed",
+        headline: { uk: "Сайт уже працює як локальний conversion surface з quote CTA, service/city coverage, proof і before/after.", en: "The site already works as a local conversion surface with quote CTAs, service/city coverage, proof, and before/after content." },
+        findings: [
+          { uk: "Публічно видно окремі service/city pages, ZIP/local context, same-day messaging, FAQ та social proof.", en: "Public pages expose service/city coverage, ZIP/local context, same-day messaging, FAQ, and social proof." },
+          { uk: "Статичні counters на jobs/reviews можуть розходитись із зовнішніми джерелами, тому їх потрібно зберігати source-specific із observed_at.", en: "Static jobs/review counters can drift from external sources, so they should be stored source-by-source with observed_at." },
+          { uk: "Кожна форма/дзвінок має зберігати landing page, UTM/referrer і city/service context до CRM.", en: "Every form/call path should preserve landing page, UTM/referrer, and city/service context into CRM." }
+        ],
+        nextStep: { uk: "Підключити GSC/GA4/call-form attribution та замінити ручні aggregate counters на source-owned evidence.", en: "Connect GSC/GA4/call-form attribution and replace manual aggregate counters with source-owned evidence." }
+      },
+      {
+        platform: "google", label: "Google", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20906%20Main%20St%20Roseville%20CA%2095678", state: "needs_private_analytics",
+        headline: { uk: "Google local presence підтверджена публічно; query/rank/conversion висновки потребують owner access.", en: "Google local presence is publicly confirmed; query, ranking, and conversion conclusions require owner access." },
+        findings: [
+          { uk: "Публічний listing узгоджується з Roseville, телефоном, адресою та годинами роботи.", en: "The public listing aligns with Roseville, the phone number, street address, and operating hours." },
+          { uk: "Google reviews — окремий source; не змішуємо його count із Thumbtack без дати та джерела.", en: "Google reviews are a separate source; do not merge their count with Thumbtack without a date and source." },
+          { uk: "Search Console, GBP Performance і CRM мають зійтися на landing page → lead → booked job → revenue.", en: "Search Console, GBP Performance, and CRM should converge on landing page → lead → booked job → revenue." }
+        ],
+        nextStep: { uk: "Після owner access підключити GBP/GSC/GA4 evidence та city/query reporting.", en: "After owner access, connect GBP/GSC/GA4 evidence and city/query reporting." }
+      },
+      {
+        platform: "instagram", label: "Instagram", state: "owner_confirmation",
+        headline: { uk: "Бізнес повідомив, що Instagram використовується для реальних робіт, фото та відео; точний public URL ще не зафіксований.", en: "The business reports using Instagram for real jobs, photos, and video; the exact public URL is not yet verified." },
+        findings: [
+          { uk: "Не вигадуємо handle або performance; після підключення зберігаємо asset/campaign → lead attribution.", en: "Do not invent a handle or performance; once connected, preserve asset/campaign → lead attribution." }
+        ],
+        nextStep: { uk: "Підтвердити official URL, підключити Insights і зафіксувати organic baseline до paid tests.", en: "Confirm the official URL, connect Insights, and establish the organic baseline before paid tests." }
+      },
+      {
+        platform: "facebook", label: "Facebook", state: "owner_confirmation",
+        headline: { uk: "Facebook заявлений власником як активний канал, але exact Page URL та внутрішні metrics ще не підтверджені.", en: "Facebook is reported by the owner as an active channel, but the exact Page URL and internal metrics are not yet verified." },
+        findings: [
+          { uk: "Facebook/Instagram контент має використовувати одну систему UTM/source labels і не створювати окрему CRM identity.", en: "Facebook/Instagram content should share one UTM/source-label system and not create a separate CRM identity." }
+        ],
+        nextStep: { uk: "Підтвердити Page/Meta access і вимірювати organic winners перед controlled paid learning.", en: "Confirm the Page/Meta access and measure organic winners before controlled paid learning." }
+      },
+      {
+        platform: "threads", label: "Threads", state: "owner_confirmation",
+        headline: { uk: "Official Threads presence у поточних bounded sources не підтверджена.", en: "An official Threads presence is not confirmed in the current bounded sources." },
+        findings: [{ uk: "Unknown не означає absent.", en: "Unknown does not mean absent." }],
+        nextStep: { uk: "Підтвердити URL; якщо канал використовується — тестувати local hooks і зберігати downstream action у CRM.", en: "Confirm the URL; if used, test local hooks and preserve downstream actions in CRM." }
+      },
+      {
+        platform: "tiktok", label: "TikTok", state: "owner_confirmation",
+        headline: { uk: "Official TikTok presence не підтверджена.", en: "An official TikTok presence is not confirmed." },
+        findings: [{ uk: "Публічний audit не повинен вигадувати views, retention або audience fit.", en: "A public audit must not invent views, retention, or audience fit." }],
+        nextStep: { uk: "Підключати тільки після підтвердження owner URL і контентної ролі.", en: "Connect only after confirming the owner URL and content role." }
+      },
+      {
+        platform: "youtube", label: "YouTube", state: "owner_confirmation",
+        headline: { uk: "Official YouTube channel не підтверджений у поточному source set.", en: "An official YouTube channel is not confirmed in the current source set." },
+        findings: [{ uk: "Для локального service business канал має мати вимірювану роль: trust, how-to/search або proof.", en: "For a local service business, the channel should have a measurable trust, how-to/search, or proof role." }],
+        nextStep: { uk: "Не створювати канал заради presence; спочатку визначити search/proof use case.", en: "Do not create a channel for presence alone; define the search/proof use case first." }
+      },
+      {
+        platform: "telegram", label: "Telegram", state: "owner_confirmation",
+        headline: { uk: "Telegram не підтверджений як customer acquisition channel.", en: "Telegram is not confirmed as a customer-acquisition channel." },
+        findings: [{ uk: "Не додаємо зайвий канал без operational use case.", en: "Do not add another channel without an operational use case." }],
+        nextStep: { uk: "Залишити off, доки owner не визначить конкретну роль.", en: "Keep it off until the owner defines a concrete role." }
+      }
+    ]
+  },
+  factsRequiringOwnerConfirmation: [
+    "official Instagram URL",
+    "official Facebook URL",
+    "Meta Business Suite / Instagram Insights access",
+    "Google Business Profile owner access",
+    "Google Search Console and GA4 access",
+    "Thumbtack lead-cost and job-history export",
+    "exact disposal facilities and landfill fee rules",
+    "Grass Valley and Nevada City service coverage before publishing city pages",
+    "driver/team access roles and labor-cost inputs"
+  ],
+  localeCopy: {
+    uk: {
+      disclosure: "Клієнтський профіль Hermes Catalog на основі client-supplied facts та bounded public sources; private CRM/marketing metrics не публікуються.",
+      heroKicker: "Junk removal · Roseville + Greater Sacramento",
+      heroTitle: "MZM Junk Removal — локальний вивіз сміття, cleanouts і debris removal.",
+      heroLead: "Публічний профіль об’єднує перевірені контакти, основні послуги, service area та Digital Audit, а operational CRM зберігається окремо від публічного Catalog.",
+      requestLabel: "Запросити estimate",
+      claimLabel: "Керування профілем",
+      truthTitle: "Підтверджені факти та межі вимірювання",
+      opportunityTitle: "Search → lead → quote → booked job → revenue → review.",
+      opportunityBody: "Наступний рівень — не більше сторінок заради сторінок, а одна attribution-модель для Website, Google, Thumbtack і social, пов’язана з job economics.",
+      requestTitle: "Потрібен junk removal у Roseville або Greater Sacramento?",
+      requestBody: "Використовуйте офіційний сайт або запит через Hermes. Ціна, доступність і final quote підтверджуються бізнесом."
+    },
+    en: {
+      disclosure: "Hermes Catalog client profile based on client-supplied facts and bounded public sources; private CRM and marketing metrics are not published.",
+      heroKicker: "Junk removal · Roseville + Greater Sacramento",
+      heroTitle: "MZM Junk Removal — local hauling, cleanouts, and debris removal.",
+      heroLead: "This public profile connects verified contact details, core services, service-area context, and a Digital Audit while operational CRM data stays separate from the public Catalog.",
+      requestLabel: "Request an estimate",
+      claimLabel: "Manage profile",
+      truthTitle: "Verified facts and measurement boundaries",
+      opportunityTitle: "Search → lead → quote → booked job → revenue → review.",
+      opportunityBody: "The next layer is not more pages for their own sake. It is one attribution model across Website, Google, Thumbtack, and social tied to job economics.",
+      requestTitle: "Need junk removal in Roseville or Greater Sacramento?",
+      requestBody: "Use the official website or a Hermes request. Availability, price, and the final quote are confirmed by the business."
+    }
+  },
+  faq: [
+    { question: "What areas does MZM Junk Removal serve?", answer: "The public website lists Roseville and Greater Sacramento coverage including Sacramento, Rocklin, Auburn, Folsom, Citrus Heights, Carmichael, Fair Oaks, Orangevale, Antelope, Granite Bay, Lincoln, Loomis, Penryn, Newcastle, Rancho Cordova and North Highlands. Additional cities should be confirmed before publishing new location pages." },
+    { question: "Can the price be confirmed from this Catalog page?", answer: "No. The business prepares an estimate from the job type, address, volume and, when needed, photos. Final pricing remains owner-controlled." },
+    { question: "How should reviews be measured?", answer: "Google, Thumbtack and website counters are separate evidence sources. Hermes stores source, count and observed date instead of presenting an unsourced combined total as permanent truth." }
+  ],
+  semanticCore: [
+    "junk removal Roseville CA",
+    "junk removal Sacramento CA",
+    "junk removal Rocklin CA",
+    "junk removal Auburn CA",
+    "furniture removal",
+    "appliance removal",
+    "garage cleanout",
+    "estate cleanout",
+    "construction debris removal",
+    "yard debris removal",
+    "same day junk removal",
+    "junk removal cost"
+  ],
+  sourceRef: "CLIENT-BRIEF+PUBLIC-MZM-WEB-20261005"
+} satisfies CatalogBusinessConcept);
+
 export const catalogBusinessConcepts = Object.freeze([
   chaykaStoreConcept,
   mangalIKazanConcept,
   trimmoConcept,
   cvitVyshniConcept,
-  konsNaBisConcept
+  konsNaBisConcept,
+  mzmJunkRemovalConcept
 ]);
 
 // A non-indexable concept snapshot, not a second directory or CRM business record.
