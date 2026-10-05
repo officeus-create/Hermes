@@ -68,7 +68,8 @@ const indexedChildSitemapFiles = [
 // October 3 adds one verified Wisconsin owner-operator vacancy owner linked from the existing careers hub.
 // October 5 adds one bounded Work With Hermes relationship hub that routes existing career, carrier, agency, and partnership owners.
 // October 5 adds exactly two KNB Catalog discovery owners: Bila Tserkva locality and the canonical Kons na Bis business profile.
-const nonInsightsExpectedPageUrlCount = 301;
+// October 5 adds two MZM Junk Removal Catalog owners: Roseville locality and the canonical client profile; the CRM process demo remains noindex.
+const nonInsightsExpectedPageUrlCount = 303;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
