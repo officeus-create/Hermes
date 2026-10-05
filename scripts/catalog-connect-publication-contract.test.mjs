@@ -85,6 +85,9 @@ for (const [route, shopName] of [
   assert.match(html, /application\/ld\+json/);
   assert.match(html, /Website concept · Hermes preview/);
   assert.match(html, /Concept preview only/);
+  assert.match(html, /HERMES DIGITAL AUDIT/);
+  assert.match(html, /Owner confirmation required/);
+  assert.match(html, /Request a full audit/);
   assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com|hello@thedapperwrench\.com/);
 }
 const websiteConcept = read("src/components/CatalogWebsiteConcept.astro");
@@ -118,6 +121,9 @@ assert.match(genericCountryRoute, /catalogConceptCountryRoutes/);
 assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
+assert.match(genericBusinessRoute, /CatalogDigitalAudit/);
+assert.match(genericBusinessRoute, /"catalog-growth"/);
+assert.match(genericBusinessRoute, /socialPlatformLabel/);
 for (const [page, expectedHref] of [
   ["dist/businesses/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
