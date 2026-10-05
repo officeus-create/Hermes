@@ -99,6 +99,7 @@ const genericLocalityRoute = read("src/pages/businesses/[state]/[city]/index.ast
 const conceptRouteRegistry = read("src/lib/catalog-concept-routes.ts");
 const catalogConceptData = read("src/data/catalog-business-concepts.ts");
 const internationalBusinessCollection = read("src/components/InternationalBusinessCollection.astro");
+const internationalBusinessProfile = read("src/components/InternationalBusinessProfile.astro");
 const catalogRequestHelper = read("src/lib/catalog-request.ts");
 const catalogRequestPage = read("src/pages/businesses/request/index.astro");
 const catalogLeadPayload = read("src/lib/catalog-lead-payload.mjs");
@@ -123,7 +124,7 @@ assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
 assert.match(genericBusinessRoute, /CatalogDigitalAudit/);
-assert.match(genericBusinessRoute, /"catalog-growth"/);
+assert.match(genericBusinessRoute, /"marketing-package"/);
 assert.match(genericBusinessRoute, /socialPlatformLabel/);
 assert.match(genericBusinessRoute, /kind==="repair"\?business\.sources\.flatMap/);
 for (const [page, expectedHref] of [
@@ -193,6 +194,8 @@ assert.match(catalogLeadPayload, /fbclid/);
 assert.match(catalogTelemetry, /ATTRIBUTION_KEYS/);
 assert.match(catalogTelemetry, /utm_campaign/);
 assert.match(websiteConcept, /buildCatalogRequestHref\("marketing-package"/);
+assert.match(internationalBusinessProfile, /buildCatalogRequestHref\("marketing-package"/);
+assert.match(internationalBusinessProfile, /catalog-business-telemetry\.js/);
 assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 
 const catalogEventApi = read("functions/api/catalog-business-event.ts");
