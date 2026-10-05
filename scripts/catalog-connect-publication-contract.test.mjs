@@ -191,8 +191,6 @@ assert.match(catalogLeadPayload, /catalog_source_ref/);
 assert.match(catalogLeadPayload, /utm_source/);
 assert.match(catalogLeadPayload, /gclid/);
 assert.match(catalogLeadPayload, /fbclid/);
-assert.match(catalogTelemetry, /ATTRIBUTION_KEYS/);
-assert.match(catalogTelemetry, /utm_campaign/);
 assert.match(websiteConcept, /buildCatalogRequestHref\("marketing-package"/);
 assert.match(internationalBusinessProfile, /buildCatalogRequestHref\("marketing-package"/);
 assert.match(internationalBusinessProfile, /catalog-business-telemetry\.js/);
@@ -201,6 +199,8 @@ assert.match(catalogRequestPage, /external email delivery still requires a verif
 const catalogEventApi = read("functions/api/catalog-business-event.ts");
 const catalogEventSchema = read("functions/api/_lib/catalog-business-events.mjs");
 const catalogTelemetry = read("public/catalog-business-telemetry.js");
+assert.match(catalogTelemetry, /ATTRIBUTION_KEYS/);
+assert.match(catalogTelemetry, /utm_campaign/);
 const catalogWebsiteConcept = read("src/components/CatalogWebsiteConcept.astro");
 const catalogReportApi = read("functions/api/repair-shop/catalog-report.ts");
 const repairDashboard = read("src/pages/services/hermes-connect/repair-shops/dashboard.astro");
