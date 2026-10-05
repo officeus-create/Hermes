@@ -31,7 +31,8 @@ export async function onRequestGet({ env }: { request: Request; env: Env }) {
       COALESCE(SUM(CASE WHEN day = ? THEN page_views ELSE 0 END), 0) AS page_views_today,
       COALESCE(SUM(CASE WHEN day >= ? THEN page_views ELSE 0 END), 0) AS page_views_month,
       COALESCE(SUM(CASE WHEN day = ? THEN sessions ELSE 0 END), 0) AS sessions_today,
-      COALESCE(SUM(CASE WHEN day >= ? THEN sessions ELSE 0 END), 0) AS sessions_month
+      COALESCE(SUM(CASE WHEN day >= ? THEN sessions ELSE 0 END), 0) AS sessions_month,
+      MAX(updated_at) AS updated_at
     FROM hermes_site_traffic_daily
   `).bind(today, monthStart, today, monthStart).first();
 
@@ -49,6 +50,7 @@ export async function onRequestGet({ env }: { request: Request; env: Env }) {
       sessions_today: Number(summary?.sessions_today || 0),
       sessions_month: Number(summary?.sessions_month || 0),
     },
+    updated_at: summary?.updated_at ? String(summary.updated_at) : null,
     disclosure: "Visitor sessions are consented browser sessions, not unique people.",
   }, {
     "Cache-Control": "public, max-age=30, s-maxage=60, stale-while-revalidate=120",
