@@ -178,7 +178,7 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
       "source_channel","content_id","content_format","campaign_id","cta_keyword","entry_offer",
       "organic_state","paid_learning_state","audience_geo","primary_pain","diagnostic_primary_gap",
       "baseline","recommended_module","reason_to_believe","business_stage","manager","consultation_status",
-      "program_fit","objection","sale_revenue","cohort","completion","renewal"
+      "next_action","next_contact_at","promise","program_fit","objection","sale_revenue","outcome","cohort","completion","renewal"
     ],
     trainingMethod: [
       t("1 · Питання — спочатку колонка порожня", "1 · Question — leave the column blank first"),
