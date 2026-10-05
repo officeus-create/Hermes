@@ -23,8 +23,14 @@ const requestContext = {
 const businessRequestHref = buildCatalogRequestHref("catalog-business-request", requestContext);
 const auditRequestHref = buildCatalogRequestHref("catalog-growth", requestContext, "Digital marketing audit");
 const claimHref = business.status === "unclaimed" ? buildCatalogRequestHref("claim", requestContext) : "";
-const growthLinks = ["Website / redesign","Google Maps","SEO / GEO","Hermes CRM","SMM","Automation"]
-  .map((label)=>({ label, href: buildCatalogRequestHref("catalog-growth", requestContext, label) }));
+const growthLinks = [
+  { uk:"Сайт / редизайн", en:"Website / redesign" },
+  { uk:"Google Maps", en:"Google Maps" },
+  { uk:"SEO / GEO", en:"SEO / GEO" },
+  { uk:"Hermes CRM", en:"Hermes CRM" },
+  { uk:"SMM", en:"SMM" },
+  { uk:"Автоматизація", en:"Automation" }
+].map((item)=>({ ...item, href: buildCatalogRequestHref("catalog-growth", requestContext, item.en) }));
 const localized = business.localeCopy;
 const copy = localized?.[defaultLocale];
 const clientStrategy = getCatalogClientStrategy(business.id);
@@ -36,7 +42,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
 ---
 {conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
   <div class="concept-disclosure">
-    <strong data-uk={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"} data-en={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}>{isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}</strong>
+    <strong data-uk={isClientProfile?"Hermes Catalog · Стратегія клієнта":"Hermes Catalog · Концепція сайту"} data-en={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}>{isClientProfile?label("Hermes Catalog · Стратегія клієнта","Hermes Catalog · Client Strategy"):label("Hermes Catalog · Концепція сайту","Hermes Catalog · Website Concept")}</strong>
     <span data-uk={localized?.uk.disclosure} data-en={localized?.en.disclosure}>{copy?.disclosure ?? "Verified/public business data + Hermes presentation concept"}</span>
     {localized && <nav class="locale-switch" aria-label="Concept language"><a href="?lang=uk" lang="uk">UA</a><a href="?lang=en" lang="en">EN</a></nav>}
   </div>
@@ -58,26 +64,26 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
       </div>
       {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}
     </div>
-    <aside><small>{isClientProfile?"CLIENT PROFILE":"HERMES CONCEPT"}</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} · claim/customer status changes only after verification</span></aside>
+    <aside><small data-uk={isClientProfile?"КЛІЄНТСЬКИЙ ПРОФІЛЬ":"КОНЦЕПЦІЯ HERMES"} data-en={isClientProfile?"CLIENT PROFILE":"HERMES CONCEPT"}>{isClientProfile?label("КЛІЄНТСЬКИЙ ПРОФІЛЬ","CLIENT PROFILE"):label("КОНЦЕПЦІЯ HERMES","HERMES CONCEPT")}</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span data-uk={`${business.status.toUpperCase()} · статус клієнта / claim змінюється тільки після перевірки`} data-en={`${business.status.toUpperCase()} · claim/customer status changes only after verification`}>{label(`${business.status.toUpperCase()} · статус клієнта / claim змінюється тільки після перевірки`,`${business.status.toUpperCase()} · claim/customer status changes only after verification`)}</span></aside>
   </section>
   <section class="concept-grid">
-    <article><p class="kicker">PRIMARY INTENT</p><h2>{business.primaryIntent}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>
-    {business.secondaryIntent && <article class="secondary"><p class="kicker">SECONDARY DIRECTION</p><h2>{business.secondaryIntent}</h2><div class="channel-list">{secondaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>}
+    <article><p class="kicker" data-uk="ОСНОВНИЙ НАПРЯМ" data-en="PRIMARY INTENT">{label("ОСНОВНИЙ НАПРЯМ","PRIMARY INTENT")}</p><h2 data-uk={business.primaryIntent} data-en={business.primaryIntentEn ?? business.primaryIntent}>{label(business.primaryIntent,business.primaryIntentEn ?? business.primaryIntent)}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>
+    {business.secondaryIntent && <article class="secondary"><p class="kicker" data-uk="ДОДАТКОВИЙ НАПРЯМ" data-en="SECONDARY DIRECTION">{label("ДОДАТКОВИЙ НАПРЯМ","SECONDARY DIRECTION")}</p><h2 data-uk={business.secondaryIntent} data-en={business.secondaryIntentEn ?? business.secondaryIntent}>{label(business.secondaryIntent,business.secondaryIntentEn ?? business.secondaryIntent)}</h2><div class="channel-list">{secondaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>}
   </section>
   {business.featuredOffer && <section class="featured-offer">
-    <div><p class="kicker">FEATURED PROGRAM / PRODUCT</p><h2>{business.featuredOffer.name}</h2><p>{business.featuredOffer.description}</p></div>
-    <div class="featured-action">{business.featuredOffer.duration && <span>{business.featuredOffer.duration}</span>}<a href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener">Official program page ↗</a></div>
+    <div><p class="kicker" data-uk="ОСНОВНА ПРОГРАМА / ПРОДУКТ" data-en="FEATURED PROGRAM / PRODUCT">{label("ОСНОВНА ПРОГРАМА / ПРОДУКТ","FEATURED PROGRAM / PRODUCT")}</p><h2 data-uk={business.featuredOffer.name} data-en={business.featuredOffer.nameEn ?? business.featuredOffer.name}>{label(business.featuredOffer.name,business.featuredOffer.nameEn ?? business.featuredOffer.name)}</h2><p data-uk={business.featuredOffer.description} data-en={business.featuredOffer.descriptionEn ?? business.featuredOffer.description}>{label(business.featuredOffer.description,business.featuredOffer.descriptionEn ?? business.featuredOffer.description)}</p></div>
+    <div class="featured-action">{business.featuredOffer.duration && <span data-uk={business.featuredOffer.duration} data-en={business.featuredOffer.durationEn ?? business.featuredOffer.duration}>{label(business.featuredOffer.duration,business.featuredOffer.durationEn ?? business.featuredOffer.duration)}</span>}<a href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk="Офіційна сторінка програми ↗" data-en="Official program page ↗">{label("Офіційна сторінка програми ↗","Official program page ↗")}</a></div>
   </section>}
   <section class="truth">
-    <div><p class="kicker">BUSINESS TRUTH</p><h2 data-uk={localized?.uk.truthTitle} data-en={localized?.en.truthTitle}>{copy?.truthTitle ?? "Structured once. Reused across Hermes."}</h2></div>
+    <div><p class="kicker" data-uk="ПІДТВЕРДЖЕНІ ФАКТИ" data-en="BUSINESS TRUTH">{label("ПІДТВЕРДЖЕНІ ФАКТИ","BUSINESS TRUTH")}</p><h2 data-uk={localized?.uk.truthTitle} data-en={localized?.en.truthTitle}>{copy?.truthTitle ?? "Structured once. Reused across Hermes."}</h2></div>
     <div>
       <div class="truth-labels"><span data-state="verified">{label("Підтверджені / публічні факти","Verified / public facts")}</span><span data-state="concept">{label("Концепція Hermes","Hermes concept")}</span><span data-state="owner">{label("Потрібне підтвердження власника","Owner confirmation required")}</span></div>
-      <dl><div><dt>Address</dt><dd>{business.address}, {business.locality}, {business.region}, {business.postalCode}</dd></div><div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div><div><dt>Needs owner confirmation</dt><dd>{business.factsRequiringOwnerConfirmation.join(" · ")}</dd></div></dl>
+      <dl><div><dt data-uk="Адреса" data-en="Address">{label("Адреса","Address")}</dt><dd>{business.address}, {business.locality}, {business.region}, {business.postalCode}</dd></div><div><dt data-uk="Розклад" data-en="Hours">{label("Розклад","Hours")}</dt><dd data-uk={business.hours.join(" · ")} data-en={(business.hoursEn ?? business.hours).join(" · ")}>{label(business.hours.join(" · "),(business.hoursEn ?? business.hours).join(" · "))}</dd></div><div><dt data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">{label("Потрібне підтвердження власника","Needs owner confirmation")}</dt><dd data-uk={business.factsRequiringOwnerConfirmation.join(" · ")} data-en={(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · ")}>{label(business.factsRequiringOwnerConfirmation.join(" · "),(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · "))}</dd></div></dl>
     </div>
   </section>
   {(business.strategyPreviewUrl || business.crmPreviewUrl) && <section class="prepared-work">
     <div>
-      <p class="kicker">PREPARED HERMES WORK</p>
+      <p class="kicker" data-uk="ПІДГОТОВЛЕНА РОБОТА HERMES" data-en="PREPARED HERMES WORK">{label("ПІДГОТОВЛЕНА РОБОТА HERMES","PREPARED HERMES WORK")}</p>
       <h2>{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
       <p>{clientStrategy ? label(
         "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Окремий noindex strategy/audit зберігається як детальний evidence/workspace, а CRM demo показує операційну модель без вигаданих sales/result даних.",
@@ -96,17 +102,17 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
   <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale={defaultLocale} />
   {clientStrategy && <CatalogClientStrategy strategy={clientStrategy} defaultLocale={defaultLocale} />}
   <section class="opportunity">
-    <div><p class="kicker">HERMES OPPORTUNITY</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
-    <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href}>{item.label}</a>)}</div>
+    <div><p class="kicker" data-uk="МОЖЛИВОСТІ HERMES" data-en="HERMES OPPORTUNITY">{label("МОЖЛИВОСТІ HERMES","HERMES OPPORTUNITY")}</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
+    <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href} data-uk={item.uk} data-en={item.en}>{label(item.uk,item.en)}</a>)}</div>
   </section>
   <section id="catalog-request" class="request">
-    <div><p class="kicker">{isClientProfile?"OFFICIAL PROGRAM PATH":"REAL CUSTOMER REQUEST"}</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
+    <div><p class="kicker" data-uk={isClientProfile?"ОФІЦІЙНИЙ ШЛЯХ ДО ПРОГРАМИ":"ЗАПИТ КЛІЄНТА"} data-en={isClientProfile?"OFFICIAL PROGRAM PATH":"REAL CUSTOMER REQUEST"}>{isClientProfile?label("ОФІЦІЙНИЙ ШЛЯХ ДО ПРОГРАМИ","OFFICIAL PROGRAM PATH"):label("ЗАПИТ КЛІЄНТА","REAL CUSTOMER REQUEST")}</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
     {isClientProfile && business.featuredOffer
       ? <a class="request-link" href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Open official program"} →</a>
       : <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>}
   </section>
-  {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2>{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>}
-  {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker">SEO / GEO FOUNDATION</p><h2>Semantic core + local intent</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
+  {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2 data-uk="Перед зверненням" data-en="Before you contact">{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3 data-uk={item.question} data-en={item.questionEn ?? item.question}>{label(item.question,item.questionEn ?? item.question)}</h3><p data-uk={item.answer} data-en={item.answerEn ?? item.answer}>{label(item.answer,item.answerEn ?? item.answer)}</p></article>)}</section>}
+  {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker" data-uk="SEO / GEO ОСНОВА" data-en="SEO / GEO FOUNDATION">{label("SEO / GEO ОСНОВА","SEO / GEO FOUNDATION")}</p><h2 data-uk="Семантичне ядро + локальний намір" data-en="Semantic core + local intent">{label("Семантичне ядро + локальний намір","Semantic core + local intent")}</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
 </section>}
 <style>
 .prepared-work{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;padding:28px}.prepared-work h2{margin:5px 0 10px;font-size:clamp(24px,3.4vw,36px)}.prepared-work p{color:#64706b;line-height:1.65}.prepared-links{display:grid;gap:10px;align-content:center}.prepared-links a{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;border:1px solid #ccd5d1;border-radius:12px;color:#24483e;text-decoration:none;font-weight:850;font-size:12px;background:#fbfcfb}
