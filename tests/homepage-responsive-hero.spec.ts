@@ -35,6 +35,6 @@ test("homepage entry uses four architectural system scene and keeps the canonica
   await expect(page.locator(".home-portal-art picture")).toHaveCount(3);
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveCount(2);
   await expect(page.locator('[data-home-logistics-scene-image][data-logistics-layer-state="active"]')).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
-  await expect(page.locator(".home-portal-motion img")).toHaveCount(1);
+  await expect(page.locator(".home-portal-motion img")).toHaveCount(0);
   await expect(page.locator(".home-master-stage video, .home-master-stage canvas")).toHaveCount(0);
 });
