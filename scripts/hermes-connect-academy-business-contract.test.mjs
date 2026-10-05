@@ -114,6 +114,13 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(publicProfile, /Приватні учні, заявки, платежі та CRM-дані тут не показуються/);
   assert.match(publicProfile, /data-lang="uk"/);
   assert.match(publicProfile, /data-lang="en"/);
+  assert.match(publicProfile, /HERMES DIGITAL AUDIT/);
+  assert.match(publicProfile, /Audit ≠ Funnel/);
+  assert.match(publicProfile, /auditPlatforms = \["website","google","instagram","facebook","threads","tiktok","youtube","telegram"\]/);
+  assert.match(publicProfile, /type=catalog-growth/);
+  assert.match(publicProfile, /Organic programming \+ stable baseline/);
+  assert.match(publicProfile, /unknown, not zero/);
+  assert.match(publicProfile, /Request a full audit/);
   assert.match(sitemap, /\/businesses\/connect\/academy\//);
   assert.match(catalogPage, /Request a similar audit/);
   assert.match(catalogPage, /type=marketing-package&months=3/);
