@@ -424,7 +424,7 @@ export const mzmJunkRemovalConcept = Object.freeze({
   secondaryIntent: "Same-day and next-day residential, commercial and construction debris removal",
   crmPreviewUrl: "/demos/hermes-connect/mzm-junk-removal.html",
   phone: "+1 279-239-1800",
-  address: "906 Main St",
+  address: "Roseville, CA 95678",
   locality: "Roseville",
   region: "California",
   postalCode: "95678",
@@ -447,10 +447,9 @@ export const mzmJunkRemovalConcept = Object.freeze({
     "Yard debris cleanout",
     "Shed removal"
   ],
-  trust: { source: "Google Business Profile", rating: 5.0, reviewCount: 46, observedAt: "2026-10-05" },
   channels: [
     { label: "Official website", url: "https://mzm-junk-removal.com/", direction: "primary" },
-    { label: "Google Maps", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20906%20Main%20St%20Roseville%20CA%2095678", direction: "maps" },
+    { label: "Google Maps", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20Roseville%20CA%2095678", direction: "maps" },
     { label: "Thumbtack", url: "https://www.thumbtack.com/ca/roseville/junk-removal/mzm-junk-removal/service/574285364726562823", direction: "secondary" }
   ],
   digitalAudit: {
@@ -482,10 +481,10 @@ export const mzmJunkRemovalConcept = Object.freeze({
         nextStep: { uk: "Підключити GSC/GA4/call-form attribution та замінити ручні aggregate counters на source-owned evidence.", en: "Connect GSC/GA4/call-form attribution and replace manual aggregate counters with source-owned evidence." }
       },
       {
-        platform: "google", label: "Google", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20906%20Main%20St%20Roseville%20CA%2095678", state: "needs_private_analytics",
+        platform: "google", label: "Google", url: "https://www.google.com/maps/search/?api=1&query=MZM%20Junk%20Removal%20Roseville%20CA%2095678", state: "needs_private_analytics",
         headline: { uk: "Google local presence підтверджена публічно; query/rank/conversion висновки потребують owner access.", en: "Google local presence is publicly confirmed; query, ranking, and conversion conclusions require owner access." },
         findings: [
-          { uk: "Публічний listing узгоджується з Roseville, телефоном, адресою та годинами роботи.", en: "The public listing aligns with Roseville, the phone number, street address, and operating hours." },
+          { uk: "Публічні listings підтверджують Roseville presence і основний телефон; exact address/hours presentation потрібно звірити з owner-managed profile перед канонізацією.", en: "Public listings support the Roseville presence and main phone; exact address and hours presentation should be reconciled against the owner-managed profile before treating them as canonical." },
           { uk: "Google reviews — окремий source; не змішуємо його count із Thumbtack без дати та джерела.", en: "Google reviews are a separate source; do not merge their count with Thumbtack without a date and source." },
           { uk: "Search Console, GBP Performance і CRM мають зійтися на landing page → lead → booked job → revenue.", en: "Search Console, GBP Performance, and CRM should converge on landing page → lead → booked job → revenue." }
         ],
