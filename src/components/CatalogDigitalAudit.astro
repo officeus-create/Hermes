@@ -1,0 +1,117 @@
+---
+import type { CatalogAuditPlatform, CatalogAuditText, CatalogBusinessConcept, CatalogDigitalAuditFinding } from "../data/catalog-business-concepts";
+
+type ConceptLocale = "uk" | "en";
+interface Props {
+  business: CatalogBusinessConcept;
+  requestHref: string;
+  defaultLocale?: ConceptLocale;
+}
+const { business, requestHref, defaultLocale = "en" } = Astro.props;
+const t = (value: CatalogAuditText) => value[defaultLocale];
+
+const platformFrom = (label: string, url = ""): CatalogAuditPlatform => {
+  const raw = `${label} ${url}`.toLowerCase();
+  if (raw.includes("instagram")) return "instagram";
+  if (raw.includes("facebook")) return "facebook";
+  if (raw.includes("threads")) return "threads";
+  if (raw.includes("tiktok")) return "tiktok";
+  if (raw.includes("youtube")) return "youtube";
+  if (raw.includes("telegram") || raw.includes("t.me")) return "telegram";
+  if (raw.includes("google") || raw.includes("maps")) return "google";
+  return "website";
+};
+const icons: Record<CatalogAuditPlatform,string> = {
+  website:"WWW", google:"G", instagram:"◎", facebook:"f", threads:"@", tiktok:"♪", youtube:"▶", telegram:"➤"
+};
+const stateCopy = {
+  observed:{uk:"Публічно перевірено",en:"Publicly observed"},
+  needs_private_analytics:{uk:"Потрібна внутрішня аналітика",en:"Internal analytics required"},
+  owner_confirmation:{uk:"Потрібне підтвердження",en:"Owner confirmation required"}
+} as const;
+
+const fallbackFindings: CatalogDigitalAuditFinding[] = [];
+if (business.website) fallbackFindings.push({
+  platform:"website", label:"Website", url:business.website, state:"observed",
+  headline:{uk:"Публічний сайт знайдено; performance і conversion не виводяться з самого факту його наявності.",en:"A public website is present; performance and conversion are not inferred from its existence."},
+  findings:[{uk:"Публічний source дозволяє перевірити структуру, факти, CTA та search/discovery surface.",en:"The public source supports review of structure, facts, CTA, and search/discovery surface."}],
+  nextStep:{uk:"Для глибокого аудиту потрібні owner-approved analytics/Search Console/CRM data.",en:"A deeper audit requires owner-approved analytics, Search Console, and CRM data."}
+});
+for (const channel of business.channels) {
+  const platform=platformFrom(channel.label,channel.url);
+  if (platform==="website" || fallbackFindings.some((item)=>item.platform===platform)) continue;
+  fallbackFindings.push({
+    platform,label:channel.label,url:channel.url,state:"needs_private_analytics",
+    headline:{uk:"Публічний канал знайдено; внутрішню ефективність не можна чесно визначити без доступу до platform analytics.",en:"A public channel is present; internal performance cannot be honestly determined without platform analytics."},
+    findings:[{uk:"Public snapshot ≠ Reach/ER/retention/audience quality/conversion.",en:"A public snapshot is not Reach/ER/retention/audience quality/conversion."}],
+    nextStep:{uk:"Підключити дозволену аналітику, зафіксувати baseline і лише після цього давати tactical recommendation.",en:"Connect permitted analytics, establish a baseline, and only then make a tactical recommendation."}
+  });
+}
+const audit = business.digitalAudit ?? {
+  observedAt:"public-source profile",
+  summary:{uk:"Це первинний digital health check з відкритих джерел. Він показує, що можна перевірити зараз і яких даних бракує для реальної рекомендації.",en:"This is an initial digital health check from public sources. It shows what can be verified now and what data is missing for a real recommendation."},
+  prerequisite:{uk:"Не перетворюємо public snapshot на вигадані KPI, funnel або гарантії.",en:"A public snapshot is never converted into invented KPI, funnels, or guarantees."},
+  sequence:[
+    {uk:"1 · Public-source audit",en:"1 · Public-source audit"},
+    {uk:"2 · Owner analytics / baseline",en:"2 · Owner analytics / baseline"},
+    {uk:"3 · Organic learning",en:"3 · Organic learning"},
+    {uk:"4 · Paid/offer test тільки після evidence gate",en:"4 · Paid/offer test only after the evidence gate"}
+  ],
+  findings:fallbackFindings
+};
+
+const titleUk = business.digitalAudit ? "Digital audit: що видно зараз і що робити далі" : "Digital health: публічний snapshot";
+const titleEn = business.digitalAudit ? "Digital audit: what is visible now and what comes next" : "Digital health: public snapshot";
+---
+<section class="catalog-digital-audit" id="digital-audit">
+  <div class="audit-head">
+    <div>
+      <p class="audit-kicker">HERMES DIGITAL AUDIT · {audit.observedAt}</p>
+      <h2 data-uk={titleUk} data-en={titleEn}>{defaultLocale==="uk"?titleUk:titleEn}</h2>
+      <p data-uk={audit.summary.uk} data-en={audit.summary.en}>{t(audit.summary)}</p>
+    </div>
+    <span class="audit-boundary" data-uk="Audit ≠ Funnel" data-en="Audit ≠ Funnel">Audit ≠ Funnel</span>
+  </div>
+
+  <div class="audit-prerequisite">
+    <strong data-uk="Evidence gate" data-en="Evidence gate">Evidence gate</strong>
+    <span data-uk={audit.prerequisite.uk} data-en={audit.prerequisite.en}>{t(audit.prerequisite)}</span>
+  </div>
+
+  <nav class="audit-icons" aria-label="Digital audit channels">
+    {audit.findings.map((finding) => (
+      <a href={`#audit-${finding.platform}`} title={finding.label}><span aria-hidden="true">{icons[finding.platform]}</span><b>{finding.label}</b></a>
+    ))}
+  </nav>
+
+  <div class="audit-sequence" aria-label="Recommended marketing sequence">
+    {audit.sequence.map((step) => <span data-uk={step.uk} data-en={step.en}>{t(step)}</span>)}
+  </div>
+
+  <div class="audit-grid">
+    {audit.findings.map((finding) => (
+      <details id={`audit-${finding.platform}`}>
+        <summary>
+          <span class="platform-icon" aria-hidden="true">{icons[finding.platform]}</span>
+          <span class="summary-copy"><b>{finding.label}</b><small data-uk={stateCopy[finding.state].uk} data-en={stateCopy[finding.state].en}>{stateCopy[finding.state][defaultLocale]}</small></span>
+          <span aria-hidden="true">+</span>
+        </summary>
+        <div class="finding-body">
+          <h3 data-uk={finding.headline.uk} data-en={finding.headline.en}>{t(finding.headline)}</h3>
+          <ul>{finding.findings.map((item) => <li data-uk={item.uk} data-en={item.en}>{t(item)}</li>)}</ul>
+          <p><strong data-uk="Наступний крок:" data-en="Next step:">{defaultLocale==="uk"?"Наступний крок:":"Next step:"}</strong> <span data-uk={finding.nextStep.uk} data-en={finding.nextStep.en}>{t(finding.nextStep)}</span></p>
+          {finding.url && <a class="source-link" href={finding.url} target="_blank" rel="noreferrer noopener">Public source ↗</a>}
+        </div>
+      </details>
+    ))}
+  </div>
+
+  <div class="audit-actions">
+    <a href="/businesses/marketing-growth-audit-example/" data-uk="Метод Hermes: organic → paid learning → offer" data-en="Hermes method: organic → paid learning → offer">{defaultLocale==="uk"?"Метод Hermes: organic → paid learning → offer":"Hermes method: organic → paid learning → offer"}</a>
+    <a class="primary" data-catalog-event="growth_start" href={requestHref} data-uk="Запросити повний аудит" data-en="Request a full audit">{defaultLocale==="uk"?"Запросити повний аудит":"Request a full audit"}</a>
+  </div>
+</section>
+
+<style>
+.catalog-digital-audit{padding:28px;border:1px solid #dde3df;border-radius:22px;background:#fff}.audit-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.audit-head h2{max-width:820px;margin:7px 0 10px;font-size:clamp(28px,4vw,42px);line-height:1.04}.audit-head p:last-child{max-width:850px;color:#64706b;line-height:1.65}.audit-kicker{margin:0;color:#477568;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.audit-boundary{white-space:nowrap;padding:7px 10px;border-radius:999px;background:#fff2d2;color:#775508;font-size:10px;font-weight:900}.audit-prerequisite{display:grid;gap:5px;margin-top:16px;padding:15px 17px;border-left:4px solid #6c55cc;border-radius:0 13px 13px 0;background:#f4f1ff}.audit-prerequisite span{color:#574f71;line-height:1.55}.audit-icons,.audit-sequence,.audit-actions{display:flex;gap:8px;flex-wrap:wrap}.audit-icons{margin-top:18px}.audit-icons a{display:flex;align-items:center;gap:7px;min-height:40px;padding:0 11px;border:1px solid #d9e1dd;border-radius:999px;color:#24322e;text-decoration:none;background:#fbfcfb;font-size:11px}.audit-icons a span{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#17211e;color:#fff;font-weight:900}.audit-sequence{margin-top:12px}.audit-sequence span{padding:7px 9px;border-radius:9px;background:#eef5f2;color:#355b50;font-size:10px;font-weight:800}.audit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}.audit-grid details{scroll-margin-top:96px;border:1px solid #dfe5e2;border-radius:15px;background:#fbfcfb;overflow:hidden}.audit-grid summary{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:15px;cursor:pointer;list-style:none}.audit-grid summary::-webkit-details-marker{display:none}.platform-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#17211e;color:#fff;font-weight:900}.summary-copy{display:grid;gap:2px}.summary-copy small{color:#7a8681;font-size:9px;text-transform:uppercase;font-weight:850}.finding-body{padding:0 15px 16px;border-top:1px solid #e6ebe8}.finding-body h3{margin:15px 0 8px;font-size:16px;line-height:1.35}.finding-body ul{padding-left:18px;color:#5f6f69;line-height:1.6}.finding-body p{color:#5f6f69;line-height:1.6}.source-link{color:#276a59;text-decoration:none;font-weight:850;font-size:11px}.audit-actions{margin-top:18px}.audit-actions a{display:inline-flex;align-items:center;min-height:42px;padding:0 12px;border:1px solid #ccd5d1;border-radius:10px;color:#24483e;text-decoration:none;font-weight:850;font-size:11px}.audit-actions .primary{background:#17211e;color:#fff;border-color:#17211e}@media(max-width:760px){.audit-head{display:grid}.audit-boundary{justify-self:start}.audit-grid{grid-template-columns:1fr}}
+</style>
