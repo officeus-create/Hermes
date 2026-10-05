@@ -86,8 +86,8 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
       <p class="kicker" data-uk="ПІДГОТОВЛЕНА РОБОТА HERMES" data-en="PREPARED HERMES WORK">{label("ПІДГОТОВЛЕНА РОБОТА HERMES","PREPARED HERMES WORK")}</p>
       <h2>{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
       <p>{clientStrategy ? label(
-        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Окремий noindex strategy/audit зберігається як детальний evidence/workspace, а CRM demo показує операційну модель без вигаданих sales/result даних.",
-        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. The separate noindex strategy/audit remains a detailed evidence workspace, while the CRM demo shows the operating model without invented sales or outcome data."
+        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records.",
+        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
       ) : label(
         "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.",
         "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately."
@@ -96,7 +96,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     <div class="prepared-links">
       {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
       {business.crmPreviewUrl && <a href={business.crmPreviewUrl}>{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
-      {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати / відкрити Academy CRM →" data-en="Register / open Academy CRM →">{label("Зареєструвати / відкрити Academy CRM →","Register / open Academy CRM →")}</a>}
+      {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати Academy workspace →" data-en="Register Academy workspace →">{label("Зареєструвати Academy workspace →","Register Academy workspace →")}</a>}
     </div>
   </section>}
   <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale={defaultLocale} />
