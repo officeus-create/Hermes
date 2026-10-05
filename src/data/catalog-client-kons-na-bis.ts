@@ -2,7 +2,7 @@
 export const konsNaBisClient = Object.freeze({
   name: "Конс на Бі$",
   website: "https://kons-na-bis.com/",
-  programmeUrl: "https://biznes-club-knb.com/zrostannia-u-biznesi-ads",
+  programmeUrl: "https://biznes-club-knb.com/zrostannia-u-biznesi",
   programmeName: "Стратегія керованого зростання у бізнесі",
   durationWeeks: 7,
   format: "online",
