@@ -196,7 +196,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   }
 
   $<HTMLFormElement>("[data-lead-form]")?.addEventListener("submit",async(event)=>{
-    event.preventDefault();showAlert("");const form=event.currentTarget;const data=new FormData(form);
+    event.preventDefault();showAlert("");const form=event.currentTarget as HTMLFormElement;const data=new FormData(form);
     const cents=(name:string)=>Math.round((Number(data.get(name))||0)*100);
     const toIso=(name:string)=>{const value=String(data.get(name)||"");return value?new Date(value).toISOString():"";};
     const id=String(data.get("id")||"");
@@ -211,7 +211,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   });
 
   $<HTMLFormElement>("[data-profile-form]")?.addEventListener("submit",async(event)=>{
-    event.preventDefault();showAlert("");const data=new FormData(event.currentTarget);
+    event.preventDefault();showAlert("");const data=new FormData(event.currentTarget as HTMLFormElement);
     const lines=(name:string)=>String(data.get(name)||"").split("\n").map(v=>v.trim()).filter(Boolean);
     try{await api("/api/hermes-connect/home-services/crm",{method:"POST",body:JSON.stringify({action:"upsert_profile",serviceSubtype:data.get("serviceSubtype"),services:lines("services"),serviceAreas:lines("serviceAreas"),publicSummary:data.get("publicSummary"),semanticCoreRef:data.get("semanticCoreRef"),contentStatus:"active_content_planning"})});await load();}
     catch(error:any){showAlert(`Could not save business profile: ${error?.message||"unknown error"}`);}
