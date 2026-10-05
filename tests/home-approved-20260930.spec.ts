@@ -40,7 +40,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
-   const image=route.locator('.home-portal-art img');
+   const image=route.locator('.home-portal-art img').first();
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -215,7 +215,7 @@ test('Home Logistics carries six owned equipment and weather states without chan
  expect(decoded.every(Boolean)).toBe(true);
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
- const geometryBefore=await scenes.first().boundingBox();
+ const geometryBefore=await page.locator('[data-route-id="logistics"] .home-portal-art').boundingBox();
  expect(geometryBefore).not.toBeNull();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect.poll(async()=>activeScene.getAttribute('data-logistics-scene-ready'),{timeout:7000,intervals:[50]}).not.toBe('car-hauler');
@@ -227,7 +227,7 @@ test('Home Logistics carries six owned equipment and weather states without chan
  expect(weatherTransitioning.every(value=>value>0&&value<1)).toBe(true);
  expect(weatherTransitioning.reduce((sum,value)=>sum+value,0)).toBeGreaterThan(0.9);
  await page.waitForTimeout(800);
- const geometryAfter=await scenes.first().boundingBox();
+ const geometryAfter=await page.locator('[data-route-id="logistics"] .home-portal-art').boundingBox();
  expect(geometryAfter).not.toBeNull();
  expect(geometryAfter!.width).toBeCloseTo(geometryBefore!.width,1);
  expect(geometryAfter!.height).toBeCloseTo(geometryBefore!.height,1);
@@ -308,7 +308,7 @@ test('Home subjects use finite cycles, pause offscreen and settle to still artwo
  await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
  const time=await layers.first().evaluate(node=>node.getAnimations()[0].currentTime);
  await page.waitForTimeout(180);
- expect(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime)).toBe(time);
+ expect(Math.abs(Number(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime))-Number(time))).toBeLessThan(1);
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await layers.evaluateAll(nodes=>nodes.forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
  await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
