@@ -33,8 +33,8 @@ test('Catalog exposes a reusable indexable marketing growth strategy example',()
   assert.match(genericCase,/Marketing Growth Audit Example/);
   assert.match(genericCase,/Social → CRM → Revenue/);
   assert.match(genericCase,/90-DAY OPERATING PLAN/);
-  assert.match(genericCase,/PROOF GOVERNANCE/);
+  assert.match(genericCase,/EVIDENCE BOUNDARY/);
   assert.match(genericCase,/trackCaseOpened\("marketing_growth_audit_example"\)/);
   assert.match(genericCase,/trackEvent\("case_study_cta"/);
-  assert.doesNotMatch(genericCase,/robots="noindex/);
+  assert.doesNotMatch(genericCase,/robots="noindex/);\n  assert.doesNotMatch(genericCase,/source_channel|owner \/ manager|CANDIDATE ASSESSMENT|reviewer score/);
 });
