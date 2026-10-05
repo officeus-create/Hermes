@@ -2,8 +2,9 @@
 import type { CatalogAuditPlatform, CatalogAuditText, CatalogBusinessConcept, CatalogDigitalAuditFinding } from "../data/catalog-business-concepts";
 
 type ConceptLocale = "uk" | "en";
+type AuditBusiness = Pick<CatalogBusinessConcept, "website" | "channels" | "digitalAudit">;
 interface Props {
-  business: CatalogBusinessConcept;
+  business: AuditBusiness;
   requestHref: string;
   defaultLocale?: ConceptLocale;
 }
