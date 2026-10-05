@@ -14,7 +14,7 @@ export function getStaticPaths(){
 }
 const {kind,route}=Astro.props as { kind:"us"|"international"; route:DirectoryCity|CatalogConceptLocalityRoute };
 const city=route as DirectoryCity;
-const internationalLocality=route as CatalogConceptLocalityRoute;
+const internationalLocality=route as CatalogConceptLocalityRoute;\nconst conceptIsPrimaryUS = kind === "international" && internationalLocality.businesses.some((business)=>business.market === "us");
 const rows: RepairShopDirectoryEntry[] = repairShopDirectory.filter((b: RepairShopDirectoryEntry)=>b.stateSlug===city.stateSlug&&b.citySlug===city.citySlug);
 const cityUrl=`https://hermeslogisticsus.com/businesses/${city.stateSlug}/${city.citySlug}/`;
 const categories=[...new Set(rows.map((business)=>business.category))];
@@ -27,7 +27,7 @@ const schema=[
 ---
 {kind === "international" ? <InternationalBusinessCollection
   title={`Businesses in ${internationalLocality.name}, ${internationalLocality.region} | Hermes Catalog`}
-  description={`Selected public business profiles in ${internationalLocality.name}, ${internationalLocality.region}, published as a secondary international discovery layer with explicit owner-verification boundaries.`}
+  description={conceptIsPrimaryUS ? `Primary U.S. Hermes Catalog client and public business profiles in ${internationalLocality.name}, ${internationalLocality.region}, with explicit public/private evidence boundaries.` : `Selected public business profiles in ${internationalLocality.name}, ${internationalLocality.region}, published as a secondary international discovery layer with explicit owner-verification boundaries.`}
   eyebrow={`Hermes Catalog · ${internationalLocality.countryName} · ${internationalLocality.name}`}
   canonical={`https://hermeslogisticsus.com/businesses/${internationalLocality.countrySlug}/${internationalLocality.slug}/`}
   businesses={internationalLocality.businesses}
