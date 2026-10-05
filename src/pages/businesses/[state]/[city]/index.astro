@@ -14,7 +14,8 @@ export function getStaticPaths(){
 }
 const {kind,route}=Astro.props as { kind:"us"|"international"; route:DirectoryCity|CatalogConceptLocalityRoute };
 const city=route as DirectoryCity;
-const internationalLocality=route as CatalogConceptLocalityRoute;\nconst conceptIsPrimaryUS = kind === "international" && internationalLocality.businesses.some((business)=>business.market === "us");
+const internationalLocality=route as CatalogConceptLocalityRoute;
+const conceptIsPrimaryUS = kind === "international" && internationalLocality.businesses.some((business)=>business.market === "us");
 const rows: RepairShopDirectoryEntry[] = repairShopDirectory.filter((b: RepairShopDirectoryEntry)=>b.stateSlug===city.stateSlug&&b.citySlug===city.citySlug);
 const cityUrl=`https://hermeslogisticsus.com/businesses/${city.stateSlug}/${city.citySlug}/`;
 const categories=[...new Set(rows.map((business)=>business.category))];
