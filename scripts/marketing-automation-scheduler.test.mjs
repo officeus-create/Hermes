@@ -94,6 +94,19 @@ assert.ok(
   "selected jobs must preserve the business-local timezone",
 );
 
+assert.throws(
+  () =>
+    selectDueJobs({
+      registry,
+      businessId: "",
+      locationId: "demo-location",
+      timeZone: "America/Chicago",
+      now: "2026-07-03T20:00:00Z",
+    }),
+  /required tenant scope/,
+  "missing tenant scope must fail closed even before a provider can run",
+);
+
 const dailyBrief = registry.jobs.find((job) => job.id === "daily_marketing_brief");
 const firstKey = createIdempotencyKey({
   businessId: "demo-business",
