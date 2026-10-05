@@ -1,0 +1,38 @@
+name: Marketing automation contract
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "config/marketing-automation-capabilities.json"
+      - "scripts/marketing-automation-scheduler.mjs"
+      - "scripts/marketing-automation-scheduler.test.mjs"
+      - "docs/MARKETING_CAPABILITY_AUTOMATION.md"
+      - ".github/workflows/marketing-automation-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate marketing automation contract
+        run: node scripts/marketing-automation-scheduler.test.mjs
+
+      - name: Prove timezone-aware dry run
+        run: |
+          node scripts/marketing-automation-scheduler.mjs \
+            --timezone America/Chicago \
+            --business synthetic-contract-business \
+            --location synthetic-contract-location \
+            --now 2026-07-06T11:30:00Z
