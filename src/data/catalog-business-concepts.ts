@@ -32,7 +32,7 @@ export type CatalogBusinessConcept = {
   primaryIntent: string;
   secondaryIntent?: string;
   featuredOffer?: { name: string; url: string; description: string; duration?: string };
-  crmPreviewUrl?: string;
+  crmPreviewUrl?: string;\n  strategyPreviewUrl?: string;
   digitalAudit?: CatalogDigitalAudit;
   phone: string;
   address: string;
@@ -236,7 +236,7 @@ export const konsNaBisConcept = Object.freeze({
     description: "Комплексна онлайн-програма для підприємців із супроводом; офіційний опис програми заявляє 7-тижневий формат.",
     duration: "7 тижнів"
   },
-  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",
+  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",\n  strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
   phone: "+380 67 11 55 111",
   address: "вул. Ярослава Мудрого, 16/2, 16",
   locality: "Біла Церква",
@@ -259,7 +259,7 @@ export const konsNaBisConcept = Object.freeze({
     { label: "Instagram · @konsnabis", url: "https://www.instagram.com/konsnabis/", direction: "secondary" },
     { label: "YouTube · Олександр Морозов", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", direction: "secondary" },
     { label: "TikTok · @konsnabis", url: "https://www.tiktok.com/@konsnabis", direction: "secondary" },
-    { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" }
+    { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" },\n    { label: "Facebook · Конс на Бі$", url: "https://www.facebook.com/konsnabis/", direction: "secondary" },\n    { label: "Telegram · Конс на Бі$", url: "https://t.me/konsnabis", direction: "secondary" }
   ],
   digitalAudit: {
     observedAt: "2026-10-05",
@@ -309,7 +309,7 @@ export const konsNaBisConcept = Object.freeze({
         nextStep: { uk: "Після стабільного organic baseline запускати малий контрольований paid-learning тільки на переможцях; offer test — після накопичення signal.", en: "After a stable organic baseline, run small controlled paid learning only on winners; test the offer after sufficient signal accumulates." }
       },
       {
-        platform: "facebook", label: "Facebook", state: "needs_private_analytics",
+        platform: "facebook", label: "Facebook", url: "https://www.facebook.com/konsnabis/", state: "needs_private_analytics",
         headline: { uk: "Facebook має бути частиною Meta learning system, але incremental lift від crossposting потрібно вимірювати, а не припускати.", en: "Facebook should participate in the Meta learning system, but incremental lift from crossposting must be measured rather than assumed." },
         findings: [
           { uk: "Потрібні Page/Business Suite insights, paid/organic split та downstream actions.", en: "Page/Business Suite insights, paid/organic split, and downstream actions are required." },
@@ -343,7 +343,7 @@ export const konsNaBisConcept = Object.freeze({
         nextStep: { uk: "Зв’язати searchable education з canonical website action і CRM source.", en: "Connect searchable education to a canonical website action and CRM source." }
       },
       {
-        platform: "telegram", label: "Telegram", state: "owner_confirmation",
+        platform: "telegram", label: "Telegram", url: "https://t.me/konsnabis", state: "needs_private_analytics",
         headline: { uk: "Telegram логічний як nurture/retention layer, але приватні conversion та якість аудиторії ззовні не видно.", en: "Telegram is a logical nurture/retention layer, but private conversion and audience quality are not externally visible." },
         findings: [
           { uk: "Не змішуємо channel membership із qualified lead або sale.", en: "Do not equate channel membership with a qualified lead or sale." }
