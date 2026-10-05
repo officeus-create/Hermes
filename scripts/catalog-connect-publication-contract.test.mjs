@@ -229,6 +229,7 @@ assert.match(knbOrganicCase, /MEASUREMENT CONTINUITY/);
 assert.match(knbOrganicCase, /application\/ld\+json/);
 assert.match(knbOrganicCase, /https:\/\/kons-na-bis\.com\//);
 assert.match(knbOrganicCase, /https:\/\/biznes-club-knb\.com\/zrostannia-u-biznesi/);
+assert.match(knbOrganicCase, /knb_growth_strategy_public/);\nassert.match(knbOrganicCase, /request_similar_audit/);
 assert.doesNotMatch(knbOrganicCase, /77\.1K|64\.2K|19\.6K|5,971|85\.7K/);
 
 console.log("Catalog Connect publication contract OK");
