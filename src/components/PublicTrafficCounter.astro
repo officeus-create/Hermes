@@ -1,13 +1,14 @@
 ---
 ---
-<aside class="public-traffic-counter" data-public-traffic-counter aria-label="Hermes live site traffic">
+<aside class="public-traffic-counter" data-public-traffic-counter aria-label="Hermes site traffic">
   <div class="public-traffic-counter__head">
     <span class="public-traffic-counter__pulse" aria-hidden="true"></span>
-    <strong>Live site traffic</strong>
+    <strong>Site traffic</strong>
   </div>
   <div class="public-traffic-counter__metrics">
     <span><b data-traffic-sessions-today>—</b><small>visitor sessions today</small></span>
     <span><b data-traffic-views-today>—</b><small>views today</small></span>
+    <span><b data-traffic-sessions-month>—</b><small>visitor sessions this month</small></span>
     <span><b data-traffic-views-month>—</b><small>views this month</small></span>
   </div>
   <p data-traffic-note>Consent-based aggregate · UTC</p>
@@ -17,6 +18,12 @@
   (() => {
     const root = document.querySelector("[data-public-traffic-counter]");
     if (!(root instanceof HTMLElement)) return;
+
+    const localStaticHost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+    if (localStaticHost) {
+      root.hidden = true;
+      return;
+    }
 
     const fmt = new Intl.NumberFormat("en-US");
     const put = (selector, value) => {
@@ -33,13 +40,20 @@
         if (!response.ok || data.success !== true) throw new Error("traffic_unavailable");
         put("[data-traffic-sessions-today]", data.summary?.sessions_today);
         put("[data-traffic-views-today]", data.summary?.page_views_today);
+        put("[data-traffic-sessions-month]", data.summary?.sessions_month);
         put("[data-traffic-views-month]", data.summary?.page_views_month);
         const note = root.querySelector("[data-traffic-note]");
-        if (note) note.textContent = "Consent-based aggregate · browser sessions are not unique people · UTC";
+        if (note) {
+          const observedAt = data.updated_at ? new Date(data.updated_at) : null;
+          const observedLabel = observedAt && !Number.isNaN(observedAt.getTime())
+            ? "Updated " + observedAt.toISOString().slice(0, 16).replace("T", " ") + " UTC"
+            : "Updated recently";
+          note.textContent = observedLabel + " · consent-based aggregate · browser sessions are not unique people";
+        }
       })
       .catch(() => {
         const note = root.querySelector("[data-traffic-note]");
-        if (note) note.textContent = "Live traffic temporarily unavailable";
+        if (note) note.textContent = "Traffic temporarily unavailable";
       });
   })();
 </script>
@@ -62,7 +76,7 @@
   }
   .public-traffic-counter__head{display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.01em}
   .public-traffic-counter__pulse{width:7px;height:7px;border-radius:999px;background:#2a8b66;box-shadow:0 0 0 4px rgba(42,139,102,.12)}
-  .public-traffic-counter__metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:9px}
+  .public-traffic-counter__metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-top:9px}
   .public-traffic-counter__metrics span{min-width:0}
   .public-traffic-counter__metrics b{display:block;font-size:19px;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
   .public-traffic-counter__metrics small{display:block;margin-top:2px;color:#667a91;font-size:9px;line-height:1.2}
