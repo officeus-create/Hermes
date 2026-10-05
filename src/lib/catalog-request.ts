@@ -1,4 +1,4 @@
-export type CatalogRequestType = "catalog-business-request" | "claim" | "catalog-growth";
+export type CatalogRequestType = "catalog-business-request" | "claim" | "catalog-growth" | "marketing-package";
 
 export type CatalogRequestContext = {
   businessId: string;
