@@ -234,5 +234,12 @@ assert.match(knbOrganicCase, /request_similar_audit/);
 assert.match(knbOrganicCase, /academy\/business\/auth\/\?mode=register&amp;business=kons-na-bis&amp;lang=uk/);
 assert.match(knbOrganicCase, /Catalog listing.*окремим opt-in/s);
 assert.doesNotMatch(knbOrganicCase, /77\.1K|64\.2K|19\.6K|5,971|85\.7K/);
+assert.doesNotMatch(knbOrganicCase, /assignedSalesOwnerId|owner_specialist_id|client_email|client_phone|internal_notes/);
+assert.doesNotMatch(knbOrganicCase, /CRM source fields|CRM fields/);
+
+const genericGrowthAudit = read("dist/businesses/marketing-growth-audit-example/index.html");
+assert.match(genericGrowthAudit, /EVIDENCE BOUNDARY/);
+assert.match(genericGrowthAudit, /source-bounded KNB case/);
+assert.doesNotMatch(genericGrowthAudit, /source_channel|owner \/ manager|CANDIDATE ASSESSMENT|reviewer score/);
 
 console.log("Catalog Connect publication contract OK");
