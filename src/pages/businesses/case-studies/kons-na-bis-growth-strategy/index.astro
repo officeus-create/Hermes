@@ -10,7 +10,7 @@ const publishedAt = "2026-10-05";
 const funnel = [
   ["01", "Контент", "Біль власника бізнесу → короткий інсайт → доказ методу → один зрозумілий CTA."],
   ["02", "Діагностика", "Запропонований entry offer: структурована діагностика 6 зон росту + карта перших 3 дій."],
-  ["03", "CRM", "Source, campaign, content asset, CTA, проблема, baseline і наступна дія зберігаються в одній картці."],
+  ["03", "Attribution", "Джерело, проблема й baseline мають пережити перехід із контенту в консультацію без публікації внутрішньої CRM-схеми."],
   ["04", "Кваліфікація", "Підтвердити, що це діючий бізнес, визначити bottleneck, readiness і program fit."],
   ["05", "Консультація", "Показати gap, reason-to-believe та модуль програми, який відповідає проблемі."],
   ["06", "7-тижнева програма", "Передати контекст із продажу в cohort delivery без втрати attribution."],
@@ -27,8 +27,8 @@ const measurementSteps = [
 ];
 
 const phases = [
-  ["7 днів", "Вимірювання", "Єдина UTM/campaign convention, один primary CTA на asset, CRM source fields, baseline dashboard і перелік claims з джерелами."],
-  ["30 днів", "Навчання системи", "Content matrix за pain × funnel stage, weekly winner/loser review, консультаційний script через diagnostic output, clean handoff у CRM."],
+  ["7 днів", "Вимірювання", "Єдина UTM/campaign convention, один primary CTA на asset, attribution continuity, baseline dashboard і перелік claims з джерелами."],
+  ["30 днів", "Навчання системи", "Content matrix за pain × funnel stage, weekly winner/loser review, консультаційний script через diagnostic output і чистий channel-to-consultation handoff."],
   ["90 днів", "Масштабування", "Розширювати тільки підтверджені hooks/audiences, зв’язати cohort outcomes і renewal з acquisition source, не плутати unknown із zero."],
 ];
 
@@ -148,7 +148,7 @@ const schema = [
         <div class="audit-grid">
           <article><span>KEEP</span><h3>Проблеми власника як content hook</h3><p>Стагнація, продажі, команда, маркетинг, систематизація й особиста участь власника — природні теми верхньої та середньої частини funnel.</p></article>
           <article><span>FIX</span><h3>Один primary CTA на asset</h3><p>Не змішувати “напишіть +”, консультацію, загальний join CTA і різні landing paths без єдиного campaign/content ID. Інакше downstream conversion не можна чесно порівнювати.</p></article>
-          <article><span>CONNECT</span><h3>Social signal → одна CRM identity</h3><p>Instagram, Threads, Telegram, форма та консультація — це touchpoints одного buyer, а не нові контакти. Source history має переживати весь шлях.</p></article>
+          <article><span>CONNECT</span><h3>Social signal → одна buyer identity</h3><p>Instagram, Threads, Telegram, форма та консультація — touchpoints одного buyer. Attribution context має переживати весь шлях без публікації приватної операційної структури.</p></article>
           <article><span>MEASURE</span><h3>Qualified action замість vanity metrics</h3><p>Views і followers — контекст. Керуючі KPI: diagnostic start, qualified lead, booked/attended consultation, sale, cohort completion і renewal.</p></article>
         </div>
       </section>
@@ -184,7 +184,7 @@ const schema = [
         <div class="section-head"><div><p class="eyebrow">06 · EVIDENCE BOUNDARY</p><h2 id="evidence-title">Що лишається source-backed, а що є рекомендацією Hermes.</h2></div></div>
         <div class="evidence-grid">
           <article><strong>Source-backed</strong><p>Назва бізнес-клубу, засновник, 7-тижнева програма, online delivery та описані на офіційній сторінці елементи навчання.</p></article>
-          <article><strong>Hermes recommendation</strong><p>Єдиний entry offer, funnel architecture, attribution contract, CRM fields, KPI hierarchy і 7/30/90 operating plan.</p></article>
+          <article><strong>Hermes recommendation</strong><p>Єдиний entry offer, funnel architecture, attribution contract, KPI hierarchy і 7/30/90 operating plan.</p></article>
           <article><strong>Not claimed here</strong><p>Внутрішня аналітика КНБ, фактичні CAC/LTV/ROMI, activation Hermes Connect, client approval of this design, rankings, leads або revenue.</p></article>
         </div>
         <div class="sources">
@@ -210,7 +210,7 @@ const schema = [
       <section class="cta">
         <p class="eyebrow">HERMES MARKETING + CONNECT</p>
         <h2>Потрібен такий самий social → CRM → revenue розбір для іншого бізнесу?</h2>
-        <p>Hermes може почати з public-source audit, побудувати measurement contract і 90-day roadmap, а CRM-поля визначити до масштабування реклами.</p>
+        <p>Hermes може почати з public-source audit, побудувати measurement contract і 90-day roadmap, а attribution boundaries визначити до масштабування реклами.</p>
         <a href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_growth_strategy&utm_content=final_cta" data-public-case-cta="final">Запросити аудит →</a>
       </section>
     </div>
