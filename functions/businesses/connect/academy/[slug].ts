@@ -1,5 +1,6 @@
 import { ensureAcademyBusinessProfilesSchema } from "../../../api/_lib/academy-business-profiles.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../../../api/_lib/hermes-company-profiles.mjs";
+import { resolveCuratedCatalogProjection } from "../../../api/_lib/catalog-public-projection.mjs";
 
 type Env = { DB?: any };
 
@@ -63,6 +64,14 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     LIMIT 1
   `).bind(slug).first();
   if (!row) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
+
+  const curatedPath = resolveCuratedCatalogProjection({
+    vertical: "academy_business",
+    website: row.website,
+  });
+  if (curatedPath) {
+    return Response.redirect(new URL(curatedPath, "https://hermeslogisticsus.com").toString(), 308);
+  }
 
   const canonical = `https://hermeslogisticsus.com/businesses/connect/academy/${encodeURIComponent(String(row.slug))}/`;
   const location = [row.city, row.region, row.country_code].filter(Boolean).join(", ");
