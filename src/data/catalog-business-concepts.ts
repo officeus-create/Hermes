@@ -7,10 +7,12 @@ export type CatalogBusinessConcept = {
   status: "unclaimed" | "claimed" | "client";
   market: "us" | "international";
   catalogPriority: "primary" | "secondary";
-  vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail";
-  schemaType: "LocalBusiness" | "Restaurant" | "HairSalon" | "Florist" | "Store";
+  vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail" | "business_academy";
+  schemaType: "LocalBusiness" | "Restaurant" | "HairSalon" | "Florist" | "Store" | "EducationalOrganization";
   primaryIntent: string;
   secondaryIntent?: string;
+  featuredOffer?: { name: string; url: string; description: string; duration?: string };
+  crmPreviewUrl?: string;
   phone: string;
   address: string;
   locality: string;
@@ -194,11 +196,109 @@ export const cvitVyshniConcept = Object.freeze({
   sourceRef: "PUBLIC-MAPS-CVIT-VYSHNI-IRPIN-20260929"
 } satisfies CatalogBusinessConcept);
 
+export const konsNaBisConcept = Object.freeze({
+  id: "catalog-ua-kons-na-bis-bila-tserkva",
+  slug: "kons-na-bis",
+  countrySlug: "ukraine",
+  localitySlug: "bila-tserkva",
+  name: "Конс на Бі$",
+  status: "client",
+  market: "international",
+  catalogPriority: "secondary",
+  vertical: "business_academy",
+  schemaType: "EducationalOrganization",
+  primaryIntent: "Бізнес-клуб та навчання для власників малого і середнього бізнесу",
+  secondaryIntent: "7-тижнева програма «Стратегія керованого зростання у бізнесі»",
+  featuredOffer: {
+    name: "Стратегія керованого зростання у бізнесі",
+    url: "https://biznes-club-knb.com/strategiya-kerovanogo-zrosty",
+    description: "Комплексна онлайн-програма для підприємців із супроводом; офіційний опис програми заявляє 7-тижневий формат.",
+    duration: "7 тижнів"
+  },
+  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",
+  phone: "+380 67 11 55 111",
+  address: "вул. Ярослава Мудрого, 16/2, 16",
+  locality: "Біла Церква",
+  region: "Київська область",
+  postalCode: "09107",
+  countryCode: "UA",
+  hours: ["Онлайн-програми та бізнес-клуб · актуальний розклад уточнюйте на офіційному сайті"],
+  website: "https://kons-na-bis.com/",
+  services: [
+    "Стратегія керованого зростання у бізнесі · 7 тижнів",
+    "Бізнес-клуб для підприємців",
+    "Бізнес-аудити",
+    "Маркетинг і систематизація залучення клієнтів",
+    "Систематизація продажів",
+    "Найм і делегування",
+    "Навчальні події та групові програми"
+  ],
+  channels: [
+    { label: "Official website", url: "https://kons-na-bis.com/", direction: "primary" },
+    { label: "Instagram · @konsnabis", url: "https://www.instagram.com/konsnabis/", direction: "secondary" },
+    { label: "YouTube · Олександр Морозов", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", direction: "secondary" },
+    { label: "TikTok · @konsnabis", url: "https://www.tiktok.com/@konsnabis", direction: "secondary" },
+    { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" }
+  ],
+  factsRequiringOwnerConfirmation: [
+    "актуальна дата старту наступної групи",
+    "актуальна вартість програми",
+    "поточний розклад занять і подій",
+    "формулювання результатів/гарантій для публікації Hermes",
+    "остаточне погодження оформлення Hermes Catalog профілю"
+  ],
+  localeCopy: {
+    uk: {
+      disclosure: "Клієнтський профіль Hermes Catalog на основі офіційних публічних джерел; оформлення та змінні комерційні умови потребують окремого погодження.",
+      heroKicker: "Бізнес-клуб · навчання підприємців · Біла Церква",
+      heroTitle: "Конс на Бі$ — бізнес-клуб і 7-тижнева програма керованого зростання.",
+      heroLead: "Публічний профіль об’єднує перевірені контакти, напрямки навчання та офіційну програму «Стратегія керованого зростання у бізнесі», щоб її можна було знаходити через Hermes Catalog та пошук.",
+      requestLabel: "Перейти до програми",
+      claimLabel: "Керування профілем",
+      truthTitle: "Підтверджені факти та межі публікації",
+      opportunityTitle: "Органічна видимість без дублювання офіційного сайту.",
+      opportunityBody: "Hermes Catalog працює як додаткова discovery-сторінка: з канонічним зв’язком на офіційний сайт і програму, структурованими фактами, внутрішніми посиланнями та окремою CRM-демонстрацією.",
+      requestTitle: "Шукаєте програму «Стратегія керованого зростання»?",
+      requestBody: "Використовуйте офіційне посилання на програму для актуальних умов участі; Hermes не підміняє офіційний сайт і не вигадує ціну, дату старту чи результати."
+    },
+    en: {
+      disclosure: "Hermes Catalog client profile based on official public sources; presentation and changing commercial terms require separate approval.",
+      heroKicker: "Business club · entrepreneur training · Bila Tserkva",
+      heroTitle: "Kons na Bis — business club and a seven-week managed-growth program.",
+      heroLead: "This public profile connects verified contact details, training directions and the official “Managed Business Growth Strategy” program so the entity can be discovered through Hermes Catalog and organic search.",
+      requestLabel: "Open the program",
+      claimLabel: "Manage profile",
+      truthTitle: "Verified facts and publication boundaries",
+      opportunityTitle: "Organic discovery without duplicating the official website.",
+      opportunityBody: "Hermes Catalog acts as an additional discovery page with canonical links to the official site and program, structured facts, internal linking, and a separate CRM demonstration.",
+      requestTitle: "Looking for the Managed Business Growth Strategy program?",
+      requestBody: "Use the official program page for current participation terms. Hermes does not invent pricing, cohort dates, or outcome claims."
+    }
+  },
+  faq: [
+    { question: "Що таке «Стратегія керованого зростання у бізнесі»?", answer: "За офіційним описом КНБ це комплексна онлайн-програма для підприємців тривалістю 7 тижнів. Актуальну програму, дату старту та умови участі слід перевіряти на офіційній сторінці." },
+    { question: "Чи є ця сторінка офіційним сайтом КНБ?", answer: "Ні. Це додатковий профіль Hermes Catalog для пошуку й навігації, який посилається на офіційні ресурси КНБ і не замінює їх." },
+    { question: "Що Hermes реалізував для КНБ?", answer: "Окремо від цього індексованого профілю підготовлено Academy CRM demo та noindex marketing-assessment із social-аудитом, funnel/offer і KPI-моделлю." }
+  ],
+  semanticCore: [
+    "Конс на Бі$",
+    "Конс на Біс",
+    "бізнес клуб підприємців",
+    "Стратегія керованого зростання у бізнесі",
+    "бізнес курс для підприємців",
+    "Олександр Морозов бізнес клуб",
+    "бізнес навчання Україна",
+    "Біла Церква бізнес клуб"
+  ],
+  sourceRef: "OFFICIAL-KNB-SITE-POLICY-PROGRAM-20261005"
+} satisfies CatalogBusinessConcept);
+
 export const catalogBusinessConcepts = Object.freeze([
   chaykaStoreConcept,
   mangalIKazanConcept,
   trimmoConcept,
-  cvitVyshniConcept
+  cvitVyshniConcept,
+  konsNaBisConcept
 ]);
 
 // A non-indexable concept snapshot, not a second directory or CRM business record.
