@@ -76,7 +76,7 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(workspace, /Average check/);
   assert.match(workspace, /Sales productivity/);
   assert.match(workspace, /Renewal \/ next program/);
-  assert.match(workspace, /Applicant → Screen → Interview → Test → Offer \/ No → Adaptation/);
+  assert.match(workspace, /Applicant → Screen → Interview → Test Assignment → Scorecard → Final Interview → Offer \/ No → Adaptation/);
   assert.match(workspace, /Repair Shop.*Academy/s);
   assert.match(workspace, /demo data/);
   assert.match(hub, /Register academy \/ courses/);
@@ -99,7 +99,7 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(catalogApi, /LEFT JOIN hermes_academy_business_profiles a ON a\.company_id=c\.id/);
   assert.match(catalogApi, /id: String\(row\.id\)/);
   assert.match(catalogApi, /companyType: isAcademy \? "academy_business"/);
-  assert.match(catalogApi, /\/businesses\/connect\/academy\//);
+  assert.match(catalogApi, /catalogProjectionPath\(\{ vertical:"academy_business"/);
   assert.doesNotMatch(catalogApi, /id: `academy-business:/);
 
   assert.match(loader, /academy_business/);
