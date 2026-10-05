@@ -140,7 +140,7 @@ assert.match(catalogConceptData, /digitalAudit:/);
 assert.match(catalogConceptData, /organic programming/);
 assert.match(catalogConceptData, /paid learning/);
 assert.match(catalogDigitalAudit, /Audit ≠ Funnel/);
-assert.match(catalogDigitalAudit, /audit-\\\$\\\{finding\\\.platform\\\}/);
+assert.match(catalogDigitalAudit, /audit-\$\{finding\.platform\}/);
 assert.match(catalogDigitalAudit, /Request a full audit/);
 assert.match(websiteConcept, /CatalogDigitalAudit/);
 assert.match(websiteConcept, /FEATURED PROGRAM \/ PRODUCT/);
