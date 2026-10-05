@@ -77,6 +77,7 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         bullets: [
           t("Google Form із brief використовується тільки як reference; Hermes його не відправляє від імені кандидата.", "The Google Form supplied with the brief is reference-only; Hermes does not submit it on the candidate's behalf."),
           t("Default candidate intake зберігає job-relevant evidence: experience, portfolio/cases, KPI, tools, language, availability, work sample і reasoning. Куріння, сімейний стан, діти, партнер та інші lifestyle-питання не потрібні для оцінки marketing work.", "Default candidate intake keeps job-relevant evidence: experience, portfolio/cases, KPI, tools, language, availability, work sample, and reasoning. Smoking, marital status, children, partner details, and other lifestyle questions are not required to assess marketing work."),
+          t("Rubric 30 points: Evidence & diagnosis · Audience & positioning · Funnel logic · Offer quality · KPI & measurement · Execution thinking.", "Rubric 30 points: Evidence & diagnosis · Audience & positioning · Funnel logic · Offer quality · KPI & measurement · Execution thinking."),
           t("Reviewer score допомагає людині прийняти рішення; автоматичного кадрового рішення немає.", "Reviewer scoring supports a human decision; there is no automated hiring decision.")
         ]
       },
@@ -104,6 +105,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
           "Organic content → trackable CTA → existing KNB consultation → qualification / problem fit → signal gate → offer hypothesis → seven-week program fit → decision → delivery → measured outcome → renewal / club. Before the signal gate, paid media is not used to search blindly for an offer without a baseline."
         ),
         bullets: [
+          t("Не створюємо новий lead magnet автоматично. Якщо власник підтверджує, що безкоштовна бізнес-діагностика КНБ актуальна, вона стає canonical entry offer; сертифікат, content-unpacking та інші бонуси працюють як сегментні entry points із власною attribution.", "Do not automatically invent another lead magnet. If the owner confirms KNB's free business diagnostic is current, use it as the canonical entry offer; certificate, content-unpacking, and other bonuses become segmented entry points with their own attribution."),
+          t("Diagnostic value proposition: знайти головне вузьке місце росту, зафіксувати baseline і дати перші 3 дії; program/module fit показувати тільки після problem-fit. Discount/package pressure — після problem-fit, не замість нього.", "Diagnostic value proposition: identify the main growth bottleneck, capture the baseline, and define the first three actions; show program/module fit only after problem-fit. Discount/package pressure comes after problem-fit, not instead of it."),
           t("W1 · Marketing — acquisition / positioning / customer flow.", "W1 · Marketing — acquisition / positioning / customer flow."),
           t("W2 · Key Business Metrics — baseline / conversion / unit economics.", "W2 · Key Business Metrics — baseline / conversion / unit economics."),
           t("W3 · Hiring System — team / delegation / capacity.", "W3 · Hiring System — team / delegation / capacity."),
@@ -154,7 +157,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
           t("Формати: Reels, Stories і каруселі. Instagram creative може розподілятися у Facebook і Threads з тим самим content_id; Instagram/Facebook Stories дублюються як distribution test, а не як доказ додаткового reach.", "Formats: Reels, Stories, and carousels. Instagram creative can be distributed to Facebook and Threads under the same content_id; Instagram/Facebook Stories can be duplicated as a distribution test, not as proof of incremental reach."),
           t("Текст, hook, мова і географія — окремі programming variables. Географічну якість аудиторії перевіряємо в Insights до будь-якого paid scaling.", "Copy, hook, language, and geography are explicit programming variables. Audience geography is verified in Insights before any paid scaling."),
           t("Testing cadence: приблизно 10–15 publishing/test actions на день через scheduled / hidden-testing workflow, коли є достатній backlog; щотижня робимо performance cut і залишаємо repeatable winners.", "Testing cadence: roughly 10–15 publishing/test actions per day through the scheduled / hidden-testing workflow when enough backlog exists; run a weekly performance cut and keep repeatable winners."),
-          t("Micro paid-learning може стартувати від $2 лише на organic winners і тільки після readiness/signal gate; це test budget, а не рекомендація масштабувати spend.", "Micro paid learning may start from $2 only on organic winners and only after the readiness/signal gate; this is a test budget, not a recommendation to scale spend.")
+          t("Micro paid-learning може стартувати від $2 лише на organic winners і тільки після readiness/signal gate; це test budget, а не рекомендація масштабувати spend.", "Micro paid learning may start from $2 only on organic winners and only after the readiness/signal gate; this is a test budget, not a recommendation to scale spend."),
+          t("Landing/website продовжує той самий шлях: Hero про головне вузьке місце → diagnostic → proof → program fit → cases → packages → consultation. UTM, campaign_id, entry_offer і diagnostic_result мають переходити в CRM без повторного заповнення.", "The landing/website continues the same path: bottleneck-led Hero → diagnostic → proof → program fit → cases → packages → consultation. UTM, campaign_id, entry_offer, and diagnostic_result must flow into CRM without duplicate entry.")
         ]
       },
       {
@@ -176,7 +180,7 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
     ],
     crmFields: [
       "source_channel","content_id","content_format","campaign_id","cta_keyword","entry_offer",
-      "organic_state","paid_learning_state","audience_geo","primary_pain","diagnostic_primary_gap",
+      "organic_state","paid_learning_state","audience_geo","primary_pain","diagnostic_primary_gap","diagnostic_result",
       "baseline","recommended_module","reason_to_believe","business_stage","manager","consultation_status",
       "next_action","next_contact_at","promise","program_fit","objection","sale_revenue","outcome","cohort","completion","renewal"
     ],
