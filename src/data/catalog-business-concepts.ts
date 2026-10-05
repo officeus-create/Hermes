@@ -290,6 +290,15 @@ export const konsNaBisConcept = Object.freeze({
         nextStep: { uk: "Визначити один canonical commercial route після social readiness gate та підключити privacy-safe attribution.", en: "Choose one canonical commercial route after the social readiness gate and connect privacy-safe attribution." }
       },
       {
+        platform: "google", label: "Google", state: "owner_confirmation",
+        headline: { uk: "Локальна присутність у Google має працювати як окремий SEO/GEO surface, але офіційний Business Profile та його owner-доступ у поточному evidence registry не підтверджені.", en: "Google local presence should operate as a separate SEO/GEO surface, but the official Business Profile and owner access are not confirmed in the current evidence registry." },
+        findings: [
+          { uk: "NAP, категорії, сайт, фото, відгуки, Q&A та локальні запити потрібно звіряти з підтвердженим Google Business Profile, а не реконструювати з випадкових search results.", en: "NAP, categories, website, photos, reviews, Q&A, and local queries should be checked against a verified Google Business Profile rather than reconstructed from incidental search results." },
+          { uk: "Catalog-профіль може підсилювати entity discovery, але не повинен дублювати непідтверджені рейтинги, години або review counts.", en: "The Catalog profile can reinforce entity discovery, but it must not duplicate unverified ratings, hours, or review counts." }
+        ],
+        nextStep: { uk: "Підтвердити canonical Google Business Profile/Maps URL і owner access; після цього зв’язати local search → website action → CRM source.", en: "Verify the canonical Google Business Profile/Maps URL and owner access, then connect local search → website action → CRM source." }
+      },
+      {
         platform: "instagram", label: "Instagram", url: "https://www.instagram.com/konsnabis/", state: "needs_private_analytics",
         headline: { uk: "Публічний профіль не дає достатніх даних, щоб валідно рахувати ER, retention, audience quality або ефективність оффера.", en: "The public profile does not provide enough data to validly calculate ER, retention, audience quality, or offer performance." },
         findings: [
