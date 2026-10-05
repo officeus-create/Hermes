@@ -18,6 +18,9 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await expect(strategy).toContainText("Organic Programming");
   await expect(strategy).toContainText("Controlled Paid Learning");
   await expect(strategy).toContainText("Signal Gate");
+  await expect(strategy).toContainText("work sample");
+  await expect(strategy).toContainText("0–7 / 8–30 / 31–90");
+  await expect(strategy).toContainText("planning budget");
   await expect(strategy).toContainText("11 блоків стратегії");
   await expect(strategy).toContainText("Instagram / TikTok / YouTube");
   await expect(strategy).toContainText("120 short-form відео на місяць");
