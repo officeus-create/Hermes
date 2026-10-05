@@ -75,11 +75,11 @@ const socialPlatformLabel=(url:string)=>{
   return null;
 };
 const repairAuditBusiness={
-  website:business.website,
-  channels:business.sources.flatMap((source:RepairShopDirectorySource)=>{
+  website:kind==="repair"?business.website:undefined,
+  channels:kind==="repair"?business.sources.flatMap((source:RepairShopDirectorySource)=>{
     const label=socialPlatformLabel(source.url);
     return label?[{label,url:source.url,direction:"secondary" as const}]:[];
-  }),
+  }):[],
 };
 ---
 {kind === "concept" ? <CatalogConceptRoute business={conceptBusiness} /> : (<BaseLayout title={profileTitle} description={business.seoSummary} schema={schema}>
