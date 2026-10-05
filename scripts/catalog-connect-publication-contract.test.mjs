@@ -225,7 +225,7 @@ assert.match(knbOrganicCase, /Стратегія керованого зрост
 assert.match(knbOrganicCase, /Незалежний Hermes analysis/);
 assert.match(knbOrganicCase, /не офіційний сайт КНБ/);
 assert.match(knbOrganicCase, /PROPOSED ENTRY OFFER/);
-assert.match(knbOrganicCase, /CRM HANDOFF/);
+assert.match(knbOrganicCase, /MEASUREMENT CONTINUITY/);
 assert.match(knbOrganicCase, /application\/ld\+json/);
 assert.match(knbOrganicCase, /https:\/\/kons-na-bis\.com\//);
 assert.match(knbOrganicCase, /https:\/\/biznes-club-knb\.com\/zrostannia-u-biznesi/);
