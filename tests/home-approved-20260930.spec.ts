@@ -327,4 +327,8 @@ test('Home reduced motion disables Technology and Academy decorative animation',
   const names=await nodes.evaluateAll(items=>items.map(item=>getComputedStyle(item).animationName));
   expect(names.every(name=>name==='none')).toBe(true);
  }
+ expect(await page.locator('.home-system-code b').first().evaluate(node=>parseFloat(getComputedStyle(node).opacity))).toBeGreaterThan(0.7);
+ expect(await page.locator('.home-system-output').evaluate(node=>parseFloat(getComputedStyle(node).opacity))).toBeGreaterThan(0.7);
+ expect(await page.locator('.home-book-page').evaluate(node=>parseFloat(getComputedStyle(node).opacity))).toBeGreaterThan(0.8);
+ expect(await page.locator('.home-academy-pen').evaluate(node=>parseFloat(getComputedStyle(node).opacity))).toBeGreaterThan(0.7);
 });
