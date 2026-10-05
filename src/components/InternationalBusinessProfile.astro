@@ -51,6 +51,15 @@ const schema = [
     address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,...(business.postalCode?{postalCode:business.postalCode}:{}),addressCountry:business.countryCode},
     ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
+  ...(business.featuredOffer ? [{
+    "@context":"https://schema.org",
+    "@type":"Course",
+    name:business.featuredOffer.name,
+    description:business.featuredOffer.description,
+    url:business.featuredOffer.url,
+    ...(business.featuredOffer.duration === "7 тижнів" ? { timeRequired:"P7W" } : {}),
+    provider:{"@type":business.schemaType,name:business.name,url:business.website ?? profileUrl}
+  }] : []),
   {
     "@context":"https://schema.org",
     "@type":"Service",
