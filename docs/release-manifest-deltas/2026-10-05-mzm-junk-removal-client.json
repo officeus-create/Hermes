@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-05-mzm-junk-removal-client",
+  "generated_at": "2026-10-05T20:30:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/businesses/california/roseville/",
+      "source_state": "stacked_on_pr_1681",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/roseville/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/businesses/california/roseville/mzm-junk-removal/",
+      "source_state": "stacked_on_pr_1681",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/businesses/california/roseville/mzm-junk-removal/",
+      "sitemap_owner": "public/sitemap-business-directory.xml",
+      "source_file": "src/pages/businesses/[state]/[city]/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/demos/hermes-connect/mzm-junk-removal.html",
+      "source_state": "stacked_on_pr_1681",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": null,
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect/mzm-junk-removal.html",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 3,
+    "indexable_route_count_added": 2,
+    "noindex_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_parent_pr_1681_or_equivalent_digital_audit_layer": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
