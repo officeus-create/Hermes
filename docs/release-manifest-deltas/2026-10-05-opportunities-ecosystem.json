@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-05-opportunities-ecosystem",
+  "generated_at": "2026-10-05T13:45:00Z",
+  "status": "COMPLETE_PENDING_DEPLOYMENT",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/opportunities/careers/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/careers/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/owner-operators/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/owner-operators/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/agency-partners/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/agency-partners/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/referral-partners/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/referral-partners/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/white-label-partners/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/white-label-partners/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/strategic-partnerships/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/strategic-partnerships/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/opportunities/expansion-investment/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/opportunities/expansion-investment/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/opportunities/[slug].astro",
+      "status": "COMPLETE",
+      "blocker": "Requires green exact-head CI, owner-authorized merge/deploy, and production readback.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 7,
+    "indexable_route_count_added": 7,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

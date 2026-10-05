@@ -1,0 +1,215 @@
+---
+import { ArrowLeft, ArrowRight, Check, Mail, Phone, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { opportunityPageBySlug, opportunityPages } from "../../data/opportunity-pages";
+
+export function getStaticPaths() {
+  return opportunityPages.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const canonicalUrl = new URL(`/opportunities/${page.slug}/`, Astro.site).toString();
+const relatedPages = page.related.map((slug) => opportunityPageBySlug.get(slug)).filter(Boolean);
+const isPhone = page.contact.href.startsWith("tel:");
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": canonicalUrl,
+  url: canonicalUrl,
+  name: page.title,
+  description: page.seoDescription,
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+  about: page.directionLinks.map((item) => ({ "@type": "Thing", name: item.label, url: new URL(item.href, Astro.site).toString() })),
+};
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Opportunities", item: "https://hermeslogisticsus.com/opportunities/" },
+    { "@type": "ListItem", position: 3, name: page.title, item: canonicalUrl },
+  ],
+};
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: page.faq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+---
+
+<BaseLayout title={page.seoTitle} description={page.seoDescription} schema={[pageSchema, breadcrumbSchema, faqSchema]}>
+  <SiteHeader theme="light" activePath="/opportunities/" />
+  <main id="main-content" class="opportunity-intent-page">
+    <section class="intent-hero">
+      <div class="shell">
+        <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Opportunities", href: "/opportunities/" }]} current={page.title} />
+        <a class="intent-back" href="/opportunities/"><ArrowLeft size={17} aria-hidden="true" />Work With Hermes</a>
+        <p class="eyebrow">{page.eyebrow}</p>
+        <h1>{page.title}</h1>
+        <p class="intent-lead">{page.summary}</p>
+        <div class="intent-actions">
+          <a class="button button-primary" href={page.primaryCta.href}>{page.primaryCta.label}<ArrowRight size={18} aria-hidden="true" /></a>
+          {page.secondaryCta && <a class="button" href={page.secondaryCta.href}>{page.secondaryCta.label}</a>}
+        </div>
+      </div>
+    </section>
+
+    <section class="section intent-audience" aria-labelledby="intent-audience-title">
+      <div class="shell intent-split">
+        <div>
+          <p class="eyebrow">Who this is for</p>
+          <h2 id="intent-audience-title">{page.audienceTitle}</h2>
+        </div>
+        <ul class="intent-check-list">{page.audience.map((item) => <li><Check size={18} aria-hidden="true" /><span>{item}</span></li>)}</ul>
+      </div>
+    </section>
+
+    <section class="section intent-value" aria-labelledby="intent-value-title">
+      <div class="shell">
+        <div class="intent-heading">
+          <p class="eyebrow">Relationship design</p>
+          <h2 id="intent-value-title">{page.valueTitle}</h2>
+        </div>
+        <div class="intent-value-grid">
+          {page.value.map((item, index) => <article><span>0{index + 1}</span><p>{item}</p></article>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section intent-process" aria-labelledby="intent-process-title">
+      <div class="shell">
+        <div class="intent-heading">
+          <p class="eyebrow">Review process</p>
+          <h2 id="intent-process-title">Start with fit. Define responsibilities before commitment.</h2>
+        </div>
+        <ol class="intent-process-grid">
+          {page.process.map((step, index) => (
+            <li>
+              <span>0{index + 1}</span>
+              <div><h3>{step.title}</h3><p>{step.body}</p></div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section intent-directions" aria-labelledby="intent-directions-title">
+      <div class="shell">
+        <div class="intent-heading">
+          <p class="eyebrow">Across the Hermes ecosystem</p>
+          <h2 id="intent-directions-title">Use the business direction that actually owns the work.</h2>
+          <p>Opportunities is a relationship layer. Logistics, Marketing, Technology, and Academy remain the four operating directions and their canonical pages remain the source for service-specific scope.</p>
+        </div>
+        <div class="intent-direction-grid">
+          {page.directionLinks.map((item) => (
+            <a href={item.href}>
+              <h3>{item.label}</h3>
+              <p>{item.body}</p>
+              <span>Explore direction <ArrowRight size={16} aria-hidden="true" /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section intent-boundaries" aria-labelledby="intent-boundaries-title">
+      <div class="shell intent-split">
+        <div>
+          <p class="eyebrow">Truth boundaries</p>
+          <h2 id="intent-boundaries-title">A public page starts a conversation. It does not manufacture a deal.</h2>
+        </div>
+        <ul class="intent-boundary-list">{page.boundaries.map((item) => <li><ShieldCheck size={19} aria-hidden="true" /><span>{item}</span></li>)}</ul>
+      </div>
+    </section>
+
+    <section class="section intent-faq" aria-labelledby="intent-faq-title">
+      <div class="shell intent-split">
+        <div><p class="eyebrow">Common questions</p><h2 id="intent-faq-title">Before you contact Hermes.</h2></div>
+        <div class="intent-faq-list">{page.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    {relatedPages.length > 0 && (
+      <section class="section intent-related" aria-labelledby="intent-related-title">
+        <div class="shell">
+          <div class="intent-heading"><p class="eyebrow">Related ways to work with Hermes</p><h2 id="intent-related-title">Another relationship may fit better.</h2></div>
+          <div class="intent-related-grid">
+            {relatedPages.map((item) => item && <a href={`/opportunities/${item.slug}/`}><span>{item.eyebrow}</span><h3>{item.title}</h3><p>{item.summary}</p><strong>Review this path <ArrowRight size={16} aria-hidden="true" /></strong></a>)}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="section intent-contact" aria-labelledby="intent-contact-title">
+      <div class="shell intent-contact-card">
+        <div>
+          <p class="eyebrow">Next step</p>
+          <h2 id="intent-contact-title">Share enough context for the right team to review the opportunity.</h2>
+          <p>{page.contact.note}</p>
+        </div>
+        <div class="intent-contact-actions">
+          <a class="button button-primary" href={page.contact.href}>
+            {isPhone ? <Phone size={18} aria-hidden="true" /> : <Mail size={18} aria-hidden="true" />}
+            {page.contact.value}
+          </a>
+          <a class="button" href="/contacts/">Contact Hermes</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .opportunity-intent-page{background:#f7f6f3;color:#172033}
+  .intent-hero{padding:clamp(7.2rem,11vw,9.5rem) 0 clamp(3.8rem,7vw,5.8rem);background:radial-gradient(circle at 86% 12%,rgba(60,96,220,.11),transparent 30%),radial-gradient(circle at 10% 76%,rgba(111,74,190,.08),transparent 34%),#f7f6f3}
+  .intent-back{display:inline-flex;align-items:center;gap:.4rem;margin:1.2rem 0 .3rem;color:#566173;font-weight:760;text-decoration:none}
+  .intent-hero h1{max-width:980px;margin:.75rem 0 1rem;font-size:clamp(3rem,7vw,6.6rem);line-height:.96;letter-spacing:-.055em}
+  .intent-lead{max-width:850px;margin:0;color:#596171;font-size:clamp(1.05rem,1.6vw,1.28rem);line-height:1.65}
+  .intent-actions,.intent-contact-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.6rem}
+  .intent-split{display:grid;grid-template-columns:minmax(0,.85fr) minmax(360px,1.15fr);gap:clamp(1.5rem,5vw,4.5rem);align-items:start}
+  .intent-split h2,.intent-heading h2,.intent-contact h2{max-width:20ch;margin:.4rem 0 .8rem;font-size:clamp(2rem,4vw,3.55rem);line-height:1.04;letter-spacing:-.04em}
+  .intent-check-list,.intent-boundary-list{display:grid;gap:.7rem;margin:0;padding:0;list-style:none}
+  .intent-check-list li,.intent-boundary-list li{display:flex;gap:.65rem;padding:1rem;border:1px solid rgba(23,32,51,.1);border-radius:15px;background:#fff;line-height:1.55}
+  .intent-check-list svg,.intent-boundary-list svg{flex:0 0 auto;margin-top:.15rem;color:#3566c8}
+  .intent-value{background:#fff}
+  .intent-heading{max-width:900px;margin-bottom:1.6rem}
+  .intent-heading>p:last-child{max-width:780px;color:#647080;line-height:1.65}
+  .intent-value-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+  .intent-value-grid article{padding:1.25rem;border:1px solid rgba(23,32,51,.1);border-radius:18px;background:#f9fafc}
+  .intent-value-grid article>span,.intent-process-grid>li>span{display:inline-flex;color:#315fc5;font-size:.82rem;font-weight:850;letter-spacing:.08em}
+  .intent-value-grid p{margin:.7rem 0 0;color:#5f6877;line-height:1.58}
+  .intent-process{background:#eef3f7}
+  .intent-process-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:0;padding:0;list-style:none}
+  .intent-process-grid li{display:flex;gap:.85rem;padding:1.3rem;border-radius:18px;background:#fff;border:1px solid rgba(23,32,51,.09)}
+  .intent-process-grid h3{margin:0 0 .45rem;font-size:1.2rem}
+  .intent-process-grid p{margin:0;color:#606a79;line-height:1.58}
+  .intent-direction-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  .intent-direction-grid a,.intent-related-grid a{padding:1.3rem;border:1px solid rgba(23,32,51,.1);border-radius:18px;background:#fff;color:inherit;text-decoration:none}
+  .intent-direction-grid h3,.intent-related-grid h3{margin:0 0 .45rem;font-size:1.35rem}
+  .intent-direction-grid p,.intent-related-grid p{margin:0 0 .7rem;color:#667080;line-height:1.58}
+  .intent-direction-grid span,.intent-related-grid strong{display:inline-flex;align-items:center;gap:.35rem;color:#1e5aba}
+  .intent-boundaries{background:#172033;color:#fff}
+  .intent-boundaries .eyebrow{color:#aebde0}
+  .intent-boundary-list li{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#e5eaf3}
+  .intent-boundary-list svg{color:#9eb8ff}
+  .intent-faq-list{display:grid;gap:.7rem}
+  .intent-faq-list details{padding:1rem 1.1rem;border:1px solid rgba(23,32,51,.1);border-radius:14px;background:#fff}
+  .intent-faq-list summary{cursor:pointer;font-weight:800}
+  .intent-faq-list p{margin:.75rem 0 0;color:#657080;line-height:1.6}
+  .intent-related{background:#eef3f7}
+  .intent-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .intent-related-grid span{display:block;margin-bottom:.55rem;color:#6c7480;font-size:.76rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+  .intent-contact-card{display:grid;grid-template-columns:minmax(0,1.2fr) auto;gap:2rem;align-items:end;padding:clamp(1.5rem,4vw,3rem);border:1px solid rgba(23,32,51,.1);border-radius:26px;background:#fff}
+  .intent-contact-card p{max-width:760px;color:#647080;line-height:1.65}
+  .intent-contact-actions{margin-top:0}
+  @media(max-width:900px){.intent-split,.intent-contact-card{grid-template-columns:1fr}.intent-value-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intent-process-grid,.intent-related-grid{grid-template-columns:1fr}.intent-contact-actions{margin-top:0}}
+  @media(max-width:640px){.intent-hero{padding-top:6.5rem}.intent-hero h1{font-size:clamp(2.8rem,14vw,4.4rem)}.intent-value-grid,.intent-direction-grid{grid-template-columns:1fr}.intent-actions .button,.intent-contact-actions .button{width:100%;justify-content:center}}
+</style>

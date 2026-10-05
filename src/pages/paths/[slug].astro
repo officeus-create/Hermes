@@ -11,6 +11,7 @@ import LoadBoardProductSpotlight from "../../components/LoadBoardProductSpotligh
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import MarketingPackageSelector from "../../components/MarketingPackageSelector.astro";
+import OpportunitiesRail from "../../components/OpportunitiesRail.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -126,6 +127,7 @@ const schema = [
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <HermesConnectLauncher variant="banner" context={path.id as any} />
+  <OpportunitiesRail context={path.id as "logistics" | "marketing" | "technology" | "academy"} />
   <ContactCTA selectedPath={contactInterestCategory} />
   <SiteFooter />
 </BaseLayout>

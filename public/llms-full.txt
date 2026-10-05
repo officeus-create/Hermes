@@ -73,6 +73,32 @@ Localized pages should be treated as language-specific public overviews, not as 
 
 ---
 
+## 2A. Work With Hermes / Opportunities
+
+The Opportunities layer is the canonical public router for people and organizations that want to work with Hermes or inside Hermes. It does not replace the four operating directions and it does not collapse different legal/commercial relationships into one application.
+
+Canonical relationship pages:
+
+- Opportunities hub: https://hermeslogisticsus.com/opportunities/
+- Careers & open roles: https://hermeslogisticsus.com/opportunities/careers/
+- Owner-Operator opportunities: https://hermeslogisticsus.com/opportunities/owner-operators/
+- Agency partnerships: https://hermeslogisticsus.com/opportunities/agency-partners/
+- Referral partners: https://hermeslogisticsus.com/opportunities/referral-partners/
+- White-label & delivery partners: https://hermeslogisticsus.com/opportunities/white-label-partners/
+- Corporate & strategic partnerships: https://hermeslogisticsus.com/opportunities/strategic-partnerships/
+- Expansion & investment conversations: https://hermeslogisticsus.com/opportunities/expansion-investment/
+
+Relationship boundaries:
+
+- Careers are employment/candidate workflows; Academy learning is not an employment offer.
+- Owner-Operator/carrier opportunities are business-to-business operating relationships, not company-driver employment.
+- Agency interest does not create a franchise, territory, exclusivity right, market appointment, or brand-use permission.
+- Referral interest does not establish a public commission or payment entitlement.
+- White-label interest does not authorize brand representation, client/system access, service levels, or data processing.
+- Strategic-partnership interest does not create exclusivity, preferred-provider status, guaranteed volume, live integrations, or co-branding rights.
+- Expansion/investment content is not an offer to sell securities or a solicitation to invest and does not promise returns, valuation, ownership, dividends, exits, territories, or fundraising availability.
+- Current vacancies, carrier programs, commercial terms, legal structures, and partner status require their own current evidence and approval.
+
 ## 3. Hermes Logistics
 
 Hermes Logistics public content covers U.S. logistics and vehicle-transport workflows, including carrier dispatch support, dealer/shipper transport preparation, auction pickup preparation, equipment economics, and carrier resources.

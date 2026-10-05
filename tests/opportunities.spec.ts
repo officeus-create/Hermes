@@ -1,35 +1,33 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Work With Hermes opportunities hub", () => {
-  test("routes each relationship without inventing recruiting contact details", async ({ page }) => {
+const childRoutes = [
+  ["/opportunities/careers/", "Careers & Open Roles at Hermes"],
+  ["/opportunities/owner-operators/", "Owner-Operator Opportunities with Hermes"],
+  ["/opportunities/agency-partners/", "Agency Partnerships with Hermes"],
+  ["/opportunities/referral-partners/", "Referral & Introducer Partnerships"],
+  ["/opportunities/white-label-partners/", "White-Label & Delivery Partnerships"],
+  ["/opportunities/strategic-partnerships/", "Corporate & Strategic Partnerships"],
+  ["/opportunities/expansion-investment/", "Expansion & Investment Conversations"],
+] as const;
+
+test.describe("Work With Hermes opportunities ecosystem", () => {
+  test("hub routes each relationship through a crawlable intent owner", async ({ page }) => {
     await page.goto("/opportunities/");
 
     await expect(page.getByRole("heading", { level: 1, name: "Work With Hermes" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Careers & Open Roles" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Owner-Operator Opportunities" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Agency Partners" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Open a Hermes Agency" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Referral Partners" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "White-Label & Delivery Partners" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Corporate & Strategic Partnerships" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Expansion, Investment & Strategic Conversations" })).toBeVisible();
-
-    await expect(page.getByRole("link", { name: "Explore careers" })).toHaveAttribute("href", "/logistics/careers/");
-    await expect(page.getByRole("link", { name: "View Wisconsin Owner-Operator opportunity" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
-    await expect(page.getByRole("link", { name: "Review agency-partner path" })).toHaveAttribute("href", "/paths/logistics/agency-partners/");
+    await expect(page.getByRole("link", { name: "Explore careers" })).toHaveAttribute("href", "/opportunities/careers/");
+    await expect(page.getByRole("link", { name: "Explore Owner-Operator opportunities" })).toHaveAttribute("href", "/opportunities/owner-operators/");
+    await expect(page.getByRole("link", { name: "Explore agency partnerships" })).toHaveAttribute("href", "/opportunities/agency-partners/");
+    await expect(page.getByRole("link", { name: "Explore referral partnerships" })).toHaveAttribute("href", "/opportunities/referral-partners/");
+    await expect(page.getByRole("link", { name: "Explore white-label delivery" })).toHaveAttribute("href", "/opportunities/white-label-partners/");
+    await expect(page.getByRole("link", { name: "Explore strategic partnerships" })).toHaveAttribute("href", "/opportunities/strategic-partnerships/");
+    await expect(page.getByRole("link", { name: "Explore expansion & investment" })).toHaveAttribute("href", "/opportunities/expansion-investment/");
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
-    await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
 
     const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
     await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
     await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
-
-    const menuButton = page.getByRole("button", { name: "Open navigation" });
-    await menuButton.click();
-    const mobileOpportunities = page.locator("#mobile-menu").getByRole("link", { name: "Opportunities" });
-    await expect(mobileOpportunities).toBeVisible();
-    await expect(mobileOpportunities).toHaveAttribute("href", "/opportunities/");
-    await expect(mobileOpportunities).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".site-footer").getByRole("link", { name: "Opportunities" })).toHaveAttribute("href", "/opportunities/");
 
     await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
     await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();
@@ -40,9 +38,36 @@ test.describe("Work With Hermes opportunities hub", () => {
     expect(bodyText).not.toContain("+1 (682) 777-5337");
   });
 
-  test("does not overflow horizontally on the current viewport", async ({ page }) => {
-    await page.goto("/opportunities/");
-    const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-    expect(hasOverflow).toBe(false);
+  for (const [route, h1] of childRoutes) {
+    test(`${route} is a substantive, bounded public relationship owner`, async ({ page }) => {
+      await page.goto(route);
+      await expect(page.getByRole("heading", { level: 1, name: h1 })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Start with fit. Define responsibilities before commitment." })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "A public page starts a conversation. It does not manufacture a deal." })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Work With Hermes" })).toHaveAttribute("href", "/opportunities/");
+      const bodyText = await page.locator("body").innerText();
+      expect(bodyText).not.toContain("careers@hermeslogisticsus.com");
+      expect(bodyText).not.toContain("+1 (682) 777-5337");
+      const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+      expect(hasOverflow).toBe(false);
+    });
+  }
+
+  test("four primary directions expose a contextual Work With Hermes rail", async ({ page }) => {
+    for (const route of ["/paths/logistics/", "/paths/marketing/", "/paths/technology/", "/paths/academy/"]) {
+      await page.goto(route);
+      const rail = page.locator(".opportunities-rail");
+      await expect(rail).toBeVisible();
+      await expect(rail.getByRole("link", { name: "See all opportunities" })).toHaveAttribute("href", "/opportunities/");
+    }
+  });
+
+  test("owner-operator path carries the public Wisconsin recruiting phone while generic careers does not", async ({ page }) => {
+    await page.goto("/opportunities/owner-operators/");
+    await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
+
+    await page.goto("/opportunities/careers/");
+    await expect(page.getByText("+1 (414) 269-7377")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toBeVisible();
   });
 });

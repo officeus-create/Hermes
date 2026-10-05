@@ -1,0 +1,65 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+interface Props {
+  context: "logistics" | "marketing" | "technology" | "academy";
+}
+
+const { context } = Astro.props;
+
+const contextLinks = {
+  logistics: [
+    { title: "Owner-Operators", body: "Review current recruiting, carrier fit, and dispatch-support paths.", href: "/opportunities/owner-operators/" },
+    { title: "Agency Partnerships", body: "Explore existing-agency collaboration or a market-launch conversation.", href: "/opportunities/agency-partners/" },
+    { title: "Careers", body: "Find current employee opportunities without mixing them with carrier business.", href: "/opportunities/careers/" },
+  ],
+  marketing: [
+    { title: "White-Label Delivery", body: "Discuss marketing, website, SEO, social, CRM, or growth delivery behind another agency or company.", href: "/opportunities/white-label-partners/" },
+    { title: "Referral Partners", body: "Introduce qualified clients or business opportunities under reviewed terms.", href: "/opportunities/referral-partners/" },
+    { title: "Careers", body: "Explore current employee and candidate paths across Hermes.", href: "/opportunities/careers/" },
+  ],
+  technology: [
+    { title: "White-Label Delivery", body: "Discuss implementation, web application, CRM, automation, or technical delivery capacity.", href: "/opportunities/white-label-partners/" },
+    { title: "Strategic Partnerships", body: "Explore integrations, vendors, platforms, and other company-to-company collaboration.", href: "/opportunities/strategic-partnerships/" },
+    { title: "Careers", body: "Explore current employee and candidate paths across Hermes.", href: "/opportunities/careers/" },
+  ],
+  academy: [
+    { title: "Careers", body: "Separate current roles from learning programs and candidate development.", href: "/opportunities/careers/" },
+    { title: "Agency & Market Expansion", body: "Discuss an operating market, local team, or agency relationship with Hermes.", href: "/opportunities/agency-partners/" },
+    { title: "Strategic Partnerships", body: "Explore education, content, distribution, employer, or industry collaboration.", href: "/opportunities/strategic-partnerships/" },
+  ],
+} as const;
+---
+
+<section class="section opportunities-rail" aria-labelledby={`opportunities-rail-${context}`}>
+  <div class="shell">
+    <div class="opportunities-rail-heading">
+      <div>
+        <p class="eyebrow">Work with Hermes</p>
+        <h2 id={`opportunities-rail-${context}`}>This business direction can also be a starting point for a larger relationship.</h2>
+      </div>
+      <a href="/opportunities/">See all opportunities <ArrowRight size={17} aria-hidden="true" /></a>
+    </div>
+    <div class="opportunities-rail-grid">
+      {contextLinks[context].map((item) => (
+        <a href={item.href}>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+          <span>Review this path <ArrowRight size={15} aria-hidden="true" /></span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .opportunities-rail{background:#f2f4f8}
+  .opportunities-rail-heading{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:1.2rem}
+  .opportunities-rail-heading h2{max-width:22ch;margin:.35rem 0 0;font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.08;letter-spacing:-.035em}
+  .opportunities-rail-heading>a,.opportunities-rail-grid span{display:inline-flex;align-items:center;gap:.35rem;color:#245bb7;font-weight:800;text-decoration:none}
+  .opportunities-rail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .opportunities-rail-grid>a{min-width:0;padding:1.2rem;border:1px solid rgba(23,32,51,.1);border-radius:17px;background:#fff;color:#172033;text-decoration:none}
+  .opportunities-rail-grid h3{margin:0 0 .45rem;font-size:1.2rem}
+  .opportunities-rail-grid p{margin:0 0 .7rem;color:#647080;line-height:1.55}
+  @media(max-width:760px){.opportunities-rail-heading{display:grid;grid-template-columns:1fr}.opportunities-rail-grid{grid-template-columns:1fr}}
+</style>
