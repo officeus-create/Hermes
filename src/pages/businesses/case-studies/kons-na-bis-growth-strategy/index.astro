@@ -1,0 +1,241 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import DirectionProductNav from "../../../../components/DirectionProductNav.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import { konsNaBisClient as client } from "../../../../data/catalog-client-kons-na-bis";
+
+const pageUrl = "https://hermeslogisticsus.com/businesses/case-studies/kons-na-bis-growth-strategy/";
+const publishedAt = "2026-10-05";
+const funnel = [
+  ["01", "Контент", "Біль власника бізнесу → короткий інсайт → доказ методу → один зрозумілий CTA."],
+  ["02", "Діагностика", "Запропонований entry offer: структурована діагностика 6 зон росту + карта перших 3 дій."],
+  ["03", "CRM", "Source, campaign, content asset, CTA, проблема, baseline і наступна дія зберігаються в одній картці."],
+  ["04", "Кваліфікація", "Підтвердити, що це діючий бізнес, визначити bottleneck, readiness і program fit."],
+  ["05", "Консультація", "Показати gap, reason-to-believe та модуль програми, який відповідає проблемі."],
+  ["06", "7-тижнева програма", "Передати контекст із продажу в cohort delivery без втрати attribution."],
+  ["07", "Результат + renewal", "Порівняти baseline з фактичним результатом, зібрати feedback і визначити наступний продукт/членство."],
+];
+
+const crmFields = [
+  ["Acquisition", "source · channel · campaign · content_id · CTA · landing"],
+  ["Diagnosis", "business stage · primary pain · bottleneck · baseline · priority"],
+  ["Sales", "owner · consultation status · objection · recommended module · reason to believe · decision"],
+  ["Delivery", "cohort · attendance · assignment · review · next action"],
+  ["Outcome", "verified before/after metric · source · definition · review date"],
+  ["Retention", "completion · feedback · renewal / club / next program"],
+];
+
+const phases = [
+  ["7 днів", "Вимірювання", "Єдина UTM/campaign convention, один primary CTA на asset, CRM source fields, baseline dashboard і перелік claims з джерелами."],
+  ["30 днів", "Навчання системи", "Content matrix за pain × funnel stage, weekly winner/loser review, консультаційний script через diagnostic output, clean handoff у CRM."],
+  ["90 днів", "Масштабування", "Розширювати тільки підтверджені hooks/audiences, зв’язати cohort outcomes і renewal з acquisition source, не плутати unknown із zero."],
+];
+
+const faq = [
+  {
+    q: "Що це за сторінка і чи є вона офіційним сайтом «Конс на Бі$»?",
+    a: "Ні. Це незалежний Hermes Catalog marketing case, створений на основі публічних джерел і робочого marketing brief. Офіційні умови програми, ціни, гарантії та актуальні пропозиції потрібно перевіряти безпосередньо на ресурсах «Конс на Бі$».",
+  },
+  {
+    q: "Який продукт розбирається у воронці?",
+    a: "7-тижнева онлайн-програма «Стратегія керованого зростання у бізнесі». Публічна сторінка програми описує практичні завдання, щотижневі розбори, закриту групу, записи занять і VIP-сесії залежно від формату участі.",
+  },
+  {
+    q: "Що потрібно змінити в social → sales переході?",
+    a: "Кожен content asset має вести в одну вимірювану дію. Source, campaign, content_id і CTA не повинні губитися після Direct, Telegram, форми чи консультації; один покупець має залишатися однією CRM identity.",
+  },
+  {
+    q: "Чи гарантує Hermes ця схема зростання продажів або прибутку?",
+    a: "Ні. Це операційна модель вимірювання й оптимізації. Вона не гарантує rankings, leads, продажі або фінансовий результат і не підтверджує маркетингові claims третіх сторін.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Конс на Бі$: marketing funnel для 7-тижневої програми",
+    description: "Hermes Catalog case: social audit, offer, measurable funnel and CRM handoff for the 7-week KNB business-growth program.",
+    url: pageUrl,
+    mainEntityOfPage: pageUrl,
+    inLanguage: "uk",
+    datePublished: publishedAt,
+    dateModified: publishedAt,
+    author: { "@type": "Organization", name: "Hermes", url: "https://hermeslogisticsus.com/" },
+    publisher: { "@type": "Organization", name: "Hermes", url: "https://hermeslogisticsus.com/" },
+    about: [
+      { "@type": "Organization", name: client.name, url: client.website },
+      { "@type": "Thing", name: client.programmeName, url: client.programmeUrl },
+      { "@type": "Thing", name: "Marketing funnel" },
+      { "@type": "Thing", name: "CRM attribution" },
+    ],
+    isBasedOn: [client.website, client.programmeUrl],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
+      { "@type": "ListItem", position: 2, name: "Marketing Growth Audit", item: "https://hermeslogisticsus.com/businesses/marketing-growth-audit-example/" },
+      { "@type": "ListItem", position: 3, name: "Конс на Бі$ growth strategy", item: pageUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  },
+];
+---
+<BaseLayout
+  title="Конс на Бі$: маркетингова воронка 7-тижневої програми"
+  description="Hermes Catalog case для «Конс на Бі$»: social audit, offer, measurable funnel і CRM handoff для 7-тижневої програми зростання бізнесу."
+  robots="index,follow,max-image-preview:large"
+  locale="uk"
+  htmlLang="uk"
+  ogLocaleOverride="uk_UA"
+  ogType="article"
+  articlePublishedTime="2026-10-05T00:00:00+03:00"
+  articleModifiedTime="2026-10-05T00:00:00+03:00"
+  schema={schema}
+>
+  <SiteHeader theme="light" activePath="/businesses/" />
+  <DirectionProductNav direction="catalog" theme="light" />
+
+  <main id="main-content" class="knb-public-case">
+    <div class="shell">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="/businesses/">Hermes Catalog</a><span>→</span>
+        <a href="/businesses/marketing-growth-audit-example/">Marketing Growth Audit</a><span>→</span>
+        <span>Конс на Бі$</span>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Hermes Catalog · public marketing case · Ukraine</p>
+        <h1>Конс на Бі$: як зв’язати social-контент із продажем 7-тижневої програми через CRM.</h1>
+        <p class="lead">Розбір для програми <strong>«{client.programmeName}»</strong>: social audit, один вимірюваний entry offer, funnel від контенту до консультації та CRM-модель, яка не губить джерело ліда після переходу між каналами.</p>
+        <div class="actions">
+          <a class="primary" href="#funnel">Дивитися funnel</a>
+          <a href="#social-audit">Social audit</a>
+          <a href={client.programmeUrl} target="_blank" rel="noopener noreferrer">Офіційна сторінка програми ↗</a>
+        </div>
+        <div class="boundary">
+          <strong>Незалежний Hermes analysis.</strong>
+          <span>Це не офіційний сайт КНБ і не підтвердження того, що «Конс на Бі$» активувала Hermes Connect, погодила цю публічну сторінку або використовує описану CRM-схему. Факти про продукт посилаються на офіційні публічні джерела; стратегічні рекомендації нижче — пропозиція Hermes.</span>
+        </div>
+      </header>
+
+      <section class="panel facts" aria-labelledby="facts-title">
+        <div class="section-head">
+          <div><p class="eyebrow">01 · PRODUCT TRUTH</p><h2 id="facts-title">Що ми можемо сказати про продукт без вигаданих даних.</h2></div>
+          <a href={client.website} target="_blank" rel="noopener noreferrer">Офіційний сайт КНБ ↗</a>
+        </div>
+        <div class="fact-grid">
+          <article><span>Продукт</span><strong>{client.programmeName}</strong><p>Публічна програма для підприємців із діючим бізнесом.</p></article>
+          <article><span>Формат</span><strong>7 тижнів · online</strong><p>Навчання дистанційне; сторінка програми описує практичні завдання та супровід.</p></article>
+          <article><span>Delivery</span><strong>Завдання · розбори · записи</strong><p>Офіційна сторінка також описує закриту групу та VIP-сесії для відповідних форматів участі.</p></article>
+        </div>
+        <p class="source-note">Ми не переносимо на Hermes Catalog ціни, знижки, фінансові обіцянки чи результативні claims як власні факти. Вони можуть змінюватися і мають перевірятися на офіційних сторінках КНБ.</p>
+      </section>
+
+      <section class="panel" id="social-audit" aria-labelledby="social-title">
+        <div class="section-head"><div><p class="eyebrow">02 · SOCIAL AUDIT</p><h2 id="social-title">Контент уже може створювати увагу. Слабке місце — не кількість постів, а вимірюваний handoff.</h2></div></div>
+        <div class="audit-grid">
+          <article><span>KEEP</span><h3>Проблеми власника як content hook</h3><p>Стагнація, продажі, команда, маркетинг, систематизація й особиста участь власника — природні теми верхньої та середньої частини funnel.</p></article>
+          <article><span>FIX</span><h3>Один primary CTA на asset</h3><p>Не змішувати “напишіть +”, консультацію, загальний join CTA і різні landing paths без єдиного campaign/content ID. Інакше downstream conversion не можна чесно порівнювати.</p></article>
+          <article><span>CONNECT</span><h3>Social signal → одна CRM identity</h3><p>Instagram, Threads, Telegram, форма та консультація — це touchpoints одного buyer, а не нові контакти. Source history має переживати весь шлях.</p></article>
+          <article><span>MEASURE</span><h3>Qualified action замість vanity metrics</h3><p>Views і followers — контекст. Керуючі KPI: diagnostic start, qualified lead, booked/attended consultation, sale, cohort completion і renewal.</p></article>
+        </div>
+      </section>
+
+      <section class="panel" id="funnel" aria-labelledby="funnel-title">
+        <div class="section-head"><div><p class="eyebrow">03 · OFFER + FUNNEL</p><h2 id="funnel-title">Оффер: не ще один lead magnet, а діагностика, яка готує дані для продажу.</h2></div></div>
+        <div class="offer">
+          <p class="offer-label">PROPOSED ENTRY OFFER</p>
+          <strong>«Знайдемо головне вузьке місце росту, зафіксуємо baseline і дамо карту перших 3 дій — до рішення про програму».</strong>
+          <p>Так діагностика дає користь до покупки й одночасно створює structured context для консультації: pain, bottleneck, baseline, priority, recommended module і reason-to-believe.</p>
+        </div>
+        <div class="funnel">
+          {funnel.map(([n,title,copy]) => <article><span>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="crm-title">
+        <div class="section-head"><div><p class="eyebrow">04 · CRM HANDOFF</p><h2 id="crm-title">CRM повинна пам’ятати, чому людина прийшла і що відбулося після консультації.</h2></div><a href="/services/hermes-connect/academy/">Hermes Connect Academy →</a></div>
+        <div class="crm-table" role="table" aria-label="Recommended CRM fields">
+          {crmFields.map(([group,fields]) => <div role="row"><strong role="cell">{group}</strong><span role="cell">{fields}</span></div>)}
+        </div>
+        <p class="source-note">CAC, LTV і ROMI не заповнюються нулями “для дашборду”. Вони з’являються тільки після підключення дозволених spend, sales/revenue і attribution sources з відомими definitions.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="plan-title">
+        <div class="section-head"><div><p class="eyebrow">05 · EXECUTION</p><h2 id="plan-title">7 / 30 / 90 днів: instrument → learn → scale.</h2></div></div>
+        <div class="phase-grid">
+          {phases.map(([period,title,copy]) => <article><span>{period}</span><h3>{title}</h3><p>{copy}</p></article>)}
+        </div>
+      </section>
+
+      <section class="panel evidence" aria-labelledby="evidence-title">
+        <div class="section-head"><div><p class="eyebrow">06 · EVIDENCE BOUNDARY</p><h2 id="evidence-title">Що лишається source-backed, а що є рекомендацією Hermes.</h2></div></div>
+        <div class="evidence-grid">
+          <article><strong>Source-backed</strong><p>Назва бізнес-клубу, засновник, 7-тижнева програма, online delivery та описані на офіційній сторінці елементи навчання.</p></article>
+          <article><strong>Hermes recommendation</strong><p>Єдиний entry offer, funnel architecture, attribution contract, CRM fields, KPI hierarchy і 7/30/90 operating plan.</p></article>
+          <article><strong>Not claimed here</strong><p>Внутрішня аналітика КНБ, фактичні CAC/LTV/ROMI, activation Hermes Connect, client approval of this design, rankings, leads або revenue.</p></article>
+        </div>
+        <div class="sources">
+          <a href={client.website} target="_blank" rel="noopener noreferrer">KNB official site ↗</a>
+          <a href={client.programmeUrl} target="_blank" rel="noopener noreferrer">7-week program ↗</a>
+          <a href="https://kons-na-bis.com/pro-proekt/" target="_blank" rel="noopener noreferrer">About the project ↗</a>
+          <a href="/businesses/marketing-growth-audit-example/">Reusable Hermes audit method →</a>
+        </div>
+      </section>
+
+      <section class="panel faq" aria-labelledby="faq-title">
+        <div class="section-head"><div><p class="eyebrow">07 · FAQ</p><h2 id="faq-title">Короткі відповіді про кейс.</h2></div></div>
+        <div class="faq-list">
+          {faq.map((item) => <details><summary>{item.q}</summary><p>{item.a}</p></details>)}
+        </div>
+      </section>
+
+      <section class="cta">
+        <p class="eyebrow">HERMES MARKETING + CONNECT</p>
+        <h2>Потрібен такий самий social → CRM → revenue розбір для іншого бізнесу?</h2>
+        <p>Hermes може почати з public-source audit, побудувати measurement contract і 90-day roadmap, а CRM-поля визначити до масштабування реклами.</p>
+        <a href="/businesses/request/?type=marketing-package&months=3&utm_source=hermes_catalog&utm_medium=case_study&utm_campaign=knb_growth_strategy&utm_content=final_cta">Запросити аудит →</a>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .knb-public-case{min-height:70vh;background:radial-gradient(circle at 90% 3%,rgba(89,92,246,.11),transparent 30rem),#f5f7fa;color:#172033}
+  .shell{width:min(1160px,calc(100% - 2rem));margin:auto;padding:112px 0 88px}
+  .breadcrumbs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px;color:#728095;font-size:12px}.breadcrumbs a{color:#2168a6;text-decoration:none;font-weight:800}
+  .hero,.panel,.cta{border:1px solid #dde5ed;border-radius:24px;background:#fff;box-shadow:0 18px 48px rgba(28,55,82,.055)}
+  .hero{padding:clamp(28px,6vw,62px);background:radial-gradient(circle at 92% 8%,rgba(94,82,218,.16),transparent 28rem),#fff}
+  .eyebrow{margin:0 0 9px;color:#6554c6;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+  h1{max-width:980px;margin:.2rem 0 1rem;font-size:clamp(42px,6.7vw,78px);line-height:.98;letter-spacing:-.048em}
+  .lead{max-width:900px;color:#5f6f83;font-size:clamp(17px,1.8vw,20px);line-height:1.65}
+  .actions,.sources{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.actions a,.sources a,.section-head>a,.cta a{display:inline-flex;align-items:center;min-height:43px;padding:0 13px;border:1px solid #ced9e4;border-radius:11px;background:#fff;color:#285d8e;text-decoration:none;font-size:12px;font-weight:850}.actions .primary,.cta a{border-color:#172033;background:#172033;color:#fff}
+  .boundary{display:grid;gap:6px;margin-top:24px;padding:16px 18px;border-left:4px solid #725fd5;border-radius:0 14px 14px 0;background:#f5f2ff;color:#576378;line-height:1.55}.boundary strong{color:#372c78}
+  .panel{margin-top:18px;padding:clamp(22px,4vw,32px)}
+  .section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.section-head h2{max-width:870px;margin:0;font-size:clamp(29px,4.4vw,48px);line-height:1.03;letter-spacing:-.035em}
+  .fact-grid,.audit-grid,.phase-grid,.evidence-grid{display:grid;gap:12px;margin-top:20px}.fact-grid,.phase-grid,.evidence-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.audit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fact-grid article,.audit-grid article,.phase-grid article,.evidence-grid article{padding:18px;border:1px solid #e1e7ee;border-radius:16px;background:#fafbfd}.fact-grid span,.audit-grid span,.phase-grid span{display:block;color:#705bc9;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.fact-grid strong{display:block;margin:7px 0;font-size:19px}.fact-grid p,.audit-grid p,.phase-grid p,.evidence-grid p,.source-note,.offer p,.faq-list p,.cta p{color:#647488;line-height:1.6}.audit-grid h3,.phase-grid h3{margin:8px 0 6px;font-size:19px}
+  .source-note{margin:16px 0 0;padding:13px 15px;border-radius:13px;background:#f2f5f8;font-size:12px}
+  .offer{margin-top:20px;padding:24px;border-radius:18px;background:#172033;color:#fff}.offer-label{margin:0!important;color:#afa2ff!important;font-size:10px!important;font-weight:900;letter-spacing:.1em}.offer strong{display:block;max-width:900px;margin:10px 0;font-size:clamp(23px,3vw,34px);line-height:1.2}.offer p{color:#c1cad6}
+  .funnel{display:grid;grid-template-columns:repeat(7,minmax(155px,1fr));gap:10px;margin-top:18px;overflow-x:auto;padding-bottom:4px}.funnel article{min-height:190px;padding:17px;border:1px solid #e0e6ed;border-radius:16px;background:#fbfcfe}.funnel span{color:#705bc9;font-size:11px;font-weight:900}.funnel h3{margin:12px 0 8px;font-size:17px}.funnel p{margin:0;color:#69798d;line-height:1.5;font-size:12px}
+  .crm-table{display:grid;margin-top:20px;border:1px solid #dfe6ed;border-radius:16px;overflow:hidden}.crm-table>div{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:14px 17px;background:#fff}.crm-table>div:nth-child(even){background:#f7f9fb}.crm-table strong{color:#30276c}.crm-table span{color:#5f7084;line-height:1.5}
+  .evidence-grid strong{color:#332878;font-size:16px}
+  .faq-list{display:grid;gap:10px;margin-top:20px}.faq-list details{padding:16px 18px;border:1px solid #e1e7ee;border-radius:15px;background:#fafbfd}.faq-list summary{cursor:pointer;font-weight:900;line-height:1.45}.faq-list p{margin:10px 0 0}
+  .cta{margin-top:18px;padding:clamp(28px,5vw,52px);background:#172033;color:#fff}.cta .eyebrow{color:#b7abff}.cta h2{max-width:850px;margin:0;font-size:clamp(31px,4.8vw,54px);line-height:1.02;letter-spacing:-.04em}.cta p{max-width:780px;color:#bcc7d3}.cta a{margin-top:12px;background:#fff;color:#172033;border-color:#fff}
+  @media(max-width:900px){.fact-grid,.phase-grid,.evidence-grid{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:repeat(7,220px)}}
+  @media(max-width:680px){.shell{width:min(100% - 22px,1160px);padding-top:96px}.section-head{display:grid}.fact-grid,.audit-grid,.phase-grid,.evidence-grid{grid-template-columns:1fr}.crm-table>div{grid-template-columns:1fr;gap:4px}.hero,.panel,.cta{border-radius:19px}}
+</style>
