@@ -2,6 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
+import { ensureHomeServiceCrmSchema } from "../_lib/home-service-crm.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
 
 type Env = { DB?: any };
@@ -37,15 +38,17 @@ export async function onRequestGet({ env }: { env: Env }) {
   await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureRepairShopProfileSchema(env.DB);
   await ensureAcademyBusinessProfilesSchema(env.DB);
+  await ensureHomeServiceCrmSchema(env.DB);
 
   const [companyResult, repairResult] = await Promise.all([
     env.DB.prepare(`
       SELECT
         c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,
         c.catalog_status,c.created_at,c.updated_at,
-        a.academy_type
+        a.academy_type,h.service_subtype,h.services_json
       FROM hermes_company_profiles c
       LEFT JOIN hermes_academy_business_profiles a ON a.company_id=c.id
+      LEFT JOIN hermes_home_service_profiles h ON h.company_id=c.id
       WHERE c.catalog_opt_in = 1
         AND c.catalog_status IN ('self_submitted', 'verified_public')
       ORDER BY CASE WHEN c.catalog_status = 'verified_public' THEN 0 ELSE 1 END, c.updated_at DESC
@@ -64,6 +67,18 @@ export async function onRequestGet({ env }: { env: Env }) {
   const companies = (companyResult?.results || []).map((row: any) => {
     const academySubtype = String(row.academy_type || "");
     const isAcademy = Boolean(academySubtype);
+    const isHomeService = !isAcademy && String(row.company_type || "") === "home_service";
+    let homeServices: string[] = [];
+    if (isHomeService) {
+      try {
+        const parsed = JSON.parse(String(row.services_json || "[]"));
+        homeServices = Array.isArray(parsed) ? parsed.map(String).filter(Boolean).slice(0, 20) : [];
+      } catch {}
+    }
+    const homeSubtype = String(row.service_subtype || "home_service");
+    const homeTypeLabel = homeSubtype === "junk_removal"
+      ? "Junk Removal & Hauling"
+      : homeSubtype.replaceAll("_", " ").replace(/\b\w/g, (letter: string) => letter.toUpperCase());
     return {
       id: String(row.id),
       companyName: String(row.company_name || ""),
@@ -72,14 +87,17 @@ export async function onRequestGet({ env }: { env: Env }) {
       ...(isAcademy ? {
         subtype: academySubtype,
         typeLabel: academyTypeLabels[academySubtype] || "Academy / Courses",
+      } : isHomeService ? {
+        subtype: homeSubtype,
+        typeLabel: homeTypeLabel,
       } : {}),
       city: String(row.city || ""),
       state: String(row.state || ""),
       countryCode: String(row.country_code || "US"),
       status: String(row.catalog_status || "self_submitted"),
-      source: isAcademy ? "academy_business_crm" : "hermes_connect_company",
-      profileUrl: isAcademy ? `/businesses/connect/academy/${encodeURIComponent(String(row.slug || ""))}/` : null,
-      services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : [],
+      source: isAcademy ? "academy_business_crm" : isHomeService ? "home_service_crm" : "hermes_connect_company",
+      profileUrl: isAcademy ? `/businesses/connect/academy/${encodeURIComponent(String(row.slug || ""))}/` : isHomeService ? `/businesses/connect/company/${encodeURIComponent(String(row.slug || ""))}/` : null,
+      services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : isHomeService ? homeServices : [],
       verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
       createdAt: row.created_at,
       updatedAt: row.updated_at,
