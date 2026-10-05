@@ -3,9 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { buildCatalogRequestHref } from "../lib/catalog-request";
+import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
+const auditRequestHref = buildCatalogRequestHref("catalog-growth", { businessId:business.id, businessName:business.name, profileUrl, city:business.locality, country:business.countryCode, sourceRef:business.sourceRef }, "Digital marketing audit");
 const mapChannel = business.channels.find((channel) => channel.direction === "maps");
 const identityChannels = business.channels.filter((channel) => channel.direction !== "maps").map((channel) => channel.url);
 const sameAs = [...new Set([...(business.website ? [business.website] : []), ...identityChannels])];
@@ -117,6 +120,7 @@ const schema = [
   </section>}
   {business.trust && <section class="trust"><strong>{business.trust.rating.toFixed(1)}</strong><span>{business.trust.source} · {business.trust.reviewCount} reviews · observed {business.trust.observedAt}</span></section>}
   <section class="channels"><h2>Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank">{channel.label} ↗</a>)}</div></section>
+  <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale="en" />
   <section class="evidence">
     <p class="eyebrow">Evidence / relationship state</p>
     <h2>What this page proves — and what it does not.</h2>
