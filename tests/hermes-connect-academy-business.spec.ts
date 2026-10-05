@@ -13,8 +13,10 @@ test("KNB Academy owner path defaults to Ukrainian, prefills bounded public fact
   await expect(page.locator('select[name="academyType"]')).toHaveValue("business_club");
   await expect(page.locator('input[name="website"]')).toHaveValue("https://kons-na-bis.com/");
   await expect(page.locator('input[name="countryCode"]')).toHaveValue("UA");
-  await expect(page.locator('input[name="city"]')).toHaveValue("");
-  await expect(page.locator('input[name="phone"]')).toHaveValue("");
+  await expect(page.locator('input[name="city"]')).toHaveValue("Біла Церква");
+  await expect(page.locator('input[name="region"]')).toHaveValue("Київська область");
+  await expect(page.locator('input[name="phone"]')).not.toHaveValue("");
+  await expect(page.locator('input[name="timezone"]')).toHaveValue("Europe/Kyiv");
   await expect(page.locator('input[name="catalogOptIn"]')).not.toBeChecked();
 
   await page.getByRole("button", { name: "EN", exact: true }).click();
@@ -77,18 +79,20 @@ test("Academy owner registration persists business profile and routes into the v
 });
 
 
-test("KNB Catalog strategy case is mobile-safe, bilingual, and routes future clients to the marketing handoff", async ({ page }) => {
+test("KNB Catalog strategy case is mobile-safe, bilingual, and preserves the organic-first readiness gate", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/businesses/concepts/kons-na-bis/", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
-  await expect(page.getByRole("heading", { name: "Конс на Бі$ Social → CRM → Revenue" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Конс на Бі$ Organic → Paid Learning → Offer → CRM" })).toBeVisible();
   await expect(page.getByText("77.1K", { exact: true })).toBeVisible();
   await expect(page.getByText("TASK 1 · INSTAGRAM AUDIT", { exact: true })).toBeVisible();
   await expect(page.getByText("TASK 2 · 7-WEEK PROGRAM FUNNEL", { exact: true })).toBeVisible();
   await expect(page.getByText("DIAGNOSTIC LENSES · PROVIDED TRAINING", { exact: true })).toBeVisible();
+  await expect(page.getByText("Перша рекомендація — не таргет, а internal audit + organic programming.")).toBeVisible();
+  await expect(page.getByText("Funnel можна проектувати, але валідовувати — тільки після readiness gate.")).toBeVisible();
 
-  const auditCta = page.getByRole("link", { name: "Запросити аудит і 90-day roadmap →" });
+  const auditCta = page.getByRole("link", { name: "Обговорити ціль і бюджет →" }).last();
   await expect(auditCta).toHaveAttribute("href", /\/businesses\/request\/\?type=marketing-package&months=3/);
   await expect(auditCta).toHaveAttribute("href", /utm_campaign=knb_marketing_case/);
 

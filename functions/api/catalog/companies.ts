@@ -2,6 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
+import { catalogProjectionPath } from "../_lib/catalog-public-projection.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
 
 type Env = { DB?: any };
@@ -41,7 +42,7 @@ export async function onRequestGet({ env }: { env: Env }) {
   const [companyResult, repairResult] = await Promise.all([
     env.DB.prepare(`
       SELECT
-        c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,
+        c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,
         c.catalog_status,c.created_at,c.updated_at,
         a.academy_type
       FROM hermes_company_profiles c
@@ -78,7 +79,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       countryCode: String(row.country_code || "US"),
       status: String(row.catalog_status || "self_submitted"),
       source: isAcademy ? "academy_business_crm" : "hermes_connect_company",
-      profileUrl: isAcademy ? `/businesses/connect/academy/${encodeURIComponent(String(row.slug || ""))}/` : null,
+      profileUrl: isAcademy ? catalogProjectionPath({ vertical:"academy_business", website:row.website, slug:String(row.slug || "") }) : null,
       services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : [],
       verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
       createdAt: row.created_at,

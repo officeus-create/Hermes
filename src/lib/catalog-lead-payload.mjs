@@ -18,6 +18,7 @@ export const buildCatalogLeadContext = ({
     gclid: searchParams.get("gclid") || "",
     gbraid: searchParams.get("gbraid") || "",
     wbraid: searchParams.get("wbraid") || "",
+    fbclid: searchParams.get("fbclid") || "",
     referrer: String(referrer || "").slice(0, 500),
   },
 });
