@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "description": "Provider-neutral Hermes Marketing job templates. This file contains no credentials, client data, or authorization to perform external writes.",
+  "default_poll_window_minutes": 15,
+  "result_statuses": [
+    "SUCCESS",
+    "NO_CHANGE",
+    "ZERO",
+    "UNKNOWN",
+    "DEFERRED",
+    "BLOCKED_AUTH",
+    "FAILED",
+    "NEEDS_REVIEW"
+  ],
+  "permission_classes": {
+    "READ_ONLY_AUTOMATIC": {
+      "external_write": false,
+      "requires_confirmation": false
+    },
+    "DRAFT_WRITE_AUTOMATIC": {
+      "external_write": false,
+      "requires_confirmation": false
+    },
+    "LIVE_WRITE_GATED": {
+      "external_write": true,
+      "requires_confirmation": true
+    }
+  },
+  "jobs": [
+    {
+      "id": "local_entity_snapshot",
+      "capability": "marketing.local_entity_discovery",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["public-web", "changedetection"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "00:15"
+      },
+      "done_condition": "A dated public-entity snapshot exists or a valid NO_CHANGE result is recorded."
+    },
+    {
+      "id": "gbp_integrity_check",
+      "capability": "marketing.gbp_change_monitoring",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["google-business-profile", "local-falcon", "windsor"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "05:30"
+      },
+      "done_condition": "Current profile fields are compared with the last verified snapshot and changes are classified."
+    },
+    {
+      "id": "review_ingest",
+      "capability": "marketing.review_ingestion",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["google-business-profile", "local-falcon", "windsor"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "05:45"
+      },
+      "done_condition": "New reviews are ingested once with rating, source time and reply state."
+    },
+    {
+      "id": "geo_grid_priority_scan",
+      "capability": "marketing.geo_grid_measurement",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": true,
+      "public_write": false,
+      "provider_preferences": ["local-grid", "open-seo-dataforseo", "local-falcon"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "06:00"
+      },
+      "done_condition": "Priority keyword-location observations are refreshed within the configured budget or explicitly DEFERRED."
+    },
+    {
+      "id": "gsc_query_page_delta",
+      "capability": "marketing.serp_rank_tracking",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["google-search-console", "crawlseo", "semrush"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "06:20"
+      },
+      "done_condition": "Priority page/query deltas are recorded with source dates and UNKNOWN is preserved when evidence is unavailable."
+    },
+    {
+      "id": "ai_visibility_priority_scan",
+      "capability": "marketing.ai_visibility_tracking",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": true,
+      "public_write": false,
+      "provider_preferences": ["governed-provider-runner", "local-falcon"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "06:40"
+      },
+      "done_condition": "The approved prompt subset is observed or the job records a non-zero failure state without inventing visibility data."
+    },
+    {
+      "id": "citation_rotation_audit",
+      "capability": "marketing.citation_audit",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["public-web", "approved-directory-adapters"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "07:00"
+      },
+      "done_condition": "The scheduled citation subset is checked for entity consistency with dated evidence."
+    },
+    {
+      "id": "competitor_public_change_check",
+      "capability": "marketing.competitor_gap_analysis",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["changedetection", "public-web"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "07:15"
+      },
+      "done_condition": "Material public competitor changes are classified without copying protected/private content."
+    },
+    {
+      "id": "attribution_reconcile",
+      "capability": "marketing.receiver_reconciliation",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["ga4", "hermes-receiver-evidence"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "07:30"
+      },
+      "done_condition": "Prior-day discovery-to-receiver evidence is reconciled and vanity metrics remain separate from qualified outcomes."
+    },
+    {
+      "id": "daily_marketing_brief",
+      "capability": "marketing.client_audit_generation",
+      "permission_class": "DRAFT_WRITE_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["hermes-marketing-brain"],
+      "schedule": {
+        "cadence": "daily",
+        "local_time": "08:00"
+      },
+      "done_condition": "One prioritized brief is generated from verified observations, including blockers, evidence freshness and next action."
+    },
+    {
+      "id": "weekly_competitor_keyword_refresh",
+      "capability": "marketing.local_keyword_research",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": true,
+      "public_write": false,
+      "provider_preferences": ["open-seo-dataforseo", "semrush", "google-search-console"],
+      "schedule": {
+        "cadence": "weekly",
+        "days_of_week": ["Mon"],
+        "local_time": "06:00"
+      },
+      "done_condition": "Priority keyword and competitor opportunity deltas are refreshed for the current market."
+    },
+    {
+      "id": "weekly_action_scorecard",
+      "capability": "marketing.white_label_reporting",
+      "permission_class": "DRAFT_WRITE_AUTOMATIC",
+      "consumes_budget": false,
+      "public_write": false,
+      "provider_preferences": ["hermes-marketing-brain"],
+      "schedule": {
+        "cadence": "weekly",
+        "days_of_week": ["Fri"],
+        "local_time": "15:00"
+      },
+      "done_condition": "Week-over-week visibility, funnel evidence, costs and prioritized actions are summarized."
+    },
+    {
+      "id": "monthly_full_evidence_review",
+      "capability": "marketing.evidence_freshness_guard",
+      "permission_class": "READ_ONLY_AUTOMATIC",
+      "consumes_budget": true,
+      "public_write": false,
+      "provider_preferences": ["hermes-marketing-brain", "open-seo-dataforseo", "crawlseo", "local-grid"],
+      "schedule": {
+        "cadence": "monthly",
+        "days_of_month": [1],
+        "local_time": "06:00"
+      },
+      "done_condition": "Monthly SEO, local, AI, citation, attribution, provider-cost and freshness evidence is reconciled."
+    }
+  ]
+}
