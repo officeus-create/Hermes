@@ -1,3 +1,23 @@
+export type CatalogAuditPlatform = "website" | "google" | "instagram" | "facebook" | "threads" | "tiktok" | "youtube" | "telegram";
+export type CatalogAuditState = "observed" | "needs_private_analytics" | "owner_confirmation";
+export type CatalogAuditText = { uk: string; en: string };
+export type CatalogDigitalAuditFinding = {
+  platform: CatalogAuditPlatform;
+  label: string;
+  url?: string;
+  state: CatalogAuditState;
+  headline: CatalogAuditText;
+  findings: CatalogAuditText[];
+  nextStep: CatalogAuditText;
+};
+export type CatalogDigitalAudit = {
+  observedAt: string;
+  summary: CatalogAuditText;
+  prerequisite: CatalogAuditText;
+  sequence: CatalogAuditText[];
+  findings: CatalogDigitalAuditFinding[];
+};
+
 export type CatalogBusinessConcept = {
   id: string;
   slug: string;
@@ -13,6 +33,7 @@ export type CatalogBusinessConcept = {
   secondaryIntent?: string;
   featuredOffer?: { name: string; url: string; description: string; duration?: string };
   crmPreviewUrl?: string;
+  digitalAudit?: CatalogDigitalAudit;
   phone: string;
   address: string;
   locality: string;
@@ -240,6 +261,88 @@ export const konsNaBisConcept = Object.freeze({
     { label: "TikTok · @konsnabis", url: "https://www.tiktok.com/@konsnabis", direction: "secondary" },
     { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" }
   ],
+  digitalAudit: {
+    observedAt: "2026-10-05",
+    summary: {
+      uk: "З відкритих даних можна зробити первинний digital-аудит, але не чесно оголосити готовий social funnel або оффер. Для робочого рішення спочатку потрібні внутрішня аналітика, стабільний органічний baseline і контрольований paid-learning.",
+      en: "Public sources support an initial digital audit, but not an honest claim that a social funnel or offer is already validated. A working decision requires internal analytics, a stable organic baseline, and controlled paid learning first."
+    },
+    prerequisite: {
+      uk: "Порядок для social: доступи до Meta Business Suite / Instagram Insights / Ads Manager → органічне програмування та baseline → paid learning на органічних переможцях → лише потім offer hypothesis, funnel і масштабування.",
+      en: "Social sequence: Meta Business Suite / Instagram Insights / Ads Manager access → organic programming and baseline → paid learning on organic winners → only then an offer hypothesis, funnel, and scale."
+    },
+    sequence: [
+      { uk: "1 · Public + internal audit", en: "1 · Public + internal audit" },
+      { uk: "2 · Органічне програмування + стабільний baseline", en: "2 · Organic programming + stable baseline" },
+      { uk: "3 · Контрольоване paid learning на organic winners", en: "3 · Controlled paid learning on organic winners" },
+      { uk: "4 · Offer hypothesis + funnel тільки після signal gate", en: "4 · Offer hypothesis + funnel only after the signal gate" },
+      { uk: "5 · CRM attribution → sales → verified outcome", en: "5 · CRM attribution → sales → verified outcome" }
+    ],
+    findings: [
+      {
+        platform: "website", label: "Website", url: "https://kons-na-bis.com/", state: "observed",
+        headline: { uk: "Сайт і окрема сторінка 7-тижневої програми існують; змінні комерційні умови мають залишатися на офіційному source.", en: "The website and a dedicated seven-week program page exist; changing commercial terms should remain on the official source." },
+        findings: [
+          { uk: "Hermes може підтвердити саму програму та її 7-тижневий online-формат із публічних джерел.", en: "Hermes can verify the program itself and its seven-week online format from public sources." },
+          { uk: "Ціна, дата потоку, пакет і результативні claims можуть змінюватися — не дублюємо їх як постійні факти Catalog.", en: "Price, cohort date, package, and outcome claims can change, so Catalog must not duplicate them as permanent facts." },
+          { uk: "До offer-тесту website повинен мати один canonical conversion path і зберігати source/UTM у CRM.", en: "Before offer testing, the website should have one canonical conversion path and preserve source/UTM into CRM." }
+        ],
+        nextStep: { uk: "Визначити один canonical commercial route після social readiness gate та підключити privacy-safe attribution.", en: "Choose one canonical commercial route after the social readiness gate and connect privacy-safe attribution." }
+      },
+      {
+        platform: "instagram", label: "Instagram", url: "https://www.instagram.com/konsnabis/", state: "needs_private_analytics",
+        headline: { uk: "Публічний профіль не дає достатніх даних, щоб валідно рахувати ER, retention, audience quality або ефективність оффера.", en: "The public profile does not provide enough data to validly calculate ER, retention, audience quality, or offer performance." },
+        findings: [
+          { uk: "Потрібні Meta Business Suite, Instagram Insights і Ads Manager: мінімум 90-денний зріз Reach, ER, retention/watch time, saves, shares, profile visits, географії та paid/organic split.", en: "Meta Business Suite, Instagram Insights, and Ads Manager are required: at least a 90-day view of Reach, ER, retention/watch time, saves, shares, profile visits, geography, and paid/organic split." },
+          { uk: "Якість аудиторії, боти або anomalous followers перевіряються по account data; не оголошуємо їх фактом із зовнішнього перегляду.", en: "Audience quality, bots, or anomalous followers must be checked from account data; they are not declared as facts from an external view." },
+          { uk: "Спочатку будуємо scheduled organic content / Reels matrix і шукаємо повторюваних organic winners.", en: "First build a scheduled organic content/Reels matrix and identify repeatable organic winners." }
+        ],
+        nextStep: { uk: "Після стабільного organic baseline запускати малий контрольований paid-learning тільки на переможцях; offer test — після накопичення signal.", en: "After a stable organic baseline, run small controlled paid learning only on winners; test the offer after sufficient signal accumulates." }
+      },
+      {
+        platform: "facebook", label: "Facebook", state: "needs_private_analytics",
+        headline: { uk: "Facebook має бути частиною Meta learning system, але incremental lift від crossposting потрібно вимірювати, а не припускати.", en: "Facebook should participate in the Meta learning system, but incremental lift from crossposting must be measured rather than assumed." },
+        findings: [
+          { uk: "Потрібні Page/Business Suite insights, paid/organic split та downstream actions.", en: "Page/Business Suite insights, paid/organic split, and downstream actions are required." },
+          { uk: "Crossposting використовуємо як distribution test із єдиною content identity, а не як доказ подвоєння охоплення.", en: "Use crossposting as a distribution test with one content identity, not as proof that reach doubles." }
+        ],
+        nextStep: { uk: "Зв’язати Instagram/Facebook assets одним measurement contract і порівнювати organic winner → paid-learning → qualified action.", en: "Connect Instagram/Facebook assets with one measurement contract and compare organic winner → paid learning → qualified action." }
+      },
+      {
+        platform: "threads", label: "Threads", url: "https://www.threads.com/@konsnabis", state: "needs_private_analytics",
+        headline: { uk: "Threads підходить для швидкого тестування hooks, питань і позиціонування, але самі views не валідовують sales offer.", en: "Threads is useful for fast testing of hooks, questions, and positioning, but views alone do not validate a sales offer." },
+        findings: [
+          { uk: "Тести повинні мати тему, audience hypothesis і наступну вимірювану дію.", en: "Tests should carry a topic, audience hypothesis, and next measurable action." },
+          { uk: "Переможні формулювання можна переносити в Reels/Stories/Facebook тільки після порівняння response quality.", en: "Winning language can move into Reels/Stories/Facebook only after response quality is compared." }
+        ],
+        nextStep: { uk: "Використовувати Threads як дешевий hypothesis layer до paid offer testing.", en: "Use Threads as a low-cost hypothesis layer before paid offer testing." }
+      },
+      {
+        platform: "tiktok", label: "TikTok", url: "https://www.tiktok.com/@konsnabis", state: "needs_private_analytics",
+        headline: { uk: "Short-form канал можна оцінювати по organic patterns, але public views не замінюють retention і audience data.", en: "The short-form channel can be evaluated through organic patterns, but public views do not replace retention and audience data." },
+        findings: [
+          { uk: "Порівнюємо hooks, watch time, completion, shares і profile actions до будь-якої paid рекомендації.", en: "Compare hooks, watch time, completion, shares, and profile actions before any paid recommendation." }
+        ],
+        nextStep: { uk: "Знайти repeatable organic format і тільки потім вирішувати, чи потрібен paid test.", en: "Find a repeatable organic format before deciding whether a paid test is warranted." }
+      },
+      {
+        platform: "youtube", label: "YouTube", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", state: "needs_private_analytics",
+        headline: { uk: "YouTube може давати trust і search intent, але його роль у продажі потрібно доводити через click/lead attribution.", en: "YouTube can build trust and search intent, but its role in sales must be proven through click/lead attribution." },
+        findings: [
+          { uk: "Shorts і long-form оцінюються окремо; retention, returning viewers і переходи важливіші за raw views.", en: "Shorts and long-form should be evaluated separately; retention, returning viewers, and transitions matter more than raw views." }
+        ],
+        nextStep: { uk: "Зв’язати searchable education з canonical website action і CRM source.", en: "Connect searchable education to a canonical website action and CRM source." }
+      },
+      {
+        platform: "telegram", label: "Telegram", state: "owner_confirmation",
+        headline: { uk: "Telegram логічний як nurture/retention layer, але приватні conversion та якість аудиторії ззовні не видно.", en: "Telegram is a logical nurture/retention layer, but private conversion and audience quality are not externally visible." },
+        findings: [
+          { uk: "Не змішуємо channel membership із qualified lead або sale.", en: "Do not equate channel membership with a qualified lead or sale." }
+        ],
+        nextStep: { uk: "Після owner access виміряти source → join → next action → consultation без дублювання CRM identity.", en: "After owner access, measure source → join → next action → consultation without duplicating CRM identity." }
+      }
+    ]
+  },
   factsRequiringOwnerConfirmation: [
     "актуальна дата старту наступної групи",
     "актуальна вартість програми",
