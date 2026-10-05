@@ -138,10 +138,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   </div>
 </section>
 <script>
-  import { initializeHomePortalMotion } from "../lib/home-portal-motion";
   import { trackCtaClicked, trackTrackSelected } from "../lib/analytics.ts";
-
-  initializeHomePortalMotion();
 
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
