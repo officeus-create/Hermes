@@ -109,7 +109,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 </span>
               </span>
             )}
-            {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" aria-hidden="true" alt="Green leaves" decoding="async" /></span>}
+            
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
               <span class="home-live-kicker">Example workflow</span>
@@ -122,9 +122,9 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 </span>
               ))}
             </span>
-            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true" data-home-pillar-proof="attention"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
-            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
-            {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><span class="home-academy-track"><i>Logistics</i><i>Sales</i><i>Marketing</i><i>Operations</i></span></span>}
+            {path.id === "marketing" && <span class="home-scene-detail home-attention-signal" aria-hidden="true" data-home-pillar-proof="attention"><i></i></span>}
+            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><span class="home-system-code"><b></b><b></b><b></b><b></b></span><span class="home-system-output"><i></i><b></b></span><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
+            {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><i class="home-academy-pen"></i><span class="home-academy-track"><i>Logistics</i><i>Sales</i><i>Marketing</i><i>Operations</i></span></span>}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true"></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
@@ -286,7 +286,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28}
 .home-logistics-scene-layer::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45}
 .home-logistics-scene-layer[data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-.home-logistics-scene-layer[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:repeating-linear-gradient(105deg,transparent 0 15px,rgba(214,239,249,.36) 16px 18px,transparent 19px 33px);animation:home-logistics-rain 1.2s linear infinite;opacity:.52}
+.home-logistics-scene-layer[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:radial-gradient(ellipse at 42% 3%,rgba(225,240,247,.22),transparent 52%),repeating-linear-gradient(101deg,transparent 0 28px,rgba(222,241,248,.18) 30px 31px,transparent 33px 58px),repeating-linear-gradient(103deg,transparent 0 43px,rgba(242,249,252,.1) 45px 46px,transparent 48px 88px);background-size:100% 100%,185% 165%,245% 190%;mask-image:linear-gradient(to bottom,#000 0 68%,rgba(0,0,0,.72) 82%,transparent 100%);filter:blur(.22px);animation:home-logistics-rain 1.7s linear infinite;opacity:.3}
 .home-logistics-scene-layer[data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 .home-logistics-scene-layer[data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
 .home-logistics-scene-layer[data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
@@ -295,7 +295,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-scene-layer[data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.58}
 .home-logistics-scene-layer[data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.68}
 [data-logistics-scene-ready="hotshot"]{filter:brightness(1.04)}
-.home-moving-leaves{left:47%;top:2.4%;width:27%;transform-origin:50% 100%}
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-road-flow{inset:23% 8% auto 26%;height:38%}
 .home-road-flow i{position:absolute;display:block;width:10%;height:2px;border-radius:3px;background:#d0f4ff;box-shadow:0 0 8px 2px #63c7ffb0;opacity:0;transform:rotate(-51deg)}
@@ -333,14 +332,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
-.home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
-.home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
-.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-of-type{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
-.home-story-frame:nth-child(2){transform:translate(9%,3%) rotate(3deg);background:#e8faf6}.home-story-frame:nth-child(2) b:first-child{background:linear-gradient(145deg,#7fbfc2,#30637c)}
-.home-story-frame:nth-child(3){transform:translate(17%,6%) rotate(10deg);background:#fff7ed}.home-story-frame:nth-child(3) b:first-child{background:linear-gradient(145deg,#f4c18b,#aa6d57)}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(3){animation:home-story-turn 2.4s ease-in-out 2}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(2){animation:home-story-turn 2.4s ease-in-out .35s 2}
-.home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
+.home-master-route-marketing .home-portal-art img{filter:saturate(.86) contrast(.98) brightness(1.015)}
+.home-attention-signal{left:10%;top:19%;width:18%;height:2px;border-radius:999px;background:linear-gradient(90deg,#dffff0,rgba(223,255,240,0));box-shadow:0 0 18px rgba(157,231,183,.34);opacity:.72;transform-origin:left center}
+.home-master-route-marketing:is(:hover,:focus-visible) .home-attention-signal{animation:home-attention-pulse 2.8s ease-in-out 2}
+.home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden;background:linear-gradient(180deg,rgba(35,25,19,.14),rgba(255,243,222,.03));backdrop-filter:blur(1px)}
+.home-system-code{position:absolute;left:9%;top:17%;width:48%;display:grid;gap:8%;opacity:.78}
+.home-system-code b{display:block;height:2px;border-radius:999px;background:linear-gradient(90deg,#fff2d8,#ffc36a 56%,transparent);transform:scaleX(.08);transform-origin:left center;opacity:.36}
+.home-system-code b:nth-child(2){width:76%}.home-system-code b:nth-child(3){width:88%}.home-system-code b:nth-child(4){width:58%}
+.home-system-output{position:absolute;right:8%;bottom:13%;width:26%;height:31%;border:1px solid rgba(255,233,199,.52);border-radius:6px;background:rgba(76,43,24,.14);opacity:.34;transform:translateY(4px)}
+.home-system-output i{position:absolute;left:18%;top:23%;width:27%;aspect-ratio:1;border:1px solid #ffd28f;border-radius:50%}
+.home-system-output i::after{content:"";position:absolute;left:24%;top:44%;width:52%;height:24%;border-left:1.5px solid #ffe0ae;border-bottom:1.5px solid #ffe0ae;transform:rotate(-45deg)}
+.home-system-output b{position:absolute;left:18%;right:14%;bottom:21%;height:2px;border-radius:999px;background:linear-gradient(90deg,#ffd69b,transparent)}
+
 .home-system-scan{position:absolute;inset:0 auto 0 -22%;width:20%;background:linear-gradient(90deg,transparent,#ffe6aa70,transparent);opacity:0}
 .home-system-node{position:absolute;top:20%;left:12%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.58}
 
@@ -348,18 +351,28 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-scan{animation:home-system-pass 2.5s ease-in-out 2}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-node{animation:home-system-breathe 1.5s ease-in-out 3}
 .home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(3){animation-delay:.18s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(4){animation-delay:.36s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(5){animation-delay:.54s}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-code b{animation:home-code-write 2.6s cubic-bezier(.16,1,.3,1) 2}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-code b:nth-child(2){animation-delay:.16s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-code b:nth-child(3){animation-delay:.32s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-code b:nth-child(4){animation-delay:.48s}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-output{animation:home-system-result 2.6s ease-out .72s 2}
 .home-learning-detail{inset:0;z-index:0}
 .home-book-page{position:absolute;left:54%;top:63%;width:32%;height:7%;border:1px solid #fffef0;border-radius:2px 8px 2px 2px;background:linear-gradient(105deg,#e7daf9d0,#fffdf1f0);box-shadow:0 5px 12px #3f2c6444;transform:skewY(-8deg) rotate(-8deg);transform-origin:8% 90%;opacity:0}
 .home-book-page svg{width:100%;height:100%;fill:none;stroke:#786391;stroke-width:1.5;stroke-linecap:round;opacity:.8}
 .home-book-page path{stroke-dasharray:90;stroke-dashoffset:90}
+.home-academy-pen{position:absolute;left:61%;top:65.4%;width:10%;height:2px;border-radius:999px;background:linear-gradient(90deg,#f8eefc,#8f70b2 72%,#5c456f);box-shadow:0 2px 6px rgba(63,44,100,.25);transform:rotate(-16deg) translateX(-10px);transform-origin:12% 50%;opacity:0}
+.home-academy-pen::after{content:"";position:absolute;right:-2px;top:-1px;border-left:4px solid #5c456f;border-top:2px solid transparent;border-bottom:2px solid transparent}
 .home-master-route-academy:is(:hover,:focus-visible) .home-book-page{animation:home-page-turn 2.8s ease-in-out 2}
 .home-master-route-academy:is(:hover,:focus-visible) .home-book-page path{animation:home-ink-write 2.8s ease-in-out 2}
+.home-master-route-academy:is(:hover,:focus-visible) .home-academy-pen{animation:home-pen-write 2.8s ease-in-out 2}
 .home-academy-track{position:absolute;right:6%;top:27%;display:grid;gap:5px;justify-items:end}
 .home-academy-track i{display:block;padding:4px 6px;border:1px solid #f2e7ffaa;border-radius:999px;background:#382b50cc;color:#fff;font:700 .44rem/1 var(--font-body);font-style:normal;letter-spacing:.05em;box-shadow:0 5px 12px #3f2c6444;opacity:.62;transform:translateX(6px)}
 .home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i{animation:home-skill-progress 1.8s cubic-bezier(.16,1,.3,1) 2}
 .home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(2){animation-delay:.18s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(3){animation-delay:.36s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(4){animation-delay:.54s}
+@keyframes home-attention-pulse{0%,100%{transform:scaleX(.32);opacity:.34}48%{transform:scaleX(1);opacity:.78}}
+@keyframes home-code-write{0%,18%{transform:scaleX(.08);opacity:.28}58%,100%{transform:scaleX(1);opacity:.88}}
+@keyframes home-system-result{0%,28%{opacity:.2;transform:translateY(4px)}58%,100%{opacity:.82;transform:translateY(0)}}
+@keyframes home-pen-write{0%,14%{opacity:0;transform:rotate(-16deg) translate(-10px,5px)}24%{opacity:.9}62%{opacity:.9;transform:rotate(-16deg) translate(24px,-7px)}78%,100%{opacity:0;transform:rotate(-16deg) translate(31px,-9px)}}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
-@keyframes home-logistics-rain{to{background-position:-28px 45px}}
+@keyframes home-logistics-rain{from{background-position:0 0,0 -18px,38px -36px}to{background-position:0 0,-34px 58px,-52px 72px}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
