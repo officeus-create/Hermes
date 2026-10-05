@@ -199,6 +199,9 @@ export function selectDueJobs({
 }) {
   validateRegistry(registry);
   assertTimeZone(timeZone);
+  if (!businessId || !locationId) {
+    throw new TypeError("businessId and locationId are required tenant scope");
+  }
 
   const windowMinutes = pollWindowMinutes ?? registry.default_poll_window_minutes ?? 15;
   const local = getLocalClock(now, timeZone);
