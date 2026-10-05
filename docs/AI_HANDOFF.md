@@ -1453,3 +1453,16 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - KNB noindex strategy concept: corrected from offer-first to evidence-gated acquisition so internal/demo surfaces no longer contradict the indexable Catalog profile. The old /zrostannia-u-biznesi-ads intake link was replaced with the current canonical /zrostannia-u-biznesi program URL.
 - Supersession: PR #1680 represents the earlier offer-first case direction and should not be merged. PR #1681 is the single owner lane for KNB Catalog + audit corrections.
 - Release boundary: source branch only until exact-head build/tests/CI and normal owner-authorized merge/deploy. Live/indexed status must be proven separately after release.
+
+
+## 2026-10-05 — PR #1681 implementation closeout · Catalog Digital Health coverage
+
+- Scope completed on the canonical KNB/Catalog lane: Digital Health now covers all currently implemented public Catalog profile families, not only the KNB international concept renderer.
+- International concept profiles: reusable `CatalogDigitalAudit` exposes Website, Google, Instagram, Facebook, Threads, TikTok, YouTube and Telegram. Missing channels are `owner_confirmation`, not inferred absent.
+- US static repair/dealer profiles: the same eight-surface renderer is attached to the existing static business route. Only explicit social-domain sources are promoted into channel URLs; directory references are not reclassified as official social accounts.
+- Hermes Connect Repair Shop runtime profiles: owner-listed website / Instagram / Facebook / Threads URLs are public-source inputs, but Reach, retention, paid/organic split, CAC and conversion remain behind the internal-analytics gate. Google canonical ownership, TikTok, YouTube and Telegram remain unknown until verified.
+- Hermes Connect Academy runtime profiles: the same eight-surface readiness model is available bilingually. The current Academy public schema exposes a website but not social URLs, so social channels remain owner-confirmation gates instead of invented links.
+- Editorial reuse: added one standalone evergreen Insights owner at `/insights/marketing/organic-social-before-paid-ads-meta-learning/`, backed by Meta's January 28, 2026 public ads-ranking explanation. It explicitly distinguishes Meta's public statement about using additional Instagram organic-engagement data from Hermes' own evidence-first operating sequence.
+- SEO inventory: the two intended static Catalog additions are the Bila Tserkva locality owner and canonical KNB profile. Insight sitemap freshness and the new article owner are included separately.
+- Regression coverage: guards US static Digital Health, runtime Repair Shop privacy-safe Digital Health, runtime Academy bilingual Digital Health, all eight channel surfaces, KNB Google/local gate, organic → paid-learning → offer readiness, the four-column candidate method, and repair-only normalization on the shared `repair | concept` route.
+- Release status: review branch only. Exact-head CI remains mandatory; merge to `main` and production deploy still require the repository's explicit owner release confirmation.
