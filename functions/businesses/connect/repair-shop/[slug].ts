@@ -160,7 +160,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   });
   const contactRequestHref = `/businesses/request/?${requestParams.toString()}`;
   const claimHref = `/businesses/request/?type=claim&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
-  const growthHref = `/businesses/request/?type=catalog-growth&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
+  const growthHref = `/businesses/request/?type=marketing-package&business=${encodeURIComponent(String(row.name))}&profile=${encodeURIComponent(canonical)}`;
   const auditChannels = [
     { key:"website", label:"Website", url:websiteUrl, listed:Boolean(websiteUrl), state:websiteUrl ? "Public source listed" : "Owner confirmation required" },
     { key:"google", label:"Google", url:mapsHref, listed:false, state:"Owner confirmation required" },
