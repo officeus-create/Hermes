@@ -437,3 +437,22 @@ WORKING_APPROACH: Preserve the original KNB assignment wording, but score the re
 CATALOG_REUSE: Business Catalog profiles can expose a source-bounded Digital Audit layer with channel icons/cards (Website, Google where known, Instagram, Facebook, Threads, TikTok, YouTube, Telegram). Each card must distinguish observed public facts, private-analytics requirements, and the recommended next step. Do not create thin per-channel doorway pages: keep the channel audit on the canonical business profile and link to one reusable Hermes marketing-audit methodology page plus a full-audit CTA.
 
 REUSE_RULE: Audit ≠ Funnel. Never convert public social observations into a validated offer, shadowban/bot claim, CAC/ROMI conclusion, or paid-media recommendation. Internal analytics and evidence gates determine when paid learning and offer tests are allowed.
+
+
+## 2026-10-05 — Shared Catalog route normalized repair-only data before the route-kind gate
+
+STATUS: SOURCE FIXED ON PR #1681; PRODUCTION UNCHANGED.
+
+PROBLEM: After adding Digital Health to US static repair/dealer profiles, the shared `/businesses/[state]/[city]/[slug]` prerender failed on an international concept route with `Cannot read properties of undefined (reading 'flatMap')`.
+
+ROOT_CAUSE: The file serves a union of `repair | concept` route props. A repair-specific normalization object called `business.sources.flatMap(...)` before the render branch checked `kind`. International concept businesses use a different evidence model and do not expose the repair-directory `sources` array.
+
+FAILED_APPROACH: Relying on the later JSX branch to protect type-specific preprocessing. Top-level Astro preprocessing runs before the conditional renderer, so data access must be gated before it executes.
+
+WORKING_APPROACH: Gate both repair-only website/source normalization and `sources.flatMap` with `kind === "repair"`; concept routes receive an empty normalized repair channel list and continue through their dedicated `CatalogConceptRoute` renderer. Add a regression contract that requires the route-kind guard.
+
+EVIDENCE: Exact-head visual-evidence build for commit `a598e5e244849085289886f3bc0ae81d27f5a1cc` failed during prerender of `/businesses/ukraine/chaiky/chayka-store`. Commit `36c76fc1ecc94cea0a4c02d604e24dec6f95b630` gates repair normalization by route kind; commit `2f5ec2fe0413b20d64983b30349f3d359850599d` adds the regression guard.
+
+LESSON: A conditional renderer does not protect top-level preprocessing in a union route.
+
+REUSE_RULE: For any shared Astro/SSR route with multiple prop shapes, perform the discriminator check before reading shape-specific arrays, objects, or methods. Regression tests should assert the discriminator is part of the normalization contract, not only the final render branch.
