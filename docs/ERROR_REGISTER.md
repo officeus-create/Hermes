@@ -422,3 +422,18 @@ EVIDENCE: PR #1681 branch `feat/catalog-knb-organic-profile-20261005`. Initial e
 LESSON: A noindex strategy/demo is not an organic Catalog deliverable. Privacy/approval-safe review surfaces and search-owned public entity pages are separate artifacts with different evidence boundaries.
 
 REUSE_RULE: For a client Catalog task whose goal includes organic discovery, require a distinct indexable source-bounded owner/entity page with visible parent-child internal links, sitemap ownership, verified public facts, explicit official-source links, and regression tests. Keep internal audits, CRM demos, candidate assessments, private metrics, and unapproved strategy noindex.
+
+
+## 2026-10-05 — KNB marketing case incorrectly treated funnel/offer as the next social step
+
+STATUS: SOURCE CORRECTED ON PR #1681; PRODUCTION UNCHANGED.
+
+PROBLEM: The recovered KNB candidate brief asked for a social audit plus a funnel/offer. Earlier Hermes strategy surfaces answered the request literally and promoted an offer-first path. That was not evidence-safe: a public profile cannot expose complete Meta reach, engagement, retention, audience quality, paid/organic split, ad-learning state, CAC, or downstream CRM sales.
+
+ROOT_CAUSE: The assignment text was treated as the execution sequence instead of as a test of strategic judgment. The missing gate was whether the candidate would identify that a validated social offer is impossible before owner analytics, organic programming, a stable baseline, and controlled paid learning.
+
+WORKING_APPROACH: Preserve the original KNB assignment wording, but score the reasoning differently. Canonical sequence is public/internal audit → organic programming → stable organic baseline → controlled paid learning on repeatable organic winners → signal gate → offer hypothesis → CRM attribution → consultation/sale → delivery/outcome. The four-column training method is also canonical: leave column 1 blank; fill 2 Awareness, 3 Understanding, 4 Application; then return to 1 and write leading questions so content follows Question → Awareness → Understanding → Application.
+
+CATALOG_REUSE: Business Catalog profiles can expose a source-bounded Digital Audit layer with channel icons/cards (Website, Google where known, Instagram, Facebook, Threads, TikTok, YouTube, Telegram). Each card must distinguish observed public facts, private-analytics requirements, and the recommended next step. Do not create thin per-channel doorway pages: keep the channel audit on the canonical business profile and link to one reusable Hermes marketing-audit methodology page plus a full-audit CTA.
+
+REUSE_RULE: Audit ≠ Funnel. Never convert public social observations into a validated offer, shadowban/bot claim, CAC/ROMI conclusion, or paid-media recommendation. Internal analytics and evidence gates determine when paid learning and offer tests are allowed.
