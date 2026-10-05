@@ -49,7 +49,7 @@ function safeProfile(row: any) {
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const ctx = await getHomeServiceContext(request, env);
-  if ("error" in ctx) return errorResponse(ctx.error);
+  if (ctx.error) return errorResponse(ctx.error);
   const url = new URL(request.url);
   const module = url.searchParams.get("module") || "dashboard";
   const ownerId = String(ctx.specialist.id);
@@ -104,7 +104,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const ctx = await getHomeServiceContext(request, env);
-  if ("error" in ctx) return errorResponse(ctx.error);
+  if (ctx.error) return errorResponse(ctx.error);
   const body = await parseBody(request);
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
