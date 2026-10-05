@@ -117,7 +117,7 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(publicProfile, /HERMES DIGITAL AUDIT/);
   assert.match(publicProfile, /Audit ≠ Funnel/);
   assert.match(publicProfile, /auditPlatforms = \["website","google","instagram","facebook","threads","tiktok","youtube","telegram"\]/);
-  assert.match(publicProfile, /type=catalog-growth/);
+  assert.match(publicProfile, /type=marketing-package/);
   assert.match(publicProfile, /Organic programming \+ stable baseline/);
   assert.match(publicProfile, /unknown, not zero/);
   assert.match(publicProfile, /Request a full audit/);
