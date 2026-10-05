@@ -142,6 +142,9 @@ assert.match(catalogConceptData, /paid learning/);
 assert.match(catalogDigitalAudit, /Audit ≠ Funnel/);
 assert.match(catalogDigitalAudit, /audit-\$\{finding\.platform\}/);
 assert.match(catalogDigitalAudit, /Request a full audit/);
+assert.match(catalogDigitalAudit, /owner_confirmation/);
+assert.match(catalogDigitalAudit, /does not mean the channel is absent/);
+assert.match(catalogDigitalAudit, /auditPlatforms/);
 assert.match(websiteConcept, /CatalogDigitalAudit/);
 assert.match(websiteConcept, /FEATURED PROGRAM \/ PRODUCT/);
 assert.match(read("public/sitemap-business-directory.xml"), /\/businesses\/ukraine\/bila-tserkva\/kons-na-bis\//);
@@ -151,6 +154,7 @@ assert.match(knbCatalogHtml, /Стратегія керованого зрост
 assert.match(knbCatalogHtml, /Official program page/);
 assert.match(knbCatalogHtml, /HERMES DIGITAL AUDIT/);
 assert.match(knbCatalogHtml, /Audit ≠ Funnel/);
+assert.match(knbCatalogHtml, /Google/);
 assert.match(knbCatalogHtml, /Instagram/);
 assert.match(knbCatalogHtml, /Facebook/);
 assert.match(knbCatalogHtml, /Threads/);
