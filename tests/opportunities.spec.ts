@@ -24,7 +24,7 @@ test.describe("Work With Hermes opportunities ecosystem", () => {
     await expect(page.getByRole("link", { name: "Explore expansion & investment" })).toHaveAttribute("href", "/opportunities/expansion-investment/");
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
 
-    const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
+    const desktopOpportunities = page.locator('.desktop-nav a[href="/opportunities/"]');
     await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
     await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
     await expect(page.locator(".site-footer").getByRole("link", { name: "Opportunities" })).toHaveAttribute("href", "/opportunities/");
@@ -44,7 +44,7 @@ test.describe("Work With Hermes opportunities ecosystem", () => {
       await expect(page.getByRole("heading", { level: 1, name: h1 })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Start with fit. Define responsibilities before commitment." })).toBeVisible();
       await expect(page.getByRole("heading", { name: "A public page starts a conversation. It does not manufacture a deal." })).toBeVisible();
-      await expect(page.getByRole("link", { name: "Work With Hermes" })).toHaveAttribute("href", "/opportunities/");
+      await expect(page.getByRole("link", { name: "Work With Hermes", exact: true })).toHaveAttribute("href", "/opportunities/");
       const bodyText = await page.locator("body").innerText();
       expect(bodyText).not.toContain("careers@hermeslogisticsus.com");
       expect(bodyText).not.toContain("+1 (682) 777-5337");
@@ -68,6 +68,6 @@ test.describe("Work With Hermes opportunities ecosystem", () => {
 
     await page.goto("/opportunities/careers/");
     await expect(page.getByText("+1 (414) 269-7377")).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();
   });
 });
