@@ -21,7 +21,7 @@ const requestContext = {
   sourceRef: business.sourceRef,
 };
 const businessRequestHref = buildCatalogRequestHref("catalog-business-request", requestContext);
-const auditRequestHref = buildCatalogRequestHref("catalog-growth", requestContext, "Digital marketing audit");
+const auditRequestHref = buildCatalogRequestHref("marketing-package", requestContext, "Digital marketing audit");
 const claimHref = business.status === "unclaimed" ? buildCatalogRequestHref("claim", requestContext) : "";
 const growthLinks = [
   { uk:"Сайт / редизайн", en:"Website / redesign" },
