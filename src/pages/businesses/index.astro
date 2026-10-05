@@ -20,7 +20,7 @@ const internationalBusinesses: readonly CatalogBusinessConcept[] = catalogBusine
 const stateCounts = new Map<string, number>();
 for (const business of usBusinesses) stateCounts.set(business.stateSlug, (stateCounts.get(business.stateSlug) ?? 0) + 1);
 for (const business of usClientConcepts) stateCounts.set(business.countrySlug, (stateCounts.get(business.countrySlug) ?? 0) + 1);
-const categoryCounts = [...new Map(usBusinesses.map((business) => [business.category, usBusinesses.filter((item) => item.category === business.category).length])).entries()];
+const usCategoryLabels = [...usBusinesses.map((business) => business.category), ...usClientConcepts.map((business) => business.vertical === "junk_removal" ? "Junk removal" : business.primaryIntent)];\nconst categoryCounts = [...new Map(usCategoryLabels.map((category) => [category, usCategoryLabels.filter((item) => item === category).length])).entries()];
 const popularTerms = [...new Set(["Website development", "Local SEO", "Hermes Connect CRM", "Load Board", ...usBusinesses.flatMap((business) => [business.category, ...business.services]), ...usClientConcepts.flatMap((business) => [business.primaryIntent, ...business.services])])].slice(0, 12);
 const academyLocalizedSamples = academyCountryRegistry.filter((country) => country.localizationState === "launch_ready");
 const ecosystem = [
