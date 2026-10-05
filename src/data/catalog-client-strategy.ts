@@ -63,7 +63,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         ),
         bullets: [
           t("Кожен public proof зберігає source URL / документ / CRM record + observed_at; для числового claim потрібні population, period, calculation, owner, approved wording і review date.", "Each public proof keeps a source URL / document / CRM record + observed_at; a numeric claim also needs population, period, calculation, owner, approved wording, and review date."),
-          t("Якщо офіційні сторінки показують різні historical/current цифри, система не вибирає автоматично більшу або новішу — потрібне human approval.", "If official surfaces show different historical/current figures, the system does not automatically choose the larger or newer number; human approval is required.")
+          t("Якщо офіційні сторінки показують різні historical/current цифри, система не вибирає автоматично більшу або новішу — потрібне human approval.", "If official surfaces show different historical/current figures, the system does not automatically choose the larger or newer number; human approval is required."),
+          t("Internal audit бере мінімум 90 днів Reach/engagement/retention/geo/paid-organic split, content archive/history, Reels distribution, Meta account status/verification і audience-quality signals. Bot/anomaly висновки робимо тільки з account data.", "The internal audit uses at least 90 days of Reach/engagement/retention/geo/paid-organic split, content archive/history, Reels distribution, Meta account status/verification, and audience-quality signals. Bot/anomaly conclusions require account data.")
         ]
       },
       {
@@ -88,9 +89,9 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         ),
         bullets: [
           t("Instagram / TikTok / YouTube — organic discovery, education and proof.", "Instagram / TikTok / YouTube — organic discovery, education, and proof."),
-          t("Threads — hypothesis engine: питання, заперечення, hooks і content backlog.", "Threads — hypothesis engine for questions, objections, hooks, and the content backlog."),
+          t("Threads — hypothesis engine: питання, заперечення, hooks і content backlog. Текст має звучати як жива розмова/спостереження; жорсткий CTA краще переносити в comment/другий touch.", "Threads — a hypothesis engine for questions, objections, hooks, and the content backlog. Copy should read like a human conversation/observation; a hard CTA is better moved to a comment or second touch."),
           t("Telegram — nurture / retention із збереженням source history.", "Telegram — nurture / retention with source history preserved."),
-          t("Facebook — proof / retarget / paid learning лише після readiness та CRM attribution.", "Facebook — proof / retarget / paid learning only after readiness and CRM attribution."),
+          t("Facebook — proof / retarget / paid learning лише після readiness та CRM attribution; monetization розглядаємо як окремий майбутній surface, а не гарантований результат crossposting.", "Facebook — proof / retarget / paid learning only after readiness and CRM attribution; monetization is treated as a separate future surface, not a guaranteed result of crossposting."),
           t("Один content asset → один primary CTA → один campaign/content identity. Не змішуємо «+» у Direct, консультацію, join і lead magnet без окремої attribution.", "One content asset → one primary CTA → one campaign/content identity. Do not mix a DM “+”, consultation, join action, and lead magnet without separate attribution."),
           t("Content matrix: Awareness → Consideration → Proof → Conversion → Retention; обсяг публікацій не є KPI без downstream action.", "Content matrix: Awareness → Consideration → Proof → Conversion → Retention; publishing volume is not a KPI without a downstream action.")
         ]
@@ -149,6 +150,7 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         ),
         bullets: [
           t("Планувальний production target для organic programming — 120 short-form відео на місяць; це робоча гіпотеза потужності, а не твердження про поточний обсяг КНБ.", "Planning production target for organic programming: 120 short-form videos per month; this is an operating capacity hypothesis, not a claim about KNB's current output."),
+          t("Для первинного organic ramp закладаємо приблизно 2.5–3.5 місяці як planning window; перехід до paid визначає signal/readiness gate, а не календар сам по собі.", "Use roughly 2.5–3.5 months as a planning window for the initial organic ramp; the move to paid is determined by the signal/readiness gate, not by the calendar alone."),
           t("Формати: Reels, Stories і каруселі. Instagram creative може розподілятися у Facebook і Threads з тим самим content_id; Instagram/Facebook Stories дублюються як distribution test, а не як доказ додаткового reach.", "Formats: Reels, Stories, and carousels. Instagram creative can be distributed to Facebook and Threads under the same content_id; Instagram/Facebook Stories can be duplicated as a distribution test, not as proof of incremental reach."),
           t("Текст, hook, мова і географія — окремі programming variables. Географічну якість аудиторії перевіряємо в Insights до будь-якого paid scaling.", "Copy, hook, language, and geography are explicit programming variables. Audience geography is verified in Insights before any paid scaling."),
           t("Testing cadence: приблизно 10–15 publishing/test actions на день через scheduled / hidden-testing workflow, коли є достатній backlog; щотижня робимо performance cut і залишаємо repeatable winners.", "Testing cadence: roughly 10–15 publishing/test actions per day through the scheduled / hidden-testing workflow when enough backlog exists; run a weekly performance cut and keep repeatable winners."),
