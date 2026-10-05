@@ -58,8 +58,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         number: 3,
         title: t("Що підтверджено, а що ні", "What is verified and what is not"),
         body: t(
-          "Підтверджені публічно: офіційний сайт, 7-тижнева програма, Instagram, Facebook, Threads, TikTok, YouTube і Telegram як публічні surfaces. Не підтверджені публічно: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift або business outcome від Hermes.",
-          "Publicly verified: the official website, seven-week program, and the public Instagram, Facebook, Threads, TikTok, YouTube, and Telegram surfaces. Not publicly verified: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift, or any Hermes-driven business outcome."
+          "Підтверджені публічно: офіційний сайт, 7-тижнева програма, Instagram, Facebook, Threads, TikTok, YouTube і Telegram як публічні surfaces. Підготовлені Hermes Instagram-розбір, funnel/MindMap і strategy material є work sample — не доказом впровадження або результату КНБ. Не підтверджені публічно: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift або business outcome від Hermes.",
+          "Publicly verified: the official website, seven-week program, and the public Instagram, Facebook, Threads, TikTok, YouTube, and Telegram surfaces. The prepared Hermes Instagram review, funnel/MindMap, and strategy material are a work sample, not proof of implementation or KNB results. Not publicly verified: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift, or any Hermes-driven business outcome."
         ),
         bullets: [
           t("Кожен public proof зберігає source URL / документ / CRM record + observed_at; для числового claim потрібні population, period, calculation, owner, approved wording і review date.", "Each public proof keeps a source URL / document / CRM record + observed_at; a numeric claim also needs population, period, calculation, owner, approved wording, and review date."),
@@ -71,8 +71,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         number: 4,
         title: t("Що містить цей приклад", "What this example contains"),
         body: t(
-          "Digital Audit по Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram; channel-role system; readiness gates; funnel/offer hypothesis; MindMap; KPI definitions; CRM attribution model; Candidate Assessment; 3–6 month media-plan logic.",
-          "Digital Audit across Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram; a channel-role system; readiness gates; funnel/offer hypothesis; MindMap; KPI definitions; CRM attribution model; Candidate Assessment; and 3–6 month media-plan logic."
+          "Вихідне тестове завдання зберігається явно: один вибраний канал — Instagram, короткі висновки й дії керівника напряму, funnel/offer для 7-тижневої програми, MindMap і план 0–7 / 8–30 / 31–90 днів. Поверх цього canonical profile додає reusable Digital Audit по Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram, readiness gates, CRM attribution, Candidate Assessment і 3–6 month media-plan logic.",
+          "The original assignment stays explicit: one selected channel — Instagram, concise findings and direction-lead actions, a funnel/offer for the seven-week program, a MindMap, and a 0–7 / 8–30 / 31–90 day plan. The canonical profile then adds the reusable Digital Audit across Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram, readiness gates, CRM attribution, Candidate Assessment, and 3–6 month media-plan logic."
         ),
         bullets: [
           t("Google Form із brief використовується тільки як reference; Hermes його не відправляє від імені кандидата.", "The Google Form supplied with the brief is reference-only; Hermes does not submit it on the candidate's behalf."),
@@ -118,7 +118,7 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
       },
       {
         number: 7,
-        title: t("Аналітика і CRM", "Analytics and CRM"),
+        title: t("Детальніше: аудит, аналітика і CRM", "Details: audit, analytics, and CRM"),
         body: t(
           "CRM повинна зберігати source_channel, content_id, campaign_id, CTA/keyword, entry_offer, primary pain, baseline, recommended_module, manager, consultation status, program fit, objection, sale/revenue, cohort, completion і renewal. Instagram → Telegram → consultation не створюють нову людину щоразу.",
           "CRM should preserve source_channel, content_id, campaign_id, CTA/keyword, entry_offer, primary pain, baseline, recommended_module, manager, consultation status, program fit, objection, sale/revenue, cohort, completion, and renewal. Instagram → Telegram → consultation must not create a new person each time."
@@ -173,8 +173,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         number: 11,
         title: t("Доступний перший крок", "Available first step"),
         body: t(
-          "Підтвердити owner-access до Meta Business Suite, Instagram Insights / Ads Manager та іншої потрібної аналітики, одну бізнес-ціль і один measurable path. Після цього формується 3–6 month media plan. Paid/offer запуск не рекомендується до readiness gate.",
-          "Confirm owner access to Meta Business Suite, Instagram Insights / Ads Manager, and the other required analytics, one business goal, and one measurable path. From there, build the 3–6 month media plan. Paid/offer launch is not recommended before the readiness gate."
+          "Публічний перший крок: описати бізнес-ціль і доступний planning budget у Hermes — після review погоджується bounded scope, без автоматичної оплати або обіцянки результату. Operational next gate після погодження scope: owner-access до Meta Business Suite, Instagram Insights / Ads Manager та іншої потрібної аналітики, один measurable path і baseline. Після цього формується 3–6 month media plan; paid/offer запуск не рекомендується до readiness gate.",
+          "Public first step: describe the business goal and available planning budget to Hermes; after review, agree a bounded scope without automatic payment or a promised result. The operational next gate after scope approval is owner access to Meta Business Suite, Instagram Insights / Ads Manager, and other required analytics, one measurable path, and a baseline. From there, build the 3–6 month media plan; paid/offer launch is not recommended before the readiness gate."
         )
       }
     ],
