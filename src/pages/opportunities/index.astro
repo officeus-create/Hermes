@@ -74,7 +74,7 @@ const opportunities = [
   },
   {
     eyebrow: "Long-term growth",
-    title: "Expansion & Strategic Conversations",
+    title: "Expansion, Investment & Strategic Conversations",
     body: "Discuss local-market expansion, strategic capital, operating partnerships, or another long-term growth relationship where Hermes and another party may have aligned interests.",
     href: `mailto:${partnershipEmail}?subject=Expansion%20or%20strategic%20conversation%20with%20Hermes`,
     label: "Start a strategic conversation",
@@ -98,7 +98,7 @@ const schema = [
     "@id": canonicalUrl,
     url: canonicalUrl,
     name: "Work With Hermes",
-    description: "Explore Hermes careers, Owner-Operator opportunities, agency relationships, referral and white-label partnerships, corporate collaboration, and expansion conversations.",
+    description: "Explore Hermes careers, Owner-Operator opportunities, agency relationships, referral and white-label partnerships, corporate collaboration, investment, and expansion conversations.",
     mainEntity: {
       "@type": "ItemList",
       itemListElement: opportunities.map((item, index) => ({
@@ -122,7 +122,7 @@ const schema = [
 
 <BaseLayout
   title="Work With Hermes | Careers, Owner-Operators, Agencies & Partnerships"
-  description="Explore Hermes careers, Wisconsin Owner-Operator opportunities, agency partnerships, referrals, white-label delivery, corporate collaboration, and expansion conversations."
+  description="Explore Hermes careers, Wisconsin Owner-Operator opportunities, agency partnerships, referrals, white-label delivery, corporate collaboration, investment, and expansion conversations."
   schema={schema}
 >
   <SiteHeader theme="light" activePath="/opportunities/" />
