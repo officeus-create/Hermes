@@ -21,7 +21,9 @@ const cities = directoryCities.filter((city)=>city.stateSlug===state.slug);
 const categories = [...new Set([...rows.map((business)=>business.category), ...clientBusinesses.map((business)=>business.vertical === "junk_removal" ? "Junk removal" : business.primaryIntent)])];
 const serviceTerms = [...new Set([...rows.flatMap((business)=>business.services), ...clientBusinesses.flatMap((business)=>business.services)])].slice(0,10);
 const serviceAreas = [...new Set(rows.flatMap((business)=>business.serviceArea))].slice(0,8);
-const clientLocalities = catalogConceptLocalityRoutes.filter((locality)=>locality.countrySlug===state.slug && locality.businesses.some((business)=>business.market==="us"));\nconst clientBusinesses = clientLocalities.flatMap((locality)=>locality.businesses.filter((business)=>business.market==="us"));\nconst hasClientBusinesses = clientBusinesses.length > 0;
+const clientLocalities = catalogConceptLocalityRoutes.filter((locality)=>locality.countrySlug===state.slug && locality.businesses.some((business)=>business.market==="us"));
+const clientBusinesses = clientLocalities.flatMap((locality)=>locality.businesses.filter((business)=>business.market==="us"));
+const hasClientBusinesses = clientBusinesses.length > 0;
 const stateUrl=`https://hermeslogisticsus.com/businesses/${state.slug}/`;
 const schema=[
   {"@context":"https://schema.org","@type":"CollectionPage",name:hasClientBusinesses?`Businesses in ${state.name}`:`Repair businesses in ${state.name}`,url:stateUrl,mainEntity:{"@type":"ItemList",itemListElement:rows.map((business,index)=>({"@type":"ListItem",position:index+1,url:`https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`,name:business.businessName}))}},
