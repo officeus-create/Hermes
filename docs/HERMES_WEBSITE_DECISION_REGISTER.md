@@ -213,3 +213,35 @@ GSAP already exists in the Hermes Video Factory and is the preferred candidate f
 Do not add Webflow, Wix or WordPress as parallel website owners. Do not add Amplitude/Statsig merely to duplicate PostHog. Do not connect more creative tools simply to increase the tool count.
 
 The target is not “maximum effects.” The target is a recognizable, truthful, fast Hermes visual system whose media explains space, attention, information or capability and whose website itself proves the quality of Hermes Web Design / Website Development.
+
+
+## 2026-10-05 — Owner visual acceptance + website finish route
+
+This is a refinement of V4, not a redesign and not a new backlog. The owner explicitly likes the current English Home composition and wants it polished, then propagated carefully through the rest of the site without sacrificing SEO/GEO/AEO/LLMO, canonical ownership, hreflang, schema, internal links, performance, accessibility, analytics/privacy or product truth.
+
+### Owner visual acceptance / corrections
+
+- **Home / Logistics:** keep the living road/equipment concept, mountains, fog, dusk/night and changing weather. The current Dry Van rain reads too much like page/glitch striping; refine it into natural atmospheric rain/wet-weather depth. Preserve the six equipment states and smooth decoded crossfade.
+- **Home / Marketing:** current scene feels visually overfilled and the botanical/leaf association is too strong. Reduce decorative greenery/motion and secondary cards; preserve the clear causal story Content → Search + social → Site action → Inquiry and the approved “Ideas Move Markets” identity.
+- **Home / Technology:** the office + projected-interface association is approved, but projections must visibly do useful system work rather than remain abstract decoration. Prefer truthful illustrative code/process/result motion tied to Request → CRM context → Automation → Receipt; no meaningless terminal/cyberpunk output or fake live data.
+- **Home / Academy:** the library/learning environment is approved. Make the open-book interaction legible: a restrained page-turn + writing/pen gesture that reinforces practice/review/progression rather than generic decoration.
+- **Hermes Connect:** one canonical public mark/geometry everywhere. The approved Option 02 continuous connected-flow mark remains the source of truth; contextual product styling may change surrounding color/material, but must not create a different logo geometry.
+- **Languages:** QA priority is English first, Russian second, Ukrainian third, then ES/IT/FR. “Complete” means page-body content, header/menu, CTA, product/status labels, form/system messages, footer, privacy/consent and internal navigation are coherent in that locale — not merely translated chrome. Use the same canonical layout/tokens and preserve hreflang/canonical ownership.
+- **Catalog:** the owner observed Cloudflare Error 1102 while opening Catalog. Historical root cause was fixed in #1593; current /businesses/ must still be treated as a fresh production-verification item whenever the error reproduces. Do not declare the incident active or resolved from history alone; require current public readback / Cloudflare evidence.
+
+### Execution route — no duplicate project/backlog
+
+Work continuously through the existing website lane using RECONCILE → PRIORITIZE → EXECUTE → VERIFY → WRITE BACK → NEXT:
+
+1. **Finish current Home PR #1679 first.** Close exact-head CI and preview regressions; visually inspect Logistics transition/rain, Marketing de-clutter, Technology process projection and Academy book/pen at 1440 + 390 and reduced motion. Do not merge/deploy until the repository owner gate is satisfied.
+2. **Home/brand consistency readback.** Confirm canonical Technology naming, Hermes Connect Option 02 mark usage, menu hierarchy and no SEO/semantic regressions.
+3. **Primary direction pages.** Logistics → Marketing → Technology → Academy. Preserve semantic owners and existing useful modules. Improve only reproducible visual/interaction mismatches, with one signature scene maximum and calm content below it.
+4. **Product/discovery surfaces.** Hermes Connect → Catalog → Insights → Load Board. Fix operational errors before aesthetic polish; product UI truth and task completion outrank spectacle.
+5. **Language parity.** EN → RU → UA → ES/IT/FR. Audit route families and visible strings, repair owner-quality localized content without mass-cloning thin pages, then verify hreflang/canonical/sitemap/internal-link contracts.
+6. **Capability showrooms.** Website Development / Redesign / selected Technology pages: demonstrate truthful sanitized Website Factory, responsive build, QA, SEO/GEO, deploy and measurement proof instead of generic agency imagery.
+7. **Remaining page families.** Commercial Logistics, Marketing services, Academy programs, Company/Contact/Legal/Accessibility and other shared templates. Migrate shared primitives first; do not page-by-page fork the design system.
+8. **Final production closeout.** Exact-head CI, representative 390/430/768/1024/1440 evidence, reduced motion, console/404/overflow/consent checks, current public readback, then classify MERGED / DEPLOYED / LIVE_VERIFIED separately. Only after that measure search/behavior/business evidence.
+
+### Permanent finish rule
+
+When the owner says “continue/finish the website,” recover this register plus current main/open PR/CI/production before acting. Do not restart rejected designs, invent a second backlog, create a V5, or report plans as completion. Continue the smallest highest-value executable website/design delta until a real blocker or complete verified closeout.
