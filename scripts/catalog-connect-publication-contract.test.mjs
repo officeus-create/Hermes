@@ -124,6 +124,7 @@ assert.match(genericBusinessRoute, /CatalogConceptRoute/);
 assert.match(genericBusinessRoute, /CatalogDigitalAudit/);
 assert.match(genericBusinessRoute, /"catalog-growth"/);
 assert.match(genericBusinessRoute, /socialPlatformLabel/);
+assert.match(genericBusinessRoute, /kind==="repair"\?business\.sources\.flatMap/);
 for (const [page, expectedHref] of [
   ["dist/businesses/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
