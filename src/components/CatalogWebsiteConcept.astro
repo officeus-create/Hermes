@@ -28,11 +28,15 @@ const growthLinks = ["Website / redesign","Google Maps","SEO / GEO","Hermes CRM"
 const localized = business.localeCopy;
 const copy = localized?.[defaultLocale];
 const clientStrategy = getCatalogClientStrategy(business.id);
+const isClientProfile = business.status === "client";
+const academyRegistrationHref = business.vertical === "business_academy"
+  ? `/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=${encodeURIComponent(business.slug)}&lang=uk`
+  : "";
 const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
 ---
 {conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
   <div class="concept-disclosure">
-    <strong>Hermes Catalog · Website Concept</strong>
+    <strong data-uk={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"} data-en={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}>{isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}</strong>
     <span data-uk={localized?.uk.disclosure} data-en={localized?.en.disclosure}>{copy?.disclosure ?? "Verified/public business data + Hermes presentation concept"}</span>
     {localized && <nav class="locale-switch" aria-label="Concept language"><a href="?lang=uk" lang="uk">UA</a><a href="?lang=en" lang="en">EN</a></nav>}
   </div>
@@ -42,14 +46,19 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
       <h1 data-uk={localized?.uk.heroTitle} data-en={localized?.en.heroTitle}>{copy?.heroTitle ?? business.name}</h1>
       <p data-uk={localized?.uk.heroLead} data-en={localized?.en.heroLead}>{copy?.heroLead ?? "This is a Hermes presentation of how the business could be structured online. Owner-confirmed facts remain separate from proposed website and growth features."}</p>
       <div class="actions">
-        <a class="primary" data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>
+        {isClientProfile && business.featuredOffer
+          ? <a class="primary" href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk={localized?.uk.requestLabel ?? "Перейти до офіційної програми"} data-en={localized?.en.requestLabel ?? "Open official program"}>{copy?.requestLabel ?? label("Перейти до офіційної програми","Open official program")}</a>
+          : <a class="primary" data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>}
+        {isClientProfile && <a data-catalog-event="call_click" href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a>}
         {mapChannel && <a data-catalog-event="maps_click" href={mapChannel.url} target="_blank" rel="noreferrer noopener">Google Maps ↗</a>}
-        <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>
+        {isClientProfile
+          ? <a data-catalog-event="growth_start" href={auditRequestHref} data-uk="Запросити повний аудит Hermes" data-en="Request a full Hermes audit">{label("Запросити повний аудит Hermes","Request a full Hermes audit")}</a>
+          : <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>}
         {claimHref && <a data-catalog-event="claim_start" href={claimHref} data-uk={localized?.uk.claimLabel} data-en={localized?.en.claimLabel}>{copy?.claimLabel ?? "Claim / verify"}</a>}
       </div>
       {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}
     </div>
-    <aside><small>HERMES CONCEPT</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} · claim/customer status changes only after verification</span></aside>
+    <aside><small>{isClientProfile?"CLIENT PROFILE":"HERMES CONCEPT"}</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} · claim/customer status changes only after verification</span></aside>
   </section>
   <section class="concept-grid">
     <article><p class="kicker">PRIMARY INTENT</p><h2>{business.primaryIntent}</h2><div class="channel-list">{primaryChannels.map((channel)=><a href={channel.url} target="_blank" rel="noreferrer noopener">{channel.label} ↗</a>)}</div></article>
@@ -70,14 +79,18 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     <div>
       <p class="kicker">PREPARED HERMES WORK</p>
       <h2>{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
-      <p>{label(
-        "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал відкриває Instagram-аудит, ролі каналів, organic-first readiness, funnel/offer hypothesis, KPI, MindMap, 3–6 month media plan, evidence governance та Candidate Assessment. CRM demo показує, як цей контекст переходить у Academy workspace без вигаданих sales/result даних.",
-        "The public profile stays the concise SEO/GEO owner. The detailed work opens the Instagram audit, channel roles, organic-first readiness, funnel/offer hypothesis, KPI, MindMap, 3–6 month media plan, evidence governance, and Candidate Assessment. The CRM demo shows how the same context can flow into the Academy workspace without invented sales or outcome data."
+      <p>{clientStrategy ? label(
+        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Окремий noindex strategy/audit зберігається як детальний evidence/workspace, а CRM demo показує операційну модель без вигаданих sales/result даних.",
+        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. The separate noindex strategy/audit remains a detailed evidence workspace, while the CRM demo shows the operating model without invented sales or outcome data."
+      ) : label(
+        "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.",
+        "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately."
       )}</p>
     </div>
     <div class="prepared-links">
-      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити повний strategy / audit →","Open full strategy / audit →")}</a>}
+      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
       {business.crmPreviewUrl && <a href={business.crmPreviewUrl}>{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
+      {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати / відкрити Academy CRM →" data-en="Register / open Academy CRM →">{label("Зареєструвати / відкрити Academy CRM →","Register / open Academy CRM →")}</a>}
     </div>
   </section>}
   <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale={defaultLocale} />
@@ -87,8 +100,10 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href}>{item.label}</a>)}</div>
   </section>
   <section id="catalog-request" class="request">
-    <div><p class="kicker">REAL CUSTOMER REQUEST</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
-    <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>
+    <div><p class="kicker">{isClientProfile?"OFFICIAL PROGRAM PATH":"REAL CUSTOMER REQUEST"}</p><h2 data-uk={localized?.uk.requestTitle} data-en={localized?.en.requestTitle}>{copy?.requestTitle ?? "Request a handoff to this business."}</h2><p data-uk={localized?.uk.requestBody} data-en={localized?.en.requestBody}>{copy?.requestBody ?? "Hermes receives the request with Catalog attribution. A request is not marked delivered to the business until a verified contact path is used."}</p></div>
+    {isClientProfile && business.featuredOffer
+      ? <a class="request-link" href={business.featuredOffer.url} target="_blank" rel="noreferrer noopener" data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Open official program"} →</a>
+      : <a class="request-link" data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Start request"} →</a>}
   </section>
   {business.faq?.length && <section class="faq"><p class="kicker">FAQ</p><h2>{label("Перед зверненням","Before you contact")}</h2>{business.faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>}
   {business.semanticCore?.length && <section class="seo-foundation"><p class="kicker">SEO / GEO FOUNDATION</p><h2>Semantic core + local intent</h2><div class="signal-list">{business.semanticCore.map((item)=><span>{item}</span>)}</div></section>}
@@ -104,6 +119,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     const requested = params.get("lang");
     const fallback = root.dataset.defaultLocale === "uk" ? "uk" : "en";
     const locale = requested === "uk" || requested === "en" ? requested : fallback;
+    document.documentElement.lang = locale;
     root.querySelectorAll<HTMLElement>("[data-uk][data-en]").forEach((node) => {
       const next = locale === "uk" ? node.dataset.uk : node.dataset.en;
       if (next) node.textContent = next;
