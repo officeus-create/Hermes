@@ -57,7 +57,7 @@ assert.match(html, /<main class="shell" id="main-content">/);
 assert.match(html, /<meta name="robots" content="index,follow">/);
 assert.match(html, /<link rel="canonical" href="https:\/\/hermeslogisticsus\.com\/businesses\/connect\/repair-shop\/example-repair-qa\/">/);
 assert.match(html, /type=claim&amp;business=|type=claim&business=/);
-assert.match(html, /type=catalog-growth&amp;business=|type=catalog-growth&business=/);
+assert.match(html, /type=marketing-package&amp;business=|type=marketing-package&business=/);
 assert.match(html, /Business hours/);
 assert.match(html, /Monday: 08:00–17:00/);
 assert.match(html, /Book an appointment/);
