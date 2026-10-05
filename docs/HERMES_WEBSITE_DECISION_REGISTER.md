@@ -242,6 +242,13 @@ Work continuously through the existing website lane using RECONCILE → PRIORITI
 7. **Remaining page families.** Commercial Logistics, Marketing services, Academy programs, Company/Contact/Legal/Accessibility and other shared templates. Migrate shared primitives first; do not page-by-page fork the design system.
 8. **Final production closeout.** Exact-head CI, representative 390/430/768/1024/1440 evidence, reduced motion, console/404/overflow/consent checks, current public readback, then classify MERGED / DEPLOYED / LIVE_VERIFIED separately. Only after that measure search/behavior/business evidence.
 
+
+### Canonical continuation command
+
+Stable owner shorthand: **HERMES WEB V4 — CONTINUE TO LIVE_VERIFIED**.
+
+When this command is given, interpret it as: recover the current website state from this decision register, current GitHub main/open PRs/CI and public production; preserve the approved V4 visual doctrine and current owner feedback; choose the highest-value executable unresolved website/design delta; execute it, verify it with exact-head evidence, write the result back to the existing canonical record, then continue to the next delta without asking for a new plan. Do not create a replacement backlog, V5, duplicate canonical page owner or parallel design system. A blocker on one lane is not permission to stop when another in-scope executable lane exists. Stop only at a real permission/credential/owner gate or complete LIVE_VERIFIED closeout.
+
 ### Permanent finish rule
 
 When the owner says “continue/finish the website,” recover this register plus current main/open PR/CI/production before acting. Do not restart rejected designs, invent a second backlog, create a V5, or report plans as completion. Continue the smallest highest-value executable website/design delta until a real blocker or complete verified closeout.
