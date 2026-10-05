@@ -7,8 +7,8 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
 
   const officialProgram = page.getByRole("link", { name: "Перейти до програми", exact: true }).first();
   await expect(officialProgram).toHaveAttribute("href", "https://biznes-club-knb.com/zrostannia-u-biznesi");
-  await expect(page.getByRole("link", { name: "Запросити повний аудит Hermes", exact: true })).toHaveAttribute("href", /type=marketing-package|type=catalog-growth/);
-  await expect(page.getByRole("link", { name: "Зареєструвати / відкрити Academy CRM →", exact: true })).toHaveAttribute("href", /\/services\/hermes-connect\/academy\/business\/auth\//);
+  await expect(page.getByRole("link", { name: "Запросити повний аудит Hermes", exact: true })).toHaveAttribute("href", /type=marketing-package/);
+  await expect(page.getByRole("link", { name: "Зареєструвати Academy workspace →", exact: true })).toHaveAttribute("href", /\/services\/hermes-connect\/academy\/business\/auth\//);
 
   const strategy = page.locator('[data-client-strategy="catalog-ua-kons-na-bis-bila-tserkva"]');
   await expect(strategy).toBeVisible();
@@ -20,6 +20,11 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await expect(strategy).toContainText("Instagram / TikTok / YouTube");
   await expect(strategy).toContainText("120 short-form відео на місяць");
   await expect(strategy).toContainText("Reels, Stories і каруселі");
+  await expect(strategy).toContainText("10–15 publishing/test actions");
+  await expect(strategy).toContainText("2.5–3.5");
+  await expect(strategy).toContainText("Meta account status/verification");
+  await expect(strategy).toContainText("next_action");
+  await expect(strategy).toContainText("outcome");
   await expect(strategy).toContainText("organic_state");
   await expect(strategy).toContainText("audience_geo");
   await expect(strategy).toContainText("Усвідомлення");
@@ -32,5 +37,5 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await expect(strategy.getByRole("heading", { name: "Full client strategy" })).toBeVisible();
   await expect(strategy).toContainText("120 short-form videos per month");
   await expect(page.getByRole("heading", { name: "What has Hermes prepared for KNB?", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Register / open Academy CRM →", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Register Academy workspace →", exact: true })).toBeVisible();
 });
