@@ -104,16 +104,16 @@ import "../../../../../../styles/hermes-academy-app.css";
         </section>
 
         <section class="academy-app-panel" id="acquisition-control">
-          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">ACQUISITION CONTROL</p><h2 data-i18n="acquisitionTitle">Social → offer → diagnostic → consultation → program.</h2></div><span class="academy-app-status" data-i18n="sampleBoard">Демо-дошка</span></div>
-          <p data-i18n="acquisitionCopy">Кожен lead зберігає source asset, campaign, CTA/entry offer, primary pain, diagnostic gap, recommended module і next action. Так marketing, sales і Academy бачать один і той самий customer journey.</p>
+          <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">ACQUISITION CONTROL</p><h2 data-i18n="acquisitionTitle">Organic baseline → paid learning → offer hypothesis → consultation → program.</h2></div><span class="academy-app-status" data-i18n="sampleBoard">Демо-дошка</span></div>
+          <p data-i18n="acquisitionCopy">До offer-test CRM зберігає source asset, organic/paid state, campaign, content hypothesis і baseline. Offer/CTA стає робочою гіпотезою тільки після organic + paid learning gate; після lead додаються pain, diagnostic gap, recommended module і next action.</p>
           <div class="academy-acquisition-table">
-            <div class="academy-acq-head"><b data-i18n="acqSource">Джерело</b><b data-i18n="acqOffer">Entry offer</b><b data-i18n="acqGap">Diagnostic gap</b><b data-i18n="acqModule">Рекомендований модуль</b><b data-i18n="acqNext">Наступна дія</b></div>
+            <div class="academy-acq-head"><b data-i18n="acqSource">Джерело</b><b data-i18n="acqOffer">Observed CTA / hypothesis</b><b data-i18n="acqGap">Diagnostic gap</b><b data-i18n="acqModule">Рекомендований модуль</b><b data-i18n="acqNext">Наступна дія</b></div>
             <div><span>Instagram · Reel</span><span>Free business review · “+”</span><span>Sales system</span><span>W6 · Sales</span><span>Consultation</span></div>
             <div><span>Instagram · Bio</span><span>Certificate 283€</span><span>Needs diagnosis</span><span>Pending</span><span>Business diagnostic</span></div>
             <div><span>Threads · Content</span><span>Content unpacking video</span><span>Positioning / marketing</span><span>W1 · Marketing</span><span>Diagnostic → consult</span></div>
             <div><span>TikTok · Profile</span><span>Consultation</span><span>Program fit</span><span>Pending diagnosis</span><span>Qualify</span></div>
           </div>
-          <p class="academy-owner-boundary" data-i18n="acquisitionBoundary">Рядки вище — демонстрація структури attribution з публічних CTA, а не реальні leads КНБ. Реальні контакти, revenue і conversion з’являються лише після дозволеного підключення джерел.</p>
+          <p class="academy-owner-boundary" data-i18n="acquisitionBoundary">Рядки вище — публічно спостережувані CTA / hypotheses для демонстрації attribution, а не рекомендація запускати їх зараз і не реальні leads КНБ. До offer/funnel потрібні internal analytics, organic baseline і paid learning; revenue/conversion з’являються тільки з дозволених реальних джерел.</p>
         </section>
 
         <section class="academy-app-panel" id="proof-registry">
@@ -194,9 +194,9 @@ import "../../../../../../styles/hermes-academy-app.css";
             <article>
               <span>02</span>
               <h3 data-i18n="assessmentTask2">Воронка продажу програми</h3>
-              <p data-i18n="assessmentTask2Copy">Запропонуйте маркетингову воронку для базової 7-тижневої програми «Стратегія керованого зростання у бізнесі»: схема / MindMap, оффер, логіка переходів і пояснення, чому саме цей оффер.</p>
+              <p data-i18n="assessmentTask2Copy">Оригінальний brief просить funnel + offer для 7-тижневої програми. Сильна відповідь спочатку має довести readiness: які internal Meta/CRM data потрібні, як підняти organic baseline, як провести paid learning на winners, і лише після цього показати offer як hypothesis та майбутню funnel-схему.</p>
               <div class="academy-assessment-flow">
-                <b>Reach</b><i>→</i><b>Engagement</b><i>→</i><b>Lead</b><i>→</i><b>Consultation</b><i>→</i><b>Sale</b><i>→</i><b>Program</b><i>→</i><b>Renewal</b>
+                <b>Internal audit</b><i>→</i><b>Organic baseline</b><i>→</i><b>Paid learning</b><i>→</i><b>Signal gate</b><i>→</i><b>Offer hypothesis</b><i>→</i><b>CRM / Consultation</b><i>→</i><b>Program</b>
               </div>
             </article>
           </div>
@@ -212,10 +212,10 @@ import "../../../../../../styles/hermes-academy-app.css";
           <div class="academy-assessment-rubric">
             <div><b data-i18n="rubric1">1 · Evidence & diagnosis</b><span>0–5</span><small data-i18n="rubric1Copy">Чи спирається висновок на факти, контент і метрики, а не на загальні фрази.</small></div>
             <div><b data-i18n="rubric2">2 · Audience & positioning</b><span>0–5</span><small data-i18n="rubric2Copy">Чи зрозуміло, кому продаємо, яку проблему вирішуємо і чому це важливо.</small></div>
-            <div><b data-i18n="rubric3">3 · Funnel logic</b><span>0–5</span><small data-i18n="rubric3Copy">Чи пов’язані контент, lead magnet, консультація, продаж і retention в одну систему.</small></div>
-            <div><b data-i18n="rubric4">4 · Offer quality</b><span>0–5</span><small data-i18n="rubric4Copy">Чи конкретний оффер, чи є reason-to-believe і логічний CTA без необґрунтованих гарантій.</small></div>
+            <div><b data-i18n="rubric3">3 · Sequence / funnel logic</b><span>0–5</span><small data-i18n="rubric3Copy">Чи не пропущені organic baseline і paid-learning gate перед offer/funnel; чи downstream handoff вимірюваний.</small></div>
+            <div><b data-i18n="rubric4">4 · Readiness & offer hypothesis</b><span>0–5</span><small data-i18n="rubric4Copy">Чи кандидат відрізняє public audit від validated offer і не запускає budget до достатнього signal.</small></div>
             <div><b data-i18n="rubric5">5 · KPI & measurement</b><span>0–5</span><small data-i18n="rubric5Copy">Чи визначені conversion, CAC, LTV/retention, revenue attribution та критерій успіху.</small></div>
-            <div><b data-i18n="rubric6">6 · Execution thinking</b><span>0–5</span><small data-i18n="rubric6Copy">Чи можна з роботи зробити 7/30/90-day plan з owners, priorities і next actions.</small></div>
+            <div><b data-i18n="rubric6">6 · Execution thinking</b><span>0–5</span><small data-i18n="rubric6Copy">Чи можна з роботи зробити 3–6 month media plan: organic → paid learning → offer validation → scale, з owners, priorities і next actions.</small></div>
           </div>
 
           <div class="academy-assessment-review">
