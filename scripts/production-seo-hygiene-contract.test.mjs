@@ -66,7 +66,8 @@ const indexedChildSitemapFiles = [
 // September 29 adds three bounded secondary international discovery profiles plus the Irpin locality hub.
 // October 1 adds one intentional indexable Marketing Growth Audit Example in Hermes Catalog; the KNB branded concept remains noindex.
 // October 3 adds one verified Wisconsin owner-operator vacancy owner linked from the existing careers hub.
-const nonInsightsExpectedPageUrlCount = 298;
+// October 5 adds exactly two KNB Catalog discovery owners: Bila Tserkva locality and the canonical Kons na Bis business profile.
+const nonInsightsExpectedPageUrlCount = 300;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
