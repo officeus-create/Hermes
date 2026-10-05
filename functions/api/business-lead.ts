@@ -451,7 +451,7 @@ export async function onRequestPost({ request, env }: Context) {
     ...(catalogProfile ? [`Catalog profile: ${catalogProfile}`] : []),
     ...(catalogSourceRef ? [`Catalog source ref: ${catalogSourceRef}`] : []),
     `Planning budget: ${planningBudget || "not provided"}`,
-    `Roadmap horizon: ${planningHorizon || "not provided"}`,
+    `Planning horizon: ${planningHorizon || "not provided"}`,
     `Preferred language: ${preferredLanguage}`,
     `Best time to contact: ${preferredContactTime}`,
     `Services: ${services.join(", ")}`,
