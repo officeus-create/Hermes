@@ -60,7 +60,11 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "Підтверджені публічно: офіційний сайт, 7-тижнева програма, Instagram, Facebook, Threads, TikTok, YouTube і Telegram як публічні surfaces. Не підтверджені публічно: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift або business outcome від Hermes.",
           "Publicly verified: the official website, seven-week program, and the public Instagram, Facebook, Threads, TikTok, YouTube, and Telegram surfaces. Not publicly verified: Instagram Insights, Meta Ads performance, CAC, LTV, ROMI, attributable revenue, conversion uplift, or any Hermes-driven business outcome."
-        )
+        ),
+        bullets: [
+          t("Кожен public proof зберігає source URL / документ / CRM record + observed_at; для числового claim потрібні population, period, calculation, owner, approved wording і review date.", "Each public proof keeps a source URL / document / CRM record + observed_at; a numeric claim also needs population, period, calculation, owner, approved wording, and review date."),
+          t("Якщо офіційні сторінки показують різні historical/current цифри, система не вибирає автоматично більшу або новішу — потрібне human approval.", "If official surfaces show different historical/current figures, the system does not automatically choose the larger or newer number; human approval is required.")
+        ]
       },
       {
         number: 4,
@@ -68,7 +72,12 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "Digital Audit по Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram; channel-role system; readiness gates; funnel/offer hypothesis; MindMap; KPI definitions; CRM attribution model; Candidate Assessment; 3–6 month media-plan logic.",
           "Digital Audit across Website · Google · Instagram · Facebook · Threads · TikTok · YouTube · Telegram; a channel-role system; readiness gates; funnel/offer hypothesis; MindMap; KPI definitions; CRM attribution model; Candidate Assessment; and 3–6 month media-plan logic."
-        )
+        ),
+        bullets: [
+          t("Google Form із brief використовується тільки як reference; Hermes його не відправляє від імені кандидата.", "The Google Form supplied with the brief is reference-only; Hermes does not submit it on the candidate's behalf."),
+          t("Default candidate intake зберігає job-relevant evidence: experience, portfolio/cases, KPI, tools, language, availability, work sample і reasoning. Куріння, сімейний стан, діти, партнер та інші lifestyle-питання не потрібні для оцінки marketing work.", "Default candidate intake keeps job-relevant evidence: experience, portfolio/cases, KPI, tools, language, availability, work sample, and reasoning. Smoking, marital status, children, partner details, and other lifestyle questions are not required to assess marketing work."),
+          t("Reviewer score допомагає людині прийняти рішення; автоматичного кадрового рішення немає.", "Reviewer scoring supports a human decision; there is no automated hiring decision.")
+        ]
       },
       {
         number: 5,
@@ -81,7 +90,9 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
           t("Instagram / TikTok / YouTube — organic discovery, education and proof.", "Instagram / TikTok / YouTube — organic discovery, education, and proof."),
           t("Threads — hypothesis engine: питання, заперечення, hooks і content backlog.", "Threads — hypothesis engine for questions, objections, hooks, and the content backlog."),
           t("Telegram — nurture / retention із збереженням source history.", "Telegram — nurture / retention with source history preserved."),
-          t("Facebook — proof / retarget / paid learning лише після readiness та CRM attribution.", "Facebook — proof / retarget / paid learning only after readiness and CRM attribution.")
+          t("Facebook — proof / retarget / paid learning лише після readiness та CRM attribution.", "Facebook — proof / retarget / paid learning only after readiness and CRM attribution."),
+          t("Один content asset → один primary CTA → один campaign/content identity. Не змішуємо «+» у Direct, консультацію, join і lead magnet без окремої attribution.", "One content asset → one primary CTA → one campaign/content identity. Do not mix a DM “+”, consultation, join action, and lead magnet without separate attribution."),
+          t("Content matrix: Awareness → Consideration → Proof → Conversion → Retention; обсяг публікацій не є KPI без downstream action.", "Content matrix: Awareness → Consideration → Proof → Conversion → Retention; publishing volume is not a KPI without a downstream action.")
         ]
       },
       {
@@ -90,7 +101,16 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "Organic content → trackable CTA → існуюча консультація КНБ → qualification / problem-fit → signal gate → offer hypothesis → відповідність 7-тижневій програмі → рішення → delivery → measured outcome → renewal / club. До signal gate paid не використовується як спосіб «знайти оффер» без baseline.",
           "Organic content → trackable CTA → existing KNB consultation → qualification / problem fit → signal gate → offer hypothesis → seven-week program fit → decision → delivery → measured outcome → renewal / club. Before the signal gate, paid media is not used to search blindly for an offer without a baseline."
-        )
+        ),
+        bullets: [
+          t("W1 · Marketing — acquisition / positioning / customer flow.", "W1 · Marketing — acquisition / positioning / customer flow."),
+          t("W2 · Key Business Metrics — baseline / conversion / unit economics.", "W2 · Key Business Metrics — baseline / conversion / unit economics."),
+          t("W3 · Hiring System — team / delegation / capacity.", "W3 · Hiring System — team / delegation / capacity."),
+          t("W4 · Facebook System — paid/social execution.", "W4 · Facebook System — paid/social execution."),
+          t("W5 · Instagram System — content / social monetization.", "W5 · Instagram System — content / social monetization."),
+          t("W6 · Sales System — consultation / conversion / average check.", "W6 · Sales System — consultation / conversion / average check."),
+          t("W7 · Online Packaging — website / landing / online conversion.", "W7 · Online Packaging — website / landing / online conversion.")
+        ]
       },
       {
         number: 7,
@@ -98,7 +118,15 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "CRM повинна зберігати source_channel, content_id, campaign_id, CTA/keyword, entry_offer, primary pain, baseline, recommended_module, manager, consultation status, program fit, objection, sale/revenue, cohort, completion і renewal. Instagram → Telegram → consultation не створюють нову людину щоразу.",
           "CRM should preserve source_channel, content_id, campaign_id, CTA/keyword, entry_offer, primary pain, baseline, recommended_module, manager, consultation status, program fit, objection, sale/revenue, cohort, completion, and renewal. Instagram → Telegram → consultation must not create a new person each time."
-        )
+        ),
+        bullets: [
+          t("1 · Qualified attention.", "1 · Qualified attention."),
+          t("2 · Lead action.", "2 · Lead action."),
+          t("3 · Qualified lead.", "3 · Qualified lead."),
+          t("4 · Consultation: booked → attended → qualified.", "4 · Consultation: booked → attended → qualified."),
+          t("5 · Sale + attributed revenue.", "5 · Sale + attributed revenue."),
+          t("6 · CAC · LTV/renewal · ROMI — тільки коли є реальні spend/revenue та attribution data.", "6 · CAC · LTV/renewal · ROMI — only when real spend/revenue and attribution data exist.")
+        ]
       },
       {
         number: 8,
@@ -106,7 +134,11 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
         body: t(
           "Ми розділяємо факт, гіпотезу і результат. Public audit не підміняє internal analytics; органіка створює baseline; paid перевіряє повторювані сигнали; CRM з’єднує marketing із sales та delivery. Unknown не перетворюється на zero або вигадану проблему.",
           "We separate fact, hypothesis, and outcome. Public audit does not substitute for internal analytics; organic activity creates the baseline; paid media tests repeatable signals; CRM connects marketing to sales and delivery. Unknown is never converted into zero or an invented problem."
-        )
+        ),
+        bullets: [
+          t("Diagnostic lenses: 1) Overthinking / complexity; 2) Data; 3) Assumptions / mind games; 4) Marketing tactics; 5) ROI; 6) Human capital.", "Diagnostic lenses: 1) Overthinking / complexity; 2) Data; 3) Assumptions / mind games; 4) Marketing tactics; 5) ROI; 6) Human capital."),
+          t("Ці 6 lenses — не шість KPI. Вони шукають ризик; outcome metrics окремо вимірюють результат.", "These six lenses are not six KPIs. They diagnose risk; outcome metrics measure results separately.")
+        ]
       },
       {
         number: 9,
@@ -149,7 +181,8 @@ export const catalogClientStrategies: Record<string, CatalogClientStrategy> = {
       t("2 · Усвідомлення", "2 · Awareness"),
       t("3 · Розуміння", "3 · Understanding"),
       t("4 · Застосування", "4 · Application"),
-      t("Після 2–4 повертаємось до 1 і формуємо наводящі питання.", "After completing 2–4, return to 1 and write leading questions.")
+      t("Після 2–4 повертаємось до 1 і формуємо наводящі питання.", "After completing 2–4, return to 1 and write leading questions."),
+      t("Рамку застосовуємо до Reels, Threads, Stories, каруселей, ad hypotheses, landing/funnel copy і sales questions.", "Apply the framework to Reels, Threads, Stories, carousels, ad hypotheses, landing/funnel copy, and sales questions.")
     ],
     scopes: [
       {
