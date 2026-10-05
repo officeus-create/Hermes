@@ -105,7 +105,7 @@ const schema = [
         "@type": "ListItem",
         position: index + 1,
         name: item.title,
-        url: new URL(item.schemaHref ?? item.href, Astro.site).toString(),
+        url: new URL(item.href, Astro.site).toString(),
       })),
     },
   },
