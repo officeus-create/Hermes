@@ -1,5 +1,217 @@
 [
   {
+    "id": "cloudflare-web-search-ai-gateway-october-2026",
+    "direction": "marketing",
+    "slug": "cloudflare-web-search-ai-gateway-october-2026",
+    "title": "Cloudflare Web Search API: What Live-Grounded AI Means for SEO | Hermes",
+    "description": "Cloudflare launched a Web Search API through AI Gateway and says participating search providers must use verified crawlers, respect robots.txt, and return links to crawled sources.",
+    "eyebrow": "AI Search & GEO Update · October 2026",
+    "h1": "Cloudflare added live web search for AI agents. What changes for website discoverability?",
+    "conciseAnswer": "Cloudflare announced Web Search API via AI Gateway on October 2, 2026, initially with Ceramic.ai, Exa and Linkup. Cloudflare says participating search-provider crawlers must meet its Verified Bot requirements, respect robots.txt, and return links to crawled sources. The practical implication is that current, machine-readable canonical pages and explicit crawler policy matter more when agents can ground answers in live web search.",
+    "explanation": [
+      "What changed: Cloudflare launched Web Search API through AI Gateway, giving agent and application workflows access to current web-search results. Cloudflare says the initial launch works with Ceramic.ai, Exa and Linkup.",
+      "Why it matters: this adds another path by which public website content can be discovered and cited inside AI-assisted workflows. Cloudflare says participating provider crawlers must satisfy its Verified Bot requirements, respect robots.txt and include links to crawled sources.",
+      "What to do: keep important business facts on stable canonical pages, make titles and structured facts machine-readable, audit Search, Training and Agent crawler policy separately, and verify actual crawl evidence before changing access rules. Measure qualified visits and downstream actions in owned analytics instead of counting machine requests as customer demand.",
+      "Result: the owned site can be easier to use as a current source for live-grounded AI search while preserving crawler controls. This is not a ranking, traffic or adoption guarantee."
+    ],
+    "takeaways": [
+      "Cloudflare launched Web Search API via AI Gateway on October 2, 2026 and says participating search-provider crawlers must identify themselves, respect robots.txt and provide source links."
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Hermes SEO",
+        "body": "Connect crawlability, canonical content and measurable search discovery.",
+        "href": "/services/seo/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Use the owned site as the canonical source behind distribution.",
+        "href": "/paths/marketing/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Cloudflare Blog — Introducing Web Search API via AI Gateway",
+    "sourceUrl": "https://blog.cloudflare.com/introducing-web-search-api/",
+    "sourcePublishedAt": "2026-10-02",
+    "datePublished": "2026-10-05",
+    "dateModified": "2026-10-05",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Cloudflare Web Search API",
+      "AI search SEO",
+      "AI Gateway web search",
+      "verified AI crawlers"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Cloudflare Web Search API announcement",
+        "use": "primary",
+        "url": "https://blog.cloudflare.com/introducing-web-search-api/",
+        "observedAt": "2026-10-05",
+        "eventDate": "2026-10-02",
+        "notes": "Primary Cloudflare source for availability, launch partners, crawler requirements, robots.txt behavior and source-link expectations."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing and search operating archive",
+        "use": "context_only",
+        "notes": "Anonymous patterns around owned-site control and discoverability only; no private client details or commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2024–2026 historical Hermes marketing/search operating material",
+      "nowPeriod": "October 2026",
+      "summary": "Hermes historical work treated the owned website as the canonical source behind distribution; Cloudflare's October 2026 Web Search API adds a live-grounded agent-search path where canonical pages, crawler policy and source attribution matter together.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://blog.cloudflare.com/introducing-web-search-api/"
+    },
+    "publicationScore": {
+      "score": 73,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+12 first-party evidence",
+        "+6 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit",
+        "-8 duplicate risk"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "bts-transportation-employment-september-2026",
+    "direction": "logistics",
+    "slug": "transportation-employment-september-2026",
+    "title": "September Trucking Employment: A Small Gain, Not a Freight Boom | Hermes",
+    "description": "BTS reported September 2026 truck-transportation employment up 0.2% from August and 0.1% year over year, while transportation-sector unemployment remained above the overall U.S. rate.",
+    "eyebrow": "Logistics Labor Market Update · October 2026",
+    "h1": "Truck transportation employment edged higher in September. What should logistics teams take from it?",
+    "conciseAnswer": "The U.S. Bureau of Transportation Statistics reported seasonally adjusted truck-transportation employment of 1,473,100 in September 2026, up 0.2% from August and 0.1% from September 2025. Transportation-sector unemployment was 4.7% on a not-seasonally-adjusted basis versus 4.0% overall. This is a modest labor-market stabilization signal, not proof that freight demand or rates have broadly recovered.",
+    "explanation": [
+      "What changed: BTS reported September 2026 truck-transportation employment at 1,473,100 on a seasonally adjusted basis, up 0.2% from August and 0.1% from a year earlier. Transportation-sector unemployment was 4.7% on a not-seasonally-adjusted basis, compared with 4.0% for the U.S. overall.",
+      "Why it matters: trucking employment improved slightly, but the broader transportation labor market still showed more unemployment than the overall economy. The release is useful as labor-market context, not as evidence that freight demand, lane rates or every hiring market have recovered.",
+      "Historical Hermes training material is used only for an anonymized pattern: practical market knowledge, load planning, negotiation and disciplined follow-up matter more than a single headline. No private identities or commercial figures are reused as current facts.",
+      "What to do: separate employment data from live freight economics. Use current lane conditions, fuel, equipment fit, compliance status, deadhead and actual load availability for operating decisions. For career decisions, build demonstrable current skills instead of treating a small monthly jobs increase as a hiring guarantee.",
+      "Result: the September release supports a measured conclusion: trucking employment improved slightly while the broader transportation labor market remained mixed."
+    ],
+    "takeaways": [
+      "Truck-transportation employment rose 0.2% month over month and 0.1% year over year in September 2026; transportation-sector unemployment was 4.7% versus 4.0% overall."
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Hermes Logistics",
+        "body": "Review the carrier and load-planning operating path.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Keep labor-market context separate from live load availability.",
+        "href": "/load-board/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "secondaryAction": {
+      "label": "Explore the Load Board",
+      "href": "/load-board/"
+    },
+    "sourceLabel": "U.S. Bureau of Transportation Statistics — September 2026 U.S. Transportation Sector Unemployment",
+    "sourceUrl": "https://www.bts.gov/newsroom/september-2026-us-transportation-sector-unemployment-47-rises-above-september-2025-level",
+    "sourcePublishedAt": "2026-10-02",
+    "datePublished": "2026-10-05",
+    "dateModified": "2026-10-05",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "truck transportation employment September 2026",
+      "transportation unemployment 2026",
+      "trucking labor market"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "BTS September 2026 transportation employment and unemployment release",
+        "use": "primary",
+        "url": "https://www.bts.gov/newsroom/september-2026-us-transportation-sector-unemployment-47-rises-above-september-2025-level",
+        "observedAt": "2026-10-05",
+        "eventDate": "2026-09-30",
+        "notes": "Primary federal source for September transportation-sector unemployment and mode-level employment."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics and Academy operating archive",
+        "use": "context_only",
+        "notes": "Anonymous operating patterns only; no private identities or commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes logistics and Academy operating material",
+      "nowPeriod": "September–October 2026",
+      "summary": "Historical Hermes training emphasized practical market knowledge and operating discipline rather than a single labor-market headline; the October 2026 BTS release reinforces that distinction because trucking employment improved slightly while broader transportation unemployment remained elevated.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.bts.gov/newsroom/september-2026-us-transportation-sector-unemployment-47-rises-above-september-2025-level"
+    },
+    "publicationScore": {
+      "score": 70,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+10 first-party evidence",
+        "+5 historical comparison",
+        "+9 search value",
+        "+8 internal-link fit",
+        "-2 duplicate risk"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
