@@ -22,7 +22,7 @@ const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profil
 {isLocalizedConcept ? (
   <BaseLayout title={title} description={description} schema={schema}>
     <SiteHeader theme="light" activePath="/businesses/" />
-    <main class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale="uk" /></main>
+    <main class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale={business.market === "us" ? "en" : "uk"} /></main>
     <SiteFooter />
   </BaseLayout>
 ) : <InternationalBusinessProfile business={business} />}
