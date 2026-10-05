@@ -305,20 +305,15 @@ test('Home secondary direction motion stays purposeful',async({page})=>{
  await expect(page.locator('.home-academy-pen')).toHaveCount(1);
 });
 
-test('Home motion responds to reduced-motion changes and stays decorative',async({page})=>{
+test('Home reduced motion disables Technology and Academy decorative animation',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
+ await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const layers=page.locator('[data-home-motion]');
- await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
- for(const layer of await layers.all()) {
-  await expect(layer).toHaveAttribute('aria-hidden','true');
-  await expect(layer).toHaveCSS('display','block');
-  expect(await layer.evaluate(node=>node.getAnimations().length)).toBe(0);
+ await page.locator('[data-route-id="technology"]').hover();
+ await page.locator('[data-route-id="academy"]').hover();
+ for(const selector of ['.home-system-code b','.home-system-output','.home-book-page','.home-academy-pen']) {
+  const nodes=page.locator(selector);
+  const names=await nodes.evaluateAll(items=>items.map(item=>getComputedStyle(item).animationName));
+  expect(names.every(name=>name==='none')).toBe(true);
  }
- await page.emulateMedia({reducedMotion:'no-preference'});
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
- await page.emulateMedia({reducedMotion:'reduce'});
- await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
- expect(await layers.first().evaluate(node=>node.getAnimations().length)).toBe(0);
 });
