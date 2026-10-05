@@ -30,8 +30,10 @@ export type CatalogBusinessConcept = {
   vertical: "repair_shop" | "restaurant" | "barber_shop" | "flower_shop" | "retail" | "business_academy";
   schemaType: "LocalBusiness" | "Restaurant" | "HairSalon" | "Florist" | "Store" | "EducationalOrganization";
   primaryIntent: string;
+  primaryIntentEn?: string;
   secondaryIntent?: string;
-  featuredOffer?: { name: string; url: string; description: string; duration?: string };
+  secondaryIntentEn?: string;
+  featuredOffer?: { name: string; nameEn?: string; url: string; description: string; descriptionEn?: string; duration?: string; durationEn?: string };
   crmPreviewUrl?: string;
   strategyPreviewUrl?: string;
   digitalAudit?: CatalogDigitalAudit;
@@ -42,12 +44,14 @@ export type CatalogBusinessConcept = {
   postalCode?: string;
   countryCode: string;
   hours: string[];
+  hoursEn?: string[];
   schemaHours?: string[];
   website?: string;
   services: string[];
   trust?: { source: string; rating: number; reviewCount: number; observedAt: string };
   channels: { label: string; url: string; direction: "primary" | "secondary" | "maps" }[];
   factsRequiringOwnerConfirmation: string[];
+  factsRequiringOwnerConfirmationEn?: string[];
   localeCopy?: {
     uk: {
       disclosure: string; heroKicker: string; heroTitle: string; heroLead: string;
@@ -60,7 +64,7 @@ export type CatalogBusinessConcept = {
       opportunityTitle: string; opportunityBody: string; requestTitle: string; requestBody: string;
     };
   };
-  faq?: { question: string; answer: string }[];
+  faq?: { question: string; answer: string; questionEn?: string; answerEn?: string }[];
   semanticCore?: string[];
   sourceRef: string;
 };
@@ -230,12 +234,17 @@ export const konsNaBisConcept = Object.freeze({
   vertical: "business_academy",
   schemaType: "EducationalOrganization",
   primaryIntent: "Бізнес-клуб та навчання для власників малого і середнього бізнесу",
+  primaryIntentEn: "Business club and education for small and medium business owners",
   secondaryIntent: "7-тижнева програма «Стратегія керованого зростання у бізнесі»",
+  secondaryIntentEn: "Seven-week Managed Business Growth Strategy program",
   featuredOffer: {
     name: "Стратегія керованого зростання у бізнесі",
+    nameEn: "Managed Business Growth Strategy",
     url: "https://biznes-club-knb.com/zrostannia-u-biznesi",
     description: "Комплексна онлайн-програма для підприємців із супроводом; офіційний опис програми заявляє 7-тижневий формат.",
-    duration: "7 тижнів"
+    descriptionEn: "A comprehensive guided online program for entrepreneurs; the official program describes a seven-week format.",
+    duration: "7 тижнів",
+    durationEn: "7 weeks"
   },
   crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",
   strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
@@ -246,6 +255,7 @@ export const konsNaBisConcept = Object.freeze({
   postalCode: "09107",
   countryCode: "UA",
   hours: ["Онлайн-програми та бізнес-клуб · актуальний розклад уточнюйте на офіційному сайті"],
+  hoursEn: ["Online programs and business club · check the current schedule on the official website"],
   website: "https://kons-na-bis.com/",
   services: [
     "Стратегія керованого зростання у бізнесі · 7 тижнів",
@@ -363,6 +373,13 @@ export const konsNaBisConcept = Object.freeze({
     "формулювання результатів/гарантій для публікації Hermes",
     "остаточне погодження оформлення Hermes Catalog профілю"
   ],
+  factsRequiringOwnerConfirmationEn: [
+    "current start date of the next cohort",
+    "current program price",
+    "current lesson and event schedule",
+    "approved wording for results / guarantees published by Hermes",
+    "final approval of the Hermes Catalog profile presentation"
+  ],
   localeCopy: {
     uk: {
       disclosure: "Клієнтський профіль Hermes Catalog на основі офіційних публічних джерел; оформлення та змінні комерційні умови потребують окремого погодження.",
@@ -392,9 +409,9 @@ export const konsNaBisConcept = Object.freeze({
     }
   },
   faq: [
-    { question: "Що таке «Стратегія керованого зростання у бізнесі»?", answer: "За офіційним описом КНБ це комплексна онлайн-програма для підприємців тривалістю 7 тижнів. Актуальну програму, дату старту та умови участі слід перевіряти на офіційній сторінці." },
-    { question: "Чи є ця сторінка офіційним сайтом КНБ?", answer: "Ні. Це додатковий профіль Hermes Catalog для пошуку й навігації, який посилається на офіційні ресурси КНБ і не замінює їх." },
-    { question: "Що Hermes реалізував для КНБ?", answer: "Окремо від цього індексованого профілю підготовлено Academy CRM demo та noindex marketing-assessment із social-аудитом, funnel/offer і KPI-моделлю." }
+    { question: "Що таке «Стратегія керованого зростання у бізнесі»?", questionEn: "What is the Managed Business Growth Strategy?", answer: "За офіційним описом КНБ це комплексна онлайн-програма для підприємців тривалістю 7 тижнів. Актуальну програму, дату старту та умови участі слід перевіряти на офіційній сторінці.", answerEn: "According to KNB's official description, this is a comprehensive seven-week online program for entrepreneurs. Check the official program page for current content, cohort dates, and participation terms." },
+    { question: "Чи є ця сторінка офіційним сайтом КНБ?", questionEn: "Is this KNB's official website?", answer: "Ні. Це додатковий профіль Hermes Catalog для пошуку й навігації, який посилається на офіційні ресурси КНБ і не замінює їх.", answerEn: "No. This is an additional Hermes Catalog discovery profile that links to KNB's official resources and does not replace them." },
+    { question: "Що Hermes реалізував для КНБ?", questionEn: "What has Hermes prepared for KNB?", answer: "Canonical Catalog profile містить Digital Audit і повну client strategy. Окремо збережено noindex evidence/workspace та Academy CRM demo, які показують деталізований audit і операційну CRM-модель без вигаданих результатів.", answerEn: "The canonical Catalog profile contains the Digital Audit and full client strategy. A separate noindex evidence workspace and Academy CRM demo preserve the detailed audit and operating CRM model without invented outcomes." }
   ],
   semanticCore: [
     "Конс на Бі$",
