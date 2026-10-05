@@ -253,6 +253,17 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await reduced.close();
 });
 
+test('Home rain reads as restrained weather rather than page striping',async({page})=>{
+ await page.goto('/');
+ const activeWeather=page.locator('[data-home-logistics-weather-layer][data-logistics-layer-state="active"]');
+ await activeWeather.evaluate(node=>node.setAttribute('data-logistics-echo-scene','dry-van'));
+ const rain=activeWeather.locator('.home-logistics-weather');
+ await expect(rain).toHaveCSS('opacity','0.3');
+ expect(await rain.evaluate(node=>getComputedStyle(node).animationDuration)).toBe('1.7s');
+ expect(await rain.evaluate(node=>getComputedStyle(node).filter)).toContain('blur');
+ expect(await rain.evaluate(node=>getComputedStyle(node).backgroundImage)).toContain('radial-gradient');
+});
+
 test('Home dusk Logistics polish keeps Hotshot readable without flattening the scene',async({page})=>{
  await page.goto('/');
  const activeWeather=page.locator('[data-home-logistics-weather-layer][data-logistics-layer-state="active"]');
