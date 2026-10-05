@@ -8,6 +8,10 @@ test('KNB academy demo keeps client evidence and CRM structure explicit',()=>{
   assert.match(html,/CAC · LTV · ROMI/);
   assert.match(html,/Lead → consultation → enrollment → participation → continuation/);
   assert.match(html,/Brief recovered/);
+  assert.match(html,/Reviewer truth gate/);
+  assert.match(html,/organic programming → baseline → paid learning/);
+  assert.match(html,/Метод 4 колонок/);
+  assert.match(html,/Питання → Усвідомлення → Розуміння → Застосування/);
   assert.match(html,/02\.10\.2026.*09:00/);
   assert.match(html,/Google Docs/);
   assert.match(html,/no live customer data/i);
@@ -31,8 +35,10 @@ test('KNB concept stays source-bounded and non-indexable',()=>{
 const genericCase=await readFile(new URL('../src/pages/businesses/marketing-growth-audit-example/index.astro',import.meta.url),'utf8');
 test('Catalog exposes a reusable indexable marketing growth strategy example',()=>{
   assert.match(genericCase,/Marketing Growth Audit Example/);
-  assert.match(genericCase,/Social → CRM → Revenue/);
-  assert.match(genericCase,/90-DAY OPERATING PLAN/);
+  assert.match(genericCase,/Organic → Paid Learning → Offer → CRM/);
+  assert.match(genericCase,/READINESS GATE/);
+  assert.match(genericCase,/3–6 MONTH MEDIA PLAN/);
+  assert.match(genericCase,/Питання → Усвідомлення → Розуміння → Застосування/);
   assert.match(genericCase,/PROOF GOVERNANCE/);
   assert.match(genericCase,/trackCaseOpened\("marketing_growth_audit_example"\)/);
   assert.match(genericCase,/trackEvent\("case_study_cta"/);
