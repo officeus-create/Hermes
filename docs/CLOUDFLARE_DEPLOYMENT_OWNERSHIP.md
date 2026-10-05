@@ -201,3 +201,23 @@ Rules:
 Authority chain:
 
 `Hermes Unified Brand System -> Hermes Digital Interface Layer -> governed repository implementation -> Cloudflare delivery`.
+
+## Search crawler and synthetic-traffic non-regression — 2026-10-06
+
+The owner-approved cross-department policy is `docs/SEARCH_GROWTH_GUARDRAIL.md`.
+
+Cloudflare/DevOps must treat these as separate traffic classes:
+
+- `HUMAN` — real visitors and customers;
+- `SEARCH_CRAWLER` — verified Googlebot/Bingbot and other approved crawlers;
+- `HERMES_SYNTHETIC` — CI, Playwright, release verifiers, headless browsers, agent readbacks, API smoke tests and bounded uptime probes.
+
+Rules:
+
+1. Do not use WAF/bot cleanup to block verified Googlebot/Bingbot merely because Hermes-owned QA traffic is noisy.
+2. Prefer stable Hermes synthetic User-Agent/marker conventions and analytics exclusion over broad network blocking.
+3. Prefer deploy/change-triggered production verification and bounded health checks over repeated full-site polling.
+4. Multiple agents/workflows should reuse one current production receipt when its exact SHA/scope is still valid instead of recrawling the same surface.
+5. Synthetic traffic is engineering evidence only; it is not a session, customer, lead, conversion or revenue signal.
+6. Investigate 401/403/404/429/5xx patterns by host/path/agent before changing security policy.
+7. Cloudflare runtime changes remain subject to the normal owner gate; this documentation policy does not itself change WAF, DNS, cache or bot settings.
