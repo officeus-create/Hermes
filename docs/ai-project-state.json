@@ -1,15 +1,17 @@
 {
   "schema_version": 6,
-  "reviewed_at": "2026-09-04",
+  "reviewed_at": "2026-10-05",
   "repository": "officeus-create/Hermes",
-  "main_commit_at_review": "49c4354e8de7547f8011d01bb31cbdc855157060",
+  "main_commit_at_review": "9f81664207d4df5f05f12b006342bf3be990e3ef",
   "freshness": {
-    "state_class": "current_governance_release_reconciliation_snapshot",
+    "state_class": "current_governance_execution_snapshot",
     "historical_handoff_is_not_current_state": true,
-    "refresh_reason": "Main advanced through London conversion evidence, Connect verifier reconciliation, Cloudflare release wiring, owner registration operations, and Repair Shop auth source-truth convergence; open lanes and external blockers were re-read on exact current main.",
-    "refresh_policy": "Re-fetch current main and every moving specialist PR before any material decision. PR head values in this snapshot are observations at review time, not durable current-state assertions.",
+    "refresh_reason": "Refreshed after the Aug-31 One Brain tail was rechecked against current Drive ACLs, the current Mac execution surface, the current GitHub main/open-PR set, and the current DOT orchestration contract. The nine Aug-31 PRs are no longer open work.",
+    "refresh_policy": "Re-fetch current main, moving PR heads, exact-head checks, production readback and One Brain owner state before any material decision. Snapshot SHAs are observations, not durable truth.",
     "cloudflare_refresh_at": "2026-09-17",
-    "cloudflare_refresh_source": "GitHub #1349 + authenticated Wrangler Pages readback; generic Pages release token is not the current production blocker."
+    "cloudflare_refresh_source": "GitHub #1349 + authenticated Wrangler Pages readback; generic Pages release token is not the current production blocker.",
+    "cloudflare_current_access_check_at": "2026-10-05",
+    "cloudflare_current_access_check": "OPERA_DASHBOARD_SIGN_IN_REQUIRED__LOCAL_WRANGLER_HAS_NO_AUTH_CONTEXT__DO_NOT_INVENT_DASHBOARD_OR_D1_PROOF"
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
@@ -22,72 +24,199 @@
     "drive_acl_issue": 431
   },
   "current_thread_scope": {
-    "classification": "ONE_BRAIN_GOVERNANCE_GITHUB_RECONCILIATION_NON_DESIGN_EXECUTION",
+    "classification": "CURRENT_GOVERNANCE_COORDINATION_STATE_REFRESH",
     "in_scope": [
-      "one_brain_google_drive_governance_and_canonicalization",
-      "drive_acl_access_risk_reconciliation",
-      "claude_exit_migration_acceptance_and_decommission_gate",
-      "github_governance_machine_state_freshness_and_pr_archaeology",
-      "cross_chat_routing_and_writer_lock_collision_prevention",
-      "backend_api_security_data_persistence_ci_release_truth_and_production_evidence"
+      "canonical_machine_state_freshness",
+      "one_brain_acl_and_execution_receipts",
+      "github_open_pr_current_state",
+      "cloudflare_access_truth_without_bypassing_auth",
+      "dot_execution_orchestration_handoff"
     ],
     "route_only": {
-      "hermes_connect_design": "Design 5",
-      "hermes_connect_ai": "AI Hermes Connect",
-      "seo_geo": "dedicated SEO/GEO lane(s)",
-      "owner_mac_and_local_runtime": "Codex 2",
-      "specialist_product_implementation": "active domain owner"
+      "product_design": "existing design owner lanes",
+      "catalog_knb": "existing KNB/Catalog lane",
+      "public_traffic_counter": "existing PR #1678 lane",
+      "cloudflare_owner_admin": "owner/admin or scoped connector only",
+      "legacy_antigravity_import": "only if legacy source files are actually recovered"
     }
   },
   "integration_snapshot": {
     "main": {
-      "sha": "49c4354e8de7547f8011d01bb31cbdc855157060",
-      "latest_merge_pr": 1064,
-      "latest_merge_scope": "Repair Shop owner auth server-source truth aligned with current live workflow wording",
-      "production_live_parity": "BLOCKED_EXTERNAL_961_API_TOKEN_ONLY",
+      "sha": "9f81664207d4df5f05f12b006342bf3be990e3ef",
+      "latest_merge_pr": 1684,
+      "latest_merge_scope": "Opportunities utility navigation after Work With Hermes hub #1683",
+      "production_live_parity": "UNKNOWN_AFTER_MAIN_ADVANCE__EXACT_MAIN_PRODUCTION_READBACK_REQUIRED",
       "exact_main_evidence": {
-        "cloudflare_pages_deploy_run": 33847109145,
-        "cloudflare_pages_deploy_result": "FAILURE_PRE_DEPLOY_SCOPED_API_TOKEN_ONLY",
-        "london_production_verifier_run": 33847109141,
-        "london_production_verifier_result": "SUCCESS",
-        "website_run": 33847109195,
-        "website_result_at_review": "IN_PROGRESS_REFETCH_BEFORE_DECISION"
+        "current_main_exact_website": "UNKNOWN_NO_FRESH_EXACT_MAIN_WEBSITE_RUN_SURFACED_IN_THIS_REFRESH",
+        "merged_pr_1684_head_website": "FAILED_BEFORE_MERGE__NAV_CONTRACT_AND_MOBILE_MENU_TIMEOUT",
+        "successor_pr_1685_exact_head": "GREEN_AT_06409DA_OBSERVED_BEFORE_THIS_REFRESH__NOT_MAIN",
+        "production_readback": "UNKNOWN__DO_NOT_INFER_FROM_MERGE_OR_BRANCH_PREVIEW"
       }
     },
     "moving_pr_head_semantics": "OBSERVED_AT_REVIEW_ONLY_REFETCH_BEFORE_DECISION",
     "open_pull_requests": [
       {
-        "number": 1059,
-        "title": "SEO/GEO: revenue-first 100-task execution gate",
-        "owner_lane": "SEO_GEO_SPECIALIST",
-        "observed_head_at_review": "66971e0cfa2e32aef990b91e452832d9d296b5d1",
-        "observed_ahead_by": 18,
-        "observed_behind_by": 0,
-        "classification": "ACTIVE_SPECIALIST_LANE_CURRENT_BASE_AT_REVIEW",
+        "number": 1685,
+        "title": "feat(opportunities): expand careers, partners, agencies and investment paths",
+        "draft": false,
+        "observed_head_at_review": "06409da49e4b4b2e9b43f621d4972d4017991d37",
+        "observed_base_sha": "9f81664207d4df5f05f12b006342bf3be990e3ef",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
         "takeover_allowed": false,
-        "decision_rule": "REFETCH_PR_HEAD_COMPARE_AND_EXACT_HEAD_CI_BEFORE_PROMOTION",
-        "last_coordination_sync_pr": 1067
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
       },
       {
-        "number": 1039,
-        "title": "feat(social): final FCC-main replay of LinkedIn attribution bridge",
-        "owner_lane": "MARKETING_SOCIAL_SPECIALIST",
-        "observed_head_at_review": "781189ca87c0daee4d593c91d553c0482d6c4832",
-        "observed_ahead_by": 1,
-        "observed_behind_by": 80,
-        "classification": "ACTIVE_SPECIALIST_LANE_STALE_TO_CURRENT_MAIN_AT_REVIEW",
+        "number": 1681,
+        "title": "feat(catalog): add KNB digital audit and organic-first growth path",
+        "draft": false,
+        "observed_head_at_review": "9104e089ad8b11286e3d7fc41355d6f0c5901196",
+        "observed_base_sha": "9f81664207d4df5f05f12b006342bf3be990e3ef",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
         "takeover_allowed": false,
-        "decision_rule": "REFETCH_PR_HEAD_COMPARE_AND_EXACT_HEAD_CI_BEFORE_PROMOTION",
-        "scope": [
-          "scripts/social-distribution.test.mjs",
-          "src/data/social-distribution-preview.ts",
-          "src/lib/social-distribution.ts",
-          "src/pages/demos/social-distribution/index.astro",
-          "tests/social-distribution.spec.ts"
-        ]
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1679,
+        "title": "Design V4: smooth Home Logistics motion + primary direction polish",
+        "draft": false,
+        "observed_head_at_review": "11d83b4272cd5d812516f6e0df11e1358a42f013",
+        "observed_base_sha": "a122bb2a4f15c37a442801760d38310a2baf858a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1678,
+        "title": "feat(traffic): show privacy-safe public live site counter",
+        "draft": false,
+        "observed_head_at_review": "184ba655373d13bfc8230ce89df1f4c9f02e5b9c",
+        "observed_base_sha": "9f81664207d4df5f05f12b006342bf3be990e3ef",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1676,
+        "title": "Design V4: turn Website Development showroom into a truthful proof replay",
+        "draft": false,
+        "observed_head_at_review": "0c87e1e6408871cac8fe83a907740a13c5984d84",
+        "observed_base_sha": "4c34ec9a73f166ce8aa942cda2acd5eb603c0b6a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1675,
+        "title": "Design V4: align Legal & Compliance with corporate trust shell",
+        "draft": false,
+        "observed_head_at_review": "e07a8eba16956cb8a0b7b8af492cfe3d06575212",
+        "observed_base_sha": "4c34ec9a73f166ce8aa942cda2acd5eb603c0b6a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1674,
+        "title": "Design V4: align Appleton and local logistics cards with corporate shell",
+        "draft": true,
+        "observed_head_at_review": "f9285f7b2bb35b4a771e16538b2f2b6c7ea60b74",
+        "observed_base_sha": "4c34ec9a73f166ce8aa942cda2acd5eb603c0b6a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1673,
+        "title": "Design V4: align digital service pages with quiet corporate shell",
+        "draft": false,
+        "observed_head_at_review": "cf6435ce8cf5137aeae0331ec4e4fe09393b3ba3",
+        "observed_base_sha": "4c34ec9a73f166ce8aa942cda2acd5eb603c0b6a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1670,
+        "title": "fix(insights): sync parent lastmod through a narrow trusted scope gate",
+        "draft": true,
+        "observed_head_at_review": "7b3949e42a1a172845c46778e4a233d4fdacf93f",
+        "observed_base_sha": "b1d0a0284b077421f76d489053dcd642b66669cf",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1669,
+        "title": "fix(qa): reject missing local HTML link targets",
+        "draft": true,
+        "observed_head_at_review": "f106ce871588d818fbd7e91350d36a1c566518b6",
+        "observed_base_sha": "b1d0a0284b077421f76d489053dcd642b66669cf",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1668,
+        "title": "Cold Fair: source pre-send state from canonical server adapter",
+        "draft": true,
+        "observed_head_at_review": "bbd418c86927508e3465bd469c4106263c52cefe",
+        "observed_base_sha": "471adca49e672244a20f1ad79ef8a632e9460471",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1663,
+        "title": "fix(catalog): clarify business and service counts",
+        "draft": true,
+        "observed_head_at_review": "d0ac1018590404b568d34a6e000cff26e6257bde",
+        "observed_base_sha": "471adca49e672244a20f1ad79ef8a632e9460471",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1596,
+        "title": "feat(connect): Academy business CRM + Catalog onboarding",
+        "draft": true,
+        "observed_head_at_review": "b9ecbfe2f7ad5085340c66127c34791beaf12e7a",
+        "observed_base_sha": "f9a4fdf63e6027f533e288b3a53f962933fac515",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1591,
+        "title": "feat(connect): prepare safe KNB company provisioning and canonical Catalog projection",
+        "draft": true,
+        "observed_head_at_review": "5db649f5aefb31701fc34e3ddfdc90912b59b41b",
+        "observed_base_sha": "eeaa2fe3ad4aeba9ea01a5224a2653509afb7270",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1565,
+        "title": "content(insights): Sep 30 governed intelligence cycle",
+        "draft": true,
+        "observed_head_at_review": "d0ec03f6246c0aa46b8cf64c6cd6e7f752c8024b",
+        "observed_base_sha": "9cbda6859be80f1919efef347362fd9210776e28",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
+      },
+      {
+        "number": 1493,
+        "title": "feat(telegram): replay ProgressoPro cloud gateway on current main",
+        "draft": true,
+        "observed_head_at_review": "9b6bfaa96f24ed1802983a19eaed53cb595eaef6",
+        "observed_base_sha": "93c9b962149eb4da79f33d820c41032f7171558a",
+        "classification": "CURRENT_OPEN_PR__REFETCH_EXACT_HEAD_BEFORE_DECISION",
+        "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_EXACT_HEAD_CI_AND_OWNER_GATE_BEFORE_PROMOTION"
       }
     ],
-    "writer_collision_status": "GOVERNANCE_REFRESH_ISOLATED_TO_DOCS_AI_PROJECT_STATE_JSON"
+    "writer_collision_status": "STATE_REFRESH_ONLY__NO_PRODUCT_IMPLEMENTATION_TAKEOVER"
   },
   "recent_promotions": {
     "website_factory_pr_1033": {
@@ -144,22 +273,31 @@
       "runtime_behavior_changed": false,
       "design_changed": false,
       "production_live_gate": 961
+    },
+    "opportunities_hub_pr_1683": {
+      "state": "MERGED_CODE_SIDE__PRODUCTION_READBACK_REQUIRED_FOR_LIVE_CLAIM",
+      "merge_sha": "3727f5c7aea6e9f3be4ad9267bac71395e6157f0"
+    },
+    "opportunities_nav_pr_1684": {
+      "state": "MERGED_WITH_EXACT_HEAD_WEBSITE_FAILURE__CURRENT_MAIN_REQUIRES_FRESH_REPLAY",
+      "merge_sha": "9f81664207d4df5f05f12b006342bf3be990e3ef",
+      "known_failure": "opportunities mobile-nav timeout + secondary-nav count contract"
     }
   },
   "platform_and_owner_gates": {
     "password_reset_email_611": "OWNER_ADMIN_ACTIVATION_GMAIL_API_TRANSPORT_OFF_UNTIL_GMAIL_SEND_OAUTH_SECRETS_RESET_PROOF_AND_MAIL_AUTH_ALIGNMENT",
     "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION_NO_PROTECTION_NO_RULESETS",
-    "drive_acl_431": "FIX_REQUIRED_LEGACY_AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_OWNER_PRESERVED",
+    "drive_acl_431": "FIX_REQUIRED_LEGACY_AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_2026_10_05_OWNER_PRESERVED__OWNER_ADMIN_PERMISSION_REMOVAL_REQUIRED",
     "telegram_historical_credential_932": "BLOCKED_PROVIDER_SIDE_ROTATION_OR_REVOCATION_NOT_PROVEN",
     "partnership_sender_876": "BLOCKED_PARTNERSHIP_SEND_AS_OR_DEDICATED_SENDER_NOT_PROVEN_DO_NOT_SPOOF",
     "ceo_qa_671": "EXISTING_QA_IDENTITY_PRESERVED_DO_NOT_REPROVISION_AUTHENTICATED_OWNER_READBACK_REQUIRES_SECURE_SESSION_CREDENTIAL_HANDOFF",
-    "owner_mac_internal_ai": "MACBOOK_RETIRED_DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE_REQUIRES_NEW_AUTHORIZED_ENDPOINT_OR_HANDOFF",
+    "owner_mac_internal_ai": "MACBOOK_RETIRED DO_NOT_USE_OLD_LOCAL_RUNNER_ROUTE AS CANONICAL TRUTH; current authorized Remote Desktop Mac may be used as an execution surface only. 2026-10-05 Control Center GET /admin=200, but the two Aug-31 legacy AntiGravity source files are missing on the current Mac and were not found in Drive.",
     "design_visual_work": "ROUTE_DESIGN_5",
     "repair_shop_access_proof_960": "BLOCKED_CLOUDFLARE_ACCOUNT_ACCESS_DEDICATED_PAGES_READ_D1_AND_ACCOUNT_CONTEXT_REQUIRED_961_CLOSED"
   },
   "one_brain_security": {
-    "canonical_core_state": "CANONICAL_GLOBAL_CORE_NO_ANONYMOUS_GRANT_OBSERVED_IN_LAST_VERIFIED_READ",
-    "legacy_tree_state": "FRESH_LEGACY_ANONYMOUS_WRITER_RISK_REMAINS_ON_AI_COMMAND_CENTER",
+    "canonical_core_state": "CURRENT_CANONICAL_GLOBAL_CORE_SAMPLE_PRIVATE__NO_ANONYMOUS_GRANT_OBSERVED_IN_RECHECKED_CURRENT_DOCS",
+    "legacy_tree_state": "FIX_REQUIRED__AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_2026_10_05",
     "bulk_destructive_cleanup_allowed": false,
     "access_codex": "RESTRICTED_SECRET_BEARING_SOURCE_OUTSIDE_ORDINARY_ONE_BRAIN",
     "secrets_rule": "No plaintext credentials, tokens, private keys or recovery values in ordinary One Brain knowledge, prompts or public Git."
@@ -226,11 +364,11 @@
     "product_files_modified": false
   },
   "execution_priorities": [
-    "#961 is closed. Run the bounded production repair_shop_access transition -> owner/API readback -> D1 readback -> cleanup only through owner issue #960 using dedicated least-privilege Pages-read + D1 proof access; do not create a second deployment stack.",
-    "After a successful exact-main deploy, require production readback before calling current code live.",
-    "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
-    "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",
-    "Keep current owner lanes isolated and replay stale PRs onto fresh main rather than stacking patches on old branches."
+    "#961 is closed. Keep bounded production D1/operator proof in owner issue #960 and do not revive a generic Pages-token blocker.",
+    "Finish existing qualified-discoverability measurement lane: public traffic counter #1678 on fresh main, exact-head CI, then production readback; do not create a second analytics service.",
+    "Prioritize U.S. car-hauling carrier demand → qualified real carrier → human receiver → next action.",
+    "Prioritize U.S.-first website/redesign/CRM demand → qualified real lead → human receiver → next action.",
+    "Close KNB / Connect-Catalog real-user activation through its existing owner lane, then remaining operational/HR/Academy/Finance/history tails by business value and proximity to DONE."
   ],
   "execution_rules": [
     "Do not implement or rewrite Hermes Connect visual design from this thread; route visual work to Design 5.",
@@ -242,5 +380,37 @@
     "Do not rerun full Codex extraction merely because main moved; re-run only when new evidence overlaps reconciled legacy candidate classes or contradicts accepted classifications.",
     "Do not spoof Partnership sender identity and do not bypass owner/admin security blockers with public or duplicate stacks.",
     "MERGED != DEPLOYED != LIVE_VERIFIED."
-  ]
+  ],
+  "legacy_aug31_closeout": {
+    "observed_at": "2026-10-05",
+    "drive_security": {
+      "current_master_board": "PRIVATE_NO_ANONYMOUS_GRANT_OBSERVED",
+      "old_markdown_source_manifest": "PRIVATE_NO_ANONYMOUS_GRANT_OBSERVED",
+      "legacy_ai_command_center": "ANYONE_WRITER_STILL_ACTIVE__ISSUE_431_OWNER_ADMIN_ACTION_REQUIRED"
+    },
+    "mac_receipt": {
+      "control_center_admin_get": "HTTP_200",
+      "runtime_doctor": "READY_WITH_WARNINGS",
+      "legacy_evidence_db": "MISSING_ON_CURRENT_MAC",
+      "legacy_decision_jsonl": "MISSING_ON_CURRENT_MAC",
+      "drive_search_for_exact_legacy_filenames": "NO_MATCH",
+      "conclusion": "IMPORT_BLOCKED_BY_MISSING_LEGACY_SOURCES__DO_NOT_RECREATE_OR_INVENT_THEM"
+    },
+    "cloudflare_access": {
+      "opera_dashboard": "SIGN_IN_REQUIRED",
+      "local_wrangler_auth": "NO_TOKEN_OR_WRANGLER_AUTH_CONTEXT_OBSERVED",
+      "conclusion": "SCOPED_AUTH_ACCESS_GAP__PUBLIC_GITHUB_PRODUCTION_EVIDENCE_MAY_BE_USED_BUT_DASHBOARD_D1_BINDING_PROOF_REMAINS_UNKNOWN"
+    },
+    "old_prs": {
+      "871": "CLOSED_UNMERGED_2026_09_01",
+      "872": "CLOSED_UNMERGED_2026_08_31",
+      "877": "CLOSED_UNMERGED_2026_09_01",
+      "882": "CLOSED_UNMERGED_2026_09_01",
+      "885": "CLOSED_UNMERGED_2026_09_01",
+      "886": "CLOSED_UNMERGED_2026_09_01",
+      "887": "CLOSED_UNMERGED_2026_09_01",
+      "910": "MERGED_2026_09_01",
+      "911": "CLOSED_UNMERGED_2026_08_31"
+    }
+  }
 }
