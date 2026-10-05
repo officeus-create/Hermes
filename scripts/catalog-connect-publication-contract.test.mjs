@@ -121,8 +121,10 @@ for (const [page, expectedHref] of [
   ["dist/businesses/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/irpin/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/bila-tserkva/"],
   ["dist/businesses/ukraine/chaiky/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/irpin/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/bila-tserkva/index.html", "/businesses/ukraine/"],
 ]) {
   assert.match(read(page), new RegExp(`href=["']${expectedHref.replaceAll("/", "\\/")}["']`));
 }
@@ -130,6 +132,16 @@ assert.match(catalogConceptData, /localeCopy:/);
 assert.match(catalogConceptData, /Телефон зламався\? Почніть із Чайка Store\./);
 assert.match(catalogConceptData, /Phone problem\? Start with Chayka Store\./);
 assert.match(catalogConceptData, /semanticCore:/);
+assert.match(catalogConceptData, /konsNaBisConcept/);
+assert.match(catalogConceptData, /Стратегія керованого зростання у бізнесі/);
+assert.match(catalogConceptData, /EducationalOrganization/);
+assert.match(read("public/sitemap-business-directory.xml"), /\/businesses\/ukraine\/bila-tserkva\/kons-na-bis\//);
+const knbCatalogHtml = read("dist/businesses/ukraine/bila-tserkva/kons-na-bis/index.html");
+assert.match(knbCatalogHtml, /Конс на Бі\$/);
+assert.match(knbCatalogHtml, /Стратегія керованого зростання у бізнесі/);
+assert.match(knbCatalogHtml, /Official program page/);
+assert.match(knbCatalogHtml, /schema\.org/);
+assert.doesNotMatch(knbCatalogHtml, /noindex,nofollow/);
 assert.match(catalogPage, /business\.primaryIntent/);
 assert.doesNotMatch(catalogPage, /business\.vertical\.replace\("_"," "\)/);
 assert.match(internationalBusinessCollection, /business\.primaryIntent/);
