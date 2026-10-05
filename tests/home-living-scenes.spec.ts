@@ -10,7 +10,8 @@ test("Home keeps native routes and shows living details without layout overflow"
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".home-display-i")).toHaveCSS("animation-name", "none");
-  await expect(page.locator(".home-story-frame").first()).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".home-attention-signal")).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".home-academy-pen")).toHaveCSS("animation-name", "none");
 });
 
 test("Home update glow follows a dated public Insight and expires after seven days", async ({ page }) => {
