@@ -95,6 +95,7 @@ const navigation = activeLocale === "en"
     }));
 const isCatalogRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
 const isInsightsRoute = currentPath === "/insights/" || currentPath.startsWith("/insights/");
+const isOpportunitiesRoute = currentPath === "/opportunities/" || currentPath.startsWith("/opportunities/");
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const signInLabel = activeLocale === "en" ? "Sign in" : localizedLabels[activeLocale].signIn;
 const section = (["logistics", "marketing", "technology", "academy"] as DirectionId[]).find((slug) => currentPath.includes(`/paths/${slug}`));
@@ -152,6 +153,7 @@ const languageLinks = siteLocales.map((language) => {
     <a class="nav-secondary-link nav-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
     {isApprovedHome && <a class="nav-secondary-link" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
     <a class="nav-secondary-link catalog-nav-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
+    <a class="nav-secondary-link opportunities-nav-link" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
   </nav>
 
   <div class="header-actions">
@@ -195,6 +197,7 @@ const languageLinks = siteLocales.map((language) => {
     <a class="mobile-nav-pillar mobile-secondary-start" data-nav-tone="insights" href="/insights/" aria-current={isInsightsRoute ? "page" : undefined}>Insights{homeUpdates?.insights && <span class="home-update-sheen" data-home-update={homeUpdates.insights.publishedAt} data-update-description="home-insights-update" hidden aria-hidden="true"></span>}</a>
     {isApprovedHome && <a class="mobile-nav-pillar" data-nav-tone="connect" href="/services/hermes-connect/">Connect{homeUpdates?.connect && <span class="home-update-sheen" data-home-update={homeUpdates.connect.publishedAt} data-update-description="home-connect-update" hidden aria-hidden="true"></span>}</a>}
     <a class="mobile-nav-pillar mobile-catalog-link" data-nav-tone="catalog" href="/businesses/" aria-current={isCatalogRoute ? "page" : undefined}><span>Catalog</span>{homeUpdates?.catalog && <span class="home-update-sheen" data-home-update={homeUpdates.catalog.publishedAt} data-update-description="home-catalog-update" hidden aria-hidden="true"></span>}</a>
+    <a class="mobile-nav-pillar mobile-opportunities-link" href="/opportunities/" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
     {!isApprovedHome && <HermesConnectLauncher
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
@@ -417,12 +420,27 @@ const languageLinks = siteLocales.map((language) => {
   .desktop-nav .catalog-nav-link {
     margin-left: 0;
   }
+  .desktop-nav .opportunities-nav-link {
+    margin-left: .15rem;
+    padding: .42rem .65rem;
+    border: 1px solid color-mix(in srgb,currentColor 18%,transparent);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .desktop-nav .opportunities-nav-link[aria-current="page"] {
+    border-color: color-mix(in srgb,currentColor 38%,transparent);
+    background: color-mix(in srgb,currentColor 7%,transparent);
+  }
   .desktop-nav .catalog-nav-link span,
   .mobile-nav .mobile-catalog-link span {
     color: inherit;
   }
   .mobile-nav .mobile-catalog-link {
     margin-top: 0;
+  }
+  .mobile-nav .mobile-opportunities-link {
+    margin-top: .35rem;
+    border-top: 1px solid color-mix(in srgb,currentColor 16%,transparent);
   }
   @media (max-width: 1180px) and (min-width: 901px) {
     .desktop-nav--ecosystem { gap: .68rem; margin-left: 1rem; font-size: .76rem; }
