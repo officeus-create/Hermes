@@ -18,12 +18,14 @@ test("global header separates four primary directions from secondary discovery l
   ]);
 
   const secondary = page.locator(".desktop-nav > .nav-secondary-link");
-  await expect(secondary).toHaveCount(3);
+  await expect(secondary).toHaveCount(4);
   expect(await secondary.evaluateAll((links) => links.map((link) => link.getAttribute("data-nav-tone")))).toEqual([
     "insights",
     "connect",
     "catalog",
+    null,
   ]);
+  await expect(page.locator('.desktop-nav a[href="/opportunities/"]')).toHaveAttribute("href", "/opportunities/");
 
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
