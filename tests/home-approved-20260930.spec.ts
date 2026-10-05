@@ -130,7 +130,7 @@ test('Home opens the existing Connect and sign-in flows, then returns with brows
 
 test('compact Home CTA reaches native contact actions and approved artwork loads once',async({page})=>{
  const artwork:string[]=[];
- page.on('request',r=>{if(r.url().includes('/images/home-20261001/'))artwork.push(r.url())});
+ page.on('request',r=>{if(/\/images\/(?:home-20261001|logistics-living)\//.test(r.url()))artwork.push(r.url())});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
  await page.locator('.header-cta').click();
