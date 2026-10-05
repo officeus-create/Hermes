@@ -17,13 +17,13 @@ const funnel = [
   ["07", "Результат + renewal", "Порівняти baseline з фактичним результатом, зібрати feedback і визначити наступний продукт/членство."],
 ];
 
-const crmFields = [
-  ["Acquisition", "source · channel · campaign · content_id · CTA · landing"],
-  ["Diagnosis", "business stage · primary pain · bottleneck · baseline · priority"],
-  ["Sales", "owner · consultation status · objection · recommended module · reason to believe · decision"],
-  ["Delivery", "cohort · attendance · assignment · review · next action"],
-  ["Outcome", "verified before/after metric · source · definition · review date"],
-  ["Retention", "completion · feedback · renewal / club / next program"],
+const measurementSteps = [
+  ["Acquisition", "Зберегти канал і конкретний content touchpoint, з якого почалася дія."],
+  ["Diagnosis", "Зафіксувати головну проблему та baseline до рекомендації програми."],
+  ["Consultation", "Не втратити контекст між діагностикою, консультацією та рішенням."],
+  ["Delivery", "Пов’язати участь у програмі з попереднім шляхом без публікації приватних даних."],
+  ["Outcome", "Порівнювати тільки перевірений before/after за однаковим визначенням метрики."],
+  ["Retention", "Окремо вимірювати completion, feedback і наступну дію після програми."],
 ];
 
 const phases = [
@@ -165,12 +165,12 @@ const schema = [
         </div>
       </section>
 
-      <section class="panel" aria-labelledby="crm-title">
-        <div class="section-head"><div><p class="eyebrow">04 · CRM HANDOFF</p><h2 id="crm-title">CRM повинна пам’ятати, чому людина прийшла і що відбулося після консультації.</h2></div><a href="/services/hermes-connect/academy/">Hermes Connect Academy →</a></div>
-        <div class="crm-table" role="table" aria-label="Recommended CRM fields">
-          {crmFields.map(([group,fields]) => <div role="row"><strong role="cell">{group}</strong><span role="cell">{fields}</span></div>)}
+      <section class="panel" aria-labelledby="measurement-title">
+        <div class="section-head"><div><p class="eyebrow">04 · MEASUREMENT CONTINUITY</p><h2 id="measurement-title">Джерело контакту не повинно губитися між контентом, діагностикою, консультацією та результатом.</h2></div><a href="/services/hermes-connect/academy/">Hermes Connect Academy →</a></div>
+        <div class="measurement-grid">
+          {measurementSteps.map(([stage,copy]) => <article><strong>{stage}</strong><p>{copy}</p></article>)}
         </div>
-        <p class="source-note">CAC, LTV і ROMI не заповнюються нулями “для дашборду”. Вони з’являються тільки після підключення дозволених spend, sales/revenue і attribution sources з відомими definitions.</p>
+        <p class="source-note">Приватна CRM-схема, персональні дані, ролі команди та внутрішні поля навмисно не публікуються в Catalog. CAC, LTV і ROMI мають з’являтися тільки з дозволених джерел і відомих definitions; unknown не перетворюється на zero.</p>
       </section>
 
       <section class="panel" aria-labelledby="plan-title">
@@ -232,10 +232,10 @@ const schema = [
   .source-note{margin:16px 0 0;padding:13px 15px;border-radius:13px;background:#f2f5f8;font-size:12px}
   .offer{margin-top:20px;padding:24px;border-radius:18px;background:#172033;color:#fff}.offer-label{margin:0!important;color:#afa2ff!important;font-size:10px!important;font-weight:900;letter-spacing:.1em}.offer strong{display:block;max-width:900px;margin:10px 0;font-size:clamp(23px,3vw,34px);line-height:1.2}.offer p{color:#c1cad6}
   .funnel{display:grid;grid-template-columns:repeat(7,minmax(155px,1fr));gap:10px;margin-top:18px;overflow-x:auto;padding-bottom:4px}.funnel article{min-height:190px;padding:17px;border:1px solid #e0e6ed;border-radius:16px;background:#fbfcfe}.funnel span{color:#705bc9;font-size:11px;font-weight:900}.funnel h3{margin:12px 0 8px;font-size:17px}.funnel p{margin:0;color:#69798d;line-height:1.5;font-size:12px}
-  .crm-table{display:grid;margin-top:20px;border:1px solid #dfe6ed;border-radius:16px;overflow:hidden}.crm-table>div{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:14px 17px;background:#fff}.crm-table>div:nth-child(even){background:#f7f9fb}.crm-table strong{color:#30276c}.crm-table span{color:#5f7084;line-height:1.5}
+  .measurement-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.measurement-grid article{padding:17px;border:1px solid #e1e7ee;border-radius:15px;background:#fafbfd}.measurement-grid strong{color:#30276c}.measurement-grid p{margin:7px 0 0;color:#5f7084;line-height:1.55;font-size:13px}
   .evidence-grid strong{color:#332878;font-size:16px}
   .faq-list{display:grid;gap:10px;margin-top:20px}.faq-list details{padding:16px 18px;border:1px solid #e1e7ee;border-radius:15px;background:#fafbfd}.faq-list summary{cursor:pointer;font-weight:900;line-height:1.45}.faq-list p{margin:10px 0 0}
   .cta{margin-top:18px;padding:clamp(28px,5vw,52px);background:#172033;color:#fff}.cta .eyebrow{color:#b7abff}.cta h2{max-width:850px;margin:0;font-size:clamp(31px,4.8vw,54px);line-height:1.02;letter-spacing:-.04em}.cta p{max-width:780px;color:#bcc7d3}.cta a{margin-top:12px;background:#fff;color:#172033;border-color:#fff}
   @media(max-width:900px){.fact-grid,.phase-grid,.evidence-grid{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:repeat(7,220px)}}
-  @media(max-width:680px){.shell{width:min(100% - 22px,1160px);padding-top:96px}.section-head{display:grid}.fact-grid,.audit-grid,.phase-grid,.evidence-grid{grid-template-columns:1fr}.crm-table>div{grid-template-columns:1fr;gap:4px}.hero,.panel,.cta{border-radius:19px}}
+  @media(max-width:680px){.shell{width:min(100% - 22px,1160px);padding-top:96px}.section-head{display:grid}.fact-grid,.audit-grid,.phase-grid,.evidence-grid,.measurement-grid{grid-template-columns:1fr}.hero,.panel,.cta{border-radius:19px}}
 </style>
