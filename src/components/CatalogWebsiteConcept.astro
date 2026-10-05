@@ -44,7 +44,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
         <a data-catalog-event="request_start" href={businessRequestHref} data-uk={localized?.uk.requestLabel} data-en={localized?.en.requestLabel}>{copy?.requestLabel ?? "Request contact via Hermes"}</a>
         {claimHref && <a data-catalog-event="claim_start" href={claimHref} data-uk={localized?.uk.claimLabel} data-en={localized?.en.claimLabel}>{copy?.claimLabel ?? "Claim / verify"}</a>}
       </div>
-      {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span></div>}
+      {business.trust && <div class="proof"><span><b>{business.trust.rating.toFixed(1)}</b> {business.trust.source}</span><span><b>{business.trust.reviewCount}</b> reviews</span>{business.trust.observedAt && <span>Observed {business.trust.observedAt}</span>}</div>}
     </div>
     <aside><small>HERMES CONCEPT</small><strong>Discover.<br/>Trust.<br/>Act.</strong><span>{business.status.toUpperCase()} · claim/customer status changes only after verification</span></aside>
   </section>
