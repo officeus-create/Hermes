@@ -29,7 +29,7 @@ assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointme
 assert.match(publicProfile, /No private customer records, appointments or account details appear on this page/);
 assert.match(publicProfile, /does not indicate a Hermes customer relationship/);
 assert.match(publicProfile, /type=claim&business=/);
-assert.match(publicProfile, /type=catalog-growth&business=/);
+assert.match(publicProfile, /type=marketing-package&business=/);
 assert.match(publicProfile, /catalog-business-request/);
 assert.match(publicProfile, /repair-shop-crm:/);
 assert.match(publicProfile, /Request contact via Hermes/);
@@ -103,6 +103,7 @@ const catalogRequestHelper = read("src/lib/catalog-request.ts");
 const catalogRequestPage = read("src/pages/businesses/request/index.astro");
 const catalogLeadPayload = read("src/lib/catalog-lead-payload.mjs");
 assert.match(catalogRequestHelper, /"catalog-business-request"/);
+assert.match(catalogRequestHelper, /"marketing-package"/);
 assert.match(catalogRequestHelper, /business_id/);
 assert.match(catalogRequestHelper, /source_ref/);
 assert.match(websiteConcept, /Request contact via Hermes/);
@@ -188,6 +189,10 @@ assert.match(catalogLeadPayload, /catalog_business_id/);
 assert.match(catalogLeadPayload, /catalog_source_ref/);
 assert.match(catalogLeadPayload, /utm_source/);
 assert.match(catalogLeadPayload, /gclid/);
+assert.match(catalogLeadPayload, /fbclid/);
+assert.match(catalogTelemetry, /ATTRIBUTION_KEYS/);
+assert.match(catalogTelemetry, /utm_campaign/);
+assert.match(websiteConcept, /buildCatalogRequestHref\("marketing-package"/);
 assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 
 const catalogEventApi = read("functions/api/catalog-business-event.ts");
