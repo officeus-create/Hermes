@@ -107,7 +107,9 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
   assert.match(publicProfile, /EducationalOrganization/);
   assert.match(publicProfile, /Вхід власника в CRM/);
   assert.match(publicProfile, /Приватні учні, заявки, платежі та CRM-дані тут не показуються/);
-  assert.match(publicProfile, /Приватний owner workspace/);\n  assert.match(publicProfile, /Внутрішні поля, workflow, team routing і customer records у Catalog не показуються/);\n  assert.doesNotMatch(publicProfile, /ліди, консультації, учасники, навчання, marketing KPI та HR/);
+  assert.match(publicProfile, /Приватний owner workspace/);
+  assert.match(publicProfile, /Внутрішні поля, workflow, team routing і customer records у Catalog не показуються/);
+  assert.doesNotMatch(publicProfile, /ліди, консультації, учасники, навчання, marketing KPI та HR/);
   assert.match(publicProfile, /data-lang="uk"/);
   assert.match(publicProfile, /data-lang="en"/);
   assert.match(sitemap, /\/businesses\/connect\/academy\//);
