@@ -209,7 +209,9 @@ const faqSchema = {
   .intent-related-grid span{display:block;margin-bottom:.55rem;color:#6c7480;font-size:.76rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
   .intent-contact-card{display:grid;grid-template-columns:minmax(0,1.2fr) auto;gap:2rem;align-items:end;padding:clamp(1.5rem,4vw,3rem);border:1px solid rgba(23,32,51,.1);border-radius:26px;background:#fff}
   .intent-contact-card p{max-width:760px;color:#647080;line-height:1.65}
-  .intent-contact-actions{margin-top:0}
+  .intent-contact-card>*{min-width:0}
+  .intent-contact-actions{min-width:0;max-width:100%;margin-top:0}
+  .intent-contact-actions .button{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-word;text-align:center}
   @media(max-width:900px){.intent-split,.intent-contact-card{grid-template-columns:1fr}.intent-value-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intent-process-grid,.intent-related-grid{grid-template-columns:1fr}.intent-contact-actions{margin-top:0}}
   @media(max-width:640px){.intent-hero{padding-top:6.5rem}.intent-hero h1{font-size:clamp(2.8rem,14vw,4.4rem)}.intent-value-grid,.intent-direction-grid{grid-template-columns:1fr}.intent-actions .button,.intent-contact-actions .button{width:100%;justify-content:center}}
 </style>
