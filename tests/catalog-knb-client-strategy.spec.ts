@@ -44,7 +44,7 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await page.goto(fullAuditHref ?? "/businesses/request/?type=marketing-package", { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-catalog-request]")).toHaveAttribute("data-request-type", "marketing-package");
   await expect(page.locator("[data-marketing-budget]")).toBeVisible();
-  await expect(page.locator('select[name="planning_budget"]')).toBeRequired();
+  await expect(page.locator('select[name="planning_budget"]')).toHaveAttribute("required", "");
   await expect(page.locator("[data-message-label]")).toHaveText("Primary business goal / what should Hermes review?");
   await expect(page.locator('textarea[name="message"]')).toHaveValue(/primary business goal/i);
   await expect(page.getByRole("heading", { name: /marketing audit \/ media plan/i })).toBeVisible();
