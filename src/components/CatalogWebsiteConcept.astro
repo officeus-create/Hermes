@@ -3,6 +3,8 @@ import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 import { buildCatalogRequestHref } from "../lib/catalog-request";
 import CatalogWebsiteDemo from "./CatalogWebsiteDemo.astro";
 import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
+import CatalogClientStrategy from "./CatalogClientStrategy.astro";
+import { getCatalogClientStrategy } from "../data/catalog-client-strategy";
 
 type ConceptLocale = "uk" | "en";
 type Props = { business: CatalogBusinessConcept; profileUrl: string; conceptCTA?: boolean; defaultLocale?: ConceptLocale; };
@@ -25,6 +27,7 @@ const growthLinks = ["Website / redesign","Google Maps","SEO / GEO","Hermes CRM"
   .map((label)=>({ label, href: buildCatalogRequestHref("catalog-growth", requestContext, label) }));
 const localized = business.localeCopy;
 const copy = localized?.[defaultLocale];
+const clientStrategy = getCatalogClientStrategy(business.id);
 const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
 ---
 {conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
@@ -78,6 +81,7 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
     </div>
   </section>}
   <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale={defaultLocale} />
+  {clientStrategy && <CatalogClientStrategy strategy={clientStrategy} defaultLocale={defaultLocale} />}
   <section class="opportunity">
     <div><p class="kicker">HERMES OPPORTUNITY</p><h2 data-uk={localized?.uk.opportunityTitle} data-en={localized?.en.opportunityTitle}>{copy?.opportunityTitle ?? "Turn the concept into an owned growth system."}</h2><p data-uk={localized?.uk.opportunityBody} data-en={localized?.en.opportunityBody}>{copy?.opportunityBody ?? "Website, Google Maps, SEO/GEO, Hermes Connect CRM, SMM and automation can be activated after owner verification."}</p></div>
     <div class="offer-grid">{growthLinks.map((item)=><a data-catalog-event="growth_start" href={item.href}>{item.label}</a>)}</div>
