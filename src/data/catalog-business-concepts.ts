@@ -32,7 +32,8 @@ export type CatalogBusinessConcept = {
   primaryIntent: string;
   secondaryIntent?: string;
   featuredOffer?: { name: string; url: string; description: string; duration?: string };
-  crmPreviewUrl?: string;\n  strategyPreviewUrl?: string;
+  crmPreviewUrl?: string;
+  strategyPreviewUrl?: string;
   digitalAudit?: CatalogDigitalAudit;
   phone: string;
   address: string;
@@ -236,7 +237,8 @@ export const konsNaBisConcept = Object.freeze({
     description: "Комплексна онлайн-програма для підприємців із супроводом; офіційний опис програми заявляє 7-тижневий формат.",
     duration: "7 тижнів"
   },
-  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",\n  strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
+  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",
+  strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
   phone: "+380 67 11 55 111",
   address: "вул. Ярослава Мудрого, 16/2, 16",
   locality: "Біла Церква",
@@ -259,7 +261,9 @@ export const konsNaBisConcept = Object.freeze({
     { label: "Instagram · @konsnabis", url: "https://www.instagram.com/konsnabis/", direction: "secondary" },
     { label: "YouTube · Олександр Морозов", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", direction: "secondary" },
     { label: "TikTok · @konsnabis", url: "https://www.tiktok.com/@konsnabis", direction: "secondary" },
-    { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" },\n    { label: "Facebook · Конс на Бі$", url: "https://www.facebook.com/konsnabis/", direction: "secondary" },\n    { label: "Telegram · Конс на Бі$", url: "https://t.me/konsnabis", direction: "secondary" }
+    { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" },
+    { label: "Facebook · Конс на Бі$", url: "https://www.facebook.com/konsnabis/", direction: "secondary" },
+    { label: "Telegram · Конс на Бі$", url: "https://t.me/konsnabis", direction: "secondary" }
   ],
   digitalAudit: {
     observedAt: "2026-10-05",
