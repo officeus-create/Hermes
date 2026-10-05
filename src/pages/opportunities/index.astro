@@ -1,0 +1,533 @@
+---
+import { ArrowRight, Mail, Phone } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const canonicalUrl = new URL("/opportunities/", Astro.site).toString();
+const partnershipEmail = "partnership@hermeslogisticsus.com";
+const recruitingEmail = "officeus@hermeslogisticsus.com";
+const recruitingPhone = "+1 (414) 269-7377";
+
+const opportunities = [
+  {
+    eyebrow: "Employment",
+    title: "Careers & Open Roles",
+    body: "Explore current employee and candidate opportunities across Logistics, Sales, Operations, Marketing, Technology, and other approved Hermes roles.",
+    href: "/logistics/careers/",
+    label: "Explore careers",
+    note: "Applications are reviewed against current needs. An application does not guarantee an interview, training path, or employment.",
+  },
+  {
+    eyebrow: "Carrier business",
+    title: "Owner-Operator Opportunities",
+    body: "For independent truck owners and owner-operators evaluating carrier programs, dispatch support, operating fit, lanes, equipment, and current recruiting opportunities.",
+    href: "/careers/wisconsin-owner-operators/",
+    label: "View Wisconsin Owner-Operator opportunity",
+    secondaryHref: "/paths/logistics/carriers/owner-operators/",
+    secondaryLabel: "Owner-Operator support",
+    note: "Owner-Operator and carrier relationships are business-to-business operating arrangements, not employee roles. Equipment and program eligibility are reviewed individually.",
+  },
+  {
+    eyebrow: "Existing agencies",
+    title: "Agency Partners",
+    body: "For established agencies, service companies, and operators that want to discuss a structured working relationship with Hermes.",
+    href: "/paths/logistics/agency-partners/",
+    label: "Review agency-partner path",
+    note: "Fit, responsibilities, services, commercial terms, and operating boundaries are reviewed before any partnership is represented as approved.",
+  },
+  {
+    eyebrow: "Market expansion",
+    title: "Open a Hermes Agency",
+    body: "For experienced operators who want to discuss launching a Hermes operating presence or agency path in a market where there is a credible team and business case.",
+    href: "/logistics/agency/",
+    label: "Explore agency launch",
+    note: "Submitting interest does not create a franchise, territory, exclusivity right, agency approval, or commercial agreement.",
+  },
+  {
+    eyebrow: "Introductions",
+    title: "Referral Partners",
+    body: "Introduce a business, carrier, candidate, agency, or other qualified opportunity when there is a clear fit with a Hermes direction.",
+    href: `mailto:${partnershipEmail}?subject=Referral%20partnership%20with%20Hermes`,
+    label: "Discuss a referral relationship",
+    schemaHref: "/contacts/",
+    note: "Referral compensation or commercial terms are not assumed. Any applicable arrangement must be reviewed and agreed separately in writing.",
+  },
+  {
+    eyebrow: "Behind-the-scenes delivery",
+    title: "White-Label & Delivery Partners",
+    body: "For companies or agencies that want to discuss Hermes performing an approved delivery, operating, technology, marketing, or support scope behind another brand.",
+    href: `mailto:${partnershipEmail}?subject=White-label%20or%20delivery%20partnership%20with%20Hermes`,
+    label: "Discuss delivery partnership",
+    schemaHref: "/contacts/",
+    note: "Brand use, client ownership, responsibilities, data access, service levels, and commercial terms require separate review before work begins.",
+  },
+  {
+    eyebrow: "Company-to-company",
+    title: "Corporate & Strategic Partnerships",
+    body: "For carriers, vendors, technology companies, marketing partners, service providers, and other organizations exploring a structured relationship with Hermes.",
+    href: `mailto:${partnershipEmail}?subject=Corporate%20or%20strategic%20partnership%20with%20Hermes`,
+    label: "Start a partnership conversation",
+    schemaHref: "/contacts/",
+    note: "A conversation starts a fit review. It does not create exclusivity, preferred status, guaranteed volume, or an approved commercial relationship.",
+  },
+  {
+    eyebrow: "Long-term growth",
+    title: "Expansion & Strategic Conversations",
+    body: "Discuss local-market expansion, strategic capital, operating partnerships, or another long-term growth relationship where Hermes and another party may have aligned interests.",
+    href: `mailto:${partnershipEmail}?subject=Expansion%20or%20strategic%20conversation%20with%20Hermes`,
+    label: "Start a strategic conversation",
+    schemaHref: "/contacts/",
+    note: "Any legal, investment, ownership, territory, or commercial structure requires separate professional review and written agreement.",
+  },
+  {
+    eyebrow: "Something different",
+    title: "Other Collaboration",
+    body: "If your idea does not fit one of the paths above, send enough context for Hermes to route the conversation to the right direction.",
+    href: "/contacts/",
+    label: "Contact Hermes",
+    note: "Share the real business objective, who is involved, and the outcome you want to explore. Hermes will route the inquiry before making any commitment.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": canonicalUrl,
+    url: canonicalUrl,
+    name: "Work With Hermes",
+    description: "Explore Hermes careers, Owner-Operator opportunities, agency relationships, referral and white-label partnerships, corporate collaboration, and expansion conversations.",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: opportunities.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.title,
+        url: new URL(item.schemaHref ?? item.href, Astro.site).toString(),
+      })),
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Opportunities", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Work With Hermes | Careers, Owner-Operators, Agencies & Partnerships"
+  description="Explore Hermes careers, Wisconsin Owner-Operator opportunities, agency partnerships, referrals, white-label delivery, corporate collaboration, and expansion conversations."
+  schema={schema}
+>
+  <SiteHeader theme="light" activePath="/opportunities/" />
+
+  <main id="main-content" class="opportunities-page">
+    <section class="opportunities-hero">
+      <div class="shell">
+        <Breadcrumbs items={[{ label: "Home", href: "/" }]} current="Opportunities" />
+        <p class="eyebrow">Opportunities · Hermes ecosystem</p>
+        <h1>Work With Hermes</h1>
+        <p class="opportunities-hero-copy">
+          Choose how you want to work with Hermes. This page routes candidates, Owner-Operators, agencies, referral partners,
+          companies, and strategic collaborators to the correct existing next step without mixing employment, carrier operations,
+          partnerships, or investment conversations into one application.
+        </p>
+        <div class="opportunities-hero-actions">
+          <a class="button button-primary" href="#ways-to-work">Choose your path <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button" href="/logistics/careers/">See open roles</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section opportunities-current" aria-labelledby="current-opportunity-title">
+      <div class="shell opportunities-current-card">
+        <div>
+          <p class="eyebrow">Current recruiting priority · Wisconsin</p>
+          <h2 id="current-opportunity-title">Owner-Operators with their own truck — truck + trailer and Power Only may be considered.</h2>
+          <p>
+            Hermes is currently recruiting responsible Wisconsin Owner-Operators through a verified public vacancy.
+            No forced dispatch is advertised. Equipment, experience, safety history, lanes, schedule, dispatch support,
+            carrier program, compensation, authority arrangements, and other operating terms are reviewed individually.
+          </p>
+          <div class="opportunities-inline-links">
+            <a class="button button-primary" href="/careers/wisconsin-owner-operators/">View current Wisconsin opportunity <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button" href="/paths/logistics/carriers/owner-operators/">Owner-Operator support</a>
+          </div>
+        </div>
+        <aside aria-label="Wisconsin Owner-Operator recruiting contact">
+          <span>Owner-Operator Recruiting — Wisconsin</span>
+          <a href="tel:+14142697377"><Phone size={18} aria-hidden="true" />{recruitingPhone}</a>
+          <p>Monday–Friday after 2:15 PM CT<br />Saturday–Sunday 10:00 AM–9:00 PM CT</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="ways-to-work" aria-labelledby="ways-to-work-title">
+      <div class="shell">
+        <div class="opportunities-heading">
+          <div>
+            <p class="eyebrow">One entry point · different relationships</p>
+            <h2 id="ways-to-work-title">Find the relationship that matches what you actually want to build.</h2>
+          </div>
+          <p>
+            Existing canonical Careers, Logistics, carrier, and agency pages remain the owners of their specific workflows.
+            New partnership categories begin with a conversation and review instead of an invented automatic approval process.
+          </p>
+        </div>
+
+        <div class="opportunities-grid">
+          {opportunities.map((item) => (
+            <article class="opportunity-card">
+              <p class="eyebrow">{item.eyebrow}</p>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+              <div class="opportunity-card-actions">
+                <a class="opportunity-primary-link" href={item.href}>
+                  {item.label}<ArrowRight size={17} aria-hidden="true" />
+                </a>
+                {item.secondaryHref && (
+                  <a class="opportunity-secondary-link" href={item.secondaryHref}>{item.secondaryLabel}</a>
+                )}
+              </div>
+              <small>{item.note}</small>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section opportunities-routing" aria-labelledby="routing-title">
+      <div class="shell">
+        <div class="opportunities-heading">
+          <div>
+            <p class="eyebrow">Contact routing</p>
+            <h2 id="routing-title">Use a real receiving route while dedicated department mailboxes are built.</h2>
+          </div>
+          <p>
+            We do not publish an unverified recruiting mailbox. Candidates can use the active Careers and vacancy flows;
+            business and partnership discussions use the existing partnership route.
+          </p>
+        </div>
+
+        <div class="opportunities-contact-grid">
+          <article>
+            <span>Careers & recruiting questions</span>
+            <a href={`mailto:${recruitingEmail}?subject=Careers%20question%20for%20Hermes`}><Mail size={18} aria-hidden="true" />{recruitingEmail}</a>
+            <p>A dedicated careers address can replace this route after the mailbox alias is created and delivery is independently verified.</p>
+          </article>
+          <article>
+            <span>Partnerships & collaboration</span>
+            <a href={`mailto:${partnershipEmail}?subject=Work%20with%20Hermes`}><Mail size={18} aria-hidden="true" />{partnershipEmail}</a>
+            <p>Use this for agency, referral, white-label, corporate, expansion, and other company-to-company conversations.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section opportunities-contact" id="contact" aria-labelledby="opportunities-contact-title">
+      <div class="shell opportunities-contact-inner">
+        <div>
+          <p class="eyebrow">Not sure which path fits?</p>
+          <h2 id="opportunities-contact-title">Start with the relationship you want, not a generic application.</h2>
+          <p>
+            Tell us whether you are looking for a role, bringing your own truck, representing an agency or company,
+            referring an opportunity, or proposing another form of collaboration. The first step is fit and routing;
+            no submission creates an automatic job, partnership, territory, investment, carrier assignment, or commercial commitment.
+          </p>
+        </div>
+        <div class="opportunities-contact-actions">
+          <a class="button button-primary" href="/contacts/">Contact Hermes <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button" href={`mailto:${partnershipEmail}?subject=Work%20with%20Hermes`}>Email Partnerships</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .opportunities-page {
+    background: #f7f6f3;
+    color: #172033;
+  }
+
+  .opportunities-hero {
+    padding: clamp(7.5rem, 11vw, 10rem) 0 clamp(4rem, 7vw, 6rem);
+    background:
+      radial-gradient(circle at 86% 14%, rgba(124, 92, 255, .09), transparent 30%),
+      radial-gradient(circle at 10% 70%, rgba(30, 136, 255, .08), transparent 34%),
+      #f7f6f3;
+  }
+
+  .opportunities-hero h1 {
+    max-width: 980px;
+    margin: .75rem 0 1rem;
+    font-size: clamp(3.3rem, 8vw, 7.6rem);
+    line-height: .94;
+    letter-spacing: -.065em;
+  }
+
+  .opportunities-hero-copy {
+    max-width: 820px;
+    margin: 0;
+    color: #596171;
+    font-size: clamp(1.08rem, 1.6vw, 1.32rem);
+    line-height: 1.6;
+  }
+
+  .opportunities-hero-actions,
+  .opportunities-inline-links,
+  .opportunities-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 1.7rem;
+  }
+
+  .opportunities-current {
+    padding-top: 0;
+  }
+
+  .opportunities-current-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(260px, .65fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    padding: clamp(1.8rem, 4vw, 3.4rem);
+    border: 1px solid rgba(23, 32, 51, .1);
+    border-radius: 30px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(23, 32, 51, .07);
+  }
+
+  .opportunities-current-card h2,
+  .opportunities-heading h2,
+  .opportunities-contact h2 {
+    margin: .55rem 0 .8rem;
+    max-width: 850px;
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -.045em;
+  }
+
+  .opportunities-current-card > div > p,
+  .opportunities-heading > p,
+  .opportunities-contact p {
+    max-width: 760px;
+    color: #606877;
+    line-height: 1.65;
+  }
+
+  .opportunities-current-card aside {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .75rem;
+    padding: 1.35rem;
+    border-radius: 22px;
+    background: #172033;
+    color: #fff;
+  }
+
+  .opportunities-current-card aside > span {
+    color: #bdc7d9;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .opportunities-current-card aside a,
+  .opportunities-contact-grid a {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    color: inherit;
+    font-size: 1.08rem;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .opportunities-current-card aside p {
+    margin: 0;
+    color: #d8dfeb;
+    font-size: .94rem;
+    line-height: 1.55;
+  }
+
+  .opportunities-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+    align-items: end;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    margin-bottom: 2rem;
+  }
+
+  .opportunities-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .opportunity-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    padding: 1.45rem;
+    border: 1px solid rgba(23, 32, 51, .1);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 14px 34px rgba(23, 32, 51, .045);
+  }
+
+  .opportunity-card h3 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    line-height: 1.12;
+    letter-spacing: -.025em;
+  }
+
+  .opportunity-card > p:not(.eyebrow) {
+    margin: 0;
+    color: #606877;
+    line-height: 1.58;
+  }
+
+  .opportunity-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    margin-top: auto;
+    padding-top: .4rem;
+  }
+
+  .opportunity-primary-link,
+  .opportunity-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    width: fit-content;
+    color: #125fbe;
+    font-weight: 820;
+    text-decoration: none;
+  }
+
+  .opportunity-secondary-link {
+    color: #5c6574;
+    font-size: .94rem;
+  }
+
+  .opportunity-card small {
+    display: block;
+    padding-top: .75rem;
+    border-top: 1px solid rgba(23, 32, 51, .08);
+    color: #747b88;
+    font-size: .82rem;
+    line-height: 1.5;
+  }
+
+  .opportunities-routing {
+    background: #eef3f7;
+  }
+
+  .opportunities-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .opportunities-contact-grid article {
+    padding: 1.45rem;
+    border: 1px solid rgba(23, 32, 51, .09);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .82);
+  }
+
+  .opportunities-contact-grid span {
+    display: block;
+    margin-bottom: .65rem;
+    color: #697180;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .opportunities-contact-grid a {
+    color: #172033;
+    overflow-wrap: anywhere;
+  }
+
+  .opportunities-contact-grid p {
+    margin: .75rem 0 0;
+    color: #697180;
+    line-height: 1.55;
+  }
+
+  .opportunities-contact-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) auto;
+    align-items: end;
+    gap: 2rem;
+    padding: clamp(1.8rem, 4vw, 3.2rem);
+    border-radius: 30px;
+    background: #fff;
+    border: 1px solid rgba(23, 32, 51, .1);
+  }
+
+  @media (max-width: 980px) {
+    .opportunities-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .opportunities-current-card,
+    .opportunities-heading,
+    .opportunities-contact-inner {
+      grid-template-columns: 1fr;
+    }
+
+    .opportunities-contact-actions {
+      margin-top: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .opportunities-hero {
+      padding-top: 6.6rem;
+    }
+
+    .opportunities-hero h1 {
+      font-size: clamp(3rem, 16vw, 4.6rem);
+    }
+
+    .opportunities-grid,
+    .opportunities-contact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .opportunities-current-card,
+    .opportunities-contact-inner {
+      padding: 1.2rem;
+      border-radius: 22px;
+    }
+
+    .opportunity-card {
+      padding: 1.2rem;
+    }
+
+    .opportunities-hero-actions .button,
+    .opportunities-inline-links .button,
+    .opportunities-contact-actions .button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
