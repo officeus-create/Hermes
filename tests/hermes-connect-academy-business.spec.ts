@@ -90,7 +90,7 @@ test("KNB Catalog strategy case is mobile-safe, bilingual, and preserves the org
   await expect(page.getByText("Перша рекомендація — не таргет, а internal audit + organic programming.")).toBeVisible();
   await expect(page.getByText("Funnel можна проектувати, але валідовувати — тільки після readiness gate.")).toBeVisible();
 
-  const auditCta = page.getByRole("link", { name: "Запросити аудит і 90-day roadmap →" });
+  const auditCta = page.getByRole("link", { name: "Запросити аудит і 3–6 month media plan →" });
   await expect(auditCta).toHaveAttribute("href", /\/businesses\/request\/\?type=marketing-package&months=3/);
   await expect(auditCta).toHaveAttribute("href", /utm_campaign=knb_marketing_case/);
 
