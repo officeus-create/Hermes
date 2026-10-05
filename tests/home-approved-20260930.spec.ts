@@ -293,31 +293,16 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await mobileContext.close();
 });
 
-test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
+test('Home secondary direction motion stays purposeful',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1200});
  await page.goto('/');
- const layers=page.locator('[data-home-motion]');
- await expect(layers).toHaveCount(1);
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
- const timing=await layers.first().evaluate(node=>node.getAnimations()[0].effect!.getTiming());
- expect(timing.duration).toBe(12000);
- expect(timing.iterations).toBe(3);
- await page.locator('footer').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
- const time=await layers.first().evaluate(node=>node.getAnimations()[0].currentTime);
- await page.waitForTimeout(180);
- expect(Math.abs(Number(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime))-Number(time))).toBeLessThan(1);
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await layers.evaluateAll(nodes=>nodes.forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
- await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await expect(layers.first()).toHaveCSS('opacity','1');
- await page.locator('footer').scrollIntoViewIfNeeded();
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await page.locator('[data-route-id="marketing"]').hover();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
+ await expect(page.locator('[data-home-motion]')).toHaveCount(0);
+ await expect(page.locator('.home-moving-leaves,.home-story-board')).toHaveCount(0);
+ await expect(page.locator('.home-attention-signal')).toHaveCount(1);
+ await expect(page.locator('.home-system-code')).toHaveCount(1);
+ await expect(page.locator('.home-system-output')).toHaveCount(1);
+ await expect(page.locator('.home-academy-pen')).toHaveCount(1);
 });
 
 test('Home motion responds to reduced-motion changes and stays decorative',async({page})=>{
