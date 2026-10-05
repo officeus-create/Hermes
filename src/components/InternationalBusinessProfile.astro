@@ -8,7 +8,7 @@ import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
-const auditRequestHref = buildCatalogRequestHref("catalog-growth", { businessId:business.id, businessName:business.name, profileUrl, city:business.locality, country:business.countryCode, sourceRef:business.sourceRef }, "Digital marketing audit");
+const auditRequestHref = buildCatalogRequestHref("marketing-package", { businessId:business.id, businessName:business.name, profileUrl, city:business.locality, country:business.countryCode, sourceRef:business.sourceRef }, "Digital marketing audit");
 const mapChannel = business.channels.find((channel) => channel.direction === "maps");
 const identityChannels = business.channels.filter((channel) => channel.direction !== "maps").map((channel) => channel.url);
 const sameAs = [...new Set([...(business.website ? [business.website] : []), ...identityChannels])];
