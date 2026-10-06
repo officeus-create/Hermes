@@ -1,8 +1,11 @@
 # SEO11 Public-Safe Authority Registry — 2026-08-11
 
-Status: RESEARCHED / OUTREACH GATED
-Parent: #368
-Dependencies: #204 entity truth, #206 demand evidence, #362 proof permissions
+Status: HISTORICAL / SUPERSEDED — DO NOT EXECUTE
+Current authority source: `docs/SEO_AUTHORITY_REGISTRY_2026-08-14.md` + owner issue #368 current comments
+Historical parent: #368
+Historical dependencies: #204 entity truth, #206 demand evidence, #362 proof permissions — all closed; do not reopen them from this file
+
+> This file preserves the 2026-08-11 research snapshot only. For current identity, measurement, proof-permission, outreach and opportunity status, use the current authority registry and current Search Error/Operating state.
 
 This registry tracks legitimate authority/referral opportunities only. It is not a mass outreach list and it does not approve publication, paid placement, membership, sponsorship, speaker claims, testimonials, or external profile changes. Public contact pages are recorded instead of copying personal/editor email addresses into the repository.
 
