@@ -5,17 +5,19 @@
 > This file preserves the original ordered 100-task sprint and its state at the time it was executed. Many `[~]` and `[ ]` markers below became stale as later PRs implemented new funnels, claim guards, direct carrier/customer intake, conversion events, entity governance, Cloudflare cleanup, and production measurement work. Do **not** restart tasks from this checklist merely because an old marker is open.
 >
 > Current execution sources of truth:
-> - **#346** — SEO 11 revenue-first master backlog and execution order;
-> - **#206** — authenticated Search Console / GA4 / Bing / qualified-lead measurement;
-> - **#204** — external company/entity/profile reconciliation;
-> - **#320** — remaining media/asset provenance only;
-> - **#280 / #319 / #321 / #324** — trigger-based legal/payment/international/advertising gates.
+> - **`docs/SEARCH_GROWTH_GUARDRAIL.md`** — Search Release Gate, evidence ladder and history-first rule;
+> - **`docs/ERROR_REGISTER.md`** — current Search defects, owner actions, access gaps and WATCH states;
+> - **`ai-collaboration/02_SEO/CURRENT_STATE.md`** — current Search/AI Visibility handoff;
+> - **#346 / #206 / #204** — closed historical provenance only; never default routers;
+> - **#515** — remaining authenticated Work.ua employer-profile correction;
+> - **#368** — earned-authority pipeline when a real business/editorial route is approved;
+> - trigger-based legal/payment/international/advertising work remains with its current owner only when the relevant trigger is real.
 >
 > Historical remaining-task mapping:
-> - original tasks **71–84**: implementation is substantially superseded by later commercial/intake/evidence work; remaining permissioned proof, authorship/reviewer evidence, and conversion optimization belong in #346;
-> - task **85** and **96–100**: measurement/editorial prioritization belongs in #206, then #346 after authenticated evidence;
+> - original tasks **71–84**: implementation is substantially superseded by later commercial/intake/evidence work; remaining permissioned proof, authorship/reviewer evidence, and conversion optimization must route through the current Guardrail/Error Register owner instead of reopening #346;
+> - task **85** and **96–100**: measurement/editorial prioritization uses the current bounded measurement contract only when fresh evidence can change a decision; do not reopen #206/#346;
 > - tasks **86–95**: keep only as performance/mobile review candidates. Current CI already enforces performance budgets and later code added LCP priority/loading work; make further CSS/JS/image changes only from current measurements and visual regression evidence;
-> - do not use this file to justify bulk city/state/equipment page creation. New-page decisions follow #206 evidence and #346's controlled-scale gate.
+> - do not use this file to justify bulk city/state/equipment page creation. New-page decisions follow the current Search Release Gate and bounded evidence; do not revive #206/#346 as execution backlogs.
 
 Status legend below is the **historical** legend: `[ ]` queued, `[~]` in progress, `[x]` completed at the time this sprint was maintained.
 
