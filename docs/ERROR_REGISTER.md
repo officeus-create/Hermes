@@ -414,7 +414,9 @@ REUSE_RULE: Crawl-control and other hostname-root assets need explicit middlewar
 
 ## 2026-10-05 — KNB client Catalog work was noindex despite the organic objective
 
-STATUS: SOURCE FIXED ON PR #1681; PRODUCTION UNCHANGED.
+STATUS: RESOLVED / PRODUCTION VERIFIED.
+
+PRODUCTION_RECEIPT: PR #1681 merged as `8981b1c9db19321739352ccbb3f02c7a75d8be6e`. A targeted live fetch on 2026-10-06 with cache tolerance `ttl=0` returned `/businesses/ukraine/bila-tserkva/kons-na-bis/` as HTTP-reachable public content with self-canonical metadata and `robots: index,follow,max-image-preview:large`. The detailed KNB strategy/evidence workspace remains a separate noindex surface, so the canonical Catalog entity/profile owns organic discovery without turning private/internal strategy into the search owner.
 
 PROBLEM: The recovered «Конс на Бі$» marketing assessment, Academy CRM demo, and client strategy page existed, but the client-specific strategy page was intentionally `noindex,nofollow` and the KNB entity/product did not have an indexable Catalog profile in the business-directory sitemap. The generic Marketing Growth Audit example was indexable, so the reusable Hermes methodology could rank while the actual client/product discovery objective remained incomplete.
 
@@ -431,7 +433,9 @@ REUSE_RULE: For a client Catalog task whose goal includes organic discovery, req
 
 ## 2026-10-05 — KNB marketing case incorrectly treated funnel/offer as the next social step
 
-STATUS: SOURCE CORRECTED ON PR #1681; PRODUCTION UNCHANGED.
+STATUS: RESOLVED / PRODUCTION VERIFIED.
+
+PRODUCTION_RECEIPT: The same 2026-10-06 `ttl=0` live readback of the canonical KNB Catalog owner renders the corrected sequence `Audit → Organic Programming → Stable Organic Baseline → Controlled Paid Learning → Signal Gate → Offer hypothesis → Funnel + CRM attribution`, and explicitly keeps public observations separate from internal analytics. No paid-first or public-data-as-validated-offer behavior remains on the live canonical owner.
 
 PROBLEM: The recovered KNB candidate brief asked for a social audit plus a funnel/offer. Earlier Hermes strategy surfaces answered the request literally and promoted an offer-first path. That was not evidence-safe: a public profile cannot expose complete Meta reach, engagement, retention, audience quality, paid/organic split, ad-learning state, CAC, or downstream CRM sales.
 
@@ -446,7 +450,9 @@ REUSE_RULE: Audit ≠ Funnel. Never convert public social observations into a va
 
 ## 2026-10-05 — Shared Catalog route normalized repair-only data before the route-kind gate
 
-STATUS: SOURCE FIXED ON PR #1681; PRODUCTION UNCHANGED.
+STATUS: RESOLVED / PRODUCTION VERIFIED.
+
+PRODUCTION_RECEIPT: PR #1681 is merged and the same current production Catalog route family successfully renders the international KNB concept owner on the shared `/businesses/[state]/[city]/[slug]` path. The production page returning structured concept content without the prior `sources.flatMap` prerender failure is live evidence that the route-kind guard is active on the released shared route. Preserve the discriminator-before-shape-specific-read regression.
 
 PROBLEM: After adding Digital Health to US static repair/dealer profiles, the shared `/businesses/[state]/[city]/[slug]` prerender failed on an international concept route with `Cannot read properties of undefined (reading 'flatMap')`.
 
