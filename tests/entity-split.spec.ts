@@ -8,8 +8,6 @@ const expectedHermesProfiles = [
 ];
 
 const forbiddenEntitySignals = [
-  "staff.am/en/company/hermes-logistics-llc",
-  "staff.am/ru/company/hermes-logistics-llc",
   "work.ua/resumes/10640079",
   "robota.ua/candidates/23423822",
   "dnb.com/business-directory/company-profiles.hermes_logistics_llc",
@@ -62,7 +60,7 @@ test("homepage publishes one stable Hermes Logistics LLC Organization node", asy
   expect(logistics.foundingDate).toBe("2018-11-01");
   expect(logistics.url).toBe("https://hermeslogisticsus.com/paths/logistics/");
   expect(logistics.mainEntityOfPage).toBe("https://hermeslogisticsus.com/company-information/");
-  expect(logistics.sameAs).toBeUndefined();
+  expect(logistics.sameAs).toEqual(["https://staff.am/en/company/hermes-logistics-llc"]);
 });
 
 test("canonical Logistics hub binds Service provider to the stable Logistics entity", async ({ page }) => {

@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   classifyConnectObservations,
   classifyConnectRootAssetObservations,
+  canShortCircuitConnectVerification,
   connectVerificationExitCode,
 } from "./connect-subdomain-verifier.mjs";
 
@@ -14,12 +15,16 @@ const requestedExpectation = process.env.CONNECT_EXPECTATION || "isolation";
 const expectation = allowedExpectations.has(requestedExpectation) ? requestedExpectation : "isolation";
 const attempts = Number.parseInt(process.env.CONNECT_CHECK_ATTEMPTS || "6", 10);
 const delayMs = Number.parseInt(process.env.CONNECT_CHECK_DELAY_MS || "10000", 10);
+const minStableAttempts = Number.parseInt(process.env.CONNECT_MIN_STABLE_ATTEMPTS || "3", 10);
 
 if (!Number.isInteger(attempts) || attempts < 1 || attempts > 24) {
   throw new Error("CONNECT_CHECK_ATTEMPTS must be an integer between 1 and 24.");
 }
 if (!Number.isInteger(delayMs) || delayMs < 1000 || delayMs > 30000) {
   throw new Error("CONNECT_CHECK_DELAY_MS must be an integer between 1000 and 30000.");
+}
+if (!Number.isInteger(minStableAttempts) || minStableAttempts < 3 || minStableAttempts > attempts) {
+  throw new Error("CONNECT_MIN_STABLE_ATTEMPTS must be an integer between 3 and CONNECT_CHECK_ATTEMPTS.");
 }
 
 const webAppMarkers = [
@@ -80,6 +85,7 @@ async function fetchPublic(url, accept = "text/html,application/xhtml+xml") {
 
 const observations = [];
 const rootAssetObservations = [];
+let shortCircuited = false;
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
   const [fetched, robotsFetched] = await Promise.all([
     fetchPublic(targetUrl),
@@ -112,6 +118,20 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
     body: robotsFetched.body,
     error: robotsFetched.error,
   });
+
+  if (attempt >= minStableAttempts) {
+    const currentVerification = classifyConnectObservations(observations, expectation);
+    const currentRootAssetVerification = classifyConnectRootAssetObservations(rootAssetObservations);
+    if (canShortCircuitConnectVerification({
+      expectation,
+      classification: currentVerification.classification,
+      rootAssetClassification: currentRootAssetVerification.classification,
+    })) {
+      shortCircuited = attempt < attempts;
+      break;
+    }
+  }
+
   if (attempt < attempts) await sleep(delayMs);
 }
 
@@ -125,6 +145,10 @@ const result = {
   expectation,
   classification,
   verification,
+  configuredAttempts: attempts,
+  executedAttempts: observations.length,
+  minStableAttempts,
+  shortCircuited,
   observations,
   rootAsset: {
     targetUrl: robotsUrl,
@@ -180,6 +204,7 @@ const markdown = [
   `- Target: ${targetUrl}`,
   `- Expected state: **${expectation}**`,
   `- Classification: **${classification}**`,
+  `- Verification requests: **${observations.length}/${attempts} attempts**${shortCircuited ? " (stable quorum reached early)" : ""}`,
   `- Healthy observations: **${verification.healthyCount}/${verification.totalCount}** (required: ${verification.requiredHealthyCount})`,
   `- Transient network failures: **${verification.networkFailureCount}**`,
   `- Root-asset classification: **${rootAssetVerification.classification}**`,
