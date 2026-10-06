@@ -1,26 +1,42 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page, type Locator } from '@playwright/test';
 
 const routes = [
   { path: 'access/', title: 'One sign-in. A CRM matched to your business.' },
   { path: 'academy/auth/', title: 'Use one Hermes account across the ecosystem.' },
   { path: 'academy/business/auth/', title: 'A CRM adapted to an academy, courses, or a business club.' },
 ];
+// Reuse the current Home regression pattern for proven CI rAF starvation.
+// Retain visible/enabled, stable geometry, in-viewport and hit-target checks.
+async function clickHistoryTarget(page: Page, target: Locator) {
+ await expect(target).toBeVisible();
+ await expect(target).toBeEnabled();
+ const first=await target.boundingBox();
+ expect(first).not.toBeNull();
+ await page.waitForTimeout(100);
+ expect(await target.boundingBox()).toEqual(first);
+ const x=first!.x+first!.width/2,y=first!.y+first!.height/2;
+ const viewport=page.viewportSize()!;
+ expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
+ expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
+ expect(await target.evaluate((node,{x,y})=>{
+  const hit=document.elementFromPoint(x,y);return hit===node||node.contains(hit);
+ },{x,y})).toBe(true);
+ await page.mouse.click(x,y);
+}
+
 async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Language navigation preserves #main-content; return to the header as a user would.
   // Mobile emulation does not implement desktop Home-key scrolling.
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  // Interaction checks need the newly navigated page to produce animation frames.
-  // CI observations already proved geometry stable, styles visible and fonts loaded.
   await page.bringToFront();
   await page.waitForLoadState('load');
-  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   if (isMobile) {
-    await page.locator('[data-menu-button]').click();
-    await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
+    await clickHistoryTarget(page, page.locator('[data-menu-button]'));
+    await clickHistoryTarget(page, page.locator(`.mobile-language-switcher a[lang="${language}"]`));
   } else {
-    await page.locator('[data-language-menu] summary').click();
-    await page.locator(`[data-language-menu] a[lang="${language}"]`).click();
+    await clickHistoryTarget(page, page.locator('[data-language-menu] summary'));
+    await clickHistoryTarget(page, page.locator(`[data-language-menu] a[lang="${language}"]`));
   }
 }
 
