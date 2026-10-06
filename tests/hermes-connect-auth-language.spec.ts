@@ -10,17 +10,19 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Mobile emulation does not implement desktop Home-key scrolling.
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  console.log('auth-language-actionability', JSON.stringify(await page.evaluate(async (mobile) => {
+    const selector = mobile ? '[data-menu-button]' : '[data-language-menu] summary';
+    const samples = [];
+    for (let sample = 0; sample < 3; sample++) {
+      const node = document.querySelector(selector)!;
+      const r = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      samples.push({ x: r.x, y: r.y, width: r.width, height: r.height, display: style.display, visibility: style.visibility, transform: style.transform, ready: document.readyState, fonts: document.fonts.status, scrollY });
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    return { href: location.href, viewport: innerWidth, samples };
+  }, isMobile)));
   if (isMobile) {
-    console.log('auth-language-menu-observation', await page.evaluate(() => {
-      const button = document.querySelector('[data-menu-button]');
-      const ancestors = [];
-      for (let node = button; node && ancestors.length < 5; node = node.parentElement) {
-        const style = getComputedStyle(node);
-        const rect = node.getBoundingClientRect();
-        ancestors.push({ tag: node.tagName, className: node.className, display: style.display, visibility: style.visibility, opacity: style.opacity, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } });
-      }
-      return { path: location.pathname, search: location.search, hash: location.hash, width: innerWidth, scrollY, ancestors };
-    }));
     await page.locator('[data-menu-button]').click();
     await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
   } else {
