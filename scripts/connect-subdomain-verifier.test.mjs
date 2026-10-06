@@ -4,6 +4,7 @@ import * as connectVerifier from "./connect-subdomain-verifier.mjs";
 const {
   classifyConnectObservations,
   classifyConnectRootAssetObservations,
+  canShortCircuitConnectVerification,
   connectVerificationExitCode,
 } = connectVerifier;
 
@@ -16,6 +17,11 @@ assert.equal(
   typeof connectVerificationExitCode,
   "function",
   "Connect verification must expose its release acceptance decision",
+);
+assert.equal(
+  typeof canShortCircuitConnectVerification,
+  "function",
+  "Connect verification must expose a stable-quorum short-circuit decision",
 );
 
 const webApp = () => ({
@@ -143,5 +149,31 @@ assert.equal(connectVerificationExitCode({
   classification: "LIVE_PREVIOUS_CONNECT",
   rootAssetClassification: "ROOT_ASSET_HEALTHY",
 }), 4);
+
+assert.equal(canShortCircuitConnectVerification({
+  expectation: "approved_web_app",
+  classification: "LIVE_APPROVED_WEB_APP",
+  rootAssetClassification: "ROOT_ASSET_HEALTHY",
+}), true);
+assert.equal(canShortCircuitConnectVerification({
+  expectation: "approved_web_app",
+  classification: "LIVE_APPROVED_WEB_APP",
+  rootAssetClassification: "ROOT_ASSET_UNHEALTHY",
+}), false);
+assert.equal(canShortCircuitConnectVerification({
+  expectation: "approved_web_app",
+  classification: "LIVE_MIXED_CONNECT_STATE",
+  rootAssetClassification: "ROOT_ASSET_HEALTHY",
+}), false);
+assert.equal(canShortCircuitConnectVerification({
+  expectation: "isolation",
+  classification: "LIVE_PREVIOUS_CONNECT",
+  rootAssetClassification: "ROOT_ASSET_UNHEALTHY",
+}), true);
+assert.equal(canShortCircuitConnectVerification({
+  expectation: "isolation",
+  classification: "LIVE_PR_HEAD_EXPOSED",
+  rootAssetClassification: "ROOT_ASSET_HEALTHY",
+}), false);
 
 console.log("Connect subdomain verifier quorum contract passed.");
