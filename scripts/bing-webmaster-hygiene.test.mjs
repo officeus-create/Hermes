@@ -3,9 +3,10 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = process.cwd();
-const [robots, dispatchPage, reviewDraft, headers] = await Promise.all([
+const [robots, dispatchPage, loadBoard, reviewDraft, headers] = await Promise.all([
   readFile(join(root, "dist", "robots.txt"), "utf8"),
   readFile(join(root, "dist", "logistics", "car-hauling-dispatch", "index.html"), "utf8"),
+  readFile(join(root, "dist", "load-board", "index.html"), "utf8"),
   readFile(join(root, "dist", "contracts", "Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html"), "utf8"),
   readFile(join(root, "dist", "_headers"), "utf8"),
 ]);
