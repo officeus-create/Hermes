@@ -29,8 +29,8 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Mobile emulation does not implement desktop Home-key scrolling.
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  await page.bringToFront();
   await page.waitForLoadState('load');
+  await expect(page.locator('html')).toBeVisible();
   if (isMobile) {
     await clickHistoryTarget(page, page.locator('[data-menu-button]'));
     await clickHistoryTarget(page, page.locator(`.mobile-language-switcher a[lang="${language}"]`));
