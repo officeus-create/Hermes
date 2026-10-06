@@ -7,7 +7,9 @@ const routes = [
 ];
 async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Language navigation preserves #main-content; return to the header as a user would.
-  await page.keyboard.press('ControlOrMeta+Home');
+  // Mobile emulation does not implement desktop Home-key scrolling.
+  await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   if (isMobile) {
     await page.locator('[data-menu-button]').click();
     await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
