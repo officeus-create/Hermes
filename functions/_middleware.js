@@ -13,6 +13,21 @@ const HSTS_HEADER_VALUE = "max-age=31536000";
 const MAIN_LEGACY_REDIRECTS = new Map([
   ["/academy", "/paths/academy/"],
   ["/academy/", "/paths/academy/"],
+  ["/resources/rpm-calculator", "/logistics/resources/rpm-calculator/"],
+  ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
+  ["/tools/load-analyzer", "/services/hermes-connect/load-analyzer/"],
+  ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
+  ["/ai-command-center", "/services/hermes-connect/ai-command-center/"],
+  ["/ai-command-center/", "/services/hermes-connect/ai-command-center/"],
+  ["/unified-inbox", "/services/hermes-connect/unified-inbox/"],
+  ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
+]);
+
+const MAIN_GONE_PATHS = new Set([
+  "/dashboard",
+  "/month",
+  "/месяц",
+  "/cdn-cgi/l/email-protection",
 ]);
 
 const ACCESS_DOCUMENTS = new Map([
@@ -308,6 +323,28 @@ function canonicalMainLegacyRedirect(incomingUrl) {
   return Response.redirect(target.toString(), 301);
 }
 
+function canonicalGonePath(pathname) {
+  let decoded = pathname;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    // Keep the encoded pathname when malformed percent-encoding is supplied.
+  }
+  const normalized = decoded.length > 1 ? decoded.replace(/\/+$/, "") : decoded;
+  return MAIN_GONE_PATHS.has(normalized) ? normalized : null;
+}
+
+function goneSearchArtifactResponse() {
+  return new Response("Gone", {
+    status: 410,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=86400",
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  });
+}
+
 async function routeMainAndCompatibilityHosts(context) {
   const publicHostRedirect = canonicalPublicHostRedirect(context.request);
   if (publicHostRedirect) return withTransportSecurity(publicHostRedirect);
@@ -317,6 +354,9 @@ async function routeMainAndCompatibilityHosts(context) {
   }
 
   const incomingUrl = new URL(context.request.url);
+  if (canonicalGonePath(incomingUrl.pathname)) {
+    return withTransportSecurity(goneSearchArtifactResponse());
+  }
   const legacyRedirect = canonicalMainLegacyRedirect(incomingUrl);
   if (legacyRedirect) return withTransportSecurity(legacyRedirect);
 
