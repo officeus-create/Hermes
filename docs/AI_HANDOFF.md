@@ -1467,6 +1467,26 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - Regression coverage: guards US static Digital Health, runtime Repair Shop privacy-safe Digital Health, runtime Academy bilingual Digital Health, all eight channel surfaces, KNB Google/local gate, organic → paid-learning → offer readiness, the four-column candidate method, and repair-only normalization on the shared `repair | concept` route.
 - Release status: review branch only. Exact-head CI remains mandatory; merge to `main` and production deploy still require the repository's explicit owner release confirmation.
 
+
+## 2026-10-06 — ChatGPT — Contact truth governance recovery (#1700)
+
+- **Problem:** public site source/tests already retire `+1 (262) 302-3626`, but current agent guidance and two dated contact/facts documents still described Logistics phone publication as approved. That conflicting repository memory could reintroduce the wrong CTA on a later change.
+- **Root cause:** mutable operational contact facts were duplicated across dated documents without an explicit precedence/supersession contract.
+- **Working approach:** branch `fix/contact-truth-governance-20261006` from current main `dcdc45e8096fa4b65d08fd4644244f513d5901f4`; make `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md` the publication authority, mark dated contact documents historical/superseded, align `CLAUDE.md`, and add `scripts/canonical-contact-governance.test.mjs` to the normal test chain.
+- **PR:** #1700. No public runtime, SEO owner, sitemap, schema, receiver, DNS, Cloudflare setting or analytics behavior is changed in this PR.
+- **Evidence boundary:** stale search/web-reader copies that still contain the retired phone are crawl/cache evidence, not current production proof. Runtime closure requires exact-SHA/custom-domain release evidence after merge.
+- **Lesson / reuse rule:** mutable business facts need one current publication authority. Dated deltas may remain as provenance only when visibly superseded; agent instructions and regression tests must follow the current authority so historical facts cannot silently become active again.
+- **Next:** exact-head CI → repair any concrete failure → normal owner-gated merge/release → production readback → close ERR-CONTACT-002 only when the runtime evidence is current.
+
+
+## 2026-10-06 — ChatGPT — History-first error-register reconciliation
+
+- **Method:** reused existing repository/history evidence; no generic GSC/Bing/Semrush/site-wide SEO rerun.
+- **Closed stale engineering blockers instead of rewriting working code:** `ERR-UX-TECH-001` is resolved by newer exact-head #1699 four-shard browser evidence while the overlap assertion remains; `ERR-HC-RS-002` is resolved by merged #1471 plus its current first-run regression; `ERR-HC-RS-001` is resolved by current scoped workspace/customer styles plus newer browser evidence.
+- **Reclassified merged-code/runtime splits:** Catalog Worker compatibility source is merged in #1671 and now waits only for the existing Worker rollout/readback; Carrier Telegram time guard is merged in #1427 and waits only for approved runtime destination/release proof; business social connectors are merged in #1564 and wait only for provider/account OAuth activation; Hermes AI fallback has no identified repository defect and waits for an authorized two-provider live fallback proof.
+- **Measurement state:** GA4 is `WATCH`, not an active defect; use a bounded receipt check only when a concrete release/business decision requires it.
+- **Governance cleanup:** duplicate AI error IDs were split; GitHub main-protection wording now preserves the dated authenticated readback instead of implying later merges rechecked administration.
+- **Reusable rule:** always distinguish `ACTIVE CODE DEFECT` from `OWNER_ACTION / ACCESS_GAP / WATCH`. A later exact-head regression that directly covers an older failure supersedes the stale failure; do not add speculative code to “fix” already-green behavior. Merged source is not separate runtime deployment proof.
 ## 2026-10-06 — Existing Connect registration-language correction
 
 ```yaml
@@ -1503,7 +1523,9 @@ handoff_to: NONE
 
 - Exact preview of `2ad7f8f` proved Access → Academy owner English continuity and explicit Ukrainian switching without submitting forms. It exposed Ukrainian static header labels on English auth pages and a false English-only notice on their Ukrainian dictionaries.
 - Added a route-scoped auth chrome adapter used only by those three pages. It reuses the existing direction-owner map, synchronizes visible navigation/sign-in text and truthful content-language labels, and removes the generic English-only notice only on these bilingual auth pages. Shared SiteHeader and Search policy remain untouched.
-- Initial Website CI passed contracts and two browser shards; three new desktop tests timed out when returning to the offscreen header after retained `#main-content` navigation. Tests now use normal Home-key scrolling before changing language, preserving the same assertions and timeout.
+- Initial Website CI passed contracts and two browser shards; three new repeated-language browser scenarios timed out during header interaction. The initial offscreen-header explanation was a hypothesis, not a confirmed cause.
 - Added a regression for the adapter wiring (observed failure before implementation). Local initializer/contract coverage is now 25/25; final build and full static/unit command are rechecked per revision. Final exact-head CI and preview are still required; no release performed.
 
-- Follow-up CI: `b4a41ed` passed quality/visual/contracts and two browser shards; the remaining failure was the same anchored navigation test on mobile, where the desktop Home key does not scroll. The test now explicitly scrolls to the top and asserts scrollY=0 before using the unchanged real menu controls; no forced clicks, removed assertions, or relaxed timeout. Exact-head repeat remains required.
+- Follow-up CI: `b4a41ed` passed quality/visual/contracts and two browser shards, but the new repeated-language scenarios continued failing after explicit scroll restoration. `afee4cb` diagnostics showed the mobile button visible with stable identical rectangles, loaded fonts, completed document and scrollY=0 across three samples, disproving a simple offscreen/geometry explanation. Browser actionability synchronization remains under investigation; do not describe the menu as fixed or the cause as established. The test-only `2e1fa1a` foreground/frame diagnostic had no pull-request CI run because later main changes caused a merge conflict; its behavior is unverified. No assertions/timeouts were relaxed or clicks forced.
+
+- 2026-10-06 11:36 UTC: reconciled the same branch with `09aa55a` main. Kept current contact-governance test chain and all independently closed error records; only appended this task record. No runtime change in this reconciliation. Build, static tests and new exact-head browser CI must be verified again.
