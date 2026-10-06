@@ -10,6 +10,7 @@ const params = new URLSearchParams({
   gclid: "gclid-1",
   gbraid: "gbraid-1",
   wbraid: "wbraid-1",
+  fbclid: "fbclid-1",
 });
 const payload = buildCatalogLeadContext({
   businessId: "catalog-ua-chayka-store",
@@ -31,6 +32,7 @@ assert.deepEqual(payload.attribution, {
   gclid: "gclid-1",
   gbraid: "gbraid-1",
   wbraid: "wbraid-1",
+  fbclid: "fbclid-1",
   referrer: "https://www.google.com/search?q=chayka+store",
 });
 const fallback = buildCatalogLeadContext({requestType:"claim",searchParams:new URLSearchParams(),referrer:""});

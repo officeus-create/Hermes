@@ -29,7 +29,7 @@ assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointme
 assert.match(publicProfile, /No private customer records, appointments or account details appear on this page/);
 assert.match(publicProfile, /does not indicate a Hermes customer relationship/);
 assert.match(publicProfile, /type=claim&business=/);
-assert.match(publicProfile, /type=catalog-growth&business=/);
+assert.match(publicProfile, /type=marketing-package&business=/);
 assert.match(publicProfile, /catalog-business-request/);
 assert.match(publicProfile, /repair-shop-crm:/);
 assert.match(publicProfile, /Request contact via Hermes/);
@@ -85,9 +85,13 @@ for (const [route, shopName] of [
   assert.match(html, /application\/ld\+json/);
   assert.match(html, /Website concept · Hermes preview/);
   assert.match(html, /Concept preview only/);
+  assert.match(html, /HERMES DIGITAL AUDIT/);
+  assert.match(html, /Owner confirmation required/);
+  assert.match(html, /Request a full audit/);
   assert.doesNotMatch(html, /hr@smartbubbleautorepair\.com|clintonautorepair@outlook\.com|hello@thedapperwrench\.com/);
 }
 const websiteConcept = read("src/components/CatalogWebsiteConcept.astro");
+const catalogDigitalAudit = read("src/components/CatalogDigitalAudit.astro");
 const catalogConceptRouteOwner = read("src/components/CatalogConceptRoute.astro");
 const genericBusinessRoute = read("src/pages/businesses/[state]/[city]/[slug].astro");
 const genericCountryRoute = read("src/pages/businesses/[state]/index.astro");
@@ -95,10 +99,12 @@ const genericLocalityRoute = read("src/pages/businesses/[state]/[city]/index.ast
 const conceptRouteRegistry = read("src/lib/catalog-concept-routes.ts");
 const catalogConceptData = read("src/data/catalog-business-concepts.ts");
 const internationalBusinessCollection = read("src/components/InternationalBusinessCollection.astro");
+const internationalBusinessProfile = read("src/components/InternationalBusinessProfile.astro");
 const catalogRequestHelper = read("src/lib/catalog-request.ts");
 const catalogRequestPage = read("src/pages/businesses/request/index.astro");
 const catalogLeadPayload = read("src/lib/catalog-lead-payload.mjs");
 assert.match(catalogRequestHelper, /"catalog-business-request"/);
+assert.match(catalogRequestHelper, /"marketing-package"/);
 assert.match(catalogRequestHelper, /business_id/);
 assert.match(catalogRequestHelper, /source_ref/);
 assert.match(websiteConcept, /Request contact via Hermes/);
@@ -117,12 +123,18 @@ assert.match(genericCountryRoute, /catalogConceptCountryRoutes/);
 assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
+assert.match(genericBusinessRoute, /CatalogDigitalAudit/);
+assert.match(genericBusinessRoute, /"marketing-package"/);
+assert.match(genericBusinessRoute, /socialPlatformLabel/);
+assert.match(genericBusinessRoute, /kind==="repair"\?business\.sources\.flatMap/);
 for (const [page, expectedHref] of [
   ["dist/businesses/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/chaiky/"],
   ["dist/businesses/ukraine/index.html", "/businesses/ukraine/irpin/"],
+  ["dist/businesses/ukraine/index.html", "/businesses/ukraine/bila-tserkva/"],
   ["dist/businesses/ukraine/chaiky/index.html", "/businesses/ukraine/"],
   ["dist/businesses/ukraine/irpin/index.html", "/businesses/ukraine/"],
+  ["dist/businesses/ukraine/bila-tserkva/index.html", "/businesses/ukraine/"],
 ]) {
   assert.match(read(page), new RegExp(`href=["']${expectedHref.replaceAll("/", "\\/")}["']`));
 }
@@ -130,6 +142,41 @@ assert.match(catalogConceptData, /localeCopy:/);
 assert.match(catalogConceptData, /Телефон зламався\? Почніть із Чайка Store\./);
 assert.match(catalogConceptData, /Phone problem\? Start with Chayka Store\./);
 assert.match(catalogConceptData, /semanticCore:/);
+assert.match(catalogConceptData, /konsNaBisConcept/);
+assert.match(catalogConceptData, /Стратегія керованого зростання у бізнесі/);
+assert.match(catalogConceptData, /EducationalOrganization/);
+assert.match(catalogConceptData, /digitalAudit:/);
+assert.match(catalogConceptData, /organic programming/);
+assert.match(catalogConceptData, /paid learning/);
+assert.match(catalogDigitalAudit, /Audit ≠ Funnel/);
+assert.match(catalogDigitalAudit, /audit-\$\{finding\.platform\}/);
+assert.match(catalogDigitalAudit, /Request a full audit/);
+assert.match(catalogDigitalAudit, /owner_confirmation/);
+assert.match(catalogDigitalAudit, /does not mean the channel is absent/);
+assert.match(catalogDigitalAudit, /auditPlatforms/);
+assert.match(websiteConcept, /CatalogDigitalAudit/);
+assert.match(websiteConcept, /FEATURED PROGRAM \/ PRODUCT/);
+assert.match(read("public/sitemap-business-directory.xml"), /\/businesses\/ukraine\/bila-tserkva\/kons-na-bis\//);
+const knbCatalogHtml = read("dist/businesses/ukraine/bila-tserkva/kons-na-bis/index.html");
+assert.match(knbCatalogHtml, /Конс на Бі\$/);
+assert.match(knbCatalogHtml, /Стратегія керованого зростання у бізнесі/);
+assert.match(knbCatalogHtml, /Official program page/);
+assert.match(knbCatalogHtml, /HERMES DIGITAL AUDIT/);
+assert.match(knbCatalogHtml, /Audit ≠ Funnel/);
+assert.match(knbCatalogHtml, /Google/);
+assert.match(knbCatalogHtml, /Instagram/);
+assert.match(knbCatalogHtml, /Facebook/);
+assert.match(knbCatalogHtml, /Threads/);
+assert.match(knbCatalogHtml, /TikTok/);
+assert.match(knbCatalogHtml, /YouTube/);
+assert.match(knbCatalogHtml, /Telegram/);
+assert.match(knbCatalogHtml, /https:\/\/www\.facebook\.com\/konsnabis\//);
+assert.match(knbCatalogHtml, /https:\/\/t\.me\/konsnabis/);
+assert.match(knbCatalogHtml, /\/businesses\/concepts\/kons-na-bis\//);
+assert.match(knbCatalogHtml, /\/demos\/hermes-connect\/academy-knb\.html/);
+assert.match(knbCatalogHtml, /PREPARED HERMES WORK/);
+assert.match(knbCatalogHtml, /schema\.org/);
+assert.doesNotMatch(knbCatalogHtml, /noindex,nofollow/);
 assert.match(catalogPage, /business\.primaryIntent/);
 assert.doesNotMatch(catalogPage, /business\.vertical\.replace\("_"," "\)/);
 assert.match(internationalBusinessCollection, /business\.primaryIntent/);
@@ -143,11 +190,17 @@ assert.match(catalogLeadPayload, /catalog_business_id/);
 assert.match(catalogLeadPayload, /catalog_source_ref/);
 assert.match(catalogLeadPayload, /utm_source/);
 assert.match(catalogLeadPayload, /gclid/);
+assert.match(catalogLeadPayload, /fbclid/);
+assert.match(websiteConcept, /buildCatalogRequestHref\("marketing-package"/);
+assert.match(internationalBusinessProfile, /buildCatalogRequestHref\("marketing-package"/);
+assert.match(internationalBusinessProfile, /catalog-business-telemetry\.js/);
 assert.match(catalogRequestPage, /external email delivery still requires a verified recipient path/);
 
 const catalogEventApi = read("functions/api/catalog-business-event.ts");
 const catalogEventSchema = read("functions/api/_lib/catalog-business-events.mjs");
 const catalogTelemetry = read("public/catalog-business-telemetry.js");
+assert.match(catalogTelemetry, /ATTRIBUTION_KEYS/);
+assert.match(catalogTelemetry, /utm_campaign/);
 const catalogWebsiteConcept = read("src/components/CatalogWebsiteConcept.astro");
 const catalogReportApi = read("functions/api/repair-shop/catalog-report.ts");
 const repairDashboard = read("src/pages/services/hermes-connect/repair-shops/dashboard.astro");

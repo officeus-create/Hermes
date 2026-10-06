@@ -3,6 +3,7 @@ import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profil
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { ensureHomeServiceCrmSchema } from "../_lib/home-service-crm.mjs";
+import { catalogProjectionPath } from "../_lib/catalog-public-projection.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
 
 type Env = { DB?: any };
@@ -43,7 +44,7 @@ export async function onRequestGet({ env }: { env: Env }) {
   const [companyResult, repairResult] = await Promise.all([
     env.DB.prepare(`
       SELECT
-        c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,
+        c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,
         c.catalog_status,c.created_at,c.updated_at,
         a.academy_type,h.service_subtype,h.services_json
       FROM hermes_company_profiles c
@@ -78,7 +79,7 @@ export async function onRequestGet({ env }: { env: Env }) {
     const homeSubtype = String(row.service_subtype || "home_service");
     const homeTypeLabel = homeSubtype === "junk_removal"
       ? "Junk Removal & Hauling"
-      : homeSubtype.replaceAll("_", " ").replace(/\b\w/g, (letter: string) => letter.toUpperCase());
+      : homeSubtype.replaceAll("_", " ").replace(/\\b\\w/g, (letter: string) => letter.toUpperCase());
     return {
       id: String(row.id),
       companyName: String(row.company_name || ""),
@@ -96,7 +97,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       countryCode: String(row.country_code || "US"),
       status: String(row.catalog_status || "self_submitted"),
       source: isAcademy ? "academy_business_crm" : isHomeService ? "home_service_crm" : "hermes_connect_company",
-      profileUrl: isAcademy ? `/businesses/connect/academy/${encodeURIComponent(String(row.slug || ""))}/` : isHomeService ? `/businesses/connect/company/${encodeURIComponent(String(row.slug || ""))}/` : null,
+      profileUrl: isAcademy ? catalogProjectionPath({ vertical:"academy_business", website:row.website, slug:String(row.slug || "") }) : isHomeService ? `/businesses/connect/company/${encodeURIComponent(String(row.slug || ""))}/` : null,
       services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : isHomeService ? homeServices : [],
       verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
       createdAt: row.created_at,

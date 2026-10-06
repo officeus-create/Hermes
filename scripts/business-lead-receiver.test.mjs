@@ -78,6 +78,7 @@ const validPayload = {
     utm_campaign: "warsaw_ru_site",
     utm_term: "создание сайта варшава",
     gclid: "test-gclid-123",
+    fbclid: "test-fbclid-123",
     referrer: "https://www.google.com/",
   },
 };
@@ -105,11 +106,12 @@ assert.match(serviceCalls[0].payload.text, /Company \/ project: Example Studio/)
 assert.match(serviceCalls[0].payload.text, /WhatsApp: \+48 555 123 456/);
 assert.match(serviceCalls[0].payload.text, /Telegram: @exampleowner/);
 assert.match(serviceCalls[0].payload.text, /Planning budget: \$3,000–\$10,000/);
-assert.match(serviceCalls[0].payload.text, /Roadmap horizon: 6 months/);
+assert.match(serviceCalls[0].payload.text, /Planning horizon: 6 months/);
 assert.match(serviceCalls[0].payload.text, /Services: Website development, SEO, Google Ads/);
 assert.match(serviceCalls[0].payload.text, /UTM source: google/);
 assert.match(serviceCalls[0].payload.text, /UTM term: создание сайта варшава/);
 assert.match(serviceCalls[0].payload.text, /GCLID: test-gclid-123/);
+assert.match(serviceCalls[0].payload.text, /FBCLID: test-fbclid-123/);
 
 const duplicate = await onRequest({ request: makeRequest(), env });
 assert.equal(duplicate.status, 200);
@@ -145,7 +147,7 @@ const backwardCompatible = await onRequest({
 });
 assert.equal(backwardCompatible.status, 200);
 assert.match(serviceCalls.at(-1).payload.text, /Planning budget: not provided/);
-assert.match(serviceCalls.at(-1).payload.text, /Roadmap horizon: not provided/);
+assert.match(serviceCalls.at(-1).payload.text, /Planning horizon: not provided/);
 
 const invalidBudget = await onRequest({
   request: makeRequest({ ...validPayload, request_id: "business_bad_budget_12345", planning_budget: "Spend everything" }, { "CF-Connecting-IP": "192.0.2.58" }),

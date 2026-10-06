@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Work With Hermes opportunities hub", () => {
-  test("routes each relationship without inventing recruiting contact details", async ({ page }) => {
+  test("routes each relationship without inventing recruiting contact details", async ({ page, isMobile }) => {
     await page.goto("/opportunities/");
 
     await expect(page.getByRole("heading", { level: 1, name: "Work With Hermes" })).toBeVisible();
@@ -20,16 +20,20 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
     await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
 
-    const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
-    await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
-    await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
-
-    const menuButton = page.getByRole("button", { name: "Open navigation" });
-    await menuButton.click();
-    const mobileOpportunities = page.locator("#mobile-menu").getByRole("link", { name: "Opportunities" });
-    await expect(mobileOpportunities).toBeVisible();
-    await expect(mobileOpportunities).toHaveAttribute("href", "/opportunities/");
-    await expect(mobileOpportunities).toHaveAttribute("aria-current", "page");
+    if (isMobile) {
+      const menuButton = page.getByRole("button", { name: "Open navigation" });
+      await menuButton.click();
+      const mobileOpportunities = page.locator("#mobile-menu").getByRole("link", { name: "Opportunities" });
+      await expect(mobileOpportunities).toBeVisible();
+      await expect(mobileOpportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(mobileOpportunities).toHaveAttribute("aria-current", "page");
+      await expect(mobileOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+    } else {
+      const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
+      await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
+      await expect(desktopOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+    }
 
     await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
     await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();

@@ -8,13 +8,14 @@ This is the vendor-neutral entry point for every AI agent working on the Hermes 
 
 1. `docs/ai-project-state.json` — compact machine-readable current state, canonical revenue pages, completed capabilities, active blockers, approval gates, and the freshest labelled measurement handoff.
 2. `AGENTS.md` — engineering boundaries, branch rules, tests, and handoff requirements.
-3. `ai-collaboration/00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md` — cross-agent ownership, evidence receipt, anti-loop, access, and handoff contract.
-4. `ai-collaboration/00_READ_FIRST/CURRENT_STATE.md` — current global Hermes/SEO/product context and freshness boundary.
-5. The current issue or bounded mission assigned to the branch.
-6. The relevant department `ai-collaboration/<department>/CURRENT_STATE.md` and approved decision log when present.
-7. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` — required scan for safe multi-direction value, reuse, and deferred opportunities.
-8. `docs/ERROR_REGISTER.md` — active, owner-required, resolved, and obsolete errors.
-9. Only the domain documents relevant to the task.
+3. `docs/SEARCH_GROWTH_GUARDRAIL.md` — owner-approved money priority, indexation gate, department non-regression rules, and synthetic-traffic classification.
+4. `ai-collaboration/00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md` — cross-agent ownership, evidence receipt, anti-loop, access, and handoff contract.
+5. `ai-collaboration/00_READ_FIRST/CURRENT_STATE.md` — current global Hermes/SEO/product context and freshness boundary.
+6. The current issue or bounded mission assigned to the branch.
+7. The relevant department `ai-collaboration/<department>/CURRENT_STATE.md` and approved decision log when present.
+8. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` — required scan for safe multi-direction value, reuse, and deferred opportunities.
+9. `docs/ERROR_REGISTER.md` — active, owner-required, resolved, and obsolete errors.
+10. Only the domain documents relevant to the task.
 
 Do **not** read the complete `docs/AI_HANDOFF.md` from the beginning unless a historical decision is disputed. It is an append-only audit journal, not the current project dashboard.
 
@@ -48,6 +49,10 @@ If a newer approved decision or authenticated measurement contradicts `docs/ai-p
 - A passing bridge/self-test proves transport or document-contract health only. It does not prove that the transported context is current; verify freshness before execution.
 
 ## 4. Revenue priority
+
+Current owner-approved Search/Marketing P0 is **qualified Car Hauling carrier acquisition**: real owner-operators/fleets that want Hermes to source/plan loads and support dispatch. It may take up to 100% of Search/Marketing capacity while it remains the strongest evidenced money path. Secondary priorities are dynamic; evidence-backed quick wins for Website Development worldwide, Hermes Connect/CRM, dealers/shippers/Load Board, or another real product may move ahead when they pass `docs/SEARCH_GROWTH_GUARDRAIL.md`.
+
+There is **no website freeze**. Product, design, client, CRM, Load Board, and systems work continues. Only uncontrolled expansion of new indexable search owners is held. A new public route must not be put into the sitemap or treated as an SEO owner merely because it exists.
 
 The primary commercial chain is:
 

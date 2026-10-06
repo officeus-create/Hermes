@@ -60,6 +60,8 @@ const getAttr = (tag, name) => {
   return decode(match?.[1] ?? match?.[2] ?? match?.[3] ?? "");
 };
 
+const hasAttr = (tag, name) => new RegExp(`\\b${name}(?:\\s*=|\\s|>)`, "i").test(tag);
+
 const tags = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>`, "gi"))].map((match) => match[0]);
 const elements = (html, tagName) => [...html.matchAll(new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi"))];
 
@@ -178,6 +180,10 @@ for (const [path, html] of htmlByPath) {
   const h1 = stripTags(h1Elements[0]?.[1] ?? "");
   if (!h1) addError(route, "H1 is empty");
   if (h1) h1Owners.set(h1.toLowerCase(), [...(h1Owners.get(h1.toLowerCase()) ?? []), route]);
+
+  const imageTags = tags(html, "img");
+  const missingAlt = imageTags.filter((tag) => !hasAttr(tag, "alt"));
+  if (missingAlt.length) addError(route, `${missingAlt.length} image tag(s) missing alt attributes`);
 
   const canonicalLinks = linksByRel(html, "canonical");
   if (canonicalLinks.length !== 1) addError(route, `expected exactly one canonical, found ${canonicalLinks.length}`);

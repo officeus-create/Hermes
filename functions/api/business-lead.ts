@@ -36,6 +36,7 @@ type AttributionInput = {
   gclid?: unknown;
   gbraid?: unknown;
   wbraid?: unknown;
+  fbclid?: unknown;
   referrer?: unknown;
 };
 
@@ -233,6 +234,7 @@ const getAttribution = (value: unknown) => {
     gclid: clean(input.gclid, 240),
     gbraid: clean(input.gbraid, 240),
     wbraid: clean(input.wbraid, 240),
+    fbclid: clean(input.fbclid, 240),
     referrer: clean(input.referrer, 500),
   };
 };
@@ -429,6 +431,7 @@ export async function onRequestPost({ request, env }: Context) {
     attribution.gclid ? `GCLID: ${attribution.gclid}` : "",
     attribution.gbraid ? `GBRAID: ${attribution.gbraid}` : "",
     attribution.wbraid ? `WBRAID: ${attribution.wbraid}` : "",
+    attribution.fbclid ? `FBCLID: ${attribution.fbclid}` : "",
     attribution.referrer ? `Referrer: ${attribution.referrer}` : "",
   ].filter(Boolean);
 
@@ -448,7 +451,7 @@ export async function onRequestPost({ request, env }: Context) {
     ...(catalogProfile ? [`Catalog profile: ${catalogProfile}`] : []),
     ...(catalogSourceRef ? [`Catalog source ref: ${catalogSourceRef}`] : []),
     `Planning budget: ${planningBudget || "not provided"}`,
-    `Roadmap horizon: ${planningHorizon || "not provided"}`,
+    `Planning horizon: ${planningHorizon || "not provided"}`,
     `Preferred language: ${preferredLanguage}`,
     `Best time to contact: ${preferredContactTime}`,
     `Services: ${services.join(", ")}`,

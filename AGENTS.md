@@ -9,10 +9,11 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 3. `docs/ERROR_REGISTER.md`
 4. The current issue or bounded mission assigned in the prompt
 5. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`
-6. `docs/DESIGN_INTEGRATION_CONTRACT.md`
-7. `docs/PUBLIC_INFORMATION_POLICY.md`
-8. Only the domain runbooks needed for the assigned task
-9. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
+6. `docs/SEARCH_GROWTH_GUARDRAIL.md` — owner-approved cross-department Search/Marketing non-regression and indexation gate
+7. `docs/DESIGN_INTEGRATION_CONTRACT.md`
+8. `docs/PUBLIC_INFORMATION_POLICY.md`
+9. Only the domain runbooks needed for the assigned task
+10. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
 
 `README.md`, `CLAUDE.md`, `docs/AI_ROLES.md`, `docs/CODEX_WEBSITE_HANDOFF.md`, and numbered `docs/CURSOR_*_MISSION_*.md` are supporting or agent-specific documents. They do not override the current owner instruction, code/tests on `main`, the current project state, or an accepted bounded issue.
 
@@ -49,6 +50,17 @@ A technical change is not `DONE_VERIFIED` merely because code, a PR, a page, a t
 - SEO: `INDEXABLE OWNER -> TECHNICAL VALIDATION -> SEARCH PLATFORM EVIDENCE -> QUERY/PAGE -> ACTION -> QUALIFIED OUTCOME`.
 
 After a material result, update the existing canonical record with task, owner, status, evidence, SHA/URL, blocker, and next action. Never claim revenue without evidence.
+
+## Search + Growth non-regression gate
+
+The owner-approved cross-department policy is `docs/SEARCH_GROWTH_GUARDRAIL.md`. It applies to every department and repository agent.
+
+- **P0 Search/Marketing business priority:** qualified Car Hauling owner-operators/fleets that want Hermes to source/plan loads and support dispatch. This P0 may consume up to 100% of Search/Marketing effort when current evidence makes it the strongest money path.
+- **No website freeze:** Design, Technology, Hermes Connect/CRM, Load Board, Catalog, Academy, client work, UX, bug fixing, and product development continue. The hold is on uncontrolled search-surface expansion, not useful product work.
+- **New public route != new search owner.** Before a route gets `index,follow`/sitemap ownership as a search landing page, it must pass the Search Release Gate: distinct intent, real capability, evidence/truth, no canonical conflict/cannibalization, unique value, internal discovery, real CTA/receiver, clean measurement, and technical validation; use an experiment contract where applicable.
+- **Existing owner first:** strengthen the current canonical owner before creating another URL.
+- **Quick wins are allowed:** Website Development, Hermes Connect/CRM, dealers/shippers/Load Board, or another real product may move ahead when fresh evidence shows a faster credible route to qualified traffic/revenue and the gate passes.
+- **Synthetic traffic is QA, not demand:** keep `HUMAN`, `SEARCH_CRAWLER`, and `HERMES_SYNTHETIC` separate. Synthetic CI/browser/form traffic never proves a customer, lead, or revenue. Do not solve internal QA noise with a WAF/bot change that could block verified Googlebot/Bingbot.
 
 ## Project boundary
 

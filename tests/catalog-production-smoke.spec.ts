@@ -43,7 +43,7 @@ test("production Catalog reconciles public CRM profiles with the single v2 runti
     await expect(page.locator(`a[href="${company.profileUrl}"]`).first()).toBeVisible();
   }
 
-  const cards = page.locator(".catalog-results .business-grid [data-catalog-card]");
+  const cards = page.locator("[data-catalog-grid] [data-catalog-card]");
   await expect.poll(() => cards.count()).toBeGreaterThanOrEqual(companies.length);
   const renderedCount = await cards.count();
 

@@ -63,7 +63,7 @@
     "test:catalog-owner-retry": "node --experimental-strip-types scripts/catalog-inquiry-retry.test.mjs && node scripts/catalog-mail-single-attempt.test.mjs"
   },
   "dependencies": {
-    "@capacitor/core": "^8.5.0",
+    "@capacitor/core": "^8.5.2",
     "@lucide/astro": "^1.24.0",
     "@tailwindcss/vite": "^4.3.2",
     "astro": "7.2.8",
@@ -72,8 +72,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
-    "@capacitor/android": "^8.5.0",
-    "@capacitor/cli": "^8.5.0",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
     "typescript": "^6.0.3"
@@ -82,6 +82,8 @@
     "uuid": "^11.1.1",
     "fast-uri": "3.1.8",
     "@xmldom/xmldom": "0.9.12",
-    "http-cache-semantics": "$http-cache-semantics"
+    "http-cache-semantics": "$http-cache-semantics",
+    "source-map-js": "1.2.2",
+    "smol-toml": "1.9.0"
   }
 }

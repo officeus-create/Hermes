@@ -3,9 +3,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { buildCatalogRequestHref } from "../lib/catalog-request";
+import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
+const auditRequestHref = buildCatalogRequestHref("marketing-package", { businessId:business.id, businessName:business.name, profileUrl, city:business.locality, country:business.countryCode, sourceRef:business.sourceRef }, "Digital marketing audit");
 const mapChannel = business.channels.find((channel) => channel.direction === "maps");
 const identityChannels = business.channels.filter((channel) => channel.direction !== "maps").map((channel) => channel.url);
 const sameAs = [...new Set([...(business.website ? [business.website] : []), ...identityChannels])];
@@ -14,12 +17,19 @@ const verticalLabel = {
   barber_shop: "Barber shop",
   flower_shop: "Flower shop",
   repair_shop: "Repair / retail",
-  retail: "Retail"
+  retail: "Retail",
+  business_academy: "Business academy / club"
 }[business.vertical];
+const isVerifiedRelationship = business.status === "claimed" || business.status === "client";
+const relationshipLead = business.status === "client"
+  ? "This source-bounded Hermes Catalog profile represents a confirmed client workstream; changing commercial terms and owner-controlled facts still require current verification."
+  : business.status === "claimed"
+    ? "This source-bounded Hermes Catalog profile is owner-claimed; changing operating details still require current verification."
+    : "This public profile is a discovery concept, not a claim that the business is already a Hermes customer.";
 const faq = [
   {
     question: "Is this an official Hermes customer profile?",
-    answer: "No. This is a public Hermes Catalog discovery profile unless the business is explicitly marked as claimed or client. Owner verification is required before Hermes presents an active customer relationship."
+    answer: isVerifiedRelationship ? `Yes. Hermes records this profile as ${business.status}; current operating and commercial details still require source or owner verification.` : "No. This is a public Hermes Catalog discovery profile. Owner verification is required before Hermes presents an active customer relationship."
   },
   {
     question: "Can the business activate Hermes Connect?",
@@ -44,6 +54,15 @@ const schema = [
     address:{"@type":"PostalAddress",streetAddress:business.address,addressLocality:business.locality,addressRegion:business.region,...(business.postalCode?{postalCode:business.postalCode}:{}),addressCountry:business.countryCode},
     ...(business.schemaHours ? { openingHours:business.schemaHours } : {}),
   },
+  ...(business.featuredOffer ? [{
+    "@context":"https://schema.org",
+    "@type":"Course",
+    name:business.featuredOffer.name,
+    description:business.featuredOffer.description,
+    url:business.featuredOffer.url,
+    ...(business.featuredOffer.duration === "7 тижнів" ? { timeRequired:"P7W" } : {}),
+    provider:{"@type":business.schemaType,name:business.name,url:business.website ?? profileUrl}
+  }] : []),
   {
     "@context":"https://schema.org",
     "@type":"Service",
@@ -81,7 +100,7 @@ const schema = [
   <header>
     <p class="eyebrow">Hermes Catalog · International · {verticalLabel}</p>
     <h1>{business.name}</h1>
-    <p class="lead">{business.primaryIntent} · {business.locality}, {business.region}. This public profile is a discovery concept, not a claim that the business is already a Hermes customer.</p>
+    <p class="lead">{business.primaryIntent} · {business.locality}, {business.region}. {relationshipLead}</p>
     <div class="badges"><span>{business.status}</span><span>{business.catalogPriority} catalog layer</span><span>{business.countryCode}</span></div>
   </header>
   <section class="grid">
@@ -93,8 +112,15 @@ const schema = [
     </dl></article>
     <article><h2>Current source-described scope</h2><ul>{business.services.map((service)=><li>{service}</li>)}</ul></article>
   </section>
+  {business.featuredOffer && <section class="offer">
+    <p class="eyebrow">Featured program / offer</p>
+    <h2>{business.featuredOffer.name}</h2>
+    <p>{business.featuredOffer.description}</p>
+    <div class="offer-meta">{business.featuredOffer.duration && <span>{business.featuredOffer.duration}</span>}<a href={business.featuredOffer.url} rel="noreferrer" target="_blank">Official program page ↗</a></div>
+  </section>}
   {business.trust && <section class="trust"><strong>{business.trust.rating.toFixed(1)}</strong><span>{business.trust.source} · {business.trust.reviewCount} reviews · observed {business.trust.observedAt}</span></section>}
   <section class="channels"><h2>Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank">{channel.label} ↗</a>)}</div></section>
+  <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale="en" />
   <section class="evidence">
     <p class="eyebrow">Evidence / relationship state</p>
     <h2>What this page proves — and what it does not.</h2>
@@ -103,17 +129,18 @@ const schema = [
       <div><dt>Catalog priority</dt><dd>{business.catalogPriority}</dd></div>
       <div><dt>Evidence reference</dt><dd><code>{business.sourceRef}</code></dd></div>
     </dl>
-    <p>This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification.</p>
+    <p>{business.status === "client" ? "This profile records a confirmed Hermes client workstream while keeping changing business facts, pricing, dates and public claims evidence-gated." : "This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification."}</p>
   </section>
   <section class="boundary"><h2>Needs owner confirmation</h2><p>Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.</p><ul>{business.factsRequiringOwnerConfirmation.map((fact)=><li>{fact}</li>)}</ul></section>
   <section class="faq"><p class="eyebrow">FAQ</p><h2>How this profile works</h2>{faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>
   <section class="growth"><div><p class="eyebrow">Hermes growth path</p><h2>From free discovery profile to an operating business system</h2><p>Claim the profile, verify facts, then activate only the modules this business needs: CRM, bookings or requests, customer history, website, local SEO/GEO, reviews and automation.</p></div><div class="actions">
-    <a href={`/services/hermes-connect/demos/${business.slug}/`}>Open CRM preview</a>
+    <a href={business.crmPreviewUrl ?? `/services/hermes-connect/demos/${business.slug}/`}>Open CRM preview</a>
     <a href={`/businesses/request/?type=claim&business=${encodeURIComponent(business.name)}&profile=${encodeURIComponent(profileUrl)}&city=${encodeURIComponent(business.locality)}&country=Ukraine`}>Claim / verify</a>
     <a href="/services/local-seo/">SEO / GEO</a><a href="/services/website-development/">Website</a>
   </div></section>
 </div></main><SiteFooter/>
+<script is:inline src="/catalog-business-telemetry.js" data-catalog-business-id={business.id}></script>
 </BaseLayout>
 <style>
-.page{background:#f6f7f9;color:#172033;min-height:70vh}.shell{width:min(1080px,calc(100% - 2rem));margin:auto;padding:105px 0 76px}.back{font-weight:800;color:#286aa6;text-decoration:none}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;color:#286aa6}header{margin-top:28px}h1{font-size:clamp(42px,7vw,76px);line-height:1;margin:.35rem 0 1rem}.lead{max-width:800px;color:#647286;line-height:1.65;font-size:17px}.badges,.actions,.channels div{display:flex;gap:9px;flex-wrap:wrap}.badges span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #dce4ed;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.grid article,.channels,.evidence,.boundary,.faq,.growth,.trust{padding:22px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.grid h2,.channels h2,.evidence h2,.boundary h2,.faq h2,.growth h2{margin-top:0}.grid dl{margin:0}.grid dl div{padding:9px 0;border-top:1px solid #edf1f4}.grid dt{font-size:11px;text-transform:uppercase;color:#788597}.grid dd{margin:3px 0 0}.grid ul,.boundary ul{padding-left:19px;line-height:1.7;color:#5f6e80}.trust{display:flex;align-items:center;gap:12px;margin-top:14px}.trust strong{font-size:30px}.trust span{color:#657286}.channels,.evidence,.boundary,.faq,.growth{margin-top:14px}.evidence dl{margin:0}.evidence dl div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:8px 0;border-top:1px solid #edf1f4}.evidence dd{margin:0}.evidence p:last-child{margin-bottom:0;color:#667386;line-height:1.6}.evidence code{font-size:11px;overflow-wrap:anywhere}.faq article+article{margin-top:18px;padding-top:18px;border-top:1px solid #edf1f4}.faq h3{margin:0 0 6px;font-size:17px}.faq p{margin:0;color:#667386;line-height:1.6}.channels a,.actions a{padding:10px 13px;border:1px solid #ced9e5;border-radius:11px;text-decoration:none;color:#1b5f9a;font-weight:750}.boundary{background:#fff9e9}.boundary p,.growth p{color:#667386;line-height:1.6}.growth{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.actions{align-content:start}@media(max-width:760px){.grid,.growth{grid-template-columns:1fr}}
+.page{background:#f6f7f9;color:#172033;min-height:70vh}.shell{width:min(1080px,calc(100% - 2rem));margin:auto;padding:105px 0 76px}.back{font-weight:800;color:#286aa6;text-decoration:none}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;color:#286aa6}header{margin-top:28px}h1{font-size:clamp(42px,7vw,76px);line-height:1;margin:.35rem 0 1rem}.lead{max-width:800px;color:#647286;line-height:1.65;font-size:17px}.badges,.actions,.channels div{display:flex;gap:9px;flex-wrap:wrap}.badges span{padding:7px 10px;border-radius:999px;background:#fff;border:1px solid #dce4ed;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.grid article,.channels,.evidence,.boundary,.faq,.growth,.trust,.offer{padding:22px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.grid h2,.channels h2,.evidence h2,.boundary h2,.faq h2,.growth h2{margin-top:0}.grid dl{margin:0}.grid dl div{padding:9px 0;border-top:1px solid #edf1f4}.grid dt{font-size:11px;text-transform:uppercase;color:#788597}.grid dd{margin:3px 0 0}.grid ul,.boundary ul{padding-left:19px;line-height:1.7;color:#5f6e80}.offer{margin-top:14px}.offer p{color:#667386;line-height:1.6}.offer-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.offer-meta span{padding:7px 10px;border-radius:999px;background:#f4f7fa;border:1px solid #dce4ed;font-size:12px}.offer-meta a{padding:10px 13px;border:1px solid #ced9e5;border-radius:11px;text-decoration:none;color:#1b5f9a;font-weight:750}.trust{display:flex;align-items:center;gap:12px;margin-top:14px}.trust strong{font-size:30px}.trust span{color:#657286}.channels,.evidence,.boundary,.faq,.growth{margin-top:14px}.evidence dl{margin:0}.evidence dl div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:8px 0;border-top:1px solid #edf1f4}.evidence dd{margin:0}.evidence p:last-child{margin-bottom:0;color:#667386;line-height:1.6}.evidence code{font-size:11px;overflow-wrap:anywhere}.faq article+article{margin-top:18px;padding-top:18px;border-top:1px solid #edf1f4}.faq h3{margin:0 0 6px;font-size:17px}.faq p{margin:0;color:#667386;line-height:1.6}.channels a,.actions a{padding:10px 13px;border:1px solid #ced9e5;border-radius:11px;text-decoration:none;color:#1b5f9a;font-weight:750}.boundary{background:#fff9e9}.boundary p,.growth p{color:#667386;line-height:1.6}.growth{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.actions{align-content:start}@media(max-width:760px){.grid,.growth{grid-template-columns:1fr}}
 </style>
