@@ -52,9 +52,184 @@ jobs:
           git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" > /tmp/indexnow-changed-files.txt
           : > /tmp/indexnow-urls.txt
 
-          if grep -Eq '^(src/pages/load-board\.astro|src/pages/load-board/|src/components/LoadBoardSeoLanding\.astro|src/data/load-board-seo\.ts)$' /tmp/indexnow-changed-files.txt; then
+          if grep -Eq '^src/pages/load-board\.astro          https://hermeslogisticsus.com/load-board/providers/central-dispatch/
+          https://hermeslogisticsus.com/load-board/providers/super-dispatch/
+          https://hermeslogisticsus.com/load-board/providers/dat/
+          https://hermeslogisticsus.com/load-board/providers/truckstop/
+          https://hermeslogisticsus.com/load-board/providers/123loadboard/
+          https://hermeslogisticsus.com/load-board/providers/direct-freight/
+          https://hermeslogisticsus.com/load-board/equipment/car-hauler/
+          https://hermeslogisticsus.com/load-board/equipment/dry-van/
+          https://hermeslogisticsus.com/load-board/equipment/reefer/
+          https://hermeslogisticsus.com/load-board/equipment/flatbed/
+          https://hermeslogisticsus.com/load-board/equipment/step-deck/
+          https://hermeslogisticsus.com/load-board/equipment/hotshot/
+          https://hermeslogisticsus.com/load-board/equipment/power-only/
+          https://hermeslogisticsus.com/load-board/equipment/box-truck/
+          URLS
+          fi
+
+          if grep -Eq '^(src/pages/logistics/car-hauler-loads/|src/data/car-hauler-geo-markets\.ts)' /tmp/indexnow-changed-files.txt; then
             cat >> /tmp/indexnow-urls.txt <<'URLS'
-          https://hermeslogisticsus.com/load-board/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/fountain-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/
+          URLS
+          fi
+
+          if grep -Eq '^src/pages/logistics/car-hauling-dispatch/' /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/logistics/car-hauling-dispatch/' >> /tmp/indexnow-urls.txt
+          fi
+
+          if grep -Eq '^src/pages/services/hermes-connect/repair-shops(\.astro|/)' /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/services/hermes-connect/repair-shops/' >> /tmp/indexnow-urls.txt
+          fi
+
+          sort -u -o /tmp/indexnow-urls.txt /tmp/indexnow-urls.txt
+          count="$(grep -c '^https://' /tmp/indexnow-urls.txt || true)"
+          {
+            echo "count=$count"
+            echo "urls<<EOF"
+            cat /tmp/indexnow-urls.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Changed files:"
+          cat /tmp/indexnow-changed-files.txt
+          echo "IndexNow URL count: $count"
+          cat /tmp/indexnow-urls.txt
+
+      - name: Validate changed canonical payload
+        if: steps.changed.outputs.count != '0'
+        env:
+          INDEXNOW_DRY_RUN: "1"
+          INDEXNOW_URLS: ${{ steps.changed.outputs.urls }}
+        run: node scripts/indexnow-submit.mjs
+
+      - name: Submit changed canonical money pages to IndexNow
+        if: steps.changed.outputs.count != '0'
+        env:
+          INDEXNOW_URLS: ${{ steps.changed.outputs.urls }}
+        run: node scripts/indexnow-submit.mjs
+
+      - name: No relevant URL changes
+        if: steps.changed.outputs.count == '0'
+        run: echo "No changed canonical money-page URLs require IndexNow notification."
+ /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/load-board/' >> /tmp/indexnow-urls.txt
+          fi
+
+          if grep -Eq '^(src/pages/load-board/|src/components/LoadBoardSeoLanding\.astro|src/data/load-board-seo\.ts)          https://hermeslogisticsus.com/load-board/providers/central-dispatch/
+          https://hermeslogisticsus.com/load-board/providers/super-dispatch/
+          https://hermeslogisticsus.com/load-board/providers/dat/
+          https://hermeslogisticsus.com/load-board/providers/truckstop/
+          https://hermeslogisticsus.com/load-board/providers/123loadboard/
+          https://hermeslogisticsus.com/load-board/providers/direct-freight/
+          https://hermeslogisticsus.com/load-board/equipment/car-hauler/
+          https://hermeslogisticsus.com/load-board/equipment/dry-van/
+          https://hermeslogisticsus.com/load-board/equipment/reefer/
+          https://hermeslogisticsus.com/load-board/equipment/flatbed/
+          https://hermeslogisticsus.com/load-board/equipment/step-deck/
+          https://hermeslogisticsus.com/load-board/equipment/hotshot/
+          https://hermeslogisticsus.com/load-board/equipment/power-only/
+          https://hermeslogisticsus.com/load-board/equipment/box-truck/
+          URLS
+          fi
+
+          if grep -Eq '^(src/pages/logistics/car-hauler-loads/|src/data/car-hauler-geo-markets\.ts)' /tmp/indexnow-changed-files.txt; then
+            cat >> /tmp/indexnow-urls.txt <<'URLS'
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/fountain-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/
+          https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/
+          URLS
+          fi
+
+          if grep -Eq '^src/pages/logistics/car-hauling-dispatch/' /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/logistics/car-hauling-dispatch/' >> /tmp/indexnow-urls.txt
+          fi
+
+          if grep -Eq '^src/pages/services/hermes-connect/repair-shops(\.astro|/)' /tmp/indexnow-changed-files.txt; then
+            echo 'https://hermeslogisticsus.com/services/hermes-connect/repair-shops/' >> /tmp/indexnow-urls.txt
+          fi
+
+          sort -u -o /tmp/indexnow-urls.txt /tmp/indexnow-urls.txt
+          count="$(grep -c '^https://' /tmp/indexnow-urls.txt || true)"
+          {
+            echo "count=$count"
+            echo "urls<<EOF"
+            cat /tmp/indexnow-urls.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Changed files:"
+          cat /tmp/indexnow-changed-files.txt
+          echo "IndexNow URL count: $count"
+          cat /tmp/indexnow-urls.txt
+
+      - name: Validate changed canonical payload
+        if: steps.changed.outputs.count != '0'
+        env:
+          INDEXNOW_DRY_RUN: "1"
+          INDEXNOW_URLS: ${{ steps.changed.outputs.urls }}
+        run: node scripts/indexnow-submit.mjs
+
+      - name: Submit changed canonical money pages to IndexNow
+        if: steps.changed.outputs.count != '0'
+        env:
+          INDEXNOW_URLS: ${{ steps.changed.outputs.urls }}
+        run: node scripts/indexnow-submit.mjs
+
+      - name: No relevant URL changes
+        if: steps.changed.outputs.count == '0'
+        run: echo "No changed canonical money-page URLs require IndexNow notification."
+ /tmp/indexnow-changed-files.txt; then
+            cat >> /tmp/indexnow-urls.txt <<'URLS'
           https://hermeslogisticsus.com/load-board/providers/ship-cars/
           https://hermeslogisticsus.com/load-board/providers/central-dispatch/
           https://hermeslogisticsus.com/load-board/providers/super-dispatch/
