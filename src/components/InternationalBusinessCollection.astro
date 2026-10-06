@@ -11,9 +11,10 @@ interface Props {
   canonical: string;
   businesses: readonly CatalogBusinessConcept[];
   breadcrumbs: { name: string; item: string }[];
+  robots?: string;
 }
 
-const { title, description, eyebrow, canonical, businesses, breadcrumbs } = Astro.props;
+const { title, description, eyebrow, canonical, businesses, breadcrumbs, robots } = Astro.props;
 const parentBreadcrumb = breadcrumbs.length > 1 ? breadcrumbs[breadcrumbs.length - 2] : breadcrumbs[0];
 const parentHref = parentBreadcrumb.item.startsWith("http") ? new URL(parentBreadcrumb.item).pathname : parentBreadcrumb.item;
 const localityHubs = breadcrumbs.length === 2
@@ -51,7 +52,7 @@ const schema = [
   },
 ];
 ---
-<BaseLayout title={title} description={description} schema={schema}>
+<BaseLayout title={title} description={description} schema={schema} robots={robots}>
   <SiteHeader theme="light" activePath="/businesses/" />
   <main id="main-content" class="intl-collection">
     <div class="shell">

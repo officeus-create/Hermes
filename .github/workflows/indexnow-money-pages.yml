@@ -56,23 +56,7 @@ jobs:
           fi
 
           if grep -Eq '^(src/pages/load-board/|src/components/LoadBoardSeoLanding\.astro$|src/data/load-board-seo\.ts$)' /tmp/indexnow-changed-files.txt; then
-            cat >> /tmp/indexnow-urls.txt <<'URLS'
-          https://hermeslogisticsus.com/load-board/providers/ship-cars/
-          https://hermeslogisticsus.com/load-board/providers/central-dispatch/
-          https://hermeslogisticsus.com/load-board/providers/super-dispatch/
-          https://hermeslogisticsus.com/load-board/providers/dat/
-          https://hermeslogisticsus.com/load-board/providers/truckstop/
-          https://hermeslogisticsus.com/load-board/providers/123loadboard/
-          https://hermeslogisticsus.com/load-board/providers/direct-freight/
-          https://hermeslogisticsus.com/load-board/equipment/car-hauler/
-          https://hermeslogisticsus.com/load-board/equipment/dry-van/
-          https://hermeslogisticsus.com/load-board/equipment/reefer/
-          https://hermeslogisticsus.com/load-board/equipment/flatbed/
-          https://hermeslogisticsus.com/load-board/equipment/step-deck/
-          https://hermeslogisticsus.com/load-board/equipment/hotshot/
-          https://hermeslogisticsus.com/load-board/equipment/power-only/
-          https://hermeslogisticsus.com/load-board/equipment/box-truck/
-          URLS
+            echo 'https://hermeslogisticsus.com/load-board/equipment/car-hauler/' >> /tmp/indexnow-urls.txt
           fi
 
           if grep -Eq '^(src/pages/logistics/car-hauler-loads/|src/data/car-hauler-geo-markets\.ts$)' /tmp/indexnow-changed-files.txt; then
