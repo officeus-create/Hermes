@@ -78,9 +78,10 @@ assert.match(companyHelper, /specialistHasLoadBoardAccess/);
 
 assert.match(companyApi, /getAuthenticatedSpecialist/);
 assert.match(companyApi, /ON CONFLICT\(owner_specialist_id\)/);
-assert.match(companyApi, /const loadBoardAccess = companyType === "home_service" \\? 0 : 1/);\nassert.match(companyApi, /load_board_access: Boolean\\(loadBoardAccess\\)/);
+assert.match(companyApi, /const loadBoardAccess = companyType === "home_service" \? 0 : 1/);
+assert.match(companyApi, /load_board_access: Boolean\(loadBoardAccess\)/);
 assert.match(companyApi, /catalog_status/);
-assert.match(companyApi, /next_url: companyType === "home_service" \\? "\/services\/hermes-connect\/home-services\/workspace\/" : "\/load-board\/\?access=unlocked#live-marketplace"/);
+assert.match(companyApi, /next_url: companyType === "home_service" \? "\/services\/hermes-connect\/home-services\/workspace\/" : "\/load-board\/\?access=unlocked#live-marketplace"/);
 
 assert.match(accountApi, /key: "load_board"/);
 assert.match(accountApi, /kind: "company_workspace"/);
