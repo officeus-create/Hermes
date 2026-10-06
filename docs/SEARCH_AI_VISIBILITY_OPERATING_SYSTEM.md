@@ -89,15 +89,15 @@ Estimated query value must never be reported as exact CRM revenue.
 
 ## Priority order
 
-1. Forensic GSC loss analysis.
-2. Indexable inventory + lifecycle/survival classification.
-3. Entity consistency: first-party/#204 closeout is complete; keep Staff.am preserved, route the remaining Work.ua contradiction through Recruiting/HR #515, and reconcile other directories only from owner-controlled evidence.
-4. Earned Authority #368.
-5. Original evidence assets from real Hermes operations.
-6. Video/image retrieval assets.
-7. AI/search visibility measurement.
-8. Search-to-revenue reconciliation.
-9. Only then choose the next bounded on-page or new-page experiment.
+1. **DONE / PRESERVE — forensic GSC loss diagnosis.** The established classification is visibility/position loss rather than a primary CTR collapse. Do not rerun a broad forensic audit unless a fresh bounded evidence window changes a concrete decision.
+2. **DONE / PRESERVE — indexable inventory + lifecycle/survival recovery.** Current consolidation, sitemap and internal-link gates are the control surface; do not recreate the old URL-by-URL backlog from historical buckets.
+3. **OWNER/EXTERNAL DELTA — entity consistency.** First-party/#204 closeout is complete; keep Staff.am preserved, route the remaining Work.ua contradiction through Recruiting/HR #515, and reconcile other directories only from owner-controlled evidence.
+4. **P1 EXTERNAL EVIDENCE — Earned Authority #368.**
+5. Original evidence assets from real Hermes operations, only from permissioned real samples.
+6. Video/image retrieval assets where they strengthen an existing canonical owner.
+7. AI/search visibility measurement on the settled cadence or when a specific release decision requires it.
+8. Search-to-revenue reconciliation using the existing receiver/qualification chain.
+9. Only then choose the next bounded on-page or new-page experiment under the Search Release Gate.
 
 ## Current page decisions from the authenticated 28-day window
 
