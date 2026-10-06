@@ -300,5 +300,30 @@
     "evidence": "Authenticated Microsoft Clarity UI opened on the new-project creation screen rather than an existing Hermes project.",
     "decision": "HOLD",
     "reason": "Search recovery does not require adding a new analytics vendor. Preserve the current consent/privacy and analytics ownership model; first clean synthetic traffic in existing measurement."
+  },
+  "entity_collision": {
+    "observed_query": {
+      "query": "hermes logistics | address: 800 john quincy adams rd taunton, ma 02780",
+      "impressions": 4,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 1.5,
+      "evidence": "OWNER_PROVIDED_BING_KEYWORD_REPORT_2026-10-05"
+    },
+    "public_research": {
+      "observed_at": "2026-10-06",
+      "similarly_named_business": "Hermes Logistic Solutions LLC",
+      "address": "800 John Quincy Adams Rd, Taunton, MA 02780",
+      "source": "https://jobs.smartrecruiters.com/oneclick-ui/company/HermesLogisticSolutionsLLC/publication/2b321869-5b48-40fc-97ba-78c198c7a54a?dcr_ci=HermesLogisticSolutionsLLC",
+      "evidence_class": "PUBLIC_RESEARCH"
+    },
+    "canonical_entity": {
+      "legal_name": "HERMES LOGISTICS, LLC",
+      "jurisdiction": "Wisconsin",
+      "dfi_entity_id": "H062724",
+      "formation_date": "2018-11-01",
+      "website": "https://hermeslogisticsus.com/"
+    },
+    "decision": "STRENGTHEN_EXISTING_COMPANY_INFORMATION_AND_AI_ENTITY_CONTEXT; DO_NOT_CREATE_NEW_IDENTITY_PAGE"
   }
 }
