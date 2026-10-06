@@ -28,6 +28,8 @@ const MAIN_GONE_PATHS = new Set([
   "/month",
   "/месяц",
   "/cdn-cgi/l/email-protection",
+  // Historical malformed backlink target `/%20rel=nofollow`; pathname is decoded before lookup.
+  "/ rel=nofollow",
 ]);
 
 const ACCESS_DOCUMENTS = new Map([
