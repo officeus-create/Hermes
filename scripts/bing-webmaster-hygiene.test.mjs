@@ -27,6 +27,8 @@ assert.match(robots, /^Sitemap: https:\/\/hermeslogisticsus\.com\/sitemapindex\.
 const dispatchDescription = attr(dispatchPage, "description");
 assert.ok(dispatchDescription.length >= 25 && dispatchDescription.length <= 160, `dispatch description must be 25-160 characters, got ${dispatchDescription.length}`);
 assert.match(dispatchDescription, /Car hauler dispatch service for U\.S\. owner-operators and small fleets/);
+assert.match(dispatchPage, /href="[\\/]logistics[\\/]resources[\\/]rpm-calculator[\\/]"/, "P0 dispatch owner must link to the RPM/deadhead calculator");
+assert.match(loadBoard, /href="[\\/]logistics[\\/]resources[\\/]rpm-calculator[\\/]"/, "P0 Load Board owner must link carrier discovery to the RPM/deadhead calculator");
 
 const draftDescription = attr(reviewDraft, "description");
 assert.ok(draftDescription.length >= 25 && draftDescription.length <= 160, `draft description must be 25-160 characters, got ${draftDescription.length}`);
