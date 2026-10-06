@@ -268,15 +268,24 @@ assert.match(providerSync, /scraping_used: false/);
 assert.match(providerSync, /write_or_book_performed: false/);
 assert.doesNotMatch(providerSync, /playwright|puppeteer|selenium|browser\.newPage/i);
 
+// Product/reference routes remain implemented, but Search Release Gate ownership is narrower:
+// provider references and non-P0 equipment pages are intentionally noindex and must not
+// re-enter sitemap/IndexNow distribution. Car Hauler remains the P0 equipment search owner.
 for (const slug of ["ship-cars", "central-dispatch", "super-dispatch", "dat", "truckstop", "123loadboard", "direct-freight"]) {
   assert.match(seoData, new RegExp(`slug: "${slug}"`));
-  assert.match(sitemap, new RegExp(`/load-board/providers/${slug}/`));
-  assert.match(indexNow, new RegExp(`/load-board/providers/${slug}/`));
+  assert.doesNotMatch(sitemap, new RegExp(`/load-board/providers/${slug}/`));
+  assert.doesNotMatch(indexNow, new RegExp(`/load-board/providers/${slug}/`));
 }
 for (const slug of ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot", "power-only", "box-truck"]) {
   assert.match(seoData, new RegExp(`slug: "${slug}"`));
-  assert.match(sitemap, new RegExp(`/load-board/equipment/${slug}/`));
-  assert.match(indexNow, new RegExp(`/load-board/equipment/${slug}/`));
+  const routePattern = new RegExp(`/load-board/equipment/${slug}/`);
+  if (slug === "car-hauler") {
+    assert.match(sitemap, routePattern);
+    assert.match(indexNow, routePattern);
+  } else {
+    assert.doesNotMatch(sitemap, routePattern);
+    assert.doesNotMatch(indexNow, routePattern);
+  }
 }
 for (const market of ["chicago-il", "denver-co", "seattle-wa", "fremont-ca", "kansas-city-mo-ks"]) {
   assert.match(serviceSitemap, new RegExp(`/logistics/car-hauler-loads/${market}/`));
