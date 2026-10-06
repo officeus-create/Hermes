@@ -6,6 +6,8 @@ const routes = [
   { path: 'academy/business/auth/', title: 'A CRM adapted to an academy, courses, or a business club.' },
 ];
 async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
+  // Language navigation preserves #main-content; return to the header as a user would.
+  await page.keyboard.press('ControlOrMeta+Home');
   if (isMobile) {
     await page.locator('[data-menu-button]').click();
     await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
@@ -23,6 +25,7 @@ for (const { path, title } of routes) {
   test(`${path} keeps default English through reload and uses one language control`, async ({ page, isMobile }) => {
     await page.goto(`/services/hermes-connect/${path}?mode=register#main-content`);
     await expect(page.locator('main h1')).toHaveText(title);
+    await expect(page.locator('.desktop-nav [data-nav-tone="logistics"]')).toHaveText('Logistics');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('main button[data-lang]')).toHaveCount(0);
     await page.reload();
@@ -30,6 +33,7 @@ for (const { path, title } of routes) {
     await chooseLanguage(page, isMobile, 'uk');
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
     await expect(page.locator('main h1')).not.toHaveText(title);
+    await expect(page.locator('[data-hc-english-only]')).toHaveCount(0);
     await chooseLanguage(page, isMobile, 'en');
     await expect(page.locator('main h1')).toHaveText(title);
     expect(new URL(page.url()).searchParams.get('mode')).toBe('register');

@@ -78,6 +78,8 @@ import "../../../../../styles/hermes-academy-app.css";
 </BaseLayout>
 
 <script>
+  import { syncConnectAuthChrome } from "../../../../../lib/connect-auth-chrome";
+
   const dictionary = {
     uk: {
       academy:"Hermes Connect Academy",signInCrumb:"Вхід",shared:"Спільний Hermes-акаунт",title:"Один Hermes-акаунт для всієї екосистеми.",
@@ -109,6 +111,7 @@ import "../../../../../styles/hermes-academy-app.css";
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
+    syncConnectAuthChrome(next);
     lang = next;
     document.documentElement.lang = next;
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
@@ -226,8 +229,6 @@ import "../../../../../styles/hermes-academy-app.css";
 
 <style>
   .academy-auth-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
-
-
 
   @media(max-width:720px){.academy-auth-toolbar{align-items:flex-start}}
 </style>

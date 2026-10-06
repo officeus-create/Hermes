@@ -1498,3 +1498,10 @@ handoff_to: NONE
 - Scorecard: primary outcome = consistent EN/UK auth journey; conversion = remove unexpected language reset; knowledge = regression and this receipt; architecture = reuse existing header rather than another control; privacy = no new data; Search/internal linking = unchanged; scale/new products/content distribution = intentionally out of scope.
 - Reuse rule: a missing optional language query must not override an existing shell preference; exercise explicit choice, saved choice, default, reload and Back before claiming language continuity.
 - Remaining: exact-head CI, desktop/mobile visual evidence, then explicit owner release approval. Next owner remains dot; no reassignment.
+
+### Same-task preview follow-through
+
+- Exact preview of `2ad7f8f` proved Access → Academy owner English continuity and explicit Ukrainian switching without submitting forms. It exposed Ukrainian static header labels on English auth pages and a false English-only notice on their Ukrainian dictionaries.
+- Added a route-scoped auth chrome adapter used only by those three pages. It reuses the existing direction-owner map, synchronizes visible navigation/sign-in text and truthful content-language labels, and removes the generic English-only notice only on these bilingual auth pages. Shared SiteHeader and Search policy remain untouched.
+- Initial Website CI passed contracts and two browser shards; three new desktop tests timed out when returning to the offscreen header after retained `#main-content` navigation. Tests now use normal Home-key scrolling before changing language, preserving the same assertions and timeout.
+- Added a regression for the adapter wiring (observed failure before implementation). Local initializer/contract coverage is now 25/25; final build and full static/unit command are rechecked per revision. Final exact-head CI and preview are still required; no release performed.

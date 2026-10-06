@@ -104,6 +104,8 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 </BaseLayout>
 
 <script>
+  import { syncConnectAuthChrome } from "../../../../lib/connect-auth-chrome";
+
   const dictionary = {
     uk: {
       back:"← Hermes Connect",eyebrow:"Hermes Connect · один акаунт",title:"Один вхід. CRM — під ваш тип бізнесу.",
@@ -143,6 +145,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
+    syncConnectAuthChrome(next);
     lang = next;
     document.documentElement.lang = next;
     try { localStorage.setItem("hermes-connect-language", next); } catch {}

@@ -30,3 +30,10 @@ for (const page of pages) {
     assert.doesNotMatch(source, /<button[^>]*data-lang=/);
   });
 }
+
+test('the three auth pages synchronize their existing navigation with the selected language', () => {
+  for (const page of pages) {
+    const source = readFileSync(`src/pages/services/hermes-connect/${page}/index.astro`, 'utf8');
+    assert.match(source, /syncConnectAuthChrome\(next\)/);
+  }
+});

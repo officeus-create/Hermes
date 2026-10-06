@@ -101,6 +101,8 @@ import "../../../../../../styles/hermes-academy-app.css";
 </BaseLayout>
 
 <script>
+  import { syncConnectAuthChrome } from "../../../../../../lib/connect-auth-chrome";
+
   const dictionary = {
     uk: {
       back:"← Hermes Connect",eyebrow:"Hermes Connect · Academy Business",title:"CRM, яка підлаштовується під академію, курси або бізнес-клуб.",
@@ -133,6 +135,7 @@ import "../../../../../../styles/hermes-academy-app.css";
   try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
   let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
   const applyLanguage=(next:Lang)=>{
+    syncConnectAuthChrome(next);
     lang=next; document.documentElement.lang=next; try{localStorage.setItem("hermes-connect-language",next)}catch{}
     document.querySelectorAll<HTMLAnchorElement>('main a[href^="/services/hermes-connect/"]:not([lang])').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
