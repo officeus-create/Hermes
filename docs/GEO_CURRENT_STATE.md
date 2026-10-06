@@ -4,7 +4,7 @@ Updated: 2026-09-29
 
 This file is the single current repository handoff for GEO/public-AI visibility work. Historical GEO stacks remain provenance only and must not be replayed wholesale.
 
-Current engineering checkpoint starts from current `main`. Historical release lane #1059 merged on 2026-09-04 and is no longer an active gate. #1352 (AI Entity Monitor / AI control-plane contracts) merged on 2026-09-17, and #1354 (current GSC indexing-tail closure) merged on 2026-09-17. Open replay PR #1368 is the current governed Insights intelligence-engine candidate and remains unpromoted until exact-head CI and merge.
+Current engineering checkpoint starts from current `main`. Historical release lane #1059 merged on 2026-09-04 and is no longer an active gate. #1352 (AI Entity Monitor / AI control-plane contracts) merged on 2026-09-17, #1354 (GSC indexing-tail closure) merged on 2026-09-17, and #1368 (governed Insights intelligence-engine replay) merged on 2026-09-18 as `01629b583ed74dc3621ac4ff8782f433bed009f4`. None of those historical PRs is an active release gate. Current GEO/Search recovery state comes from current `main`, `docs/ERROR_REGISTER.md`, and `docs/SEARCH_GROWTH_GUARDRAIL.md`; do not reopen old branch stacks merely because an older handoff still names them.
 
 ## Boundary
 
