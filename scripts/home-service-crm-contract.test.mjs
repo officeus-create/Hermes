@@ -90,6 +90,8 @@ assert.match(accountApi, /home-services\/workspace/);
 assert.match(catalogApi, /home_service_crm/);
 assert.match(catalogApi, /businesses\/connect\/company/);
 assert.match(catalogRuntime, /companyType === 'home_service'/);
+assert.match(catalogRuntime, /const companyHref =/);
+assert.match(catalogRuntime, /companyType === 'home_service' && repairGrid && companyHref/);
 assert.match(sitemap, /homeServiceUrls/);
 assert.match(sitemap, /businesses\/connect\/company/);
 
