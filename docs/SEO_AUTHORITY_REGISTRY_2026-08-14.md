@@ -14,7 +14,11 @@ This registry records **opportunities**, not backlinks. Membership, editorial ac
 
 ## Current baseline
 
-Authenticated SEO14 handoff reports only **4 GSC external links**, all attributed to Work.ua. This is a discovery/authority bottleneck, but raw backlink count is not the KPI. The primary goal remains useful referring domains and qualified referral traffic.
+The 2026-08 SEO14 handoff historically reported **4 GSC external links**, all attributed to Work.ua. Treat that number as dated provenance, **not a current backlink count**.
+
+Fresh owner-provided Bing evidence reconciled on 2026-10-05/06 separately flags insufficient high-quality inbound domains as a current authority recommendation. That supports keeping earned authority as a real growth lane, but it does not justify mass link acquisition or imply that a specific backlink count caused ranking movement.
+
+The primary goal remains useful, relevant referring domains and qualified referral traffic. Raw backlink count is not the KPI.
 
 ## Activation rules
 
