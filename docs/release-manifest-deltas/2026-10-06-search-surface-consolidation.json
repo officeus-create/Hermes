@@ -278,12 +278,61 @@
       "robots": "noindex,follow",
       "sitemap_owner": null,
       "reason": "2026-10-06 Search Recovery: reusable strategy/example page remains publicly usable but is not a business-entity search owner."
+    },
+    {
+      "route": "/services/hermes-connect/ai-command-center/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/business-automation/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/load-analyzer/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/proposal-builder/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/rate-negotiator/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/roi-calculator/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
+    },
+    {
+      "route": "/services/hermes-connect/unified-inbox/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: Hermes Connect marks this surface as a reference capability, not a current live product; keep it public for users and internal product context without competing as a canonical search owner."
     }
   ],
   "acceptance": {
     "route_count_added": 0,
     "indexable_route_count_added": 0,
-    "route_count_updated": 39,
+    "route_count_updated": 46,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
