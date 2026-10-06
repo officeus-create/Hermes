@@ -1,6 +1,8 @@
 # SEO Revenue Priority Backlog
 
 Reviewed: 2026-08-07
+Status: `HISTORICAL COMMERCIAL PRIORITY MAP — NOT THE CURRENT EXECUTION ROUTER`
+Current execution: `docs/SEARCH_GROWTH_GUARDRAIL.md` → `docs/ERROR_REGISTER.md` → `ai-collaboration/02_SEO/CURRENT_STATE.md`.
 
 ## Objective
 
@@ -23,7 +25,7 @@ Remaining priority is measurement, proof, entity consistency and follow-up quali
 1. `/logistics/appleton-wi-vehicle-transport/`
    - Revenue action: qualified vehicle-transport request.
    - Current primary CTA: direct vehicle-transport intake.
-   - External gates: Search Console/GA4 baseline (#206), query evidence, qualified-inquiry reconciliation.
+   - External gates: bounded search/analytics evidence only when a current decision requires it, plus qualified-inquiry reconciliation; #206 is closed historical provenance.
 
 2. Wisconsin state and city vehicle-transport cluster
    - Revenue action: local vehicle-transport inquiry.
@@ -33,12 +35,12 @@ Remaining priority is measurement, proof, entity consistency and follow-up quali
 3. `/logistics/dealer-vehicle-transportation/`
    - Revenue action: dealer or shipper transport inquiry.
    - Current primary CTA: dealer-prefilled direct transport intake.
-   - External gates: production event verification (#206) and one permissioned dealer/customer proof asset (#176).
+   - External gates: current production-event evidence when required and one permissioned dealer/customer proof asset; do not reopen #206 by default.
 
 4. `/logistics/car-hauling-dispatch/`
    - Revenue action: carrier/owner-operator dispatch inquiry.
    - Current primary CTA: direct carrier dispatch review.
-   - External gates: production event verification (#206), one permissioned carrier proof asset (#176), final execution agreement remains separate under #280.
+   - External gates: current production-event evidence when required, one permissioned carrier proof asset, and the separately governed final execution agreement; do not reopen #206 by default.
 
 5. `/logistics/auction-vehicle-pickup/` and supporting auction resources
    - Revenue action: move resource and service intent into transport review.
@@ -50,7 +52,7 @@ Remaining priority is measurement, proof, entity consistency and follow-up quali
 6. `/services/seo-for-logistics-companies/`
    - Revenue action: SEO audit or consultation inquiry.
    - Current primary CTA: structured Marketing SEO intake.
-   - External gates: GA4 verification (#206), named reviewer and evidence-approved case/proof (#176).
+   - External gates: bounded GA4 receipt evidence when required, a named reviewer and evidence-approved case/proof; do not reopen #206 by default.
 
 7. `/services/seo-for-independent-auto-dealers/`
    - Revenue action: dealer SEO consultation.
@@ -106,10 +108,11 @@ Unknown values remain null. They must never be converted to zero without source 
 
 Do not publish mass city, state, equipment or thin semantic pages to increase URL count. Existing audited money pages must first have authenticated index/query evidence, production event verification, qualified-inquiry reconciliation and proof review.
 
-Current external blockers are tracked in:
+Current external blockers/actions are no longer owned by this dated backlog. Route them through the current Error Register and active owner lanes:
 
-- #206 — Search Console, Bing, GA4 and qualified-lead baseline;
-- #204 / #306 — external profiles and Hermes entity disambiguation;
-- #176 — permissioned proof, named experts and conversion evidence;
-- #226 / #305 — Cloudflare/CI ownership and deployment isolation;
-- #280 — final carrier agreement execution.
+- measurement — existing production/search contracts, invoked only for a bounded release or business decision; #206 stays closed;
+- entity/profile consistency — Work.ua under Recruiting/HR #515; Staff.am is preserved as corrected public evidence; #204 stays closed;
+- earned authority/proof — #368 plus permissioned real evidence only; no synthetic backlink volume;
+- Cloudflare Crawler Hints — current owner/account access gate in the Error Register;
+- GitHub main protection — current admin/owner gate #938;
+- legal/commercial execution — follow the current Legal/Sales owner rather than this historical Search backlog.

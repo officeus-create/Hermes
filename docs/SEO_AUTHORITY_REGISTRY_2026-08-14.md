@@ -3,8 +3,8 @@
 Status: `PRIMARY-SOURCE + EXISTING-ASSET MAPPED / NO OUTREACH SENT`
 
 Owner issue: #368  
-Dependencies: #204 entity consistency, #206 measurement, #362 proof permissions  
-Recruiting employer-profile operations handoff: #515
+Dependencies: current canonical company facts, Recruiting/HR Work.ua correction #515, on-demand measurement under `docs/SEARCH_GROWTH_GUARDRAIL.md`, #362 proof permissions  
+Closed provenance: #204 entity reconciliation; #206 generic measurement router
 
 ## Purpose
 
@@ -21,7 +21,7 @@ Authenticated SEO14 handoff reports only **4 GSC external links**, all attribute
 Before any outreach or application:
 
 1. destination URL must be production-healthy and canonical;
-2. identity facts used in the pitch must be reconciled through #204/#515;
+2. identity facts used in the pitch must match the current canonical company-facts approval matrix; Work.ua contradictions remain routed to #515;
 3. no unsupported agency count, employee count, fleet, customer, revenue, ranking, award, or result claim;
 4. proof-dependent pitches remain blocked by #362;
 5. paid advertising/sponsorship is never counted as earned editorial authority;
@@ -68,7 +68,7 @@ Do not create another checklist or association-targeted landing page merely to o
 | AUTH-012 | Metropolitan Milwaukee Association of Commerce (mmac.org) | Local business association / citation | Local Milwaukee business/entity relevance could be useful if Hermes' Milwaukee identity is owner-approved and membership has real business value. | `/about/`, `/company-information/` or `/paths/logistics/` | `RESEARCHED_HOLD_IDENTITY` | Verify current membership/directory terms and canonical Milwaukee facts before activation. |
 | AUTH-013 | WPG Shippers Association (wpg.org) | Shipper/logistics association | Wisconsin-based shipper/logistics relevance may fit a genuine relationship. | Shipper/dealer canonical owner if factual service fit is confirmed | `RESEARCH_ONLY` | Confirm eligibility and commercial relevance; no SEO-only membership. |
 | AUTH-014 | Work.ua Hermes employer profile | Existing owned-profile citation | Current public Hermes employer profile and one Car Hauling Dispatcher job are discoverable and are the reported source of current GSC external links. | `/careers/car-hauling-dispatcher/` | `EXISTING_CITATION / JOB_PRODUCTION_VERIFIED / ENTITY_RECONCILIATION_PENDING` | Job URL is production verified. Profile facts/Telegram copy still require Recruiting/HR handling in #515; SEO validates entity consistency and index behavior only. |
-| AUTH-015 | Staff.am Hermes employer profile | Existing owned-profile citation | Staff.am has a Hermes company profile, domain reference and historical job presence. | `/logistics/careers/` or canonical job page when an active matching role exists | `EXISTING_CITATION_NEEDS_RECONCILIATION` | Employee count/founding-year/company-copy conflicts with Work.ua; resolve via #515 before treating as clean entity evidence. |
+| AUTH-015 | Staff.am Hermes employer profile | Existing owned-profile citation | Direct EN/RU public readback on 2026-10-06 shows the Hermes domain with restrained logistics copy; the former conflicting foundation year, employee count, location, benefit and phone fields are no longer visible. | `/logistics/careers/` or canonical job page when an active matching role exists | `EXISTING_CITATION / PUBLIC_FACTS_RECONCILED_2026-10-06 / ACCESS_OWNER_UNKNOWN` | Preserve the corrected public state. Authenticated ownership is needed only for a future edit or if the public profile regresses; do not route this row back into #515 merely because Work.ua remains open. |
 
 ## Rejected / not-counted patterns
 
@@ -85,7 +85,7 @@ Do not create another checklist or association-targeted landing page merely to o
 ## First SEO activation sequence
 
 1. **Completed:** `/careers/car-hauling-dispatcher/` has an exact production JobPosting PASS and was included in the accepted 109-URL IndexNow batch. Search-engine indexing remains a separate platform state.
-2. Receive canonical employer/company fact table back from Recruiting/HR handoff #515 and reconcile #204.
+2. Keep Staff.am in its corrected public state. Use Recruiting/HR #515 only for the still-conflicting Work.ua employer profile, then return dated visible evidence to the current canonical entity inventory.
 3. Keep AUTH-014/015 as citations, not earned editorial authority.
 4. Eligibility research ranks: **WMCA → WATDA → TIA → NAAA**. WMCA/WATDA are strongest audience-fit candidates; TIA/NAAA require stricter operating-fit classification.
 5. **Completed at SEO asset layer:** do not build a new linkable page. Use the mapped existing resource for each audience and only add content when a concrete target exposes a real gap.
