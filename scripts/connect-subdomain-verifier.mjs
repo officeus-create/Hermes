@@ -77,6 +77,25 @@ export function classifyConnectRootAssetObservations(observations) {
   };
 }
 
+export function canShortCircuitConnectVerification({
+  expectation,
+  classification,
+  rootAssetClassification,
+}) {
+  if (classification === "UNRESOLVED_NETWORK_ACCESS") return false;
+  if (classification === "LIVE_UNKNOWN_CONTENT") return false;
+  if (classification === "LIVE_MIXED_CONNECT_STATE") return false;
+  if (expectation === "approved_web_app") {
+    return classification === "LIVE_APPROVED_WEB_APP"
+      && rootAssetClassification === "ROOT_ASSET_HEALTHY";
+  }
+  if (expectation === "isolation") return classification === "LIVE_PREVIOUS_CONNECT";
+  if (expectation === "release_pending") {
+    return classification === "LIVE_PREVIOUS_CONNECT" || classification === "LIVE_APPROVED_WEB_APP";
+  }
+  return false;
+}
+
 export function connectVerificationExitCode({
   expectation,
   classification,
