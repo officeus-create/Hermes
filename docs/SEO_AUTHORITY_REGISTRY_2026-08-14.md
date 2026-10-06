@@ -3,7 +3,7 @@
 Status: `PRIMARY-SOURCE + EXISTING-ASSET MAPPED / NO OUTREACH SENT`
 
 Owner issue: #368  
-Dependencies: current canonical company facts, Recruiting/HR Work.ua correction #515, on-demand measurement under `docs/SEARCH_GROWTH_GUARDRAIL.md`, #362 proof permissions  
+Dependencies: current canonical company facts, Recruiting/HR Work.ua correction #515, on-demand measurement under `docs/SEARCH_GROWTH_GUARDRAIL.md`, preserved fail-closed proof permission policy from historical #362 (closed; do not reopen)  
 Closed provenance: #204 entity reconciliation; #206 generic measurement router
 
 ## Purpose
@@ -23,7 +23,7 @@ Before any outreach or application:
 1. destination URL must be production-healthy and canonical;
 2. identity facts used in the pitch must match the current canonical company-facts approval matrix; Work.ua contradictions remain routed to #515;
 3. no unsupported agency count, employee count, fleet, customer, revenue, ranking, award, or result claim;
-4. proof-dependent pitches remain blocked by #362;
+4. proof-dependent pitches remain blocked unless the preserved case-specific permission/rights policy from closed #362 is independently cleared; do not reopen #362;
 5. paid advertising/sponsorship is never counted as earned editorial authority;
 6. external outreach belongs to Sales/Partnerships operations, not the SEO implementation thread; SEO supplies target, destination, evidence and measurement requirements.
 
