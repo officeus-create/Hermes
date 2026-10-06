@@ -29,6 +29,18 @@ The following routes should use `noindex,follow` or `noindex,nofollow` depending
 
 Noindex pages must not appear in the primary sitemap.
 
+## Catalog collection density gate
+
+Hermes Catalog profile pages may remain indexable when the individual business profile has bounded public-source evidence and useful distinct content. Generic collection hubs are different:
+
+- a U.S. state collection is indexable only when at least **2** evidence-backed business profiles are currently represented;
+- a U.S. city collection is indexable only when at least **2** evidence-backed business profiles are currently represented;
+- below that threshold the hub stays navigable with `noindex,follow`, keeps its self-canonical, and is removed from the sitemap;
+- the underlying individual business profile remains independently eligible for indexing;
+- when the collection later reaches the threshold, the route may automatically return to `index,follow` and sitemap ownership after the normal release checks.
+
+This prevents one-profile state/city shells from consuming crawl/indexing attention while preserving the useful profile and future navigation hierarchy.
+
 ## `/load-board/` decision
 
 **Decision: `/load-board/` is an `index,follow,max-image-preview:large` canonical search owner while its visible experience maintains the approved source-gated live + preview truth boundary.**
