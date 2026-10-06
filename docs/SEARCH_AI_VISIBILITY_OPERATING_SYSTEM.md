@@ -186,3 +186,14 @@ Decision:
 6. treat authority acquisition as external-evidence P1.
 
 Machine-readable evidence: `data/seo/bing-owner-snapshot-2026-10-05.json`.
+
+### Decision status — 2026-10-06 recovery closeout
+
+- **1 · Healthy sitemap + controlled page-only IndexNow — PRESERVE.**
+- **2 · Changed-cluster-only IndexNow — RESOLVED IN MAIN.** Commit `5046809c97ecc1fcc4fb345ceb4a83a678d72c3e` replaced fixed full-batch money-page resubmission with changed-cluster submission; do not reopen this from old IndexNow event counts.
+- **3 · Cloudflare Crawler Hints — ACCESS_GAP.** Target remains Crawler Hints OFF while repository-controlled IndexNow stays ON. The current authorized Cloudflare surface can read but not safely mutate this setting; do not bypass with a broad token or a second deployment path.
+- **4 · P0 Car Hauling ownership discipline — ACTIVE RULE, NOT A PAGE-EXPANSION TASK.** Strengthen existing owners and keep preview/live freight truth boundaries; new URLs still require the Search Release Gate.
+- **5 · Bing Site Scan code-side hygiene — RESOLVED IN SOURCE/RELEASE.** #1696 promoted public title/meta/H1/alt hygiene to release gates and exact-head recovery checks passed. Historical aggregate Site Scan counts are not instructions to mass-edit pages; wait for normal Bing recrawl or use exact affected URLs only if a future concrete defect is reported.
+- **6 · Authority acquisition — EXTERNAL EVIDENCE P1.** Earned/entity-relevant citations and owned profile corrections remain separate from code recovery; never substitute link spam or synthetic directory volume.
+
+Recovery rule: do not repeat the Bing/GSC audit merely to refresh these statuses. Reopen a decision only from a fresh exact source/runtime/search-platform defect that changes an action.
