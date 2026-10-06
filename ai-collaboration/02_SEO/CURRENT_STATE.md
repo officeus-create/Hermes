@@ -29,7 +29,7 @@ Latest sanitized SEO14 owner-provided Codex handoff dated 2026-08-14 reports the
 
 Evidence class in this file: `OWNER_PROVIDED_HANDOFF`. The owner supplied the Codex SEO14 result from an authenticated run; this file may use it for prioritization, but a different agent must not claim it independently opened those platform views unless it actually did.
 
-## Newer authenticated measurement — 2026-08-28
+## Historical authenticated measurement — 2026-08-28 (do not use as the current recovery baseline)
 
 This newer `PLATFORM_VERIFIED` evidence supersedes the older access classifications above while preserving the older window as historical context:
 
@@ -41,6 +41,10 @@ This newer `PLATFORM_VERIFIED` evidence supersedes the older access classificati
 - The existing GA4 property and single web stream were accessible and collecting. No obvious duplicate-tag configuration was visible, but the commercial exact-once receipt is not yet proven in DebugView and the visible seven-day report showed zero key events.
 
 Evidence limitation: authenticated access, sitemap success, index state and analytics receipt are separate claims. None proves a qualified lead or revenue.
+
+### Current operating override — 2026-10-06
+
+The August measurements above remain provenance only. They must not trigger a fresh generic GSC/Bing/GA4 baseline run. Search Recovery now starts from the existing evidence plus current `docs/ERROR_REGISTER.md` and `docs/SEARCH_GROWTH_GUARDRAIL.md`. Merged #1696 consolidated low-evidence search owners and hardened Bing public-page hygiene; merged #1699 hardened same-origin internal-link and sitemap freshness release gates. Pull a newer bounded search-platform window only when a specific post-release decision cannot be made from existing evidence.
 
 ## Repository-complete foundation
 
@@ -95,8 +99,8 @@ Repeated sitemap submission is not the next bottleneck.
 
 The following still require direct authenticated or owner-controlled evidence:
 
-- a comparable next query × page export after the current 7-day/28-day windows;
-- Bing query/click performance beyond the small visible baseline and recrawl of the remaining Logistics SEO priority URL;
+- ON-DEMAND only: a newer bounded query × page export when a concrete post-release decision requires a settled comparison; this is not a standing recovery task;
+- ON-DEMAND only: a settled Bing performance/recrawl check after a relevant released change; do not repeatedly resubmit or repoll healthy sitemap/IndexNow paths;
 - GA4 commercial-event DebugView receipt exactly once, key-event configuration and internal/test/bot traffic separation;
 - human-qualified inquiry counts and sales dispositions;
 - CrUX or Search Console field Core Web Vitals;

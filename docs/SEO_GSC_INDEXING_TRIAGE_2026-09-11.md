@@ -1,5 +1,8 @@
 # GSC indexing triage — 2026-09-11
 
+> **Current-state override — 2026-10-06:** every GSC/Bing count and section labelled “current” below is a dated historical snapshot from its stated observation date, not a standing recovery queue. Merged #1696/#1697/#1699 and current `docs/ERROR_REGISTER.md` supersede the old crawl/index cleanup state. Do not bulk-validate, bulk-request indexing, resubmit healthy sitemaps/IndexNow, or rerun a generic platform audit from these historical buckets. Reopen only an exact canonical owner that current source/production evidence proves is still defective.
+
+
 ## Authenticated reconciliation — 2026-09-27
 
 - GSC Pages aggregate (last updated September 20): 134 indexed / 249 excluded: 61 alternate canonical, 55 `noindex`, 119 discovered not indexed, 6 crawled not indexed, 7 not found (404), 1 redirect. These are historical report buckets, not 249 live defects or a current count of unindexed canonical owners.
