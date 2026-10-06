@@ -51,3 +51,10 @@ test('auth chrome language updates preserve the contact CTA icon', () => {
   assert.ok(contact.childNodes.includes(icon), 'existing contact icon must survive text translation');
   assert.equal(label.textContent, 'Почати розмову');
 });
+
+test('auth language navigation opts out of blocking document-transition snapshots', () => {
+  for (const page of pages) {
+    const source = readFileSync(`src/pages/services/hermes-connect/${page}/index.astro`, 'utf8');
+    assert.match(source, /@view-transition\s*\{\s*navigation:\s*none\s*;/, page);
+  }
+});

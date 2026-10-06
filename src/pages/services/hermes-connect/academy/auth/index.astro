@@ -228,6 +228,8 @@ import "../../../../../styles/hermes-academy-app.css";
 </script>
 
 <style>
+  /* Auth navigation must not leave a document snapshot intercepting input. */
+  @view-transition { navigation: none; }
   .academy-auth-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
 
   @media(max-width:720px){.academy-auth-toolbar{align-items:flex-start}}

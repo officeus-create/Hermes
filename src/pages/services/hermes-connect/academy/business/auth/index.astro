@@ -228,6 +228,8 @@ import "../../../../../../styles/hermes-academy-app.css";
 </script>
 
 <style>
+  /* Auth navigation must not leave a document snapshot intercepting input. */
+  @view-transition { navigation: none; }
   .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
 
   .academy-owner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.academy-owner-check{display:flex;gap:10px;align-items:flex-start;margin:16px 0 18px;line-height:1.55}.academy-owner-check input{margin-top:4px}

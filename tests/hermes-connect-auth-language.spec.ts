@@ -1,33 +1,10 @@
-import { expect, test, type Page, type Locator } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const routes = [
   { path: 'access/', title: 'One sign-in. A CRM matched to your business.' },
   { path: 'academy/auth/', title: 'Use one Hermes account across the ecosystem.' },
   { path: 'academy/business/auth/', title: 'A CRM adapted to an academy, courses, or a business club.' },
 ];
-// Reuse the current Home regression pattern for proven CI rAF starvation.
-// Retain visible/enabled, stable geometry, in-viewport and hit-target checks.
-async function clickHistoryTarget(page: Page, target: Locator) {
- await expect(target).toBeVisible();
- await expect(target).toBeEnabled();
- const first=await target.boundingBox();
- expect(first).not.toBeNull();
- await page.waitForTimeout(100);
- expect(await target.boundingBox()).toEqual(first);
- const x=first!.x+first!.width/2,y=first!.y+first!.height/2;
- const viewport=page.viewportSize()!;
- expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
- expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
- const hitState=await target.evaluate((node,{x,y})=>{
-  const hit=document.elementFromPoint(x,y);
-  return { matches:hit===node||node.contains(hit), target:node.outerHTML, hit:hit?.outerHTML.slice(0,1500),
-   stack:document.elementsFromPoint(x,y).slice(0,5).map(element=>({tag:element.tagName,id:element.id,class:element.className,position:getComputedStyle(element).position,zIndex:getComputedStyle(element).zIndex})),
-   point:{x,y},scroll:{x:scrollX,y:scrollY},viewport:visualViewport?{x:visualViewport.offsetLeft,y:visualViewport.offsetTop,width:visualViewport.width,height:visualViewport.height,scale:visualViewport.scale}:null };
- },{x,y});
- expect(hitState.matches,JSON.stringify(hitState)).toBe(true);
- await page.mouse.click(x,y);
-}
-
 async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Language navigation preserves #main-content; return to the header as a user would.
   // Mobile emulation does not implement desktop Home-key scrolling.
@@ -36,11 +13,11 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   await page.waitForLoadState('load');
   await expect(page.locator('html')).toBeVisible();
   if (isMobile) {
-    await clickHistoryTarget(page, page.locator('[data-menu-button]'));
-    await clickHistoryTarget(page, page.locator(`.mobile-language-switcher a[lang="${language}"]`));
+    await page.locator('[data-menu-button]').click();
+    await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
   } else {
-    await clickHistoryTarget(page, page.locator('[data-language-menu] summary'));
-    await clickHistoryTarget(page, page.locator(`[data-language-menu] a[lang="${language}"]`));
+    await page.locator('[data-language-menu] summary').click();
+    await page.locator(`[data-language-menu] a[lang="${language}"]`).click();
   }
 }
 
