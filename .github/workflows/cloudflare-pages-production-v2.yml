@@ -245,6 +245,7 @@ jobs:
             echo "- Build output: \`dist\`"
             echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
             echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
+            echo "- Logistics contact verification: preview-safe Logistics contact shell and its live browser runtime activation"
             echo "- WEB10 Academy production contract: five public learning tracks required; retired two-program copy forbidden"
             echo
             echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."
