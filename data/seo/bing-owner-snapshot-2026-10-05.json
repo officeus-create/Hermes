@@ -1,0 +1,290 @@
+{
+  "source": {
+    "type": "OWNER_PROVIDED_BING_WEBMASTER_EXPORTS",
+    "export_date": "2026-10-05",
+    "received_date": "2026-10-06",
+    "site": "https://hermeslogisticsus.com/",
+    "files": [
+      "IssueDetailsBySeverity",
+      "SubmittedUrls",
+      "IndexNowIndexCoverageIssueDetails",
+      "IndexNowIndexCoverageIssues",
+      "IndexNowIndexCoverageDatestats",
+      "sitemaps",
+      "KeywordReport",
+      "SearchPerformanceOverview_All",
+      "AIPerformanceOverviewStats",
+      "SiteExplorerUrls"
+    ],
+    "cautions": [
+      "SearchPerformanceOverview_All was uploaded twice with identical SHA-256 and is counted once.",
+      "Daily IndexNow IndexedUrls/CrawledUrls are event counts from the export and are not treated as unique URL counts.",
+      "Daily AI Cited Pages values may repeat the same URL on different dates and are not treated as unique cited-page count.",
+      "Site Explorer export is a partial observed URL set, not a complete index inventory.",
+      "Bing submission/index/crawl signals are not proof of qualified traffic, leads or revenue."
+    ]
+  },
+  "search_performance": {
+    "range": {
+      "from": "2026-08-12",
+      "through": "2026-10-03"
+    },
+    "clicks": 5,
+    "impressions": 107,
+    "ctr": 0.04672897196261682,
+    "previous_14_days": {
+      "from": "2026-09-06",
+      "through": "2026-09-19",
+      "clicks": 2,
+      "impressions": 25
+    },
+    "latest_14_days": {
+      "from": "2026-09-20",
+      "through": "2026-10-03",
+      "clicks": 3,
+      "impressions": 54
+    },
+    "interpretation": "Bing visibility increased in the latest comparable 14-day window; current evidence does not support a Bing sitewide visibility ban."
+  },
+  "priority_queries": [
+    {
+      "query": "hermes connect",
+      "impressions": 13,
+      "clicks": 1,
+      "ctr": 0.0769,
+      "average_position": 3.8461538461538463,
+      "classification": "brand_product_signal"
+    },
+    {
+      "query": "auto transport load board",
+      "impressions": 2,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 6.5,
+      "classification": "P0_car_hauling_load_discovery"
+    },
+    {
+      "query": "self dispach for car service",
+      "impressions": 1,
+      "clicks": 1,
+      "ctr": 1,
+      "average_position": 1,
+      "classification": "P0_dispatch_vs_self_dispatch_signal_typo_observed"
+    },
+    {
+      "query": "rpm for carrier best rate trucking",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 8,
+      "classification": "P0_carrier_economics_signal"
+    },
+    {
+      "query": "loaded rpm and fuel mileage",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 1,
+      "classification": "P0_carrier_economics_signal"
+    },
+    {
+      "query": "broker-carrier setup packet",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 8,
+      "classification": "P0_carrier_back_office_signal"
+    },
+    {
+      "query": "notice of assignment freight factoring required setup packet",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 7,
+      "classification": "P0_carrier_back_office_signal"
+    },
+    {
+      "query": "multi car transport",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 5,
+      "classification": "vehicle_transport_signal"
+    },
+    {
+      "query": "logistics seo agency usa case studies",
+      "impressions": 3,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 5.3333,
+      "classification": "website_marketing_secondary_money_signal"
+    },
+    {
+      "query": "hermes logistics usa",
+      "impressions": 2,
+      "clicks": 1,
+      "ctr": 0.5,
+      "average_position": 4,
+      "classification": "brand_entity_signal"
+    },
+    {
+      "query": "hermes logistics",
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0,
+      "average_position": 6,
+      "classification": "brand_entity_signal"
+    }
+  ],
+  "sitemap": {
+    "url": "https://hermeslogisticsus.com/sitemapindex.xml",
+    "type": "SitemapIndex",
+    "source": "Submitted",
+    "last_submitted": "2026-10-04",
+    "last_processed": "2026-10-04",
+    "status": "Success",
+    "discovered_urls": 302
+  },
+  "indexnow": {
+    "date_range": {
+      "from": "2026-08-12",
+      "through": "2026-10-03"
+    },
+    "submitted_url_events": 5286,
+    "indexed_url_events": 32,
+    "crawled_url_events": 38,
+    "coverage_summary": [
+      {
+        "type": "NeedsAttention",
+        "issue": "ContentQuality",
+        "urls": 4
+      },
+      {
+        "type": "Indexed",
+        "issue": "Indexed",
+        "urls": 14
+      }
+    ],
+    "content_quality_examples": [
+      {
+        "url": "https://hermeslogisticsus.com/robots.txt",
+        "crawl_date": "2026-10-02 00:00:52"
+      },
+      {
+        "url": "https://hermeslogisticsus.com/demos/hermes-connect/icon-maskable.svg",
+        "crawl_date": "2026-10-01 03:05:50"
+      },
+      {
+        "url": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+        "crawl_date": "2026-09-30 03:11:06"
+      },
+      {
+        "url": "https://hermeslogisticsus.com/fonts/source-sans-3-latin.woff2",
+        "crawl_date": "2026-09-26 16:58:01"
+      }
+    ],
+    "manual_submissions": [
+      {
+        "url": "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
+        "submitted_at": "2026-09-22T02:43:00-07:00"
+      }
+    ],
+    "current_repository_boundary": "scripts/indexnow-submit.mjs rejects robots.txt, sitemaps, fonts and other non-HTML assets. Asset/discovery-file observations therefore do not originate from the current canonical repository submitter.",
+    "cloudflare_readback_2026_10_06": {
+      "crawler_hints": "ENABLED",
+      "evidence": "Authenticated Cloudflare Caching > Configuration accessibility readback shows the Crawler Hints switch in the enabled state."
+    },
+    "inference": "The combination of 5,286 submission events, non-HTML IndexNow observations, the current page-only repository submitter, and enabled Cloudflare Crawler Hints strongly indicates duplicate/over-broad notification from Cloudflare Crawler Hints plus earlier/repeated release submissions. Treat as a notification-efficiency defect, not as proof of a search-engine penalty."
+  },
+  "ai_performance": {
+    "range": {
+      "from": "2026-08-12",
+      "through": "2026-10-03"
+    },
+    "citations": 29,
+    "cited_page_daily_count_sum": 11,
+    "interpretation": "Bing/Copilot citation activity exists; this is retrieval evidence, not business outcome evidence."
+  },
+  "site_scan": {
+    "name": "Hermes full technical audit 2026-10-04",
+    "scanned_pages": 581,
+    "errors": 2,
+    "warnings": 22,
+    "issue_summary": [
+      {
+        "issue": "Missing meta description",
+        "severity": "Error",
+        "affected_pages": 2
+      },
+      {
+        "issue": "Missing image alt attribute",
+        "severity": "Warning",
+        "affected_pages": 20
+      },
+      {
+        "issue": "Title too long",
+        "severity": "Warning",
+        "affected_pages": 2
+      },
+      {
+        "issue": "More than one h1",
+        "severity": "Notice",
+        "affected_pages": 2
+      }
+    ],
+    "note": "The aggregate export does not identify affected URLs. Current repository SEO audit already enforces exactly one title/meta description/H1 for sitemap-owned indexable pages, so URL-level Bing evidence is required before changing canonical owners."
+  },
+  "authority": {
+    "bing_recommendation": "Insufficient inbound links from high-quality domains",
+    "severity": "Medium",
+    "backlinks_ui": "Data unavailable in the provided authenticated screenshot",
+    "site_explorer_root_backlinks": 1,
+    "interpretation": "External authority remains a real growth constraint. Use legitimate entity-relevant citations, associations, editorial mentions, partner/customer proof and expert contributions; no PBNs, fake reviews, fake offices or spam directories."
+  },
+  "site_explorer_observations": {
+    "observed_urls": 21,
+    "notable_rows": [
+      {
+        "url": "https://hermeslogisticsus.com/company-information",
+        "impressions": 4,
+        "clicks": 1,
+        "last_indexed": "2026-09-30",
+        "http": 200,
+        "backlinks": 0
+      },
+      {
+        "url": "https://hermeslogisticsus.com",
+        "impressions": 1,
+        "clicks": 0,
+        "last_indexed": "2026-10-01",
+        "http": 200,
+        "backlinks": 1
+      },
+      {
+        "url": "https://hermeslogisticsus.com/load-board",
+        "impressions": 2,
+        "clicks": 0,
+        "last_indexed": "2026-09-22",
+        "http": 200,
+        "backlinks": 0
+      },
+      {
+        "url": "https://hermeslogisticsus.com/download",
+        "impressions": 8,
+        "clicks": 0,
+        "last_indexed": "2026-09-02",
+        "http": 200,
+        "backlinks": 0
+      }
+    ]
+  },
+  "decisions": {
+    "bing_ban": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+    "current_p0": "Car Hauling carrier acquisition",
+    "indexnow": "REDUCE_DUPLICATE_AND_NON_PAGE_NOTIFICATION_NOISE",
+    "crawler_hints": "DISABLE_WHEN_WRITE_CAPABILITY_IS_AVAILABLE; retain canonical controlled IndexNow workflows",
+    "new_page_wave": "HOLD",
+    "authority": "P1_EXTERNAL_EVIDENCE_AND_CITATION_ACQUISITION",
+    "site_scan": "P2_URL_LEVEL_TRIAGE; do not mass-edit without affected URLs"
+  }
+}
