@@ -141,3 +141,17 @@ Agents do not exchange passwords, PATs, OAuth tokens, cookies or session exports
 9. field Core Web Vitals;
 10. permissioned proof and legitimate external-authority coverage;
 11. correct AI/search entity description and linked citation.
+
+## Bing current owner evidence — 2026-10-05/06
+
+Fresh owner-provided Bing exports supersede the 2026-08-28 Bing snapshot:
+
+- Search Performance through 2026-10-03: **5 clicks / 107 impressions**; latest 14 days = **3/54** versus prior 14 days = **2/25**. Bing visibility is currently small but rising, not collapsed.
+- Bing sitemap index: **Success / 302 discovered URLs** on 2026-10-04.
+- AI Performance: **29 citation events** in the exported window.
+- Site Scan: **581 pages / 2 errors / 22 warnings**; supplied aggregate does not expose affected URLs, so metadata/alt/title/H1 changes require URL-level evidence or repository reproduction first.
+- Bing authority recommendation flags insufficient high-quality inbound domains. This is a real authority constraint, not permission for bulk directory/PBN/link schemes.
+- IndexNow: **5,286 submitted events / 32 indexed events / 38 crawled events** over the exported dates. Non-HTML coverage examples are present even though the repository submitter now rejects assets.
+- Authenticated Cloudflare Caching > Configuration readback shows **Crawler Hints ON**. Treat the combination as IndexNow notification noise. Current remediation is changed-cluster-only repository submission plus Crawler Hints disablement when Cloudflare write capability is available.
+
+P0 remains qualified Car Hauling carrier acquisition. Bing already shows relevant signals around `auto transport load board`, dispatch/self-dispatch, RPM/deadhead and carrier setup-packet intent. Strengthen those existing owners and conversion paths; do not multiply URL owners from the low-volume query set.

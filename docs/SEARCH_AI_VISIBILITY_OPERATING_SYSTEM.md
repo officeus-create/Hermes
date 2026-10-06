@@ -163,3 +163,26 @@ Machine-readable evidence:
 ## Original-evidence execution gate
 
 The next five candidate assets reuse existing canonical owners. No new public URL is authorized by this plan. Publication requires the stated sample, permission, anonymization and privacy gates. Each approved asset must be packaged as page evidence, chart/image, video, transcript, internal links, relevant authority outreach and an AI-readable methodology/limitations block.
+
+## Bing owner refresh — 2026-10-05 export / 2026-10-06 reconciliation
+
+Owner-provided Bing Webmaster exports dated 2026-10-05 plus authenticated browser readback materially update the older Bing state:
+
+- Search Performance (`2026-08-12`..`2026-10-03`): **5 clicks / 107 impressions**. Latest comparable 14 days (`2026-09-20`..`2026-10-03`) improved to **3 clicks / 54 impressions** versus **2 / 25** in the preceding 14 days. Current evidence does **not** support a Bing sitewide visibility ban.
+- `sitemapindex.xml`: **Success**, last processed 2026-10-04, **302 discovered URLs**.
+- AI Performance export: **29 citation events** across the observed window. Daily cited-page counts are event-level observations and are not treated as a unique-page total.
+- Bing Site Scan `Hermes full technical audit 2026-10-04`: **581 pages**, **2 errors**, **22 warnings**. Aggregates: 2 missing meta descriptions, 20 missing image alt attributes, 2 overly long titles and 2 multi-H1 notices. Exact affected URLs were not included in the supplied aggregate export, so do not mass-edit canonical owners from counts alone.
+- Authority recommendation: **insufficient inbound links from high-quality domains** (medium severity). Treat this as a legitimate authority gap; pursue earned/entity-relevant citations and editorial proof, never link spam.
+- IndexNow date stats contain **5,286 submitted-URL events**, **32 indexed events**, and **38 crawled events**. Current IndexNow coverage examples include `robots.txt`, an SVG, a WOFF2 font and `/logistics/car-hauling-dispatch/`. The canonical repository submitter already rejects non-HTML assets/discovery files.
+- Authenticated Cloudflare readback on 2026-10-06 shows **Crawler Hints enabled**. Cloudflare documents that Crawler Hints can notify IndexNow from cache-change signals; combined with the non-HTML observations, this is strong evidence of over-broad/duplicate notification noise rather than a Bing penalty.
+
+Decision:
+
+1. keep the healthy sitemap and controlled page-only IndexNow transport;
+2. change automatic money-page IndexNow notifications from fixed full-batch resubmission to **changed-cluster-only** submission;
+3. disable Cloudflare Crawler Hints when a supported Cloudflare write path is available, then compare a settled 72-hour IndexNow/crawl window;
+4. keep P0 on Car Hauling carriers and strengthen existing owners before adding URLs;
+5. triage Site Scan issues only from exact affected URLs or repository reproduction;
+6. treat authority acquisition as external-evidence P1.
+
+Machine-readable evidence: `data/seo/bing-owner-snapshot-2026-10-05.json`.

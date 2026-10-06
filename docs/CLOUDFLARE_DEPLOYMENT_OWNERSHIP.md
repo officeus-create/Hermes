@@ -221,3 +221,13 @@ Rules:
 5. Synthetic traffic is engineering evidence only; it is not a session, customer, lead, conversion or revenue signal.
 6. Investigate 401/403/404/429/5xx patterns by host/path/agent before changing security policy.
 7. Cloudflare runtime changes remain subject to the normal owner gate; this documentation policy does not itself change WAF, DNS, cache or bot settings.
+
+### Crawler Hints current state — 2026-10-06
+
+Authenticated Cloudflare Caching > Configuration readback shows **Crawler Hints enabled**. Fresh Bing owner exports show 5,286 IndexNow submitted-URL events in the observed period and non-HTML coverage examples (`robots.txt`, SVG, WOFF2) even though the current repository IndexNow submitter rejects non-HTML URLs.
+
+Cloudflare's current Crawler Hints design uses cache-change signals and supports IndexNow notifications. With Hermes already maintaining a canonical page-only IndexNow transport, the current state creates redundant/over-broad notification noise.
+
+Target state: **Crawler Hints OFF; controlled repository IndexNow ON**.
+
+The owner authorized search cleanup in the current workstream. This environment can read the authenticated Cloudflare setting but exposes no supported Cloudflare write action for this toggle, so the mutation remains `ACCESS_GAP / WRITE_CAPABILITY_MISSING`, not `OWNER_ACTION_REQUIRED`. Do not substitute a broad API token, cookie extraction, WAF rule, DNS change or second deployment mechanism. After a supported toggle path exists, turn Crawler Hints off, read it back, and compare a settled 72-hour Bing IndexNow/crawl window.
