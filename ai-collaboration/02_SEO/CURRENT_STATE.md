@@ -69,12 +69,12 @@ SEO13 changed the Logistics SEO title/H1/description/content on 2026-08-13. Do n
 
 1. Protect canonical query ownership and avoid same-intent page multiplication.
 2. Strengthen relevant internal links from strong hubs, cases and resources into existing money-page owners.
-3. Reconcile the low GSC internal-link count with the repository link graph and Search Console freshness before treating `28` as a complete crawl count.
+3. Preserve the current internal-link and same-origin release gates. Do not treat the historical GSC `28` internal-link count as a current defect unless a newer bounded query/page decision requires fresh evidence.
 4. Improve legitimate external entity consistency and authority; do not manufacture links or directory spam.
 5. Resolve authenticated GA4 ownership/receipt and prove controlled events arrive exactly once before changing the analytics runtime.
-6. Capture Bing performance when current processing completes; do not recreate the site/account.
+6. Bing performance was captured in the 2026-10-05/06 owner evidence. The next Bing check is only a settled post-release comparison when it can change a concrete decision; do not recreate the site/account or repeatedly resubmit healthy discovery paths.
 7. Keep technical SEO contracts, sitemaps, robots, canonicals, schema and privacy guards green.
-8. Compare the Logistics SEO canonical owner after approximately 7 and 28 days using the same query/page scope.
+8. Compare current priority money owners after the planned 7-day and 28-day settlement windows using the same query/page scope; do not rewrite owners from an unsettled release window.
 9. Expand pages only when measurements show distinct intent and useful first-party value.
 
 ## External authority / entity state
@@ -107,7 +107,7 @@ The following still require direct authenticated or owner-controlled evidence:
 - permissioned real customer/carrier cases;
 - authoritative external-profile corrections and ownership where needed.
 
-Issue #206 remains the measurement source of truth. Do not create parallel measurement issues that drift from it.
+Issue #206 is closed historical measurement provenance, not the current execution router. Current Search Recovery routes through `docs/SEARCH_GROWTH_GUARDRAIL.md`, `docs/ERROR_REGISTER.md`, and the current One Brain Search/AI Visibility state. Pull newer bounded platform evidence only when a concrete post-release decision requires it.
 
 ## Expansion rule
 
