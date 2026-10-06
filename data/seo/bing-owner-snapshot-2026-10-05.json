@@ -286,5 +286,19 @@
     "new_page_wave": "HOLD",
     "authority": "P1_EXTERNAL_EVIDENCE_AND_CITATION_ACQUISITION",
     "site_scan": "P2_URL_LEVEL_TRIAGE; do not mass-edit without affected URLs"
+  },
+  "public_sources": {
+    "bing_webmaster_guidelines": "https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a",
+    "bing_indexnow": "https://www.bing.com/webmasters/help/indexnow-0z209wby",
+    "bing_url_submission": "https://www.bing.com/webmasters/help/url-submission-62f2860b",
+    "bing_link_building": "https://www.bing.com/webmasters/help/link-building-7a3f99b7",
+    "cloudflare_crawler_hints": "https://developers.cloudflare.com/cache/advanced-configuration/crawler-hints/"
+  },
+  "clarity": {
+    "observed_at": "2026-10-06",
+    "status": "NOT_CONFIGURED",
+    "evidence": "Authenticated Microsoft Clarity UI opened on the new-project creation screen rather than an existing Hermes project.",
+    "decision": "HOLD",
+    "reason": "Search recovery does not require adding a new analytics vendor. Preserve the current consent/privacy and analytics ownership model; first clean synthetic traffic in existing measurement."
   }
 }
