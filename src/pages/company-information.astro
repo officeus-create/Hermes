@@ -1,5 +1,6 @@
 ---
 import TrustPage from "../components/TrustPage.astro";
+import { approvedHermesLogisticsSameAs } from "../data/public-entity-registry";
 
 const logisticsEntitySchema = {
   "@context": "https://schema.org",
@@ -19,6 +20,7 @@ const logisticsEntitySchema = {
   areaServed: { "@type": "Country", name: "United States" },
   mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
   disambiguatingDescription: "Wisconsin HERMES LOGISTICS, LLC, DFI entity H062724, formed 2018-11-01, represented on hermeslogisticsus.com; similarly named companies and addresses must not be merged without current evidence.",
+  sameAs: approvedHermesLogisticsSameAs,
 };
 
 
