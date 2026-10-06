@@ -1414,5 +1414,212 @@
         "+15 internal-link and Catalog fit"
       ]
     }
+  },
+  {
+    "id": "lmi-transportation-capacity-prices-october-2026",
+    "direction": "logistics",
+    "slug": "logistics-capacity-prices-september-2026-lmi",
+    "title": "Logistics Capacity Tightens as Transportation Prices Surge | Hermes Insights",
+    "description": "The September 2026 Logistics Managers' Index rose to 70.2 while Transportation Capacity contracted to 34.4 and Transportation Prices climbed to 92.7. Hermes explains how to use the signal without turning a survey index into a lane-rate forecast.",
+    "eyebrow": "Logistics Market Signal · October 2026",
+    "h1": "LMI reached 70.2 as transportation capacity tightened. What should carriers and planners do with the signal?",
+    "conciseAnswer": "The September 2026 Logistics Managers' Index, released October 6, rose to 70.2 from 66.6 in August. Transportation Capacity fell to 34.4, indicating contraction, while Transportation Prices rose to 92.7. The signal is useful macro context for carriers, dispatchers, shippers and trainees, but it is a diffusion-index survey rather than a lane-level rate, load-count or load-board measure.",
+    "explanation": [
+      "What changed: The September Logistics Managers' Index was released on October 6, 2026 at 70.2, up 3.6 points from August's 66.6 and the second-highest reading in four years. Transportation Capacity fell 5.6 points to 34.4, a contraction reading, while Transportation Utilization was 66.1 and Transportation Prices rose 2.7 points to 92.7. The report also says the broader index is a diffusion index, where readings above 50 indicate expansion and readings below 50 indicate contraction.",
+      "Why it matters: a tightening-capacity and rising-price combination can change negotiating conditions, but the LMI is not a universal RPM target and does not tell a carrier what a specific load should pay. Historical Hermes operating material is used only for the anonymous pattern that load-board conditions, route planning, deadhead, negotiation and reload planning belong in the same decision chain. No old rates, earnings, customer details or private commercial figures are reused as current facts.",
+      "What to do: treat the LMI as a macro warning to refresh assumptions more often. Before accepting or countering a load, verify the actual origin market, destination reload quality, loaded and deadhead miles, current fuel, equipment fit, appointment constraints, payment terms and live load-board evidence. If a lane is tightening locally, that evidence can support a stronger negotiation position; if it is not, the national survey should not override the real lane.",
+      "Result: teams get a disciplined way to use a same-day logistics signal without overclaiming. The practical output is earlier recognition that capacity and pricing conditions may be tightening, paired with a requirement to confirm the real lane before acting. Source/date: Logistics Managers' Index, released October 6, 2026."
+    ],
+    "takeaways": [
+      "September 2026 LMI rose to 70.2 from 66.6 in August",
+      "Transportation Capacity contracted at 34.4 while Transportation Prices rose to 92.7",
+      "The LMI is a diffusion-index survey, not a lane rate, load count or guaranteed market forecast",
+      "Use the macro signal to trigger fresher lane, deadhead, fuel and reload checks before negotiating"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Hermes Load Board",
+        "body": "Use live load and capacity evidence separately from macro survey indicators.",
+        "href": "/load-board/"
+      },
+      {
+        "title": "Hermes Logistics",
+        "body": "Review carrier, shipper and operating resources for current freight decisions.",
+        "href": "/paths/logistics/"
+      },
+      {
+        "title": "RPM Calculator",
+        "body": "Calculate lane-level rate-per-mile inputs as one part of total route economics.",
+        "href": "/logistics/resources/rpm-calculator/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Explore Hermes Load Board",
+      "href": "/load-board/"
+    },
+    "secondaryAction": {
+      "label": "Review Hermes Logistics",
+      "href": "/paths/logistics/"
+    },
+    "sourceLabel": "Logistics Managers' Index — September 2026 report",
+    "sourceUrl": "https://www.the-lmi.com/september-2026-logistics-managers-index.html",
+    "sourcePublishedAt": "2026-10-06",
+    "datePublished": "2026-10-06",
+    "dateModified": "2026-10-06",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Logistics Managers Index September 2026",
+      "transportation capacity 2026",
+      "transportation prices 2026",
+      "truck capacity market",
+      "freight market capacity",
+      "load planning market signal",
+      "carrier rate negotiation"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "September 2026 Logistics Managers' Index report",
+        "use": "primary",
+        "url": "https://www.the-lmi.com/september-2026-logistics-managers-index.html",
+        "observedAt": "2026-10-06",
+        "eventDate": "2026-10-06",
+        "notes": "Primary current source for the September LMI, Transportation Capacity, Transportation Utilization and Transportation Prices readings, plus the diffusion-index methodology."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized operating pattern linking load-board conditions, route planning, deadhead, negotiation and reload planning. No identifiable chat content, old rates, earnings or private commercial figures are republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes logistics operating archive",
+      "nowPeriod": "September 2026 data released October 6, 2026",
+      "summary": "Historical Hermes material treated route planning, deadhead, negotiation and reload planning as connected operating decisions. The September 2026 LMI adds current macro evidence that transportation capacity is contracting while prices are expanding, but it does not convert historical practice into a current rate benchmark.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.the-lmi.com/september-2026-logistics-managers-index.html"
+    },
+    "publicationScore": {
+      "score": 70,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+18 source authority",
+        "+8 first-party evidence",
+        "+4 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit",
+        "-3 duplicate risk"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "google-youtube-social-creative-october-2026",
+    "direction": "marketing",
+    "slug": "google-youtube-social-assets-testing-october-2026",
+    "title": "Google Says Start YouTube Ads With Existing Social Creative | Hermes Insights",
+    "description": "Google's October 2026 Demand Gen guidance says existing social assets can be a solid starting point for YouTube ads and recommends gradual, data-driven creative testing. Hermes separates that advice from any claim that organic performance guarantees paid results.",
+    "eyebrow": "Paid Learning · October 2026",
+    "h1": "Google says existing social creative can seed YouTube ads. What should marketers test next?",
+    "conciseAnswer": "Google's Ads & Commerce team says existing social creative can be a solid starting point for Demand Gen and YouTube performance ads when it follows asset specifications. Google also recommends gradual, data-driven creative changes rather than high-volume churn. For Hermes Marketing, that supports using proven organic creative as test inventory while still measuring paid results independently.",
+    "explanation": [
+      "What changed: On October 1, 2026, Google published Demand Gen guidance saying marketers can start with existing creative such as social assets, use Asset Studio's multimodal video creation, and make creative changes gradually so the system has enough time to measure performance.",
+      "Why it matters: this supports a practical bridge from organic programming into paid learning without proving that an organic winner will automatically become a profitable ad. The public guidance is about creative inputs and testing discipline, not a guarantee of CAC, lead quality, sales or campaign profitability.",
+      "What to do: take a small set of repeatable organic winners that already have a clear hook and next action, adapt them to Google's asset specifications, then test changes gradually. Keep source/UTM attribution, qualified-lead definitions and downstream CRM outcomes visible so the paid test is judged by business evidence rather than views alone.",
+      "Result: one piece of social creative can become a controlled paid-learning input instead of triggering a full creative rebuild, while marketers preserve the distinction between organic engagement and paid commercial performance. Source/date: Google Ads & Commerce Blog, October 1, 2026."
+    ],
+    "takeaways": [
+      "Google says existing social assets can be a solid starting point for YouTube/Demand Gen creative",
+      "Google recommends gradual, data-driven creative changes rather than quantity for its own sake",
+      "Organic creative performance is a useful input, not proof of paid CAC, lead quality or profitability"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Organic Social Before Paid Ads",
+        "body": "Review the Hermes evidence-first sequence for organic baseline, paid learning and funnel validation.",
+        "href": "/insights/marketing/organic-social-before-paid-ads-meta-learning/"
+      },
+      {
+        "title": "Marketing Growth Audit",
+        "body": "Use the Hermes audit framework to connect creative testing to measurable downstream outcomes.",
+        "href": "/businesses/marketing-growth-audit-example/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect social discovery, creative testing and owned conversion paths.",
+        "href": "/paths/marketing/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the Marketing Growth Audit",
+      "href": "/businesses/marketing-growth-audit-example/"
+    },
+    "secondaryAction": {
+      "label": "Review Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Google Ads & Commerce — creating assets for YouTube ads",
+    "sourceUrl": "https://blog.google/products/ads-commerce/creating-assets-youtube-ads/",
+    "sourcePublishedAt": "2026-10-01",
+    "datePublished": "2026-10-06",
+    "dateModified": "2026-10-06",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "YouTube ads social creative",
+      "Demand Gen creative testing",
+      "Google Ads social assets",
+      "organic creative paid ads",
+      "YouTube ad asset testing",
+      "Google Asset Studio"
+    ],
+    "contentTier": "brief",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Google Ads & Commerce creative guidance for YouTube ads",
+        "use": "primary",
+        "url": "https://blog.google/products/ads-commerce/creating-assets-youtube-ads/",
+        "observedAt": "2026-10-06",
+        "eventDate": "2026-10-01",
+        "notes": "Primary Google source for using existing social assets as a creative starting point, Asset Studio video generation, and gradual data-driven asset testing. It does not guarantee paid performance."
+      }
+    ],
+    "publicationScore": {
+      "score": 53,
+      "recommendation": "telegram",
+      "reasons": [
+        "+16 freshness",
+        "+20 source authority",
+        "+12 search value",
+        "+10 internal-link fit",
+        "-5 duplicate risk"
+      ]
+    }
   }
 ]
