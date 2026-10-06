@@ -13,7 +13,7 @@ for (const [legacy, canonical] of [
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
 }
-for (const gone of ["/dashboard", "/month", "/месяц", "/cdn-cgi/l/email-protection"]) {
+for (const gone of ["/dashboard", "/month", "/месяц", "/cdn-cgi/l/email-protection", "/ rel=nofollow"]) {
   assert.ok(middleware.includes(`"${gone}"`), `stale crawl artifact must be explicitly retired: ${gone}`);
 }
 assert.match(middleware, /status:\s*410/);
