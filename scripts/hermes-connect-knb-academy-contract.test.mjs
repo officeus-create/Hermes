@@ -38,7 +38,7 @@ test('KNB concept stays source-bounded and non-indexable',()=>{
 });
 
 const genericCase=await readFile(new URL('../src/pages/businesses/marketing-growth-audit-example/index.astro',import.meta.url),'utf8');
-test('Catalog exposes a reusable indexable marketing growth strategy example',()=>{
+test('Catalog keeps the reusable marketing growth strategy example public but outside the search index',()=>{
   assert.match(genericCase,/Marketing Growth Audit Example/);
   assert.match(genericCase,/Organic → Paid Learning → Offer → CRM/);
   assert.match(genericCase,/READINESS GATE/);
@@ -47,5 +47,5 @@ test('Catalog exposes a reusable indexable marketing growth strategy example',()
   assert.match(genericCase,/PROOF GOVERNANCE/);
   assert.match(genericCase,/trackCaseOpened\("marketing_growth_audit_example"\)/);
   assert.match(genericCase,/trackEvent\("case_study_cta"/);
-  assert.doesNotMatch(genericCase,/robots="noindex/);
+  assert.match(genericCase,/robots="noindex,follow"/);
 });

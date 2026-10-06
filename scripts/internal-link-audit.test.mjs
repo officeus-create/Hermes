@@ -1,4 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
+import { statSync } from "node:fs";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
@@ -29,6 +30,7 @@ const normalizeInternalRoute = (href, sourceRoute) => {
     if (target.origin !== origin) return null;
     if (target.pathname === "/404.html") return "/404.html";
     if (/\.[a-z0-9]{2,8}$/i.test(target.pathname) && !target.pathname.endsWith(".html")) return null;
+    if (target.pathname.endsWith("/index.html")) return target.pathname.slice(0, -"index.html".length);
     if (target.pathname.endsWith(".html")) return target.pathname;
     return target.pathname.endsWith("/") ? target.pathname : `${target.pathname}/`;
   } catch {
@@ -67,6 +69,48 @@ for (const htmlPath of htmlFiles) {
   pages.set(route, { route, htmlPath, html, indexable: !getMetaRobots(html).includes("noindex") });
 }
 
+// Classify only exact redirect rules and GET handlers declared by Pages Functions.
+const redirects = new Map();
+try {
+  for (const line of (await readFile(join(root, "public/_redirects"), "utf8")).split("\n")) {
+    const [from, to, status] = line.trim().split(/\s+/);
+    if (from?.startsWith("/") && !from.includes("*") && !from.includes(":") && /^30[1278]$/.test(status ?? "")) redirects.set(from, to);
+  }
+} catch (error) { if (error.code !== "ENOENT") throw error; }
+const dynamicRoutes = [];
+async function collectGetRoutes(directory, relative = "") {
+  let entries;
+  try { entries = await readdir(directory, {withFileTypes: true}); }
+  catch (error) { if (error.code === "ENOENT") return; throw error; }
+  for (const entry of entries) {
+    if (entry.name.startsWith("_")) continue;
+    const path = join(relative, entry.name);
+    if (entry.isDirectory()) { await collectGetRoutes(join(directory, entry.name), path); continue; }
+    if (!/\.(?:js|ts)$/.test(path)) continue;
+    const source = await readFile(join(directory, entry.name), "utf8");
+    if (!/export\s+(?:(?:const|let|var)\s+onRequestGet\b|(?:async\s+)?function\s+onRequestGet\b)/.test(source)) continue;
+    const segments = path.replace(/\.(?:js|ts)$/, "").split("/");
+    if (segments.at(-1) === "index") segments.pop();
+    const pattern = segments.map(segment => /^\[\[.*\]\]$/.test(segment) ? ".*" : /^\[.*\]$/.test(segment) ? "[^/]+" : segment.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("/");
+    dynamicRoutes.push(new RegExp(`^/${pattern}/?$`));
+  }
+}
+await collectGetRoutes(join(root, "functions"));
+function classifyTarget(href, sourceRoute, visited = new Set()) {
+  const target = new URL(href, new URL(sourceRoute, origin));
+  if (target.origin !== origin) return {kind: "external"};
+  if (visited.has(target.pathname)) return {kind: "missing"};
+  visited.add(target.pathname);
+  if (redirects.has(target.pathname)) return classifyTarget(redirects.get(target.pathname), sourceRoute, visited);
+  const route = normalizeInternalRoute(target.href, sourceRoute);
+  if (route && pages.has(route)) return {kind: "page", route};
+  try { if (statSync(join(dist, decodeURIComponent(target.pathname))).isFile()) return {kind: "asset"}; }
+  catch (error) { if (error.code !== "ENOENT" && error.code !== "ENOTDIR" && !(error instanceof URIError)) throw error; }
+  if (dynamicRoutes.some(pattern => pattern.test(target.pathname))) return {kind: "dynamic"};
+  return {kind: "missing"};
+}
+const missingTargets = new Set();
+
 const graph = new Map([...pages.keys()].map((route) => [route, new Set()]));
 const inbound = new Map([...pages.keys()].map((route) => [route, new Set()]));
 const inboundAnchorTexts = new Map([...pages.keys()].map((route) => [route, new Set()]));
@@ -75,8 +119,12 @@ for (const page of pages.values()) {
   for (const match of page.html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     const href = match[1].trim();
     if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
-    const targetRoute = normalizeInternalRoute(href, page.route);
-    if (!targetRoute || !pages.has(targetRoute) || targetRoute === page.route) continue;
+    let target;
+    try { target = classifyTarget(href, page.route); }
+    catch { missingTargets.add(`${page.route}: invalid internal page target ${href}`); continue; }
+    if (target.kind === "missing") missingTargets.add(`${page.route}: missing internal page target ${href}`);
+    if (target.kind !== "page" || target.route === page.route) continue;
+    const targetRoute = target.route;
     graph.get(page.route).add(targetRoute);
     inbound.get(targetRoute).add(page.route);
     const anchorText = normalizeAnchorText(match[2]);
@@ -144,3 +192,6 @@ for (const warning of warnings) console.warn(`SEO link warning — ${warning}`);
 console.log(
   `Internal-link audit completed: ${pages.size} HTML pages, ${sitemapFiles.length} sitemap file(s), ${sitemapRoutes.size} sitemap routes, ${warnings.length} review warning(s).`,
 );
+
+for (const missing of missingTargets) console.error(`Internal-link error — ${missing}`);
+if (missingTargets.size) process.exitCode = 1;

@@ -1,15 +1,27 @@
 # Hermes Logistics contact and division plan
 
-## Current approved public contacts
+Status: `HISTORICAL PLAN / CURRENT CONTACTS SUPERSEDED`
 
-Owner update: 2026-07-22. This section supersedes the previously published multi-phone routing.
+Current publication authority: `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md`.
 
-| Division | Contact | Source status | Website use |
+As of 2026-09-24, reaffirmed 2026-10-06:
+- no canonical public phone is approved;
+- `+1 (262) 302-3626` is retired from public Logistics routing;
+- `freight_301@hermeslogisticsus.com` is retired and denylisted;
+- `officeus@hermeslogisticsus.com` is the approved general public coordination email.
+
+Do not restore a phone or retired mailbox from the historical plan below without a new owner-approved canonical-facts update and matching regression evidence.
+
+## Historical public-contact plan — superseded
+
+Owner update: 2026-07-22. Preserved for provenance only.
+
+| Division | Contact | Historical source status | Current use |
 | --- | --- | --- | --- |
-| Logistics Sales Department · USA | +1 (262) 302-3626 | Owner confirmed, 2026-07-22 | The single public telephone for every incoming Logistics call: shipper, dealer, broker, carrier, owner-operator, Car Hauling, freight, and operating-support inquiries |
-| Logistics Email · USA | freight_301@hermeslogisticsus.com | Previously verified and retained by owner direction | Freight, documents, dispatch, and operating-support questions |
+| Logistics Sales Department · USA | +1 (262) 302-3626 | Owner confirmed, 2026-07-22 | `RETIRED / DO_NOT_PUBLISH` |
+| Logistics Email · USA | freight_301@hermeslogisticsus.com | Previously verified | `RETIRED / DO_NOT_PUBLISH` |
 
-All other previously published Hermes telephone numbers are removed from the website. Marketing, Academy, and IT remain email-only.
+Current public contact routing uses the approved website intake and `officeus@hermeslogisticsus.com`.
 
 ## International office-location presentation
 

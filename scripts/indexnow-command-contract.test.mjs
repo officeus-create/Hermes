@@ -26,12 +26,25 @@ for (const required of [
   "steps.changed.outputs.count != '0'",
   "steps.changed.outputs.urls",
   "https://hermeslogisticsus.com/load-board/",
+  "https://hermeslogisticsus.com/load-board/equipment/car-hauler/",
   "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
   "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
 ]) {
   assert.ok(moneyWorkflow.includes(required), `Money-page IndexNow workflow must preserve changed-URL control: ${required}`);
 }
 assert.equal(moneyWorkflow.includes("workflow_dispatch:"), false, "Money-page IndexNow automation must stay push/change driven; manual submission already has a separate owner workflow");
+for (const retired of [
+  "https://hermeslogisticsus.com/load-board/providers/ship-cars/",
+  "https://hermeslogisticsus.com/load-board/equipment/dry-van/",
+  "https://hermeslogisticsus.com/load-board/equipment/reefer/",
+  "https://hermeslogisticsus.com/load-board/equipment/flatbed/",
+  "https://hermeslogisticsus.com/load-board/equipment/step-deck/",
+  "https://hermeslogisticsus.com/load-board/equipment/hotshot/",
+  "https://hermeslogisticsus.com/load-board/equipment/power-only/",
+  "https://hermeslogisticsus.com/load-board/equipment/box-truck/",
+]) {
+  assert.equal(moneyWorkflow.includes(retired), false, `IndexNow must not notify non-owner support surface: ${retired}`);
+}
 assert.ok(moneyWorkflow.includes("if grep -Eq '^src/pages/load-board\\.astro$'"), "Money-page workflow must isolate canonical Load Board root changes");
 assert.ok(moneyWorkflow.includes("echo 'https://hermeslogisticsus.com/load-board/' >> /tmp/indexnow-urls.txt"), "Load Board root changes must submit the canonical root");
 
