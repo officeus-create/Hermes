@@ -1,5 +1,9 @@
 # SEO14 — AI Agent Routing and Evidence Contract — 2026-08-14
 
+Status: **HISTORICAL / SUPERSEDED — DO NOT ROUTE CURRENT WORK FROM THIS FILE**
+
+Current Search routing lives in `CURRENT_STATE.md`, `docs/SEARCH_GROWTH_GUARDRAIL.md`, `docs/ERROR_REGISTER.md`, `docs/SEARCH_AI_VISIBILITY_OPERATING_SYSTEM.md`, and the current One Brain/HOS ownership state. The `#206` source-of-truth statement and fixed model-to-role assignments below are preserved only as the 2026-08-14 execution snapshot.
+
 ```yaml
 ai_name: ChatGPT
 model: GPT-5.6 Sol
