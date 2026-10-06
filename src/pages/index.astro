@@ -7,7 +7,7 @@ import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { languageAlternates } from "../data/locales";
-import { approvedHermesSameAs } from "../data/public-entity-registry";
+import { approvedHermesLogisticsSameAs, approvedHermesSameAs } from "../data/public-entity-registry";
 import "../styles/home-mobile-visual-fixes.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
@@ -65,6 +65,7 @@ const logisticsOrganizationSchema = {
   email: "officeus@hermeslogisticsus.com",
   areaServed: { "@type": "Country", name: "United States" },
   mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
+  sameAs: approvedHermesLogisticsSameAs,
 };
 
 const websiteSchema = {
