@@ -13,11 +13,14 @@
     const isAcademy = company?.companyType === 'academy_business';
     const isGenericAcademyLike = ['business_club','business_academy','online_school','courses','coaching','corporate_academy'].includes(String(company?.companyType || ''));
     const isAcademyLike = isAcademy || isGenericAcademyLike;
+    const isHomeService = company?.companyType === 'home_service';
     const typeLabel = isAcademy
       ? String(company.typeLabel || 'Academy / Courses')
       : isGenericAcademyLike
         ? String(company.typeLabel || company.companyType || 'Academy / Courses').replaceAll('_',' ')
-        : 'Repair Shop';
+        : isHomeService
+          ? String(company.typeLabel || 'Home & Local Service')
+          : 'Repair Shop';
     const services = Array.isArray(company.services) ? company.services.slice(0, 4).map(String) : [];
     article.dataset.searchText = [company.companyName, typeLabel, company.city, company.state, company.countryCode, ...services].filter(Boolean).join(' ').toLowerCase();
 
@@ -91,6 +94,11 @@
 
         if (company?.companyType === 'repair_shop' && repairGrid && repairHref && !repairExistingIds.has(id)) {
           repairGrid.append(makeCard(company, repairHref));
+          repairExistingIds.add(id);
+          continue;
+        }
+        if (company?.companyType === 'home_service' && repairGrid && companyHref && !repairExistingIds.has(id)) {
+          repairGrid.append(makeCard(company, companyHref));
           repairExistingIds.add(id);
           continue;
         }

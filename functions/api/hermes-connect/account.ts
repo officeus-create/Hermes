@@ -15,7 +15,7 @@ import { getHrReviewerAccess } from "../_lib/hr.mjs";
 type Env = { DB?: any };
 
 type OwnedBusiness = {
-  key: "repair_shop" | "beauty_salon" | "academy_business";
+  key: "repair_shop" | "beauty_salon" | "academy_business" | "home_service";
   kind: "owned_business";
   id: string;
   name: string;
@@ -128,6 +128,17 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(academyBusiness.slug || ""),
       href: "/services/hermes-connect/academy/business/workspace/",
       workspace_state: "academy_vertical",
+    });
+  }
+  if (hermesCompany && String(hermesCompany.company_type) === "home_service") {
+    ownedBusinesses.push({
+      key: "home_service",
+      kind: "owned_business",
+      id: String(hermesCompany.id),
+      name: String(hermesCompany.company_name || "Home Service Business"),
+      slug: String(hermesCompany.slug || ""),
+      href: "/services/hermes-connect/home-services/workspace/",
+      workspace_state: "live",
     });
   }
 

@@ -17,6 +17,7 @@ export const HERMES_COMPANY_TYPES = new Set([
   "broker",
   "shipper",
   "dealer",
+  "home_service",
   "other",
 ]);
 
