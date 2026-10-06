@@ -142,7 +142,7 @@ const schema = [
         <div class="business-grid">
           {internationalBusinesses.map((business) => (
             <article class="business-card" data-search-text={[business.name,business.primaryIntent,business.locality,business.region,...business.services].join(" ").toLowerCase()}>
-              <div class="business-card__top"><span>{business.primaryIntent}</span><span>{business.status === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
+              <div class="business-card__top"><span>{business.primaryIntent}</span><span>{business.status === "client" ? "Hermes client" : business.status === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
               <h3>{business.name}</h3>
               <p>{business.locality}, {business.region} · {business.countryCode}</p>
               <ul>{business.services.slice(0,4).map((service)=><li>{service}</li>)}</ul>
