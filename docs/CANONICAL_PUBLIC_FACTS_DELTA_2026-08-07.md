@@ -1,6 +1,8 @@
 # Canonical Public Facts Delta — 2026-08-07
 
-Status: `VERIFIED_PUBLIC_DELTA`
+Status: `HISTORICAL_DELTA / CONTACT_FIELDS_SUPERSEDED`
+
+> Current-state override (2026-09-24; reaffirmed 2026-10-06): contact publication authority is `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md`. No canonical public phone is currently approved. The former `+1 (262) 302-3626` Logistics number is retired and must not be restored from this dated delta. Historical contact wording below is retained only as provenance.
 
 Purpose: identify the smallest set of current, owner-controlled public facts that can already be used to reconcile external profiles without waiting for broader private owner approval.
 
@@ -13,14 +15,14 @@ This does **not** replace `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md`. It only re
 | Root public brand | `Hermes` | `VERIFIED_PUBLIC` | Root website/entity label. Do not infer that every direction is one legal entity. |
 | Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Canonical public domain. |
 | General public email | `officeus@hermeslogisticsus.com` | `VERIFIED_PUBLIC` | Current public coordination route. Retired aliases must not be promoted as active. |
-| U.S. Logistics Sales phone | `+1 (262) 302-3626` | `VERIFIED_PUBLIC` | Public phone for incoming U.S. Logistics Sales contact. |
+| U.S. Logistics Sales phone | `+1 (262) 302-3626` | `RETIRED / DO_NOT_PUBLISH` | Historical value only. Current canonical facts approve no public phone. |
 | U.S. logistics direction label | `Hermes Logistics` / `Hermes Logistics LLC` where the owned site explicitly describes the U.S. logistics direction | `VERIFIED_PUBLIC` | Do not add fleet, brokerage authority, office, carrier-control or guaranteed-capacity claims by implication. |
 | Marketing direction | `ProgressoPro` | `VERIFIED_PUBLIC` | Keep distinct from Hermes root `sameAs` until exact entity relationship is separately approved. |
 | Education direction | `Hermes Business Academy` | `VERIFIED_PUBLIC` | Do not imply guaranteed employment, income or placement. |
 | Technology direction | `Hermes IT Development` | `VERIFIED_PUBLIC` | Keep live products, prototypes and planned capability distinct. |
 | Logistics geography wording | U.S. market / United States | `VERIFIED_PUBLIC` | Service geography is not proof of office presence. |
 | Other-direction geography wording | International email coordination / coordination markets | `VERIFIED_PUBLIC` | Milan, Berlin, Paris, Miami, California, New York and England must not be described as public offices or walk-in locations unless separately verified. |
-| Public contact architecture | Logistics may use the U.S. sales phone; general/logistics/marketing/academy/technology/legal/privacy/publication questions may use the approved general email according to the current owned-site source | `VERIFIED_PUBLIC` | External profiles should use only currently monitored approved channels. |
+| Public contact architecture | `officeus@hermeslogisticsus.com` is the current approved general public coordination route; no canonical public phone is currently approved | `CURRENT_OVERRIDE` | External profiles should use only currently monitored channels approved by the canonical company-facts source. |
 
 ## Public-safe direction descriptions
 
