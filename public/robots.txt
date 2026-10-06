@@ -1,6 +1,7 @@
 User-agent: *
 Content-Signal: search=yes, ai-input=yes
 Allow: /
+Disallow: /cdn-cgi/
 
 Sitemap: https://hermeslogisticsus.com/sitemapindex.xml
 Sitemap: https://hermeslogisticsus.com/sitemap.xml

@@ -4,6 +4,7 @@ import { classifyUrl, extractUrls, readLocalSitemapUrls } from "./gsc-indexing-t
 
 const redirects = await readFile(new URL("../public/_redirects", import.meta.url), "utf8");
 const middleware = await readFile(new URL("../functions/_middleware.js", import.meta.url), "utf8");
+const robots = await readFile(new URL("../public/robots.txt", import.meta.url), "utf8");
 assert.match(redirects, /^\/academy\/ \/paths\/academy\/ 301$/m, "retired /academy/ hub must redirect to canonical Academy direction");
 for (const [legacy, canonical] of [
   ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
@@ -13,11 +14,12 @@ for (const [legacy, canonical] of [
 ]) {
   assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
 }
-for (const gone of ["/dashboard", "/month", "/месяц", "/cdn-cgi/l/email-protection", "/ rel=nofollow"]) {
+for (const gone of ["/dashboard", "/month", "/месяц", "/ rel=nofollow"]) {
   assert.ok(middleware.includes(`"${gone}"`), `stale crawl artifact must be explicitly retired: ${gone}`);
 }
 assert.match(middleware, /status:\s*410/);
 assert.match(middleware, /"X-Robots-Tag": "noindex, nofollow"/);
+assert.match(robots, /^Disallow: \/cdn-cgi\/$/m, "Cloudflare-managed /cdn-cgi/ crawl artifacts must be blocked in robots.txt");
 
 
 const sitemaps = await readLocalSitemapUrls();
