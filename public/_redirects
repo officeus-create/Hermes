@@ -6,3 +6,7 @@
 /uk/london/marketing/ /gb/london/marketing/ 301
 /uk/london/it-web-development/ /gb/london/it-web-development/ 301
 /uk/london/us-logistics-training/ /gb/london/us-logistics-training/ 301
+/resources/rpm-calculator/ /logistics/resources/rpm-calculator/ 301
+/tools/load-analyzer/ /services/hermes-connect/load-analyzer/ 301
+/ai-command-center/ /services/hermes-connect/ai-command-center/ 301
+/unified-inbox/ /services/hermes-connect/unified-inbox/ 301

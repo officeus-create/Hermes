@@ -94,6 +94,18 @@ async function processPasswordResetRequest(env: Env, email: string, locale: stri
   }
 }
 
+export async function onRequestGet() {
+  return new Response(JSON.stringify({ success: false, error: "method_not_allowed" }), {
+    status: 405,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Allow": "POST",
+      "Cache-Control": "no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  });
+}
+
 export async function onRequestPost(context: RequestContext) {
   const { request, env } = context;
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });

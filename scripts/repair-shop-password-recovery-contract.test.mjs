@@ -12,7 +12,7 @@ import {
   normalizePasswordResetLocale,
   passwordResetExpiry,
 } from "../functions/api/_lib/password-reset.mjs";
-import { onRequestPost as forgotPassword } from "../functions/api/auth/forgot-password.ts";
+import { onRequestGet as forgotPasswordGet, onRequestPost as forgotPassword } from "../functions/api/auth/forgot-password.ts";
 
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -45,6 +45,11 @@ assert.match(helper, /token_hash TEXT PRIMARY KEY/);
 assert.doesNotMatch(helper, /\n\s*token TEXT/);
 assert.match(forgotEndpoint, /role !== "Shop Owner"/);
 assert.match(forgotEndpoint, /return jsonResponse\(200, acknowledgement\)/);
+const forgotGetResponse = await forgotPasswordGet();
+assert.equal(forgotGetResponse.status, 405);
+assert.equal(forgotGetResponse.headers.get("allow"), "POST");
+assert.equal(forgotGetResponse.headers.get("x-robots-tag"), "noindex, nofollow");
+
 assert.match(forgotEndpoint, /SELECT COUNT\(\*\) AS count FROM password_reset_tokens WHERE specialist_id = \? AND created_at >= \?/);
 assert.match(forgotEndpoint, /if \(Number\(recent\?\.count \?\? 0\) >= 3\)/);
 assert.match(forgotEndpoint, /UPDATE password_reset_tokens SET used_at = \? WHERE specialist_id = \? AND used_at IS NULL/);
