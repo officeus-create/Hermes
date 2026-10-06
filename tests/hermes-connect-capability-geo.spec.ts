@@ -8,10 +8,10 @@ const referenceRoutes = [
 
 test.describe("Hermes Connect reference capability GEO hierarchy", () => {
   for (const route of referenceRoutes) {
-    test(`${route} stays indexable but models itself as a page inside Hermes Connect`, async ({ page }) => {
+    test(`${route} stays public and linked but does not compete as a search owner`, async ({ page }) => {
       await page.goto(route);
 
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
       await expect(page.locator("[data-hc-capability-page]")).toHaveAttribute("data-hc-live-status", "reference");
       await expect(page.locator(".hc-reference-badge")).toContainText("not current live pilot");
 
