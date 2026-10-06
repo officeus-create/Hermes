@@ -8,9 +8,12 @@ const routes = [
 async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Language navigation preserves #main-content; return to the header as a user would.
   // Mobile emulation does not implement desktop Home-key scrolling.
+  // Complete navigation and font-driven layout before restoring scroll; the
+  // preserved fragment can otherwise adjust the viewport after the one-shot scroll.
+  await page.waitForLoadState('load');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  await page.waitForLoadState('load');
   await expect(page.locator('html')).toBeVisible();
   if (isMobile) {
     await page.locator('[data-menu-button]').click();
