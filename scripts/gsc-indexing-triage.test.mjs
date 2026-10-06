@@ -3,7 +3,22 @@ import { readFile } from "node:fs/promises";
 import { classifyUrl, extractUrls, readLocalSitemapUrls } from "./gsc-indexing-triage.mjs";
 
 const redirects = await readFile(new URL("../public/_redirects", import.meta.url), "utf8");
+const middleware = await readFile(new URL("../functions/_middleware.js", import.meta.url), "utf8");
 assert.match(redirects, /^\/academy\/ \/paths\/academy\/ 301$/m, "retired /academy/ hub must redirect to canonical Academy direction");
+for (const [legacy, canonical] of [
+  ["/resources/rpm-calculator/", "/logistics/resources/rpm-calculator/"],
+  ["/tools/load-analyzer/", "/services/hermes-connect/load-analyzer/"],
+  ["/ai-command-center/", "/services/hermes-connect/ai-command-center/"],
+  ["/unified-inbox/", "/services/hermes-connect/unified-inbox/"],
+]) {
+  assert.ok(redirects.includes(`${legacy} ${canonical} 301`), `retired public owner must redirect: ${legacy}`);
+}
+for (const gone of ["/dashboard", "/month", "/месяц", "/cdn-cgi/l/email-protection"]) {
+  assert.ok(middleware.includes(`"${gone}"`), `stale crawl artifact must be explicitly retired: ${gone}`);
+}
+assert.match(middleware, /status:\s*410/);
+assert.match(middleware, /"X-Robots-Tag": "noindex, nofollow"/);
+
 
 const sitemaps = await readLocalSitemapUrls();
 assert.ok(sitemaps.has("https://hermeslogisticsus.com/es/"), "Spanish public owner must be in current sitemaps");
