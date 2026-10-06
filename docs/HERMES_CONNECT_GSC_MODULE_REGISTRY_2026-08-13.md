@@ -1,7 +1,14 @@
 # Hermes Connect — GSC demand → canonical owner → module registry
 
-Status: Wave 1 production registry  
-Evidence source: authenticated owner-supplied Google Search Console export tracked under #206 / #461–#465  
+Status: Wave 1 production registry
+
+### Current measurement-routing override — 2026-10-06
+
+The module/canonical-owner mapping below remains a production/product registry, but every `#206` measurement-owner reference in this dated file is **historical provenance only**. Issue #206 is closed and must not be reopened as the current Search measurement router.
+
+For current Search decisions use `ai-collaboration/02_SEO/CURRENT_STATE.md`, `docs/SEARCH_GROWTH_GUARDRAIL.md`, and `docs/ERROR_REGISTER.md`. Pull a fresh bounded GSC/Bing/GA4 window only when a concrete post-release decision requires it. Missing fresh evidence is `UNKNOWN/DATA_PENDING`, not zero.
+
+Historical evidence source: authenticated owner-supplied Google Search Console export tracked under #206 / #461–#465  
 Production verification: Wave 1 smoke run `31668926104`
 
 ## Operating rule
