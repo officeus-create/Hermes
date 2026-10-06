@@ -1,5 +1,6 @@
 ---
 import TrustPage from "../components/TrustPage.astro";
+import { approvedHermesLogisticsSameAs } from "../data/public-entity-registry";
 
 const logisticsEntitySchema = {
   "@context": "https://schema.org",
@@ -18,8 +19,31 @@ const logisticsEntitySchema = {
   email: "officeus@hermeslogisticsus.com",
   areaServed: { "@type": "Country", name: "United States" },
   mainEntityOfPage: "https://hermeslogisticsus.com/company-information/",
+  disambiguatingDescription: "Wisconsin HERMES LOGISTICS, LLC, DFI entity H062724, formed 2018-11-01, represented on hermeslogisticsus.com; similarly named companies and addresses must not be merged without current evidence.",
+  sameAs: approvedHermesLogisticsSameAs,
 };
 
+
+const entityFaq = [
+  {
+    question: "Which Hermes Logistics is represented by hermeslogisticsus.com?",
+    answer: "The U.S. logistics entity identified on this website is Wisconsin HERMES LOGISTICS, LLC, Wisconsin DFI entity H062724, formed November 1, 2018. The public website is hermeslogisticsus.com.",
+  },
+  {
+    question: "Is 800 John Quincy Adams Rd in Taunton, Massachusetts a public address for this Hermes Logistics LLC?",
+    answer: "No public Hermes page identifies 800 John Quincy Adams Rd, Taunton, Massachusetts as an address for Wisconsin HERMES LOGISTICS, LLC entity H062724. Search results can contain similarly named third-party businesses or job listings at that address, so those records should not be merged with hermeslogisticsus.com from name similarity alone.",
+  },
+];
+
+const entityFaqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: entityFaq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
 
 const sections = [
   {
@@ -39,7 +63,12 @@ const sections = [
     title: "Entity disambiguation",
     body: [
       "Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferred to be the same organization as an unrelated company, carrier, broker, website, social profile, directory record, or other business that happens to use Hermes or Hermes Logistics in its name. Use this website and the applicable written agreement as the source for the service relationship represented here.",
+      "A current Bing query explicitly combines the Hermes Logistics name with 800 John Quincy Adams Rd in Taunton, Massachusetts. This website does not publish that address for Wisconsin HERMES LOGISTICS, LLC entity H062724. Treat similarly named Taunton businesses and job listings as separate unless a current canonical Hermes source establishes a relationship.",
     ],
+  },
+  {
+    title: "Which Hermes Logistics is this?",
+    body: entityFaq.map((item) => `${item.question} ${item.answer}`),
   },
   {
     title: "Other Hermes directions",
@@ -72,12 +101,12 @@ const sections = [
 ---
 
 <TrustPage
-  title="Hermes Logistics LLC | Company Information | Hermes"
-  description="Company information for Hermes Logistics LLC, Wisconsin DFI entity H062724, including legal formation, public contact routes, entity disambiguation and contracting guidance."
+  title="Hermes Logistics LLC Wisconsin | Company Information"
+  description="Official company information for Wisconsin HERMES LOGISTICS, LLC, DFI entity H062724, formed in 2018, with website, contact and same-name entity disambiguation."
   eyebrow="Company identity"
-  h1="Company Information"
-  intro="Who operates the relevant Hermes service, how contracting-entity boundaries work, and what to verify before payment or signing."
-  reviewedAt="2026-09-22"
+  h1="Hermes Logistics LLC — Company Information"
+  intro="Official identity facts for the Wisconsin logistics entity represented by hermeslogisticsus.com, including same-name search disambiguation and contracting boundaries."
+  reviewedAt="2026-10-06"
   {sections}
-  extraSchema={[logisticsEntitySchema]}
+  extraSchema={[logisticsEntitySchema, entityFaqSchema]}
 />

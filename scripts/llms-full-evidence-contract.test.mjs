@@ -37,6 +37,8 @@ requireText("Wisconsin DFI Entity ID **H062724**");
 requireText("formed **2018-11-01**");
 requireText("A corporate filing does not establish a public walk-in office");
 requireText("Similar names alone are not evidence of shared ownership, authority, location, fleet, contacts, or operating identity.");
+requireText("800 john quincy adams rd taunton, ma 02780");
+requireText("do not publish that Taunton address");
 requireText("https://hermeslogisticsus.com/services/seo-for-logistics-companies/");
 requireText("https://hermeslogisticsus.com/logistics/car-hauling-dispatch/");
 requireText("https://connect.hermeslogisticsus.com/");

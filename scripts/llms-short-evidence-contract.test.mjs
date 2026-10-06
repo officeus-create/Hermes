@@ -27,6 +27,8 @@ for (const text of [
   "formed **2018-11-01**",
   "It is not evidence of a public walk-in office",
   "Do not merge similarly named third-party entities into this website's identity without current approved evidence.",
+  "800 john quincy adams rd taunton, ma 02780",
+  "does **not** publish that Taunton address",
   "https://hermeslogisticsus.com/paths/logistics/",
   "https://hermeslogisticsus.com/paths/marketing/",
   "https://hermeslogisticsus.com/paths/academy/",

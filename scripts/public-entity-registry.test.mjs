@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  approvedHermesLogisticsSameAs,
   approvedHermesSameAs,
   heldCrossEntityProfiles,
   publicEntityRegistry,
@@ -27,9 +28,12 @@ assert.equal(logistics.schemaId, "https://hermeslogisticsus.com/#logistics");
 assert.equal(logistics.relationshipStatus, "approved_direction");
 assert.equal(logistics.schemaPublication, "approved");
 assert.equal(logistics.websiteOwner, "/paths/logistics/");
+assert.deepEqual(approvedHermesLogisticsSameAs, ["https://staff.am/en/company/hermes-logistics-llc"]);
 assert.ok(
-  logistics.socialProfiles.every((profile) => profile.status !== "approved_same_entity"),
-  "Approving the Logistics entity must not auto-approve root-vs-direction social sameAs ownership.",
+  logistics.socialProfiles
+    .filter((profile) => ["instagram", "threads"].includes(profile.platform))
+    .every((profile) => profile.status !== "approved_same_entity"),
+  "Approving verified Staff.am identity must not auto-approve root-vs-direction social sameAs ownership.",
 );
 
 const pipelineLogistics = contentEntityRegistry.find((entity) => entity.id === "hermes_logistics");
@@ -90,4 +94,4 @@ assert.ok(pipelineAcademy);
 assert.equal(pipelineAcademy.relationshipStatus, "approved_parent");
 assert.equal(pipelineAcademy.socialProfiles.length, 0);
 
-console.log("Public entity registry checks passed: Hermes sameAs is exact, Technology uses the canonical public direction label, ProgressoPro remains on relationship hold, and downstream content channels stay blocked.");
+console.log("Public entity registry checks passed: root Hermes sameAs remains exact, verified Staff.am corroborates only the Logistics entity, Technology uses the canonical public direction label, and unresolved cross-entity channels stay blocked.");

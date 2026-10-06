@@ -25,7 +25,7 @@ export interface PublicEntityRecord {
   relationshipStatus: EntityRelationshipStatus;
   schemaPublication: "approved" | "hold";
   socialProfiles: Array<{
-    platform: "instagram" | "threads" | "facebook" | "telegram" | "x" | "youtube";
+    platform: "instagram" | "threads" | "facebook" | "telegram" | "x" | "youtube" | "staff_am";
     url: string;
     status: SocialProfileStatus;
     evidence: string;
@@ -78,6 +78,12 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
         status: "website_linked_signal",
         evidence: "Linked from the public Hermes website; exact root-versus-direction social-profile ownership remains separately governed.",
       },
+      {
+        platform: "staff_am",
+        url: "https://staff.am/en/company/hermes-logistics-llc",
+        status: "approved_same_entity",
+        evidence: "Owner-controlled employer profile corrected through Staff.am support and independently read back 2026-10-06: exact Hermes Logistics LLC name, U.S. logistics description, and canonical hermeslogisticsus.com website link.",
+      },
     ],
     notes:
       "Owner directive confirms Hermes Logistics LLC as the U.S. logistics business identified on hermeslogisticsus.com. Publish one stable #logistics Organization identity for the direction, while keeping external sameAs/profile ownership separately evidence-gated.",
@@ -125,6 +131,10 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
 };
 
 export const approvedHermesSameAs = publicEntityRegistry.hermes_ecosystem.socialProfiles
+  .filter((profile) => profile.status === "approved_same_entity")
+  .map((profile) => profile.url);
+
+export const approvedHermesLogisticsSameAs = publicEntityRegistry.hermes_logistics.socialProfiles
   .filter((profile) => profile.status === "approved_same_entity")
   .map((profile) => profile.url);
 
