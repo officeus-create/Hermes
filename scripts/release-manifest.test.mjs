@@ -91,19 +91,32 @@ const deltas = await Promise.all(
 );
 const deltaRows = [];
 const deltaRemovals = [];
+const deltaUpdates = [];
 for (const { filename, data } of deltas) {
   assert(data.schema_version === 1, `${filename}: schema_version must be 1.`);
   assert(data.base_manifest === "docs/release-manifest-2026-08-01.json", `${filename}: base manifest is incorrect.`);
   assert(typeof data.release_delta === "string" && data.release_delta.length > 0, `${filename}: release_delta is missing.`);
-  assert(Array.isArray(data.additions) && data.additions.length > 0, `${filename}: additions must not be empty.`);
-  assert(data.acceptance?.route_count_added === data.additions.length, `${filename}: route-count acceptance is incorrect.`);
+  assert(Array.isArray(data.additions), `${filename}: additions must be an array.`);
   const removals = Array.isArray(data.removals) ? data.removals : [];
+  const updates = Array.isArray(data.updates) ? data.updates : [];
+  assert(data.additions.length + removals.length + updates.length > 0, `${filename}: delta must contain additions, removals, or updates.`);
+  assert(data.acceptance?.route_count_added === data.additions.length, `${filename}: route-count acceptance is incorrect.`);
   if (removals.length > 0) {
     assert(data.acceptance?.route_count_removed === removals.length, `${filename}: removed-route acceptance is incorrect.`);
     for (const removal of removals) {
       assert(typeof removal?.route === "string" && removal.route.length > 0, `${filename}: removal route is missing.`);
       assert(typeof removal?.reason === "string" && removal.reason.length > 0, `${filename}: removal reason is missing for ${removal.route}.`);
       deltaRemovals.push({ ...removal, release_delta: data.release_delta });
+    }
+  }
+  if (updates.length > 0) {
+    assert(data.acceptance?.route_count_updated === updates.length, `${filename}: updated-route acceptance is incorrect.`);
+    for (const update of updates) {
+      assert(typeof update?.route === "string" && update.route.length > 0, `${filename}: update route is missing.`);
+      assert(["indexable", "noindex"].includes(update?.indexability), `${filename}: update indexability is invalid for ${update.route}.`);
+      assert(typeof update?.robots === "string" && update.robots.length > 0, `${filename}: update robots is missing for ${update.route}.`);
+      assert(typeof update?.reason === "string" && update.reason.length > 0, `${filename}: update reason is missing for ${update.route}.`);
+      deltaUpdates.push({ ...update, release_delta: data.release_delta });
     }
   }
   const indexableAdditions = data.additions.filter((row) => row.indexability === "indexable").length;
@@ -152,6 +165,13 @@ for (const row of [...baselineRows, ...deltaRows]) {
   assert(!manifestByRoute.has(row.route), `Release manifest route is declared more than once: ${row.route}`);
   manifestByRoute.set(row.route, row);
 }
+const updatedRows = [];
+for (const update of deltaUpdates) {
+  const existing = manifestByRoute.get(update.route);
+  assert(existing, `Release manifest update targets an unknown route: ${update.route}`);
+  updatedRows.push({ before: existing, after: { ...existing, ...update } });
+  manifestByRoute.set(update.route, { ...existing, ...update });
+}
 const removedRows = [];
 for (const removal of deltaRemovals) {
   const existing = manifestByRoute.get(removal.route);
@@ -194,8 +214,13 @@ for (const htmlFile of htmlFiles) {
 
 const deltaIndexableCount = deltaRows.filter((row) => row.indexability === "indexable").length;
 const removedIndexableCount = removedRows.filter((row) => row.indexability === "indexable").length;
+const updatedIndexableDelta = updatedRows.reduce((sum, row) => {
+  const before = row.before.indexability === "indexable" ? 1 : 0;
+  const after = row.after.indexability === "indexable" ? 1 : 0;
+  return sum + after - before;
+}, 0);
 const currentSource = manifest.sources.find((source) => source.id === "current_main");
-const expectedIndexableCount = currentSource.indexable_route_count + deltaIndexableCount - removedIndexableCount;
+const expectedIndexableCount = currentSource.indexable_route_count + deltaIndexableCount - removedIndexableCount + updatedIndexableDelta;
 assert(indexableCount === expectedIndexableCount, `Expected ${expectedIndexableCount} indexable routes, found ${indexableCount}.`);
 assert(!owners.has("/paths/academy/casablanca/"), "Casablanca must not be present in a sitemap during Phase 1.");
 assert(!manifestByRoute.has("/paths/academy/casablanca/"), "Casablanca must not be present in the current-main manifest during Phase 1.");
@@ -219,5 +244,5 @@ assert(markdown.includes("| pr_85 | open_draft_stale | 0 |"), "Markdown PR #85 r
 assert(markdown.includes("| merged_pr_86 | merged_into_current_main | 5 |"), "Markdown PR #86 route count is missing.");
 
 console.log(
-  `Release manifest checks passed: ${baselineRows.length} baseline routes + ${deltaRows.length} declared delta route(s), ${indexableCount} indexable routes, ${sitemapFiles.length} sitemap files, ${verificationArtifacts.length} Google ownership artifact(s), production baseline 95, immutable release 46.`,
+  `Release manifest checks passed: ${baselineRows.length} baseline routes + ${deltaRows.length} declared delta additions + ${deltaUpdates.length} current-state update(s), ${indexableCount} indexable routes, ${sitemapFiles.length} sitemap files, ${verificationArtifacts.length} Google ownership artifact(s), production baseline 95, immutable release 46.`,
 );
