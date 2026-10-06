@@ -33,7 +33,7 @@ const mapsHref=business.streetAddress
   ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${business.streetAddress}, ${business.city}, ${business.state}, ${business.country}`)}`
   : "";
 const rawProfileTitle=`${business.businessName} | ${business.category} in ${business.city}, ${business.state}`;
-const compactBusinessName=business.businessName.replace(/\s+(?:Shop|LLC)$/i,"").trim();
+const compactBusinessName=String(business.businessName ?? business.name ?? "Business").replace(/\s+(?:Shop|LLC)$/i,"").trim();
 const compactProfileTitle=`${compactBusinessName} | ${business.city}, ${business.state}`;
 const profileTitle=rawProfileTitle.length<=60?rawProfileTitle:compactProfileTitle;
 const carrierRelevant=/truck|diesel|fleet|trailer|commercial/i.test([business.category,...business.services].join(" "));
