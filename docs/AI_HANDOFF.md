@@ -1487,3 +1487,45 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - **Measurement state:** GA4 is `WATCH`, not an active defect; use a bounded receipt check only when a concrete release/business decision requires it.
 - **Governance cleanup:** duplicate AI error IDs were split; GitHub main-protection wording now preserves the dated authenticated readback instead of implying later merges rechecked administration.
 - **Reusable rule:** always distinguish `ACTIVE CODE DEFECT` from `OWNER_ACTION / ACCESS_GAP / WATCH`. A later exact-head regression that directly covers an older failure supersedes the stale failure; do not add speculative code to “fix” already-green behavior. Merged source is not separate runtime deployment proof.
+## 2026-10-06 — Existing Connect registration-language correction
+
+```yaml
+ai_name: dot
+model: not recorded
+chat_or_thread: existing Hermes completion conversation
+role: direct implementation owner
+department: Technology / Connect
+date: 2026-10-06
+contribution_type: Implementation Report
+confidence: 85
+task_id: ERR-HC-AUTH-LANGUAGE-20261006
+source_of_truth: current owner instruction to fix the existing registration language defect
+authority_scope: Branch write
+write_scope: [three existing Connect auth pages, regression tests, error register, handoff]
+specialization: [bounded code correction, regression verification]
+not_specialized_in: [Search decisions]
+reviewed: [current main, applicable instructions, auth pages, shared locale shell]
+not_reviewed: [production behavior after release]
+handoff_to: NONE
+```
+
+- Agent/task owner: dot, Technology/Connect; owner explicitly requested direct correction of the existing language defect, without reassignment. Branch: `fix/connect-auth-language-continuity-20261006`.
+- Source: owner-reported English → Ukrainian registration drift; fresh repository reproduction on `d2ce77c`, rebased on `dcdc45e` without changing Search-owned files.
+- Root cause: shared Connect navigation omits the default `lang=en`, while three authentication pages interpreted its absence as Ukrainian and exposed duplicate local controls. The business-auth page also rewrote the shared header's language links.
+- Changes: three existing noindex auth pages use explicit locale → saved locale → English for their EN/UK content; remove only their duplicate UA/EN buttons; keep existing SiteHeader and its navigation behavior. Scope business-auth link rewriting to main content, excluding language choices.
+- Verification: regression demonstrated 15 failures before correction and 24/24 passes after; targeted Academy contracts pass. Build and `npm test` pass on the initial base and again after rebasing onto `dcdc45e`. Local browser startup is blocked by this executor's socket restriction; do not call this browser-verified until CI/preview coverage passes.
+- Preserved: routes, canonical/robots/sitemap, headings/copy, auth APIs, account and private-data boundaries, shared SiteHeader/Design ownership, current Search work. No external registration or messages; no merge/deploy.
+- Scorecard: primary outcome = consistent EN/UK auth journey; conversion = remove unexpected language reset; knowledge = regression and this receipt; architecture = reuse existing header rather than another control; privacy = no new data; Search/internal linking = unchanged; scale/new products/content distribution = intentionally out of scope.
+- Reuse rule: a missing optional language query must not override an existing shell preference; exercise explicit choice, saved choice, default, reload and Back before claiming language continuity.
+- Remaining: exact-head CI, desktop/mobile visual evidence, then explicit owner release approval. Next owner remains dot; no reassignment.
+
+### Same-task preview follow-through
+
+- Exact preview of `2ad7f8f` proved Access → Academy owner English continuity and explicit Ukrainian switching without submitting forms. It exposed Ukrainian static header labels on English auth pages and a false English-only notice on their Ukrainian dictionaries.
+- Added a route-scoped auth chrome adapter used only by those three pages. It reuses the existing direction-owner map, synchronizes visible navigation/sign-in text and truthful content-language labels, and removes the generic English-only notice only on these bilingual auth pages. Shared SiteHeader and Search policy remain untouched.
+- Initial Website CI passed contracts and two browser shards; three new repeated-language browser scenarios timed out during header interaction. The initial offscreen-header explanation was a hypothesis, not a confirmed cause.
+- Added a regression for the adapter wiring (observed failure before implementation). Local initializer/contract coverage is now 25/25; final build and full static/unit command are rechecked per revision. Final exact-head CI and preview are still required; no release performed.
+
+- Follow-up CI: `b4a41ed` passed quality/visual/contracts and two browser shards, but the new repeated-language scenarios continued failing after explicit scroll restoration. `afee4cb` diagnostics showed the mobile button visible with stable identical rectangles, loaded fonts, completed document and scrollY=0 across three samples, disproving a simple offscreen/geometry explanation. Browser actionability synchronization remains under investigation; do not describe the menu as fixed or the cause as established. The test-only `2e1fa1a` foreground/frame diagnostic had no pull-request CI run because later main changes caused a merge conflict; its behavior is unverified. No assertions/timeouts were relaxed or clicks forced.
+
+- 2026-10-06 11:36 UTC: reconciled the same branch with `09aa55a` main. Kept current contact-governance test chain and all independently closed error records; only appended this task record. No runtime change in this reconciliation. Build, static tests and new exact-head browser CI must be verified again.
