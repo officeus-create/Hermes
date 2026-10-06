@@ -1466,3 +1466,35 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - SEO inventory: the two intended static Catalog additions are the Bila Tserkva locality owner and canonical KNB profile. Insight sitemap freshness and the new article owner are included separately.
 - Regression coverage: guards US static Digital Health, runtime Repair Shop privacy-safe Digital Health, runtime Academy bilingual Digital Health, all eight channel surfaces, KNB Google/local gate, organic → paid-learning → offer readiness, the four-column candidate method, and repair-only normalization on the shared `repair | concept` route.
 - Release status: review branch only. Exact-head CI remains mandatory; merge to `main` and production deploy still require the repository's explicit owner release confirmation.
+
+## 2026-10-06 — Existing Connect registration-language correction
+
+```yaml
+ai_name: dot
+model: not recorded
+chat_or_thread: existing Hermes completion conversation
+role: direct implementation owner
+department: Technology / Connect
+date: 2026-10-06
+contribution_type: Implementation Report
+confidence: 85
+task_id: ERR-HC-AUTH-LANGUAGE-20261006
+source_of_truth: current owner instruction to fix the existing registration language defect
+authority_scope: Branch write
+write_scope: [three existing Connect auth pages, regression tests, error register, handoff]
+specialization: [bounded code correction, regression verification]
+not_specialized_in: [Search decisions]
+reviewed: [current main, applicable instructions, auth pages, shared locale shell]
+not_reviewed: [production behavior after release]
+handoff_to: NONE
+```
+
+- Agent/task owner: dot, Technology/Connect; owner explicitly requested direct correction of the existing language defect, without reassignment. Branch: `fix/connect-auth-language-continuity-20261006`.
+- Source: owner-reported English → Ukrainian registration drift; fresh repository reproduction on `d2ce77c`, rebased on `dcdc45e` without changing Search-owned files.
+- Root cause: shared Connect navigation omits the default `lang=en`, while three authentication pages interpreted its absence as Ukrainian and exposed duplicate local controls. The business-auth page also rewrote the shared header's language links.
+- Changes: three existing noindex auth pages use explicit locale → saved locale → English for their EN/UK content; remove only their duplicate UA/EN buttons; keep existing SiteHeader and its navigation behavior. Scope business-auth link rewriting to main content, excluding language choices.
+- Verification: regression demonstrated 15 failures before correction and 24/24 passes after; targeted Academy contracts pass. Build and `npm test` pass on the initial base and again after rebasing onto `dcdc45e`. Local browser startup is blocked by this executor's socket restriction; do not call this browser-verified until CI/preview coverage passes.
+- Preserved: routes, canonical/robots/sitemap, headings/copy, auth APIs, account and private-data boundaries, shared SiteHeader/Design ownership, current Search work. No external registration or messages; no merge/deploy.
+- Scorecard: primary outcome = consistent EN/UK auth journey; conversion = remove unexpected language reset; knowledge = regression and this receipt; architecture = reuse existing header rather than another control; privacy = no new data; Search/internal linking = unchanged; scale/new products/content distribution = intentionally out of scope.
+- Reuse rule: a missing optional language query must not override an existing shell preference; exercise explicit choice, saved choice, default, reload and Back before claiming language continuity.
+- Remaining: exact-head CI, desktop/mobile visual evidence, then explicit owner release approval. Next owner remains dot; no reassignment.

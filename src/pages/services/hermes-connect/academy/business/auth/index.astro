@@ -17,10 +17,6 @@ import "../../../../../../styles/hermes-academy-app.css";
     <main id="main-content" class="academy-app-shell">
       <div class="academy-owner-toolbar">
         <a href="/services/hermes-connect/" data-i18n="back">← Hermes Connect</a>
-        <div class="academy-owner-lang" aria-label="Language">
-          <button type="button" data-lang="uk" class="active">UA</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
       </div>
 
       <section class="academy-app-hero">
@@ -132,15 +128,16 @@ import "../../../../../../styles/hermes-academy-app.css";
 
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(location.search);
-  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  // Match the shared Connect shell: explicit choice, then saved choice, then English.
+  let savedLanguage: string | null = null;
+  try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
+  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
   const applyLanguage=(next:Lang)=>{
     lang=next; document.documentElement.lang=next; try{localStorage.setItem("hermes-connect-language",next)}catch{}
-    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/"]').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
+    document.querySelectorAll<HTMLAnchorElement>('main a[href^="/services/hermes-connect/"]:not([lang])').forEach(link=>{const url=new URL(link.getAttribute("href")||"/",window.location.origin);url.searchParams.set("lang",next);link.href=url.pathname+url.search+url.hash;});
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(node=>{const key=node.dataset.i18n as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
     document.querySelectorAll<HTMLOptionElement>("[data-i18n-option]").forEach(node=>{const key=node.dataset.i18nOption as keyof typeof dictionary.uk; const value=dictionary[next][key]; if(value) node.textContent=value;});
-    document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(btn=>btn.classList.toggle("active",btn.dataset.lang===next));
   };
-  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach(btn=>btn.addEventListener("click",()=>{const next:Lang=btn.dataset.lang==="en"?"en":"uk";const url=new URL(window.location.href);url.searchParams.set("lang",next);window.location.assign(url.pathname+url.search+url.hash);}));
   applyLanguage(lang);
 
   const loading=document.querySelector<HTMLElement>("[data-owner-loading]");
@@ -229,7 +226,7 @@ import "../../../../../../styles/hermes-academy-app.css";
 
 <style>
   .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
-  .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
+
   .academy-owner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.academy-owner-check{display:flex;gap:10px;align-items:flex-start;margin:16px 0 18px;line-height:1.55}.academy-owner-check input{margin-top:4px}
   @media(max-width:760px){.academy-owner-grid{grid-template-columns:1fr}}
 </style>

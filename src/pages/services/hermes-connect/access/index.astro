@@ -16,10 +16,6 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     <div class="access-shell">
       <div class="access-toolbar">
         <a href="/services/hermes-connect/" data-route data-i18n="back">← Hermes Connect</a>
-        <div class="access-lang" aria-label="Language">
-          <button type="button" class="active" data-lang="uk">UA</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
       </div>
 
       <section class="access-intro">
@@ -136,7 +132,10 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   } as const;
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(window.location.search);
-  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  // Match the shared Connect shell: explicit choice, then saved choice, then English.
+  let savedLanguage: string | null = null;
+  try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
+  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
 
   const withLang = (path: string) => {
     const url = new URL(path, window.location.origin);
@@ -152,17 +151,10 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       const value = dictionary[next][key];
       if (value) node.textContent = value;
     });
-    document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.classList.toggle("active", button.dataset.lang === next));
     document.querySelectorAll<HTMLAnchorElement>("[data-route]").forEach((link) => {
       link.href = withLang(link.getAttribute("href") || "/");
     });
   };
-  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.addEventListener("click", () => {
-    const next: Lang = button.dataset.lang === "en" ? "en" : "uk";
-    const url = new URL(window.location.href);
-    url.searchParams.set("lang", next);
-    window.location.assign(url.pathname + url.search + url.hash);
-  }));
   applyLanguage(lang);
 
   const loading = document.querySelector<HTMLElement>("[data-access-loading]");
@@ -233,7 +225,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 </script>
 
 <style>
-  .access-page{min-height:100vh;padding:118px 24px 82px;background:radial-gradient(circle at 82% 8%,rgba(124,92,255,.11),transparent 30rem),#f4f6f8;color:#152033}.access-shell{width:min(1120px,100%);margin:auto}.access-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.access-toolbar>a{color:#334d69;text-decoration:none;font-weight:850}.access-lang{display:flex;padding:3px;border:1px solid #d6dfE8;border-radius:999px;background:#fff}.access-lang button{border:0;background:transparent;border-radius:999px;padding:7px 11px;font-weight:900;cursor:pointer}.access-lang button.active{background:#151b27;color:#fff}
+  .access-page{min-height:100vh;padding:118px 24px 82px;background:radial-gradient(circle at 82% 8%,rgba(124,92,255,.11),transparent 30rem),#f4f6f8;color:#152033}.access-shell{width:min(1120px,100%);margin:auto}.access-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.access-toolbar>a{color:#334d69;text-decoration:none;font-weight:850}
   .access-intro{max-width:940px;margin-bottom:28px}.eyebrow,.status{margin:0 0 10px;color:#6d56d9;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.access-intro h1{max-width:900px;margin:0;font-size:clamp(46px,7vw,82px);line-height:.96;letter-spacing:-.055em}.access-intro>p:last-child{max-width:850px;color:#617087;line-height:1.7;font-size:17px}
   .access-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:18px;align-items:start}.access-card{padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(24,40,68,.07)}.access-card h2{margin:0 0 10px;font-size:clamp(27px,3vw,36px);letter-spacing:-.025em}.muted{color:#68778a;line-height:1.6}.status.success{color:#16815f}.access-card form{display:grid;gap:14px}.access-card label{display:grid;gap:6px;font-size:12px;font-weight:800}.access-card input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #cfd9e4;border-radius:10px;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.access-card button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:800}.primary,.access-card button.primary{border:1px solid #151b27;background:#151b27;color:#fff}.access-card button:not(.primary){border:1px solid #cfd9e4;background:#fff;color:#244c73}.alert{min-height:1.4em;margin:0;color:#a33b3b;font-size:12px}
   .business-options{display:grid;gap:10px;margin-top:18px}.business-option{display:grid;grid-template-columns:1fr auto;gap:6px 14px;padding:16px;border:1px solid #dce4ed;border-radius:16px;background:#fbfcfe;color:#1e2d40;text-decoration:none;transition:.15s ease}.business-option:hover,.business-option:focus-visible{transform:translateY(-1px);border-color:#9daec2;box-shadow:0 12px 28px rgba(32,58,88,.08)}.business-option.academy{border-color:#cfc5f0;background:linear-gradient(135deg,#fff,#f7f3ff)}.business-option.live{border-color:#bfd9ef;background:linear-gradient(135deg,#fff,#f2f9ff)}.business-option strong{font-size:17px}.business-option small{grid-column:1/-1;color:#68778a;line-height:1.5}.business-option em{grid-row:1;font-style:normal;color:#265e92;font-size:12px;font-weight:900;align-self:center}.option-state{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;background:#eaf5ff;color:#14679e;font-size:9px;font-weight:900;letter-spacing:.08em}.academy .option-state{background:#efe9ff;color:#6547af}.option-state.neutral{background:#edf1f5;color:#536479}

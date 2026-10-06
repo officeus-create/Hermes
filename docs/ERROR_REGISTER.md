@@ -461,3 +461,13 @@ EVIDENCE: Exact-head visual-evidence build for commit `a598e5e244849085289886f3b
 LESSON: A conditional renderer does not protect top-level preprocessing in a union route.
 
 REUSE_RULE: For any shared Astro/SSR route with multiple prop shapes, perform the discriminator check before reading shape-specific arrays, objects, or methods. Regression tests should assert the discriminator is part of the normalization contract, not only the final render branch.
+
+## Existing Connect registration-language correction — 2026-10-06
+
+- ID: ERR-HC-AUTH-LANGUAGE-20261006
+- Status: IN_REVIEW, not production verified
+- Owner: dot, current owner-directed registration correction
+- Problem/root cause: Access and both Academy auth pages treated omitted `lang=en` as Ukrainian, conflicting with the shared Connect shell and duplicating its language control; business auth additionally rewrote header language links.
+- Correction: explicit EN/UK choice, saved choice, then English; use the existing header control only and limit page-owned link rewriting to content.
+- Evidence: `scripts/connect-auth-language-regression.test.mjs` executes each actual page initializer; 15 failures before correction, 24/24 pass after. Browser coverage: `tests/hermes-connect-auth-language.spec.ts` plus existing Academy owner journey. Local Chromium launch blocked by socket permissions; exact-head CI/preview remain required.
+- Release: feature branch only; no merge/deploy. Search-owned configuration, URL ownership and metadata untouched.
