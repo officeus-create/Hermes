@@ -11,6 +11,16 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   if (isMobile) {
+    console.log('auth-language-menu-observation', await page.evaluate(() => {
+      const button = document.querySelector('[data-menu-button]');
+      const ancestors = [];
+      for (let node = button; node && ancestors.length < 5; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        const rect = node.getBoundingClientRect();
+        ancestors.push({ tag: node.tagName, className: node.className, display: style.display, visibility: style.visibility, opacity: style.opacity, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height } });
+      }
+      return { path: location.pathname, search: location.search, hash: location.hash, width: innerWidth, scrollY, ancestors };
+    }));
     await page.locator('[data-menu-button]').click();
     await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
   } else {
