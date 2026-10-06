@@ -18,10 +18,11 @@ test("Academy registration reuses shared auth and extends one canonical Hermes c
   assert.match(auth, /business_club/);
   assert.match(auth, /name="catalogOptIn" type="checkbox" \/>/);
   assert.match(auth, /name="location"/);
-  assert.match(auth, /data-lang="uk"/);
-  assert.match(auth, /data-lang="en"/);
+  assert.match(auth, /<SiteHeader\b/);
+  assert.doesNotMatch(auth, /<button[^>]*data-lang=/);
+  assert.match(auth, /hermes-connect-language/);
   assert.match(auth, /locale="uk"/);
-  assert.match(auth, /window\.location\.assign/);
+  assert.match(auth, /location\.assign\(payload\.next_url/);
 
   assert.match(api, /ensureHermesCompanyProfilesSchema/);
   assert.match(api, /hermes_company_profiles/);
@@ -83,8 +84,9 @@ test("Academy owner workspace is distinct from learner and Repair Shop workflows
   assert.match(hub, /learner account/);
   assert.match(productHub, /BUSINESS CRM \+ LEARNER ACCESS/);
   assert.match(learnerAuth, /Academy Business CRM/);
-  assert.match(learnerAuth, /data-lang="uk"/);
-  assert.match(learnerAuth, /data-lang="en"/);
+  assert.match(learnerAuth, /<SiteHeader\b/);
+  assert.doesNotMatch(learnerAuth, /<button[^>]*data-lang=/);
+  assert.match(learnerAuth, /hermes-connect-language/);
   assert.match(learnerAuth, /locale="uk"/);
 });
 

@@ -19,10 +19,6 @@ import "../../../../../styles/hermes-academy-app.css";
         <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
           <a href="/services/hermes-connect/academy/" data-i18n="academy">Hermes Connect Academy</a><span>/</span><span aria-current="page" data-i18n="signInCrumb">Вхід</span>
         </nav>
-        <div class="academy-auth-lang" aria-label="Language">
-          <button type="button" data-lang="uk" class="active">UA</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
       </div>
 
       <section class="academy-app-hero">
@@ -82,6 +78,8 @@ import "../../../../../styles/hermes-academy-app.css";
 </BaseLayout>
 
 <script>
+  import { syncConnectAuthChrome } from "../../../../../lib/connect-auth-chrome";
+
   const dictionary = {
     uk: {
       academy:"Hermes Connect Academy",signInCrumb:"Вхід",shared:"Спільний Hermes-акаунт",title:"Один Hermes-акаунт для всієї екосистеми.",
@@ -102,7 +100,10 @@ import "../../../../../styles/hermes-academy-app.css";
   } as const;
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(window.location.search);
-  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  // Match the shared Connect shell: explicit choice, then saved choice, then English.
+  let savedLanguage: string | null = null;
+  try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
+  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
   const withLang = (path: string) => {
     const url = new URL(path, window.location.origin);
     if (lang === "en") url.searchParams.set("lang", "en");
@@ -110,6 +111,7 @@ import "../../../../../styles/hermes-academy-app.css";
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
+    syncConnectAuthChrome(next);
     lang = next;
     document.documentElement.lang = next;
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
@@ -117,18 +119,11 @@ import "../../../../../styles/hermes-academy-app.css";
       const value = dictionary[next][key];
       if (value) node.textContent = value;
     });
-    document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.classList.toggle("active", button.dataset.lang === next));
     const owner = document.querySelector<HTMLAnchorElement>("[data-owner-link]");
     const dashboard = document.querySelector<HTMLAnchorElement>("[data-dashboard-link]");
     if (owner) owner.href = withLang("/services/hermes-connect/academy/business/auth/?mode=register");
     if (dashboard) dashboard.href = withLang("/services/hermes-connect/academy/dashboard/");
   };
-  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((button) => button.addEventListener("click", () => {
-    const next: Lang = button.dataset.lang === "en" ? "en" : "uk";
-    const url = new URL(window.location.href);
-    url.searchParams.set("lang", next);
-    window.location.assign(url.pathname + url.search + url.hash);
-  }));
   applyLanguage(lang);
 
   const loading = document.getElementById("academy-auth-loading");
@@ -233,9 +228,9 @@ import "../../../../../styles/hermes-academy-app.css";
 </script>
 
 <style>
+  /* Auth navigation must not leave a document snapshot intercepting input. */
+  @view-transition { navigation: none; }
   .academy-auth-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
-  .academy-auth-lang{display:flex;padding:3px;border:1px solid rgba(148,163,184,.35);border-radius:999px;background:#fff}
-  .academy-auth-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}
-  .academy-auth-lang button.active{background:#111827;color:#fff}
+
   @media(max-width:720px){.academy-auth-toolbar{align-items:flex-start}}
 </style>
