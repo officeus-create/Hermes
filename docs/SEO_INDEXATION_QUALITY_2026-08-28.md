@@ -39,12 +39,16 @@ evidence_class: PLATFORM_VERIFIED + PRODUCTION_VERIFIED + REPOSITORY_VERIFIED
 source: GSC + Bing + GA4 + production + origin/main
 observed_at: 2026-08-28
 scope: hermeslogisticsus.com priority URLs, page-indexing examples, sitemap coverage, analytics stream and current route metadata
-freshness: CURRENT
+freshness: HISTORICAL_SNAPSHOT
 result: 28 GSC discovered-not-indexed examples identified; two www variants fail at production; nine low-evidence equipment path variants are near-template pages; priority canonical owners remain indexable
 limitations: indexability and technical eligibility do not prove future indexation, rankings, qualified inquiries or revenue
 ```
 
-## Current classification
+> Current-state override — 2026-10-06: this file is retained as dated evidence only. Do not treat its 28 examples, `www` condition, sitemap counts, or INDEX/NOINDEX classifications as current defects. Current recovery status lives in `docs/ERROR_REGISTER.md` and `docs/SEARCH_GROWTH_GUARDRAIL.md`; merged #1696/#1697/#1699 supersede the old crawl/index cleanup state. Do not rerun GSC/Bing merely to refresh this document.
+
+<!-- historical snapshot below -->
+
+## Historical classification as observed on 2026-08-28
 
 ### INDEX — preserve
 
