@@ -1466,3 +1466,14 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - SEO inventory: the two intended static Catalog additions are the Bila Tserkva locality owner and canonical KNB profile. Insight sitemap freshness and the new article owner are included separately.
 - Regression coverage: guards US static Digital Health, runtime Repair Shop privacy-safe Digital Health, runtime Academy bilingual Digital Health, all eight channel surfaces, KNB Google/local gate, organic → paid-learning → offer readiness, the four-column candidate method, and repair-only normalization on the shared `repair | concept` route.
 - Release status: review branch only. Exact-head CI remains mandatory; merge to `main` and production deploy still require the repository's explicit owner release confirmation.
+
+
+## 2026-10-06 — ChatGPT — Contact truth governance recovery (#1700)
+
+- **Problem:** public site source/tests already retire `+1 (262) 302-3626`, but current agent guidance and two dated contact/facts documents still described Logistics phone publication as approved. That conflicting repository memory could reintroduce the wrong CTA on a later change.
+- **Root cause:** mutable operational contact facts were duplicated across dated documents without an explicit precedence/supersession contract.
+- **Working approach:** branch `fix/contact-truth-governance-20261006` from current main `dcdc45e8096fa4b65d08fd4644244f513d5901f4`; make `docs/CANONICAL_COMPANY_FACTS_APPROVAL.md` the publication authority, mark dated contact documents historical/superseded, align `CLAUDE.md`, and add `scripts/canonical-contact-governance.test.mjs` to the normal test chain.
+- **PR:** #1700. No public runtime, SEO owner, sitemap, schema, receiver, DNS, Cloudflare setting or analytics behavior is changed in this PR.
+- **Evidence boundary:** stale search/web-reader copies that still contain the retired phone are crawl/cache evidence, not current production proof. Runtime closure requires exact-SHA/custom-domain release evidence after merge.
+- **Lesson / reuse rule:** mutable business facts need one current publication authority. Dated deltas may remain as provenance only when visibly superseded; agent instructions and regression tests must follow the current authority so historical facts cannot silently become active again.
+- **Next:** exact-head CI → repair any concrete failure → normal owner-gated merge/release → production readback → close ERR-CONTACT-002 only when the runtime evidence is current.
