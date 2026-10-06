@@ -47,5 +47,5 @@ test('Catalog keeps the reusable marketing growth strategy example public but ou
   assert.match(genericCase,/PROOF GOVERNANCE/);
   assert.match(genericCase,/trackCaseOpened\("marketing_growth_audit_example"\)/);
   assert.match(genericCase,/trackEvent\("case_study_cta"/);
-  assert.doesNotMatch(genericCase,/robots="noindex/);
+  assert.match(genericCase,/robots="noindex,follow"/);
 });
