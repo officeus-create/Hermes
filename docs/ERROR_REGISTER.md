@@ -467,3 +467,13 @@ EVIDENCE: Exact-head visual-evidence build for commit `a598e5e244849085289886f3b
 LESSON: A conditional renderer does not protect top-level preprocessing in a union route.
 
 REUSE_RULE: For any shared Astro/SSR route with multiple prop shapes, perform the discriminator check before reading shape-specific arrays, objects, or methods. Regression tests should assert the discriminator is part of the normalization contract, not only the final render branch.
+
+## Existing Connect registration-language correction — 2026-10-06
+
+- ID: ERR-HC-AUTH-LANGUAGE-20261006
+- Status: IN_REVIEW, not production verified
+- Owner: dot, current owner-directed registration correction
+- Problem/root cause: Access and both Academy auth pages treated omitted `lang=en` as Ukrainian, conflicting with the shared Connect shell and duplicating its language control; business auth additionally rewrote header language links.
+- Correction: explicit EN/UK choice, saved choice, then English; use the existing header control only and limit page-owned link rewriting to content.
+- Evidence: `scripts/connect-auth-language-regression.test.mjs` executes actual page initializers and the chrome adapter; 15 failures before language correction, now 27/27 checks including preserved CTA icon and route-local document-transition opt-out. Build and full `npm test` pass on 6 October 12:22 UTC. In `cb78b27` CI, the mobile hit stack placed HTML above the visible menu; rAF callbacks previously stalled after navigation. Existing Kittle concept route already documents the same Chromium document-transition failure. The three auth routes now use that existing `@view-transition { navigation: none; }` pattern; compiled CSS order independently verified, ordinary Playwright clicks restored, all language/history assertions retained. Fresh exact-head browser CI remains required. No force-click, relaxed timeout or sitewide animation change. Local Chromium launch remains blocked by socket permissions.
+- Release: feature branch only; no merge/deploy. Search-owned configuration, URL ownership and metadata untouched.

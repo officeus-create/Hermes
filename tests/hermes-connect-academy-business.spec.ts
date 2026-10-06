@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const ok = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
 
-test("KNB Academy owner path defaults to Ukrainian, prefills bounded public facts, and switches to English", async ({ page }) => {
+test("KNB Academy owner path defaults to Ukrainian, prefills bounded public facts, and switches to English", async ({ page, isMobile }) => {
   await page.route("**/api/auth/me", (route) => route.fulfill(ok({ success: false, error: "not_authenticated" }, 401)));
 
   await page.goto("/services/hermes-connect/academy/business/auth/?mode=register&business=kons-na-bis&lang=uk", { waitUntil: "domcontentloaded" });
@@ -19,8 +19,15 @@ test("KNB Academy owner path defaults to Ukrainian, prefills bounded public fact
   await expect(page.locator('input[name="timezone"]')).toHaveValue("Europe/Kyiv");
   await expect(page.locator('input[name="catalogOptIn"]')).not.toBeChecked();
 
-  await page.getByRole("button", { name: "EN", exact: true }).click();
-  await expect(page).toHaveURL(/business=kons-na-bis.*lang=en|lang=en.*business=kons-na-bis/);
+  if (isMobile) {
+    await page.locator("[data-menu-button]").click();
+    await page.locator('.mobile-language-switcher a[lang="en"]').click();
+  } else {
+    await page.locator('[data-language-menu] summary').click();
+    await page.locator('[data-language-menu] a[lang="en"]').click();
+  }
+  await expect(page).toHaveURL(/business=kons-na-bis/);
+  await expect.poll(() => new URL(page.url()).searchParams.get("lang") ?? "en").toBe("en");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { name: "A CRM adapted to an academy, courses, or a business club." })).toBeVisible();
   await expect(page.locator('input[name="businessName"]')).toHaveValue("Конс на Бі$");
