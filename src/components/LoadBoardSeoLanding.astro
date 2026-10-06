@@ -13,6 +13,7 @@ interface Props {
 
 const { page, kind } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const robots = kind === "provider" || (kind === "equipment" && page.slug !== "car-hauler") ? "noindex,follow" : undefined;
 const isCarHauling = kind === "provider" ? ["ship-cars", "central-dispatch", "super-dispatch"].includes(page.slug) : page.slug === "car-hauler";
 const relatedPages = (kind === "provider" ? loadBoardProviderPages : loadBoardEquipmentPages)
   .filter((item) => item.slug !== page.slug)
@@ -55,7 +56,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={page.title} description={page.description} schema={schema}>
+<BaseLayout title={page.title} description={page.description} schema={schema} robots={robots}>
   <div class="lb-seo-page">
     <SiteHeader theme="dark" activePath="/load-board/" />
     <main id="main-content">
