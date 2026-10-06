@@ -395,7 +395,9 @@ FOLLOW_UP: The first exact-head GitHub contracts job found a stale workflow-only
 
 ## 2026-10-04 — Connect hostname routed `/robots.txt` into a missing demo asset
 
-STATUS: SOURCE FIXED ON REVIEW BRANCH; PRODUCTION UNCHANGED.
+STATUS: RESOLVED / PRODUCTION VERIFIED.
+
+PRODUCTION_RECEIPT: PR #1677 merged as `03336816fa1f431ba52062eba10d0e58d4c40694`. The later approved-main Cloudflare Pages release run `37441992508` completed successfully, including the `Verify Connect custom subdomain` gate. That verifier includes the Connect `/robots.txt` crawl-control checks described below, so the old pre-release 404 state is superseded.
 
 PROBLEM: A fresh remote-Mac series returned 20/20 HTTP 200 responses for the apex `/robots.txt`, while `https://connect.hermeslogisticsus.com/robots.txt` returned 20/20 HTTP 404 responses.
 
