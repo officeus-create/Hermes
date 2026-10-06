@@ -122,6 +122,11 @@ assert.match(conceptRouteRegistry, /catalogConceptBusinessRoutes/);
 assert.match(genericCountryRoute, /catalogConceptCountryRoutes/);
 assert.match(genericLocalityRoute, /catalogConceptLocalityRoutes/);
 assert.match(genericBusinessRoute, /catalogConceptBusinessRoutes/);
+assert.match(genericCountryRoute, /const stateIndexable = rows\.length >= 2;/);
+assert.match(genericCountryRoute, /robots=\{stateIndexable \? "index,follow,max-image-preview:large" : "noindex,follow"\}/);
+assert.match(genericLocalityRoute, /const cityIndexable=rows\.length >= 2;/);
+assert.match(genericLocalityRoute, /robots=\{cityIndexable \? "index,follow,max-image-preview:large" : "noindex,follow"\}/);
+
 assert.match(genericBusinessRoute, /CatalogConceptRoute/);
 assert.match(genericBusinessRoute, /CatalogDigitalAudit/);
 assert.match(genericBusinessRoute, /"marketing-package"/);
@@ -157,6 +162,29 @@ assert.match(catalogDigitalAudit, /auditPlatforms/);
 assert.match(websiteConcept, /CatalogDigitalAudit/);
 assert.match(websiteConcept, /FEATURED PROGRAM \/ PRODUCT/);
 assert.match(read("public/sitemap-business-directory.xml"), /\/businesses\/ukraine\/bila-tserkva\/kons-na-bis\//);
+const businessDirectorySitemap = read("public/sitemap-business-directory.xml");
+for (const thinHub of [
+  "/businesses/alaska/",
+  "/businesses/alaska/palmer/",
+  "/businesses/wyoming/",
+  "/businesses/wyoming/glenrock/",
+  "/businesses/texas/",
+  "/businesses/texas/dallas/",
+  "/businesses/arkansas/sherwood/",
+  "/businesses/california/riverside/",
+]) {
+  assert.ok(!businessDirectorySitemap.includes(thinHub), `Thin one-profile hub must stay out of sitemap: ${thinHub}`);
+}
+for (const retainedOwner of [
+  "/businesses/arkansas/",
+  "/businesses/illinois/",
+  "/businesses/california/",
+  "/businesses/alaska/palmer/gold-standard-diesel-and-fleet/",
+  "/businesses/wyoming/glenrock/iron-nation-services/",
+]) {
+  assert.ok(businessDirectorySitemap.includes(retainedOwner), `Useful owner must remain in sitemap: ${retainedOwner}`);
+}
+
 const knbCatalogHtml = read("dist/businesses/ukraine/bila-tserkva/kons-na-bis/index.html");
 assert.match(knbCatalogHtml, /Конс на Бі\$/);
 assert.match(knbCatalogHtml, /Стратегія керованого зростання у бізнесі/);
