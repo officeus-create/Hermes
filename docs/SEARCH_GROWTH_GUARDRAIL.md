@@ -44,6 +44,19 @@ If the gate fails, strengthen the existing canonical owner, keep the new route o
 
 Do not mass-create city/state/equipment/service permutations. Do not turn private/auth/CRM/API/demo routes into SEO pages merely to increase page count. Do not mass-`noindex` proven existing owners as a cleanup shortcut.
 
+## History-first recovery rule
+
+Do not start a new broad SEO/GEO/GSC/Bing/site audit when a verified analysis and error register already exist.
+
+Use this order:
+
+`RECOVER HISTORY -> CHECK CURRENT STATE OF THE EXACT DEFECT -> CLOSE IF ALREADY FIXED -> BOUNDED FIX IF STILL PRESENT -> REGRESSION GATE -> OWNER-GATED RELEASE -> EXACT-SHA LIVE VERIFY -> SEARCH SETTLEMENT`
+
+- Old platform buckets are evidence about the past, not automatic current defects.
+- A closed/superseded issue, PR or branch must not remain an execution router.
+- Do not merge a stale recovery branch wholesale. Replay only the reviewed delta onto current `main`.
+- Do not rerun a generic baseline merely because a prior task requested one. Pull a newer bounded platform window only when the underlying state changed or a concrete decision requires a newer settled interval.
+- Every recurring technical failure should become a regression/release gate, and every operating lesson should be written to One Brain.
 ## Existing-owner-first rule
 
 Before creating a URL:
