@@ -64,11 +64,11 @@ const indexedChildSitemapFiles = [
 // source-bounded profiles add five owners: Alabama, Brookwood, East Dundee and both profiles.\n// The Chayka Store pilot adds three intentional Ukraine Catalog owners: country, locality and business concept.
 // September 28 adds Little Rock, Guy and Cedarville locality pages plus three unclaimed Arkansas profiles.
 // September 29 adds three bounded secondary international discovery profiles plus the Irpin locality hub.
-// October 1 adds one intentional indexable Marketing Growth Audit Example in Hermes Catalog; the KNB branded concept remains noindex.
+// October 1 added a Marketing Growth Audit example, but Search Recovery now keeps that strategy/example route noindex and out of the Catalog sitemap.
 // October 3 adds one verified Wisconsin owner-operator vacancy owner linked from the existing careers hub.
 // October 5 adds one bounded Work With Hermes relationship hub that routes existing career, carrier, agency, and partnership owners.
-// October 5 adds exactly two KNB Catalog discovery owners: Bila Tserkva locality and the canonical Kons na Bis business profile.
-const nonInsightsExpectedPageUrlCount = 301;
+// October 5 added KNB locality + profile; Search Recovery keeps the business profile indexable while single-profile locality collections are noindex.\n// 2026-10-06 Search Recovery also removes 14 secondary Load Board provider/non-P0 equipment owners and 25 thin Catalog/example owners from static sitemaps.
+const nonInsightsExpectedPageUrlCount = 262;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
@@ -101,6 +101,36 @@ assert.equal(
 );
 assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled static child sitemaps must not contain duplicate page URLs");
 assert.ok(sitemapPageUrls.includes(carrierLifecycleGuide), "bounded carrier-lifecycle guide must remain discoverable in the controlled sitemap inventory");
+
+const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
+const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
+assert.doesNotMatch(primarySitemap, /\/load-board\/providers\//, "provider-integration support pages must not compete as sitemap search owners");
+for (const slug of ["dry-van","reefer","flatbed","step-deck","hotshot","power-only","box-truck"]) {
+  assert.ok(!primarySitemap.includes(`/load-board/equipment/${slug}/`), `non-P0 Load Board equipment page must stay outside the sitemap: ${slug}`);
+}
+assert.ok(primarySitemap.includes("/load-board/equipment/car-hauler/"), "P0 Car Hauler equipment owner must remain in the sitemap");
+assert.ok(!businessDirectorySitemap.includes("/businesses/marketing-growth-audit-example/"), "strategy/example route must not be a Catalog sitemap owner");
+const allowedCatalogCollections = new Set([
+  "/businesses/",
+  "/businesses/arkansas/",
+  "/businesses/illinois/",
+  "/businesses/california/",
+  "/businesses/ukraine/",
+  "/businesses/ukraine/chaiky/",
+]);
+for (const value of extractLocs(businessDirectorySitemap)) {
+  const pathname = new URL(value).pathname;
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "businesses" && parts.length <= 3) {
+    assert.ok(allowedCatalogCollections.has(pathname), `thin Catalog collection leaked into sitemap: ${pathname}`);
+  }
+}
+const stateCatalogSource = await readFile(new URL("../src/pages/businesses/[state]/index.astro", import.meta.url), "utf8");
+const cityCatalogSource = await readFile(new URL("../src/pages/businesses/[state]/[city]/index.astro", import.meta.url), "utf8");
+const catalogAuditExample = await readFile(new URL("../src/pages/businesses/marketing-growth-audit-example/index.astro", import.meta.url), "utf8");
+assert.match(stateCatalogSource, /collectionCount >= 2 \? undefined : "noindex,follow"/);
+assert.match(cityCatalogSource, /collectionCount >= 2 \? undefined : "noindex,follow"/);
+assert.match(catalogAuditExample, /robots="noindex,follow"/);
 
 const serviceSitemap = await readFile(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
 const carrierGeoUrls = extractLocs(serviceSitemap).filter((url) => url.startsWith(carrierGeoRoot));
