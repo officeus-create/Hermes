@@ -158,6 +158,31 @@ for (const [path, html] of htmlByPath) {
 
   if (robotsTags.length > 1) addError(route, `multiple robots meta tags (${robotsTags.length})`);
   if (path === "404.html" && !robotsContent.includes("noindex")) addWarning(route, "404 page should be noindex");
+
+  // Bing Site Scan may crawl noindex/public utility pages that are intentionally
+  // outside the canonical search-owner set. Keep a diagnostic readout for the
+  // same basic HTML quality signals without turning intentional noindex pages
+  // into indexing failures.
+  if (!indexable && path !== "404.html") {
+    const noindexTitles = elements(html, "title");
+    const noindexDescriptions = metaByName(html, "description");
+    const noindexH1s = elements(html, "h1");
+    const noindexImages = tags(html, "img");
+    const noindexMissingAlt = noindexImages.filter((tag) => !hasAttr(tag, "alt"));
+    if (noindexTitles.length !== 1 || !decode(noindexTitles[0]?.[1] ?? "")) {
+      addWarning(route, `Bing parity: noindex/public utility page has ${noindexTitles.length} usable title element(s)`);
+    }
+    if (noindexDescriptions.length !== 1 || !getAttr(noindexDescriptions[0] ?? "", "content")) {
+      addWarning(route, `Bing parity: noindex/public utility page has ${noindexDescriptions.length} usable meta description(s)`);
+    }
+    if (noindexH1s.length !== 1 || !stripTags(noindexH1s[0]?.[1] ?? "")) {
+      addWarning(route, `Bing parity: noindex/public utility page has ${noindexH1s.length} usable H1 element(s)`);
+    }
+    if (noindexMissingAlt.length) {
+      addWarning(route, `Bing parity: noindex/public utility page has ${noindexMissingAlt.length} image tag(s) missing alt`);
+    }
+  }
+
   if (!indexable) continue;
   indexableRoutes.push(route);
 
