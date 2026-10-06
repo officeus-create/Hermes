@@ -91,7 +91,7 @@ Estimated query value must never be reported as exact CRM revenue.
 
 1. Forensic GSC loss analysis.
 2. Indexable inventory + lifecycle/survival classification.
-3. Entity Resolution #204.
+3. Entity consistency: first-party/#204 closeout is complete; keep Staff.am preserved, route the remaining Work.ua contradiction through Recruiting/HR #515, and reconcile other directories only from owner-controlled evidence.
 4. Earned Authority #368.
 5. Original evidence assets from real Hermes operations.
 6. Video/image retrieval assets.
