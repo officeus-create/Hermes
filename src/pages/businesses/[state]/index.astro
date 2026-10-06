@@ -21,6 +21,8 @@ const cities = directoryCities.filter((city)=>city.stateSlug===state.slug);
 const categories = [...new Set(rows.map((business)=>business.category))];
 const serviceTerms = [...new Set(rows.flatMap((business)=>business.services))].slice(0,10);
 const serviceAreas = [...new Set(rows.flatMap((business)=>business.serviceArea))].slice(0,8);
+const collectionCount = kind === "us" ? rows.length : internationalCountry.businesses.length;
+const collectionRobots = collectionCount >= 2 ? undefined : "noindex,follow";
 const stateUrl=`https://hermeslogisticsus.com/businesses/${state.slug}/`;
 const schema=[
   {"@context":"https://schema.org","@type":"CollectionPage",name:`Repair businesses in ${state.name}`,url:stateUrl,mainEntity:{"@type":"ItemList",itemListElement:rows.map((business,index)=>({"@type":"ListItem",position:index+1,url:`https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`,name:business.businessName}))}},
@@ -33,11 +35,12 @@ const schema=[
   eyebrow={`Hermes Catalog · International · ${internationalCountry.name}`}
   canonical={`https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/`}
   businesses={internationalCountry.businesses}
+  robots={collectionRobots}
   breadcrumbs={[
     { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
     { name: internationalCountry.name, item: `https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/` }
   ]}
-/> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema}>
+/> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema} robots={collectionRobots}>
 <SiteHeader theme="light" activePath="/businesses/"/><DirectionProductNav direction="catalog" theme="light" />
 <main class="state-page"><div class="shell">
   <a class="back" href="/businesses/">← Hermes Catalog</a>
