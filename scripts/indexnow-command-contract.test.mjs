@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 
 const root = new URL("../", import.meta.url).pathname;
 const workflow = await readFile(new URL("../.github/workflows/indexnow-seo-command.yml", import.meta.url), "utf8");
+const moneyWorkflow = await readFile(new URL("../.github/workflows/indexnow-money-pages.yml", import.meta.url), "utf8");
 for (const required of [
   "github.event.issue.number == 346",
   "github.event.comment.body == '/submit-indexnow-all'",
@@ -17,6 +18,29 @@ for (const required of [
 }
 assert.equal(workflow.includes("schedule:"), false, "IndexNow all-URL release submission must not become a recurring spam schedule");
 assert.equal(workflow.includes("pull_request:"), false, "IndexNow release submission must not run automatically for pull requests");
+
+
+for (const required of [
+  "git diff --name-only",
+  "Collect changed canonical money URLs",
+  "steps.changed.outputs.count != '0'",
+  "steps.changed.outputs.urls",
+  "https://hermeslogisticsus.com/load-board/",
+  "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+  "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+]) {
+  assert.ok(moneyWorkflow.includes(required), `Money-page IndexNow workflow must preserve changed-URL control: ${required}`);
+}
+assert.equal(moneyWorkflow.includes("workflow_dispatch:"), false, "Money-page IndexNow automation must stay push/change driven; manual submission already has a separate owner workflow");
+const moneyTrigger = moneyWorkflow.split("permissions:")[0];
+for (const forbiddenTrigger of [
+  "public/sitemap.xml",
+  "public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt",
+  "scripts/indexnow-submit.mjs",
+  ".github/workflows/indexnow-money-pages.yml",
+]) {
+  assert.equal(moneyTrigger.includes(forbiddenTrigger), false, `IndexNow must not resubmit money pages merely because ${forbiddenTrigger} changed`);
+}
 
 const submitter = await readFile(new URL("./indexnow-submit.mjs", import.meta.url), "utf8");
 for (const required of [
