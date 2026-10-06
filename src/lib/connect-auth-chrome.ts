@@ -16,7 +16,10 @@ export function syncConnectAuthChrome(language: 'en' | 'uk') {
     });
   }
   header.querySelectorAll<HTMLElement>('[data-hermes-sign-in]').forEach(node => { node.textContent = labels.signIn; });
-  header.querySelectorAll<HTMLAnchorElement>('a[href$="#contact"]').forEach(node => { node.textContent = labels.contact; });
+  header.querySelectorAll<HTMLAnchorElement>('a[href$="#contact"]').forEach(link => {
+    const text = Array.from(link.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+    if (text) text.textContent = labels.contact;
+  });
   const home = header.querySelector<HTMLAnchorElement>('a.wordmark');
   if (home) home.href = language === 'uk' ? '/ua/#top' : '/#top';
   const contentLanguage = document.querySelector<HTMLElement>('[data-hc-product-context] .hc-content-language');

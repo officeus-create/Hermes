@@ -37,3 +37,17 @@ test('the three auth pages synchronize their existing navigation with the select
     assert.match(source, /syncConnectAuthChrome\(next\)/);
   }
 });
+
+test('auth chrome language updates preserve the contact CTA icon', () => {
+  const adapter = readFileSync('src/lib/connect-auth-chrome.ts', 'utf8').replace(/^import .*\n/, '').replace('export function', 'function');
+  const code = stripTypeScriptTypes(adapter, { mode: 'strip' });
+  const label = { nodeType: 3, textContent: 'Start a conversation' };
+  const icon = { nodeType: 1, tagName: 'svg' };
+  const contact = { childNodes: [label, icon], set textContent(value) { this.childNodes = [{ nodeType: 3, textContent: value }]; } };
+  const header = { querySelectorAll(selector) { return selector === 'a[href$="#contact"]' ? [contact] : []; }, querySelector() { return null; } };
+  const document = { querySelector(selector) { return selector === '.site-header' ? header : null; }, querySelectorAll() { return []; } };
+  const context = { document, Node: { TEXT_NODE: 3 }, directionOwnerRoutes: { en: {}, uk: {} } };
+  runInNewContext(`${code}; syncConnectAuthChrome('uk');`, context);
+  assert.ok(contact.childNodes.includes(icon), 'existing contact icon must survive text translation');
+  assert.equal(label.textContent, 'Почати розмову');
+});

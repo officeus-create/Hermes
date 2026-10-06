@@ -18,9 +18,13 @@ async function clickHistoryTarget(page: Page, target: Locator) {
  const viewport=page.viewportSize()!;
  expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
  expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
- expect(await target.evaluate((node,{x,y})=>{
-  const hit=document.elementFromPoint(x,y);return hit===node||node.contains(hit);
- },{x,y})).toBe(true);
+ const hitState=await target.evaluate((node,{x,y})=>{
+  const hit=document.elementFromPoint(x,y);
+  return { matches:hit===node||node.contains(hit), target:node.outerHTML, hit:hit?.outerHTML.slice(0,1500),
+   stack:document.elementsFromPoint(x,y).slice(0,5).map(element=>({tag:element.tagName,id:element.id,class:element.className,position:getComputedStyle(element).position,zIndex:getComputedStyle(element).zIndex})),
+   point:{x,y},scroll:{x:scrollX,y:scrollY},viewport:visualViewport?{x:visualViewport.offsetLeft,y:visualViewport.offsetTop,width:visualViewport.width,height:visualViewport.height,scale:visualViewport.scale}:null };
+ },{x,y});
+ expect(hitState.matches,JSON.stringify(hitState)).toBe(true);
  await page.mouse.click(x,y);
 }
 
