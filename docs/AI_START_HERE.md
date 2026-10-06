@@ -60,7 +60,7 @@ The primary commercial chain is:
 
 Canonical commercial owners are defined in `docs/ai-project-state.json`. Supporting pages must strengthen an existing owner through a distinct search intent and a natural internal link. Do not create a competing thin conversion page or wording-variant doorway page.
 
-For SEO work, also read `ai-collaboration/02_SEO/CURRENT_STATE.md` and, while current, `ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md` before opening parallel implementation or measurement work.
+For SEO work, read `ai-collaboration/02_SEO/CURRENT_STATE.md`, `docs/SEARCH_GROWTH_GUARDRAIL.md`, `docs/ERROR_REGISTER.md`, and `docs/SEARCH_AI_VISIBILITY_OPERATING_SYSTEM.md` before opening parallel implementation or measurement work. The dated `ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md` file is historical provenance only.
 
 ## 5. Required safety boundaries
 

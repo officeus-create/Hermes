@@ -119,18 +119,25 @@ Never convert illustrative examples, private operational records, modelled direc
 
 ## Agent routing
 
-Use `SEO_AGENT_ROUTING_2026-08-14.md` for SEO task ownership and handoff rules.
+Current Search work routes through the **current One Brain / Hermes Operating Stack ownership and verified capability**, not through the fixed model-to-role mapping from the dated SEO14 router.
 
-Core lanes:
+Read in this order before opening parallel Search implementation or measurement work:
 
-- ChatGPT: strategy, commercial intent, prioritization, orchestration and contradiction resolution;
-- Codex: implementation, tests, repository verification and authenticated measurement coordination where available;
-- Antigravity: crawl/browser/UI verification and bounded page-level inspection;
-- Claude: independent SEO/QA challenge and evidence-gap review;
-- Gemini: read-only Google evidence when authenticated Google access exists;
-- owner: destructive account/security/ownership gates and business decisions outside delegated scope.
+1. `docs/SEARCH_GROWTH_GUARDRAIL.md` — Search Release Gate, evidence ladder and history-first rule;
+2. `docs/ERROR_REGISTER.md` — current defects, owner actions, access gaps and WATCH states;
+3. this `CURRENT_STATE.md` — current Search/AI Visibility handoff;
+4. `docs/SEARCH_AI_VISIBILITY_OPERATING_SYSTEM.md` — durable operating rules.
 
-Agents do not exchange passwords, PATs, OAuth tokens, cookies or session exports. Each agent uses its own authorized environment.
+`SEO_AGENT_ROUTING_2026-08-14.md` is historical provenance only. Its old `#206` source-of-truth statement and fixed ChatGPT/Codex/Antigravity/Claude/Gemini lane assignments must not route current work.
+
+Current execution rules:
+
+- keep one active writer/owner per artifact or bounded slice;
+- assign technical implementation to the currently authorized agent with verified repository/test capability;
+- accept platform evidence only from the session/agent that actually has authenticated access to that platform;
+- use an independent capable reviewer when HUEG or task risk requires one; an unavailable named model is not itself a blocker;
+- keep destructive account/security/ownership/billing/legal decisions behind the applicable owner gate;
+- do not exchange passwords, PATs, OAuth tokens, cookies or session exports between agents.
 
 ## Success hierarchy
 
