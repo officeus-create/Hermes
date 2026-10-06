@@ -31,12 +31,12 @@ This file is a public-safe approval template. It must not contain credentials, p
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Legal entity name | `Hermes Logistics, LLC` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records entity `H062724` + owner-confirmed website identity | SEO/GEO verification + Owner | 2026-09-22 | 2026-12-22 | Exact state-record legal name; public website may use the normalized spelling `Hermes Logistics LLC`. Do not merge same-name businesses into this identity. |
 | Public brand name | `Hermes Logistics` | `VERIFIED_PUBLIC` | Current owned website / public entity registry | Owner | 2026-09-22 | 2026-12-22 | Public-facing logistics direction label; legal identity remains Hermes Logistics LLC. |
-| Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Current public website |  | 2026-08-04 |  | Confirm preferred capitalization and canonical domain. |
+| Primary website | `https://hermeslogisticsus.com/` | `VERIFIED_PUBLIC` | Current owned Company Information page + canonical production site | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Canonical public domain for the Hermes website. |
 | Primary business category |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Avoid merging all four directions into one vague category. |
 | Legal jurisdiction/state | `Wisconsin` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records, entity `H062724` | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Legal formation jurisdiction only; do not convert a registered office into a public customer location. |
 | Wisconsin DFI Entity ID | `H062724` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records exact-name search | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Public legal identifier for Hermes Logistics, LLC. |
 | Formation/operating start date | `Legal formation: 2018-11-01` | `VERIFIED_PUBLIC` | Wisconsin DFI Corporate Records, entity `H062724` | SEO/GEO verification | 2026-09-22 | 2026-12-22 | Legal formation date only; do not convert it into an unsupported operating-history or "since" marketing claim. |
-| Public legal/correction contact |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  |  |
+| Public legal/correction contact | `officeus@hermeslogisticsus.com` | `VERIFIED_PUBLIC` | Current owned Company Information page, Corrections section | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Public route for review/correction of identity, contact, authority, or service statements; not a substitute for a legal-notice address. |
 
 # B. Contact and location
 
@@ -54,15 +54,15 @@ This file is a public-safe approval template. It must not contain credentials, p
 | Direction | Canonical one-sentence description | Status | Evidence/source type | Owner | Verified date | Next review | Prohibited ambiguity |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Hermes Logistics | `Hermes Logistics LLC is the U.S. logistics business identified on hermeslogisticsus.com for logistics-related services and communications.` | `VERIFIED_PUBLIC` | Owner directive + Company Information page | Owner | 2026-09-22 | 2026-12-22 | Do not imply fleet ownership, brokerage authority, guaranteed capacity, or carrier control unless verified. |
-| ProgressoPro |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not mix client results, personal results, forecasts, and agency-wide results. |
-| Hermes Business Academy |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not imply guaranteed employment, income, placement, feedback, or an unapproved current program. |
-| IT / website / automation |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Do not present concepts or specifications as live products. |
+| ProgressoPro | `ProgressoPro connects website strategy, SEO, social media, positioning, campaigns, lead generation, sales workflow, and measurement around a defined business objective.` | `VERIFIED_PUBLIC` | Current owned `/paths/marketing/` page | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Do not mix client results, personal results, forecasts, and agency-wide results; no ranking, lead-volume, or revenue guarantee is implied. |
+| Hermes Business Academy | `Hermes Business Academy publicly presents practical learning tracks in U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations, with exact cohort or practice terms confirmed separately.` | `VERIFIED_PUBLIC` | Current owned `/paths/academy/` page | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Do not imply guaranteed employment, income, placement, certification, feedback, paid cohort availability, or an unapproved current program. |
+| IT / website / automation | `Hermes Technology turns defined business processes into custom websites, portals, CRM modules, workflow automation, business assistants, integrations, and industry-specific software built in controlled stages.` | `VERIFIED_PUBLIC` | Current owned `/paths/technology/` page | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Do not present concepts, reference capabilities, integrations, or specifications as live production products unless separately verified. |
 
 # D. Logistics operating claims
 
 | Claim area | Approved wording/value | Status | Evidence/source type | Verified by | Verified date | Next review | Boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Dispatch and back-office scope |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Carrier retains final operating and booking decision. |
+| Dispatch and back-office scope | `Load search, broker communication, rate negotiation, setup/document and insurance-certificate coordination, invoicing/accounts-receivable follow-through, and day-to-day operating communication for eligible carriers.` | `VERIFIED_PUBLIC` | Current owned `/paths/logistics/` page | Website owner + SEO/GEO verification | 2026-10-06 | 2026-12-22 | Carrier approval, authority/insurance/equipment fit, final operating scope, booking rules, and commercial terms remain controlled by onboarding and the applicable agreement. |
 | Vehicle-transport coordination scope |  | `OWNER_APPROVAL_REQUIRED` |  |  |  |  | Separate coordination from motor-carrier responsibility. |
 | Brokerage relationship/authority |  | `EVIDENCE_REQUIRED` |  |  |  |  | State exact legal/operating relationship only. |
 | MC/USDOT identifiers |  | `OWNER_APPROVAL_REQUIRED` | Official source |  |  |  | Publish only identifiers that belong to the stated entity and role. |
@@ -100,7 +100,7 @@ This file is a public-safe approval template. It must not contain credentials, p
 
 | Platform/profile | Public URL | Login owner known | Current facts compared | Required action | Action owner | Completed date | Recheck date |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Main website | `https://hermeslogisticsus.com/` |  |  | Review against approved matrix |  |  |  |
+| Main website | `https://hermeslogisticsus.com/` | Owner-controlled | Reviewed 2026-10-06 against `/company-information/` plus Logistics / Marketing / Technology / Academy direction owners | Preserve the verified public identity/contact/direction wording; keep unverified location, scale, authority, fleet, people, and results fields gated | SEO/GEO + website owner | 2026-10-06 | 2026-12-22 |
 | Staff.am | `https://staff.am/en/company/hermes-logistics-llc` | Access owner pending | Compared 2026-09-22; stale/conflicting scale, founding, office, services and benefits wording remains visible | Authenticated keep/update/remove under Recruiting/HR #515 | Recruiting/HR |  | Recheck after edit propagation |
 | Work.ua | `https://www.work.ua/en/jobs/by-company/366364/` | Access owner pending | Fresh search 2026-09-22 shows current/recent Hermes Logistics, LLC vacancy surfaces; employer-page fetch is bot-blocked from current audit | Audit employer profile fields and active vacancy copy; preserve supported recruiting facts and correct stale company identity facts under #515 | Recruiting/HR |  | Recheck after authenticated review |
 | LinkedIn company/person profiles |  | `ACCESS_GAP` | Exact domain/name search on 2026-09-24 surfaced personal Hermes-related profiles and unrelated same-name company pages, but did not establish an exact Hermes Logistics company page for `hermeslogisticsus.com` | Confirm whether an existing exact company page/admin path exists; keep personal profiles separate and do not add `sameAs` until control and entity match are verified | SEO + owner/admin |  | Recheck after admin confirmation |
