@@ -1,6 +1,7 @@
 import { ensureRepairShopProfileSchema } from "./api/_lib/repair-shop-schema.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "./api/_lib/academy-business-profiles.mjs";
 import { ensureHermesCompanyProfilesSchema } from "./api/_lib/hermes-company-profiles.mjs";
+import { ensureHomeServiceCrmSchema } from "./api/_lib/home-service-crm.mjs";
 
 type Env = { DB?: any };
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -13,6 +14,7 @@ export async function onRequestGet({ env }: { env: Env }) {
   await ensureRepairShopProfileSchema(env.DB);
   await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureAcademyBusinessProfilesSchema(env.DB);
+  await ensureHomeServiceCrmSchema(env.DB);
   const result = await env.DB.prepare(`
     SELECT slug,updated_at
     FROM repair_shops
@@ -39,7 +41,22 @@ export async function onRequestGet({ env }: { env: Env }) {
     const lastmod = String(row.updated_at || "").slice(0, 10);
     return `<url><loc>https://hermeslogisticsus.com/businesses/connect/academy/${esc(slug)}/</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ""}<changefreq>monthly</changefreq><priority>0.68</priority></url>`;
   }).join("");
-  const urls = repairUrls + academyUrls;
+  const homeServiceResult = await env.DB.prepare(`
+    SELECT c.slug,c.updated_at
+    FROM hermes_company_profiles c
+    JOIN hermes_home_service_profiles h ON h.company_id=c.id
+    WHERE c.company_type='home_service'
+      AND c.catalog_opt_in=1
+      AND c.catalog_status IN ('self_submitted','verified_public')
+    ORDER BY c.updated_at DESC
+    LIMIT 5000
+  `).all();
+  const homeServiceUrls = (homeServiceResult?.results || []).map((row: any) => {
+    const slug = encodeURIComponent(String(row.slug || ""));
+    const lastmod = String(row.updated_at || "").slice(0, 10);
+    return `<url><loc>https://hermeslogisticsus.com/businesses/connect/company/${esc(slug)}/</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ""}<changefreq>weekly</changefreq><priority>0.70</priority></url>`;
+  }).join("");
+  const urls = repairUrls + academyUrls + homeServiceUrls;
   return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, {
     headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=300, s-maxage=900" },
   });

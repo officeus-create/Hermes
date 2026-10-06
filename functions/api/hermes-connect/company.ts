@@ -103,13 +103,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const id = existing?.id || `company-${crypto.randomUUID()}`;
   const slug = existing?.slug || companySlug(companyName, specialist.id);
   const createdAt = existing?.created_at || now;
+  const loadBoardAccess = companyType === "home_service" ? 0 : 1;
 
   await env.DB.prepare(`
     INSERT INTO hermes_company_profiles (
       id, owner_specialist_id, company_name, slug, company_type, city, state, website,
       phone, address_line1, postal_code, country_code, timezone, public_source_ref,
       authority_number, catalog_opt_in, catalog_status, load_board_access, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'self_submitted', 1, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'self_submitted', ?, ?, ?)
     ON CONFLICT(owner_specialist_id) DO UPDATE SET
       company_name = excluded.company_name,
       company_type = excluded.company_type,
@@ -125,12 +126,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       authority_number = excluded.authority_number,
       catalog_opt_in = excluded.catalog_opt_in,
       catalog_status = CASE WHEN hermes_company_profiles.catalog_status = 'verified_public' THEN 'verified_public' ELSE 'self_submitted' END,
-      load_board_access = 1,
+      load_board_access = excluded.load_board_access,
       updated_at = excluded.updated_at
   `).bind(
     id, specialist.id, companyName, slug, companyType, city, state, website || null,
     phone || null, addressLine1 || null, postalCode || null, countryCode, timezone || null, publicSourceRef || null,
-    authorityNumber || null, catalogOptIn ? 1 : 0, createdAt, now,
+    authorityNumber || null, catalogOptIn ? 1 : 0, loadBoardAccess, createdAt, now,
   ).run();
 
   const row = await env.DB.prepare(
@@ -140,10 +141,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   return jsonResponse(200, {
     success: true,
     company: safeCompany(row),
-    load_board_access: true,
+    load_board_access: Boolean(loadBoardAccess),
     catalog: catalogOptIn
       ? { listed: true, status: row?.catalog_status || "self_submitted", note: "Self-submitted company facts remain verification-pending until reviewed." }
       : { listed: false, status: "opted_out" },
-    next_url: "/load-board/?access=unlocked#live-marketplace",
+    next_url: companyType === "home_service" ? "/services/hermes-connect/home-services/workspace/" : "/load-board/?access=unlocked#live-marketplace",
   }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
 }
