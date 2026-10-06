@@ -132,10 +132,11 @@ test("Academy Catalog projects the canonical company once and keeps private CRM 
 });
 
 test("KNB concept and demo route into real Academy business onboarding with UA EN switch", async () => {
-  const [concept, demo, auth] = await Promise.all([
+  const [concept, demo, auth, intake] = await Promise.all([
     read("src/pages/businesses/concepts/kons-na-bis/index.astro"),
     read("public/demos/hermes-connect/academy-knb.html"),
     read("src/pages/services/hermes-connect/academy/business/auth/index.astro"),
+    read("src/data/catalog-client-kons-na-bis.ts"),
   ]);
   assert.match(concept, /academy\/business\/auth\/\?mode=register/);
   assert.match(concept, /business=kons-na-bis/);
@@ -151,6 +152,12 @@ test("KNB concept and demo route into real Academy business onboarding with UA E
   assert.match(demo, /url\.searchParams\.set\('lang',lang\)/);
   assert.match(auth, /academyType:"business_club"/);
   assert.match(auth, /https:\/\/kons-na-bis\.com\//);
+  assert.match(intake, /businessType: "academy_business"/);
+  assert.match(intake, /academySubtype: "business_club"/);
+  assert.match(intake, /productionOwnerBinding: "blocked_owner_identity_required"/);
+  assert.match(intake, /temporaryOrSyntheticOwnerAllowed: false/);
+  assert.match(intake, /connectRecordId: null/);
+  assert.match(intake, /crmRecordId: null/);
 });
 
 test("Academy business appears in the shared Hermes account portfolio through canonical company id", async () => {
