@@ -88,6 +88,7 @@
 
         const repairHref = /^\/businesses\/connect\/repair-shop\/[a-zA-Z0-9%_-]+\/$/.test(href) ? href : '';
         const academyHref = /^\/businesses\/connect\/academy\/[a-zA-Z0-9%_-]+\/$/.test(href) ? href : '';
+        const companyHref = /^\/businesses\/connect\/company\/[a-zA-Z0-9%_-]+\/$/.test(href) ? href : '';
         const isGenericUaAcademyLike = company?.source === 'hermes_connect_company'
           && String(company?.countryCode || '').toUpperCase() === 'UA'
           && ['business_club','business_academy','online_school','courses','coaching','corporate_academy'].includes(String(company?.companyType || ''));
