@@ -13,7 +13,11 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   await page.waitForLoadState('load');
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  // The header is fixed: exact document scroll is not the interaction contract.
+  // Assert the real control is fully on-screen, then retain normal click actionability.
+  const languageControl = page.locator(isMobile ? '[data-menu-button]' : '[data-language-menu] summary');
+  await expect(languageControl).toBeVisible();
+  await expect(languageControl).toBeInViewport({ ratio: 1 });
   await expect(page.locator('html')).toBeVisible();
   if (isMobile) {
     await page.locator('[data-menu-button]').click();
