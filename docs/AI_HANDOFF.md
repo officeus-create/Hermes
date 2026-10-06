@@ -1477,3 +1477,13 @@ CI follow-up: the first security commit exposed one stale workflow-only assertio
 - **Evidence boundary:** stale search/web-reader copies that still contain the retired phone are crawl/cache evidence, not current production proof. Runtime closure requires exact-SHA/custom-domain release evidence after merge.
 - **Lesson / reuse rule:** mutable business facts need one current publication authority. Dated deltas may remain as provenance only when visibly superseded; agent instructions and regression tests must follow the current authority so historical facts cannot silently become active again.
 - **Next:** exact-head CI → repair any concrete failure → normal owner-gated merge/release → production readback → close ERR-CONTACT-002 only when the runtime evidence is current.
+
+
+## 2026-10-06 — ChatGPT — History-first error-register reconciliation
+
+- **Method:** reused existing repository/history evidence; no generic GSC/Bing/Semrush/site-wide SEO rerun.
+- **Closed stale engineering blockers instead of rewriting working code:** `ERR-UX-TECH-001` is resolved by newer exact-head #1699 four-shard browser evidence while the overlap assertion remains; `ERR-HC-RS-002` is resolved by merged #1471 plus its current first-run regression; `ERR-HC-RS-001` is resolved by current scoped workspace/customer styles plus newer browser evidence.
+- **Reclassified merged-code/runtime splits:** Catalog Worker compatibility source is merged in #1671 and now waits only for the existing Worker rollout/readback; Carrier Telegram time guard is merged in #1427 and waits only for approved runtime destination/release proof; business social connectors are merged in #1564 and wait only for provider/account OAuth activation; Hermes AI fallback has no identified repository defect and waits for an authorized two-provider live fallback proof.
+- **Measurement state:** GA4 is `WATCH`, not an active defect; use a bounded receipt check only when a concrete release/business decision requires it.
+- **Governance cleanup:** duplicate AI error IDs were split; GitHub main-protection wording now preserves the dated authenticated readback instead of implying later merges rechecked administration.
+- **Reusable rule:** always distinguish `ACTIVE CODE DEFECT` from `OWNER_ACTION / ACCESS_GAP / WATCH`. A later exact-head regression that directly covers an older failure supersedes the stale failure; do not add speculative code to “fix” already-green behavior. Merged source is not separate runtime deployment proof.
