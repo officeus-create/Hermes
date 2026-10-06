@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-06-search-surface-consolidation",
+  "generated_at": "2026-10-06T02:25:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [],
+  "updates": [
+    {
+      "route": "/load-board/providers/ship-cars/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/central-dispatch/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/super-dispatch/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/dat/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/truckstop/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/123loadboard/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/providers/direct-freight/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/dry-van/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/reefer/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/flatbed/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/step-deck/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/hotshot/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/power-only/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/load-board/equipment/box-truck/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: supporting provider/non-P0 equipment surface remains user-accessible but no longer competes as a canonical search owner; P0 Load Board root and Car Hauler owner remain indexable."
+    },
+    {
+      "route": "/businesses/alaska/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/alaska/palmer/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/arkansas/little-rock/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/arkansas/guy/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/arkansas/cedarville/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/arkansas/sherwood/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/wyoming/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/wyoming/glenrock/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/texas/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/texas/dallas/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/alabama/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/south-dakota/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/oklahoma/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/iowa/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/illinois/crystal-lake/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/illinois/east-dundee/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/alabama/brookwood/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/south-dakota/mitchell/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/oklahoma/tulsa/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/iowa/bedford/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/california/riverside/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/california/colton/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/ukraine/bila-tserkva/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/ukraine/irpin/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: single-profile/thin Catalog collection remains navigable but the evidence-backed business profile owns search discovery."
+    },
+    {
+      "route": "/businesses/marketing-growth-audit-example/",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "sitemap_owner": null,
+      "reason": "2026-10-06 Search Recovery: reusable strategy/example page remains publicly usable but is not a business-entity search owner."
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 0,
+    "indexable_route_count_added": 0,
+    "route_count_updated": 39,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
