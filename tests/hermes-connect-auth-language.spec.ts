@@ -10,18 +10,11 @@ async function chooseLanguage(page: Page, isMobile: boolean, language: string) {
   // Mobile emulation does not implement desktop Home-key scrolling.
   await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  console.log('auth-language-actionability', JSON.stringify(await page.evaluate(async (mobile) => {
-    const selector = mobile ? '[data-menu-button]' : '[data-language-menu] summary';
-    const samples = [];
-    for (let sample = 0; sample < 3; sample++) {
-      const node = document.querySelector(selector)!;
-      const r = node.getBoundingClientRect();
-      const style = getComputedStyle(node);
-      samples.push({ x: r.x, y: r.y, width: r.width, height: r.height, display: style.display, visibility: style.visibility, transform: style.transform, ready: document.readyState, fonts: document.fonts.status, scrollY });
-      await new Promise(resolve => setTimeout(resolve, 150));
-    }
-    return { href: location.href, viewport: innerWidth, samples };
-  }, isMobile)));
+  // Interaction checks need the newly navigated page to produce animation frames.
+  // CI observations already proved geometry stable, styles visible and fonts loaded.
+  await page.bringToFront();
+  await page.waitForLoadState('load');
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   if (isMobile) {
     await page.locator('[data-menu-button]').click();
     await page.locator(`.mobile-language-switcher a[lang="${language}"]`).click();
