@@ -21,6 +21,7 @@ const cities = directoryCities.filter((city)=>city.stateSlug===state.slug);
 const categories = [...new Set(rows.map((business)=>business.category))];
 const serviceTerms = [...new Set(rows.flatMap((business)=>business.services))].slice(0,10);
 const serviceAreas = [...new Set(rows.flatMap((business)=>business.serviceArea))].slice(0,8);
+const stateIndexable = rows.length >= 2;
 const stateUrl=`https://hermeslogisticsus.com/businesses/${state.slug}/`;
 const schema=[
   {"@context":"https://schema.org","@type":"CollectionPage",name:`Repair businesses in ${state.name}`,url:stateUrl,mainEntity:{"@type":"ItemList",itemListElement:rows.map((business,index)=>({"@type":"ListItem",position:index+1,url:`https://hermeslogisticsus.com/businesses/${business.stateSlug}/${business.citySlug}/${business.slug}/`,name:business.businessName}))}},
@@ -37,7 +38,7 @@ const schema=[
     { name: "Hermes Catalog", item: "https://hermeslogisticsus.com/businesses/" },
     { name: internationalCountry.name, item: `https://hermeslogisticsus.com/businesses/${internationalCountry.slug}/` }
   ]}
-/> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} schema={schema}>
+/> : (<BaseLayout title={`Repair Businesses in ${state.name} | Hermes Catalog`} description={`Evidence-backed repair and service business profiles in ${state.name}, grouped by city with source notes, claim state, and owner-verification boundaries.`} robots={stateIndexable ? "index,follow,max-image-preview:large" : "noindex,follow"} schema={schema}>
 <SiteHeader theme="light" activePath="/businesses/"/><DirectionProductNav direction="catalog" theme="light" />
 <main class="state-page"><div class="shell">
   <a class="back" href="/businesses/">← Hermes Catalog</a>
