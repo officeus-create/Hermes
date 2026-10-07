@@ -402,3 +402,18 @@ test("Participant bridge is company scoped, capacity gated, and never infers lea
   assert.match(ownerApi,/noindex, nofollow/);
   assert.match(claimApi,/noindex, nofollow/);
 });
+
+
+test("Academy owner workspace exposes the explicit participant bridge and boots it with the other persisted modules", () => {
+  const workspace=readFileSync(new URL("../src/pages/services/hermes-connect/academy/business/workspace/index.astro",import.meta.url),"utf8");
+  const programsApi=readFileSync(new URL("../functions/api/hermes-connect/academy/programs.ts",import.meta.url),"utf8");
+  assert.match(workspace,/data-participant-invite-form/);
+  assert.match(workspace,/data-participant-lead-select/);
+  assert.match(workspace,/data-participant-cohort-select/);
+  assert.match(workspace,/data-participant-invite-secret/);
+  assert.match(workspace,/explicit authenticated Hermes specialist claim/);
+  assert.match(workspace,/loadParticipants\(\)/);
+  assert.match(workspace,/Promise\.all\(\[loadCrmCore\(\),loadProgramsCohorts\(\),loadMeasurement\(\),loadAssessments\(\),loadParticipants\(\)\]\)/);
+  assert.match(programsApi,/enrollmentBridge:\s*"explicit_authenticated_specialist_claim"/);
+  assert.doesNotMatch(workspace+programsApi,/enrollmentBridge:\s*"not_activated"/);
+});
