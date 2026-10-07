@@ -6,14 +6,14 @@ import "../../../../styles/hermes-academy-app.css";
 ---
 
 <BaseLayout
-  title="Hermes Connect Academy | CRM для академій та навчання"
-  description="Hermes Connect Academy: окрема CRM для власників академій, курсів і бізнес-клубів та окремий learner workspace для студентів."
+  title="Hermes Connect Academy | CRM for academies and learning"
+  description="Hermes Connect Academy: a dedicated CRM for academy, course, and business-club owners plus a separate learner workspace."
   robots="noindex,nofollow"
-  htmlLang="uk"
-  locale="uk"
+  htmlLang="en"
+  locale="en"
 >
   <div class="academy-app-page">
-    <SiteHeader activePath="/services/hermes-connect/" locale="uk" />
+    <SiteHeader activePath="/services/hermes-connect/" locale="en" />
     <main id="main-content" class="academy-app-shell">
       <div class="academy-hub-toolbar">
         <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
@@ -137,14 +137,15 @@ import "../../../../styles/hermes-academy-app.css";
   type Lang = keyof typeof d;
   type Key = keyof typeof d.uk;
   const params = new URLSearchParams(location.search);
-  let lang: Lang = params.get("lang") === "en" ? "en" : "uk";
+  let lang: Lang = params.get("lang") === "uk" ? "uk" : "en";
   function apply(next: Lang) {
     lang = next;
     document.documentElement.lang = next;
     try { localStorage.setItem("hermes-connect-language", next); } catch {}
     document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/"]').forEach((link) => {
       const url = new URL(link.getAttribute("href") || "/", window.location.origin);
-      url.searchParams.set("lang", next);
+      if (next === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", next);
       link.href = url.pathname + url.search + url.hash;
     });
     document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
