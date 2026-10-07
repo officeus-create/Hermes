@@ -53,12 +53,12 @@ import "../../../../../../styles/hermes-academy-app.css";
           </aside>
         </section>
 
-        <section class="academy-owner-kpis">
-          <article><span data-i18n="leads">Нові ліди</span><strong>12</strong><small data-i18n="sample">demo data</small></article>
-          <article><span data-i18n="consultations">Консультації</span><strong>6</strong><small data-i18n="sample">demo data</small></article>
-          <article><span data-i18n="learners">Активні учасники</span><strong>34</strong><small data-i18n="sample">demo data</small></article>
-          <article><span data-i18n="review">На перевірці</span><strong>8</strong><small data-i18n="sample">demo data</small></article>
-          <article><span>ROMI</span><strong>—</strong><small data-i18n="realOnly">лише з реальних даних</small></article>
+        <section class="academy-owner-kpis" data-academy-crm-metrics>
+          <article><span data-i18n="leads">Нові ліди</span><strong data-crm-metric="totalLeads">—</strong><small>CRM Core · live data</small></article>
+          <article><span data-i18n="consultations">Консультації</span><strong data-crm-metric="consultationsBooked">—</strong><small>booked · live data</small></article>
+          <article><span data-i18n="qualified">Кваліфікація</span><strong data-crm-metric="consultationsQualified">—</strong><small>consultation qualified</small></article>
+          <article><span data-i18n="enrolled">Зарахований</span><strong data-crm-metric="enrolled">—</strong><small>CRM Core · live data</small></article>
+          <article><span>Revenue</span><strong data-crm-revenue>—</strong><small data-i18n="realOnly">лише з реальних даних</small></article>
         </section>
 
         <section class="academy-app-panel" id="crm">
@@ -74,6 +74,31 @@ import "../../../../../../styles/hermes-academy-app.css";
             <div><b data-i18n="activeLearner">Активний учасник</b></div>
             <div><b data-i18n="completed">Завершив / alumni</b><article><strong>Demo · Віктор</strong><small>Completion · reviewed</small></article></div>
             <div><b data-i18n="renewal">Renewal / наступна програма</b></div>
+          </div>
+        </section>
+
+        <section class="academy-app-panel academy-crm-core" id="crm-core" data-academy-crm-core>
+          <div class="academy-owner-panel-head">
+            <div><p class="academy-app-eyebrow">CRM CORE · OWNER-SCOPED</p><h2>Реальні ліди, консультації та наступні дії</h2></div>
+            <span class="academy-app-status">LIVE DATA · PRIVATE</span>
+          </div>
+          <p>Цей блок читає та зберігає приватні CRM-записи поточного власника Academy Business. Demo pipeline вище залишається лише моделлю майбутнього повного workspace. Revenue не вважається відомим без окремого source reference.</p>
+          <form class="academy-crm-core-form" data-crm-lead-form>
+            <label><span>Контакт *</span><input name="contactName" required maxlength="160" autocomplete="name" placeholder="Ім’я / компанія"/></label>
+            <label><span>Джерело</span><input name="sourceChannel" maxlength="80" placeholder="instagram / threads / website"/></label>
+            <label><span>Content ID</span><input name="contentId" maxlength="160" placeholder="reel-001"/></label>
+            <label><span>Campaign ID</span><input name="campaignId" maxlength="160" placeholder="organic-october"/></label>
+            <label><span>Основна потреба</span><input name="primaryPain" maxlength="600" placeholder="Що потрібно вирішити"/></label>
+            <label><span>Рекомендований модуль</span><input name="recommendedModule" maxlength="180" placeholder="W6 · Sales System"/></label>
+            <label><span>Stage</span><select name="businessStage"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="consultation_booked">Consultation booked</option><option value="consultation_attended">Consultation attended</option><option value="program_fit">Program fit</option><option value="decision">Decision</option><option value="enrolled">Enrolled</option><option value="active">Active</option><option value="completed">Completed</option><option value="lost">Lost</option><option value="renewal">Renewal</option></select></label>
+            <label><span>Consultation</span><select name="consultationStatus"><option value="not_scheduled">Not scheduled</option><option value="booked">Booked</option><option value="attended">Attended</option><option value="qualified">Qualified</option><option value="no_show">No-show</option><option value="cancelled">Cancelled</option><option value="not_fit">Not fit</option></select></label>
+            <label class="academy-crm-core-wide"><span>Next action</span><input name="nextAction" maxlength="400" placeholder="Наступна конкретна дія"/></label>
+            <label><span>Next contact</span><input name="nextContactAt" type="datetime-local"/></label>
+            <button class="academy-app-button intelligence" type="submit">Зберегти lead</button>
+          </form>
+          <p class="academy-crm-core-status" data-crm-form-status aria-live="polite"></p>
+          <div class="academy-crm-recent" data-crm-recent>
+            <p>Завантажуємо реальні CRM-записи…</p>
           </div>
         </section>
 
@@ -247,6 +272,42 @@ import "../../../../../../styles/hermes-academy-app.css";
   const loading=document.querySelector<HTMLElement>("[data-workspace-loading]");const content=document.querySelector<HTMLElement>("[data-workspace-content]");const alert=document.querySelector<HTMLElement>("[data-workspace-alert]");
   const json=async(url:string,options:RequestInit={})=>{const r=await fetch(url,{...options,headers:{Accept:"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});const p=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(p.error||`request_${r.status}`),{status:r.status,payload:p});return p;};
   const fail=(message:string)=>{if(alert){alert.textContent=message;alert.className="academy-app-alert show error";}};
+  const money=(cents:number|null|undefined)=>cents===null||cents===undefined?"—":new Intl.NumberFormat(lang==="uk"?"uk-UA":"en-US",{style:"currency",currency:"USD"}).format(cents/100);
+  const renderCrmCore=(state:any)=>{
+    const metrics=state?.metrics||{};
+    document.querySelectorAll<HTMLElement>("[data-crm-metric]").forEach(node=>{const key=node.dataset.crmMetric||"";node.textContent=Number.isFinite(Number(metrics[key]))?String(metrics[key]):"—";});
+    const revenue=document.querySelector<HTMLElement>("[data-crm-revenue]");
+    if(revenue)revenue.textContent=Number(metrics.revenueKnownCount)>0?money(Number(metrics.revenueCents||0)):"—";
+    const target=document.querySelector<HTMLElement>("[data-crm-recent]");
+    if(!target)return;
+    const leads=Array.isArray(state?.recentLeads)?state.recentLeads:[];
+    if(!leads.length){target.innerHTML="<p>CRM Core поки не має реальних lead-записів.</p>";return;}
+    target.replaceChildren(...leads.map((lead:any)=>{
+      const article=document.createElement("article");
+      const strong=document.createElement("strong");strong.textContent=lead.contactName||"Lead";
+      const meta=document.createElement("small");meta.textContent=[lead.sourceChannel||"direct",lead.businessStage||"new",lead.consultationStatus||"not_scheduled"].join(" · ");
+      const next=document.createElement("span");next.textContent=lead.nextAction?"Next: "+lead.nextAction:"Next action: —";
+      article.append(strong,meta,next);
+      return article;
+    }));
+  };
+  const loadCrmCore=async()=>{const state=await json("/api/hermes-connect/academy/crm?module=dashboard");renderCrmCore(state);};
+  document.querySelector<HTMLFormElement>("[data-crm-lead-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=document.querySelector<HTMLElement>("[data-crm-form-status]");
+    const values=Object.fromEntries(new FormData(form).entries());
+    if(status){status.textContent="Зберігаємо…";status.className="academy-crm-core-status";}
+    try{
+      await json("/api/hermes-connect/academy/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_lead",...values})});
+      form.reset();
+      if(status){status.textContent="Lead збережено і перечитано з CRM.";status.className="academy-crm-core-status ok";}
+      await loadCrmCore();
+    }catch(error:any){
+      const detail=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"crm_save_failed");
+      if(status){status.textContent=detail;status.className="academy-crm-core-status error";}
+    }
+  });
   void(async()=>{
     try{
       await json("/api/auth/me");
@@ -255,6 +316,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       const b=state.academyBusiness;const name=document.querySelector<HTMLElement>("[data-business-name]");if(name)name.textContent=b.businessName||"Academy";
       const link=document.querySelector<HTMLAnchorElement>("[data-catalog-link]");if(link)link.href=b.catalogOptIn?`/businesses/connect/academy/${encodeURIComponent(b.slug)}/`:"/businesses/";
       loading?.classList.add("academy-app-hidden");content?.classList.remove("academy-app-hidden");
+      await loadCrmCore();
     }catch(error:any){if(error?.status===401){location.assign("/services/hermes-connect/academy/business/auth/?mode=login");return;}fail(String(error?.message||"Could not load workspace"));}
   })();
   document.querySelector<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);location.assign("/services/hermes-connect/academy/business/auth/?mode=login");});
@@ -264,8 +326,9 @@ import "../../../../../../styles/hermes-academy-app.css";
   .academy-owner-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.academy-owner-toolbar>a{font-weight:800;text-decoration:none}
   .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
   .academy-owner-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}.academy-owner-kpis article{padding:18px;border:1px solid rgba(148,163,184,.28);border-radius:18px;background:#fff}.academy-owner-kpis span,.academy-owner-kpis small{display:block}.academy-owner-kpis span{font-size:12px;color:#64748b}.academy-owner-kpis strong{display:block;margin:7px 0;font-size:28px}.academy-owner-kpis small{font-size:10px;color:#94a3b8}
-  .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
+  .academy-crm-core-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.academy-crm-core-form label{display:grid;gap:6px}.academy-crm-core-form label>span{font-size:10px;font-weight:800;color:#64748b}.academy-crm-core-form input,.academy-crm-core-form select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:10px 11px;background:#fff;color:#0f172a}.academy-crm-core-wide{grid-column:span 2}.academy-crm-core-form button{align-self:end;min-height:41px}.academy-crm-core-status{min-height:20px;margin:12px 0 0;color:#64748b}.academy-crm-core-status.ok{color:#166534}.academy-crm-core-status.error{color:#b91c1c}.academy-crm-recent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.academy-crm-recent article{display:grid;gap:5px;padding:13px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-crm-recent small,.academy-crm-recent span{color:#64748b;font-size:10px}.academy-crm-recent strong{font-size:12px}
+    .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
   .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-training-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-training-method>div{display:grid;gap:5px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#f8fafc}.academy-training-method span{font-size:9px;color:#7c5cff;font-weight:900}.academy-training-method b{font-size:11px}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
-  @media(max-width:900px){.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
+  @media(max-width:900px){.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
   @media(max-width:620px){.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
 </style>
