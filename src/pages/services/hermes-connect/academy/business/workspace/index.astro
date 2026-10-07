@@ -165,7 +165,47 @@ import "../../../../../../styles/hermes-academy-app.css";
               <div><span>04</span><b data-i18n="deliveryReview">Delivery & review</b><small data-i18n="deliveryReviewCopy">Lessons · evidence · feedback</small></div>
               <div><span>05</span><b data-i18n="completionRenewal">Completion & renewal</b><small data-i18n="completionRenewalCopy">Alumni · club · next program</small></div>
             </div>
-          </article>
+          
+            <div class="academy-program-live" data-academy-programs-cohorts>
+              <p class="academy-owner-boundary"><b>LIVE DATA · PRIVATE.</b> Program/cohort definitions are owner + company scoped. Deal → learner → cohort linking is intentionally not activated until an explicit shared Hermes identity/link contract exists; email/name matching never enrolls a person.</p>
+              <div class="academy-program-live-grid">
+                <form data-academy-program-form>
+                  <strong>Program / Програма</strong>
+                  <input name="name" required maxlength="180" placeholder="Program name / Назва"/>
+                  <input name="formatText" maxlength="160" placeholder="Format / Формат"/>
+                  <input name="durationText" maxlength="160" placeholder="Duration / Тривалість"/>
+                  <input name="eligibilityText" maxlength="600" placeholder="Eligibility / Для кого"/>
+                  <select name="status"><option value="draft">Draft</option><option value="active">Active</option><option value="paused">Paused</option></select>
+                  <div class="academy-program-price">
+                    <input name="priceCents" type="number" min="0" step="1" placeholder="Price cents · optional"/>
+                    <input name="currency" maxlength="3" placeholder="EUR / USD"/>
+                  </div>
+                  <input name="priceSourceRef" maxlength="300" placeholder="Price source reference · required when price > 0"/>
+                  <button class="academy-app-button intelligence" type="submit">Save program</button>
+                  <small data-academy-program-status aria-live="polite"></small>
+                </form>
+                <form data-academy-cohort-form>
+                  <strong>Cohort / Потік</strong>
+                  <select name="programId" data-academy-program-select required><option value="">Select program</option></select>
+                  <input name="name" required maxlength="180" placeholder="Cohort name / Назва потоку"/>
+                  <select name="status"><option value="planned">Planned</option><option value="enrolling">Enrolling</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
+                  <div class="academy-program-price">
+                    <input name="startDate" type="date"/>
+                    <input name="endDate" type="date"/>
+                  </div>
+                  <input name="capacity" type="number" min="1" step="1" placeholder="Capacity · optional / UNKNOWN"/>
+                  <input name="timezone" maxlength="80" value="Europe/Kyiv" placeholder="Timezone"/>
+                  <input name="scheduleText" maxlength="600" placeholder="Schedule · optional / UNKNOWN"/>
+                  <button class="academy-app-button intelligence" type="submit">Save cohort</button>
+                  <small data-academy-cohort-status aria-live="polite"></small>
+                </form>
+              </div>
+              <div class="academy-program-records">
+                <div><strong>Programs</strong><div data-academy-program-list><p>Loading…</p></div></div>
+                <div><strong>Cohorts</strong><div data-academy-cohort-list><p>Loading…</p></div></div>
+              </div>
+            </div>
+</article>
 
           <article class="academy-app-panel">
             <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">SALES MANAGEMENT</p><h2 data-i18n="salesHierarchy">Багаторівнева sales-структура</h2></div><span class="academy-app-status" data-i18n="configurable">Налаштовується</span></div>
@@ -302,12 +342,77 @@ import "../../../../../../styles/hermes-academy-app.css";
       await json("/api/hermes-connect/academy/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_lead",...values})});
       form.reset();
       if(status){status.textContent="Lead збережено і перечитано з CRM.";status.className="academy-crm-core-status ok";}
-      await loadCrmCore();
+      await Promise.all([loadCrmCore(),loadProgramsCohorts()]);
     }catch(error:any){
       const detail=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"crm_save_failed");
       if(status){status.textContent=detail;status.className="academy-crm-core-status error";}
     }
   });
+
+  const programSelect=()=>document.querySelector<HTMLSelectElement>("[data-academy-program-select]");
+  const renderProgramsCohorts=(state:any)=>{
+    const programs=Array.isArray(state?.programs)?state.programs:[];
+    const cohorts=Array.isArray(state?.cohorts)?state.cohorts:[];
+    const select=programSelect();
+    if(select){
+      const current=select.value;
+      select.replaceChildren(new Option("Select program",""),...programs.map((p:any)=>new Option(p.name||"Program",p.id)));
+      if(programs.some((p:any)=>p.id===current))select.value=current;
+    }
+    const programTarget=document.querySelector<HTMLElement>("[data-academy-program-list]");
+    if(programTarget){
+      if(!programs.length){programTarget.innerHTML="<p>No persisted programs yet / Програм ще немає.</p>";}
+      else programTarget.replaceChildren(...programs.map((p:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");title.textContent=p.name||"Program";
+        const meta=document.createElement("small");meta.textContent=[p.status||"draft",p.formatText||"format —",p.durationText||"duration —"].join(" · ");
+        const price=document.createElement("span");price.textContent=p.priceCents===null?"Price: UNKNOWN":"Price: "+(Number(p.priceCents||0)/100).toFixed(2)+(p.currency?" "+p.currency:"");
+        article.append(title,meta,price);return article;
+      }));
+    }
+    const cohortTarget=document.querySelector<HTMLElement>("[data-academy-cohort-list]");
+    if(cohortTarget){
+      if(!cohorts.length){cohortTarget.innerHTML="<p>No persisted cohorts yet / Потоків ще немає.</p>";}
+      else cohortTarget.replaceChildren(...cohorts.map((c:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");title.textContent=c.name||"Cohort";
+        const meta=document.createElement("small");meta.textContent=[c.programName||"Program",c.status||"planned",c.code||""].filter(Boolean).join(" · ");
+        const dates=document.createElement("span");dates.textContent="Start: "+(c.startDate||"UNKNOWN")+" · Capacity: "+(c.capacity??"UNKNOWN");
+        article.append(title,meta,dates);return article;
+      }));
+    }
+  };
+  const loadProgramsCohorts=async()=>{const state=await json("/api/hermes-connect/academy/programs");renderProgramsCohorts(state);};
+  document.querySelector<HTMLFormElement>("[data-academy-program-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=document.querySelector<HTMLElement>("[data-academy-program-status]");
+    const values=Object.fromEntries(new FormData(form).entries());
+    const payload:any={action:"create_program",...values};
+    if(!payload.priceCents)delete payload.priceCents;
+    if(status)status.textContent="Saving / Зберігаємо…";
+    try{
+      await json("/api/hermes-connect/academy/programs",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      form.reset();if(status)status.textContent="Saved / Збережено";await loadProgramsCohorts();
+    }catch(error:any){if(status)status.textContent=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"program_save_failed");}
+  });
+  document.querySelector<HTMLFormElement>("[data-academy-cohort-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=document.querySelector<HTMLElement>("[data-academy-cohort-status]");
+    const values=Object.fromEntries(new FormData(form).entries());
+    const payload:any={action:"create_cohort",...values};
+    if(!payload.capacity)delete payload.capacity;
+    if(!payload.startDate)delete payload.startDate;
+    if(!payload.endDate)delete payload.endDate;
+    if(status)status.textContent="Saving / Зберігаємо…";
+    try{
+      await json("/api/hermes-connect/academy/programs",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      const selected=String(values.programId||"");form.reset();if(programSelect())programSelect()!.value=selected;
+      if(status)status.textContent="Saved / Збережено";await loadProgramsCohorts();
+    }catch(error:any){if(status)status.textContent=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"cohort_save_failed");}
+  });
+
   void(async()=>{
     try{
       await json("/api/auth/me");
@@ -327,6 +432,7 @@ import "../../../../../../styles/hermes-academy-app.css";
   .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
   .academy-owner-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}.academy-owner-kpis article{padding:18px;border:1px solid rgba(148,163,184,.28);border-radius:18px;background:#fff}.academy-owner-kpis span,.academy-owner-kpis small{display:block}.academy-owner-kpis span{font-size:12px;color:#64748b}.academy-owner-kpis strong{display:block;margin:7px 0;font-size:28px}.academy-owner-kpis small{font-size:10px;color:#94a3b8}
   .academy-crm-core-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.academy-crm-core-form label{display:grid;gap:6px}.academy-crm-core-form label>span{font-size:10px;font-weight:800;color:#64748b}.academy-crm-core-form input,.academy-crm-core-form select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:10px 11px;background:#fff;color:#0f172a}.academy-crm-core-wide{grid-column:span 2}.academy-crm-core-form button{align-self:end;min-height:41px}.academy-crm-core-status{min-height:20px;margin:12px 0 0;color:#64748b}.academy-crm-core-status.ok{color:#166534}.academy-crm-core-status.error{color:#b91c1c}.academy-crm-recent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.academy-crm-recent article{display:grid;gap:5px;padding:13px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-crm-recent small,.academy-crm-recent span{color:#64748b;font-size:10px}.academy-crm-recent strong{font-size:12px}
+  .academy-program-live{margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.22)}.academy-program-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-program-live form{display:grid;gap:8px;padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:#fff}.academy-program-live input,.academy-program-live select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-program-live form>small{min-height:16px;color:#64748b}.academy-program-price{display:grid;grid-template-columns:1fr 1fr;gap:8px}.academy-program-records{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.academy-program-records>div{display:grid;gap:8px}.academy-program-records [data-academy-program-list],.academy-program-records [data-academy-cohort-list]{display:grid;gap:8px}.academy-program-records article{display:grid;gap:4px;padding:11px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-program-records small,.academy-program-records span{font-size:10px;color:#64748b}
     .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
   .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-training-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-training-method>div{display:grid;gap:5px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#f8fafc}.academy-training-method span{font-size:9px;color:#7c5cff;font-weight:900}.academy-training-method b{font-size:11px}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
   @media(max-width:900px){.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
