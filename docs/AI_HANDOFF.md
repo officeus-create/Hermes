@@ -1573,3 +1573,10 @@ handoff_to: repository owner for review and release decision
 - Rollback: revert this bounded feature commit. No production, merge, deployment or real submission performed. Next: exact-head CI + desktop/mobile preview verification, then owner merge decision; product/Sales owner separately supplies persisted request → receiver → human receipt evidence under #960.
 
 - Same-slice review: source attribution now requires the supplied `source_path` to exactly match the existing public repair service owner; a vertical-only or unapproved source query does not fabricate source attribution. The initial PR revision `e54243f3c35227aae37f2216b1a887829adad5d1` passed GitHub contracts; final runtime revision requires its own CI.
+
+### PR #1749 — same-slice CI follow-up, 2026-10-08
+
+- Owner delegated the exact failure in `tests/hermes-connect-auth-language.spec.ts`: saved Ukrainian incorrectly expected on clean access. Existing access behavior is preserved; Academy saved-locale behavior is preserved.
+- Regression now tests route-specific clean language, reload, explicit Ukrainian/reload and explicit English. No runtime or Catalog changes.
+- Prior `fbae1ddf` contracts and visual evidence succeeded; browser aggregate failed on the stale access assertion and other shards were cancelled by fail-fast. Do not call cancelled shards a completed green gate.
+- Current executor permissions now permit Linux Chrome startup. Focused desktop/mobile auth and Repair context checks execute locally; final output and the new exact-head rerun are attached to PR #1749. Earlier socket denial remains historical environment evidence, not a current blocker.

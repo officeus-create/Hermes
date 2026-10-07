@@ -51,11 +51,20 @@ for (const { path, title } of routes) {
     await page.goBack();
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
   });
-  test(`${path} respects saved Ukrainian and explicit English overrides it`, async ({ page }) => {
+  const cleanLanguage = path === 'access/' ? 'en' : 'uk';
+  test(`${path} resolves saved Ukrainian according to its clean-route contract and respects explicit locales`, async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('hermes-connect-language', 'uk'));
     await page.goto(`/services/hermes-connect/${path}`);
+    await expect(page.locator('html')).toHaveAttribute('lang', cleanLanguage);
+    if (cleanLanguage === 'en') await expect(page.locator('main h1')).toHaveText(title);
+    else await expect(page.locator('main h1')).not.toHaveText(title);
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('lang', cleanLanguage);
+    await page.goto(`/services/hermes-connect/${path}?lang=uk`);
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
     await expect(page.locator('main h1')).not.toHaveText(title);
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
     await page.goto(`/services/hermes-connect/${path}?lang=en`);
     await expect(page.locator('main h1')).toHaveText(title);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');

@@ -516,3 +516,10 @@ EVIDENCE: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md. Build and npm test pas
 - STATUS: CODED / REVIEW_REQUIRED, not production resolved. Current-head CI/browser and preview evidence are release gates. PR: https://github.com/officeus-create/Hermes/pull/1749.
 - OWNER HANDOFF: #1744 owns broad locale/Catalog parity; reconcile only overlapping access/BaseLayout/locale assertions, preserve this English SSR main and pilot boundary. #1673 owns DigitalServicePage design; preserve its styles while retaining this CTA-query delta. Catalog #1663 / Catalog owner retains Kittle server-rendered discovery. No Catalog files changed here.
 - REUSE_RULE: server HTML and runtime language must agree on clean English owners; carry allowlisted commercial context to the existing form and its private summary, never infer Sales receipt from a page/form or HTTP acceptance alone.
+
+### PR #1749 — stale saved-locale browser assertion, 2026-10-08
+
+- PROBLEM / ROOT_CAUSE: on `fbae1ddf`, the older browser regression still expected saved Ukrainian on clean access, contradicting the intentional English clean-route contract. It correctly remains the default for the separate Academy auth routes.
+- WORKING_APPROACH: update only the regression to distinguish access from Academy, check clean-route reload, explicit `?lang=uk` and its reload, and explicit English. Do not restore the defect or relax assertions.
+- EVIDENCE: focused locale/source contracts pass; fresh desktop/mobile auth and repair-context browser verification is recorded in the PR. GitHub shard 3 cancellation is not a green aggregate run, even when its tests finished successfully; rerun all gates on the new head.
+- STATUS: regression aligned / current-head verification required. No runtime, Catalog, receiver, deployment or client-data change in this follow-up.
