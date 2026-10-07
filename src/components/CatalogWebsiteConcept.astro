@@ -46,8 +46,8 @@ const displayRegion = label(business.region, business.regionEn ?? business.regio
 const displaySemanticCore = defaultLocale === "uk" ? business.semanticCore : (business.semanticCoreEn ?? business.semanticCore);
 const channelLabel = (channel: CatalogBusinessConcept["channels"][number]) => label(channel.label, channel.labelEn ?? channel.label);
 const preparedBodyUk = clientStrategy
-  ? "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records."
-  : "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.";
+  ? "Канонічний профіль у Hermes Catalog уже містить цифровий аудит, повну стратегію клієнта, перевірку готовності до органічного просування, CRM-атрибуцію, медіаплан на 3–6 місяців і методику для кандидатів та контенту. Збереження ідентичності та профілю бізнесу Academy вже реалізовано; модулі лідів, потоків, завдань і HR в окремій CRM-демонстрації поки показують модель продукту й не видаються за реальні записи клієнта."
+  : "Публічний профіль залишається коротким SEO/GEO-власником. Детальний матеріал і CRM-демонстрація відкриваються окремо.";
 const preparedBodyEn = clientStrategy
   ? "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
   : "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately.";
@@ -100,8 +100,8 @@ const preparedBodyEn = clientStrategy
       <p data-uk={preparedBodyUk} data-en={preparedBodyEn}>{label(preparedBodyUk,preparedBodyEn)}</p>
     </div>
     <div class="prepared-links">
-      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl} data-uk="Відкрити evidence strategy / audit →" data-en="Open evidence strategy / audit →">{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
-      {business.crmPreviewUrl && <a href={business.crmPreviewUrl} data-uk="Відкрити Academy CRM demo →" data-en="Open Academy CRM demo →">{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
+      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl} data-uk="Відкрити стратегію / аудит з доказами →" data-en="Open evidence strategy / audit →">{label("Відкрити стратегію / аудит з доказами →","Open evidence strategy / audit →")}</a>}
+      {business.crmPreviewUrl && <a href={business.crmPreviewUrl} data-uk="Відкрити CRM-демонстрацію Academy →" data-en="Open Academy CRM demo →">{label("Відкрити CRM-демонстрацію Academy →","Open Academy CRM demo →")}</a>}
       {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати Academy workspace →" data-en="Register Academy workspace →">{label("Зареєструвати Academy workspace →","Register Academy workspace →")}</a>}
     </div>
   </section>}
