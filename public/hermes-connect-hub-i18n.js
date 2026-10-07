@@ -159,6 +159,7 @@
     ["Proposal Builder", {ru:"Конструктор предложений",uk:"Конструктор пропозицій",es:"Generador de propuestas",it:"Generatore di proposte",fr:"Générateur de propositions"}],
     ["ROI Calculator", {ru:"Калькулятор ROI",uk:"Калькулятор ROI",es:"Calculadora de ROI",it:"Calcolatore ROI",fr:"Calculateur ROI"}],
     ["Business Automation", {ru:"Автоматизация бизнеса",uk:"Автоматизація бізнесу",es:"Automatización empresarial",it:"Automazione aziendale",fr:"Automatisation d’entreprise"}],
+    ["Skip to content", {ru:"Перейти к содержимому",uk:"Перейти до вмісту",es:"Saltar al contenido",it:"Vai al contenuto",fr:"Aller au contenu"}],
     ["Start a conversation", {ru:"Начать разговор",uk:"Почати розмову",es:"Iniciar una conversación",it:"Inizia una conversazione",fr:"Démarrer une conversation"}],
     ["Sign in", {ru:"Войти",uk:"Увійти",es:"Entrar",it:"Accedi",fr:"Connexion"}],
     ["Hermes account", {ru:"Аккаунт Hermes",uk:"Акаунт Hermes",es:"Cuenta Hermes",it:"Account Hermes",fr:"Compte Hermes"}],
