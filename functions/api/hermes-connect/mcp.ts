@@ -122,9 +122,8 @@ const publicToolDefinitions = [
       properties: {
         accepted: { type: "boolean" },
         status: { type: "string" },
-        receipt_id: { type: ["string", "null"] },
       },
-      required: ["accepted", "status", "receipt_id"],
+      required: ["accepted", "status"],
       additionalProperties: false,
     },
     annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
@@ -218,7 +217,7 @@ function recommendStartPath(args: Record<string, unknown>) {
       route: "LIVE_REPAIR_SHOPS",
       status: "LIVE_PUBLIC_PRODUCT",
       reason: "Repair Shops is the current public live Hermes Connect vertical.",
-      next_step: "Review the live Repair Shops workflow and start owner setup only if it matches the business.",
+      next_step: "Review the current Repair Shops product information and workflow to decide whether it fits the business.",
       url: REPAIR_URL,
     };
   }
@@ -254,7 +253,7 @@ function recommendStartPath(args: Record<string, unknown>) {
 
 async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
   if (args.consent_to_product_learning !== true) {
-    return { accepted: false, status: "explicit_consent_required", receipt_id: null };
+    return { accepted: false, status: "explicit_consent_required" };
   }
 
   const businessType = normalize(args.business_type, 80);
@@ -264,15 +263,15 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
   const allowedOutcomes = new Set(["missing_capability", "workflow_friction", "useful_pattern", "confusing", "other"]);
 
   if (!businessType || !problemClass || !desiredCapability || !allowedOutcomes.has(outcome)) {
-    return { accepted: false, status: "invalid_structured_feedback", receipt_id: null };
+    return { accepted: false, status: "invalid_structured_feedback" };
   }
 
   if ([businessType, problemClass, desiredCapability].some(containsSensitivePattern)) {
-    return { accepted: false, status: "feedback_contains_disallowed_sensitive_pattern", receipt_id: null };
+    return { accepted: false, status: "feedback_contains_disallowed_sensitive_pattern" };
   }
 
   if (!env.DB) {
-    return { accepted: false, status: "learning_store_unavailable", receipt_id: null };
+    return { accepted: false, status: "learning_store_unavailable" };
   }
 
   const id = `HC-LEARN-${crypto.randomUUID()}`;
@@ -288,6 +287,9 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
       consent_state TEXT NOT NULL DEFAULT 'explicit'
     )`
   ).run();
+  const retentionCutoff = new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString();
+  await env.DB.prepare(`DELETE FROM plugin_product_learning_events WHERE created_at < ?`).bind(retentionCutoff).run();
+
   await env.DB.prepare(
     `INSERT INTO plugin_product_learning_events
       (id, created_at, business_type, problem_class, desired_capability, outcome, consent_state)
@@ -296,7 +298,7 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
     .bind(id, now, businessType, problemClass, desiredCapability, outcome)
     .run();
 
-  return { accepted: true, status: "stored_privacy_safe_product_learning_event", receipt_id: id };
+  return { accepted: true, status: "stored_privacy_safe_product_learning_event" };
 }
 
 async function callTool(env: Env, name: string, args: Record<string, unknown>) {
