@@ -1,3 +1,23 @@
+
+test("English Hermes Catalog renders Ukrainian businesses with English presentation fields", async ({ page }) => {
+  await page.goto("/businesses/", { waitUntil: "domcontentloaded" });
+
+  const international = page.locator("#international-businesses");
+  await expect(international).toBeVisible();
+  for (const name of ["Chayka Store", "Mangal i Kazan", "TRIMMO II Barbershop", "Tsvit VYSHNI Flower Studio", "Kons na Bis"]) {
+    await expect(international.getByRole("heading", { name, exact: true })).toBeVisible();
+  }
+
+  const visible = await international.evaluate((node) => (node as HTMLElement).innerText);
+  for (const forbidden of ["Чайки", "Київська область", "Біла Церква", "Ірпінь", "Шашлик", "Квіти", "Бізнес-клуб"]) {
+    expect(visible).not.toContain(forbidden);
+  }
+  expect(visible).toContain("Chaiky");
+  expect(visible).toContain("Kyiv Oblast");
+  expect(visible).toContain("Bila Tserkva");
+  expect(visible).toContain("Irpin");
+});
+
 import { expect, test } from "@playwright/test";
 
 test("KNB canonical Catalog profile exposes the complete reusable client strategy and correct public paths", async ({ page }) => {
