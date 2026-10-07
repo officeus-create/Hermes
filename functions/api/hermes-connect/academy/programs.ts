@@ -87,7 +87,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success: true,
     programs: (programResult?.results || []).map(safeAcademyBusinessProgram),
     cohorts: (cohortResult?.results || []).map(safeAcademyBusinessCohort),
-    enrollmentBridge: "not_activated",
+    enrollmentBridge: "explicit_authenticated_specialist_claim",
   }, privateHeaders);
 }
 
