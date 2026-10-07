@@ -158,11 +158,40 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
+const hubLocaleCases = [
+  ["ru", "Управляйте бизнесом с AI.", "Одна система. Разные бизнес-процессы.", "Язык контента: русский", "Русский"],
+  ["uk", "Керуйте бізнесом з AI.", "Одна система. Різні бізнес-процеси.", "Мова контенту: українська", "Українська"],
+  ["es", "Dirige tu empresa con IA.", "Un sistema. Distintas realidades empresariales.", "Idioma del contenido: español", "Español"],
+  ["it", "Gestisci la tua azienda con l’AI.", "Un sistema. Realtà aziendali diverse.", "Lingua dei contenuti: italiano", "Italiano"],
+  ["fr", "Pilotez votre entreprise avec l’IA.", "Un système. Des réalités d’entreprise différentes.", "Langue du contenu : français", "Français"],
+] as const;
+
+test("Hermes Connect Hub keeps every selected locale internally consistent", async ({ page }) => {
+  for (const [locale, hero, adaptiveHeading, contentLanguage, languageName] of hubLocaleCases) {
+    await page.goto(`/services/hermes-connect/?lang=${locale}`, { waitUntil: "domcontentloaded" });
+
+    await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page.locator(".hc-copy h1")).toHaveText(hero);
+    await expect(page.getByRole("heading", { name: adaptiveHeading, exact: true })).toBeVisible();
+    await expect(page.locator(".hc-content-language")).toHaveText(contentLanguage);
+    await expect(page.locator("[data-language-menu] summary span")).toHaveText(languageName);
+
+    const accessHref = await page.locator('main a[href^="/services/hermes-connect/access/"]').first().getAttribute("href");
+    expect(accessHref).toContain(`lang=${locale}`);
+    await expect(page.locator(".hc-brand-page")).not.toContainText("Run your business with AI.");
+    await expect(page.locator(".hc-brand-page")).not.toContainText("One system. Different business realities.");
+  }
+});
+
 test("Hermes Connect Hub presents one live product, private Academy and Beauty, and adaptive preview configurations", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
   await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  const canonicalAccessHref = await page.locator('main a[href^="/services/hermes-connect/access/"]').first().getAttribute("href");
+  expect(canonicalAccessHref).not.toContain("lang=");
+  expect(canonicalAccessHref).not.toContain("lang=uk");
   await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
