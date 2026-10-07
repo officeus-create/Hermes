@@ -5,13 +5,13 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 ---
 
 <BaseLayout
-  title="Вхід і реєстрація | Hermes Connect"
-  description="Один Hermes-акаунт і CRM, що підлаштовується під тип бізнесу: Repair Shop, Academy / Courses та інші vertical-specific workspaces."
+  title="Sign in and registration | Hermes Connect"
+  description="One Hermes account. Repair Shop is the current live pilot; choose the workspace matched to your business."
   robots="noindex,nofollow"
-  htmlLang="uk"
-  locale="uk"
+  htmlLang="en"
+  locale="en"
 >
-  <SiteHeader activePath="/paths/technology/" theme="light" locale="uk" />
+  <SiteHeader activePath="/paths/technology/" theme="light" locale="en" />
   <main id="main-content" class="access-page">
     <div class="access-shell">
       <div class="access-toolbar">
@@ -19,63 +19,64 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       </div>
 
       <section class="access-intro">
-        <p class="eyebrow" data-i18n="eyebrow">Hermes Connect · один акаунт</p>
-        <h1 data-i18n="title">Один вхід. CRM — під ваш тип бізнесу.</h1>
-        <p data-i18n="lead">Hermes identity спільна, але робоче середовище не універсальне. СТО отримує автомобілі, записи й послуги. Академія отримує ліди, консультації, учасників, потоки, завдання, маркетингові KPI та retention.</p>
+        <p class="eyebrow" data-i18n="eyebrow">Hermes Connect · one account</p>
+        <h1 data-i18n="title">One sign-in. A CRM matched to your business.</h1>
+        <p data-i18n="lead">Hermes identity is shared, but the workspace is not universal. Repair Shops get vehicles, bookings and services. Academies get leads, consultations, learners, cohorts, assignments, marketing KPI and retention.</p>
+        <p data-i18n="pilotBoundary">Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.</p>
       </section>
 
       <section class="access-grid">
         <article class="access-card access-login" aria-labelledby="access-title">
           <div data-access-loading>
-            <p class="status" data-i18n="secure">Безпечна сесія</p>
-            <h2 id="access-title" data-i18n="checking">Перевіряємо ваш Hermes-акаунт…</h2>
+            <p class="status" data-i18n="secure">Secure session</p>
+            <h2 id="access-title" data-i18n="checking">Checking your Hermes account…</h2>
           </div>
 
           <div data-access-active hidden>
-            <p class="status success" data-i18n="sessionActive">Сесія активна</p>
-            <h2><span data-i18n="welcome">Вітаємо,</span> <span data-access-name>Hermes user</span>.</h2>
+            <p class="status success" data-i18n="sessionActive">Session active</p>
+            <h2><span data-i18n="welcome">Welcome,</span> <span data-access-name>Hermes user</span>.</h2>
             <p data-access-email class="muted"></p>
-            <p class="muted" data-i18n="activeCopy">Ваші бізнеси та дозволені workspaces доступні через Hermes account switcher у верхньому меню.</p>
+            <p class="muted" data-i18n="activeCopy">Your businesses and authorized workspaces are available through the Hermes account switcher in the header.</p>
             <div class="actions">
-              <a class="primary" href="/services/hermes-connect/" data-route data-open-connect data-i18n="openConnect">Відкрити Hermes Connect</a>
-              <button type="button" data-access-logout data-i18n="logout">Вийти</button>
+              <a class="primary" href="/services/hermes-connect/" data-route data-open-connect data-i18n="openConnect">Open Hermes Connect</a>
+              <button type="button" data-access-logout data-i18n="logout">Log out</button>
             </div>
           </div>
 
           <form data-access-form hidden>
-            <p class="status" data-i18n="accountAccess">Вхід в акаунт</p>
-            <h2 data-i18n="signIn">Увійти</h2>
-            <p class="muted" data-i18n="signInCopy">Використовуйте email і пароль вашої спільної Hermes identity.</p>
+            <p class="status" data-i18n="accountAccess">Account access</p>
+            <h2 data-i18n="signIn">Sign in</h2>
+            <p class="muted" data-i18n="signInCopy">Use the email and password attached to your shared Hermes identity.</p>
             <p class="alert" data-access-alert role="status"></p>
             <label>Email<input name="email" type="email" autocomplete="username" required /></label>
-            <label><span data-i18n="password">Пароль</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
-            <button class="primary" type="submit" data-i18n="secureLogin">Безпечний вхід</button>
+            <label><span data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
+            <button class="primary" type="submit" data-i18n="secureLogin">Secure login</button>
           </form>
         </article>
 
         <article class="access-card business-router">
-          <p class="status" data-i18n="newBusiness">Новий бізнес</p>
-          <h2 data-i18n="chooseType">Оберіть тип — Hermes відкриє правильну CRM.</h2>
+          <p class="status" data-i18n="newBusiness">New business</p>
+          <h2 data-i18n="chooseType">Choose a type — Hermes opens the right CRM.</h2>
           <div class="business-options">
             <a class="business-option live" href="/services/hermes-connect/repair-shops/auth/?mode=register" data-route>
               <span class="option-state" data-i18n="live">LIVE</span>
-              <strong data-i18n="repair">Repair Shop / СТО</strong>
-              <small data-i18n="repairCopy">Записи, клієнти, автомобілі, послуги, availability і follow-up.</small>
-              <em data-i18n="register">Зареєструвати →</em>
+              <strong data-i18n="repair">Repair Shop</strong>
+              <small data-i18n="repairCopy">Bookings, customers, vehicles, services, availability and follow-up.</small>
+              <em data-i18n="register">Register →</em>
             </a>
 
             <a class="business-option academy" href="/services/hermes-connect/academy/business/auth/?mode=register" data-route>
-              <span class="option-state" data-i18n="available">ДОСТУПНО</span>
+              <span class="option-state" data-i18n="available">AVAILABLE</span>
               <strong data-i18n="academyOwner">Academy / Courses / Business Club</strong>
-              <small data-i18n="academyOwnerCopy">Sales CRM, learners, cohorts, lessons, assignments, reviews, CAC/LTV/ROMI, HR і retention.</small>
-              <em data-i18n="register">Зареєструвати →</em>
+              <small data-i18n="academyOwnerCopy">Sales CRM, learners, cohorts, lessons, assignments, reviews, CAC/LTV/ROMI, HR and retention.</small>
+              <em data-i18n="register">Register →</em>
             </a>
 
             <a class="business-option learner" href="/services/hermes-connect/academy/auth/?mode=register" data-route>
-              <span class="option-state neutral" data-i18n="learnerState">УЧАСНИК</span>
+              <span class="option-state neutral" data-i18n="learnerState">LEARNER</span>
               <strong data-i18n="academyLearner">Academy learner</strong>
-              <small data-i18n="academyLearnerCopy">Окремий learner workspace для навчання, evidence, прогресу та support.</small>
-              <em data-i18n="createLearner">Створити learner account →</em>
+              <small data-i18n="academyLearnerCopy">A separate learner workspace for learning, evidence, progress and support.</small>
+              <em data-i18n="createLearner">Create learner account →</em>
             </a>
           </div>
         </article>
@@ -83,21 +84,21 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 
       <section class="vertical-map" aria-labelledby="vertical-map-title">
         <div>
-          <p class="eyebrow" data-i18n="architecture">Архітектура Hermes Connect</p>
-          <h2 id="vertical-map-title" data-i18n="notUniversal">Не одна CRM для всіх бізнесів.</h2>
-          <p data-i18n="notUniversalCopy">Один canonical business profile може мати vertical-specific workspace. Нові verticals підключаються до тієї ж Hermes identity і Catalog, а не створюють дублікати компаній.</p>
+          <p class="eyebrow" data-i18n="architecture">Hermes Connect architecture</p>
+          <h2 id="vertical-map-title" data-i18n="notUniversal">Not one CRM for every business.</h2>
+          <p data-i18n="notUniversalCopy">One canonical business profile can have a vertical-specific workspace. New verticals attach to the same Hermes identity and Catalog instead of creating duplicate companies.</p>
         </div>
         <div class="vertical-list">
           <article><span>01</span><strong data-i18n="repairShort">Repair Shop</strong><small data-i18n="liveProduct">Live product</small></article>
           <article><span>02</span><strong data-i18n="academyShort">Academy</strong><small data-i18n="businessCrm">Business CRM + learner</small></article>
           <article class="preparing"><span>03</span><strong>Beauty & Wellness</strong><small data-i18n="privateFoundation">Private foundation</small></article>
-          <article class="preparing"><span>04</span><strong data-i18n="logistics">Logistics</strong><small data-i18n="preparing">Готується</small></article>
-          <article class="preparing"><span>05</span><strong data-i18n="marketing">Marketing</strong><small data-i18n="preparing">Готується</small></article>
-          <article class="preparing"><span>06</span><strong data-i18n="professional">Professional Services</strong><small data-i18n="preparing">Готується</small></article>
+          <article class="preparing"><span>04</span><strong data-i18n="logistics">Logistics</strong><small data-i18n="preparing">Preparing</small></article>
+          <article class="preparing"><span>05</span><strong data-i18n="marketing">Marketing</strong><small data-i18n="preparing">Preparing</small></article>
+          <article class="preparing"><span>06</span><strong data-i18n="professional">Professional Services</strong><small data-i18n="preparing">Preparing</small></article>
         </div>
       </section>
 
-      <p class="access-boundary" data-i18n="boundary">Реєстрація Hermes-акаунта не публікує бізнес у Catalog автоматично. Публікація бізнес-профілю — окремий opt-in. Приватні CRM-дані не стають публічними.</p>
+      <p class="access-boundary" data-i18n="boundary">Creating a Hermes account does not publish the business to Catalog automatically. Public business listing is a separate opt-in. Private CRM data never becomes public by registration alone.</p>
     </div>
   </main>
   <SiteFooter />
@@ -108,6 +109,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 
   const dictionary = {
     uk: {
+      pilotBoundary:"СТО — поточний живий пілот. Після реєстрації акаунта потрібно налаштувати бізнес; реєстрація не підтверджує активацію чи результати клієнта.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · один акаунт",title:"Один вхід. CRM — під ваш тип бізнесу.",
       lead:"Hermes identity спільна, але робоче середовище не універсальне. СТО отримує автомобілі, записи й послуги. Академія отримує ліди, консультації, учасників, потоки, завдання, маркетингові KPI та retention.",
       secure:"Безпечна сесія",checking:"Перевіряємо ваш Hermes-акаунт…",sessionActive:"Сесія активна",welcome:"Вітаємо,",activeCopy:"Ваші бізнеси та дозволені workspaces доступні через Hermes account switcher у верхньому меню.",openConnect:"Відкрити Hermes Connect",logout:"Вийти",
@@ -120,6 +122,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       loginError:"Не вдалося увійти. Перевірте email і пароль."
     },
     en: {
+      pilotBoundary:"Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.",
       back:"← Hermes Connect",eyebrow:"Hermes Connect · one account",title:"One sign-in. A CRM matched to your business.",
       lead:"Hermes identity is shared, but the workspace is not universal. Repair Shops get vehicles, bookings and services. Academies get leads, consultations, learners, cohorts, assignments, marketing KPI and retention.",
       secure:"Secure session",checking:"Checking your Hermes account…",sessionActive:"Session active",welcome:"Welcome,",activeCopy:"Your businesses and authorized workspaces are available through the Hermes account switcher in the header.",openConnect:"Open Hermes Connect",logout:"Log out",
@@ -134,14 +137,13 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   } as const;
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(window.location.search);
-  // Match the shared Connect shell: explicit choice, then saved choice, then English.
-  let savedLanguage: string | null = null;
-  try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
-  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
+  // The public clean route is English; Ukrainian is an explicit URL choice.
+  let lang: Lang = params.get("lang") === "uk" ? "uk" : "en";
 
   const withLang = (path: string) => {
     const url = new URL(path, window.location.origin);
-    url.searchParams.set("lang", lang);
+    if (lang === "en") url.searchParams.delete("lang");
+    else url.searchParams.set("lang", lang);
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {

@@ -107,11 +107,14 @@ const seoFunnels: Record<string, SeoFunnelContext> = {
 };
 const websiteContext = websiteFunnels[content.slug];
 const seoContext = seoFunnels[content.slug];
+const repairContext = content.slug === "/services/auto-repair-website-design/" || content.slug === "/services/seo-for-auto-repair-shops/"
+  ? `&vertical=auto_repair&source_path=${encodeURIComponent(content.slug)}`
+  : "";
 const websiteProjectBriefHref = websiteContext
-  ? `/paths/technology/?project=${websiteContext.project}#project-brief`
+  ? `/paths/technology/?project=${websiteContext.project}${repairContext}#project-brief`
   : "";
 const seoIntakeHref = seoContext
-  ? `/paths/marketing/?service=${seoContext.service}#contact`
+  ? `/paths/marketing/?service=${seoContext.service}${repairContext}#contact`
   : "";
 const parentLabel = seoContext ? "Marketing" : "IT Development";
 const parentHref = seoContext ? "/paths/marketing/" : "/paths/technology/";

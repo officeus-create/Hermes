@@ -200,9 +200,10 @@ const safeSchema = schema
         let stored = null;
         try { stored = window.localStorage.getItem("hermes-connect-language"); } catch {}
         const hasExplicitLocale = requested !== null;
+        const cleanEnglishAccess = window.location.pathname === "/services/hermes-connect/access/";
         const active = hasExplicitLocale
           ? (requested && supported.has(requested) ? requested : "en")
-          : (stored && supported.has(stored) ? stored : "en");
+          : (!cleanEnglishAccess && stored && supported.has(stored) ? stored : "en");
         document.documentElement.lang = active;
         try { window.localStorage.setItem("hermes-connect-language", active); } catch {}
 

@@ -18,9 +18,9 @@ test("Hermes Connect access routes one account into vertical-specific CRM", () =
   assert.match(page, /String\(owned\[0\]\.href\)/);
 });
 
-test("Access page keeps Ukrainian content and shares the header language preference", () => {
-  assert.match(page, /htmlLang="uk"/);
-  assert.match(page, /locale="uk"/);
+test("Access page defaults to English and retains explicit Ukrainian content", () => {
+  assert.match(page, /htmlLang="en"/);
+  assert.match(page, /locale="en"/);
   assert.match(page, /<SiteHeader\b/);
   assert.doesNotMatch(page, /<button[^>]*data-lang=/);
   assert.match(page, /hermes-connect-language/);
@@ -46,4 +46,13 @@ test("Hermes Connect product entry routes through the business-aware access page
   assert.match(product, /href="\/services\/hermes-connect\/access\/\?lang=uk"/);
   assert.match(product, /Choose business \/ Sign in/);
   assert.match(product, /href="\/services\/hermes-connect\/academy\/\?lang=uk"/);
+});
+
+
+test("clean access source renders English before runtime translation", () => {
+  const markup = page.split("<script>")[0];
+  assert.doesNotMatch(markup, /[\u0400-\u04ff]/);
+  assert.match(markup, /Repair Shop is the current live pilot/);
+  assert.match(markup, /does not confirm activation or customer results/);
+  assert.match(markup, /robots="noindex,nofollow"/);
 });
