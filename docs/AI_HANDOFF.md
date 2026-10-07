@@ -1560,6 +1560,15 @@ handoff_to: repository owner for review and release decision
 - Deferred: audit the separate Load Board carrier enhancer and shipper/dealer submission paths for the same retry invariant in their own bounded lanes. Do not claim production resolution until merge, deploy, and live readback are complete.
 - Release boundary: review branch only. Merge/deploy requires the repository owner's explicit confirmation.
 
+
+## 2026-10-08 — Codex / Project31 — Wisconsin vacancy runtime expiry
+
+- Contribution: Implementation Report; owner directive in Wisconsin recruiting thread, branch `fix/wisconsin-vacancy-runtime-expiry-20261008`, main base `d82279a8d81f5415137cefef4ac3cc656df52086`. Scope: existing Wisconsin page + Careers hub lifecycle, no new search owner.
+- Safe server-time guard removes expired JobPosting/Apply at validThrough without another build; shows review-required contact, updates hub open count, preserves reference links/canonical/robots/sitemap. Renewing requires dated owner-review provenance within the existing seven-day review window. No business terms or ATS state changed.
+- Current-head local evidence: build 399 pages/zero errors, full npm test, lifecycle boundaries and both route bundles PASS. Browser tests PENDING: preview startup recovered, Chromium 1228 executable missing and downloads truncated; selected 12 browser cases failed before launch. Exact-head CI/Pages preview mandatory; MERGED/DEPLOYED/LIVE not claimed.
+- Error: ERR-WI-JOBPOSTING-RUNTIME-20261008; full bounded evidence, seven business blockers and rollback appended to existing Recruiting Growth Loop runbook.
+- Compounding: SEO = truthful schema with existing owners retained; conversion = current-versus-reference CTA boundary; knowledge = expiry/renewal runbook; links = preserved page and hub references; architecture = two path-scoped middleware guards, no global rewrite/dependency; data/privacy = no applicant payload or analytics changes; scale/content reuse/AI = evaluated, deferred; verification = runtime fixture/static pass, browser/production pending.
+- Next owner: existing Wisconsin writer completes exact-head CI/preview; HR/CEO confirms operating model and actual applicant receiver; normal owner gate controls release.
 ## 2026-10-08 — Codex — Repair Shop public entry and commercial context
 
 - TASK: owner-assigned safe CRM/Repair fixes after #1746/#1748/#1747, base `d82279a8d81f5415137cefef4ac3cc656df52086`; branch `fix/repair-public-entry-context-20261008`, PR https://github.com/officeus-create/Hermes/pull/1749.
