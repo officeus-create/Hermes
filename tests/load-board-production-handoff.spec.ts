@@ -22,7 +22,7 @@ test("canonical Load Board upgrades preview handoffs to same-origin secure deliv
 
     if (url.pathname === "/api/logistics-lead") {
       deliveries.push({ url: request.url(), method: request.method(), body: request.postDataJSON() });
-      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) });
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, request_id: request.postDataJSON().request_id }) });
       return;
     }
 
@@ -78,7 +78,8 @@ test("canonical Load Board upgrades preview handoffs to same-origin secure deliv
   expect(deliveries[0].method).toBe("POST");
   expect(deliveries[0].body.lead_type).toBe("load_board_access");
   expect(deliveries[0].body.sales_tag).toBe("LOAD BOARD ACCESS / CARRIER");
-  await expect(page.locator("[data-vehicle-delivery-status]")).toContainText("Request received by Logistics Sales");
+  await expect(page.locator("[data-vehicle-delivery-status]")).toContainText("Submitted:");
+  await expect(page.locator("[data-vehicle-delivery-status]")).toHaveAttribute("data-human-receipt-state", "unconfirmed");
 
   await loadForm.locator('select[name="submitter_type"]').selectOption("private_party");
   await loadForm.locator('input[name="contact_name"]').fill("QA Customer");
@@ -109,5 +110,6 @@ test("canonical Load Board upgrades preview handoffs to same-origin secure deliv
   expect(deliveries[1].method).toBe("POST");
   expect(deliveries[1].body.lead_type).toBe("posted_load");
   expect(deliveries[1].body.sales_tag).toBe("POSTED LOAD / CUSTOMER");
-  await expect(page.locator("[data-load-delivery-status]")).toContainText("Request received by Logistics Sales");
+  await expect(page.locator("[data-load-delivery-status]")).toContainText("Submitted:");
+  await expect(page.locator("[data-load-delivery-status]")).toHaveAttribute("data-delivery-state", "unconfirmed");
 });

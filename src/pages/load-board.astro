@@ -8,14 +8,34 @@ import CarrierRpmCalculator from "../components/CarrierRpmCalculator.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://hermeslogisticsus.com/load-board/#webpage",
+  url: "https://hermeslogisticsus.com/load-board/",
+  name: "Hermes Load Board",
+  description: "A car hauling load review workspace with approved active records when available, separate non-bookable market examples, and a vehicle transportation request path.",
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+  mainEntity: {
+    "@type": "WebApplication",
+    "@id": "https://hermeslogisticsus.com/load-board/#application",
+    name: "Hermes Load Board",
+    url: "https://hermeslogisticsus.com/load-board/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web browser",
+    featureList: ["Load filtering", "RPM and deadhead calculator", "Vehicle transport request review"],
+    description: "Review approved active public records when available and separate non-bookable market examples. Requests require review and do not create a booking.",
+  },
+};
 import "../styles/features/load.css";
 ---
 
 <BaseLayout
   title="Car Hauler Load Board | Search Auto Transport Loads | Hermes"
   description="Search and review source-gated car hauling and auto transport load opportunities plus a clearly labeled market preview with lane, equipment, deadhead, timing, rate, paperwork, and carrier-fit data."
+  schema={schema}
 >
-  <div class="load-board-page">
+  <div class="load-board-page" id="top">
     <SiteHeader theme="light" activePath="/load-board/" />
     <main id="main-content">
       <section class="load-board-hero">
@@ -23,6 +43,7 @@ import "../styles/features/load.css";
           <div>
             <p class="eyebrow">Hermes Logistics · Car Hauling Load Board</p>
             <h1>Car Hauler Load Board: Search Auto Transport Loads</h1>
+            <p><a class="button button-primary" data-hero-transport-cta href="/logistics/request-vehicle-transport/#transport-intake">Customer, shipper or dealer? Request vehicle transport <ArrowRight size={18} aria-hidden="true" /></a></p>
             <p>Search source-gated active auto transport opportunities when approved public records are available, then use the clearly labeled market preview to evaluate lane, equipment, deadhead, timing, rate, paperwork, and carrier fit. The live marketplace may show zero approved records. Customers, shippers, and dealers who need real vehicle transportation can go directly to the production transport-request path. Carrier access and load requests are reviewed separately; submission itself is not a booking.</p>
           </div>
           <div class="load-board-safety">
@@ -450,6 +471,7 @@ import "../styles/features/load.css";
 </BaseLayout>
 
 <script>
+  import { requireSubmittedReceipt, submittedReceiptCopy, submissionRequestId } from "../lib/logistics-submission-receipt";
   import {
     buildLoadBoardPayload,
     buildLoadBoardPreview,
@@ -517,13 +539,16 @@ import "../styles/features/load.css";
     if (vehicleEmail) vehicleEmail.hidden = vehicleLive;
     if (vehicleSendButton) vehicleSendButton.hidden = !vehicleLive;
     if (vehicleDeliveryStatus) {
+      vehicleDeliveryStatus.dataset.submissionState = "prepared";
+      vehicleDeliveryStatus.dataset.deliveryState = "unconfirmed";
+      vehicleDeliveryStatus.dataset.humanReceiptState = "unconfirmed";
       vehicleDeliveryStatus.textContent = vehicleLive
         ? "Review the lead, then send it securely to Logistics Sales."
         : "Email is prepared with the sales tag. Review it and press Send in your email application.";
     }
     if (vehicleBoundary) {
       vehicleBoundary.textContent = vehicleLive
-        ? "The request is not delivered until you press Send to Logistics Sales and receive confirmation."
+        ? "Sending can confirm submission to the request service. Delivery and human receipt require separate evidence; submission does not create a booking."
         : "Preview mode does not send or store the request automatically.";
     }
     if (vehicleResult) {
@@ -682,6 +707,9 @@ import "../styles/features/load.css";
     if (loadSendButton) loadSendButton.hidden = !loadLive;
     if (loadSalesTag) loadSalesTag.textContent = `Sales tag: ${activeLoadLead.sales_tag}`;
     if (loadDeliveryStatus) {
+      loadDeliveryStatus.dataset.submissionState = "prepared";
+      loadDeliveryStatus.dataset.deliveryState = "unconfirmed";
+      loadDeliveryStatus.dataset.humanReceiptState = "unconfirmed";
       loadDeliveryStatus.textContent = loadLive
         ? "Review the posted load, then send it securely to Logistics Sales."
         : "Email is prepared with the posted-load sales tag. Review it and press Send in your email application.";
@@ -727,7 +755,7 @@ import "../styles/features/load.css";
 
     button.disabled = true;
     deliveryStatus.textContent = "Sending the request securely…";
-    const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+    const requestId = submissionRequestId(lead);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10000);
     try {
@@ -742,11 +770,15 @@ import "../styles/features/load.css";
         }),
         signal: controller.signal,
       });
-      if (!response.ok) throw new Error("delivery_failed");
-      deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review it and follow up.";
+      const receipt = await requireSubmittedReceipt(response, requestId);
+      deliveryStatus.dataset.submissionState = receipt.submission;
+      deliveryStatus.dataset.deliveryState = receipt.delivery;
+      deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
+      deliveryStatus.textContent = submittedReceiptCopy;
       button.hidden = true;
     } catch {
-      deliveryStatus.textContent = "Delivery was not confirmed. Your request may not have been received; please try again or use the prepared email option.";
+      deliveryStatus.dataset.submissionState = "unconfirmed";
+      deliveryStatus.textContent = "Submission was not confirmed. Your request may have been accepted; retry or use the prepared email option. Delivery and human receipt remain unconfirmed.";
     } finally {
       window.clearTimeout(timeout);
       button.disabled = false;

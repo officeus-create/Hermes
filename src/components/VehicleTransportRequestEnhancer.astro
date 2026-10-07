@@ -1,4 +1,5 @@
 <script>
+  import { requireSubmittedReceipt, submittedReceiptCopy, submissionRequestId } from "../lib/logistics-submission-receipt";
   import {
     buildLoadBoardPayload,
     buildLoadBoardPreview,
@@ -30,6 +31,10 @@
     if (canonicalProductionHost) {
       form.dataset.leadMode = "live";
       if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    }
+    const modeNote = form.querySelector<HTMLElement>("[data-transport-mode-note]");
+    if (modeNote && form.dataset.leadMode === "live") {
+      modeNote.textContent = "Live request intake: review your details, then submit to the request service. Submission does not confirm delivery, human receipt, carrier assignment, or booking.";
     }
 
     const today = new Date();
@@ -169,6 +174,9 @@
       if (activeLead) email.href = buildLogisticsSalesMailto(activeLead, "officeus@hermeslogisticsus.com");
 
       const live = form.dataset.leadMode === "live";
+      deliveryStatus.dataset.submissionState = "prepared";
+      deliveryStatus.dataset.deliveryState = "unconfirmed";
+      deliveryStatus.dataset.humanReceiptState = "unconfirmed";
       sendButton.hidden = !live || !deliverable;
       deliveryStatus.textContent = deliverable
         ? live
@@ -176,7 +184,7 @@
           : "The request is prepared for review. Open the prepared email; preview mode does not send or store it automatically."
         : "Correct the missing or invalid transport information before choosing a handoff.";
       boundary.textContent = live
-        ? "A success state appears only after the approved receiver confirms delivery. Capacity, price, pickup timing, equipment, and carrier assignment remain unconfirmed until separately accepted."
+        ? "Submitted means the request service accepted the handoff. Delivery and human receipt require separate evidence. Capacity, price, pickup timing, equipment, and carrier assignment remain unconfirmed until separately accepted."
         : "Preview mode creates no booking, carrier assignment, CRM record, load publication, payment, or automatic message.";
 
       result.dataset.decision = review.decision;
@@ -230,7 +238,7 @@
 
       sendButton.disabled = true;
       deliveryStatus.textContent = "Sending the request securely…";
-      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const requestId = submissionRequestId(activeLead);
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), 10000);
 
@@ -246,17 +254,21 @@
           }),
           signal: controller.signal,
         });
-        if (!response.ok) throw new Error("delivery_failed");
+        const receipt = await requireSubmittedReceipt(response, requestId);
 
-        deliveryStatus.textContent = "Request received by Logistics Sales for transport review.";
+        deliveryStatus.dataset.submissionState = receipt.submission;
+        deliveryStatus.dataset.deliveryState = receipt.delivery;
+        deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
+        deliveryStatus.textContent = submittedReceiptCopy;
         sendButton.hidden = true;
         pushEvent({
-          event: "vehicle_transport_delivery_confirmed",
+          event: "vehicle_transport_submitted",
           ...baseEvent,
           preview_status: result.dataset.decision || "unknown",
         });
       } catch {
-        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email to contact Logistics Sales.";
+        deliveryStatus.dataset.submissionState = "unconfirmed";
+        deliveryStatus.textContent = "Submission was not confirmed. The request may have been accepted; retry or use the prepared email. Delivery was not confirmed and human receipt remains unknown.";
       } finally {
         window.clearTimeout(timeout);
         sendButton.disabled = false;

@@ -35,9 +35,9 @@ const schema = [
   robots="noindex,follow"
   schema={schema}
 >
-  <SiteHeader activePath="/paths/logistics/" />
+  <SiteHeader activePath="/paths/logistics/" contactHref="#transport-intake" />
   <main id="main-content" class="transport-request-page">
-    <section class="transport-request-hero">
+    <section class="transport-request-hero" id="top">
       <div class="shell transport-request-hero-grid">
         <div>
           <nav class="transport-request-breadcrumbs" aria-label="Breadcrumb">
@@ -48,11 +48,11 @@ const schema = [
           <p class="eyebrow">Hermes Logistics · Direct customer intake</p>
           <h1>Request a Vehicle Transportation Review</h1>
           <p class="transport-request-lead">
-            Prepare a real dealer, auction, shipper, broker, business, or private-customer request without entering the fictional Load Board demo. Logistics Sales reviews route, timing, condition, release context, equipment needs, and the next practical step.
+            Prepare a dealer, auction, shipper, broker, business, or private-customer transportation request. Hermes reviews route, timing, condition, release context, equipment needs, and the next practical step. Submission does not guarantee carrier availability or a booking.
           </p>
           <div class="transport-request-actions">
             <a class="button button-primary" href="#transport-intake">Prepare the request <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button button-ghost" href="/load-board/?role=shipper#post-load">Preview the Load Board demo</a>
+            <a class="button button-ghost" href="/load-board/?role=shipper#post-load">Explore Load Board and labeled market examples</a>
           </div>
         </div>
         <aside class="transport-request-expectation">
@@ -243,9 +243,9 @@ const schema = [
             </label>
 
             <button class="button button-primary" type="submit">Review transport request</button>
-            <p class="transport-mode-note">
+            <p class="transport-mode-note" data-transport-mode-note>
               {leadMode === "live"
-                ? "Secure delivery is available only when the approved same-origin receiver confirms the request."
+                ? "Live request intake: review your details, then submit to the request service. Submission does not confirm delivery, human receipt, carrier assignment, or booking."
                 : "Preview mode is active. The form prepares a review and email handoff without automatic delivery or storage."}
             </p>
           </form>
