@@ -8,27 +8,38 @@ const pages = [
     route: "/ua/", path: "ua/index.html", lang: "uk",
     requiredLabels: ["Технології", "Маркетинг", "Академія", "Логістика"],
     requiredCtas: ["Обрати напрям", "Написати команді", "Надіслати опис електронною поштою"],
+    requiredCurrentTruth: ["Поточний статус продуктів", "Hermes Connect · СТО", "Логістика США", "SEO/GEO"],
+    forbiddenStaleTruth: ["медіаплани на 3, 6, 9 або 12 місяців", "Робочий прототип", "owner-operators", "production-функції"],
   },
   {
     route: "/ru/", path: "ru/index.html", lang: "ru",
     requiredLabels: ["Технологии", "Маркетинг", "Академия", "Логистика"],
     requiredCtas: ["Выбрать направление", "Написать команде", "Отправить описание по электронной почте"],
     requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
+    requiredCurrentTruth: ["Текущий статус продуктов", "Hermes Connect · СТО", "Логистика США", "SEO/GEO"],
+    forbiddenStaleTruth: ["медиапланы на 3, 6, 9 или 12 месяцев", "Рабочий прототип", "owner-operators", "production-функции"],
   },
   {
     route: "/es/", path: "es/index.html", lang: "es",
     requiredLabels: ["Tecnología", "Marketing", "Academia", "Logística"],
     requiredCtas: ["Elegir un área", "Escribir al equipo", "Enviar la descripción por email"],
+    requiredCurrentTruth: ["Estado actual de los productos", "Hermes Connect · Talleres", "Logística de EE. UU.", "SEO/GEO"],
+    forbiddenStaleTruth: ["planes de medios de 3, 6, 9 o 12 meses", "Prototipo funcional", "owner-operators", "una demo,"],
   },
   {
     route: "/it/", path: "it/index.html", lang: "it",
     requiredLabels: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
     requiredCtas: ["Scegli un'area", "Scrivi al team", "Invia la descrizione via email"],
+    requiredTitleText: "accademia",
+    requiredCurrentTruth: ["Stato attuale dei prodotti", "Hermes Connect · Officine", "Logistica USA", "SEO/GEO"],
+    forbiddenStaleTruth: ["media plan da 3, 6, 9 o 12 mesi", "Prototipo funzionale", "owner-operator", "owner canonico", "owner canonici", "una demo,"],
   },
   {
     route: "/fr/", path: "fr/index.html", lang: "fr",
     requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
     requiredCtas: ["Choisir un pôle", "Écrire à l'équipe", "Envoyer la description par email"],
+    requiredCurrentTruth: ["État actuel des produits", "Hermes Connect · Ateliers", "Logistique américaine", "SEO/GEO"],
+    forbiddenStaleTruth: ["plans médias sur 3, 6, 9 ou 12 mois", "Prototype fonctionnel", "owner-operators"],
   },
   { route: "/ua/academy/", path: "ua/academy/index.html", lang: "uk", requiredLabels: ["Академія"], requiredCtas: [] },
   { route: "/ru/academy/", path: "ru/academy/index.html", lang: "ru", requiredLabels: ["Академия"], requiredCtas: [] },
@@ -139,6 +150,12 @@ for (const page of pages) {
   for (const cta of page.requiredCtas ?? []) {
     if (!visible.includes(cta)) errors.push(`${page.route}: natural-language CTA is missing: ${cta}`);
   }
+  for (const truth of page.requiredCurrentTruth ?? []) {
+    if (!visible.includes(truth)) errors.push(`${page.route}: current localized product truth is missing: ${truth}`);
+  }
+  for (const stale of page.forbiddenStaleTruth ?? []) {
+    if (visible.includes(stale)) errors.push(`${page.route}: stale localized product model is still visible: ${stale}`);
+  }
   for (const href of page.requiredHrefs ?? []) {
     if (!html.includes(`href="${href}"`)) errors.push(`${page.route}: required locale-safe href is missing: ${href}`);
   }
@@ -163,6 +180,9 @@ for (const page of pages) {
   const title = getTagText(html, "title");
   const description = getMetaDescription(html);
   if (!title) errors.push(`${page.route}: localized title is missing`);
+  if (page.requiredTitleText && !title.toLowerCase().includes(page.requiredTitleText.toLowerCase())) {
+    errors.push(`${page.route}: localized title is missing required language text: ${page.requiredTitleText}`);
+  }
   if (!description) errors.push(`${page.route}: localized meta description is missing`);
   if (titles.has(title)) errors.push(`${page.route}: localized title duplicates ${titles.get(title)}: ${title}`);
   else titles.set(title, page.route);
