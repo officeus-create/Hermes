@@ -21,11 +21,12 @@ const call = async (body, env = {}, headers = {}) => {
 {
   const { json } = await call({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const names = json.result.tools.map((tool) => tool.name);
-  assert.deepEqual(names, ['get_product_overview','recommend_start_path','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
+  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
   assert.equal(json.result.tools[0].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[2].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[3].annotations.readOnlyHint, true);
-  assert.equal(json.result.tools[4].annotations.readOnlyHint, false);
+  assert.equal(json.result.tools[4].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[5].annotations.readOnlyHint, false);
 }
 
 {
@@ -97,4 +98,15 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   const { json } = await call({jsonrpc:'2.0',id:12,method:'tools/call',params:{name:'get_product_learning_policy',arguments:{}}});
   assert.ok(json.result.structuredContent.excluded_data.includes('raw full conversations'));
   assert.match(json.result.structuredContent.release_rule, /SkillCandidate|CapabilityCandidate/);
+}
+
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:13,method:'tools/call',params:{name:'build_crm_onboarding_plan',arguments:{business_type:'roofing company',primary_problem:'leads arrive from several places and follow-up is inconsistent',desired_outcome:'one measurable follow-up pipeline',existing_crm:false,current_stack:['Google Workspace']}}});
+  const plan = json.result.structuredContent;
+  assert.match(plan.strategy, /Problem -> minimum approved connections/);
+  assert.ok(plan.recommended_connections.some((item) => item.capability === 'Business email'));
+  assert.match(plan.crm_bootstrap_prompt, /Use only the sources and connectors I explicitly approve/);
+  assert.match(plan.continuity_rule, /durable provisioning job/);
+  assert.match(plan.authorization_rule, /recommendation never grants access/);
 }
