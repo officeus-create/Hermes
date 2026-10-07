@@ -163,6 +163,7 @@ export async function requireParticipantInviteRelations(db, companyId, ownerId, 
     LIMIT 1
   `).bind(value.programId, companyId, ownerId).first();
   if (!program) return { error: "participant_invite_program_not_found" };
+  if (String(program.status) !== "active") return { error: "participant_invite_program_not_active" };
 
   const cohort = await db.prepare(`
     SELECT id,name,code,status,capacity,program_id,archived_at
