@@ -3,13 +3,13 @@
 <aside class="public-traffic-counter" data-public-traffic-counter aria-label="Hermes site traffic">
   <div class="public-traffic-counter__head">
     <span class="public-traffic-counter__pulse" aria-hidden="true"></span>
-    <strong>Site traffic</strong>
+    <strong data-traffic-title>Site traffic</strong>
   </div>
   <div class="public-traffic-counter__metrics">
-    <span><b data-traffic-sessions-today>—</b><small>visitor sessions today</small></span>
-    <span><b data-traffic-views-today>—</b><small>views today</small></span>
-    <span><b data-traffic-sessions-month>—</b><small>visitor sessions this month</small></span>
-    <span><b data-traffic-views-month>—</b><small>views this month</small></span>
+    <span><b data-traffic-sessions-today>—</b><small data-traffic-sessions-today-label>visitor sessions today</small></span>
+    <span><b data-traffic-views-today>—</b><small data-traffic-views-today-label>views today</small></span>
+    <span><b data-traffic-sessions-month>—</b><small data-traffic-sessions-month-label>visitor sessions this month</small></span>
+    <span><b data-traffic-views-month>—</b><small data-traffic-views-month-label>views this month</small></span>
   </div>
   <p data-traffic-note>Consent-based aggregate · UTC</p>
 </aside>
@@ -25,7 +25,28 @@
       return;
     }
 
-    const fmt = new Intl.NumberFormat("en-US");
+    const supported = new Set(["en","ru","uk","es","it","fr"]);
+    const requested = String(new URLSearchParams(window.location.search).get("lang") || "").toLowerCase();
+    const documentLocale = String(document.documentElement.lang || "en").toLowerCase();
+    const locale = supported.has(requested) ? requested : supported.has(documentLocale) ? documentLocale : "en";
+    const copy = {
+      en:{title:"Site traffic",sessionsToday:"visitor sessions today",viewsToday:"views today",sessionsMonth:"visitor sessions this month",viewsMonth:"views this month",base:"Consent-based aggregate · UTC",updated:"Updated",recent:"Updated recently",suffix:"consent-based aggregate · browser sessions are not unique people",unavailable:"Traffic temporarily unavailable",aria:"Hermes site traffic"},
+      ru:{title:"Посещаемость сайта",sessionsToday:"сессии посетителей сегодня",viewsToday:"просмотры сегодня",sessionsMonth:"сессии посетителей за месяц",viewsMonth:"просмотры за месяц",base:"Агрегат по согласию · UTC",updated:"Обновлено",recent:"Недавно обновлено",suffix:"агрегат по согласию · браузерные сессии не равны уникальным людям",unavailable:"Данные о трафике временно недоступны",aria:"Посещаемость сайта Hermes"},
+      uk:{title:"Відвідуваність сайту",sessionsToday:"сесії відвідувачів сьогодні",viewsToday:"перегляди сьогодні",sessionsMonth:"сесії відвідувачів за місяць",viewsMonth:"перегляди за місяць",base:"Агреговані дані за згодою · UTC",updated:"Оновлено",recent:"Нещодавно оновлено",suffix:"агреговані дані за згодою · браузерні сесії не дорівнюють унікальним людям",unavailable:"Дані про трафік тимчасово недоступні",aria:"Відвідуваність сайту Hermes"},
+      es:{title:"Tráfico del sitio",sessionsToday:"sesiones de visitantes hoy",viewsToday:"vistas hoy",sessionsMonth:"sesiones de visitantes este mes",viewsMonth:"vistas este mes",base:"Agregado con consentimiento · UTC",updated:"Actualizado",recent:"Actualizado recientemente",suffix:"agregado con consentimiento · las sesiones del navegador no son personas únicas",unavailable:"Tráfico temporalmente no disponible",aria:"Tráfico del sitio Hermes"},
+      it:{title:"Traffico del sito",sessionsToday:"sessioni visitatori oggi",viewsToday:"visualizzazioni oggi",sessionsMonth:"sessioni visitatori questo mese",viewsMonth:"visualizzazioni questo mese",base:"Aggregato con consenso · UTC",updated:"Aggiornato",recent:"Aggiornato di recente",suffix:"aggregato con consenso · le sessioni browser non sono persone uniche",unavailable:"Traffico temporaneamente non disponibile",aria:"Traffico del sito Hermes"},
+      fr:{title:"Trafic du site",sessionsToday:"sessions visiteurs aujourd’hui",viewsToday:"vues aujourd’hui",sessionsMonth:"sessions visiteurs ce mois-ci",viewsMonth:"vues ce mois-ci",base:"Agrégat avec consentement · UTC",updated:"Mis à jour",recent:"Mis à jour récemment",suffix:"agrégat avec consentement · les sessions navigateur ne sont pas des personnes uniques",unavailable:"Trafic temporairement indisponible",aria:"Trafic du site Hermes"}
+    }[locale];
+    root.setAttribute("aria-label",copy.aria);
+    const setText=(selector,value)=>{const node=root.querySelector(selector);if(node)node.textContent=value;};
+    setText("[data-traffic-title]",copy.title);
+    setText("[data-traffic-sessions-today-label]",copy.sessionsToday);
+    setText("[data-traffic-views-today-label]",copy.viewsToday);
+    setText("[data-traffic-sessions-month-label]",copy.sessionsMonth);
+    setText("[data-traffic-views-month-label]",copy.viewsMonth);
+    setText("[data-traffic-note]",copy.base);
+
+    const fmt = new Intl.NumberFormat(locale === "en" ? "en-US" : locale);
     const put = (selector, value) => {
       const node = root.querySelector(selector);
       if (node) node.textContent = fmt.format(Number(value || 0));
@@ -46,14 +67,14 @@
         if (note) {
           const observedAt = data.updated_at ? new Date(data.updated_at) : null;
           const observedLabel = observedAt && !Number.isNaN(observedAt.getTime())
-            ? "Updated " + observedAt.toISOString().slice(0, 16).replace("T", " ") + " UTC"
-            : "Updated recently";
-          note.textContent = observedLabel + " · consent-based aggregate · browser sessions are not unique people";
+            ? copy.updated + " " + observedAt.toISOString().slice(0, 16).replace("T", " ") + " UTC"
+            : copy.recent;
+          note.textContent = observedLabel + " · " + copy.suffix;
         }
       })
       .catch(() => {
         const note = root.querySelector("[data-traffic-note]");
-        if (note) note.textContent = "Traffic temporarily unavailable";
+        if (note) note.textContent = copy.unavailable;
       });
   })();
 </script>
