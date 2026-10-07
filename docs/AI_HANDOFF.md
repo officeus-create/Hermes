@@ -1633,3 +1633,29 @@ handoff_to: repository reviewer and Logistics operations
 ### PR #1752 — rebase after #1750, 2026-10-08
 
 - Rebased the same bounded review package onto main `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Both #1749 and #1750 release records plus the prior Load Board synchronization receipt are preserved. Only additive journal conflicts required resolution. Load Board runtime and regression files remain byte-identical to `247a7ad2`; exact-head validation and merge readiness are recorded in PR #1752. No new PR, production merge or deploy.
+
+## Hermes mobile after #1747 — bounded implementation handoff, 2026-10-07 UTC
+
+```yaml
+ai_name: ChatGPT / Codex
+model: GPT-6 family (exact runtime model not exposed)
+chat_or_thread: Technology — WEB Сайт / Hermes mobile после 1747
+role: mobile evidence and bounded cache-delivery implementation
+department: Technology / WEB
+date: 2026-10-07
+contribution_type: Implementation Report
+confidence: 95
+task_id: existing WEB recovery task after PR 1747
+source_of_truth: latest owner instruction; docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md
+authority_scope: Branch write / Platform read / Draft PR; no merge or deploy
+write_scope: [LogisticsCommercialPage image URL, bundled approved image, provenance, focused tests, existing recovery/error/handoff docs]
+specialization: [Lighthouse repeated measurement, trace/network evidence, Astro media delivery]
+not_specialized_in: [field conversion attribution, CDN administrative mutation]
+reviewed: [AGENTS.md, collaboration protocol/current-state snapshot, current main d82279a8, PR1747, successful deploy37686365007, production run37686780431, active PR1744 and1679 overlap, six fresh production traces, six paired local traces, edge body hashes, build/contracts/browser results]
+not_reviewed: [field CrUX/conversions, after-patch production, inaccessible native current task Page]
+handoff_to: existing WEB release reviewer / owner
+```
+
+Same task and existing recovery artifact preserved. Main d822 is LIVE; old EVENT_WAIT superseded. Production Home median90/LCP2071.636ms/TBT0; Dealer79/LCP2579.6585ms/TBT0. No sustained concrete multi-second scripting stack; no global runtime/Home/CSS patch, preserving active writers1744/1679. Proven stale hero222111 vs optimized90337 bytes; bundled content-hashed URL fixes delivery identity, all business content/receivers intact. Controlled local Dealer medianLCP5649.966→5035.2165ms (three paired improvements); not production after.
+
+Build/full contracts pass; focused browser4/4 and visual readbacks390/768/1440 pass. Full local browser1965pass/25fail/16skip; six unrelated failures reproduce on main, others unresolved. New selector fixed and rerun green. No merge/deploy or real lead sends. NEXT: exact-head CI/review, independently authorized release then live byte/three-run production acceptance. Detailed settings, hashes, limitations and learning are in existing recovery/error register, not a parallel backlog.

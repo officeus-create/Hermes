@@ -222,3 +222,70 @@ PR #1746 содержит локальный lab-результат Performance 
 | https://hermeslogisticsus.com/ua/gb/london/us-logistics-training/ | #top |
 | https://hermeslogisticsus.com/ua/gb/london/it-web-development/ | #top |
 | https://hermeslogisticsus.com/ua/gb/london/marketing/ | #top |
+
+
+## Остаточная mobile-производительность после #1747 — bounded evidence, 2026-10-07 UTC
+
+Статус: IMPLEMENTED / TARGET_VERIFIED, draft release gate pending. Это продолжение существующей Technology — WEB Сайт задачи, а не новый backlog. Ожидание deploy #1747 завершено; предыдущий EVENT_WAIT ниже/выше — исторический.
+
+### Точная ревизия и production evidence
+
+Свежий readback main = merge #1747 `d82279a8d81f5415137cefef4ac3cc656df52086`. Merge: 2026-10-07 21:01:04 UTC. [Deploy 37686365007](https://github.com/officeus-create/Hermes/actions/runs/37686365007) SUCCESS, updated 21:04:32 UTC; [production Lighthouse 37686780431](https://github.com/officeus-create/Hermes/actions/runs/37686780431) SUCCESS, 21:04:34–21:08:45 UTC. MERGED отдельно от LIVE: реальные HTML/asset GET и новые lab reports сняты после публикации.
+
+Три свежих production mobile-прогона для каждого при одинаковых настройках Lighthouse 13.4.1 / Chrome headless shell 155.0.8059.39: simulated mobile, CPU 4x, RTT 150 ms, throughput 1638.4 kbps, 412×823, DPR 1.75; холодный профиль, consent untouched, без кликов. HTTPS proxy/certificate flag одинаковые во всех шести. `configSettings` SHA256 `f2b0f3fa0bad310eaa856b7e9ddb94cc71b0aae3969c34eccceac0db73e3457a`. Первые два разведочных прогона заменены после окончания параллельных unit tests; финальная серия без concurrent build/test нагрузки.
+
+| Production owner / run | fetchTime UTC 2026-10-07 | Performance | LCP ms | TBT ms |
+| --- | --- | ---: | ---: | ---: |
+| Home 1 | 21:23:25.484 | 91 | 2071.636 | 0 |
+| Home 2 | 21:21:49.101 | 90 | 1979.232 | 0 |
+| Home 3 | 21:22:38.997 | 89 | 2072.2565 | 0 |
+| **Home median** | after #1747, before this patch | **90** | **2071.636** | **0** |
+| Dealer 1 | 21:23:48.906 | 79 | 2535.600 | 8 |
+| Dealer 2 | 21:21:24.965 | 79 | 2609.516 | 0 |
+| Dealer 3 | 21:22:13.442 | 84 | 2579.6585 | 0 |
+| **Dealer median** | after #1747, before this patch | **79** | **2579.6585** | **0** |
+
+SEO = 100 in all six. GitHub single-run Home 57 / LCP 3.7 s / TBT 3000 ms, Dealer 59 / 3.4 s / 3130 ms are valid earlier observations, not stable medians and not directly comparable across hosts/browser versions. Owner-provided other single observations from 37686780431: LoadBoard 83 / 3.5 s / 190 ms; dispatch 85 / 3.8 s / 0 ms; /services/seo/ 98 / 1.8 s / 50 ms. These remain single results; no three-run medians claimed for those routes. Workflow 37674883076 / main 6fb10af is pre-#1747 and never used as its effect.
+
+### Trace findings and bounded decision
+
+All three Home LCP nodes: `nav#paths > a.home-master-route > span.home-portal-art > img`, logistics scene imagery. All three Dealer LCP nodes: `div.shell > div.commercial-hero-grid > div > p.commercial-lead`, text, not hero image. Multisecond scripting/TBT is not sustained in these traces. Long-task URL alone does not identify a function; no repeatable expensive concrete call-stack justifies another runtime patch. Raw observed trace timings and simulated LCP timings are different measurement layers, not interchangeable.
+
+BaseLayout CSS still about 44,055 compressed transfer bytes, render-blocking estimate ~300–310 ms in inspected reports. Estimate is not guaranteed savings. Active #1744 owns overlapping global layout/locale work and #1679 Home scene work; no global CSS/Home/runtime edits or duplicated #1747 TreeWalker/runtime-scope work. Main-thread rendering totals are not TBT. No field-CWV/conversion claim.
+
+### Confirmed stale edge image and implemented correction
+
+Unversioned `/images/path-logistics-system.jpg` returned **222,111 body bytes** (old GitHub 222,741 transfer includes headers) after successful deploy, CF HIT with long cache lifetime. Exact d822 main image is **90,337 bytes**. Query `?revision=d82279a8` returns that exact optimized payload. Repeated three GET pairs at 21:28:26/33, 21:28:39/46, 21:28:53/59 UTC confirm the same mismatch; all successful, HIT. New production Dealer reports also observe resourceSize 222,111 (transfer varies 222,716–222,748).
+
+Old payload SHA256: `4ec293290e5e3a1188bdb16f81e99a6f4fa30c048db265c4fb82e04e531a831d`.
+Optimized/main/candidate SHA256: `9d965fe79dadec6075549ce07538056c60ec7952275e6a2a482a9e2061b4cb6c`.
+Reduction **131,774 bytes / 59.33%**. This proves stale delivery, not an independent TBT root cause.
+
+Scoped implementation: bundle the same approved 90,337-byte image through Astro, producing `/_astro/path-logistics-system.dXZ0XwNU.jpg`; use one hashed URL consistently for hero, preload, social and Service schema image. Source pixels, title/H1, schema identity, text, CTA receivers, forms, dimensions and eager/high priority remain unchanged. Other custom images and legacy public URL remain valid. Media provenance remains NEEDS_OWNER_PROVENANCE; no invented rights or expanded placement. Source implementation commit `ad8dc5eb551ac746460ca911c25fbd9be474815a`.
+
+### Comparable before/after, controlled local replay — NOT production after
+
+Three interleaved pairs, same URL/host/browser/settings and cold profiles, after all tests stopped. Before = untouched d822 source build with only disposable generated hero replaced by exact captured stale edge payload; after = candidate build. Static HTTP transport serves CSS/JS uncompressed in both. This reproduces payload contention, but differs from production; absolute scores must not be compared with production medians.
+
+| Dealer local replay | Performance | LCP ms | TBT ms |
+| --- | ---: | ---: | ---: |
+| Before 1 | 65 | 5663.2875 | 4 |
+| After 1 | 67 | 5035.2165 | 0 |
+| Before 2 | 70 | 5573.493 | 0 |
+| After 2 | 72 | 4964.466 | 4 |
+| Before 3 | 65 | 5649.966 | 2 |
+| After 3 | 67 | 5036.991 | 0 |
+| **Before median** | **65** | **5649.966** | **2** |
+| **After median** | **67** | **5035.2165** | **0** |
+
+LCP median improvement **614.7495 ms / 10.88%**; each paired after improves (~609–628 ms). LCP stays the same lead paragraph. Network trace proves hero resourceSize 222,111 → 90,337 and transfer 222,302 → 90,527. TBT 2 → 0 ms is negligible, not a heavy-TBT fix. No Home after claim because Home is unchanged. No after-fix production median exists until a separately authorized release.
+
+### Validation, remaining gate and NEXT
+
+Build/typecheck PASS: 399 routes, 0 errors/0 warnings (116 hints). Full npm test PASS. New static media/hash/preload/schema/CTA contracts PASS. Final focused browser checks PASS 4/4 (Dealer/dispatch × desktop/mobile). Reduced-motion screenshots/readbacks at 390/768/1440 confirm no horizontal overflow and unchanged CTA destinations; no lead submit.
+
+Full local browser suite: **1965 passed, 25 failed, 16 skipped**. One new test initially failed because a legitimate repeated CTA made its selector ambiguous; selector narrowed and final focused 4/4 passed. Six unrelated failures reproduced on untouched d822 with same harness: Academy Ukraine 390 funnel, Catalog V4 readability, internal AI RU390, Connect Hub persisted RU, private AI responsive matrix, London RU responsive. Ten other selected failures passed on baseline replay; remaining failures are UNRESOLVED/flaky/harness candidates, not all declared pre-existing. Local harness uses headless shell and same-invocation static server because normal Chrome profile/preview server are unavailable. Full green browser acceptance is not claimed or waived.
+
+NEXT: reviewer checks narrow cache-delivery diff; current-head CI must resolve/validate required browser gate. No merge/deploy performed. After separately approved successful exact-SHA deploy, verify hashed asset 90,337 bytes at edge and repeat comparable three-run production Dealer/Home control. Global CSS/Home improvements remain with current writers. Existing task measurement/implementation portion is bounded complete; release acceptance remains pending. Direct ChatGPT Page task update is ACCESS_GAP: two targeted Pages searches returned only unrelated guide, so no unrelated Page or duplicate task was modified.
+
+Evidence bundle: `Hermes_Mobile_Evidence_2026-10-08.zip` contains production reports, controlled replay reports, devtools network logs, trace evidence, GET hashes and visual readbacks. Traces omit only Screenshot events to reduce size; timing/stacks/network events retained. Original single-run artifacts are provenance, not median inputs.
