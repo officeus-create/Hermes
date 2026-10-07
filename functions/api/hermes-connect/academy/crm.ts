@@ -97,7 +97,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         consultation_status,next_action,next_contact_at,promise_text,program_fit,objection,
         sale_revenue_cents,revenue_currency,revenue_source_ref,outcome,cohort,completion_status,renewal_status,
         notes,archived_at,created_at,updated_at
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?)
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?)
     `).bind(
       id,ownerId,companyId,value.contactName,value.contactPhone || null,value.contactEmail || null,
       value.sourceChannel,value.contentId || null,value.contentFormat || null,value.campaignId || null,
