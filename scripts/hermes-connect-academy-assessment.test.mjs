@@ -356,3 +356,20 @@ test("Academy assessment is company-scoped, does not infer candidate identity, a
   assert.match(candidateApiSource,/private, no-store/);
   assert.match(candidateApiSource,/noindex, nofollow/);
 });
+
+
+test("Academy assessment owner workspace boots persisted assessment UI and keeps identity boundary visible", () => {
+  const workspace = readFileSync(new URL("../src/pages/services/hermes-connect/academy/business/workspace/index.astro", import.meta.url), "utf8");
+  const ownerApi = readFileSync(new URL("../functions/api/hermes-connect/academy/assessments.ts", import.meta.url), "utf8");
+  assert.match(workspace, /data-assessment-template-form/);
+  assert.match(workspace, /data-assessment-assignment-form/);
+  assert.match(workspace, /data-assessment-review-form/);
+  assert.match(workspace, /loadAssessments\(\)/);
+  assert.match(workspace, /Promise\.all\(\[loadCrmCore\(\),loadProgramsCohorts\(\),loadMeasurement\(\),loadAssessments\(\)\]\)/);
+  assert.match(workspace, /One-time token/);
+  assert.match(workspace, /Final employment action.*canonical Hermes HR human-review flow/i);
+  assert.match(ownerApi, /candidateSearch:\s*false/);
+  assert.match(ownerApi, /candidateMustClaimWithExistingHrIdentity:\s*true/);
+  assert.match(ownerApi, /assessment_candidate_must_claim_explicitly/);
+  assert.doesNotMatch(ownerApi, /SELECT[\s\S]{0,500}FROM hr_candidates/i);
+});
