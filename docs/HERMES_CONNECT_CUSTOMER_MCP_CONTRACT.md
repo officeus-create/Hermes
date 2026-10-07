@@ -1,6 +1,6 @@
-# Hermes Connect Customer MCP Contract V1.2
+# Hermes Connect Adaptive MCP Contract V1.3
 
-Status: design contract. No remote MCP endpoint, real-customer authentication flow, or customer production readiness is claimed by this document.
+Status: design contract for the adaptive Hermes Connect CRM identity/provisioning/action layer. No live remote MCP endpoint or external-customer production readiness is claimed by this document.
 
 ## Goal
 
@@ -29,6 +29,41 @@ Required rules:
 - expired/revoked membership or capability denies the action;
 - customer identity never unlocks another tenant.
 
+## Identity router
+
+Every identity-sensitive workflow resolves the least-privileged server-authorized mode before returning private data or permitting a mutation:
+
+- `HERMES_OWNER`
+- `HERMES_STAFF`
+- `CUSTOMER`
+- `PROSPECT_DISCOVERY`
+- `UNAUTHENTICATED`
+
+For shared/production use, only validated Hermes credentials may select the first three. ChatGPT account metadata, prompt claims, names/emails, hidden/copied codes, locale/device/session hints or obfuscated strings may never elevate privilege.
+
+## Discovery/context boundary
+
+Unauthenticated/prospect users may receive business discovery and advisory help without a connected CRM. The system may use only relevant host-provided context, user-selected material and authorized connected sources. The MCP must not pull, reconstruct or persist complete raw ChatGPT history.
+
+## Provisioning tools and state
+
+Planned authenticated tools:
+- `create_provisioning_request`
+- `get_provisioning_request`
+- `start_provisioning_job`
+- `get_provisioning_job`
+- `cancel_provisioning_job` where allowed
+- secure activation/invite exchange endpoints
+
+Provisioning state:
+`REQUESTED → IDENTITY_VERIFICATION → BLUEPRINTED → PROVISIONING → READY_FOR_OWNER → OWNER_CONFIRMED → ACTIVE`, with `NEEDS_INFO / BLOCKED / CANCELLED`.
+
+A chat may claim background CRM work only when Hermes infrastructure has persisted a real job ID/state. Account activation must use verified passwordless/OAuth/passkey/magic-link/one-time-invite flow; predictable passwords and credentials in chat are prohibited.
+
+## Product-learning boundary
+
+Customer Workspace continuation data and reusable Hermes product learning are separate stores/contracts. A sanitized `ProductLearningEvent` may capture reusable problem/capability/failure/evidence/outcome/rule patterns when policy permits. It must not contain raw full chats, credentials, secrets, unnecessary identity/PII, private customer lists, notes or rates. Marketing reuse has a separate consent/rights gate.
+
 ## Read tools
 
 - `whoami` — verified identity, memberships, current company/workspace, roles/capabilities.
@@ -36,7 +71,9 @@ Required rules:
 - `get_capabilities` — server-authoritative capability registry for the authenticated workspace.
 - `resolve_company` — dedupe by allowed identifiers; never return unauthorized tenants.
 - `get_company_state` — canonical company/evidence states.
-- `get_catalog_projection` — public projection state.\n- `get_public_profile_state` — claim/owner-verification/public-consent/notification-consent state.\n- `get_growth_summary` — tenant-scoped measured actions, qualified/won outcomes and attribution with explicit evidence/UNKNOWN state.
+- `get_catalog_projection` — public projection state.
+- `get_public_profile_state` — claim/owner-verification/public-consent/notification-consent state.
+- `get_growth_summary` — tenant-scoped measured actions, qualified/won outcomes and attribution with explicit evidence/UNKNOWN state.
 - `get_change_request` — request/status/release/readback.
 - `list_change_requests` — only requests belonging to allowed company/workspace.
 - `get_session_receipt` — bounded prior action/readback receipt.
@@ -47,7 +84,8 @@ Required rules:
 - `set_catalog_projection` — owner-confirmed evidence-safe public projection.
 - `activate_workspace` — activate an already-supported vertical workspace.
 - `update_workspace_config` — reversible supported configuration exposed by the capability registry.
-- `record_touchpoint` — append/idempotent source/content/CTA history.\n- `submit_growth_brief` — persist a customer Website/SEO/GEO/SMM/content/ads-readiness/reporting brief against the same Company/Workspace.
+- `record_touchpoint` — append/idempotent source/content/CTA history.
+- `submit_growth_brief` — persist a customer Website/SEO/GEO/SMM/content/ads-readiness/reporting brief against the same Company/Workspace.
 - `create_change_request` — durable request/status object.
 - `append_change_request_context` — add clarification/evidence without overwriting history.
 - `create_evidence_candidate` — internal evidence candidate, not publication.
@@ -255,13 +293,19 @@ Evidence states stay distinct:
 
 Customer-facing release status must never claim a later state without evidence for that state.
 
-## Customer pilot gate
+## External customer pilot gate
 
 Do not invite a real customer until:
+- identity-router modes are derived from authenticated Hermes server state, not private-owner fallback;
+- discovery flow has full-history overcollection negative tests;
+- secure ProvisioningRequest/ProvisioningJob + passwordless activation are implemented;
+- product-learning sanitization and opt-out/privacy policy are implemented;
 - remote MCP endpoint exists and is HTTPS;
 - OAuth/account linking exists;
 - `whoami` + tenant scopes are proven;
-- capability registry is server-authoritative;\n- Catalog claim/owner verification/public-consent/notification-consent are server-authoritative;\n- Growth Center metrics distinguish measured values from UNKNOWN;
+- capability registry is server-authoritative;
+- Catalog claim/owner verification/public-consent/notification-consent are server-authoritative;
+- Growth Center metrics distinguish measured values from UNKNOWN;
 - cross-tenant denial tests pass;
 - no internal staff data/instructions are in the customer package;
 - tenant writes have audit + readback + receipt;
