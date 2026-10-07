@@ -51,11 +51,16 @@ for (const { path, title } of routes) {
     await page.goBack();
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
   });
-  test(`${path} respects saved Ukrainian and explicit English overrides it`, async ({ page }) => {
+  test(`${path} keeps locale ownership consistent between clean and explicit URLs`, async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('hermes-connect-language', 'uk'));
     await page.goto(`/services/hermes-connect/${path}`);
-    await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
-    await expect(page.locator('main h1')).not.toHaveText(title);
+    if (path === 'access/') {
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await expect(page.locator('main h1')).toHaveText(title);
+    } else {
+      await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
+      await expect(page.locator('main h1')).not.toHaveText(title);
+    }
     await page.goto(`/services/hermes-connect/${path}?lang=en`);
     await expect(page.locator('main h1')).toHaveText(title);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
