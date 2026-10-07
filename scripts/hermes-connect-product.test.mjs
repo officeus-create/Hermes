@@ -77,7 +77,7 @@ assert.match(hubSource, /PREVIEW CONFIGURATION/);
 assert.match(hubSource, /WORKSPACE PREVIEW · SAMPLE DATA/);
 assert.match(hubSource, /Configuration preview · not a released vertical/);
 assert.match(hubSource, /One product family/);
-assert.match(hubSource, /PRIVATE LEARNER WORKSPACE/);
+assert.match(hubSource, /BUSINESS CRM \+ LEARNER ACCESS/);
 assert.match(hubSource, /\/services\/hermes-connect\/academy\//);
 assert.match(hubSource, /Beauty & Wellness/);
 assert.match(hubSource, /PRIVATE OWNER FOUNDATION/);
