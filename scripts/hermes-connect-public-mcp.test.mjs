@@ -109,7 +109,11 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
 {
   const { json } = await call({jsonrpc:'2.0',id:13,method:'tools/call',params:{name:'build_crm_onboarding_plan',arguments:{business_type:'roofing company',primary_problem:'leads arrive from several places and follow-up is inconsistent',desired_outcome:'one measurable follow-up pipeline',existing_crm:false,current_stack:['Google Workspace']}}});
   const plan = json.result.structuredContent;
-  assert.match(plan.strategy, /Problem -> minimum approved connections/);
+  assert.match(plan.strategy, /Problem -> concrete actions/);
+  assert.equal(plan.do_now.length, 3);
+  assert.match(plan.do_now[0], /customer journey|current CRM/);
+  assert.ok(plan.need_from_you.length <= 5);
+  assert.match(plan.build_execute, /CRM blueprint|source of truth/);
   assert.ok(plan.recommended_connections.some((item) => item.capability === 'Business email'));
   assert.equal(plan.recommended_connections.some((item) => item.capability === 'Marketing / analytics sources'), false);
   assert.match(plan.crm_bootstrap_prompt, /Use only the sources and connectors I explicitly approve/);
