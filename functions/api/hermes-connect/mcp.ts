@@ -469,7 +469,7 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
     host_action: connectAction,
   });
 
-  if (/(?:\bseo\b|\bgeo\b|\bgoogle\b|\bwebsite\b|\bsocial\b|\bmarketing\b|\bads\b|\btraffic\b|\bvisibility\b|\bcontent\b)/.test(combined)) {
+  if (/(?:\bseo\b|\bgeo\b|google ads|google analytics|search console|google business profile|google maps|\bwebsite\b|\bsocial\b|\bmarketing\b|\bads\b|\btraffic\b|\bvisibility\b|\bcontent\b)/.test(combined)) {
     recommendedConnections.push({
       capability: "Marketing / analytics sources",
       priority: "optional",
