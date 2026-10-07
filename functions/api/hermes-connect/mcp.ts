@@ -152,6 +152,7 @@ const publicToolDefinitions = [
       type: "object",
       properties: {
         strategy: { type: "string" },
+        do_now: { type: "array", minItems: 1, maxItems: 3, items: { type: "string" } },
         recommended_connections: {
           type: "array",
           items: {
@@ -166,7 +167,9 @@ const publicToolDefinitions = [
             additionalProperties: false,
           },
         },
-        minimum_questions: { type: "array", items: { type: "string" } },
+        minimum_questions: { type: "array", maxItems: 5, items: { type: "string" } },
+        need_from_you: { type: "array", maxItems: 5, items: { type: "string" } },
+        build_execute: { type: "string" },
         crm_bootstrap_prompt: { type: "string" },
         execution_sequence: { type: "array", items: { type: "string" } },
         continuity_rule: { type: "string" },
@@ -174,8 +177,11 @@ const publicToolDefinitions = [
       },
       required: [
         "strategy",
+        "do_now",
         "recommended_connections",
         "minimum_questions",
+        "need_from_you",
+        "build_execute",
         "crm_bootstrap_prompt",
         "execution_sequence",
         "continuity_rule",
@@ -486,15 +492,30 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
     "Which one KPI should improve first?",
   ];
 
+  const doNow = [
+    existingCrm
+      ? "Use the current CRM/source of truth and map the exact stage, owner, and follow-up gaps before creating any replacement system."
+      : "Map one customer journey from first contact to completed outcome and turn it into one CRM pipeline before choosing extra software or modules.",
+    recommendedConnections.length > 0
+      ? `Approve only the first useful connections: ${recommendedConnections.slice(0, 3).map((item) => item.capability).join(", ")}.`
+      : "Do not connect another system yet; the current information is enough to draft the first CRM blueprint.",
+    "Choose one first KPI and one broken handoff to fix; postpone lower-value automation until readback proves this step works.",
+  ];
+
   const outcomeText = desiredOutcome || "improve the main operating bottleneck and make ownership measurable";
   const crmBootstrapPrompt =
     `Build my Hermes Connect CRM blueprint for a ${businessType}. Main problem: ${problem}. Desired outcome: ${outcomeText}. Use only the sources and connectors I explicitly approve. First map the customer journey, pipeline stages, owners, handoffs, follow-up rules, KPIs, and missing automations. Reuse any existing CRM/source of truth instead of duplicating it. Ask only for facts you cannot infer safely. Do not ask for passwords, API keys, full chat history, or unrelated private data. Give me concrete next actions while the setup is being prepared.`;
 
   return {
     strategy:
-      "Problem -> minimum approved connections -> compact intake -> CRM blueprint -> authenticated ProvisioningRequest/Job when available -> readback -> improvement loop.",
+      "Problem -> concrete actions -> minimum approved connections -> compact intake -> CRM blueprint -> authenticated ProvisioningRequest/Job when available -> readback -> improvement loop.",
+    do_now: doNow,
     recommended_connections: recommendedConnections.slice(0, 5),
     minimum_questions: minimumQuestions,
+    need_from_you: minimumQuestions,
+    build_execute: existingCrm
+      ? "Build the first blueprint around the existing CRM as source of truth. Change systems only if the evidence shows the current one cannot support the required workflow."
+      : "Build the CRM blueprint now. Start a real ProvisioningRequest/Job only when authenticated Hermes tooling can return durable server state.",
     crm_bootstrap_prompt: crmBootstrapPrompt,
     execution_sequence: [
       "Recommend only the connectors that materially reduce repeated data entry or improve evidence quality.",
