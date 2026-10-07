@@ -21,9 +21,11 @@ const call = async (body, env = {}, headers = {}) => {
 {
   const { json } = await call({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const names = json.result.tools.map((tool) => tool.name);
-  assert.deepEqual(names, ['get_product_overview','recommend_start_path','submit_product_feedback']);
+  assert.deepEqual(names, ['get_product_overview','recommend_start_path','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
   assert.equal(json.result.tools[0].annotations.readOnlyHint, true);
-  assert.equal(json.result.tools[2].annotations.readOnlyHint, false);
+  assert.equal(json.result.tools[2].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[3].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[4].annotations.readOnlyHint, false);
 }
 
 {
@@ -73,3 +75,26 @@ const call = async (body, env = {}, headers = {}) => {
 }
 
 console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
+
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:9,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'local contractor',primary_goal:'improve Google visibility and website leads'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_MARKETING');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:10,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'car hauling company',primary_goal:'improve carrier and dispatch operations'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_LOGISTICS');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:11,method:'tools/call',params:{name:'get_hermes_business_routes',arguments:{}}});
+  assert.equal(json.result.structuredContent.routes.length, 4);
+  assert.deepEqual(json.result.structuredContent.routes.map((route) => route.id), ['CONNECT','MARKETING','LOGISTICS','ACADEMY']);
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:12,method:'tools/call',params:{name:'get_product_learning_policy',arguments:{}}});
+  assert.ok(json.result.structuredContent.excluded_data.includes('raw full conversations'));
+  assert.match(json.result.structuredContent.release_rule, /SkillCandidate|CapabilityCandidate/);
+}
