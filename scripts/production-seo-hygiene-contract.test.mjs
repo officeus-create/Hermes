@@ -198,9 +198,13 @@ assert.ok(
 );
 
 const workflow = await readFile(new URL("../.github/workflows/production-seo-hygiene-command.yml", import.meta.url), "utf8");
-assert.ok(workflow.includes("github.event.issue.number == 346"), "SEO hygiene command must stay scoped to the SEO 11 master issue");
-assert.ok(workflow.includes("github.event.comment.body == '/verify-production-seo'"), "SEO hygiene command trigger must remain explicit");
+assert.ok(workflow.includes("workflow_dispatch:"), "SEO hygiene verifier must remain explicitly manually dispatchable");
+assert.equal(workflow.includes("issue_comment:"), false, "SEO hygiene verifier must not depend on an issue-comment router");
+assert.equal(workflow.includes("github.event.issue.number"), false, "SEO hygiene verifier must not bind execution to a closed issue");
+assert.equal(workflow.includes("gh issue comment"), false, "SEO hygiene verifier must not publish into a closed issue");
+assert.equal(workflow.includes("issues: write"), false, "SEO hygiene verifier no longer needs issue-write permission");
 assert.ok(workflow.includes("node scripts/check-production-seo-hygiene.mjs"), "workflow must use the bounded SEO hygiene wrapper");
+assert.ok(workflow.includes("GITHUB_STEP_SUMMARY"), "SEO hygiene verifier must keep sanitized Actions-summary evidence");
 assert.ok(workflow.includes("no real lead") === false, "workflow should not imply that a lead is created");
 
 console.log(`Production SEO hygiene contract passed: ${sitemapPageUrls.length} unique canonical static page URLs across ${staticChildSitemapFiles.length} static child sitemaps; ${indexedChildSitemapFiles.length} controlled children in sitemapindex.xml.`);
