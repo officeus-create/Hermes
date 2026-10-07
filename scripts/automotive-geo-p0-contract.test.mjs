@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [carrierPage, loadBoardPage, carrierMarkets, dealerPage, repairEnhancer, repairPage] = await Promise.all([
+const [carrierPage, loadBoardPage, carrierMarkets, carrierGeoPage, dealerPage, repairEnhancer, repairPage] = await Promise.all([
   readFile(new URL("../src/pages/logistics/car-hauling-dispatch/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/load-board.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/data/car-hauler-geo-markets.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/CarHaulerGeoPage.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/dealer-vehicle-transportation/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
@@ -36,6 +37,8 @@ assert.match(carrierPage, /existing 25 market pages remain a published research 
 assert.doesNotMatch(carrierPage, /current 25-market GEO launch|25-market carrier GEO launch/);
 assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
 assert.match(loadBoardPage, /href="\/logistics\/car-hauler-loads\/"/, "Load Board must provide a contextual discovery link to the Carrier GEO hub");
+assert.match(carrierGeoPage, /data-carrier-geo-related-markets/, "market owners must cross-link useful nearby published markets");
+assert.match(carrierGeoPage, /carHaulerGeoMarkets/, "related market links must resolve from the canonical registry");
 assert.match(carrierPage, /label: "Car Hauling Load Board", href: "\/load-board\/"/, "Dispatch owner must provide a descriptive canonical Load Board anchor");
 assert.match(carrierPage, /label: "Open the Car Hauling Load Board", href: "\/load-board\/\?role=carrier&equipment=car_hauler#available-loads"/, "Dispatch owner must preserve the filtered car-hauler Load Board handoff without demo-only labeling");
 
