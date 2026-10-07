@@ -43,11 +43,16 @@ const displayName = label(business.name, business.nameEn ?? business.name);
 const displayAddress = label(business.address, business.addressEn ?? business.address);
 const displayLocality = label(business.locality, business.localityEn ?? business.locality);
 const displayRegion = label(business.region, business.regionEn ?? business.region);
-const displayServices = defaultLocale === "uk" ? business.services : (business.servicesEn ?? business.services);
 const displaySemanticCore = defaultLocale === "uk" ? business.semanticCore : (business.semanticCoreEn ?? business.semanticCore);
 const channelLabel = (channel: CatalogBusinessConcept["channels"][number]) => label(channel.label, channel.labelEn ?? channel.label);
+const preparedBodyUk = clientStrategy
+  ? "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records."
+  : "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.";
+const preparedBodyEn = clientStrategy
+  ? "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
+  : "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately.";
 ---
-{conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale}>
+{conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale} data-title-uk={`${business.name} | Hermes Catalog`} data-title-en={`${business.nameEn ?? business.name} | Hermes Catalog`}>
   <div class="concept-disclosure">
     <strong data-uk={isClientProfile?"Hermes Catalog · Стратегія клієнта":"Hermes Catalog · Концепція сайту"} data-en={isClientProfile?"Hermes Catalog · Client Strategy":"Hermes Catalog · Website Concept"}>{isClientProfile?label("Hermes Catalog · Стратегія клієнта","Hermes Catalog · Client Strategy"):label("Hermes Catalog · Концепція сайту","Hermes Catalog · Website Concept")}</strong>
     <span data-uk={localized?.uk.disclosure} data-en={localized?.en.disclosure}>{copy?.disclosure ?? "Verified/public business data + Hermes presentation concept"}</span>
@@ -92,17 +97,11 @@ const channelLabel = (channel: CatalogBusinessConcept["channels"][number]) => la
     <div>
       <p class="kicker" data-uk="ПІДГОТОВЛЕНА РОБОТА HERMES" data-en="PREPARED HERMES WORK">{label("ПІДГОТОВЛЕНА РОБОТА HERMES","PREPARED HERMES WORK")}</p>
       <h2 data-uk="Повний розбір і CRM-модель уже зібрані." data-en="The full strategy review and CRM model are already prepared.">{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
-      <p>{clientStrategy ? label(
-        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records.",
-        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
-      ) : label(
-        "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.",
-        "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately."
-      )}</p>
+      <p data-uk={preparedBodyUk} data-en={preparedBodyEn}>{label(preparedBodyUk,preparedBodyEn)}</p>
     </div>
     <div class="prepared-links">
-      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
-      {business.crmPreviewUrl && <a href={business.crmPreviewUrl}>{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
+      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl} data-uk="Відкрити evidence strategy / audit →" data-en="Open evidence strategy / audit →">{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
+      {business.crmPreviewUrl && <a href={business.crmPreviewUrl} data-uk="Відкрити Academy CRM demo →" data-en="Open Academy CRM demo →">{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
       {academyRegistrationHref && <a href={academyRegistrationHref} data-uk="Зареєструвати Academy workspace →" data-en="Register Academy workspace →">{label("Зареєструвати Academy workspace →","Register Academy workspace →")}</a>}
     </div>
   </section>}
@@ -133,6 +132,8 @@ const channelLabel = (channel: CatalogBusinessConcept["channels"][number]) => la
     const fallback = root.dataset.defaultLocale === "uk" ? "uk" : "en";
     const locale = requested === "uk" || requested === "en" ? requested : fallback;
     document.documentElement.lang = locale;
+    const localizedTitle = locale === "uk" ? root.dataset.titleUk : root.dataset.titleEn;
+    if (localizedTitle) document.title = localizedTitle;
     root.querySelectorAll<HTMLElement>("[data-uk][data-en]").forEach((node) => {
       const next = locale === "uk" ? node.dataset.uk : node.dataset.en;
       if (next) node.textContent = next;
