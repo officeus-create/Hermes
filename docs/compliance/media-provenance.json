@@ -253,6 +253,26 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
+      "path": "public/images/home-20261001/leaves-160.webp",
+      "sha256": "63229d463d5c3eb7b5ac6ac83ed4aa3d3d0d01b76296065d66e552db05953767",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale. This responsive variant was locally downsampled from public/images/home-20261001/leaves.webp on 2026-10-07 without adding external material.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/leaves-256.webp",
+      "sha256": "2c1f2e7575b2907886dfe68cfebe194fdbba747ccf11875d358042204ab7fc8c",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale. This responsive variant was locally downsampled from public/images/home-20261001/leaves.webp on 2026-10-07 without adding external material.",
+      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "public/images/home-20261001/leaves.webp",
       "sha256": "314cacc41df6bcaf3e555dbdfbec67fc812685b5683899ebdabe0149cce4342d",
       "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
@@ -413,6 +433,16 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
+      "path": "public/images/logistics-living/car-hauler-768.webp",
+      "sha256": "1e3eb1aabad6846450c36a0b5ca388dcbc014254c416392b0df4e084830259d8",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/car-hauler-887.webp on 2026-10-07 without adding external material.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "public/images/logistics-living/car-hauler-887.webp",
       "sha256": "18ae4448dd280c3c2bfcfad54176d95eac656ae4a8fe2029cac8b9f3f404fdb7",
       "firstTrackedCommit": "0cc525d44c75bb9b2a2146978c8223a84f47c0d8",
@@ -429,6 +459,16 @@
       "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/logistics-living/dry-van-768.webp",
+      "sha256": "b60d3bb02372a3db7e701526f4c7a1b976a5c892dd311e19ae98961efcfaba98",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/dry-van-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
@@ -453,6 +493,16 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
+      "path": "public/images/logistics-living/flatbed-768.webp",
+      "sha256": "2dfc4e1b1f26adf5292460f4566b81d23c9132b8c35296691431d708d8ccc150",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/flatbed-887.webp on 2026-10-07 without adding external material.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "public/images/logistics-living/flatbed-887.webp",
       "sha256": "d671f3777d1209f325fa84a3e2ee56e832df29f5706dc09096fc0f82c89b5de3",
       "firstTrackedCommit": "0cc525d44c75bb9b2a2146978c8223a84f47c0d8",
@@ -469,6 +519,16 @@
       "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/logistics-living/hotshot-768.webp",
+      "sha256": "8573512025f815e64894f8e2e1960490c4d536e18257cea57908a7551c2fcee3",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/hotshot-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
@@ -493,6 +553,16 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
+      "path": "public/images/logistics-living/reefer-768.webp",
+      "sha256": "fa932e8f87f385ee3c222243341f49ec0ed5644af7f7903e22d24fa53124ce2b",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/reefer-887.webp on 2026-10-07 without adding external material.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "public/images/logistics-living/reefer-887.webp",
       "sha256": "a40090afc4c585d8d3390c27126b78bd1b8a759d74b9f1f5ba2307d137ff9f93",
       "firstTrackedCommit": "0cc525d44c75bb9b2a2146978c8223a84f47c0d8",
@@ -509,6 +579,16 @@
       "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
+      "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/logistics-living/step-deck-768.webp",
+      "sha256": "8044a1c3f458e5d9d776072f4da5afa9afbfe57b20f38c01edd849f2099f4c20",
+      "firstTrackedCommit": "113510685aeb75cb00a2f6362680b7fc059e1efc",
+      "classification": "OWNER_REQUESTED_AI_AUTHORED_LOGISTICS_SCENE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/step-deck-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },

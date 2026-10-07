@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-10-07",
+  "source": "OWNER_AUTHENTICATED_GSC_PAGE_INDEXING_REPORT_UPDATED_2026-10-04",
+  "not_found_404": {
+    "gsc_count": 7,
+    "validation": "started_2026-09-17",
+    "rows": [
+      { "url": "https://hermeslogisticsus.com/%EF%BF%BC", "current_resolution": "release_adds_410_noindex_nofollow" },
+      { "url": "https://hermeslogisticsus.com/academy/", "current_resolution": "301_to_/paths/academy/" },
+      { "url": "https://hermeslogisticsus.com/cdn-cgi/l/email-protection", "current_resolution": "expected_cloudflare_404_and_robots_disallow_/cdn-cgi/" },
+      { "url": "https://hermeslogisticsus.com/api/auth/forgot-password", "current_resolution": "405_for_unsupported_GET_with_x_robots_tag_noindex_nofollow" },
+      { "url": "https://hermeslogisticsus.com/month", "current_resolution": "410_with_x_robots_tag_noindex_nofollow" },
+      { "url": "https://hermeslogisticsus.com/%D0%BC%D0%B5%D1%81%D1%8F%D1%86", "current_resolution": "410_with_x_robots_tag_noindex_nofollow" },
+      { "url": "https://hermeslogisticsus.com/dashboard/", "current_resolution": "410_with_x_robots_tag_noindex_nofollow" }
+    ]
+  },
+  "forbidden_403": {
+    "gsc_count": 1,
+    "validation": "started_2026-10-07",
+    "rows": [
+      { "url": "http://www.hermeslogisticsus.com/", "gsc_last_crawl": "2026-07-30", "current_resolution": "redirects_to_https_non_www_canonical_and_returns_200" }
+    ]
+  },
+  "crawled_not_indexed": {
+    "gsc_count": 1,
+    "validation": "started_2026-10-07",
+    "rows": [
+      { "url": "https://hermeslogisticsus.com/business-growth/", "gsc_last_crawl": "2026-09-04", "current_resolution": "intentional_200_noindex_follow_canonical_owner_routes_to_current_growth_pages" }
+    ]
+  },
+  "canonical_variants": {
+    "gsc_count": 61,
+    "classification": "expected_duplicate_exclusion_with_proper_canonical",
+    "observed_examples": [
+      "https://hermeslogisticsus.com/paths/marketing/?service=logistics_seo",
+      "https://hermeslogisticsus.com/paths/marketing/?service=seo",
+      "https://hermeslogisticsus.com/paths/marketing/?service=local_seo",
+      "https://hermeslogisticsus.com/services/hermes-connect/?lang=it",
+      "https://hermeslogisticsus.com/?v=2",
+      "https://hermeslogisticsus.com/paths/technology/?project=website_development",
+      "https://hermeslogisticsus.com/services/hermes-connect/?lang=es",
+      "https://hermeslogisticsus.com/paths/technology/?project=website_redesign",
+      "https://hermeslogisticsus.com/load-board/?lang=uk",
+      "https://hermeslogisticsus.com/services/hermes-connect/?lang=uk"
+    ]
+  }
+}

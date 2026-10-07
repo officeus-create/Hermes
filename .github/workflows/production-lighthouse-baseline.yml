@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         page:
           - slug: home
@@ -48,12 +48,22 @@ jobs:
           PAGE_SLUG: ${{ matrix.page.slug }}
         run: |
           mkdir -p lighthouse-results
-          npx --yes lighthouse@13.4.1 "$TARGET_URL" \
-            --output=json \
-            --output-path="lighthouse-results/${PAGE_SLUG}.json" \
-            --only-categories=performance,accessibility,best-practices,seo \
-            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-            --quiet
+          succeeded=0
+          for attempt in 1 2; do
+            rm -f "lighthouse-results/${PAGE_SLUG}.json"
+            if npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+              --output=json \
+              --output-path="lighthouse-results/${PAGE_SLUG}.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet; then
+              succeeded=1
+              break
+            fi
+            echo "::warning::Lighthouse attempt ${attempt} failed for ${PAGE_SLUG}; retrying once after Chrome cleanup."
+            pkill -f chrome || true
+          done
+          test "$succeeded" -eq 1
 
       - name: Write sanitized score summary
         env:

@@ -28,6 +28,8 @@ const MAIN_GONE_PATHS = new Set([
   "/month",
   "/месяц",
   "/cdn-cgi/l/email-protection",
+  // Historical malformed root URL surfaced by Search Console on 2026-10-07.
+  "/\uFFFC",
   // Historical malformed backlink target `/%20rel=nofollow`; pathname is decoded before lookup.
   "/ rel=nofollow",
 ]);
