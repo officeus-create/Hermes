@@ -13,10 +13,17 @@ interface Props {
 const { locale: requestedPropLocale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const connectRequestedLocale = currentPath.startsWith("/services/hermes-connect") ? Astro.url.searchParams.get("lang") : null;
-const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale;
-const publicLocationBoundary = locale === "ru"
-  ? "Логистика в США · международная координация по электронной почте"
-  : "U.S. logistics · International email coordination";
+const locale: SiteLocale = connectRequestedLocale && connectRequestedLocale in localeConfig
+  ? connectRequestedLocale as SiteLocale
+  : requestedPropLocale;
+const publicLocationBoundary = {
+  en: "U.S. logistics · International email coordination",
+  uk: "Логістика у США · міжнародна координація електронною поштою",
+  ru: "Логистика в США · международная координация по электронной почте",
+  es: "Logística en EE. UU. · coordinación internacional por email",
+  it: "Logistica negli Stati Uniti · coordinamento internazionale via email",
+  fr: "Logistique aux États-Unis · coordination internationale par email",
+}[locale];
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
 const directionOrder = { logistics: 0, marketing: 1, technology: 2, academy: 3 } as const;
 const directionRank = (href: string) => {
