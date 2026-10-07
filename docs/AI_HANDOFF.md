@@ -1659,6 +1659,7 @@ handoff_to: existing WEB release reviewer / owner
 Same task and existing recovery artifact preserved. Main d822 is LIVE; old EVENT_WAIT superseded. Production Home median90/LCP2071.636ms/TBT0; Dealer79/LCP2579.6585ms/TBT0. No sustained concrete multi-second scripting stack; no global runtime/Home/CSS patch, preserving active writers1744/1679. Proven stale hero222111 vs optimized90337 bytes; bundled content-hashed URL fixes delivery identity, all business content/receivers intact. Controlled local Dealer medianLCP5649.966→5035.2165ms (three paired improvements); not production after.
 
 Build/full contracts pass; focused browser4/4 and visual readbacks390/768/1440 pass. Full local browser1965pass/25fail/16skip; six unrelated failures reproduce on main, others unresolved. New selector fixed and rerun green. No merge/deploy or real lead sends. NEXT: exact-head CI/review, independently authorized release then live byte/three-run production acceptance. Detailed settings, hashes, limitations and learning are in existing recovery/error register, not a parallel backlog.
+
 ## 2026-10-07 — Repair service sticky CTA context follow-up (Codex)
 
 PROBLEM: Production 390×844 readback on both existing repair Website/SEO owners shows visible mobile sticky links omit vertical/source_path while hero links preserve them.
@@ -1707,3 +1708,30 @@ RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 85
 ### PR #1751 — bounded release sync after #1757, 2026-10-08
 
 - Rebased existing PR onto main `0cba03b4bd6e462623d48980885b81293d349ddd`. Both journal histories and the #1753 hero regression plus Catalog regression in npm test retained. Repair CTA changes remain untouched. Per current owner directive, new SSR navigation is bounded to the existing Kittle canonical path; other opted-in profiles retain their existing helper eligibility, feed and sitemap ownership. No invented facts or consent changes. Prior local/CI evidence remains historical; fresh-head validation required. No merge/deploy.
+
+## 2026-10-08 — Codex — Search crawler-hints status reconciliation
+
+```yaml
+ai_name: Codex
+model: GPT-6.1
+chat_or_thread: Hermes Search demand, CTR, authority and AI visibility
+role: direct documentation owner
+department: Search / Marketing
+date: 2026-10-08
+contribution_type: Documentation reconciliation
+confidence: 99
+task_id: ERR-CLOUDFLARE-CRAWLER-HINTS-20261006
+source_of_truth: authenticated Cloudflare owner receipt on current main
+authority_scope: Review branch
+write_scope: [error register, handoff]
+specialization: [search operations, evidence reconciliation]
+not_specialized_in: [Cloudflare account administration, release approval]
+reviewed: [current main, crawler-hints receipt, indexing release record, search operating system]
+not_reviewed: [future settled Bing response, lead or revenue impact]
+handoff_to: repository owner for review
+```
+
+- Reconciled the stale `OWNER_ACTION` row with the existing authenticated receipt at `data/seo/indexnow-crawler-hints-setting-2026-10-07.json`: Cloudflare Crawler Hints is OFF and the repository-controlled IndexNow path remains the only intended notification owner.
+- No runtime, canonical page, robots, sitemap, schema, tracking, submission workflow or external account was changed. This documentation-only correction prevents a duplicate Cloudflare mutation while the team waits for a settled Bing comparison window.
+- Verification before the final release-queue rebase: exact-head `git diff --check`, `npm run build` (399 pages, zero errors) and `npm test` passed on base `83aef305da82f5221b51d617da34c9f040cbc5cf`. The same documentation-only delta was then rebased after #1753, #1757 and #1751 onto `55eaf2762242fb830641e227280b98ad89966fe9`; fresh exact-head CI is required before merge readiness can be claimed.
+- Release boundary: review branch only. No merge, deployment, traffic, lead or revenue claim.
