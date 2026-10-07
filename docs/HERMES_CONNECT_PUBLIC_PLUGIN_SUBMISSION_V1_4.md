@@ -24,7 +24,7 @@ The private owner-test Plugin ID is not the public directory identity.
 2. Merge the single canonical public lane.
 3. Cloudflare production deployment reaches the merged SHA.
 4. Support, Privacy, Terms and Product URLs return the expected production content.
-5. MCP production endpoint initializes and lists exactly the intended five public tools.
+5. MCP production endpoint initializes and lists exactly the intended six public tools.
 6. All five tools return schema-valid, privacy-bounded results on representative and invalid inputs.
 7. Portal issues domain challenge token.
 8. Store that exact token only in the production runtime binding OPENAI_APPS_CHALLENGE_TOKEN.
@@ -51,6 +51,14 @@ The private owner-test Plugin ID is not the public directory identity.
 - destructiveHint: false — no mutation.
 - openWorldHint: false — does not query arbitrary external entities.
 
+### build_crm_onboarding_plan
+- Purpose: convert a described business problem into the smallest connector/integration plan, minimum intake questions, a ready CRM bootstrap prompt, and a truthful execution sequence.
+- readOnlyHint: true — advisory planning only; it does not install apps, connect accounts, provision CRM state, or persist user data.
+- destructiveHint: false — no mutation.
+- openWorldHint: false — deterministic Hermes onboarding guidance; host-native connector discovery/approval happens outside this tool.
+- Host rule: when an AI host supports plugins/connectors, surface its native Connect/Install approval control; otherwise explain the required integration. Never request passwords, API keys, recovery codes, or full private chat history.
+- Continuity rule: conversation may continue while a real authenticated durable ProvisioningJob runs; without a durable job, never claim asynchronous/background CRM population.
+
 ### get_hermes_business_routes
 - Purpose: explain the bounded Connect/Technology, Marketing, Logistics and Academy routes.
 - readOnlyHint: true.
@@ -73,7 +81,7 @@ The private owner-test Plugin ID is not the public directory identity.
 ## Positive reviewer flows
 
 1. Auto repair owner -> product overview + live Repair Shops route.
-2. Roofing/service business -> CRM blueprint, no fake live vertical.
+2. Roofing/service business -> CRM blueprint + connector-guided onboarding plan + ready bootstrap prompt, no fake live vertical.
 3. Mixed CRM + search visibility + team learning -> bounded multi-direction Hermes routing.
 4. Ask how learning works -> sanitized learning policy, no raw-history claim.
 5. Explicit consented post-estimate reminder feedback -> minimal structured feedback write.
@@ -91,7 +99,7 @@ Show in one continuous recording:
 2. Invoke get_product_overview.
 3. Route an auto repair shop.
 4. Route a non-live vertical to CRM blueprint without false availability.
-5. Show four-direction ecosystem routing.
+5. Show connector-guided onboarding: smallest connection set, minimum questions, ready CRM bootstrap prompt, and no-secret install/connect boundary.\n6. Show four-direction ecosystem routing.
 6. Show learning-policy boundaries.
 7. Submit one synthetic privacy-safe consented feedback case.
 8. Attempt a sensitive/cross-tenant case and show safe denial/no private tool.
