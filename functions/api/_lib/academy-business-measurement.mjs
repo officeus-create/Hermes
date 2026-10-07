@@ -250,7 +250,10 @@ export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows 
       periodEnd: group.periodEnd,
       spendCents: group.spendCents,
       evidenceCount: group.evidenceCount,
+      attributedLeads: scopedLeads.length,
       attributedSales: sales.length,
+      leadToSaleRatio: scopedLeads.length > 0 ? sales.length / scopedLeads.length : null,
+      costPerLeadCents: scopedLeads.length > 0 ? Math.round(group.spendCents / scopedLeads.length) : null,
       attributedRevenueKnownCount: revenueRows.length,
       revenueCents: revenueComplete ? revenueCents : null,
       cacCents: sales.length > 0 ? Math.round(group.spendCents / sales.length) : null,
@@ -273,6 +276,13 @@ export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows 
     .filter((row) => row.kind === "result_claim")
     .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
     .map(safeAcademyBusinessEvidence);
+  const today = new Date().toISOString().slice(0, 10);
+  const approvedClaims = claims.filter((item) => item.claimState === "approved");
+  const publicReadyClaims = approvedClaims.filter((item) =>
+    Boolean(item.approvedWording) &&
+    Boolean(item.reviewAt) &&
+    String(item.reviewAt) >= today
+  );
 
   return {
     evidenceCount: evidence.length,
@@ -280,7 +290,10 @@ export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows 
     economics,
     ltvEvidence,
     claims,
-    approvedClaimCount: claims.filter((item) => item.claimState === "approved").length,
+    publicReadyClaims,
+    approvedClaimCount: approvedClaims.length,
+    publicReadyClaimCount: publicReadyClaims.length,
+    staleApprovedClaimCount: approvedClaims.length - publicReadyClaims.length,
     needsReviewClaimCount: claims.filter((item) => item.claimState === "needs_review").length,
   };
 }
