@@ -72,6 +72,15 @@ const schema = [
       acceptedAnswer: { "@type": "Answer", text: item.a },
     })),
   },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 3, name: "Support", item: "https://hermeslogisticsus.com/services/hermes-connect/support/" },
+    ],
+  },
 ];
 ---
 
