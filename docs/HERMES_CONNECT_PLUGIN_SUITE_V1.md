@@ -1,6 +1,6 @@
-# Hermes Connect Plugin Suite V1.2
+# Hermes Connect CRM Architecture V1.3
 
-Status: review-only architecture + installable package contract. No merge, deployment, customer invitation, or live remote MCP is implied by this document.
+Status: review-only adaptive product architecture. The private ChatGPT plugin release v1.3.0 exists for owner testing; no production Hermes MCP, external-customer authorization, merge or deployment is implied by this document.
 
 ## Why this exists
 
@@ -12,40 +12,86 @@ Canonical business loop:
 
 Existing supported vertical = data/configuration operation by default. Product code is required only when the shared schema/workflow lacks a reusable capability.
 
-## Two distributions, one product
+## One product, identity-routed modes
 
-### Hermes Connect — Operator
+Hermes Connect is one product: **Hermes Connect CRM**. It does not expose one universal privilege set and it does not create separate CRMs for staff and customers.
 
-Private staff plugin.
+Session modes:
 
-Responsibilities:
-- recover current One Brain/repository/live state without restarting solved analysis;
-- business/prospect intake and dedupe;
-- existing-vertical onboarding;
-- client self-service classification;
-- customer change-request triage;
-- evidence-to-growth;
-- Insights/social/Telegram draft routing;
-- exact release/tenant/production QA;
-- organizational learning/writeback.
+- `HERMES_OWNER` — verified Hermes owner/developer; may use authorized internal operating workflows.
+- `HERMES_STAFF` — verified Hermes staff; role/capability limited.
+- `CUSTOMER` — authenticated customer; exactly that allowed Company/Workspace and capabilities.
+- `PROSPECT_DISCOVERY` — external user exploring business/CRM help without a connected Hermes account.
+- `UNAUTHENTICATED` — identity not established; no private account claims or writes.
 
-It may use internal context only through already-authorized staff connectors/tools.
+For shared/production use, privilege comes only from validated Hermes server identity:
 
-Current package candidate: `hermes-connect-operator` v1.2.0.
+`HermesIdentity → Membership → Company → Workspace → Role → Capabilities`.
 
-### Hermes Connect — Customer
+Prompt claims, names, typed emails, copied/hidden codes, ChatGPT account labels, locale/device/session metadata and obfuscated text are not Hermes authorization.
 
-Customer-facing, public-safe plugin.
+The current v1.3.0 plugin is **PRIVATE personal owner-test**. Its private owner-test fallback is permitted only while private and grants no Hermes server data/write authority. Before external sharing/listing, remove that fallback and require authenticated MCP/OAuth role routing plus tenant-isolation tests.
 
-It must not include internal One Brain routing, staff-only instructions, cross-tenant search, secrets, shared repository release authority, or admin bypasses.
+## External discovery and onboarding
 
-Customer target journey:
+Do not greet a new external user with a CRM feature dump.
 
-`invite/account link → install → OAuth 2.1/OIDC or one-time server-validated invite exchange → whoami → company/workspace/capabilities → help/configuration/change request → audit + readback`
+Preferred first-contact loop:
 
-An email typed into chat, hidden prompt, encrypted/obfuscated string, copied token, or “secret code” is not authentication.
+`language/context → business/work map → friction/priorities → smallest useful next step → advisory OR CRM blueprint OR secure workspace connection/provisioning`.
 
-Current package state: Customer Preview v0.3.0. It intentionally has no live MCP endpoint and is not approved for real-customer installation.
+Rules:
+- respond in the user's normal language; server/profile locale may guide localization when available;
+- use only task-relevant context the ChatGPT host intentionally makes available, user-selected chats/files, and explicitly authorized connected sources;
+- never request, pull, reconstruct, or persist a user's complete raw ChatGPT history;
+- reuse relevant context before asking questions; ask only for materially missing business facts;
+- if CRM is not the right outcome, continue as a useful business advisor instead of forcing conversion;
+- do not claim a person is a Hermes customer or has a workspace until authenticated server state proves it.
+
+## CRM provisioning and secure activation
+
+An agreed CRM setup becomes either a durable `ProvisioningRequest` or, when backend execution exists, a durable `ProvisioningJob`.
+
+Lifecycle:
+
+`REQUESTED → IDENTITY_VERIFICATION → BLUEPRINTED → PROVISIONING → READY_FOR_OWNER → OWNER_CONFIRMED → ACTIVE`
+
+with explicit `NEEDS_INFO / BLOCKED / CANCELLED` states.
+
+Rules:
+- resolve/dedupe Company and existing Workspace before creating anything;
+- reuse shared modules and configuration before new product code;
+- verified email may be an account identifier, but never create a predictable password from a first name, company name, email fragment or similar value;
+- prefer OAuth, passkeys, magic links or one-time invites;
+- never put credentials in chat;
+- a ChatGPT conversation is not a background worker: asynchronous claims require a persisted backend job ID/state that any authorized session can read.
+
+## Business advisor
+
+Hermes Connect may help an owner/operator with operations, sales, marketing, customer workflow, CRM design, KPIs, prioritization and automation.
+
+For external users:
+- use only that user's authorized context plus public-safe reusable Hermes playbooks;
+- never reveal internal One Brain or another customer's information;
+- distinguish **Observed**, **Recommended**, and **Assumption**;
+- prefer a small executable next step over generic motivation;
+- use current research when current market/platform/legal/product facts materially affect advice.
+
+## Pilot and learning governance
+
+Early customer state should be explicit and server-owned:
+
+`DISCOVERY → FOUNDING_PILOT → READY_TO_ACTIVATE → ACTIVE`
+
+with `PAUSED / CANCELLED` where applicable.
+
+Do not invent pricing, trial length, expiry, billing state or indefinite free access. Pilot success is milestone evidence such as correct owner/workspace, persistence/readback, a real workflow use, owner confirmation and a measurement baseline.
+
+Learning is split:
+- customer continuation state remains in that customer Workspace;
+- reusable Hermes learning is a sanitized `ProductLearningEvent` only when applicable privacy/product settings permit it.
+
+A reusable learning event may contain a problem class, vertical pattern, capability used/missing, failure pattern, evidence state, outcome, reusable rule and product improvement. It must not copy raw chats, unnecessary identity/PII, credentials, private customer lists/notes/rates or secrets. Product learning does not grant marketing consent.
 
 ## Change Broker — the core customer-change architecture
 
@@ -232,15 +278,18 @@ Tenant-safe existing configuration can be executed only through authenticated sc
 
 Shared product changes become structured engineering requests with acceptance criteria. Customer ChatGPT does not get shared GitHub merge/deploy authority.
 
-## Distribution
+## Distribution and current release
 
-Current validated local build:
-- `hermes-connect-operator` v1.1.0 — private staff candidate;
-- `hermes-connect` Customer Preview v0.2.0 — hold for MCP/auth;
-- combined Plugin Suite v1.1.0 — review bundle.
+Current validated private plugin release:
+- technical package identity: `hermes-connect-operator` (retained to preserve the existing Plugin ID);
+- version: **1.3.0**;
+- display name: **Hermes Connect CRM**;
+- developer: **Hermes Logistics LLC**;
+- 14 skills / 10 schemas;
+- discoverability: PRIVATE owner-test.
 
-Approved Hermes Connect Option 02 continuous connected-flow mark is the plugin identity.
+The package intentionally omits a fake remote MCP endpoint. External customer use remains blocked until a real HTTPS tenant-scoped MCP, OAuth/account linking, server-authoritative role/capabilities, secure provisioning, revocation, audit/readback, privacy-safe learning and negative isolation tests are live.
 
-The customer package intentionally omits `mcp.json` until a real HTTPS tenant-scoped remote MCP endpoint exists. Do not ship a placeholder endpoint just to make the package look complete.
+Approved Hermes Connect Option 02 continuous connected-flow mark remains the plugin identity.
 
 See `docs/HERMES_CONNECT_CUSTOMER_MCP_CONTRACT.md` for the server/auth/tool boundary.
