@@ -9,7 +9,10 @@ import {
   onRequestGet as getParticipants,
   onRequestPost as mutateParticipants,
 } from "../functions/api/hermes-connect/academy/participants.ts";
-import { onRequestPost as claimParticipant } from "../functions/api/hermes-connect/academy/participant-claim.ts";
+import {
+  onRequestGet as getLearnerParticipants,
+  onRequestPost as claimParticipant,
+} from "../functions/api/hermes-connect/academy/participant-claim.ts";
 
 function makeD1() {
   const sqlite = new DatabaseSync(":memory:");
@@ -212,6 +215,18 @@ test("Business participant bridge links enrolled CRM lead to authenticated Herme
   assert.equal(duplicate.status,200);
   assert.equal((await duplicate.json()).duplicate,true);
 
+  const learnerRead=await getLearnerParticipants({
+    request:req("/api/hermes-connect/academy/participant-claim","learner-token-one"),
+    env:{DB:db},
+  });
+  assert.equal(learnerRead.status,200);
+  const learnerBody=await learnerRead.json();
+  assert.equal(learnerBody.participants.length,1);
+  assert.equal(learnerBody.participants[0].programId,program.id);
+  assert.equal(learnerBody.participants[0].cohortId,cohort.id);
+  assert.equal(learnerBody.learnerIdentity,"shared_hermes_specialist");
+  assert.equal(learnerBody.sharedAcademyEnrollmentMutation,false);
+
   const ownerRead=await getParticipants({
     request:req("/api/hermes-connect/academy/participants","owner-token-one"),
     env:{DB:db},
@@ -380,6 +395,7 @@ test("Participant bridge is company scoped, capacity gated, and never infers lea
   assert.doesNotMatch(ownerApi+claimApi,/DELETE\s+FROM/i);
   assert.match(ownerApi,/participant_identity_must_claim_explicitly/);
   assert.match(claimApi,/getAuthenticatedSpecialist/);
+  assert.match(claimApi,/export async function onRequestGet/);
   assert.match(claimApi,/participant_claim_scope_not_editable/);
   assert.match(ownerApi,/private, no-store/);
   assert.match(claimApi,/private, no-store/);
