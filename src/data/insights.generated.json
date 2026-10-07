@@ -1,5 +1,333 @@
 [
   {
+    "id": "eia-fuel-volatility-route-economics-october-2026",
+    "direction": "logistics",
+    "slug": "eia-fuel-volatility-route-economics-october-2026",
+    "title": "EIA Raises Oil Outlook While Diesel Eases | Hermes Insights",
+    "description": "EIA raised its fourth-quarter Brent forecast while the latest U.S. diesel price eased. Hermes explains why carriers should refresh fuel assumptions without turning national data into a lane-rate rule.",
+    "eyebrow": "Fuel & Route Economics · October 2026",
+    "h1": "Diesel eased this week, but EIA raised its oil outlook. What should carriers recalculate?",
+    "conciseAnswer": "EIA's October 6 outlook raised its fourth-quarter Brent forecast to $105 per barrel, $14 above the prior month's forecast. Its weekly update shows U.S. on-highway diesel at $6.199 per gallon for October 5, down 18.3 cents week over week. The operating lesson is volatility: refresh fuel and route economics frequently instead of using one national price as a universal rate target.",
+    "explanation": [
+      "What changed: EIA's October 6 Short-Term Energy Outlook raised the fourth-quarter 2026 Brent forecast to $105 per barrel, while its weekly retail update shows national on-highway diesel at $6.199 per gallon for October 5, down $0.183 from the prior week. Why it matters: weekly pump prices and the medium-term outlook can move differently, so stale fuel assumptions can distort a load decision. Historical Hermes material is used only for the anonymized pattern that fuel, deadhead, route position, reload probability and negotiation belong in one decision chain. What to do: refresh the actual lane's fuel assumption, keep loaded and deadhead miles separate, include tolls and timing, and check the next realistic reload before countering a rate. Result: use EIA as current market context without turning a national forecast into a universal RPM or surcharge rule. Source/date: U.S. Energy Information Administration, October 6, 2026."
+    ],
+    "takeaways": [
+      "EIA raised its Q4 2026 Brent forecast to $105/b, while the October 5 U.S. diesel price was $6.199/gal and down 18.3 cents week over week",
+      "Refresh lane-level fuel, deadhead and reload assumptions instead of treating one national number as a universal rate rule"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "RPM calculator",
+        "body": "Use rate-per-mile math as one input to complete route economics.",
+        "href": "/logistics/resources/rpm-calculator/"
+      },
+      {
+        "title": "Hermes Load Board",
+        "body": "Check live lane evidence separately from national fuel data.",
+        "href": "/load-board/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the RPM Calculator",
+      "href": "/logistics/resources/rpm-calculator/"
+    },
+    "secondaryAction": {
+      "label": "Explore the Load Board",
+      "href": "/load-board/"
+    },
+    "sourceLabel": "U.S. Energy Information Administration — Short-Term Energy Outlook",
+    "sourceUrl": "https://www.eia.gov/outlooks/steo/",
+    "sourcePublishedAt": "2026-10-06",
+    "datePublished": "2026-10-07",
+    "dateModified": "2026-10-07",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "diesel price outlook 2026",
+      "truck fuel cost",
+      "carrier route economics",
+      "EIA diesel forecast"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "Hermes Logistics Academy",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "EIA October 2026 Short-Term Energy Outlook",
+        "use": "primary",
+        "url": "https://www.eia.gov/outlooks/steo/",
+        "observedAt": "2026-10-07",
+        "eventDate": "2026-10-06",
+        "notes": "Current authoritative oil and diesel outlook."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "EIA Gasoline and Diesel Fuel Update",
+        "use": "primary",
+        "url": "https://www.eia.gov/petroleum/gasdiesel/",
+        "observedAt": "2026-10-07",
+        "eventDate": "2026-10-06",
+        "notes": "Current authoritative weekly retail diesel series."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical logistics operating archive",
+        "use": "context_only",
+        "notes": "Anonymized operating-pattern context only; no identifiable conversations or private figures republished."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes logistics operating archive",
+      "nowPeriod": "October 2026",
+      "summary": "Historical Hermes logistics work linked fuel, deadhead, route position, reload planning and negotiation. Current EIA data reinforces frequent recalculation because weekly retail prices can ease while the broader oil outlook remains elevated.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://www.eia.gov/outlooks/steo/"
+    },
+    "publicationScore": {
+      "score": 74,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+10 historical operating fit",
+        "+9 historical comparison",
+        "+10 search value",
+        "+10 internal-link fit",
+        "-5 duplicate risk from prior fuel coverage"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "meta-ads-agentic-workflows-october-2026",
+    "direction": "marketing",
+    "slug": "meta-ads-agentic-workflows-october-2026",
+    "title": "Meta Expands Ads Creative Studio and Agentic Campaign Workflows | Hermes Insights",
+    "description": "Meta is expanding Ads Creative Studio, testing deeper business context and scheduled tasks in its business assistant, and opening Customer Lifecycle Strategy to all advertisers.",
+    "eyebrow": "Meta Ads & AI Workflow · October 2026",
+    "h1": "Meta is putting more AI into Ads Manager. What should marketers automate carefully?",
+    "conciseAnswer": "Meta announced on October 6 that Ads Creative Studio is rolling out more broadly, its business assistant is gaining deeper context and testing scheduled tasks and alerts, and Customer Lifecycle Strategy is now available to all advertisers. Meta also keeps permission and explicit-approval controls around agent-prepared campaign work.",
+    "explanation": [
+      "What changed: Meta's October 6 Advertising Week update says Ads Creative Studio is rolling out to more advertisers, the Meta AI business assistant is gaining deeper business context and testing scheduled tasks, alerts and conversational campaign actions, and Customer Lifecycle Strategy is now available to all advertisers. Why it matters: more planning, creative analysis and campaign operations can happen inside the platform, but the difference between a recommendation and an approved business decision becomes more important. What to do: use AI for bounded analysis, drafts and recurring summaries; keep human approval for publishing, targeting and budget changes; and preserve UTMs, qualified-lead definitions and CRM outcomes outside the platform. Result: faster campaign work without giving up the evidence chain or treating platform activity as qualified revenue. Source/date: Meta Newsroom, October 6, 2026."
+    ],
+    "takeaways": [
+      "Ads Creative Studio is rolling out more broadly, while several business-assistant capabilities remain tests or upcoming features",
+      "Meta says agent-prepared campaign work is controlled by advertiser permissions and explicit approval before publication",
+      "Keep owned attribution and CRM outcomes as the business truth layer"
+    ],
+    "faq": [],
+    "related": [
+      {
+        "title": "Marketing Growth Audit",
+        "body": "Use the Hermes evidence-first method for organic learning, paid testing and CRM attribution.",
+        "href": "/businesses/marketing-growth-audit-example/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect social discovery, campaign execution and owned measurement.",
+        "href": "/paths/marketing/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the Marketing Growth Audit",
+      "href": "/businesses/marketing-growth-audit-example/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Marketing",
+      "href": "/paths/marketing/"
+    },
+    "sourceLabel": "Meta Newsroom — Advertising Week New York 2026",
+    "sourceUrl": "https://about.fb.com/ltam/news/2026/10/advertising-week-new-york-2026-nuevas-capacidades-de-ia-para-guiar-campanas-y-llegar-a-los-clientes/",
+    "sourcePublishedAt": "2026-10-06",
+    "datePublished": "2026-10-07",
+    "dateModified": "2026-10-07",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "Meta Ads Creative Studio",
+      "Meta AI business assistant",
+      "Customer Lifecycle Strategy Meta",
+      "AI campaign workflow"
+    ],
+    "contentTier": "digest",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta Advertising Week New York 2026 announcement",
+        "use": "primary",
+        "url": "https://about.fb.com/ltam/news/2026/10/advertising-week-new-york-2026-nuevas-capacidades-de-ia-para-guiar-campanas-y-llegar-a-los-clientes/",
+        "observedAt": "2026-10-07",
+        "eventDate": "2026-10-06",
+        "notes": "Primary Meta source for the rollout, tests, lifecycle feature and approval controls."
+      },
+      {
+        "sourceId": "TG-002",
+        "kind": "first_party_historical",
+        "label": "Hermes historical marketing operating archive",
+        "use": "context_only",
+        "notes": "Used only for the anonymized pattern separating organic learning, paid execution and downstream business attribution."
+      }
+    ],
+    "historicalComparison": {
+      "thenPeriod": "2021–2026 historical Hermes marketing operating archive",
+      "nowPeriod": "October 2026",
+      "summary": "Historical Hermes marketing work separated content learning, paid execution and downstream business proof. Meta's October update compresses more campaign work into Ads Manager while permissions, explicit approval and owned measurement remain useful controls.",
+      "evidenceSourceIds": [
+        "TG-002",
+        "PUBLIC-WEB-CURRENT"
+      ],
+      "currentVerificationUrl": "https://about.fb.com/ltam/news/2026/10/advertising-week-new-york-2026-nuevas-capacidades-de-ia-para-guiar-campanas-y-llegar-a-los-clientes/"
+    },
+    "publicationScore": {
+      "score": 73,
+      "recommendation": "digest",
+      "reasons": [
+        "+20 freshness",
+        "+20 source authority",
+        "+8 first-party historical fit",
+        "+6 historical comparison",
+        "+13 search value",
+        "+10 internal-link fit",
+        "-4 duplicate risk from recent Meta AI coverage"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Editorial Pipeline"
+    }
+  },
+  {
+    "id": "meta-organic-signals-paid-learning-october-2026",
+    "direction": "marketing",
+    "slug": "organic-social-before-paid-ads-meta-learning",
+    "title": "Organic Social Before Paid Ads: What Meta Data Can Prove | Hermes",
+    "description": "A public Instagram profile cannot validate CAC, retention or a sales funnel. Hermes explains an evidence-first sequence: internal audit, organic baseline, controlled paid learning, then offer validation.",
+    "eyebrow": "Social Growth Method · October 2026",
+    "h1": "Why a public Instagram profile cannot validate a paid funnel — and what to measure first",
+    "conciseAnswer": "Public social profiles can show content, visible engagement and public identity, but they cannot reveal the internal audience, retention, attribution, cost and conversion data needed to validate a paid funnel. Meta says its 2026 ads systems can incorporate additional organic engagement data from Instagram. Hermes therefore uses an evidence-first operating sequence — audit → organic baseline → controlled paid learning → offer validation — as a measurement discipline, not as a claim that Meta requires every business to wait a fixed number of months before advertising.",
+    "explanation": [
+      "Start with the evidence boundary. A public Instagram, Facebook or Threads page can support a useful outside-in audit: content cadence, visible creative patterns, public calls to action, identity consistency and obvious discovery gaps. It cannot honestly prove Reach by audience segment, watch-time retention, non-follower distribution, paid-versus-organic contribution, lead quality, CAC, consultation conversion or revenue attribution. Those decisions require authorized platform analytics and CRM evidence. That is why Hermes Catalog marks public observations, private-analytics requirements and owner-confirmation gaps separately instead of turning a screenshot into a confident funnel recommendation.",
+      "Meta's own January 2026 engineering and business update gives an important signal without justifying an overclaim. Meta says its newer ads ranking work uses longer behavior sequences and can incorporate additional organic engagement data on Instagram. That shows organic engagement can be one input in the broader advertising system. It does not say that every company must complete a fixed organic warm-up period, that stopping ads permanently damages an account, or that an organic winner automatically becomes a profitable paid offer. Those stronger claims still have to be tested against the actual account and business economics.",
+      "Hermes therefore treats organic programming as a learning layer. Build a repeatable content matrix, measure which hooks, formats and audience themes consistently outperform the account's own baseline, and connect those observations to profile actions, site visits or qualified conversations where possible. Once repeated organic winners exist, use a small controlled paid-learning budget to compare creative and audience response. The purpose is not to scale immediately; it is to collect cleaner evidence about whether the signal survives paid distribution and whether downstream actions remain qualified.",
+      "Only after that signal gate should the team call an offer or funnel validated. The offer then needs a canonical destination, explicit CTA, source/UTM capture and CRM stages that connect content → click or message → qualified lead → consultation → sale → delivery outcome. If paid traffic produces cheap clicks but weak qualified actions, the funnel is not working. If a social post produces high views without meaningful next actions, it is a distribution result, not sales proof. This sequence reduces the chance of optimizing vanity metrics while commercial decisions remain unmeasured."
+    ],
+    "takeaways": [
+      "Public social data supports an outside-in audit, not a validated CAC or sales funnel",
+      "Meta says its ads ranking work can incorporate additional organic engagement data from Instagram",
+      "Hermes treats organic baseline → controlled paid learning → offer validation as an evidence discipline, not a universal Meta rule",
+      "A real funnel needs internal platform analytics plus CRM attribution from content to qualified action and revenue"
+    ],
+    "faq": [
+      {
+        "question": "Does Meta require every business to grow organically before running ads?",
+        "answer": "No public Meta source establishes a universal fixed organic-first requirement. Hermes uses an organic baseline before scaling paid media as a risk-control and measurement method, while the exact sequence should still reflect the account, objective and available evidence."
+      },
+      {
+        "question": "Can a public Instagram audit tell whether followers are bots or calculate engagement quality?",
+        "answer": "Not reliably. Public observations can nominate questions, but audience quality, detailed Reach, retention, paid/organic split and conversion analysis require authorized account analytics and supporting business data."
+      },
+      {
+        "question": "When is an organic winner ready for a paid test?",
+        "answer": "When the format or message beats the account's own baseline repeatedly and has a measurable next action. A small paid-learning test can then check whether the signal survives paid distribution before larger budget or offer scaling."
+      },
+      {
+        "question": "What makes a social funnel commercially measurable?",
+        "answer": "A canonical CTA or destination, source and UTM capture, qualified-lead definitions, CRM stages and downstream sale or delivery evidence. Views and likes alone do not validate a commercial funnel."
+      }
+    ],
+    "related": [
+      {
+        "title": "Marketing Growth Audit",
+        "body": "Use the reusable Hermes method for audit, organic learning, paid-learning gates and CRM attribution.",
+        "href": "/businesses/marketing-growth-audit-example/"
+      },
+      {
+        "title": "Hermes Catalog",
+        "body": "Review source-bounded business profiles and Digital Health audits without invented performance claims.",
+        "href": "/businesses/"
+      },
+      {
+        "title": "Hermes Marketing",
+        "body": "Connect social discovery, owned conversion paths and measurable growth workflows.",
+        "href": "/paths/marketing/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Open the Marketing Growth Audit",
+      "href": "/businesses/marketing-growth-audit-example/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Catalog",
+      "href": "/businesses/"
+    },
+    "sourceLabel": "Meta Newsroom — 2026: AI Drives Performance",
+    "sourceUrl": "https://about.fb.com/news/2026/01/2026-ai-drives-performance/",
+    "sourcePublishedAt": "2026-01-28",
+    "datePublished": "2026-10-05",
+    "dateModified": "2026-10-05",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "organic social before paid ads",
+      "Instagram audit",
+      "Meta ads learning",
+      "organic reach baseline",
+      "social media funnel audit",
+      "paid social validation",
+      "Meta organic engagement signals"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "telegram": {
+      "group": "SMM Organic Target",
+      "messageId": null
+    },
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "Meta January 2026 AI and ads-ranking update",
+        "use": "primary",
+        "url": "https://about.fb.com/news/2026/01/2026-ai-drives-performance/",
+        "observedAt": "2026-10-05",
+        "eventDate": "2026-01-28",
+        "notes": "Primary Meta source for the statement that newer ads-ranking work can incorporate additional organic engagement data on Instagram. It does not establish a universal fixed organic-first advertising rule."
+      }
+    ],
+    "publicationScore": {
+      "score": 86,
+      "recommendation": "standalone",
+      "reasons": [
+        "+17 current platform relevance",
+        "+20 first-party source authority",
+        "+16 search value",
+        "+18 reusable business-method value",
+        "+15 internal-link and Catalog fit"
+      ]
+    }
+  },
+  {
     "id": "google-search-console-multimodal-reporting-september-2026",
     "direction": "marketing",
     "slug": "google-search-console-multimodal-reporting-september-2026",
@@ -1304,115 +1632,6 @@
     "telegram": {
       "group": "SMM Organic Target",
       "messageId": 837
-    }
-  },
-  {
-    "id": "meta-organic-signals-paid-learning-october-2026",
-    "direction": "marketing",
-    "slug": "organic-social-before-paid-ads-meta-learning",
-    "title": "Organic Social Before Paid Ads: What Meta Data Can Prove | Hermes",
-    "description": "A public Instagram profile cannot validate CAC, retention or a sales funnel. Hermes explains an evidence-first sequence: internal audit, organic baseline, controlled paid learning, then offer validation.",
-    "eyebrow": "Social Growth Method · October 2026",
-    "h1": "Why a public Instagram profile cannot validate a paid funnel — and what to measure first",
-    "conciseAnswer": "Public social profiles can show content, visible engagement and public identity, but they cannot reveal the internal audience, retention, attribution, cost and conversion data needed to validate a paid funnel. Meta says its 2026 ads systems can incorporate additional organic engagement data from Instagram. Hermes therefore uses an evidence-first operating sequence — audit → organic baseline → controlled paid learning → offer validation — as a measurement discipline, not as a claim that Meta requires every business to wait a fixed number of months before advertising.",
-    "explanation": [
-      "Start with the evidence boundary. A public Instagram, Facebook or Threads page can support a useful outside-in audit: content cadence, visible creative patterns, public calls to action, identity consistency and obvious discovery gaps. It cannot honestly prove Reach by audience segment, watch-time retention, non-follower distribution, paid-versus-organic contribution, lead quality, CAC, consultation conversion or revenue attribution. Those decisions require authorized platform analytics and CRM evidence. That is why Hermes Catalog marks public observations, private-analytics requirements and owner-confirmation gaps separately instead of turning a screenshot into a confident funnel recommendation.",
-      "Meta's own January 2026 engineering and business update gives an important signal without justifying an overclaim. Meta says its newer ads ranking work uses longer behavior sequences and can incorporate additional organic engagement data on Instagram. That shows organic engagement can be one input in the broader advertising system. It does not say that every company must complete a fixed organic warm-up period, that stopping ads permanently damages an account, or that an organic winner automatically becomes a profitable paid offer. Those stronger claims still have to be tested against the actual account and business economics.",
-      "Hermes therefore treats organic programming as a learning layer. Build a repeatable content matrix, measure which hooks, formats and audience themes consistently outperform the account's own baseline, and connect those observations to profile actions, site visits or qualified conversations where possible. Once repeated organic winners exist, use a small controlled paid-learning budget to compare creative and audience response. The purpose is not to scale immediately; it is to collect cleaner evidence about whether the signal survives paid distribution and whether downstream actions remain qualified.",
-      "Only after that signal gate should the team call an offer or funnel validated. The offer then needs a canonical destination, explicit CTA, source/UTM capture and CRM stages that connect content → click or message → qualified lead → consultation → sale → delivery outcome. If paid traffic produces cheap clicks but weak qualified actions, the funnel is not working. If a social post produces high views without meaningful next actions, it is a distribution result, not sales proof. This sequence reduces the chance of optimizing vanity metrics while commercial decisions remain unmeasured."
-    ],
-    "takeaways": [
-      "Public social data supports an outside-in audit, not a validated CAC or sales funnel",
-      "Meta says its ads ranking work can incorporate additional organic engagement data from Instagram",
-      "Hermes treats organic baseline → controlled paid learning → offer validation as an evidence discipline, not a universal Meta rule",
-      "A real funnel needs internal platform analytics plus CRM attribution from content to qualified action and revenue"
-    ],
-    "faq": [
-      {
-        "question": "Does Meta require every business to grow organically before running ads?",
-        "answer": "No public Meta source establishes a universal fixed organic-first requirement. Hermes uses an organic baseline before scaling paid media as a risk-control and measurement method, while the exact sequence should still reflect the account, objective and available evidence."
-      },
-      {
-        "question": "Can a public Instagram audit tell whether followers are bots or calculate engagement quality?",
-        "answer": "Not reliably. Public observations can nominate questions, but audience quality, detailed Reach, retention, paid/organic split and conversion analysis require authorized account analytics and supporting business data."
-      },
-      {
-        "question": "When is an organic winner ready for a paid test?",
-        "answer": "When the format or message beats the account's own baseline repeatedly and has a measurable next action. A small paid-learning test can then check whether the signal survives paid distribution before larger budget or offer scaling."
-      },
-      {
-        "question": "What makes a social funnel commercially measurable?",
-        "answer": "A canonical CTA or destination, source and UTM capture, qualified-lead definitions, CRM stages and downstream sale or delivery evidence. Views and likes alone do not validate a commercial funnel."
-      }
-    ],
-    "related": [
-      {
-        "title": "Marketing Growth Audit",
-        "body": "Use the reusable Hermes method for audit, organic learning, paid-learning gates and CRM attribution.",
-        "href": "/businesses/marketing-growth-audit-example/"
-      },
-      {
-        "title": "Hermes Catalog",
-        "body": "Review source-bounded business profiles and Digital Health audits without invented performance claims.",
-        "href": "/businesses/"
-      },
-      {
-        "title": "Hermes Marketing",
-        "body": "Connect social discovery, owned conversion paths and measurable growth workflows.",
-        "href": "/paths/marketing/"
-      }
-    ],
-    "primaryAction": {
-      "label": "Open the Marketing Growth Audit",
-      "href": "/businesses/marketing-growth-audit-example/"
-    },
-    "secondaryAction": {
-      "label": "Explore Hermes Catalog",
-      "href": "/businesses/"
-    },
-    "sourceLabel": "Meta Newsroom — 2026: AI Drives Performance",
-    "sourceUrl": "https://about.fb.com/news/2026/01/2026-ai-drives-performance/",
-    "sourcePublishedAt": "2026-01-28",
-    "datePublished": "2026-10-05",
-    "dateModified": "2026-10-05",
-    "authorName": "Hermes Editorial Team",
-    "keywords": [
-      "organic social before paid ads",
-      "Instagram audit",
-      "Meta ads learning",
-      "organic reach baseline",
-      "social media funnel audit",
-      "paid social validation",
-      "Meta organic engagement signals"
-    ],
-    "contentTier": "standalone",
-    "currentMarketClaim": true,
-    "telegram": {
-      "group": "SMM Organic Target",
-      "messageId": null
-    },
-    "evidence": [
-      {
-        "sourceId": "PUBLIC-WEB-CURRENT",
-        "kind": "public_external",
-        "label": "Meta January 2026 AI and ads-ranking update",
-        "use": "primary",
-        "url": "https://about.fb.com/news/2026/01/2026-ai-drives-performance/",
-        "observedAt": "2026-10-05",
-        "eventDate": "2026-01-28",
-        "notes": "Primary Meta source for the statement that newer ads-ranking work can incorporate additional organic engagement data on Instagram. It does not establish a universal fixed organic-first advertising rule."
-      }
-    ],
-    "publicationScore": {
-      "score": 86,
-      "recommendation": "standalone",
-      "reasons": [
-        "+17 current platform relevance",
-        "+20 first-party source authority",
-        "+16 search value",
-        "+18 reusable business-method value",
-        "+15 internal-link and Catalog fit"
-      ]
     }
   }
 ]
