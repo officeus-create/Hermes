@@ -293,24 +293,24 @@ export function aggregateHomeServiceLeads(rows = []) {
     const leadCostComplete = leadCostVerifiedCount === scopeRows.length;
     const quoteComplete = quoteVerifiedCount === scopeRows.length;
 
-    const knownRevenueCents = sumVerified(completedScope, "final_amount_cents", "final_amount_known", "final_amount_source_ref");
-    const knownDisposalCostCents = sumVerified(completedScope, "disposal_cost_cents", "disposal_cost_known", "disposal_cost_source_ref");
-    const knownLeadCostCents = sumVerified(scopeRows, "lead_cost_cents", "lead_cost_known", "lead_cost_source_ref");
+    const verifiedRevenueCents = sumVerified(completedScope, "final_amount_cents", "final_amount_known", "final_amount_source_ref");
+    const verifiedDisposalCostCents = sumVerified(completedScope, "disposal_cost_cents", "disposal_cost_known", "disposal_cost_source_ref");
+    const verifiedLeadCostCents = sumVerified(scopeRows, "lead_cost_cents", "lead_cost_known", "lead_cost_source_ref");
     const grossComplete = revenueComplete && disposalComplete && leadCostComplete;
 
     return {
-      revenueCents: revenueComplete ? knownRevenueCents : null,
-      disposalCostCents: disposalComplete ? knownDisposalCostCents : null,
-      leadCostCents: leadCostComplete ? knownLeadCostCents : null,
+      revenueCents: revenueComplete ? verifiedRevenueCents : null,
+      disposalCostCents: disposalComplete ? verifiedDisposalCostCents : null,
+      leadCostCents: leadCostComplete ? verifiedLeadCostCents : null,
       grossAfterTrackedCostsCents: grossComplete
-        ? knownRevenueCents - knownDisposalCostCents - knownLeadCostCents
+        ? verifiedRevenueCents - verifiedDisposalCostCents - verifiedLeadCostCents
         : null,
       averageTicketCents: completedScope.length === 0
         ? 0
-        : revenueComplete ? Math.round(knownRevenueCents / completedScope.length) : null,
-      knownRevenueCents,
-      knownDisposalCostCents,
-      knownLeadCostCents,
+        : revenueComplete ? Math.round(verifiedRevenueCents / completedScope.length) : null,
+      verifiedRevenueCents,
+      verifiedDisposalCostCents,
+      verifiedLeadCostCents,
       moneyEvidence: {
         revenue: {
           knownCount: finalKnownCount,
@@ -372,7 +372,7 @@ export function aggregateHomeServiceLeads(rows = []) {
         bookedRate: item.leads ? item.booked / item.leads : 0,
       };
     }).sort((a,b) =>
-      Number(b.revenueCents ?? b.knownRevenueCents ?? 0) - Number(a.revenueCents ?? a.knownRevenueCents ?? 0)
+      Number(b.revenueCents ?? b.verifiedRevenueCents ?? 0) - Number(a.revenueCents ?? a.verifiedRevenueCents ?? 0)
       || b.leads - a.leads
     );
   };
