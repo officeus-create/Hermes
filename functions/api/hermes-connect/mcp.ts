@@ -128,6 +128,64 @@ const publicToolDefinitions = [
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   },
   {
+    name: "build_crm_onboarding_plan",
+    title: "Build a connector-guided CRM onboarding plan",
+    description:
+      "Use this after the user explains the business problem and wants a concrete setup path. Returns the smallest useful connector/integration plan, minimum onboarding questions, a ready CRM bootstrap prompt, and an execution sequence. It never installs third-party apps itself, never asks for passwords/API keys, and never claims background CRM work unless an authenticated durable provisioning job exists.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        business_type: { type: "string", minLength: 2, maxLength: 80 },
+        primary_problem: { type: "string", minLength: 3, maxLength: 240 },
+        desired_outcome: { type: "string", maxLength: 240 },
+        current_stack: {
+          type: "array",
+          maxItems: 8,
+          items: { type: "string", minLength: 1, maxLength: 80 },
+        },
+        existing_crm: { type: "boolean" },
+      },
+      required: ["business_type", "primary_problem"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        strategy: { type: "string" },
+        recommended_connections: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              capability: { type: "string" },
+              priority: { type: "string", enum: ["required", "recommended", "optional"] },
+              reason: { type: "string" },
+              host_action: { type: "string" },
+            },
+            required: ["capability", "priority", "reason", "host_action"],
+            additionalProperties: false,
+          },
+        },
+        minimum_questions: { type: "array", items: { type: "string" } },
+        crm_bootstrap_prompt: { type: "string" },
+        execution_sequence: { type: "array", items: { type: "string" } },
+        continuity_rule: { type: "string" },
+        authorization_rule: { type: "string" },
+      },
+      required: [
+        "strategy",
+        "recommended_connections",
+        "minimum_questions",
+        "crm_bootstrap_prompt",
+        "execution_sequence",
+        "continuity_rule",
+        "authorization_rule",
+      ],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
     name: "get_hermes_business_routes",
     title: "Get Hermes business routes",
     description:
@@ -357,6 +415,102 @@ function recommendStartPath(args: Record<string, unknown>) {
   };
 }
 
+function buildCrmOnboardingPlan(args: Record<string, unknown>) {
+  const businessType = normalize(args.business_type, 80);
+  const problem = normalize(args.primary_problem, 240);
+  const desiredOutcome = normalize(args.desired_outcome, 240);
+  const currentStack = Array.isArray(args.current_stack)
+    ? args.current_stack.slice(0, 8).map((item) => normalize(item, 80)).filter(Boolean)
+    : [];
+  const existingCrm = args.existing_crm === true;
+  const combined = `${businessType} ${problem} ${desiredOutcome} ${currentStack.join(" ")}`.toLowerCase();
+
+  const connectAction =
+    "If the AI host supports trusted plugins/connectors, surface its native Connect/Install action for this capability. Otherwise explain the exact integration needed. Never ask the user to paste passwords, API keys, recovery codes, or full private chat history.";
+
+  const recommendedConnections: Array<{
+    capability: string;
+    priority: "required" | "recommended" | "optional";
+    reason: string;
+    host_action: string;
+  }> = [];
+
+  if (existingCrm || /crm|pipeline|lead|sales|follow.?up|customer/.test(combined)) {
+    recommendedConnections.push({
+      capability: "Current CRM or structured customer records",
+      priority: existingCrm ? "required" : "recommended",
+      reason: "Reuse the existing source of truth before creating a second customer database or duplicate pipeline.",
+      host_action: connectAction,
+    });
+  }
+
+  if (/lead|sales|follow.?up|customer|inbox|email|estimate|quote|support|dispatch|booking|appointment/.test(combined)) {
+    recommendedConnections.push({
+      capability: "Business email",
+      priority: "recommended",
+      reason: "Email history can reveal real intake, follow-up, objections, handoffs, and missed-response patterns without asking the user to retype them.",
+      host_action: connectAction,
+    });
+  }
+
+  if (/booking|appointment|schedule|meeting|dispatch|service|course|training/.test(combined)) {
+    recommendedConnections.push({
+      capability: "Calendar or scheduling system",
+      priority: "recommended",
+      reason: "Scheduling evidence helps model availability, handoffs, booking stages, reminders, and ownership.",
+      host_action: connectAction,
+    });
+  }
+
+  recommendedConnections.push({
+    capability: "Business files / SOPs / forms",
+    priority: "optional",
+    reason: "Selected documents can speed up workflow mapping and CRM field design when the user chooses what to share.",
+    host_action: connectAction,
+  });
+
+  if (/seo|geo|google|website|social|marketing|ads|traffic|visibility|content/.test(combined)) {
+    recommendedConnections.push({
+      capability: "Marketing / analytics sources",
+      priority: "optional",
+      reason: "Use measured acquisition and conversion evidence to connect CRM stages to traffic, inquiries, qualified actions, and outcomes.",
+      host_action: connectAction,
+    });
+  }
+
+  const minimumQuestions = [
+    "What is the main customer journey from first contact to completed outcome?",
+    "Where do new requests or leads arrive today?",
+    "What step is currently slow, lost, duplicated, or dependent on one person?",
+    "Who owns the next action at each critical handoff?",
+    "Which one KPI should improve first?",
+  ];
+
+  const outcomeText = desiredOutcome || "improve the main operating bottleneck and make ownership measurable";
+  const crmBootstrapPrompt =
+    `Build my Hermes Connect CRM blueprint for a ${businessType}. Main problem: ${problem}. Desired outcome: ${outcomeText}. Use only the sources and connectors I explicitly approve. First map the customer journey, pipeline stages, owners, handoffs, follow-up rules, KPIs, and missing automations. Reuse any existing CRM/source of truth instead of duplicating it. Ask only for facts you cannot infer safely. Do not ask for passwords, API keys, full chat history, or unrelated private data. Give me concrete next actions while the setup is being prepared.`;
+
+  return {
+    strategy:
+      "Problem -> minimum approved connections -> compact intake -> CRM blueprint -> authenticated ProvisioningRequest/Job when available -> readback -> improvement loop.",
+    recommended_connections: recommendedConnections.slice(0, 5),
+    minimum_questions: minimumQuestions,
+    crm_bootstrap_prompt: crmBootstrapPrompt,
+    execution_sequence: [
+      "Recommend only the connectors that materially reduce repeated data entry or improve evidence quality.",
+      "Use the AI host's native connector/plugin approval flow when available; otherwise stay advisory and describe the needed integration.",
+      "Read only user-approved relevant sources and map one canonical Company/workflow before creating records.",
+      "Create the CRM blueprint: stages, owners, fields, automations, KPIs, permissions, and acceptance criteria.",
+      "If authenticated Hermes provisioning exists, create a durable ProvisioningRequest/Job and return its ID/state; otherwise return the blueprint/request without claiming work is running.",
+      "Continue the business conversation immediately; later turns query durable job/readback state instead of asking the user to repeat context.",
+    ],
+    continuity_rule:
+      "The user may keep talking while an authenticated durable provisioning job runs. Without a durable backend job, never claim asynchronous or background CRM population.",
+    authorization_rule:
+      "Connection and write permissions stay with the user and the server/host authorization layer. A model recommendation never grants access by itself.",
+  };
+}
+
 function getHermesBusinessRoutes() {
   return {
     routes: HERMES_ROUTES.map((route) => ({ ...route })),
@@ -441,6 +595,7 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
 async function callTool(env: Env, name: string, args: Record<string, unknown>) {
   if (name === "get_product_overview") return getOverview();
   if (name === "recommend_start_path") return recommendStartPath(args);
+  if (name === "build_crm_onboarding_plan") return buildCrmOnboardingPlan(args);
   if (name === "get_hermes_business_routes") return getHermesBusinessRoutes();
   if (name === "get_product_learning_policy") return getProductLearningPolicy();
   if (name === "submit_product_feedback") return submitProductFeedback(env, args);
