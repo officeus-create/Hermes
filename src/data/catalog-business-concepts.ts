@@ -466,6 +466,15 @@ export const konsNaBisConcept = Object.freeze({
     "бізнес навчання Україна",
     "Біла Церква бізнес клуб"
   ],
+  semanticCoreEn: [
+    "Kons na Bis",
+    "entrepreneur business club",
+    "Managed Business Growth Strategy",
+    "business course for entrepreneurs",
+    "Oleksandr Morozov business club",
+    "business education Ukraine",
+    "Bila Tserkva business club"
+  ],
   sourceRef: "OFFICIAL-KNB-SITE-POLICY-PROGRAM-20261005"
 } satisfies CatalogBusinessConcept);
 
