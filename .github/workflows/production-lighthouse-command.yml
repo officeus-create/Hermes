@@ -1,29 +1,20 @@
 name: Measure production Lighthouse on command
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
-# Every issue comment triggers workflow evaluation. Scope concurrency to the exact
-# comment so an unrelated later comment cannot cancel an approved measurement run.
 concurrency:
-  group: production-lighthouse-command-${{ github.event.comment.id }}
+  group: production-lighthouse-manual
   cancel-in-progress: false
 
 jobs:
   measure:
-    if: >-
-      github.event.issue.number == 354 &&
-      github.event.comment.body == '/measure-production-lighthouse' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 28
     env:
-      GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/
 
     steps:
@@ -89,8 +80,7 @@ jobs:
             echo "> Session-state causality is not measured with URL fragments. The prior hash-based regular-home lane was invalidated by same-URL paired evidence in #459."
             echo
             echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
-          } > /tmp/production-lighthouse-comment.md
-          gh issue comment 354 --repo "${{ github.repository }}" --body-file /tmp/production-lighthouse-comment.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload lab reports
         if: always()
