@@ -62,13 +62,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (ctx.error) return errorResponse(ctx.error);
   const ownerId = String(ctx.specialist.id);
   const companyId = String(ctx.company.id);
-  const now = new Date().toISOString();
-  await env.DB.prepare(`
-    UPDATE hermes_academy_business_participant_invites
-    SET state='expired',updated_at=?
-    WHERE owner_specialist_id=? AND company_id=? AND state='issued' AND expires_at<=?
-  `).bind(now,ownerId,companyId,now).run();
-
   const [inviteResult, participantResult] = await Promise.all([
     env.DB.prepare(`
       SELECT i.*, l.contact_name AS lead_contact_name, p.name AS program_name,
@@ -163,7 +156,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const id = String(body.id || "").trim();
     const invite = await readInvite(env.DB,id,ownerId,companyId);
     if (!invite) return jsonResponse(404,{success:false,error:"participant_invite_not_found"},privateHeaders);
-    if (invite.state !== "issued") return jsonResponse(409,{success:false,error:"participant_invite_not_revocable"},privateHeaders);
+    if (invite.state !== "issued" || Date.parse(String(invite.expires_at || "")) <= Date.now()) {
+      return jsonResponse(409,{success:false,error:"participant_invite_not_revocable"},privateHeaders);
+    }
     await env.DB.prepare(`
       UPDATE hermes_academy_business_participant_invites
       SET state='revoked',revoked_at=?,updated_at=?
@@ -177,11 +172,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const existing = await readParticipant(env.DB,id,ownerId,companyId);
     if (!existing) return jsonResponse(404,{success:false,error:"participant_not_found"},privateHeaders);
     const state = normalizeParticipantState(body.state,String(existing.state || "enrolled"));
-    if (!["active","completed","alumni","withdrawn"].includes(state)) {
-      return jsonResponse(400,{success:false,error:"participant_state_invalid"},privateHeaders);
-    }
-    if (state === "alumni" && !existing.completed_at) {
-      return jsonResponse(409,{success:false,error:"participant_must_complete_before_alumni"},privateHeaders);
+    const transitions: Record<string,string[]> = {
+      enrolled: ["active","withdrawn"],
+      active: ["completed","withdrawn"],
+      completed: ["alumni"],
+      alumni: [],
+      withdrawn: [],
+    };
+    if (!transitions[String(existing.state)]?.includes(state)) {
+      return jsonResponse(409,{success:false,error:"participant_state_transition_invalid"},privateHeaders);
     }
     const completedAt = state === "completed" && !existing.completed_at ? now : existing.completed_at;
     await env.DB.prepare(`
