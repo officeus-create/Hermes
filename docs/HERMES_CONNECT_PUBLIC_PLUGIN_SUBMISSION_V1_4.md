@@ -13,8 +13,8 @@ Status: PRE-SUBMISSION. This runbook does not claim OpenAI approval or publicati
 - Support URL: https://hermeslogisticsus.com/services/hermes-connect/support/
 - Privacy: https://hermeslogisticsus.com/privacy/
 - Terms: https://hermeslogisticsus.com/terms/
-- Public candidate package: hermes-connect-crm v1.4.0
-- Candidate ZIP SHA256: 234935992f414152564a50c76f2ba1608593505c1a8135ace0f326a33939005c
+- Public candidate package target: hermes-connect-crm v1.4.1
+- Candidate ZIP SHA256: UNKNOWN until the v1.4.1 public package is regenerated. The prior v1.4.0 SHA256 `234935992f414152564a50c76f2ba1608593505c1a8135ace0f326a33939005c` is superseded and MUST NOT be submitted as the current package.
 
 The private owner-test Plugin ID is not the public directory identity.
 
@@ -30,7 +30,7 @@ The private owner-test Plugin ID is not the public directory identity.
 8. Store that exact token only in the production runtime binding OPENAI_APPS_CHALLENGE_TOKEN.
 9. Verify the challenge URL returns only the exact token as plain text.
 10. Use a global-data-residency OpenAI project and verified Hermes Logistics LLC business/developer identity.
-11. Upload the public ZIP using the With MCP submission path.
+11. Regenerate the public v1.4.1 ZIP from the public-safe skill set after live MCP readback, validate it, record the exact SHA256, then upload that exact ZIP using the With MCP submission path.
 12. Scan Tools, inspect annotations/schemas/descriptions and resolve every blocking finding.
 13. Verify 5 positive + 3 negative review cases.
 14. Record an accessible reviewer walkthrough that demonstrates the principal tools/use cases.
