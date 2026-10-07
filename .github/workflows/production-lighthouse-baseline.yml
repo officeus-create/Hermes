@@ -2,14 +2,17 @@ name: Production Lighthouse baseline
 
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows:
+      - Deploy approved main to Cloudflare Pages v2
+    types:
+      - completed
     branches:
       - main
-    paths:
-      - .github/workflows/production-lighthouse-baseline.yml
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: production-lighthouse-baseline
@@ -17,6 +20,7 @@ concurrency:
 
 jobs:
   lighthouse:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     name: Mobile lab baseline — ${{ matrix.page.slug }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -37,10 +41,21 @@ jobs:
             url: https://hermeslogisticsus.com/services/seo/
 
     steps:
+      - name: Check out the measurement revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Require successful exact-revision deployment before measurement
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: node scripts/verify-lighthouse-release.mjs
 
       - name: Run Lighthouse against production
         env:
@@ -69,6 +84,7 @@ jobs:
         env:
           TARGET_URL: ${{ matrix.page.url }}
           PAGE_SLUG: ${{ matrix.page.slug }}
+          MEASUREMENT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           node <<'NODE'
           import fs from 'node:fs';
@@ -85,6 +101,7 @@ jobs:
             `- URL: ${targetUrl}`,
             `- Lighthouse: ${report.lighthouseVersion ?? 'unknown'}`,
             `- Fetch time: ${report.fetchTime ?? 'unknown'}`,
+            `- Deployment-verified measurement revision: ${process.env.MEASUREMENT_SHA}`,
             `- Performance: ${score('performance')}`,
             `- Accessibility: ${score('accessibility')}`,
             `- Best Practices: ${score('best-practices')}`,

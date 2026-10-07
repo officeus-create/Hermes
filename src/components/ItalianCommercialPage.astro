@@ -73,7 +73,7 @@ const faqSchema = {
   alternates={content.alternates}
   schema={[serviceSchema, breadcrumbSchema, faqSchema]}
 >
-  <SiteHeader theme="light" locale="it" />
+  <SiteHeader contactHref="#contact" theme="light" locale="it" />
   <main id="main-content" class:list={["it-commercial", `it-commercial--${content.id}`]} data-hermes-vertical={content.id}>
     <section class="it-commercial-hero hermes-surface-obsidian" id="top">
       <div class="it-commercial-hero-media" aria-hidden="true"><img src={content.image} alt="" width="1600" height="1000" loading="eager" fetchpriority="high" decoding="async" /></div>

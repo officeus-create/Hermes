@@ -16,9 +16,10 @@ interface Props {
   theme?: "dark" | "light";
   activePath?: string;
   locale?: SiteLocale;
+  contactHref?: string;
 }
 
-const { theme = "dark", activePath, locale = "en" } = Astro.props;
+const { theme = "dark", activePath, locale = "en", contactHref = "/contacts/" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isApprovedHome = currentPath === "/";
 const homeUpdates = isApprovedHome ? {
@@ -182,7 +183,7 @@ const languageLinks = siteLocales.map((language) => {
         ))}
       </nav>
     </details>
-    <a class="header-cta" href="#contact">
+    <a class="header-cta" href={contactHref}>
       {contactLabel}
       <ArrowUpRight size={17} aria-hidden="true" />
     </a>
@@ -209,7 +210,7 @@ const languageLinks = siteLocales.map((language) => {
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
-    <a href="#contact">{contactLabel}</a>
+    <a href={contactHref}>{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
       <strong>{localeConfig[activeLocale].name}</strong>
       {languageLinks.map((item) => (

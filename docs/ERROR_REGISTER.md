@@ -497,3 +497,11 @@ EVIDENCE: The new regression failed before implementation because two attempts p
 LESSON: An idempotency key identifies one business intent, not one click. A retry after an ambiguous outcome must reuse the same identity; a material user edit must create a new one.
 
 REUSE_RULE: Every browser-to-receiver lead flow with retryable ambiguous delivery must persist its request identity across unchanged retries and reset it on trusted intent changes. Test both the retry and new-intent boundaries.
+
+
+## 2026-10-07 — Public journey recovery and Lighthouse deployment race
+
+STATUS: proposed branch, not released.
+CAUSE: general header used missing #contact targets; Academy inbound track anchors were absent; general website navigation selected a London owner; public MotionLayer loaded repair-owner runtime; push-triggered Lighthouse ran before deployment.
+PREVENTION: build-time header/Academy/owner-runtime contracts and successful exact-revision deployment gate before production measurement.
+EVIDENCE: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md. Build and npm test pass; browser verification and release remain pending.
