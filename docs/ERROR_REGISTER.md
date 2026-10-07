@@ -523,3 +523,5 @@ EVIDENCE: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md. Build and npm test pas
 - WORKING_APPROACH: update only the regression to distinguish access from Academy, check clean-route reload, explicit `?lang=uk` and its reload, and explicit English. Do not restore the defect or relax assertions.
 - EVIDENCE: focused locale/source contracts pass; fresh desktop/mobile auth and repair-context browser verification is recorded in the PR. GitHub shard 3 cancellation is not a green aggregate run, even when its tests finished successfully; rerun all gates on the new head.
 - STATUS: regression aligned / current-head verification required. No runtime, Catalog, receiver, deployment or client-data change in this follow-up.
+
+- Second exact CI finding in the same PR: `tests/seo-repair-b2b-owner-map.spec.ts` selected retired generic Website/SEO hrefs. The regression now identifies each visible hero primary CTA by accessible name and asserts its complete repair-context destination, including vertical/source path and the correct form anchor. Product links are not reverted.

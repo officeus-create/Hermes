@@ -1580,3 +1580,5 @@ handoff_to: repository owner for review and release decision
 - Regression now tests route-specific clean language, reload, explicit Ukrainian/reload and explicit English. No runtime or Catalog changes.
 - Prior `fbae1ddf` contracts and visual evidence succeeded; browser aggregate failed on the stale access assertion and other shards were cancelled by fail-fast. Do not call cancelled shards a completed green gate.
 - Current executor permissions now permit Linux Chrome startup. Focused desktop/mobile auth and Repair context checks execute locally; final output and the new exact-head rerun are attached to PR #1749. Earlier socket denial remains historical environment evidence, not a current blocker.
+
+- Second same-slice CI correction: repair B2B owner-map browser checks now assert the visible primary CTA and exact repair-context Website/SEO URL. Existing titles, H1, related owners and mobile action-bar expectations remain protected. No runtime change.
