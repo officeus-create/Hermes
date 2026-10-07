@@ -293,3 +293,23 @@ The package intentionally omits a fake remote MCP endpoint. External customer us
 Approved Hermes Connect Option 02 continuous connected-flow mark remains the plugin identity.
 
 See `docs/HERMES_CONNECT_CUSTOMER_MCP_CONTRACT.md` for the server/auth/tool boundary.
+
+
+## V1.4 public-directory foundation — 2026-10-07
+
+The public distribution is now treated as a separate **trust surface** of the same Hermes Connect CRM product, not as a copy of the private Operator package.
+
+Public package identity: `hermes-connect-crm` v1.4.0, display name **Hermes Connect CRM**, developer **Hermes Logistics LLC**.
+
+Public-package rule:
+- include only public/customer discovery, advisory, provisioning/change-request planning, consented Catalog/growth guidance, and privacy-safe learning skills;
+- do not ship private One Brain routing, release QA, repository/deploy, staff intake, internal evidence-distribution, or organizational-control skills;
+- remove the private-owner fallback: owner/staff/customer privileges require server authorization;
+- current public release truthfully exposes no private CRM read/write capability.
+
+First public MCP endpoint contract: `https://hermeslogisticsus.com/api/hermes-connect/mcp`.
+Initial tools are intentionally bounded: `get_product_overview`, `recommend_start_path`, and explicit-consent `submit_product_feedback`. Product feedback stores only a small sanitized ProductLearningEvent and rejects common PII/credential patterns; it is not raw conversation ingestion and not marketing consent.
+
+Public support/trust owner: `/services/hermes-connect/support/` with canonical Privacy/Terms/Legal links and explicit no-secrets guidance.
+
+Public submission remains a separate gate from code release: production HTTPS MCP + support page must be live, OpenAI domain verification must pass, developer identity must be verified as Hermes Logistics LLC, the five positive / three negative cases must be run, a reviewer-accessible demo recording must exist, and OpenAI review must approve the listing before Publish.
