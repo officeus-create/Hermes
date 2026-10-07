@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hermes-connect-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-07",
+  "observability": {
+    "enabled": true
+  }
+}
