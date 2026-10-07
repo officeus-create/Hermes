@@ -10,8 +10,8 @@ const cases = [
   {
     path: "/ua/academy/us-logistics-operations/",
     lang: "uk",
-    required: ["подальший супровід", "передача задач"],
-    forbidden: ["follow-up", "handoff", "team leads", "feedback"],
+    required: ["подальший супровід", "передача задач", "Програма маркетингу українською", "супроводу продажів"],
+    forbidden: ["follow-up", "handoff", "team leads", "feedback", "website-first", "lead journey", "Marketing program"],
   },
   {
     path: "/ru/academy/us-logistics-operations/",
