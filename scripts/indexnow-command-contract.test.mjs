@@ -1,24 +1,51 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
 const root = new URL("../", import.meta.url).pathname;
-const workflow = await readFile(new URL("../.github/workflows/indexnow-seo-command.yml", import.meta.url), "utf8");
+const manualWorkflow = await readFile(new URL("../.github/workflows/indexnow-submit.yml", import.meta.url), "utf8");
 const moneyWorkflow = await readFile(new URL("../.github/workflows/indexnow-money-pages.yml", import.meta.url), "utf8");
+const retiredIssueCommentWorkflow = new URL("../.github/workflows/indexnow-seo-command.yml", import.meta.url);
+
+assert.equal(
+  existsSync(retiredIssueCommentWorkflow),
+  false,
+  "Closed issue #346 must not remain an executable IndexNow routing surface.",
+);
 
 for (const required of [
-  "github.event.issue.number == 346",
-  "github.event.comment.body == '/submit-indexnow-all'",
-  "INDEXNOW_USE_SITEMAPS: \"1\"",
+  "workflow_dispatch:",
+  "urls:",
+  "all_public_urls:",
+  "default: false",
   "INDEXNOW_DRY_RUN: \"1\"",
+  "inputs.urls",
+  "inputs.all_public_urls",
   "node scripts/indexnow-submit.mjs",
-  "echo \"status=$status\" >> \"$GITHUB_OUTPUT\"",
-  "IndexNow acceptance does not guarantee crawling, indexing, ranking, traffic, or leads",
 ]) {
-  assert.ok(workflow.includes(required), `IndexNow owner command must preserve ${required}`);
+  assert.ok(manualWorkflow.includes(required), "Manual IndexNow workflow must preserve " + required);
 }
-assert.equal(workflow.includes("schedule:"), false, "IndexNow all-URL release submission must not become a recurring spam schedule");
-assert.equal(workflow.includes("pull_request:"), false, "IndexNow release submission must not run automatically for pull requests");
+assert.equal(
+  manualWorkflow.includes("issue_comment:"),
+  false,
+  "Manual IndexNow must not depend on a historical issue-comment router.",
+);
+assert.equal(
+  manualWorkflow.includes("github.event.issue.number"),
+  false,
+  "Manual IndexNow must not bind execution to a closed issue number.",
+);
+assert.equal(
+  manualWorkflow.includes("schedule:"),
+  false,
+  "All-URL IndexNow submission must never become a recurring spam schedule.",
+);
+assert.equal(
+  manualWorkflow.includes("pull_request:"),
+  false,
+  "Manual IndexNow submission must not run automatically for pull requests.",
+);
 
 for (const required of [
   "git diff --name-only",
@@ -30,9 +57,13 @@ for (const required of [
   "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
   "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
 ]) {
-  assert.ok(moneyWorkflow.includes(required), `Money-page IndexNow workflow must preserve changed-URL control: ${required}`);
+  assert.ok(moneyWorkflow.includes(required), "Money-page IndexNow workflow must preserve changed-URL control: " + required);
 }
-assert.equal(moneyWorkflow.includes("workflow_dispatch:"), false, "Money-page IndexNow automation must stay push/change driven; manual submission already has a separate owner workflow");
+assert.equal(
+  moneyWorkflow.includes("workflow_dispatch:"),
+  false,
+  "Money-page IndexNow automation must stay push/change driven; manual submission already has a separate workflow.",
+);
 for (const retired of [
   "https://hermeslogisticsus.com/load-board/providers/ship-cars/",
   "https://hermeslogisticsus.com/load-board/equipment/dry-van/",
@@ -43,10 +74,16 @@ for (const retired of [
   "https://hermeslogisticsus.com/load-board/equipment/power-only/",
   "https://hermeslogisticsus.com/load-board/equipment/box-truck/",
 ]) {
-  assert.equal(moneyWorkflow.includes(retired), false, `IndexNow must not notify non-owner support surface: ${retired}`);
+  assert.equal(moneyWorkflow.includes(retired), false, "IndexNow must not notify non-owner support surface: " + retired);
 }
-assert.ok(moneyWorkflow.includes("if grep -Eq '^src/pages/load-board\\.astro$'"), "Money-page workflow must isolate canonical Load Board root changes");
-assert.ok(moneyWorkflow.includes("echo 'https://hermeslogisticsus.com/load-board/' >> /tmp/indexnow-urls.txt"), "Load Board root changes must submit the canonical root");
+assert.ok(
+  moneyWorkflow.includes("if grep -Eq '^src/pages/load-board\\.astro$'"),
+  "Money-page workflow must isolate canonical Load Board root changes",
+);
+assert.ok(
+  moneyWorkflow.includes("echo 'https://hermeslogisticsus.com/load-board/' >> /tmp/indexnow-urls.txt"),
+  "Load Board root changes must submit the canonical root",
+);
 
 const moneyTrigger = moneyWorkflow.split("permissions:")[0];
 for (const forbiddenTrigger of [
@@ -55,7 +92,11 @@ for (const forbiddenTrigger of [
   "scripts/indexnow-submit.mjs",
   ".github/workflows/indexnow-money-pages.yml",
 ]) {
-  assert.equal(moneyTrigger.includes(forbiddenTrigger), false, `IndexNow must not resubmit money pages merely because ${forbiddenTrigger} changed`);
+  assert.equal(
+    moneyTrigger.includes(forbiddenTrigger),
+    false,
+    "IndexNow must not resubmit money pages merely because " + forbiddenTrigger + " changed",
+  );
 }
 
 const submitter = await readFile(new URL("./indexnow-submit.mjs", import.meta.url), "utf8");
@@ -72,7 +113,7 @@ for (const required of [
   'INDEXNOW_USE_SITEMAPS',
   'response.status !== 200 && response.status !== 202',
 ]) {
-  assert.ok(submitter.includes(required), `IndexNow submitter must preserve safety guard ${required}`);
+  assert.ok(submitter.includes(required), "IndexNow submitter must preserve safety guard " + required);
 }
 
 function dryRun(urls) {
@@ -94,7 +135,7 @@ for (const validUrl of [
   "https://hermeslogisticsus.com/example.html",
 ]) {
   const result = dryRun(validUrl);
-  assert.equal(result.status, 0, `canonical HTML page must be accepted: ${validUrl}\n${result.stderr}`);
+  assert.equal(result.status, 0, "canonical HTML page must be accepted: " + validUrl + "\n" + result.stderr);
 }
 
 for (const invalidUrl of [
@@ -108,8 +149,8 @@ for (const invalidUrl of [
   "https://hermeslogisticsus.com/scripts/app.js",
 ]) {
   const result = dryRun(invalidUrl);
-  assert.notEqual(result.status, 0, `non-HTML URL must fail closed: ${invalidUrl}`);
-  assert.match(result.stderr, /canonical HTML page URLs/, `rejection must explain page-only contract: ${invalidUrl}`);
+  assert.notEqual(result.status, 0, "non-HTML URL must fail closed: " + invalidUrl);
+  assert.match(result.stderr, /canonical HTML page URLs/, "rejection must explain page-only contract: " + invalidUrl);
 }
 
-console.log("IndexNow owner command contract passed.");
+console.log("IndexNow routing contract passed.");
