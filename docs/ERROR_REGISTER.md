@@ -538,3 +538,14 @@ PREVENTION: Receipt unit cases reject empty/error/mismatched responses and ignor
 EXTERNAL_GATE: Actual approved inventory and mailbox/human receipts require operational evidence; this branch creates none. Historical delivery-confirmed analytics counts remain non-delivery evidence.
 REVIEW_CORRECTION: Preserve older secure-browser compatibility when randomUUID is unavailable by generating UUID v4 from getRandomValues. Same-object retry reuses the stored ID; no timestamp or Math.random identity. Added failing-first unit regression and real browser fallback coverage.
 VERIFICATION: Final build and full npm test pass; all Load Board browser files and direct customer-intake regression pass 58/58. Earlier full suite had 1,970 passed, 16 skipped, 20 failed; the two package terminology failures are corrected and pass in the final scoped run. The 18 other scenarios remain outside this package and do not constitute a green release receipt. PR #1752 stays review-only pending exact-head CI and release decision.
+
+## ERR-MOBILE-HERO-CACHE-20261007 — IMPLEMENTED / RELEASE_GATE_PENDING
+
+PROBLEM: successful #1747 deploy still delivers old 222,111-byte logistics hero at unversioned URL.
+ROOT_CAUSE: long-lived cached public asset URL does not change when optimized bytes change; query revision returns exact main 90,337 bytes.
+FAILED_APPROACH: treating merge or build source byte count as live asset verification; attributing old single high TBT to a function from URL alone.
+WORKING_APPROACH: capture three production runs/trace per Home/Dealer, repeated edge GET pairs, then content-hash the same approved image and align hero/preload/schema.
+EVIDENCE: main d82279a8; deploy 37686365007; Lighthouse 37686780431; production medians Home90/2071.636ms/0, Dealer79/2579.6585ms/0. Controlled replay Dealer LCP median5649.966→5035.2165ms, three consistent pairs; payload222111→90337. Not production after.
+LESSON: MERGED != LIVE; check body hash/bytes and distinguish raw trace, simulated lab medians and field outcomes.
+REUSE_RULE: changed long-lived public media must get a content-versioned URL, identical preload/display/schema target, preserved provenance and functional CTA readback.
+NEXT: exact-head CI/browser acceptance, owner-authorized release, then live hashed-byte and three-run production check. Full local browser suite has unresolved unrelated failures; do not merge from a false green claim. Canonical evidence/status: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md.
