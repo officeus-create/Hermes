@@ -235,14 +235,19 @@ assert.ok(
   productionWorkflow.includes("preview-safe Logistics contact shell and its live browser runtime activation"),
   "Production release reporting must describe the raw-shell plus browser runtime contract accurately.",
 );
-assert.ok(
-  productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),
-  "Successful release comments must keep newlines escaped inside the YAML run block.",
+assert.doesNotMatch(
+  productionWorkflow,
+  /gh issue comment\s+961|issues:\s*write/,
+  "Closed #961 must not remain a release-reporting sink or require issues write permission.",
 );
-assert.ok(
-  productionWorkflow.includes('## Approved-main production parity did not complete\\n\\nThe release workflow'),
-  "Failure release comments must keep newlines escaped inside the YAML run block.",
-);
+for (const marker of [
+  'RELEASE_STATUS: ${{ job.status }}',
+  'echo "- Result: \\`${RELEASE_STATUS}\\`"',
+  'echo "- Actions run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"',
+  "Publish sanitized summary",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Release evidence must stay in the GitHub Actions summary: ${marker}`);
+}
 
 const accessStateProofWorkflow = read(".github/workflows/repair-access-state-production-proof.yml");
 assert.match(
