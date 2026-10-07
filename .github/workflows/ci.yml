@@ -123,12 +123,12 @@ jobs:
         run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
 
   browser-regression:
-    name: browser-regression (shard ${{ matrix.shard }}/4)
+    name: browser-regression (shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3]
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -149,7 +149,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run full browser regression shard
-        run: npx playwright test --shard=${{ matrix.shard }}/4
+        run: npx playwright test --shard=${{ matrix.shard }}/3
 
   build-and-test:
     if: ${{ always() }}
