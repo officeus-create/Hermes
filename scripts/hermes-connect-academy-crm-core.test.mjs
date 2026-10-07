@@ -293,4 +293,5 @@ for (const field of [
 assert.match(apiSource, /same_origin_required/);
 assert.match(apiSource, /owner_specialist_id=\? AND company_id=\?/);
 assert.match(apiSource, /archive_lead/);
+assert.doesNotMatch(apiSource, /onRequestDelete|DELETE FROM hermes_academy_business_leads/, "Academy CRM core must archive records instead of hard deleting them");
 console.log("hermes-connect-academy-crm-core: contract ok");
