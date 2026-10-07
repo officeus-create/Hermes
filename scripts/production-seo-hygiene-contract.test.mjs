@@ -112,7 +112,10 @@ for (const capability of ["ai-command-center","business-automation","load-analyz
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }
 const capabilityComponent = await readFile(new URL("../src/components/HermesConnectCapabilityPage.astro", import.meta.url), "utf8");
-assert.match(capabilityComponent, /robots="noindex,follow"/);
+const loadAnalyzerCapability = await readFile(new URL("../src/pages/services/hermes-connect/load-analyzer.astro", import.meta.url), "utf8");
+assert.match(capabilityComponent, /robots = "noindex,follow"/);
+assert.match(capabilityComponent, /robots=\{robots\}/);
+assert.match(loadAnalyzerCapability, /robots="index,follow"/);
 assert.doesNotMatch(primarySitemap, /\/load-board\/providers\//, "provider-integration support pages must not compete as sitemap search owners");
 for (const slug of ["dry-van","reefer","flatbed","step-deck","hotshot","power-only","box-truck"]) {
   assert.ok(!primarySitemap.includes(`/load-board/equipment/${slug}/`), `non-P0 Load Board equipment page must stay outside the sitemap: ${slug}`);
