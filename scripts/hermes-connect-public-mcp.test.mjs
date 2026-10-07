@@ -60,8 +60,10 @@ const call = async (body, env = {}, headers = {}) => {
   };
   const { json } = await call({jsonrpc:'2.0',id:7,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'post estimate follow up',desired_capability:'automatic reminder after two days',outcome:'missing_capability',consent_to_product_learning:true}}}, {DB:db});
   assert.equal(json.result.structuredContent.accepted, true);
-  assert.match(json.result.structuredContent.receipt_id, /^HC-LEARN-/);
-  assert.equal(rows.length, 2);
+  assert.equal(json.result.structuredContent.status, 'stored_privacy_safe_product_learning_event');
+  assert.equal('receipt_id' in json.result.structuredContent, false);
+  assert.equal(rows.length, 3);
+  assert.match(rows[1].sql, /DELETE FROM plugin_product_learning_events/);
 }
 
 {
