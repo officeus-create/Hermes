@@ -1,0 +1,33 @@
+name: Hermes Connect MCP
+
+on:
+  pull_request:
+    paths:
+      - "workers/hermes-connect-mcp/**"
+      - ".github/workflows/hermes-connect-mcp.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/hermes-connect-mcp/**"
+      - ".github/workflows/hermes-connect-mcp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/hermes-connect-mcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/hermes-connect-mcp/package.json
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
