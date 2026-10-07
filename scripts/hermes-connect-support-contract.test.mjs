@@ -22,7 +22,7 @@ assert.ok(!support.includes('password='));
 
 
 for (const text of [
-  'Hermes Connect ChatGPT/Codex plugin and product learning',
+  'Hermes Connect ChatGPT plugin and product learning',
   'explicitly agrees to share structured product feedback',
   'raw or complete chat history',
   'rolling 24-month retention cleanup',
