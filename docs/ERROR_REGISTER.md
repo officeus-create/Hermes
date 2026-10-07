@@ -549,3 +549,24 @@ EVIDENCE: main d82279a8; deploy 37686365007; Lighthouse 37686780431; production 
 LESSON: MERGED != LIVE; check body hash/bytes and distinguish raw trace, simulated lab medians and field outcomes.
 REUSE_RULE: changed long-lived public media must get a content-versioned URL, identical preload/display/schema target, preserved provenance and functional CTA readback.
 NEXT: exact-head CI/browser acceptance, owner-authorized release, then live hashed-byte and three-run production check. Full local browser suite has unresolved unrelated failures; do not merge from a false green claim. Canonical evidence/status: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md.
+## 2026-10-07 — Repair service sticky CTA context follow-up (Codex)
+
+PROBLEM: Production 390×844 readback on both existing repair Website/SEO owners shows visible mobile sticky links omit vertical/source_path while hero links preserve them.
+ROOT_CAUSE: MoneyPageActionBar has independent hardcoded destinations; #1749 updated DigitalServicePage only.
+FAILED_APPROACH: New parity assertions fail on unchanged main for both owners in desktop/mobile (4 failed, 2 passed).
+WORKING_APPROACH: Change only the two repair href entries. Extend existing owner-map browser tests with exact hero/sticky parity, mobile click-to-existing-form/preselected repair context, desktop hidden state and unchanged generic owner destinations.
+EVIDENCE: Base main 84a787f169f6248edfcc5caa34953835f27ec00b. Branch fix/repair-sticky-context. Production before: Website /paths/technology/?project=website_development#project-brief; SEO /paths/marketing/?service=seo#contact. Candidate adds &vertical=auto_repair&source_path=<encoded existing owner> before the unchanged anchor. Validation and exact-head CI recorded in follow-up draft PR.
+LESSON: A primary CTA regression does not cover the separate mobile sticky conversion entry.
+REUSE_RULE: Check href parity plus actual mobile form context for every duplicated conversion entry.
+STATUS: Review-only candidate; production remains unfixed until separately authorized release and live readback. No merge/deploy, real lead submission or delivery claim.
+OWNERSHIP: Open PR file sets checked: no runtime/test overlap; additive handoff/error docs overlap #1750/#1751/#1752/#1753/#1679. Catalog #1751/#1663 and shared layout #1755 untouched.
+SCORECARD: Conversion/context +; durable knowledge +; reusable regression +; search owner/metadata/indexability unchanged; no new product/automation/public claims.
+NEXT: Exact-head CI review, then owner-authorized release and 390×844 production href/form readback.
+
+LOCAL VALIDATION: build PASS (399 pages); full npm test PASS; focused desktop/mobile owner-map + repair public/form/context suite 20/20 PASS. Screenshots captured for both mobile sticky entries. Full browser suite is delegated to exact-head PR CI; no local full-suite green claim. Canonical/robots/schema contracts and title/H1 assertions pass; sitemap file untouched.
+
+MAIN SYNC: Rebased this same PR onto cc5a8ae58914a65a7cd43497a9cdad39ee2ab073 after merged #1750. Rebase applied cleanly; all main/release records retained. Runtime/test diff remains exactly two repair href entries plus bounded existing owner-map assertions. Old-head local full E2E stopped for rebase: 901 passed, 8 failed outside repair CTA, 7 skipped, 4 interrupted, 1096 not run; not a green gate. Old-head contracts/audit passed; final rebased-head CI supersedes those. Fresh final-base build/unit/focused verification required and reported in the same draft PR. No merge/deploy.
+
+MAIN SYNC AFTER #1752 (2026-10-08): Rebased existing #1757 onto 83aef305da82f5221b51d617da34c9f040cbc5cf. Shared-doc EOF conflicts resolved by retaining both complete Load Board and Repair records. Repair component/tests unchanged from prior green head9f83334d (2004 passed/16 skipped exact-head CI); fresh-head CI required, results recorded in same PR. No merge/deploy.
+
+RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 859dc26dc9d28b0c3a09f825751ad1317c6ffa18. Retained all fresh-main release records plus complete Repair follow-up records. Runtime/test files unchanged from prior551f3c74; only two repair Website/SEO sticky href entries and narrow regression coverage remain. Earlier CI/cancellation is historical coordination evidence, not this head qualification. Fresh required exact-head CI recorded in #1757; no merge/deploy.

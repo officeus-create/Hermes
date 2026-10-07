@@ -13,7 +13,21 @@ test("auto repair SEO owner keeps one B2B search-to-intake path", async ({ page 
   await expect(page.locator('a[href="/services/auto-repair-website-design/"]').first()).toBeVisible();
   await expect(page.locator('a[href="/services/hermes-connect/repair-shops/"]').first()).toBeVisible();
   const actionBar = page.locator(".money-page-action-bar");
-  if (testInfo.project.name === "mobile") await expect(actionBar).toBeVisible();
+  const stickyCta = actionBar.locator(".money-page-action-primary");
+  await expect(stickyCta).toHaveAttribute("href", await primaryCta.getAttribute("href") as string);
+  if (testInfo.project.name === "mobile") {
+    await expect(actionBar).toBeVisible();
+    await page.route("**/api/**", route => route.abort());
+    const destination = await stickyCta.getAttribute("href");
+    await page.screenshot({ path: `test-results/repair-sticky-${destination?.startsWith("/paths/technology/") ? "website" : "seo"}-390.png` });
+    await stickyCta.click();
+    await expect(page).toHaveURL(destination as string);
+    if (destination?.startsWith("/paths/technology/")) {
+      await expect(page.locator('input[name="industry"]')).toHaveValue("Auto repair shop / service center");
+    } else {
+      await expect(page.locator('select[name="seo_vertical"]')).toHaveValue("auto_repair");
+    }
+  }
   else await expect(actionBar).toBeHidden();
 });
 
@@ -27,7 +41,21 @@ test("auto repair website owner keeps one website brief path", async ({ page }, 
   await expect(page.locator('a[href="/services/seo-for-auto-repair-shops/"]').first()).toBeVisible();
   await expect(page.locator('a[href="/services/hermes-connect/repair-shops/"]').first()).toBeVisible();
   const actionBar = page.locator(".money-page-action-bar");
-  if (testInfo.project.name === "mobile") await expect(actionBar).toBeVisible();
+  const stickyCta = actionBar.locator(".money-page-action-primary");
+  await expect(stickyCta).toHaveAttribute("href", await primaryCta.getAttribute("href") as string);
+  if (testInfo.project.name === "mobile") {
+    await expect(actionBar).toBeVisible();
+    await page.route("**/api/**", route => route.abort());
+    const destination = await stickyCta.getAttribute("href");
+    await page.screenshot({ path: `test-results/repair-sticky-${destination?.startsWith("/paths/technology/") ? "website" : "seo"}-390.png` });
+    await stickyCta.click();
+    await expect(page).toHaveURL(destination as string);
+    if (destination?.startsWith("/paths/technology/")) {
+      await expect(page.locator('input[name="industry"]')).toHaveValue("Auto repair shop / service center");
+    } else {
+      await expect(page.locator('select[name="seo_vertical"]')).toHaveValue("auto_repair");
+    }
+  }
   else await expect(actionBar).toBeHidden();
 });
 
@@ -39,3 +67,13 @@ test("Hermes Connect repair scheduling owner routes growth to specialized owners
   await expect(page.locator('a[href="/services/seo-for-auto-repair-shops/"]').first()).toBeVisible();
   await expect(page.locator('a[href="/services/auto-repair-website-design/"]').first()).toBeVisible();
 });
+
+for (const [owner, href] of [
+  ["/services/website-development/", "/paths/technology/?project=website_development#project-brief"],
+  ["/services/seo/", "/paths/marketing/?service=seo#contact"],
+]) {
+  test(`${owner} retains its own sticky destination`, async ({ page }) => {
+    await page.goto(owner);
+    await expect(page.locator(".money-page-action-primary")).toHaveAttribute("href", href);
+  });
+}
