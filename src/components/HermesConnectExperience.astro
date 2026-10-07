@@ -92,7 +92,7 @@ const { loadBoardContext = false } = Astro.props;
   (() => {
     const SUPPORTED = new Set(["en", "uk", "ru", "es", "it", "fr"]);
     const params = new URLSearchParams(window.location.search);
-    const requested = params.get("lang");
+    const requested = params.get("lang")?.toLowerCase() ?? null;
     const locale = requested && SUPPORTED.has(requested) ? requested : "en";
     const path = window.location.pathname;
 
@@ -285,7 +285,7 @@ const { loadBoardContext = false } = Astro.props;
     inner.append(summary, nav);
     context.append(inner);
 
-    if (locale !== "en" && !(isBeauty && locale === "ru")) {
+    if (locale !== "en" && !isHub && !(isBeauty && locale === "ru")) {
       const notice = document.createElement("div");
       notice.className = "hc-language-truth";
       notice.setAttribute("data-hc-english-only", "true");
