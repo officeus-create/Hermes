@@ -376,7 +376,7 @@ function recommendStartPath(args: Record<string, unknown>) {
     };
   }
 
-  if (/seo|geo|local search|google|website|social|instagram|facebook|threads|content|marketing|ads|advertising|traffic|visibility/.test(combined)) {
+  if (/(?:\bseo\b|\bgeo\b|local search|\bgoogle\b|\bwebsite\b|\bsocial\b|\binstagram\b|\bfacebook\b|\bthreads\b|\bcontent\b|\bmarketing\b|\bads\b|\badvertising\b|\btraffic\b|\bvisibility\b)/.test(combined)) {
     return {
       route: "HERMES_MARKETING",
       status: "DISCOVERY",
@@ -469,7 +469,7 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
     host_action: connectAction,
   });
 
-  if (/seo|geo|google|website|social|marketing|ads|traffic|visibility|content/.test(combined)) {
+  if (/(?:\bseo\b|\bgeo\b|\bgoogle\b|\bwebsite\b|\bsocial\b|\bmarketing\b|\bads\b|\btraffic\b|\bvisibility\b|\bcontent\b)/.test(combined)) {
     recommendedConnections.push({
       capability: "Marketing / analytics sources",
       priority: "optional",
