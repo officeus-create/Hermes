@@ -51,6 +51,24 @@ const nullableCents = (value) => {
   return Math.min(Math.round(number), 100_000_000_000);
 };
 
+const currencyCode = (value) => {
+  const currency = clean(value, 3).toUpperCase();
+  return /^[A-Z]{3}$/.test(currency) ? currency : "";
+};
+
+async function ensureAcademyCrmRevenueCurrencyColumn(db) {
+  const existing = await db.prepare("PRAGMA table_info(hermes_academy_business_leads)").all();
+  const names = new Set((existing?.results || []).map((row) => String(row.name || "")));
+  if (names.has("revenue_currency")) return;
+  try {
+    await db.prepare("ALTER TABLE hermes_academy_business_leads ADD COLUMN revenue_currency TEXT").run();
+  } catch (error) {
+    const current = await db.prepare("PRAGMA table_info(hermes_academy_business_leads)").all();
+    const currentNames = new Set((current?.results || []).map((row) => String(row.name || "")));
+    if (!currentNames.has("revenue_currency")) throw error;
+  }
+}
+
 export async function ensureAcademyBusinessCrmSchema(db) {
   await ensureHermesCompanyProfilesSchema(db);
   await ensureAcademyBusinessProfilesSchema(db);
@@ -86,6 +104,7 @@ export async function ensureAcademyBusinessCrmSchema(db) {
       program_fit TEXT,
       objection TEXT,
       sale_revenue_cents INTEGER,
+      revenue_currency TEXT,
       revenue_source_ref TEXT,
       outcome TEXT,
       cohort TEXT,
@@ -97,6 +116,7 @@ export async function ensureAcademyBusinessCrmSchema(db) {
       updated_at TEXT NOT NULL
     )
   `).run();
+  await ensureAcademyCrmRevenueCurrencyColumn(db);
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_academy_crm_leads_owner_stage ON hermes_academy_business_leads(owner_specialist_id,business_stage,updated_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_academy_crm_leads_company_stage ON hermes_academy_business_leads(company_id,business_stage,updated_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_academy_crm_leads_owner_source ON hermes_academy_business_leads(owner_specialist_id,source_channel)").run();
@@ -170,6 +190,7 @@ export function normalizeAcademyCrmLead(body, existing = {}) {
     programFit: clean(body.programFit ?? existing.program_fit, 600),
     objection: clean(body.objection ?? existing.objection, 600),
     saleRevenueCents: nullableCents(body.saleRevenueCents ?? existing.sale_revenue_cents),
+    revenueCurrency: currencyCode(body.revenueCurrency ?? existing.revenue_currency),
     revenueSourceRef: clean(body.revenueSourceRef ?? existing.revenue_source_ref, 300),
     outcome: clean(body.outcome ?? existing.outcome, 800),
     cohort: clean(body.cohort ?? existing.cohort, 180),
@@ -184,8 +205,9 @@ export function academyCrmLeadErrors(value) {
   if (value.contactName.length < 2) errors.push("contact_name_required");
   if (value.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.contactEmail)) errors.push("contact_email_invalid");
   if (value.contactPhone && value.contactPhone.length < 7) errors.push("contact_phone_invalid");
-  if (value.saleRevenueCents !== null && value.saleRevenueCents > 0 && !value.revenueSourceRef) {
-    errors.push("revenue_source_ref_required");
+  if (value.saleRevenueCents !== null && value.saleRevenueCents > 0) {
+    if (!value.revenueSourceRef) errors.push("revenue_source_ref_required");
+    if (!value.revenueCurrency) errors.push("revenue_currency_required");
   }
   return errors;
 }
@@ -221,6 +243,7 @@ export function safeAcademyCrmLead(row) {
     programFit: row.program_fit || "",
     objection: row.objection || "",
     saleRevenueCents: row.sale_revenue_cents === null || row.sale_revenue_cents === undefined ? null : Number(row.sale_revenue_cents),
+    revenueCurrency: currencyCode(row.revenue_currency),
     revenueSourceRef: row.revenue_source_ref || "",
     outcome: row.outcome || "",
     cohort: row.cohort || "",
@@ -239,22 +262,76 @@ export function aggregateAcademyCrmLeads(rows = []) {
   const consultationAttendedStates = new Set(["attended","qualified"]);
   const qualifiedStages = new Set(["qualified","consultation_booked","consultation_attended","program_fit","decision","enrolled","active","completed","renewal"]);
   const enrolledStages = new Set(["enrolled","active","completed","renewal"]);
-  const revenueRows = activeRows.filter((row) => row.sale_revenue_cents !== null && row.sale_revenue_cents !== undefined);
-  const revenueCents = revenueRows.reduce((sum, row) => sum + Number(row.sale_revenue_cents || 0), 0);
+
+  const revenueRows = activeRows.filter((row) =>
+    row.sale_revenue_cents !== null &&
+    row.sale_revenue_cents !== undefined &&
+    Number(row.sale_revenue_cents) >= 0 &&
+    Boolean(currencyCode(row.revenue_currency)) &&
+    Boolean(clean(row.revenue_source_ref, 300))
+  );
+  const revenueUnknownCurrencyCount = activeRows.filter((row) =>
+    row.sale_revenue_cents !== null &&
+    row.sale_revenue_cents !== undefined &&
+    !currencyCode(row.revenue_currency)
+  ).length;
+
+  const revenueByCurrencyMap = new Map();
+  for (const row of revenueRows) {
+    const currency = currencyCode(row.revenue_currency);
+    revenueByCurrencyMap.set(currency, (revenueByCurrencyMap.get(currency) || 0) + Number(row.sale_revenue_cents || 0));
+  }
+  const revenueByCurrency = [...revenueByCurrencyMap.entries()]
+    .map(([currency, cents]) => ({ currency, cents }))
+    .sort((a, b) => a.currency.localeCompare(b.currency));
+  const singleRevenueCurrency = revenueByCurrency.length === 1 ? revenueByCurrency[0] : null;
 
   const bySourceMap = new Map();
   for (const row of activeRows) {
     const key = clean(row.source_channel, 80) || "Unknown";
-    const item = bySourceMap.get(key) || { key, leads: 0, qualified: 0, enrolled: 0, revenueKnownCount: 0, revenueCents: 0 };
+    const item = bySourceMap.get(key) || {
+      key,
+      leads: 0,
+      qualified: 0,
+      enrolled: 0,
+      revenueKnownCount: 0,
+      revenueByCurrencyMap: new Map(),
+    };
     item.leads += 1;
     if (qualifiedStages.has(String(row.business_stage))) item.qualified += 1;
     if (enrolledStages.has(String(row.business_stage))) item.enrolled += 1;
-    if (row.sale_revenue_cents !== null && row.sale_revenue_cents !== undefined) {
+    const currency = currencyCode(row.revenue_currency);
+    if (
+      row.sale_revenue_cents !== null &&
+      row.sale_revenue_cents !== undefined &&
+      currency &&
+      clean(row.revenue_source_ref, 300)
+    ) {
       item.revenueKnownCount += 1;
-      item.revenueCents += Number(row.sale_revenue_cents || 0);
+      item.revenueByCurrencyMap.set(
+        currency,
+        (item.revenueByCurrencyMap.get(currency) || 0) + Number(row.sale_revenue_cents || 0),
+      );
     }
     bySourceMap.set(key, item);
   }
+
+  const bySource = [...bySourceMap.values()].map((item) => {
+    const revenueByCurrency = [...item.revenueByCurrencyMap.entries()]
+      .map(([currency, cents]) => ({ currency, cents }))
+      .sort((a, b) => a.currency.localeCompare(b.currency));
+    const single = revenueByCurrency.length === 1 ? revenueByCurrency[0] : null;
+    return {
+      key: item.key,
+      leads: item.leads,
+      qualified: item.qualified,
+      enrolled: item.enrolled,
+      revenueKnownCount: item.revenueKnownCount,
+      revenueCents: single ? single.cents : null,
+      revenueCurrency: single ? single.currency : null,
+      revenueByCurrency,
+    };
+  }).sort((a, b) => b.enrolled - a.enrolled || b.qualified - a.qualified || b.leads - a.leads);
 
   return {
     totalLeads: activeRows.length,
@@ -264,7 +341,10 @@ export function aggregateAcademyCrmLeads(rows = []) {
     consultationsQualified: activeRows.filter((row) => String(row.consultation_status) === "qualified").length,
     enrolled: activeRows.filter((row) => enrolledStages.has(String(row.business_stage))).length,
     revenueKnownCount: revenueRows.length,
-    revenueCents,
-    bySource: [...bySourceMap.values()].sort((a, b) => b.enrolled - a.enrolled || b.qualified - a.qualified || b.leads - a.leads),
+    revenueUnknownCurrencyCount,
+    revenueCents: singleRevenueCurrency ? singleRevenueCurrency.cents : null,
+    revenueCurrency: singleRevenueCurrency ? singleRevenueCurrency.currency : null,
+    revenueByCurrency,
+    bySource,
   };
 }

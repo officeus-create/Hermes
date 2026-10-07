@@ -95,9 +95,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         organic_state,paid_learning_state,audience_geo,primary_pain,diagnostic_primary_gap,
         diagnostic_result,baseline,recommended_module,reason_to_believe,business_stage,manager,
         consultation_status,next_action,next_contact_at,promise_text,program_fit,objection,
-        sale_revenue_cents,revenue_source_ref,outcome,cohort,completion_status,renewal_status,
+        sale_revenue_cents,revenue_currency,revenue_source_ref,outcome,cohort,completion_status,renewal_status,
         notes,archived_at,created_at,updated_at
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?)
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?)
     `).bind(
       id,ownerId,companyId,value.contactName,value.contactPhone || null,value.contactEmail || null,
       value.sourceChannel,value.contentId || null,value.contentFormat || null,value.campaignId || null,
@@ -106,7 +106,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       value.diagnosticResult || null,value.baseline || null,value.recommendedModule || null,
       value.reasonToBelieve || null,value.businessStage,value.manager || null,value.consultationStatus,
       value.nextAction || null,value.nextContactAt || null,value.promise || null,value.programFit || null,
-      value.objection || null,value.saleRevenueCents,value.revenueSourceRef || null,value.outcome || null,
+      value.objection || null,value.saleRevenueCents,value.revenueCurrency || null,value.revenueSourceRef || null,value.outcome || null,
       value.cohort || null,value.completionStatus,value.renewalStatus,value.notes || null,now,now
     ).run();
     const row = await readLead(env.DB, id, ownerId, companyId);
@@ -127,7 +127,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         campaign_id=?,cta_keyword=?,entry_offer=?,organic_state=?,paid_learning_state=?,audience_geo=?,
         primary_pain=?,diagnostic_primary_gap=?,diagnostic_result=?,baseline=?,recommended_module=?,
         reason_to_believe=?,business_stage=?,manager=?,consultation_status=?,next_action=?,next_contact_at=?,
-        promise_text=?,program_fit=?,objection=?,sale_revenue_cents=?,revenue_source_ref=?,outcome=?,cohort=?,
+        promise_text=?,program_fit=?,objection=?,sale_revenue_cents=?,revenue_currency=?,revenue_source_ref=?,outcome=?,cohort=?,
         completion_status=?,renewal_status=?,notes=?,updated_at=?
       WHERE id=? AND owner_specialist_id=? AND company_id=? AND archived_at IS NULL
     `).bind(
@@ -138,7 +138,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       value.baseline || null,value.recommendedModule || null,value.reasonToBelieve || null,value.businessStage,
       value.manager || null,value.consultationStatus,value.nextAction || null,value.nextContactAt || null,
       value.promise || null,value.programFit || null,value.objection || null,value.saleRevenueCents,
-      value.revenueSourceRef || null,value.outcome || null,value.cohort || null,value.completionStatus,
+      value.revenueCurrency || null,value.revenueSourceRef || null,value.outcome || null,value.cohort || null,value.completionStatus,
       value.renewalStatus,value.notes || null,now,id,ownerId,companyId
     ).run();
     const row = await readLead(env.DB, id, ownerId, companyId);

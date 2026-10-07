@@ -137,7 +137,9 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
   assert.equal(dashboardBody.metrics.totalLeads, 1);
   assert.equal(dashboardBody.metrics.consultationsBooked, 1);
   assert.equal(dashboardBody.metrics.revenueKnownCount, 0);
-  assert.equal(dashboardBody.metrics.revenueCents, 0);
+  assert.equal(dashboardBody.metrics.revenueCents, null);
+  assert.equal(dashboardBody.metrics.revenueCurrency, null);
+  assert.deepEqual(dashboardBody.metrics.revenueByCurrency, []);
 
   const rejectedRevenue = await mutateAcademyCrm({
     request: request("/api/hermes-connect/academy/crm", "token-one", "POST", {
@@ -146,6 +148,7 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
       businessStage: "enrolled",
       consultationStatus: "qualified",
       saleRevenueCents: 75000,
+      revenueCurrency: "",
       revenueSourceRef: "",
     }),
     env: { DB: db },
@@ -153,6 +156,7 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
   assert.equal(rejectedRevenue.status, 400);
   const rejectedBody = await rejectedRevenue.json();
   assert.ok(rejectedBody.errors.includes("revenue_source_ref_required"));
+  assert.ok(rejectedBody.errors.includes("revenue_currency_required"));
 
   const updated = await mutateAcademyCrm({
     request: request("/api/hermes-connect/academy/crm", "token-one", "POST", {
@@ -161,6 +165,7 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
       businessStage: "enrolled",
       consultationStatus: "qualified",
       saleRevenueCents: 75000,
+      revenueCurrency: "EUR",
       revenueSourceRef: "synthetic-test-receipt:academy-001",
       cohort: "Synthetic cohort",
       completionStatus: "not_started",
@@ -171,6 +176,7 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
   assert.equal(updated.status, 200);
   const updatedBody = await updated.json();
   assert.equal(updatedBody.lead.saleRevenueCents, 75000);
+  assert.equal(updatedBody.lead.revenueCurrency, "EUR");
   assert.equal(updatedBody.lead.revenueSourceRef, "synthetic-test-receipt:academy-001");
 
   const reread = await getAcademyCrm({
@@ -182,6 +188,8 @@ test("Academy CRM core persists one owner-scoped lead with attribution and hones
   assert.equal(rereadBody.metrics.consultationsQualified, 1);
   assert.equal(rereadBody.metrics.revenueKnownCount, 1);
   assert.equal(rereadBody.metrics.revenueCents, 75000);
+  assert.equal(rereadBody.metrics.revenueCurrency, "EUR");
+  assert.deepEqual(rereadBody.metrics.revenueByCurrency, [{ currency: "EUR", cents: 75000 }]);
 
   sqlite.close();
 });
