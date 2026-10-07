@@ -70,7 +70,10 @@ const indexedChildSitemapFiles = [
 // October 5 added KNB locality + profile; Search Recovery keeps the business profile indexable while single-profile locality collections are noindex.
 // 2026-10-06 Search Recovery also removes 14 secondary Load Board provider/non-P0 equipment owners, 25 thin Catalog/example owners, and 7 unreleased Hermes Connect reference-capability owners from static sitemaps.
 // 2026-10-07 Hermes Connect public-plugin release adds one intentional indexable Support/Trust owner in sitemap-digital-services.xml.
-const nonInsightsExpectedPageUrlCount = 256;
+// 2026-10-07 restores Load Analyzer as a clearly bounded public reference owner because the
+// production compatibility route, historical manifest and carrier discovery path all assign it
+// a distinct search purpose without presenting the capability as a live paid integration.
+const nonInsightsExpectedPageUrlCount = 257;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
@@ -108,9 +111,10 @@ const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.me
 const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
 const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
 assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/support/"), "Hermes Connect Support/Trust owner must remain discoverable in the digital-services sitemap");
-for (const capability of ["ai-command-center","business-automation","load-analyzer","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
+for (const capability of ["ai-command-center","business-automation","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }
+assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/load-analyzer/"), "bounded public Load Analyzer reference owner must remain discoverable in the digital-services sitemap");
 const capabilityComponent = await readFile(new URL("../src/components/HermesConnectCapabilityPage.astro", import.meta.url), "utf8");
 const loadAnalyzerCapability = await readFile(new URL("../src/pages/services/hermes-connect/load-analyzer.astro", import.meta.url), "utf8");
 assert.match(capabilityComponent, /robots = "noindex,follow"/);
