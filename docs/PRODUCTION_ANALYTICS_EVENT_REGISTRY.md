@@ -124,7 +124,9 @@ Canonical workspace: `/logistics/request-vehicle-transport/`
 | `vehicle_transport_intake_start` | First trusted focus/input/change in the direct transport form | `audience_type`, `page_group`, `service_group`, `page_path` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Customer-side transport intake began. |
 | `vehicle_transport_preview_ready` | Local transport review generated | base parameters plus `preview_status`, controlled `submitter_group` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | A reviewable request was prepared locally; not booked or delivered. |
 | `vehicle_transport_handoff_ready` | Email fallback clicked or secure delivery initiated | base parameters plus `handoff_method`, `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | User chose a handoff route; no capacity, carrier, price, pickup, or booking confirmation. |
-| `vehicle_transport_delivery_confirmed` | Approved receiver returned a successful response | base parameters plus `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED`; `DELIVERY_RECONCILIATION_REQUIRED` | Browser received delivery confirmation. Must be reconciled with receiver and human-review evidence. |
+| `vehicle_transport_submitted` | Approved receiver returned `success: true` and the matching `request_id` | base parameters plus `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Request service accepted the handoff. Mailbox delivery and human receipt remain unconfirmed. |
+
+2026-10-08 correction: the previous `vehicle_transport_delivery_confirmed` browser event was inferred from HTTP 2xx and is retired. Historical counts and August audit event-family snapshots must not be interpreted as delivery or human receipt. Neither `delivery-confirmed` nor `human-receipt` is emitted without corresponding receiver evidence; the current receiver supplies neither.
 
 ## D. Legacy Load Board carrier workflow
 
@@ -257,7 +259,7 @@ Priority sequence:
 6. `vehicle_transport_intake_start`;
 7. `vehicle_transport_preview_ready`;
 8. `vehicle_transport_handoff_ready`;
-9. `vehicle_transport_delivery_confirmed`;
+9. `vehicle_transport_submitted` (acceptance only);
 10. `contact_click`;
 11. SEO and website-project funnel events;
 12. homepage role and path-engine events.
@@ -276,7 +278,7 @@ After transport is confirmed:
 Recommended initial key-event candidates after evidence review:
 
 - `carrier_delivery_confirmed`;
-- `vehicle_transport_delivery_confirmed`;
+- future vehicle-transport delivery confirmation only after a verified delivery receipt exists; `vehicle_transport_submitted` is not a completed human-reviewed lead;
 - later direction-specific secure-delivery confirmations only after implementation and receiver reconciliation.
 
 Do not mark `contact_click`, `handoff_ready`, `preview_ready`, or a generic CTA as a completed lead merely to inflate conversion counts.

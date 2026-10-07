@@ -1,4 +1,5 @@
 <script>
+  import { requireSubmittedReceipt, submittedReceiptCopy, submissionRequestId } from "../lib/logistics-submission-receipt";
   import {
     buildQualifiedCarrierLead,
     buildQualifiedCarrierMailto,
@@ -173,13 +174,16 @@
       email.href = buildQualifiedCarrierMailto(activeLead);
 
       const live = form.dataset.leadMode === "live";
+      deliveryStatus.dataset.submissionState = "prepared";
+      deliveryStatus.dataset.deliveryState = "unconfirmed";
+      deliveryStatus.dataset.humanReceiptState = "unconfirmed";
       email.hidden = live;
       sendButton.hidden = !live;
       deliveryStatus.textContent = live
         ? "Review the qualified carrier lead, then send it securely to Logistics Sales."
         : "Email is prepared with authority, insurance, fleet, dispatch, equipment, and operating details. Review it and press Send in your email application.";
       boundary.textContent = live
-        ? "The request is not delivered until you press Send to Logistics Sales and receive confirmation."
+        ? "Sending can confirm submission to the request service. Delivery and human receipt require separate evidence; submission does not create a booking."
         : "Preview mode does not send or store the request automatically.";
 
       result.dataset.decision = review.decision;
@@ -216,7 +220,7 @@
 
       sendButton.disabled = true;
       deliveryStatus.textContent = "Sending the request securely…";
-      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const requestId = submissionRequestId(activeLead);
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), 10000);
       try {
@@ -231,11 +235,15 @@
           }),
           signal: controller.signal,
         });
-        if (!response.ok) throw new Error("delivery_failed");
-        deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review it and follow up.";
+        const receipt = await requireSubmittedReceipt(response, requestId);
+        deliveryStatus.dataset.submissionState = receipt.submission;
+        deliveryStatus.dataset.deliveryState = receipt.delivery;
+        deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
+        deliveryStatus.textContent = submittedReceiptCopy;
         sendButton.hidden = true;
       } catch {
-        deliveryStatus.textContent = "Delivery was not confirmed. Your request may not have been received; please try again or use the prepared email option.";
+        deliveryStatus.dataset.submissionState = "unconfirmed";
+        deliveryStatus.textContent = "Submission was not confirmed. Your request may have been accepted; retry or use the prepared email. Delivery was not confirmed and human receipt remains unknown.";
       } finally {
         window.clearTimeout(timeout);
         sendButton.disabled = false;

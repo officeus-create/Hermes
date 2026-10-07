@@ -1591,3 +1591,45 @@ handoff_to: repository owner for review and release decision
 - Current executor permissions now permit Linux Chrome startup. Focused desktop/mobile auth and Repair context checks execute locally; final output and the new exact-head rerun are attached to PR #1749. Earlier socket denial remains historical environment evidence, not a current blocker.
 
 - Second same-slice CI correction: repair B2B owner-map browser checks now assert the visible primary CTA and exact repair-context Website/SEO URL. Existing titles, H1, related owners and mobile action-bar expectations remain protected. No runtime change.
+
+## 2026-10-08 — safe Load Board intake package
+
+```yaml
+ai_name: Codex
+model: GPT-6
+chat_or_thread: Logistics — Load Board
+role: bounded implementation owner
+department: Logistics / public Load Board
+date: 2026-10-08
+contribution_type: Implementation Report
+confidence: 90
+task_id: LOAD-BOARD-TRUTHFUL-INTAKE-20261008
+source_of_truth: owner instruction to implement in this lane; current main after PRs 1746/1748/1747
+authority_scope: Branch write
+write_scope: [Load Board page and existing intake enhancers, local schema/CTA/anchors, focused tests, additive handoff/error and analytics registry corrections]
+specialization: [truthful submission UX, technical SEO, regression verification]
+not_specialized_in: [approved inventory sourcing, final email delivery, human sales review]
+reviewed: [main d82279a8, open PR file sets, actual public handlers and receiver, repository governance]
+not_reviewed: [production behavior after release, authenticated recipient mailbox]
+handoff_to: repository reviewer and Logistics operations
+```
+
+- Branch: `fix/load-board-truthful-intake-20261008`; review PR #1752. No merge/deploy performed. Main includes #1746, #1748, #1747. Open #1744 shared layout and #1679 header/product-test changes are avoided; only additive error/handoff entries overlap #1679 and later #1749/#1750/#1751.
+- Existing purpose preserved: carriers review approved public records when available, demo examples remain non-bookable, customers use the existing transport qualification path, authenticated company posting and source/freshness/rights gates are unchanged. No indexable route removed or newly noindexed; intake retains its existing noindex,follow policy.
+- Before/after: production Preview mode note becomes live request intake; generic HTTP 2xx no longer becomes “received by Sales.” Exact request acceptance is submitted, final delivery and human receipt remain unconfirmed. Changed reviewed intents use new IDs; an ambiguous retry of the same review reuses its ID.
+- Review correction: environments without crypto.randomUUID use a UUID v4 built from crypto.getRandomValues. No timestamp/Math.random identity is introduced. Focused unit and actual browser intake regressions cover this fallback without changing same-object retry identity.
+- JSON-LD describes the existing WebApplication filtering/calculator/request-review capabilities and canonical page only; no invented Offer, inventory, price, rating, or booking claim.
+- Analytics: replace the incorrect browser vehicle_transport_delivery_confirmed event with vehicle_transport_submitted. August audit snapshots are historical; old counts do not prove delivery. GA4 mapping and actual recipient reconciliation remain external work.
+- Final local verification: build exited 0 (399 pages); full npm test exited 0; all Load Board browser files plus direct customer-intake regression passed 58/58 desktop/mobile. Secure UUID fallback has a red/green unit regression and actual browser coverage with randomUUID unavailable; same-object retry keeps the ID. Mobile screenshot reviewed: customer CTA visible under H1, no horizontal overflow. Canonical/schema/robots/anchors and generic-2xx rejection were checked. Tests use intercepted synthetic fixtures, never production leads.
+- Earlier full E2E run: 1,970 passed, 16 skipped, 20 failed. Two Load Board failures came from newly added demo terminology; wording now explicitly says preview examples are not inventory, and the unchanged evergreen tests pass in the final 58-case run. The other 18 failing scenarios concern Academy/Catalog/Connect/London outside this patch; no current-main reproduction is claimed. Full-suite release remains unproven. Exact-head CI and final runtime state are recorded in PR #1752; draft/review only.
+- Compounding scorecard: outcome = clearer customer acquisition and honest carrier review; conversion = first-screen customer entry and recoverable idempotent intake; SEO = canonical/indexability preserved and real capabilities structured; internal links = existing commercial intake and contact targets; knowledge = receipt contract and durable error record; reuse = one shared receipt validator across existing handlers; privacy = no new data/PII analytics; architecture = existing receiver and business gates retained.
+- Rollback: revert this bounded branch; no data migration or runtime binding changes. Next reviewer action: exact-head CI/preview review, then authorized release and live readback. Operations must supply permitted active inventory and separate final-delivery/human-receipt evidence before those states can be claimed.
+
+### PR #1752 — main synchronization after #1749, 2026-10-08
+
+- Integrated main `84a787f169f6248edfcc5caa34953835f27ec00b` into the existing review branch. Only EOF additions in this handoff and ERROR_REGISTER conflicted; both tasks' complete records are retained.
+- Load Board runtime, schema, CTA, inventory boundaries, receipt validator, secure UUID fallback and targeted regressions are byte-identical to prior head `b9411c39ebc8c7e2448b5ed2bc83afb651667326`. Main's #1749 changes are retained without edits. Targeted desktop/mobile and exact-head terminal CI receipt are recorded in PR #1752. No new PR, production merge or deploy.
+
+### PR #1752 — rebase after #1750, 2026-10-08
+
+- Rebased the same bounded review package onto main `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Both #1749 and #1750 release records plus the prior Load Board synchronization receipt are preserved. Only additive journal conflicts required resolution. Load Board runtime and regression files remain byte-identical to `247a7ad2`; exact-head validation and merge readiness are recorded in PR #1752. No new PR, production merge or deploy.

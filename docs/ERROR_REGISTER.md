@@ -526,3 +526,15 @@ EVIDENCE: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md. Build and npm test pas
 - STATUS: regression aligned / current-head verification required. No runtime, Catalog, receiver, deployment or client-data change in this follow-up.
 
 - Second exact CI finding in the same PR: `tests/seo-repair-b2b-owner-map.spec.ts` selected retired generic Website/SEO hrefs. The regression now identifies each visible hero primary CTA by accessible name and asserts its complete repair-context destination, including vertical/source path and the correct form anchor. Product links are not reverted.
+
+## LOAD-BOARD-TRUTHFUL-INTAKE-20261008 — request acceptance is not human receipt
+
+STATUS: REVIEW_BRANCH; production verification pending.
+PROBLEM: Direct transport production runtime enabled live submission while leaving a Preview mode note. Load Board and transport handlers treated generic HTTP 2xx as receipt by Logistics Sales; the customer path appeared after the dynamically inserted marketplace. Footer top anchors were absent on these two pages.
+ROOT_CAUSE: Static mode copy was not reconciled with production overrides. Browser handlers did not inspect the existing receiver's success/request_id receipt, and the carrier qualification enhancer independently replaced the Load Board handler. The receiver confirms Worker handoff, not final delivery or human receipt.
+FAILED_APPROACH: HTTP success, a matching receipt, successful CI, and a synthetic submission are not interchangeable with mailbox delivery or a qualified human-reviewed lead.
+FIX: Shared receipt validation exposes submitted only for success plus matching request_id; delivery and human receipt stay unconfirmed. Retries retain the reviewed lead's request identity. Production mode note updates, hero customer CTA, explicit demo boundary, truthful WebPage/WebApplication schema, existing intake contact target and top anchors are restored locally.
+PREVENTION: Receipt unit cases reject empty/error/mismatched responses and ignore unsupported delivery/human claims. Browser regressions cover desktop/mobile, generic 2xx retry, canonical/indexability, first-screen CTA and anchors. No source gates, booking rules, fields, receiver, sitemap or robots policy changed.
+EXTERNAL_GATE: Actual approved inventory and mailbox/human receipts require operational evidence; this branch creates none. Historical delivery-confirmed analytics counts remain non-delivery evidence.
+REVIEW_CORRECTION: Preserve older secure-browser compatibility when randomUUID is unavailable by generating UUID v4 from getRandomValues. Same-object retry reuses the stored ID; no timestamp or Math.random identity. Added failing-first unit regression and real browser fallback coverage.
+VERIFICATION: Final build and full npm test pass; all Load Board browser files and direct customer-intake regression pass 58/58. Earlier full suite had 1,970 passed, 16 skipped, 20 failed; the two package terminology failures are corrected and pass in the final scoped run. The 18 other scenarios remain outside this package and do not constitute a green release receipt. PR #1752 stays review-only pending exact-head CI and release decision.
