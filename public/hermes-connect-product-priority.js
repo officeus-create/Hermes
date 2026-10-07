@@ -153,53 +153,9 @@
   const requestedLocale = () => String(new URLSearchParams(window.location.search).get("lang") || "").trim().toLowerCase();
 
   function applyRussianHub() {
-    if (normalize(window.location.pathname) !== "/services/hermes-connect/" || requestedLocale() !== "ru") return false;
-    const root = document.querySelector(".hc-brand-page");
-    if (!(root instanceof HTMLElement)) return false;
-
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    for (const node of nodes) {
-      const parent = node.parentElement;
-      if (!parent || ["SCRIPT", "STYLE"].includes(parent.tagName)) continue;
-      const value = node.nodeValue || "";
-      const key = value.trim();
-      const translated = HUB_RU.get(key);
-      if (translated) node.nodeValue = value.replace(key, translated);
-    }
-
-    document.documentElement.lang = "ru";
-    root.setAttribute("data-hc-hub-locale", "ru");
-    root.querySelector('[aria-label="Current Hermes Connect product status"]')?.setAttribute("aria-label", "Текущий статус продукта Hermes Connect");
-    root.querySelector('[aria-label="Hermes Connect product preview"]')?.setAttribute("aria-label", "Превью продукта Hermes Connect");
-
-    const productContext = document.querySelector("[data-hc-product-context]");
-    productContext?.querySelectorAll("[data-hc-english-only]").forEach((node) => node.remove());
-    const contentLanguage = productContext?.querySelector(".hc-content-language");
-    if (contentLanguage) contentLanguage.textContent = "Язык контента: русский";
-    const languageLabel = productContext?.querySelector(".hc-language-menu strong");
-    if (languageLabel) languageLabel.textContent = "Русский";
-
-    try { window.localStorage.setItem("hermes-connect-language", "ru"); } catch {}
-
-    document.title = "Hermes Connect | AI-операционная система для бизнеса";
-    const description = document.querySelector('meta[name="description"]');
-    if (description) description.setAttribute("content", "Управляйте бизнесом с AI. Hermes Connect адаптирует единую операционную систему под разные бизнес-процессы; СТО — текущее публичное рабочее направление, Academy и Beauty — приватные пространства с ограниченным подтверждённым набором функций.");
-
-    root.querySelectorAll("a[href]").forEach((link) => {
-      if (!(link instanceof HTMLAnchorElement)) return;
-      const raw = link.getAttribute("href") || "";
-      if (!raw || raw.startsWith("mailto:") || raw.startsWith("tel:") || raw.startsWith("javascript:")) return;
-      const url = new URL(raw, window.location.href);
-      if (url.origin !== window.location.origin) return;
-      if (url.pathname.startsWith("/services/hermes-connect/") || url.pathname.startsWith("/load-board/")) {
-        url.searchParams.set("lang", "ru");
-        link.setAttribute("href", `${url.pathname}${url.search}${url.hash}`);
-      }
-    });
-
-    return true;
+    // Hub copy is owned by /hermes-connect-hub-i18n.js for every supported locale.
+    // Keep this legacy hook inert so product-nav ordering cannot mutate page language.
+    return false;
   }
 
   function apply() {
