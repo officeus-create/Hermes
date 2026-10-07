@@ -163,6 +163,11 @@ assert.equal(verifiedZero.revenueCents, 0);
 assert.equal(verifiedZero.grossAfterTrackedCostsCents, 0);
 assert.equal(verifiedZero.averageTicketCents, 0);
 
+const noData = aggregateHomeServiceLeads([]);
+assert.equal(noData.revenueCents, null);
+assert.equal(noData.grossAfterTrackedCostsCents, null);
+assert.equal(noData.averageTicketCents, null);
+
 const safeUnknown = safeHomeServiceLead({
   id: "lead-unknown",
   source: "direct",
