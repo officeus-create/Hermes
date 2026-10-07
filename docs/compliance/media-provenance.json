@@ -614,7 +614,7 @@
     },
     {
       "path": "public/images/path-logistics-system.jpg",
-      "sha256": "4ec293290e5e3a1188bdb16f81e99a6f4fa30c048db265c4fb82e04e531a831d",
+      "sha256": "9d965fe79dadec6075549ce07538056c60ec7952275e6a2a482a9e2061b4cb6c",
       "firstTrackedCommit": "c926f46083745441c19363b0c40468277b3c9e0c",
       "classification": "CURRENT_REPO_ASSET",
       "provenanceStatus": "NEEDS_OWNER_PROVENANCE",

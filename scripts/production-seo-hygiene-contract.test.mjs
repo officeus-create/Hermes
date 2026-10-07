@@ -29,6 +29,8 @@ assert.ok(!layout.includes("hermes-social-share-2026.jpg"), "BaseLayout must not
 assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema must not revive the retired social-share duplicate.");
 assert.ok(!layout.includes("/images/hermes-ecosystem-hero.jpg"), "BaseLayout must not revive the retired public hero duplicate.");
 assert.ok(!homepage.includes("/images/hermes-ecosystem-hero.jpg"), "Homepage schema must not revive the retired public hero duplicate.");
+assert.ok(layout.includes('{isHermesConnectExperienceRoute && <script is:inline src="/hermes-connect-product-priority.js" defer></script>}'), "Hermes Connect navigation runtime must stay scoped to Connect and Load Board pages.");
+assert.ok(!layout.includes("document.createTreeWalker(document.body"), "BaseLayout must not scan every page's rendered text at runtime for retired copy that is already absent from source.");
 
 const sitemapHost = "hermeslogisticsus.com";
 const staticChildSitemapFiles = [
@@ -70,7 +72,10 @@ const indexedChildSitemapFiles = [
 // October 5 added KNB locality + profile; Search Recovery keeps the business profile indexable while single-profile locality collections are noindex.
 // 2026-10-06 Search Recovery also removes 14 secondary Load Board provider/non-P0 equipment owners, 25 thin Catalog/example owners, and 7 unreleased Hermes Connect reference-capability owners from static sitemaps.
 // 2026-10-07 Hermes Connect public-plugin release adds one intentional indexable Support/Trust owner in sitemap-digital-services.xml.
-const nonInsightsExpectedPageUrlCount = 256;
+// 2026-10-07 restores Load Analyzer as a clearly bounded public reference owner because the
+// production compatibility route, historical manifest and carrier discovery path all assign it
+// a distinct search purpose without presenting the capability as a live paid integration.
+const nonInsightsExpectedPageUrlCount = 257;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
@@ -108,11 +113,15 @@ const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.me
 const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
 const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
 assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/support/"), "Hermes Connect Support/Trust owner must remain discoverable in the digital-services sitemap");
-for (const capability of ["ai-command-center","business-automation","load-analyzer","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
+for (const capability of ["ai-command-center","business-automation","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }
+assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/load-analyzer/"), "bounded public Load Analyzer reference owner must remain discoverable in the digital-services sitemap");
 const capabilityComponent = await readFile(new URL("../src/components/HermesConnectCapabilityPage.astro", import.meta.url), "utf8");
-assert.match(capabilityComponent, /robots="noindex,follow"/);
+const loadAnalyzerCapability = await readFile(new URL("../src/pages/services/hermes-connect/load-analyzer.astro", import.meta.url), "utf8");
+assert.match(capabilityComponent, /robots = "noindex,follow"/);
+assert.match(capabilityComponent, /robots=\{robots\}/);
+assert.match(loadAnalyzerCapability, /robots="index,follow"/);
 assert.doesNotMatch(primarySitemap, /\/load-board\/providers\//, "provider-integration support pages must not compete as sitemap search owners");
 for (const slug of ["dry-van","reefer","flatbed","step-deck","hotshot","power-only","box-truck"]) {
   assert.ok(!primarySitemap.includes(`/load-board/equipment/${slug}/`), `non-P0 Load Board equipment page must stay outside the sitemap: ${slug}`);

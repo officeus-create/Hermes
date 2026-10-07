@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-07-load-analyzer-search-owner",
+  "generated_at": "2026-10-07T22:30:00+03:00",
+  "status": "CURRENT_HEAD_PENDING_PRODUCTION",
+  "additions": [],
+  "updates": [
+    {
+      "route": "/services/hermes-connect/load-analyzer/",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "reason": "Restore the bounded public reference owner required by the production compatibility route and carrier decision-support discovery path. The page states that it is not a live paid integration and does not claim external data access."
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 0,
+    "route_count_updated": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

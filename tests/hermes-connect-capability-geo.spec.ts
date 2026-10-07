@@ -1,17 +1,17 @@
 import { expect, test } from "@playwright/test";
 
 const referenceRoutes = [
-  "/services/hermes-connect/ai-command-center/",
-  "/services/hermes-connect/unified-inbox/",
-  "/services/hermes-connect/load-analyzer/",
+  { route: "/services/hermes-connect/ai-command-center/", robots: "noindex,follow" },
+  { route: "/services/hermes-connect/unified-inbox/", robots: "noindex,follow" },
+  { route: "/services/hermes-connect/load-analyzer/", robots: "index,follow" },
 ];
 
 test.describe("Hermes Connect reference capability GEO hierarchy", () => {
-  for (const route of referenceRoutes) {
-    test(`${route} stays public and linked but does not compete as a search owner`, async ({ page }) => {
+  for (const { route, robots } of referenceRoutes) {
+    test(`${route} preserves its declared search ownership boundary`, async ({ page }) => {
       await page.goto(route);
 
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", robots);
       await expect(page.locator("[data-hc-capability-page]")).toHaveAttribute("data-hc-live-status", "reference");
       await expect(page.locator(".hc-reference-badge")).toContainText("not current live pilot");
 

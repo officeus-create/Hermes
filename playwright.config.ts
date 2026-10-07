@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const e2ePort = process.env.HERMES_E2E_PORT ?? "4321";
 const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
+const browserChannel = process.env.PLAYWRIGHT_USE_SYSTEM_CHROME ? "chrome" : undefined;
 
 const ordinaryE2eStorageState = {
   cookies: [],
@@ -27,6 +28,7 @@ export default defineConfig({
   grepInvert: globalExcludedTests,
   use: {
     baseURL: e2eBaseUrl,
+    channel: browserChannel,
     trace: "retain-on-failure",
     storageState: ordinaryE2eStorageState,
   },
