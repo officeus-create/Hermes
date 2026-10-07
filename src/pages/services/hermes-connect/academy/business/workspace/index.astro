@@ -336,6 +336,53 @@ import "../../../../../../styles/hermes-academy-app.css";
             <span>Score · — / 30</span>
             <span data-i18n="assessmentDecision">Decision · Pending human review</span>
           </div>
+
+          <div class="academy-assessment-live" data-academy-assessment-live>
+            <div class="academy-owner-panel-head">
+              <div><p class="academy-app-eyebrow">LIVE HR ASSESSMENT · OWNER-SCOPED</p><h3>Template → assignment → explicit candidate claim → submission → human score</h3></div>
+              <span class="academy-app-status">30 POINTS · HUMAN ONLY</span>
+            </div>
+            <p>Owner не шукає кандидатів у глобальній Hermes HR базі. Assignment створюється без candidate identity; кандидат сам прив’язує його через існуючий HR candidate ID + candidate token + одноразовий assignment token.</p>
+            <div class="academy-assessment-live-grid">
+              <form data-assessment-template-form>
+                <strong>Create reusable template</strong>
+                <input name="title" required maxlength="180" placeholder="Marketing work sample"/>
+                <input name="roleTitle" required maxlength="180" placeholder="Role · Marketing Lead"/>
+                <textarea name="brief" required maxlength="8000" placeholder="Job-relevant brief · evidence · task · expected reasoning"></textarea>
+                <textarea name="sourcesText" placeholder="HTTPS sources · one per line"></textarea>
+                <select name="submissionFormat"><option value="google_docs_mindmap">Google Docs + MindMap</option><option value="google_docs">Google Docs</option><option value="external_refs">External refs</option></select>
+                <button class="academy-app-button intelligence" type="submit">Save template</button>
+                <small data-assessment-template-status aria-live="polite"></small>
+              </form>
+              <form data-assessment-assignment-form>
+                <strong>Issue assessment</strong>
+                <select name="templateId" data-assessment-template-select required><option value="">Select template</option></select>
+                <label><span>Deadline</span><input name="deadlineAt" type="datetime-local" required/></label>
+                <button class="academy-app-button intelligence" type="submit">Create assignment</button>
+                <small data-assessment-assignment-status aria-live="polite"></small>
+                <code data-assessment-assignment-secret hidden></code>
+              </form>
+            </div>
+            <form class="academy-assessment-score-form" data-assessment-review-form>
+              <strong>Human reviewer score · 6 × 0–5</strong>
+              <select name="id" data-assessment-review-select required><option value="">Select submitted assignment</option></select>
+              <input name="evidence_diagnosis" type="number" min="0" max="5" step="1" required placeholder="Evidence & diagnosis 0–5"/>
+              <input name="audience_positioning" type="number" min="0" max="5" step="1" required placeholder="Audience & positioning 0–5"/>
+              <input name="funnel_logic" type="number" min="0" max="5" step="1" required placeholder="Funnel logic 0–5"/>
+              <input name="readiness_offer" type="number" min="0" max="5" step="1" required placeholder="Readiness & offer 0–5"/>
+              <input name="kpi_measurement" type="number" min="0" max="5" step="1" required placeholder="KPI & measurement 0–5"/>
+              <input name="execution_thinking" type="number" min="0" max="5" step="1" required placeholder="Execution thinking 0–5"/>
+              <select name="decision"><option value="READY_FOR_FINAL_HUMAN_REVIEW">Ready for final human review</option><option value="MORE_EVIDENCE">More evidence</option><option value="ASSESSMENT_NOT_PASSED">Assessment not passed</option></select>
+              <textarea name="reviewerNotes" required maxlength="5000" placeholder="Human reviewer notes · job-relevant evidence only"></textarea>
+              <button class="academy-app-button intelligence" type="submit">Record human review</button>
+              <small data-assessment-review-status aria-live="polite"></small>
+            </form>
+            <div class="academy-assessment-live-records">
+              <div><strong>Templates</strong><div data-assessment-template-list><p>Loading…</p></div></div>
+              <div><strong>Assignments</strong><div data-assessment-assignment-list><p>Loading…</p></div></div>
+            </div>
+            <p class="academy-owner-boundary">Цей score — human work-sample assessment, а не автоматичне hiring decision. Candidate не може записати собі score/decision. Final employment action залишається в canonical Hermes HR human-review flow.</p>
+          </div>
         </section>
 
         <p class="academy-owner-boundary" data-i18n="boundary">Поки що операційні картки та показники на цій сторінці — демонстраційна структура vertical. Бізнес-профіль і Hermes-акаунт зберігаються реально; CRM-модулі активуються поетапно без підміни demo-даних реальними.</p>
@@ -485,7 +532,97 @@ import "../../../../../../styles/hermes-academy-app.css";
   };
   setMeasurementObservedNow();
 
-    const programSelect=()=>document.querySelector<HTMLSelectElement>("[data-academy-program-select]");
+  const assessmentTemplateSelect=()=>document.querySelector<HTMLSelectElement>("[data-assessment-template-select]");
+  const assessmentReviewSelect=()=>document.querySelector<HTMLSelectElement>("[data-assessment-review-select]");
+  const renderAssessments=(state:any)=>{
+    const templates=Array.isArray(state?.templates)?state.templates:[];
+    const assignments=Array.isArray(state?.assignments)?state.assignments:[];
+    const templateSelect=assessmentTemplateSelect();
+    if(templateSelect){
+      const current=templateSelect.value;
+      templateSelect.replaceChildren(new Option("Select template",""),...templates.map((item:any)=>new Option(`${item.title||"Template"} · ${item.roleTitle||"Role"}`,item.id)));
+      if(templates.some((item:any)=>item.id===current))templateSelect.value=current;
+    }
+    const reviewSelect=assessmentReviewSelect();
+    if(reviewSelect){
+      const current=reviewSelect.value;
+      const reviewable=assignments.filter((item:any)=>["submitted","reviewed"].includes(String(item.state)));
+      reviewSelect.replaceChildren(new Option("Select submitted assignment",""),...reviewable.map((item:any)=>new Option(`${item.id.slice(-8)} · ${item.state} · ${item.candidateId||"candidate"}`,item.id)));
+      if(reviewable.some((item:any)=>item.id===current))reviewSelect.value=current;
+    }
+    const templateTarget=document.querySelector<HTMLElement>("[data-assessment-template-list]");
+    if(templateTarget){
+      if(!templates.length)templateTarget.innerHTML="<p>No persisted assessment templates yet.</p>";
+      else templateTarget.replaceChildren(...templates.map((item:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");title.textContent=item.title||"Template";
+        const meta=document.createElement("small");meta.textContent=[item.roleTitle||"",item.submissionFormat||"",item.rubricVersion||""].filter(Boolean).join(" · ");
+        const brief=document.createElement("span");brief.textContent=item.brief||"";
+        article.append(title,meta,brief);return article;
+      }));
+    }
+    const assignmentTarget=document.querySelector<HTMLElement>("[data-assessment-assignment-list]");
+    if(assignmentTarget){
+      if(!assignments.length)assignmentTarget.innerHTML="<p>No persisted assessment assignments yet.</p>";
+      else assignmentTarget.replaceChildren(...assignments.map((item:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");title.textContent=`${item.state||"issued"} · ${item.id.slice(-8)}`;
+        const meta=document.createElement("small");meta.textContent=`Deadline: ${item.deadlineAt||"UNKNOWN"} · Candidate: ${item.candidateId||"UNCLAIMED"}`;
+        const detail=document.createElement("span");
+        if(item.review)detail.textContent=`Human score: ${item.review.totalScore}/30 · ${item.review.decision}`;
+        else if(item.submission)detail.textContent="Submission received · human review pending";
+        else detail.textContent="Waiting for explicit candidate claim/submission";
+        article.append(title,meta,detail);return article;
+      }));
+    }
+  };
+  const loadAssessments=async()=>{const state=await json("/api/hermes-connect/academy/assessments?module=dashboard");renderAssessments(state);};
+
+  document.querySelector<HTMLFormElement>("[data-assessment-template-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=form.querySelector<HTMLElement>("[data-assessment-template-status]");
+    const values:any=Object.fromEntries(new FormData(form).entries());
+    const sources=String(values.sourcesText||"").split(/[\n,]+/).map((value)=>value.trim()).filter(Boolean);
+    delete values.sourcesText;
+    if(status)status.textContent="Saving template…";
+    try{
+      await json("/api/hermes-connect/academy/assessments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_template",...values,sources})});
+      form.reset();if(status)status.textContent="Template saved.";await loadAssessments();
+    }catch(error:any){if(status)status.textContent=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"assessment_template_failed");}
+  });
+
+  document.querySelector<HTMLFormElement>("[data-assessment-assignment-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=form.querySelector<HTMLElement>("[data-assessment-assignment-status]");
+    const secret=form.querySelector<HTMLElement>("[data-assessment-assignment-secret]");
+    const values:any=Object.fromEntries(new FormData(form).entries());
+    if(status)status.textContent="Creating assignment…";
+    if(secret){secret.hidden=true;secret.textContent="";}
+    try{
+      const result=await json("/api/hermes-connect/academy/assessments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_assignment",...values})});
+      if(status)status.textContent="Assignment created. Copy the token now — it is returned once.";
+      if(secret){secret.hidden=false;secret.textContent=`Assignment ID: ${result.assignment.id}\nOne-time token: ${result.assignmentToken}`;}
+      form.reset();await loadAssessments();
+    }catch(error:any){if(status)status.textContent=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"assessment_assignment_failed");}
+  });
+
+  document.querySelector<HTMLFormElement>("[data-assessment-review-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=form.querySelector<HTMLElement>("[data-assessment-review-status]");
+    const values:any=Object.fromEntries(new FormData(form).entries());
+    const scoreKeys=["evidence_diagnosis","audience_positioning","funnel_logic","readiness_offer","kpi_measurement","execution_thinking"];
+    const scores:any={};for(const key of scoreKeys){scores[key]=Number(values[key]);delete values[key];}
+    if(status)status.textContent="Recording human review…";
+    try{
+      const result=await json("/api/hermes-connect/academy/assessments",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"review_submission",...values,scores})});
+      form.reset();if(status)status.textContent=`Human review saved · ${result.assignment?.review?.totalScore??"—"}/30`;await loadAssessments();
+    }catch(error:any){if(status)status.textContent=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"assessment_review_failed");}
+  });
+
+      const programSelect=()=>document.querySelector<HTMLSelectElement>("[data-academy-program-select]");
   const renderProgramsCohorts=(state:any)=>{
     const programs=Array.isArray(state?.programs)?state.programs:[];
     const cohorts=Array.isArray(state?.cohorts)?state.cohorts:[];
@@ -557,7 +694,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       const b=state.academyBusiness;const name=document.querySelector<HTMLElement>("[data-business-name]");if(name)name.textContent=b.businessName||"Academy";
       const link=document.querySelector<HTMLAnchorElement>("[data-catalog-link]");if(link)link.href=b.catalogOptIn?`/businesses/connect/academy/${encodeURIComponent(b.slug)}/`:"/businesses/";
       loading?.classList.add("academy-app-hidden");content?.classList.remove("academy-app-hidden");
-      await Promise.all([loadCrmCore(),loadProgramsCohorts(),loadMeasurement()]);
+      await Promise.all([loadCrmCore(),loadProgramsCohorts(),loadMeasurement(),loadAssessments()]);
     }catch(error:any){if(error?.status===401){location.assign("/services/hermes-connect/academy/business/auth/?mode=login");return;}fail(String(error?.message||"Could not load workspace"));}
   })();
   document.querySelector<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);location.assign("/services/hermes-connect/academy/business/auth/?mode=login");});
@@ -571,7 +708,7 @@ import "../../../../../../styles/hermes-academy-app.css";
   .academy-measurement-live{margin-top:18px;padding-top:18px;border-top:1px solid rgba(148,163,184,.22)}.academy-measurement-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}.academy-measurement-form label{display:grid;gap:5px}.academy-measurement-form label>span{font-size:10px;font-weight:800;color:#64748b}.academy-measurement-form input,.academy-measurement-form select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-measurement-wide{grid-column:span 2}.academy-measurement-form button{align-self:end;min-height:39px}.academy-measurement-economics,.academy-measurement-records{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.academy-measurement-economics article,.academy-measurement-records article{display:grid;gap:4px;padding:11px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-measurement-economics small,.academy-measurement-records small,.academy-measurement-economics span,.academy-measurement-records span{font-size:10px;color:#64748b;overflow-wrap:anywhere}
   .academy-program-live{margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.22)}.academy-program-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-program-live form{display:grid;gap:8px;padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:#fff}.academy-program-live input,.academy-program-live select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-program-live form>small{min-height:16px;color:#64748b}.academy-program-price{display:grid;grid-template-columns:1fr 1fr;gap:8px}.academy-program-records{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.academy-program-records>div{display:grid;gap:8px}.academy-program-records [data-academy-program-list],.academy-program-records [data-academy-cohort-list]{display:grid;gap:8px}.academy-program-records article{display:grid;gap:4px;padding:11px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-program-records small,.academy-program-records span{font-size:10px;color:#64748b}
     .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
-  .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-training-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-training-method>div{display:grid;gap:5px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#f8fafc}.academy-training-method span{font-size:9px;color:#7c5cff;font-weight:900}.academy-training-method b{font-size:11px}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
-  @media(max-width:900px){.academy-measurement-form{grid-template-columns:repeat(2,1fr)}.academy-measurement-economics,.academy-measurement-records{grid-template-columns:1fr}.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
-  @media(max-width:620px){.academy-measurement-form{grid-template-columns:1fr}.academy-measurement-wide{grid-column:span 1}.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
+  .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-training-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-training-method>div{display:grid;gap:5px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#f8fafc}.academy-training-method span{font-size:9px;color:#7c5cff;font-weight:900}.academy-training-method b{font-size:11px}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-assessment-live{margin-top:20px;padding-top:18px;border-top:1px solid rgba(148,163,184,.22)}.academy-assessment-live-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.academy-assessment-live-grid form,.academy-assessment-score-form{display:grid;gap:8px;padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:#fff}.academy-assessment-live input,.academy-assessment-live select,.academy-assessment-live textarea{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-assessment-live textarea{min-height:82px;resize:vertical}.academy-assessment-live label{display:grid;gap:5px}.academy-assessment-live label span{font-size:10px;font-weight:800;color:#64748b}.academy-assessment-score-form{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:10px}.academy-assessment-score-form>strong,.academy-assessment-score-form textarea,.academy-assessment-score-form button,.academy-assessment-score-form small{grid-column:1/-1}.academy-assessment-live-records{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.academy-assessment-live-records>div{padding:12px;border:1px solid rgba(148,163,184,.22);border-radius:12px;background:#f8fafc}.academy-assessment-live-records article{display:grid;gap:4px;margin-top:8px;padding:10px;border-radius:10px;background:#fff}.academy-assessment-live-records small,.academy-assessment-live-records span{color:#64748b;font-size:10px;overflow-wrap:anywhere}.academy-assessment-live code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;padding:10px;border-radius:10px;background:#0f172a;color:#e2e8f0;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
+  @media(max-width:900px){.academy-assessment-live-grid,.academy-assessment-live-records{grid-template-columns:1fr}.academy-assessment-score-form{grid-template-columns:repeat(2,1fr)}.academy-measurement-form{grid-template-columns:repeat(2,1fr)}.academy-measurement-economics,.academy-measurement-records{grid-template-columns:1fr}.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
+  @media(max-width:620px){.academy-assessment-score-form{grid-template-columns:1fr}.academy-measurement-form{grid-template-columns:1fr}.academy-measurement-wide{grid-column:span 1}.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
 </style>
