@@ -73,7 +73,7 @@ const faqSchema = {
   alternates={alternates}
   schema={[serviceSchema, breadcrumbSchema, faqSchema]}
 >
-  <SiteHeader theme="dark" locale={locale} activePath={canonicalPath} />
+  <SiteHeader contactHref="#contact" theme="dark" locale={locale} activePath={canonicalPath} />
   {locale === "ru" && <DirectionProductNav direction={directionId} theme="dark" locale="ru" />}
   <main id="main-content" class:list={["localized-owner", `localized-owner--${directionId}`]} data-localized-owner={`${locale}:${directionId}`}>
     <section class="localized-owner-hero" id="top">
