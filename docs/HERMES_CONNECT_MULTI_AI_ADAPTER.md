@@ -66,3 +66,15 @@ Do not duplicate tool schemas manually; discovery is the source of truth.
 - DeepSeek: official Tool Calls docs support function tools; the model proposes tool calls and the client executes them.
 
 This adapter is intentionally dependency-light and contains no provider API keys.
+
+
+## Production status verified 2026-10-07
+
+The canonical Hermes MCP is live on production at `https://hermeslogisticsus.com/api/hermes-connect/mcp`.
+Independent live readback proved:
+- HTTPS initialization returns MCP protocol `2025-06-18`;
+- `tools/list` returns six public tools;
+- `build_crm_onboarding_plan` returns the action-first sequence, a minimal connector plan, no more than five intake questions, and a ready CRM bootstrap prompt;
+- Support, Privacy, Terms, and the Hermes Connect product page return current HTTP 200 content.
+
+This closes the production dependency that originally kept this adapter PR in draft. Provider-specific deployment still must not fork Hermes Company/CRM/Catalog state.
