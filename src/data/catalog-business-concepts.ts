@@ -87,8 +87,10 @@ export const chaykaStoreConcept = Object.freeze({
   catalogPriority: "secondary",
   vertical: "repair_shop",
   schemaType: "Store",
-  primaryIntent: "Phone repair & accessories",
-  secondaryIntent: "More Chay — tea",
+  primaryIntent: "Ремонт телефонів та аксесуари",
+  primaryIntentEn: "Phone repair & accessories",
+  secondaryIntent: "More Chay — чай",
+  secondaryIntentEn: "More Chay — tea",
   phone: "+380 63 924 22 22",
   address: "вул. Валерія Лобановського, 21/3",
   addressEn: "21/3 Valeriia Lobanovskoho St",
@@ -101,7 +103,8 @@ export const chaykaStoreConcept = Object.freeze({
   hours: ["Пн–Сб 10:00–19:00", "Нд 10:00–18:30"],
   hoursEn: ["Mon–Sat 10:00–19:00", "Sun 10:00–18:30"],
   schemaHours: ["Mo-Sa 10:00-19:00", "Su 10:00-18:30"],
-  services: ["Phone repair discovery", "Accessories discovery", "Tea direction"],
+  services: ["Пошук послуг із ремонту телефонів", "Аксесуари", "Чайний напрям More Chay"],
+  servicesEn: ["Phone repair discovery", "Accessories discovery", "Tea direction"],
   trust: { source: "Google", rating: 5.0, reviewCount: 68, observedAt: "2026-09-24" },
   channels: [
     { label: "Google Maps", url: "https://maps.app.goo.gl/J49ktCNKXmkhbsLt7?g_st=ic", direction: "maps" },
@@ -109,7 +112,8 @@ export const chaykaStoreConcept = Object.freeze({
     { label: "Instagram · More Chay", url: "https://www.instagram.com/more_chau", direction: "secondary" },
     { label: "Telegram · More Chay", url: "https://t.me/more_chay", direction: "secondary" }
   ],
-  factsRequiringOwnerConfirmation: ["exact repair service menu", "prices", "repair turnaround", "warranty", "supported device models", "accessory inventory", "tea inventory"],
+  factsRequiringOwnerConfirmation: ["точний перелік ремонтних послуг", "ціни", "строки ремонту", "гарантія", "підтримувані моделі пристроїв", "наявність аксесуарів", "наявність чаю"],
+  factsRequiringOwnerConfirmationEn: ["exact repair service menu", "prices", "repair turnaround", "warranty", "supported device models", "accessory inventory", "tea inventory"],
   localeCopy: {
     uk: {
       disclosure: "Публічні та надані бізнесом дані + концепція презентації Hermes",
@@ -142,7 +146,7 @@ export const chaykaStoreConcept = Object.freeze({
     { question: "Чи можна уточнити ремонт телефону через цю сторінку?", answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом.", questionEn: "Can I ask about phone repair through this page?", answerEn: "Yes. You can submit a contact request; specific services, price, turnaround and warranty must be confirmed by the business." },
     { question: "Це офіційний сайт Чайка Store?", answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes.", questionEn: "Is this the official Chayka Store website?", answerEn: "No. This is a Hermes Catalog website concept based on public and business-supplied data; the profile remains unclaimed by the owner in Hermes." }
   ],
-  semanticCore: ["ремонт телефонів Чайки", "ремонт смартфонів Чайки", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
+  semanticCore: ["ремонт телефонів Чайки", "ремонт смартфонів Чайки", "локальна бізнес-сутність + NAP", "Google Business", "FAQ + schema", "UA / EN"],
   semanticCoreEn: ["phone repair Chaiky", "smartphone repair Chaiky", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
   sourceRef: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924"
 } satisfies CatalogBusinessConcept);
