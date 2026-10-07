@@ -1,0 +1,158 @@
+---
+import { ArrowRight, LifeBuoy, LockKeyhole, MessagesSquare, ShieldCheck, Sparkles, Wrench } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const supportCards = [
+  {
+    icon: LockKeyhole,
+    title: "Account & access",
+    body: "Get help with sign-in, workspace access, owner verification, or choosing the correct Hermes Connect route. Never send passwords, one-time codes, API keys, or payment credentials in a support message.",
+    cta: "Open Access Center",
+    href: "/download/",
+  },
+  {
+    icon: Wrench,
+    title: "CRM setup & business workflow",
+    body: "If your business is not yet a released Hermes Connect vertical, start with the real workflow: leads, customers, handoffs, follow-up, ownership, KPIs, and the smallest useful CRM blueprint.",
+    cta: "Open product hub",
+    href: "/services/hermes-connect/",
+  },
+  {
+    icon: MessagesSquare,
+    title: "Product feedback & feature requests",
+    body: "Report a blocker, confusing workflow, missing capability, or useful pattern. Hermes separates customer-specific context from reusable product learning and does not treat a message as proof that a feature is live.",
+    cta: "Email Hermes Connect support",
+    href: "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Support",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Privacy & data requests",
+    body: "Use the dedicated privacy route for access, correction, deletion, or applicable opt-out requests. Do not include identity documents or sensitive credentials in the first message.",
+    cta: "Open Privacy Choices",
+    href: "/privacy-choices/",
+  },
+];
+
+const faqs = [
+  {
+    q: "Which Hermes Connect product is live today?",
+    a: "Repair Shops is the current public live vertical. Other business configurations are described only with their verified status and are not presented as live customer products until separately released.",
+  },
+  {
+    q: "Can Hermes Connect read every ChatGPT conversation in my account?",
+    a: "No. Hermes Connect should work only from context you intentionally make relevant to the task, selected files or conversations, and authorized connected sources. It should not pull or reconstruct your complete chat history.",
+  },
+  {
+    q: "Can I use the ChatGPT plugin without already being a Hermes customer?",
+    a: "The public product path is designed to begin with business discovery and a practical starting recommendation. Private customer workspace data requires authenticated Hermes account linking.",
+  },
+  {
+    q: "How does Hermes learn from product feedback?",
+    a: "Reusable product learning is reduced to privacy-safe patterns such as problem class, missing capability, workflow friction, and evidence state. Raw conversations, credentials, customer lists, private notes, and secrets should not become reusable Hermes learning records.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Hermes Connect Support",
+    url: "https://hermeslogisticsus.com/services/hermes-connect/support/",
+    description: "Support for Hermes Connect CRM account access, business workflow and CRM setup, product feedback, privacy requests, and current product status.",
+    isPartOf: { "@type": "SoftwareApplication", name: "Hermes Connect", url: "https://hermeslogisticsus.com/services/hermes-connect/" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="Hermes Connect Support | CRM, Access & Product Help"
+  description="Get Hermes Connect CRM help with account access, business workflow and CRM setup, product feedback, privacy requests, and current product status."
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/technology/" theme="light" />
+  <main id="main-content" class="hc-support-page">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <p class="eyebrow"><LifeBuoy size={15} aria-hidden="true" />Hermes Connect Support</p>
+          <h1>Get to the right next step.</h1>
+          <p class="lead">Account access, CRM setup, product questions, workflow problems, feature requests, and privacy each follow a different path. Start here and Hermes will route the request without inventing access or product status.</p>
+          <div class="actions">
+            <a class="primary" href="/services/hermes-connect/">Open Hermes Connect <ArrowRight size={17} aria-hidden="true" /></a>
+            <a href="/services/hermes-connect/repair-shops/">Repair Shops · live product</a>
+          </div>
+        </div>
+        <aside class="status-card" aria-label="Current product support status">
+          <p><Sparkles size={16} aria-hidden="true" />Current product truth</p>
+          <strong>One Hermes Connect product. Different verified states.</strong>
+          <ul>
+            <li>Repair Shops: public live vertical</li>
+            <li>Private workspace data: authenticated access only</li>
+            <li>Unreleased verticals: discovery / blueprint first</li>
+            <li>Public ChatGPT plugin: directory release in preparation</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="support-section" aria-labelledby="support-options-title">
+      <div class="shell">
+        <div class="section-head"><p class="eyebrow">Choose the issue</p><h2 id="support-options-title">Support without sending you in circles.</h2></div>
+        <div class="card-grid">
+          {supportCards.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article>
+                <Icon size={22} aria-hidden="true" />
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <a href={item.href}>{item.cta} <ArrowRight size={15} aria-hidden="true" /></a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <section class="support-section muted" aria-labelledby="safe-support-title">
+      <div class="shell safe-grid">
+        <div><p class="eyebrow">Security boundary</p><h2 id="safe-support-title">Support should never require your secrets.</h2></div>
+        <div>
+          <p>Do not send passwords, one-time login codes, API keys, payment credentials, private keys, identity documents, or another customer’s private data. Hermes account and customer-specific actions must be authorized through the applicable secure account workflow.</p>
+          <p>For ordinary support, include the product area, what you were trying to do, what happened, the expected result, and a non-sensitive screenshot only when it is necessary.</p>
+          <div class="inline-links"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Use</a><a href="/legal-compliance/">Legal & Compliance</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="support-section" aria-labelledby="faq-title">
+      <div class="shell">
+        <div class="section-head"><p class="eyebrow">Common questions</p><h2 id="faq-title">Clear answers before escalation.</h2></div>
+        <div class="faq-grid">{faqs.map((item) => <article><h3>{item.q}</h3><p>{item.a}</p></article>)}</div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="shell final-grid">
+        <div><p class="eyebrow">Still need help?</p><h2>Send the smallest useful support packet.</h2><p>Product area · business type · what happened · expected result. Leave out secrets and unrelated personal information.</p></div>
+        <a class="primary" href="mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Support">Contact Hermes Connect Support <ArrowRight size={17} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .hc-support-page{background:#f8fafc;color:#111827}.shell{width:min(1180px,calc(100% - 2rem));margin:auto}.hero{padding:8.2rem 0 4.5rem;background:radial-gradient(circle at 80% 10%,rgba(37,99,235,.12),transparent 34%),linear-gradient(180deg,#fff,#f7f9fc)}.hero-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.65fr);gap:3rem;align-items:center}.eyebrow{display:flex;align-items:center;gap:.45rem;margin:0 0 .8rem;color:#2563eb;font-size:.75rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase}.hero h1,.support-section h2,.final-cta h2{margin:.2rem 0 .9rem;letter-spacing:-.045em;line-height:.98}.hero h1{font-size:clamp(3rem,7vw,5.8rem);max-width:820px}.lead{max-width:760px;color:#556174;font-size:1.12rem;line-height:1.7}.actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.5rem}.actions a,.primary{display:inline-flex;align-items:center;gap:.45rem;min-height:46px;padding:.75rem 1rem;border:1px solid #d8e0eb;border-radius:.8rem;background:#fff;color:#172033;text-decoration:none;font-weight:800}.actions .primary,.primary{border-color:#172033;background:#172033;color:#fff}.status-card,.card-grid article,.faq-grid article{border:1px solid rgba(17,24,39,.09);border-radius:1.25rem;background:rgba(255,255,255,.92);box-shadow:0 18px 55px rgba(31,41,55,.06)}.status-card{padding:1.4rem}.status-card>p{display:flex;gap:.45rem;align-items:center;color:#2563eb;font-size:.78rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.status-card strong{display:block;font-size:1.35rem;line-height:1.25}.status-card ul{margin:1rem 0 0;padding-left:1.1rem;color:#5d687a;line-height:1.75}.support-section{padding:4.8rem 0}.support-section.muted{background:#eef2f7}.section-head{max-width:760px;margin-bottom:1.7rem}.support-section h2,.final-cta h2{font-size:clamp(2.1rem,4vw,3.5rem)}.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.card-grid article{padding:1.45rem}.card-grid article>svg{color:#2563eb}.card-grid h3,.faq-grid h3{margin:.9rem 0 .5rem;font-size:1.15rem}.card-grid p,.faq-grid p,.safe-grid p,.final-cta p{color:#5d687a;line-height:1.65}.card-grid a,.inline-links a{display:inline-flex;align-items:center;gap:.35rem;color:#1f56c5;font-weight:800;text-decoration:none}.safe-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:2.5rem}.inline-links{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.1rem}.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.faq-grid article{padding:1.35rem}.final-cta{padding:4.5rem 0 5.5rem;background:#111827;color:#fff}.final-cta .eyebrow{color:#7dd3fc}.final-cta p{color:#c7d0dc}.final-grid{display:flex;justify-content:space-between;align-items:end;gap:2rem}.final-grid>div{max-width:720px}.final-cta .primary{background:#fff;color:#111827;border-color:#fff;white-space:nowrap}@media(max-width:820px){.hero-grid,.safe-grid{grid-template-columns:1fr}.card-grid,.faq-grid{grid-template-columns:1fr}.final-grid{display:grid;align-items:start}.hero{padding-top:7rem}}
+</style>
