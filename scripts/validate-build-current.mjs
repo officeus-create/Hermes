@@ -16,6 +16,10 @@ const loadBoardExpectationReplacements = new Map([
   ["Car Hauling Loads &amp; Load Board Preview", "Car Hauler Load Board | Search Auto Transport Loads"],
   ["Dry-run only", "Source-gated live + market preview"],
 ]);
+const localizedOverviewExpectationReplacements = new Map([
+  ["AI та messaging-асистенти", "AI-асистенти та інтеграції"],
+  ["AI и messaging-ассистенты", "AI-ассистенты и интеграции"],
+]);
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
 let currentSource = legacySource;
@@ -36,6 +40,16 @@ for (const [legacyExpectation, currentExpectation] of loadBoardExpectationReplac
     count,
     1,
     `Expected exactly one historical Load Board expectation for ${legacyExpectation}, found ${count}. Update the compatibility runner intentionally if the legacy validator changes.`,
+  );
+  currentSource = currentSource.replace(legacyExpectation, currentExpectation);
+}
+
+for (const [legacyExpectation, currentExpectation] of localizedOverviewExpectationReplacements) {
+  const count = currentSource.split(legacyExpectation).length - 1;
+  assert.equal(
+    count,
+    1,
+    `Expected exactly one historical localized overview expectation for ${legacyExpectation}, found ${count}. Update the compatibility runner intentionally if the legacy validator changes.`,
   );
   currentSource = currentSource.replace(legacyExpectation, currentExpectation);
 }

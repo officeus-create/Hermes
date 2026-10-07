@@ -140,7 +140,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
   uk: {
     logistics: {
       metaTitle: "Логістика США, диспетчеризація та Car Hauling | Hermes Logistics",
-      metaDescription: "Логістична підтримка для перевізників, власників-операторів, дилерів і вантажовідправників у США: диспетчеризація, документи, координація та Car Hauling.",
+      metaDescription: "Логістична підтримка для перевізників, owner-operators, дилерів і вантажовідправників у США: dispatch, документи, координація та Car Hauling.",
       h1: "Логістика США для перевізників, дилерів і вантажовідправників.",
       detail: "Hermes Logistics поєднує dispatch і back-office підтримку, координацію документів, взаємодію з брокерами та вантажовідправниками й окремі Car Hauling маршрути. Конкретна доступність, навантаження, ставки та комерційні умови перевіряються перед роботою.",
       boundary: "Сторінка не означає наявність конкретного вантажу, гарантованої ставки, гарантованого gross або автоматичного прийняття перевізника. Реальна робота починається після перевірки authority, insurance, equipment, lane fit та поточних умов.",
@@ -152,7 +152,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
     },
     marketing: {
       metaTitle: "Маркетинг, SEO, контент і лідогенерація | Hermes Marketing",
-      metaDescription: "Маркетинг для бізнесу: позиціонування, сайти, SEO, контент, соціальні мережі, реклама, шлях ліда, передача в CRM та аналітика.",
+      metaDescription: "Маркетинг для бізнесу: позиціонування, сайти, SEO, контент, social media, реклама, lead journey, CRM handoff та аналітика.",
       h1: "Маркетинг, який з'єднує попит із кваліфікованою дією.",
       detail: "Hermes Marketing / ProgressoPro будує не набір розрізнених публікацій, а шлях від оферу й контенту до сайту, CTA, заявки, подальшого супроводу та вимірювання. Канали підбираються під бізнес-задачу й фактичний бюджет.",
       boundary: "Ми не гарантуємо позицію Google, фіксовану кількість лідів, охоплення або дохід. SEO, GEO/AEO, соціальні мережі та реклама оцінюються за вихідним рівнем, виконаною роботою, якістю запитів і доступними бізнес-результатами.",
@@ -191,7 +191,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
   ru: {
     logistics: {
       metaTitle: "Логистика США, диспетчеризация и Car Hauling | Hermes Logistics",
-      metaDescription: "Логистическая поддержка для перевозчиков, владельцев-операторов, дилеров и отправителей в США: диспетчеризация, документы, координация и Car Hauling.",
+      metaDescription: "Логистическая поддержка для перевозчиков, owner-operators, дилеров и отправителей в США: dispatch, документы, координация и Car Hauling.",
       h1: "Логистика США для перевозчиков, дилеров и отправителей.",
       detail: "Hermes Logistics объединяет dispatch и back-office поддержку, координацию документов, взаимодействие с брокерами и отправителями и отдельные Car Hauling маршруты. Доступность, грузы, ставки и коммерческие условия проверяются перед работой.",
       boundary: "Страница не означает наличие конкретного груза, гарантированной ставки, гарантированного gross или автоматического принятия перевозчика. Реальная работа начинается после проверки authority, insurance, equipment, lane fit и текущих условий.",
@@ -203,7 +203,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
     },
     marketing: {
       metaTitle: "Маркетинг, SEO, контент и лидогенерация | Hermes Marketing",
-      metaDescription: "Маркетинг для бизнеса: позиционирование, сайты, SEO, контент, социальные сети, реклама, путь лида, передача в CRM и аналитика.",
+      metaDescription: "Маркетинг для бизнеса: позиционирование, сайты, SEO, контент, social media, реклама, lead journey, CRM handoff и аналитика.",
       h1: "Маркетинг, который связывает спрос с квалифицированным действием.",
       detail: "Hermes Marketing / ProgressoPro строит не набор разрозненных публикаций, а путь от оффера и контента до сайта, CTA, заявки, дальнейшего сопровождения и измерения. Каналы выбираются под бизнес-задачу и фактический бюджет.",
       boundary: "Мы не гарантируем позицию Google, фиксированное число лидов, охват или доход. SEO, GEO/AEO, социальные сети и реклама оцениваются через исходный уровень, выполненную работу, качество запросов и доступные бизнес-результаты.",
@@ -241,7 +241,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
   es: {
     logistics: {
       metaTitle: "Logística en EE. UU., dispatch y Car Hauling | Hermes Logistics",
-      metaDescription: "Soporte logístico para transportistas, transportistas independientes, concesionarios y remitentes en EE. UU.: despacho, documentos, coordinación y Car Hauling.",
+      metaDescription: "Soporte logístico para carriers, owner-operators, concesionarios y remitentes en EE. UU.: dispatch, documentos, coordinación y Car Hauling.",
       h1: "Logística de Estados Unidos para transportistas, concesionarios y remitentes.",
       detail: "Hermes Logistics conecta soporte de dispatch y back office, coordinación documental, comunicación con brokers y remitentes y flujos específicos de Car Hauling. La disponibilidad, las cargas, las tarifas y las condiciones comerciales se revisan antes de trabajar.",
       boundary: "Esta página no implica una carga concreta, una tarifa o gross garantizados ni aceptación automática de un carrier. El trabajo real comienza después de revisar authority, insurance, equipment, lane fit y condiciones actuales.",
@@ -253,7 +253,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
     },
     marketing: {
       metaTitle: "Marketing digital, SEO, contenido y leads | Hermes Marketing",
-      metaDescription: "Posicionamiento, sitios web, SEO, contenido, redes sociales, publicidad, recorrido del prospecto, transferencia al CRM y analítica para empresas.",
+      metaDescription: "Posicionamiento, sitios web, SEO, contenido, social media, publicidad, lead journey, CRM handoff y analítica para empresas.",
       h1: "Marketing que conecta la demanda con una acción cualificada.",
       detail: "Hermes Marketing / ProgressoPro no trata el sitio web, SEO, las redes sociales y las ventas como tareas aisladas. Conecta oferta, contenido, CTA, captación, seguimiento y medición en un sistema que puede revisarse con datos reales.",
       boundary: "No garantizamos una posición en Google, un número fijo de leads, alcance o ingresos. SEO, GEO/AEO, redes sociales y publicidad se evalúan con un punto de partida, ejecución verificable, calidad de consultas y resultados empresariales disponibles.",
@@ -267,7 +267,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
       metaTitle: "Desarrollo web, CRM y automatización con IA | Hermes Technology",
       metaDescription: "Sitios, web apps, CRM, integraciones, analítica y automatización con IA construidos alrededor de procesos empresariales reales.",
       h1: "Sistemas digitales construidos alrededor del proceso real de la empresa.",
-      detail: "Hermes Technology empieza por usuarios, datos, decisiones y handoffs, no por una tecnología de moda. Un proyecto puede comenzar con un sitio, módulo CRM, portal, integración o asistente AI y ampliarse después de verificar la primera versión.",
+      detail: "Hermes Technology empieza por usuarios, datos, decisiones y traspasos entre etapas, no por una tecnología de moda. Un proyecto puede comenzar con un sitio, módulo CRM, portal, integración o asistente AI y ampliarse después de verificar la primera versión.",
       boundary: "Un prototipo, una demostración y una función operativa no son lo mismo. Integraciones, acciones externas, datos privados y pagos se activan solo después de una revisión técnica y operativa separada.",
       related: [
         { label: "Hermes Connect", href: "/services/hermes-connect/", body: "Familia pública de productos con espacios de trabajo conectados de Hermes Technology." },
@@ -291,7 +291,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
   it: {
     logistics: {
       metaTitle: "Logistica USA, dispatch e Car Hauling | Hermes Logistics",
-      metaDescription: "Supporto logistico per vettori, vettori indipendenti, concessionari e mittenti negli USA: gestione operativa, documenti, coordinamento e Car Hauling.",
+      metaDescription: "Supporto logistico per carrier, owner-operator, concessionari e mittenti negli USA: dispatch, documenti, coordinamento e Car Hauling.",
       h1: "Logistica negli Stati Uniti per vettori, concessionari e mittenti.",
       detail: "Hermes Logistics collega supporto dispatch e back office, coordinamento documentale, comunicazione con broker e mittenti e flussi Car Hauling dedicati. Disponibilità, carichi, tariffe e condizioni commerciali vengono verificati prima del lavoro.",
       boundary: "Questa pagina non implica un carico specifico, una tariffa o gross garantiti né l'accettazione automatica di un carrier. Il lavoro reale inizia dopo la verifica di authority, insurance, equipment, lane fit e condizioni attuali.",
@@ -303,7 +303,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
     },
     marketing: {
       metaTitle: "Marketing Digitale, SEO e GEO per Aziende in Italia | Hermes",
-      metaDescription: "Strategia digitale, SEO, GEO/AEO, reti sociali, pubblicità, siti orientati alla conversione, CRM e processi commerciali per aziende in Italia.",
+      metaDescription: "Strategia digitale, SEO, GEO/AEO, social media, advertising, siti orientati alla conversione, CRM e processi commerciali per aziende in Italia.",
       h1: "Marketing digitale costruito come un sistema di crescita.",
       detail: "La pagina canonica italiana dedicata esiste già e collega sito, SEO, GEO/AEO, contenuti, social media, pubblicità, CRM, seguito e analisi in un unico percorso misurabile.",
       boundary: "Le attività locali, gli uffici, le recensioni e i risultati vengono descritti solo quando sono verificati. Non garantiamo ranking, lead o ricavi.",
@@ -337,7 +337,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
   fr: {
     logistics: {
       metaTitle: "Logistique USA, dispatch et Car Hauling | Hermes Logistics",
-      metaDescription: "Support logistique pour transporteurs, transporteurs indépendants, concessionnaires et expéditeurs aux États-Unis : gestion opérationnelle, documents, coordination et Car Hauling.",
+      metaDescription: "Support logistique pour transporteurs, owner-operators, concessionnaires et expéditeurs aux USA : dispatch, documents, coordination et Car Hauling.",
       h1: "Logistique aux États-Unis pour transporteurs, concessionnaires et expéditeurs.",
       detail: "Hermes Logistics relie support dispatch et back office, coordination documentaire, communication avec brokers et expéditeurs et flux Car Hauling dédiés. La disponibilité, les charges, les tarifs et les conditions commerciales sont vérifiés avant le travail.",
       boundary: "Cette page n'implique pas une charge précise, un tarif ou gross garanti ni l'acceptation automatique d'un transporteur. Le travail réel commence après vérification de l'authority, de l'assurance, de l'équipement, du lane fit et des conditions actuelles.",
@@ -349,7 +349,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
     },
     marketing: {
       metaTitle: "Marketing digital, SEO, contenu et génération de leads | Hermes",
-      metaDescription: "Positionnement, sites, SEO, contenu, réseaux sociaux, publicité, parcours prospect, transfert vers le CRM et analyse pour les entreprises.",
+      metaDescription: "Positionnement, sites, SEO, contenu, social media, publicité, lead journey, CRM handoff et analytics pour les entreprises.",
       h1: "Un marketing qui relie la demande à une action qualifiée.",
       detail: "Hermes Marketing / ProgressoPro ne traite pas le site, le SEO, les réseaux sociaux et les ventes comme des tâches isolées. Nous relions offre, contenu, CTA, acquisition, suivi et mesure dans un système qui peut être évalué avec des données réelles.",
       boundary: "Nous ne garantissons ni position Google, ni nombre fixe de prospects, ni portée, ni revenu. SEO, GEO/AEO, réseaux sociaux et publicité sont évalués à partir d’un niveau de référence, de l’exécution vérifiable, de la qualité des demandes et des résultats commerciaux disponibles.",
@@ -363,7 +363,7 @@ export const localizedDirectionCopy: Record<LocalizedSiteLocale, Record<Directio
       metaTitle: "Développement web, CRM et automatisation IA | Hermes Technology",
       metaDescription: "Sites, web apps, CRM, intégrations, analytics et automatisation IA construits autour de processus métier réels.",
       h1: "Des systèmes numériques construits autour du processus réel de l'entreprise.",
-      detail: "Hermes Technology commence par les utilisateurs, les données, les décisions et les handoffs, pas par une technologie à la mode. Un projet peut démarrer par un site, un module CRM, un portail, une intégration ou un assistant AI, puis s'étendre après validation de la première version.",
+      detail: "Hermes Technology commence par les utilisateurs, les données, les décisions et les transmissions entre étapes, pas par une technologie à la mode. Un projet peut démarrer par un site, un module CRM, un portail, une intégration ou un assistant AI, puis s'étendre après validation de la première version.",
       boundary: "Un prototype, une démonstration et une fonction opérationnelle ne sont pas identiques. Intégrations, actions externes, données privées et paiements sont activés uniquement après une validation technique et opérationnelle séparée.",
       related: [
         { label: "Hermes Connect", href: "/services/hermes-connect/", body: "Famille publique de produits à espaces de travail connectés de Hermes Technology." },

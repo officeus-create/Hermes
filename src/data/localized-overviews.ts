@@ -245,7 +245,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
   it: {
     locale: "it",
     path: "/it/",
-    metaTitle: "Hermes | Logistica, marketing, accademia e sviluppo IT",
+    metaTitle: "Hermes | Logistica, marketing, academy e sviluppo IT",
     metaDescription: "Hermes integra logistica, marketing, formazione aziendale pratica e sviluppo IT per imprese negli Stati Uniti e partner internazionali.",
     heroImageAlt: "Quattro portali architettonici illuminati che rappresentano le direzioni di business di Hermes",
     hero: {

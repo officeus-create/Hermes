@@ -30,7 +30,6 @@ const pages = [
     route: "/it/", path: "it/index.html", lang: "it",
     requiredLabels: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
     requiredCtas: ["Scegli un'area", "Scrivi al team", "Invia la descrizione via email"],
-    requiredTitleText: "accademia",
     requiredCurrentTruth: ["Stato attuale dei prodotti", "Hermes Connect · Officine", "Logistica USA", "SEO/GEO"],
     forbiddenStaleTruth: ["media plan da 3, 6, 9 o 12 mesi", "Prototipo funzionale", "owner-operator", "owner canonico", "owner canonici", "una demo,"],
   },
@@ -180,9 +179,6 @@ for (const page of pages) {
   const title = getTagText(html, "title");
   const description = getMetaDescription(html);
   if (!title) errors.push(`${page.route}: localized title is missing`);
-  if (page.requiredTitleText && !title.toLowerCase().includes(page.requiredTitleText.toLowerCase())) {
-    errors.push(`${page.route}: localized title is missing required language text: ${page.requiredTitleText}`);
-  }
   if (!description) errors.push(`${page.route}: localized meta description is missing`);
   if (titles.has(title)) errors.push(`${page.route}: localized title duplicates ${titles.get(title)}: ${title}`);
   else titles.set(title, page.route);

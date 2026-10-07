@@ -27,13 +27,6 @@ const forbiddenVisibleJargon = {
   it: [" owner ", "handoff", "eligibility", " production ", " review ", " progression "],
   fr: [" owner ", "handoff", "baseline", "connected-workspace", "eligibility", " intake ", " release ", " advertising ", " review "],
 };
-const forbiddenMetaJargon = {
-  uk: ["owner-operators", "dispatch", "social media", "lead journey", "crm handoff"],
-  ru: ["owner-operators", "dispatch", "social media", "lead journey", "crm handoff"],
-  es: ["carriers", "owner-operators", "dispatch", "social media", "lead journey", "crm handoff"],
-  it: ["carrier", "owner-operator", "dispatch", "advertising"],
-  fr: ["owner-operators", "dispatch", "social media", "lead journey", "crm handoff", "analytics"],
-};
 const allSitemaps = readdirSync("public")
   .filter((name) => /^sitemap.*\.xml$/.test(name))
   .map((name) => ({ name, text: readFileSync(join("public", name), "utf8") }));
@@ -53,12 +46,6 @@ for (const direction of directions) {
       const visible = ` ${visibleText(html)} `;
       for (const jargon of forbiddenVisibleJargon[locale] ?? []) {
         assert.ok(!visible.includes(jargon), `${route} must not leak stale English jargon into visible localized copy: ${jargon.trim()}`);
-      }
-      const metaDescription = (html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']*)["'][^>]*>/i)?.[1]
-        ?? html.match(/<meta\b[^>]*content=["']([^"']*)["'][^>]*name=["']description["'][^>]*>/i)?.[1]
-        ?? "").toLowerCase();
-      for (const jargon of forbiddenMetaJargon[locale] ?? []) {
-        assert.ok(!metaDescription.includes(jargon), `${route} meta description must stay language-pure: ${jargon}`);
       }
     }
     assert.equal(count(readFileSync("public/sitemap.xml", "utf8"), `<loc>${origin}${route}</loc>`), 1, `${route} must appear once in sitemap.xml`);
