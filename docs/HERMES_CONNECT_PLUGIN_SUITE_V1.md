@@ -1,4 +1,4 @@
-# Hermes Connect Plugin Suite V1.1
+# Hermes Connect Plugin Suite V1.2
 
 Status: review-only architecture + installable package contract. No merge, deployment, customer invitation, or live remote MCP is implied by this document.
 
@@ -31,7 +31,7 @@ Responsibilities:
 
 It may use internal context only through already-authorized staff connectors/tools.
 
-Current package candidate: `hermes-connect-operator` v1.1.0.
+Current package candidate: `hermes-connect-operator` v1.2.0.
 
 ### Hermes Connect — Customer
 
@@ -45,7 +45,7 @@ Customer target journey:
 
 An email typed into chat, hidden prompt, encrypted/obfuscated string, copied token, or “secret code” is not authentication.
 
-Current package state: Customer Preview v0.2.0. It intentionally has no live MCP endpoint and is not approved for real-customer installation.
+Current package state: Customer Preview v0.3.0. It intentionally has no live MCP endpoint and is not approved for real-customer installation.
 
 ## Change Broker — the core customer-change architecture
 
@@ -172,6 +172,41 @@ A later state requires dated evidence for that state. UNKNOWN remains UNKNOWN.
 - Public capability proof: every claimed feature should point to a functioning scenario/evidence.
 
 The plugin helps close these lanes; it must not relabel them done.
+
+## Catalog as a presales mini-site and Growth Center
+
+Catalog is not merely a directory. It is a consented public **presales projection and action surface** backed by the same canonical Company/Workspace.
+
+Required contract:
+- preserve one `company_id`, one workspace relationship and one stable public profile identity/URL;
+- distinguish `UNCLAIMED / CLAIM_PENDING / CLAIMED / UNKNOWN` and verified-owner state;
+- do not create owner access or owner notifications from a guessed/public email;
+- public projection contains only safe company facts allowed by explicit server-side consent/capability;
+- private CRM contacts, customers, estimates/jobs, private notes, credentials and private commercial fields never leak into Catalog/News;
+- call/form/booking/website/CTA actions return to the existing CRM/touchpoint layer with provenance/UTM/idempotency;
+- an action event is not automatically a qualified lead, sale or revenue;
+- owner/manager notifications require verified identity plus notification consent;
+- weekly/monthly reporting preserves funnel stage and evidence state; missing metrics stay UNKNOWN rather than 0.
+
+Customer self-service includes a tenant-scoped **Growth Brief** for Website, SEO/GEO/Local/AI visibility, SMM/social, content, CTA/booking and advertising readiness. It is attached to the same Company/Workspace; do not create a second marketing CRM.
+
+Recommendation guard:
+
+`PRODUCT/OFFER/CTA + MEASUREMENT + ORGANIC BASELINE → PAID AMPLIFICATION`
+
+Paid advertising does not repair an unproven funnel and must not be recommended solely because an ad channel exists. No rankings/leads/revenue guarantee.
+
+## Customer Growth Center
+
+When authenticated MCP exists, the customer-facing plugin may show only server-supplied tenant data:
+- CRM/workspace state;
+- Catalog claim/owner-verification/public-consent state;
+- measured Catalog actions;
+- qualified/won outcomes only when that evidence exists;
+- Website/SEO/GEO/Insights/social activity and attribution when available;
+- durable change-request status.
+
+The Customer Preview must say UNKNOWN rather than fabricate missing metrics. It must respect workspace/profile locale supplied by Hermes Connect rather than infer language from the prompt alone.
 
 ## Content and growth compounding
 
