@@ -200,13 +200,20 @@ const safeSchema = schema
         let stored = null;
         try { stored = window.localStorage.getItem("hermes-connect-language"); } catch {}
         const hasExplicitLocale = requested !== null;
+        const cleanEnglishOwner = new Set([
+          "/services/hermes-connect/",
+          "/services/hermes-connect/access/",
+          "/services/hermes-connect/academy/",
+        ]).has(window.location.pathname);
         const active = hasExplicitLocale
           ? (requested && supported.has(requested) ? requested : "en")
-          : (stored && supported.has(stored) ? stored : "en");
+          : cleanEnglishOwner
+            ? "en"
+            : (stored && supported.has(stored) ? stored : "en");
         document.documentElement.lang = active;
         try { window.localStorage.setItem("hermes-connect-language", active); } catch {}
 
-        if (!hasExplicitLocale && active !== "en") {
+        if (!hasExplicitLocale && !cleanEnglishOwner && active !== "en") {
           const normalized = new URL(window.location.href);
           normalized.searchParams.set("lang", active);
           window.history.replaceState(window.history.state, "", normalized.pathname + normalized.search + normalized.hash);
