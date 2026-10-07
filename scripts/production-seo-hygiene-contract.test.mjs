@@ -67,8 +67,10 @@ const indexedChildSitemapFiles = [
 // October 1 added a Marketing Growth Audit example, but Search Recovery now keeps that strategy/example route noindex and out of the Catalog sitemap.
 // October 3 adds one verified Wisconsin owner-operator vacancy owner linked from the existing careers hub.
 // October 5 adds one bounded Work With Hermes relationship hub that routes existing career, carrier, agency, and partnership owners.
-// October 5 added KNB locality + profile; Search Recovery keeps the business profile indexable while single-profile locality collections are noindex.\n// 2026-10-06 Search Recovery also removes 14 secondary Load Board provider/non-P0 equipment owners, 25 thin Catalog/example owners, and 7 unreleased Hermes Connect reference-capability owners from static sitemaps.
-const nonInsightsExpectedPageUrlCount = 255;
+// October 5 added KNB locality + profile; Search Recovery keeps the business profile indexable while single-profile locality collections are noindex.
+// 2026-10-06 Search Recovery also removes 14 secondary Load Board provider/non-P0 equipment owners, 25 thin Catalog/example owners, and 7 unreleased Hermes Connect reference-capability owners from static sitemaps.
+// 2026-10-07 Hermes Connect public-plugin release adds one intentional indexable Support/Trust owner in sitemap-digital-services.xml.
+const nonInsightsExpectedPageUrlCount = 256;
 const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
 const carrierLifecycleGuide = `https://${sitemapHost}/logistics/resources/car-hauler-jobs-owner-operator-guide/`;
 const expectedCarrierGeoCityCount = 25;
@@ -105,6 +107,7 @@ assert.ok(sitemapPageUrls.includes(carrierLifecycleGuide), "bounded carrier-life
 const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
 const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
 const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
+assert.ok(digitalServicesSitemap.includes("/services/hermes-connect/support/"), "Hermes Connect Support/Trust owner must remain discoverable in the digital-services sitemap");
 for (const capability of ["ai-command-center","business-automation","load-analyzer","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }
