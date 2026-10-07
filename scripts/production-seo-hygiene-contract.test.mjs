@@ -29,6 +29,8 @@ assert.ok(!layout.includes("hermes-social-share-2026.jpg"), "BaseLayout must not
 assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema must not revive the retired social-share duplicate.");
 assert.ok(!layout.includes("/images/hermes-ecosystem-hero.jpg"), "BaseLayout must not revive the retired public hero duplicate.");
 assert.ok(!homepage.includes("/images/hermes-ecosystem-hero.jpg"), "Homepage schema must not revive the retired public hero duplicate.");
+assert.ok(layout.includes('{isHermesConnectExperienceRoute && <script is:inline src="/hermes-connect-product-priority.js" defer></script>}'), "Hermes Connect navigation runtime must stay scoped to Connect and Load Board pages.");
+assert.ok(!layout.includes("document.createTreeWalker(document.body"), "BaseLayout must not scan every page's rendered text at runtime for retired copy that is already absent from source.");
 
 const sitemapHost = "hermeslogisticsus.com";
 const staticChildSitemapFiles = [
