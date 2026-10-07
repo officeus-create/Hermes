@@ -39,6 +39,8 @@
   const setupSeoIntake = () => {
     const params = new URLSearchParams(window.location.search);
     const repairContext = params.get("vertical") === "auto_repair";
+    const sourcePath = repairContext && params.get("source_path") === "/services/seo-for-auto-repair-shops/"
+      ? "/services/seo-for-auto-repair-shops/" : "";
     const requestedService = params.get("service");
     if (window.location.pathname !== "/paths/marketing/" || requestedService !== "seo") return;
 
@@ -242,7 +244,7 @@
     const syncPreviewFields = () => {
       hiddenPlanning.value = timeline.value;
       hiddenGoal.value = `${labelFor(workScope)}; ${labelFor(searchScope)}; issue: ${problem.value.trim()}`;
-      hiddenAudience.value = `${labelFor(vertical)}; market: ${market.value.trim()}${repairContext ? "; source page: /services/seo-for-auto-repair-shops/" : ""}`;
+      hiddenAudience.value = `${labelFor(vertical)}; market: ${market.value.trim()}${sourcePath ? `; source page: ${sourcePath}` : ""}`;
       hiddenResults.value = `Website: ${currentWebsite.value.trim() || "not provided"}; Search Console: ${labelFor(gscAccess)}; GA4: ${labelFor(ga4Access)}`;
       hiddenBudget.value = budget.value ? labelFor(budget) : "Not provided";
     };

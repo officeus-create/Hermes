@@ -58,6 +58,8 @@
   const setupWebsiteProjectScope = () => {
     const params = new URLSearchParams(window.location.search);
     const repairContext = params.get("vertical") === "auto_repair";
+    const sourcePath = repairContext && params.get("source_path") === "/services/auto-repair-website-design/"
+      ? "/services/auto-repair-website-design/" : "";
     const requestedProject = params.get("project") || "";
     const config = websiteProjects[requestedProject];
     if (window.location.pathname !== "/paths/technology/" || !config) return;
@@ -190,7 +192,8 @@
         : original;
       const scopeBlock = [
         marker,
-        ...(repairContext ? ["Business type: Repair shop / service center", "Source page: /services/auto-repair-website-design/"] : []),
+        ...(repairContext ? ["Business type: Repair shop / service center"] : []),
+        ...(sourcePath ? [`Source page: ${sourcePath}`] : []),
         `Project type: ${selectedLabel(projectType)}`,
         `Current website: ${clean(currentWebsite.value, 240) || "Not provided"}`,
         `Target U.S. market: ${clean(targetMarket.value, 240)}`,

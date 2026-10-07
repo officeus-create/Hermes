@@ -105,3 +105,13 @@ for (const [owner, label, destination, query, anchor] of [
     await page.screenshot({ path: `test-results/repair-${owner === websiteOwner ? 'website' : 'seo'}-${test.info().project.name}.png`, fullPage: true });
   });
 }
+
+test('SEO context never turns an unapproved source query into attribution', async ({ page }) => {
+  await page.goto('/paths/marketing/?service=seo&vertical=auto_repair&source_path=unapproved#contact');
+  const form = page.locator('[data-contact-form]');
+  await expect(form.locator('select[name="seo_vertical"]')).toHaveValue('auto_repair');
+  // Exercise the summary synchronization listener without creating or delivering a lead.
+  await form.evaluate(node => node.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+  await expect(form.locator('input[name="target_audience"]')).toHaveValue(/Repair shop \/ service center/);
+  await expect(form.locator('input[name="target_audience"]')).not.toHaveValue(/source page:|unapproved/);
+});
