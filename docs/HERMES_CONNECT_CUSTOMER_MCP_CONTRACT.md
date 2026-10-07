@@ -1,4 +1,4 @@
-# Hermes Connect Customer MCP Contract V1.1
+# Hermes Connect Customer MCP Contract V1.2
 
 Status: design contract. No remote MCP endpoint, real-customer authentication flow, or customer production readiness is claimed by this document.
 
@@ -36,7 +36,7 @@ Required rules:
 - `get_capabilities` — server-authoritative capability registry for the authenticated workspace.
 - `resolve_company` — dedupe by allowed identifiers; never return unauthorized tenants.
 - `get_company_state` — canonical company/evidence states.
-- `get_catalog_projection` — public projection state.
+- `get_catalog_projection` — public projection state.\n- `get_public_profile_state` — claim/owner-verification/public-consent/notification-consent state.\n- `get_growth_summary` — tenant-scoped measured actions, qualified/won outcomes and attribution with explicit evidence/UNKNOWN state.
 - `get_change_request` — request/status/release/readback.
 - `list_change_requests` — only requests belonging to allowed company/workspace.
 - `get_session_receipt` — bounded prior action/readback receipt.
@@ -47,7 +47,7 @@ Required rules:
 - `set_catalog_projection` — owner-confirmed evidence-safe public projection.
 - `activate_workspace` — activate an already-supported vertical workspace.
 - `update_workspace_config` — reversible supported configuration exposed by the capability registry.
-- `record_touchpoint` — append/idempotent source/content/CTA history.
+- `record_touchpoint` — append/idempotent source/content/CTA history.\n- `submit_growth_brief` — persist a customer Website/SEO/GEO/SMM/content/ads-readiness/reporting brief against the same Company/Workspace.
 - `create_change_request` — durable request/status object.
 - `append_change_request_context` — add clarification/evidence without overwriting history.
 - `create_evidence_candidate` — internal evidence candidate, not publication.
@@ -55,6 +55,34 @@ Required rules:
 - `write_session_receipt` — durable scoped audit/current state.
 
 No write tool should accept an arbitrary company/workspace supplied by the model without resolving it against the authenticated memberships.
+
+## Catalog/public-profile consent boundary
+
+Catalog is a public presales projection, not a mirror of private CRM data.
+
+Server-owned state must distinguish:
+- claim state: UNCLAIMED / CLAIM_PENDING / CLAIMED / UNKNOWN;
+- owner verification: UNVERIFIED / PENDING / VERIFIED / UNKNOWN;
+- public-projection consent;
+- owner/manager notification consent;
+- measured-vs-unknown growth metrics.
+
+Rules:
+- public email/name does not prove ownership;
+- no owner login/notification is created from inference;
+- only allow-listed company facts may project publicly;
+- customers, contacts, jobs/estimates, notes, credentials, private rates and internal evidence stay private;
+- Catalog actions may create attributed CRM touchpoints through allowed tools, but action != qualified lead != sale != revenue;
+- missing metrics remain UNKNOWN, never silently converted to 0;
+- public-profile mutation and notification are separate capabilities/consents.
+
+## Growth/reporting contract
+
+The customer Growth Center may read only authenticated tenant-scoped measured data and request a durable Growth Brief.
+
+A Growth Brief can cover Website, SEO/GEO/local/AI visibility, SMM/social, content, CTA/booking, reporting and advertising readiness. It must attach to the existing Company/Workspace.
+
+Recommendation policy is organic/readiness first when product/offer/CTA/measurement or baseline evidence is not yet proven. The system does not guarantee rankings, leads or revenue.
 
 ## Change Broker
 
@@ -233,7 +261,7 @@ Do not invite a real customer until:
 - remote MCP endpoint exists and is HTTPS;
 - OAuth/account linking exists;
 - `whoami` + tenant scopes are proven;
-- capability registry is server-authoritative;
+- capability registry is server-authoritative;\n- Catalog claim/owner verification/public-consent/notification-consent are server-authoritative;\n- Growth Center metrics distinguish measured values from UNKNOWN;
 - cross-tenant denial tests pass;
 - no internal staff data/instructions are in the customer package;
 - tenant writes have audit + readback + receipt;
