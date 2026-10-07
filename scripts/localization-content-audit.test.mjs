@@ -243,6 +243,54 @@ for (const marker of repairShopDemoMarkers) {
   if (!repairShopDemo.includes(marker)) errors.push(`Repair Shop demo bootstrap: safety/query marker is missing: ${marker}`);
 }
 
+// Hermes Connect Product Hub must honor the same six-locale contract as the
+// Repair Shop workspace. The canonical no-query page is English; query locales
+// own the translated page, footer, metadata, and locale propagation.
+const connectHubI18n = await readFile(join(root, "public/hermes-connect-hub-i18n.js"), "utf8");
+const connectHubPage = await readFile(join(root, "src/pages/services/hermes-connect/index.astro"), "utf8");
+const siteFooterSource = await readFile(join(root, "src/components/SiteFooter.astro"), "utf8");
+const catalogConceptSource = await readFile(join(root, "src/data/catalog-business-concepts.ts"), "utf8");
+const catalogIndexSource = await readFile(join(root, "src/pages/businesses/index.astro"), "utf8");
+const catalogProfileSource = await readFile(join(root, "src/components/InternationalBusinessProfile.astro"), "utf8");
+const catalogWebsiteConceptSource = await readFile(join(root, "src/components/CatalogWebsiteConcept.astro"), "utf8");
+
+for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) {
+  if (!connectHubI18n.includes(`${locale}:`)) errors.push(`Hermes Connect hub: locale runtime marker is missing: ${locale}`);
+}
+for (const marker of [
+  'const locale = SUPPORTED.has(requested) ? requested : "en"',
+  'document.documentElement.lang = locale',
+  'window.localStorage.setItem("hermes-connect-language", locale)',
+  'url.searchParams.set("lang", locale)',
+  'url.searchParams.delete("lang")',
+  'AI-операційна система для бізнесу',
+  'Sistema operativo de IA para empresas',
+  'Sistema operativo AI per le aziende',
+  'Système d’exploitation IA pour les entreprises',
+]) {
+  if (!connectHubI18n.includes(marker)) errors.push(`Hermes Connect hub: locale parity marker is missing: ${marker}`);
+}
+if (!connectHubPage.includes('src="/hermes-connect-hub-i18n.js"')) errors.push("Hermes Connect hub: locale parity runtime is not loaded");
+if (connectHubPage.includes('/services/hermes-connect/access/?lang=uk') || connectHubPage.includes('/services/hermes-connect/academy/?lang=uk')) {
+  errors.push("Hermes Connect hub: canonical English CTA must not hardcode Ukrainian locale");
+}
+if (!siteFooterSource.includes('connectRequestedLocale && connectRequestedLocale in localeConfig')) {
+  errors.push("Hermes Connect footer: all supported query locales must resolve through localeConfig");
+}
+
+for (const marker of ["nameEn?: string", "addressEn?: string", "localityEn?: string", "regionEn?: string", "servicesEn?: string[]", 'nameEn: "Kons na Bis"', 'localityEn: "Bila Tserkva"', 'regionEn: "Kyiv Oblast"']) {
+  if (!catalogConceptSource.includes(marker)) errors.push(`Catalog presentation locale field is missing: ${marker}`);
+}
+for (const marker of ["business.nameEn ?? business.name", "business.localityEn ?? business.locality", "business.regionEn ?? business.region", "business.servicesEn ?? business.services"]) {
+  if (!catalogIndexSource.includes(marker)) errors.push(`Catalog English directory rendering is missing locale field: ${marker}`);
+}
+for (const marker of ["displayName", "displayAddress", "displayLocality", "displayRegion", "displayHours", "displayServices"]) {
+  if (!catalogProfileSource.includes(marker)) errors.push(`Catalog English profile rendering is missing: ${marker}`);
+}
+for (const marker of ["data-title-en", "business.addressEn ?? business.address", "business.semanticCoreEn", "channel.labelEn", 'url.searchParams.set("lang", locale)']) {
+  if (!catalogWebsiteConceptSource.includes(marker)) errors.push(`Catalog UA/EN switch parity marker is missing: ${marker}`);
+}
+
 if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
