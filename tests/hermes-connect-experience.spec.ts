@@ -180,6 +180,10 @@ test("Hermes Connect Hub keeps every selected locale internally consistent", asy
     expect(accessHref).toContain(`lang=${locale}`);
     await expect(page.locator(".hc-brand-page")).not.toContainText("Run your business with AI.");
     await expect(page.locator(".hc-brand-page")).not.toContainText("One system. Different business realities.");
+    if (["es", "it", "fr"].includes(locale)) {
+      const visible = await page.locator(".hc-brand-page").evaluate((node) => (node as HTMLElement).innerText);
+      expect(visible).not.toMatch(/[А-Яа-яЁёІіЇїЄєҐґ]/);
+    }
   }
 });
 
@@ -189,6 +193,8 @@ test("Hermes Connect Hub presents one live product, private Academy and Beauty, 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
   await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  const englishVisible = await page.locator(".hc-brand-page").evaluate((node) => (node as HTMLElement).innerText);
+  expect(englishVisible).not.toMatch(/[А-Яа-яЁёІіЇїЄєҐґ]/);
   const canonicalAccessHref = await page.locator('main a[href^="/services/hermes-connect/access/"]').first().getAttribute("href");
   expect(canonicalAccessHref).not.toContain("lang=");
   expect(canonicalAccessHref).not.toContain("lang=uk");
