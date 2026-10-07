@@ -59,7 +59,7 @@ test("nested Repair Shop routes keep Repair Shops selected in the product family
   await page.goto("/services/hermes-connect/repair-shops/");
   const nav = page.locator("[data-hc-product-context] .hc-family-nav");
   await expect(nav.getByRole("link", { name: "Repair Shops", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(nav.locator(":scope > a").nth(2)).toHaveText("Load Board");
+  await expect(nav.locator(":scope > a").nth(2)).toHaveText("Доска грузов");
 });
 
 test("Academy remains a current product and is selected across its route family", async ({ page }) => {
