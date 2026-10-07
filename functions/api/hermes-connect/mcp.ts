@@ -602,6 +602,26 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
   const retentionCutoff = new Date(Date.now() - 730 * 24 * 60 * 60 * 1000).toISOString();
   await env.DB.prepare(`DELETE FROM plugin_product_learning_events WHERE created_at < ?`).bind(retentionCutoff).run();
 
+  const hourlyCutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const recentCount = await env.DB.prepare(
+    `SELECT COUNT(*) AS count FROM plugin_product_learning_events WHERE created_at >= ?`
+  ).bind(hourlyCutoff).first();
+  if (Number(recentCount?.count || 0) >= 120) {
+    return { accepted: false, status: "learning_rate_limited" };
+  }
+
+  const duplicateCutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const duplicate = await env.DB.prepare(
+    `SELECT id FROM plugin_product_learning_events
+     WHERE business_type = ? AND problem_class = ? AND desired_capability = ? AND outcome = ? AND created_at >= ?
+     LIMIT 1`
+  )
+    .bind(businessType, problemClass, desiredCapability, outcome, duplicateCutoff)
+    .first();
+  if (duplicate?.id) {
+    return { accepted: true, status: "duplicate_product_learning_event" };
+  }
+
   await env.DB.prepare(
     `INSERT INTO plugin_product_learning_events
       (id, created_at, business_type, problem_class, desired_capability, outcome, consent_state)
