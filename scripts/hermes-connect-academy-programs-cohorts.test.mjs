@@ -183,7 +183,7 @@ test("Academy Business persists owner-scoped programs/cohorts without fabricatin
   const readBody = await read.json();
   assert.equal(readBody.programs.length,1);
   assert.equal(readBody.cohorts.length,1);
-  assert.equal(readBody.enrollmentBridge,"not_activated");
+  assert.equal(readBody.enrollmentBridge,"explicit_authenticated_specialist_claim");
 
   sqlite.close();
 });
@@ -259,7 +259,7 @@ for (const marker of [
   "data-academy-cohort-form",
   "/api/hermes-connect/academy/programs",
   "enrollmentBridge",
-  "not_activated",
+  "explicit_authenticated_specialist_claim",
 ]) assert.match(workspace + apiSource,new RegExp(marker.replace(/[.*+?^$()|[\]\\]/g,"\\$&")));
 
 for (const field of [
