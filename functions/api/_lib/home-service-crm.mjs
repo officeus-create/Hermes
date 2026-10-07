@@ -74,15 +74,19 @@ export async function ensureHomeServiceCrmSchema(db) {
       approximate_volume TEXT,
       lead_cost_cents INTEGER NOT NULL DEFAULT 0,
       lead_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (lead_cost_known IN (0,1)),
+      lead_cost_source_ref TEXT,
       quote_cents INTEGER NOT NULL DEFAULT 0,
       quote_known INTEGER NOT NULL DEFAULT 0 CHECK (quote_known IN (0,1)),
+      quote_source_ref TEXT,
       status TEXT NOT NULL DEFAULT 'new',
       job_start_at TEXT,
       assigned_driver TEXT,
       final_amount_cents INTEGER NOT NULL DEFAULT 0,
       final_amount_known INTEGER NOT NULL DEFAULT 0 CHECK (final_amount_known IN (0,1)),
+      final_amount_source_ref TEXT,
       disposal_cost_cents INTEGER NOT NULL DEFAULT 0,
       disposal_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (disposal_cost_known IN (0,1)),
+      disposal_cost_source_ref TEXT,
       duration_minutes INTEGER NOT NULL DEFAULT 0,
       payment_method TEXT,
       loss_reason TEXT,
@@ -99,9 +103,13 @@ export async function ensureHomeServiceCrmSchema(db) {
   const columnNames = new Set((columns?.results || []).map((row) => String(row.name || "")));
   for (const [name, definition] of [
     ["lead_cost_known", "INTEGER NOT NULL DEFAULT 0 CHECK (lead_cost_known IN (0,1))"],
+    ["lead_cost_source_ref", "TEXT"],
     ["quote_known", "INTEGER NOT NULL DEFAULT 0 CHECK (quote_known IN (0,1))"],
+    ["quote_source_ref", "TEXT"],
     ["final_amount_known", "INTEGER NOT NULL DEFAULT 0 CHECK (final_amount_known IN (0,1))"],
+    ["final_amount_source_ref", "TEXT"],
     ["disposal_cost_known", "INTEGER NOT NULL DEFAULT 0 CHECK (disposal_cost_known IN (0,1))"],
+    ["disposal_cost_source_ref", "TEXT"],
   ]) {
     if (!columnNames.has(name)) await db.prepare(`ALTER TABLE hermes_home_service_leads ADD COLUMN ${name} ${definition}`).run();
   }
@@ -176,15 +184,19 @@ export function normalizeHomeServiceLead(body, existing = {}) {
     approximateVolume: cleanHomeServiceText(body.approximateVolume ?? existing.approximate_volume, 120),
     leadCostCents: leadCost.cents,
     leadCostKnown: leadCost.known,
+    leadCostSourceRef: leadCost.known ? cleanHomeServiceText(body.leadCostSourceRef ?? existing.lead_cost_source_ref, 300) : "",
     quoteCents: quote.cents,
     quoteKnown: quote.known,
+    quoteSourceRef: quote.known ? cleanHomeServiceText(body.quoteSourceRef ?? existing.quote_source_ref, 300) : "",
     status,
     jobStartAt: cleanHomeServiceText(body.jobStartAt ?? existing.job_start_at, 40),
     assignedDriver: cleanHomeServiceText(body.assignedDriver ?? existing.assigned_driver, 120),
     finalAmountCents: finalAmount.cents,
     finalAmountKnown: finalAmount.known,
+    finalAmountSourceRef: finalAmount.known ? cleanHomeServiceText(body.finalAmountSourceRef ?? existing.final_amount_source_ref, 300) : "",
     disposalCostCents: disposalCost.cents,
     disposalCostKnown: disposalCost.known,
+    disposalCostSourceRef: disposalCost.known ? cleanHomeServiceText(body.disposalCostSourceRef ?? existing.disposal_cost_source_ref, 300) : "",
     durationMinutes: nonNegativeInteger(body.durationMinutes ?? existing.duration_minutes, 7 * 24 * 60),
     paymentMethod,
     lossReason: cleanHomeServiceText(body.lossReason ?? existing.loss_reason, 300),
@@ -224,15 +236,23 @@ export function safeHomeServiceLead(row) {
     approximateVolume: row.approximate_volume || "",
     leadCostCents: leadCostKnown ? Number(row.lead_cost_cents || 0) : null,
     leadCostKnown,
+    leadCostSourceRef: leadCostKnown ? (row.lead_cost_source_ref || "") : "",
+    leadCostVerified: leadCostKnown && Boolean(row.lead_cost_source_ref),
     quoteCents: quoteKnown ? Number(row.quote_cents || 0) : null,
     quoteKnown,
+    quoteSourceRef: quoteKnown ? (row.quote_source_ref || "") : "",
+    quoteVerified: quoteKnown && Boolean(row.quote_source_ref),
     status: row.status || "new",
     jobStartAt: row.job_start_at || null,
     assignedDriver: row.assigned_driver || "",
     finalAmountCents: finalAmountKnown ? Number(row.final_amount_cents || 0) : null,
     finalAmountKnown,
+    finalAmountSourceRef: finalAmountKnown ? (row.final_amount_source_ref || "") : "",
+    finalAmountVerified: finalAmountKnown && Boolean(row.final_amount_source_ref),
     disposalCostCents: disposalCostKnown ? Number(row.disposal_cost_cents || 0) : null,
     disposalCostKnown,
+    disposalCostSourceRef: disposalCostKnown ? (row.disposal_cost_source_ref || "") : "",
+    disposalCostVerified: disposalCostKnown && Boolean(row.disposal_cost_source_ref),
     durationMinutes: Number(row.duration_minutes || 0),
     paymentMethod: row.payment_method || "",
     lossReason: row.loss_reason || "",
@@ -255,22 +275,27 @@ export function aggregateHomeServiceLeads(rows = []) {
   const summarizeMoney = (scopeRows) => {
     const completedScope = scopeRows.filter((row) => String(row.status) === "completed");
     const known = (row, field) => Number(row[field] || 0) === 1;
-    const sumKnown = (list, centsField, knownField) =>
-      list.filter((row) => known(row, knownField)).reduce((sum, row) => sum + Number(row[centsField] || 0), 0);
+    const verified = (row, knownField, sourceField) => known(row, knownField) && Boolean(cleanHomeServiceText(row[sourceField], 300));
+    const sumVerified = (list, centsField, knownField, sourceField) =>
+      list.filter((row) => verified(row, knownField, sourceField)).reduce((sum, row) => sum + Number(row[centsField] || 0), 0);
 
     const finalKnownCount = completedScope.filter((row) => known(row, "final_amount_known")).length;
+    const finalVerifiedCount = completedScope.filter((row) => verified(row, "final_amount_known", "final_amount_source_ref")).length;
     const disposalKnownCount = completedScope.filter((row) => known(row, "disposal_cost_known")).length;
+    const disposalVerifiedCount = completedScope.filter((row) => verified(row, "disposal_cost_known", "disposal_cost_source_ref")).length;
     const leadCostKnownCount = scopeRows.filter((row) => known(row, "lead_cost_known")).length;
+    const leadCostVerifiedCount = scopeRows.filter((row) => verified(row, "lead_cost_known", "lead_cost_source_ref")).length;
     const quoteKnownCount = scopeRows.filter((row) => known(row, "quote_known")).length;
+    const quoteVerifiedCount = scopeRows.filter((row) => verified(row, "quote_known", "quote_source_ref")).length;
 
-    const revenueComplete = finalKnownCount === completedScope.length;
-    const disposalComplete = disposalKnownCount === completedScope.length;
-    const leadCostComplete = leadCostKnownCount === scopeRows.length;
-    const quoteComplete = quoteKnownCount === scopeRows.length;
+    const revenueComplete = finalVerifiedCount === completedScope.length;
+    const disposalComplete = disposalVerifiedCount === completedScope.length;
+    const leadCostComplete = leadCostVerifiedCount === scopeRows.length;
+    const quoteComplete = quoteVerifiedCount === scopeRows.length;
 
-    const knownRevenueCents = sumKnown(completedScope, "final_amount_cents", "final_amount_known");
-    const knownDisposalCostCents = sumKnown(completedScope, "disposal_cost_cents", "disposal_cost_known");
-    const knownLeadCostCents = sumKnown(scopeRows, "lead_cost_cents", "lead_cost_known");
+    const knownRevenueCents = sumVerified(completedScope, "final_amount_cents", "final_amount_known", "final_amount_source_ref");
+    const knownDisposalCostCents = sumVerified(completedScope, "disposal_cost_cents", "disposal_cost_known", "disposal_cost_source_ref");
+    const knownLeadCostCents = sumVerified(scopeRows, "lead_cost_cents", "lead_cost_known", "lead_cost_source_ref");
     const grossComplete = revenueComplete && disposalComplete && leadCostComplete;
 
     return {
@@ -289,26 +314,34 @@ export function aggregateHomeServiceLeads(rows = []) {
       moneyEvidence: {
         revenue: {
           knownCount: finalKnownCount,
+          verifiedCount: finalVerifiedCount,
           requiredCount: completedScope.length,
           unknownCount: completedScope.length - finalKnownCount,
+          unverifiedCount: finalKnownCount - finalVerifiedCount,
           complete: revenueComplete,
         },
         disposalCost: {
           knownCount: disposalKnownCount,
+          verifiedCount: disposalVerifiedCount,
           requiredCount: completedScope.length,
           unknownCount: completedScope.length - disposalKnownCount,
+          unverifiedCount: disposalKnownCount - disposalVerifiedCount,
           complete: disposalComplete,
         },
         leadCost: {
           knownCount: leadCostKnownCount,
+          verifiedCount: leadCostVerifiedCount,
           requiredCount: scopeRows.length,
           unknownCount: scopeRows.length - leadCostKnownCount,
+          unverifiedCount: leadCostKnownCount - leadCostVerifiedCount,
           complete: leadCostComplete,
         },
         quote: {
           knownCount: quoteKnownCount,
+          verifiedCount: quoteVerifiedCount,
           requiredCount: scopeRows.length,
           unknownCount: scopeRows.length - quoteKnownCount,
+          unverifiedCount: quoteKnownCount - quoteVerifiedCount,
           complete: quoteComplete,
         },
         grossComplete,
