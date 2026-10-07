@@ -36,6 +36,14 @@ assert.equal(capabilityResponse.status, 200);
 assert.deepEqual(await capabilityResponse.json(), {
   ok: true,
   catalog_delivery_receipt_contract: "v1",
+  cold_fair: {
+    contract: "v1",
+    runtime_mode: "blocked",
+    promotional_send_gate: "BLOCKED",
+    canonical_source_configured: false,
+    durable_ledger_configured: false,
+    provider_configured: false,
+  },
 });
 const unauthorizedCapability = await worker.fetch(new Request("https://synthetic.internal/v1/capabilities", {
   method: "GET",

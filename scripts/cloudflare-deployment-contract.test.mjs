@@ -60,6 +60,7 @@ assert.equal("routes" in emailWorkerProduction, false, "The private email Worker
 
 const emailWorkerEntry = read("workers/lead-email/src/entry.mjs");
 assert.match(emailWorkerEntry, /import leadEmailWorker, \{ CarHaulingDeliveryCoordinatorCore \} from "\.\/index\.mjs"/);
+assert.match(emailWorkerEntry, /import \{ ColdFairActionLedgerCore \} from "\.\/cold-fair-action-ledger\.mjs"/);
 assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\.\/load-board-inbound\.mjs"/);
 assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
 assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
@@ -67,15 +68,32 @@ assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outboun
 assert.match(emailWorkerEntry, /import \{ DurableObject \} from "cloudflare:workers"/);
 assert.match(emailWorkerEntry, /export class CarHaulingDeliveryCoordinator extends DurableObject/);
 assert.match(emailWorkerEntry, /return this\.coordinator\.alarm\(\)/);
+assert.match(emailWorkerEntry, /export class ColdFairActionLedger extends DurableObject/);
+assert.match(emailWorkerEntry, /return this\.ledger\.fetch\(request\)/);
 for (const config of [emailWorkerExample, emailWorkerProduction]) {
-  assert.deepEqual(config.durable_objects?.bindings, [{
-    name: "CAR_HAULING_DELIVERY_COORDINATOR",
-    class_name: "CarHaulingDeliveryCoordinator",
-  }]);
+  assert.deepEqual(config.durable_objects?.bindings, [
+    {
+      name: "CAR_HAULING_DELIVERY_COORDINATOR",
+      class_name: "CarHaulingDeliveryCoordinator",
+    },
+    {
+      name: "COLD_FAIR_ACTION_LEDGER",
+      class_name: "ColdFairActionLedger",
+    },
+  ]);
   assert.deepEqual(config.exports?.CarHaulingDeliveryCoordinator, {
     type: "durable-object",
     storage: "sqlite",
   });
+  assert.deepEqual(config.exports?.ColdFairActionLedger, {
+    type: "durable-object",
+    storage: "sqlite",
+  });
+  assert.equal("migrations" in config, false,
+    "The repository uses Wrangler exports lifecycle; legacy migrations cannot be mixed into this Worker config");
+  assert.equal(config.vars?.COLD_FAIR_RUNTIME_MODE, "blocked");
+  assert.equal(config.vars?.COLD_FAIR_PROMOTIONAL_SEND_GATE, "BLOCKED");
+  assert.equal("services" in config, false, "Do not invent a parallel canonical source Worker; missing binding must fail closed.");
 }
 assert.equal(
   emailWorkerProduction.vars?.CAR_HAULING_DURABLE_OUTBOX_REQUIRED,
