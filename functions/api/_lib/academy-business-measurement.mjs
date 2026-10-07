@@ -181,6 +181,10 @@ const matchesScope = (lead, row) => {
   if (row.source_channel && clean(lead.source_channel, 80).toLowerCase() !== clean(row.source_channel, 80).toLowerCase()) return false;
   if (row.campaign_id && clean(lead.campaign_id, 160) !== clean(row.campaign_id, 160)) return false;
   if (row.content_id && clean(lead.content_id, 160) !== clean(row.content_id, 160)) return false;
+  const createdAt = Date.parse(String(lead.created_at || ""));
+  if (!Number.isFinite(createdAt)) return false;
+  if (row.period_start && createdAt < Date.parse(`${row.period_start}T00:00:00.000Z`)) return false;
+  if (row.period_end && createdAt > Date.parse(`${row.period_end}T23:59:59.999Z`)) return false;
   return true;
 };
 
@@ -189,6 +193,8 @@ const scopeKey = (row) => [
   clean(row.source_channel, 80).toLowerCase() || "*",
   clean(row.campaign_id, 160) || "*",
   clean(row.content_id, 160) || "*",
+  clean(row.period_start, 10) || "*",
+  clean(row.period_end, 10) || "*",
 ].join("|");
 
 export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows = []) {
@@ -210,6 +216,8 @@ export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows 
       sourceChannel: row.source_channel || "",
       campaignId: row.campaign_id || "",
       contentId: row.content_id || "",
+      periodStart: row.period_start || null,
+      periodEnd: row.period_end || null,
       spendCents: 0,
       evidenceCount: 0,
     };
@@ -238,6 +246,8 @@ export function aggregateAcademyBusinessMeasurement(evidenceRows = [], leadRows 
       sourceChannel: group.sourceChannel,
       campaignId: group.campaignId,
       contentId: group.contentId,
+      periodStart: group.periodStart,
+      periodEnd: group.periodEnd,
       spendCents: group.spendCents,
       evidenceCount: group.evidenceCount,
       attributedSales: sales.length,
