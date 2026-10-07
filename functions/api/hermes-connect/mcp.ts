@@ -18,6 +18,36 @@ const PRIVACY_URL = "https://hermeslogisticsus.com/privacy/";
 const TERMS_URL = "https://hermeslogisticsus.com/terms/";
 const REPAIR_URL = "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/";
 const ACADEMY_URL = "https://hermeslogisticsus.com/services/hermes-connect/academy/";
+const MARKETING_URL = "https://hermeslogisticsus.com/paths/marketing/";
+const LOGISTICS_URL = "https://hermeslogisticsus.com/paths/logistics/";
+const TECHNOLOGY_URL = "https://hermeslogisticsus.com/paths/technology/";
+
+const HERMES_ROUTES = [
+  {
+    id: "CONNECT",
+    name: "Hermes Connect / Technology",
+    use_when: "CRM, workflow, automation, software, integrations, operating data, or product change requests are the main problem.",
+    url: TECHNOLOGY_URL,
+  },
+  {
+    id: "MARKETING",
+    name: "Hermes Marketing",
+    use_when: "Website, SEO/GEO/local/AI visibility, content, social, acquisition, CTA, or measurement readiness is the main problem.",
+    url: MARKETING_URL,
+  },
+  {
+    id: "LOGISTICS",
+    name: "Hermes Logistics",
+    use_when: "U.S. logistics operations, carriers, dispatch, car hauling, shippers, dealers, or related workflows are the main problem.",
+    url: LOGISTICS_URL,
+  },
+  {
+    id: "ACADEMY",
+    name: "Hermes Academy",
+    use_when: "Structured learning, practice, role development, course progression, or team capability is the main problem.",
+    url: ACADEMY_URL,
+  },
+] as const;
 
 const instructions =
   "Hermes Connect CRM starts with the least-privileged public mode. Help users understand the current product, choose a practical business/CRM starting path, and share privacy-safe product feedback only with explicit consent. Never claim private CRM access, internal Hermes access, or customer identity without authenticated server state.";
@@ -93,6 +123,62 @@ const publicToolDefinitions = [
         url: { type: "string" },
       },
       required: ["route", "status", "reason", "next_step", "url"],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
+    name: "get_hermes_business_routes",
+    title: "Get Hermes business routes",
+    description:
+      "Use when a user's need may belong to Hermes Connect/Technology, Marketing, U.S. Logistics, Academy, or a justified combination. Returns public routing guidance only; it does not create a customer record or commercial commitment.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        routes: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              use_when: { type: "string" },
+              url: { type: "string" },
+            },
+            required: ["id", "name", "use_when", "url"],
+            additionalProperties: false,
+          },
+        },
+        rule: { type: "string" },
+      },
+      required: ["routes", "rule"],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
+    name: "get_product_learning_policy",
+    title: "Get Hermes Connect product-learning policy",
+    description:
+      "Use when a user asks how Hermes Connect improves from recurring usage and feedback without copying raw private conversations into shared product memory.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        reusable_learning: { type: "array", items: { type: "string" } },
+        excluded_data: { type: "array", items: { type: "string" } },
+        release_rule: { type: "string" },
+      },
+      required: ["reusable_learning", "excluded_data", "release_rule"],
       additionalProperties: false,
     },
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
@@ -232,6 +318,26 @@ function recommendStartPath(args: Record<string, unknown>) {
     };
   }
 
+  if (/seo|geo|local search|google|website|social|instagram|facebook|threads|content|marketing|ads|advertising|traffic|visibility/.test(combined)) {
+    return {
+      route: "HERMES_MARKETING",
+      status: "DISCOVERY",
+      reason: "The primary problem is acquisition, visibility, content, or marketing-system readiness rather than CRM alone.",
+      next_step: "Establish the offer, CTA, measurement, and organic baseline before deciding whether paid amplification or a larger growth program is justified.",
+      url: MARKETING_URL,
+    };
+  }
+
+  if (/carrier|dispatch|car haul|auto transport|shipper|dealer|freight|load board|trucking|logistics/.test(combined)) {
+    return {
+      route: "HERMES_LOGISTICS",
+      status: "DISCOVERY",
+      reason: "The primary problem belongs to U.S. logistics operations or transportation workflow.",
+      next_step: "Clarify the equipment, lane or operating problem, responsible party, and desired business outcome before selecting a logistics service or workflow.",
+      url: LOGISTICS_URL,
+    };
+  }
+
   if (/crm|lead|follow.?up|customer|pipeline|booking|operations|automation|sales|workflow/.test(combined)) {
     return {
       route: "CRM_BLUEPRINT",
@@ -248,6 +354,37 @@ function recommendStartPath(args: Record<string, unknown>) {
     reason: "The smallest useful starting point is a business/workflow review before deciding whether CRM, automation, or advisory work is needed.",
     next_step: "Describe the current workflow, the main bottleneck, who owns the work, and the result you want to improve.",
     url: PRODUCT_URL,
+  };
+}
+
+function getHermesBusinessRoutes() {
+  return {
+    routes: HERMES_ROUTES.map((route) => ({ ...route })),
+    rule:
+      "Recommend the smallest Hermes route supported by the user's actual problem. A conversation or route recommendation is not customer status, payment, revenue, or a promise of availability.",
+  };
+}
+
+function getProductLearningPolicy() {
+  return {
+    reusable_learning: [
+      "recurring problem class",
+      "vertical or workflow pattern",
+      "missing or useful capability",
+      "failure pattern",
+      "evidence state",
+      "verified outcome",
+      "reusable rule",
+    ],
+    excluded_data: [
+      "raw full conversations",
+      "passwords or access tokens",
+      "unnecessary personal information",
+      "private customer lists or notes",
+      "private rates or confidential commercial data",
+    ],
+    release_rule:
+      "Reusable learning may create a SkillCandidate or CapabilityCandidate. Shared privileged behavior changes only through reviewed versioned releases or approved hosted MCP updates.",
   };
 }
 
@@ -304,6 +441,8 @@ async function submitProductFeedback(env: Env, args: Record<string, unknown>) {
 async function callTool(env: Env, name: string, args: Record<string, unknown>) {
   if (name === "get_product_overview") return getOverview();
   if (name === "recommend_start_path") return recommendStartPath(args);
+  if (name === "get_hermes_business_routes") return getHermesBusinessRoutes();
+  if (name === "get_product_learning_policy") return getProductLearningPolicy();
   if (name === "submit_product_feedback") return submitProductFeedback(env, args);
   throw new Error("tool_not_found");
 }
