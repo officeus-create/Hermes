@@ -111,3 +111,24 @@ Do not show real customer data, secrets, internal One Brain, private emails, cre
 ## Post-publication operating rule
 
 Hosted MCP tool changes may be discovered by later OpenAI scans. Preserve backward compatibility, privacy boundaries and tool semantics. Bundled skill/listing changes remain versioned package changes. Product learning proposes SkillCandidate/CapabilityCandidate changes; user conversations do not directly rewrite privileged public instructions.
+
+
+## Multi-AI distribution contract
+
+Hermes Connect has one canonical backend and Company/Workspace identity model. AI products are access adapters, not separate CRMs.
+
+Priority:
+1. Native remote MCP when the AI host supports Streamable HTTP MCP.
+2. Host-native connector/plugin installation and authorization when available.
+3. Function/tool-call adapter over the same bounded Hermes tool contracts for hosts without native remote MCP.
+4. Advisory/manual fallback when no safe integration is available.
+
+Current compatibility basis:
+- ChatGPT/Codex: public plugin + Hermes remote MCP is the primary distribution path.
+- Google Gemini API: Remote MCP is supported through the Interactions API with Streamable HTTP. Official reference: https://ai.google.dev/gemini-api/docs/function-calling
+- Grok/xAI: custom connectors and Remote MCP accept a public MCP server URL. Official references: https://docs.x.ai/grok/connectors and https://docs.x.ai/developers/tools/remote-mcp
+- DeepSeek API: official Tool Calls/function-calling is available. Until a first-party remote-MCP consumer is verified, use a thin function-call adapter that maps the same Hermes MCP tool schemas/calls; do not fork product state. Official reference: https://api-docs.deepseek.com/guides/tool_calls/
+
+Do not claim that an AI provider's consumer application automatically recommends or installs Hermes Connect unless that provider actually exposes such discovery/install behavior. The durable promise is the Hermes tool/backend contract; install UX is host-owned.
+
+Changing AI providers must not create a new Company, CRM, permissions model, ChangeRequest store, or product-learning store.
