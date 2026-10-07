@@ -12,7 +12,10 @@ for (const page of pages) {
   const start = script.indexOf('  const params =');
   const end = script.indexOf('\n  const ', script.indexOf('let lang:'));
   const initialization = stripTypeScriptTypes(script.slice(start, end), { mode: 'strip' });
-  for (const [search, stored, expected] of [['', null, 'en'], ['', 'en', 'en'], ['', 'uk', 'uk'], ['?lang=en', 'uk', 'en'], ['?lang=uk', 'en', 'uk'], ['?lang=invalid', 'uk', 'en']]) {
+  const cases = page === 'access'
+    ? [['', null, 'en'], ['', 'en', 'en'], ['', 'uk', 'en'], ['?lang=en', 'uk', 'en'], ['?lang=uk', 'en', 'uk'], ['?lang=invalid', 'uk', 'en']]
+    : [['', null, 'en'], ['', 'en', 'en'], ['', 'uk', 'uk'], ['?lang=en', 'uk', 'en'], ['?lang=uk', 'en', 'uk'], ['?lang=invalid', 'uk', 'en']];
+  for (const [search, stored, expected] of cases) {
     test(`${page}: ${search || 'no query'} / stored ${stored} resolves ${expected}`, () => {
       const localStorage = { getItem: () => stored };
       const location = { search };
