@@ -9,7 +9,13 @@ const previewNote = "Preview mode is active. The form prepares a review and emai
 
 // Execute the actual enhancer and qualifier with synthetic DOM data. All delivery
 // calls stay inside this fixture; nothing reaches a Worker or creates a lead.
-function fixture(origin: string, mode = "preview", overrides: Record<string, string> = {}, missingNote = false) {
+function fixture(
+  origin: string,
+  mode = "preview",
+  overrides: Record<string, string> = {},
+  missingNote = false,
+  deliveryResults: Array<"ok" | "error"> = ["ok"],
+) {
   const compile = (source: string) => ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
@@ -40,16 +46,21 @@ function fixture(origin: string, mode = "preview", overrides: Record<string, str
   const form = nodes["[data-vehicle-form]"];
   form.dataset = { leadMode: mode, leadEndpoint: mode === "live" ? "/api/logistics-lead" : "" };
   const requests: { url: string; options: any }[] = [];
+  let requestSequence = 0;
   const location = new URL("/logistics/start-car-hauling-dispatch/", origin);
   const root = { querySelector: (selector: string) => missingNote && selector === ".dispatch-mode-note" ? null : nodes[selector] || null };
   const source = readFileSync(resolve("src/components/CarrierDispatchIntakeEnhancer.astro"), "utf8");
   runInNewContext(compile(source.match(/<script>([\s\S]*?)<\/script>/)![1]), {
     exports: {}, require: () => qualification.exports, URL, AbortController,
-    crypto: { randomUUID: () => "synthetic-fixture-request" },
+    crypto: { randomUUID: () => `synthetic-fixture-request-${++requestSequence}` },
     window: { location, localStorage: { getItem: () => "denied" }, setTimeout, clearTimeout },
     document: { querySelector: () => root, createElement: element },
     FormData: class { get(name: string) { return values[name] ?? null; } },
-    fetch: async (url: URL, options: any) => { requests.push({ url: url.href, options }); return { ok: true }; },
+    fetch: async (url: URL, options: any) => {
+      requests.push({ url: url.href, options });
+      if (deliveryResults.shift() === "error") throw new Error("synthetic_network_failure");
+      return { ok: true };
+    },
   });
   return {
     form, nodes, requests, note: nodes[".dispatch-mode-note"],
@@ -100,6 +111,33 @@ test("qualification gate still blocks incomplete and rejected requests", async (
     await view.send();
     expect(view.requests).toHaveLength(0);
   }
+});
+
+test("a delivery retry reuses the same idempotency key until the form changes", async () => {
+  const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["error", "ok"]);
+  view.review();
+
+  await view.send();
+  expect(view.requests).toHaveLength(1);
+  expect(view.nodes["[data-vehicle-delivery-status]"].textContent).toContain("Delivery was not confirmed");
+
+  await view.send();
+  expect(view.requests).toHaveLength(2);
+
+  const requestIds = view.requests.map(({ options }) => ({
+    header: options.headers["Idempotency-Key"],
+    body: JSON.parse(options.body).request_id,
+  }));
+  expect(requestIds[0].header).toBe(requestIds[0].body);
+  expect(requestIds[1].header).toBe(requestIds[1].body);
+  expect(requestIds[1]).toEqual(requestIds[0]);
+
+  view.form.handlers.input({ isTrusted: true });
+  view.review();
+  await view.send();
+  const changedRequest = view.requests[2].options;
+  expect(changedRequest.headers["Idempotency-Key"]).toBe(JSON.parse(changedRequest.body).request_id);
+  expect(changedRequest.headers["Idempotency-Key"]).not.toBe(requestIds[0].header);
 });
 
 test("an absent optional mode note leaves review functional", () => {
