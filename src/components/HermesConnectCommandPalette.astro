@@ -58,12 +58,12 @@
           : "en";
 
     const copies: Record<string, Record<string, string>> = {
-      en: { trigger: "Search", openCommand: "Open Hermes command palette", title: "Search & open", placeholder: "Search products and workspaces…", close: "Close", loading: "Loading your allowed workspaces…", ready: "Type to search Hermes Connect.", empty: "No allowed results match this search.", enter: "Enter to open", products: "Products", workspaces: "Workspaces", businesses: "Businesses", registrations: "Owner registrations" },
-      ru: { trigger: "Поиск", openCommand: "Открыть палитру команд Hermes", title: "Найти и открыть", placeholder: "Поиск по продуктам и рабочим пространствам…", close: "Закрыть", loading: "Загружаем доступные вам пространства…", ready: "Введите запрос для поиска в Hermes Connect.", empty: "Нет доступных результатов по этому запросу.", enter: "Enter — открыть", products: "Продукты", workspaces: "Пространства", businesses: "Бизнесы", registrations: "Регистрации владельца" },
-      uk: { trigger: "Пошук", openCommand: "Відкрити палітру команд Hermes", title: "Знайти й відкрити", placeholder: "Пошук продуктів і робочих просторів…", close: "Закрити", loading: "Завантажуємо доступні вам простори…", ready: "Введіть запит для пошуку в Hermes Connect.", empty: "Немає доступних результатів за цим запитом.", enter: "Enter — відкрити", products: "Продукти", workspaces: "Простори", businesses: "Бізнеси", registrations: "Реєстрації власника" },
-      es: { trigger: "Buscar", openCommand: "Abrir la paleta de comandos de Hermes", title: "Buscar y abrir", placeholder: "Buscar productos y espacios…", close: "Cerrar", loading: "Cargando tus espacios permitidos…", ready: "Escribe para buscar en Hermes Connect.", empty: "No hay resultados permitidos.", enter: "Enter para abrir", products: "Productos", workspaces: "Espacios", businesses: "Negocios", registrations: "Registros del propietario" },
-      it: { trigger: "Cerca", openCommand: "Apri la palette comandi Hermes", title: "Cerca e apri", placeholder: "Cerca prodotti e spazi…", close: "Chiudi", loading: "Caricamento degli spazi consentiti…", ready: "Digita per cercare in Hermes Connect.", empty: "Nessun risultato consentito.", enter: "Invio per aprire", products: "Prodotti", workspaces: "Spazi", businesses: "Aziende", registrations: "Registrazioni proprietario" },
-      fr: { trigger: "Rechercher", openCommand: "Ouvrir la palette de commandes Hermes", title: "Rechercher et ouvrir", placeholder: "Rechercher produits et espaces…", close: "Fermer", loading: "Chargement de vos espaces autorisés…", ready: "Saisissez une recherche dans Hermes Connect.", empty: "Aucun résultat autorisé.", enter: "Entrée pour ouvrir", products: "Produits", workspaces: "Espaces", businesses: "Entreprises", registrations: "Inscriptions propriétaire" },
+      en: { trigger: "Search", openCommand: "Open Hermes command palette", title: "Search & open", placeholder: "Search products and workspaces…", close: "Close", loading: "Loading your allowed workspaces…", ready: "Type to search Hermes Connect.", empty: "No allowed results match this search.", enter: "Enter to open", products: "Products", workspaces: "Workspaces", businesses: "Businesses", registrations: "Owner registrations", resultOne: "result", resultMany: "results" },
+      ru: { trigger: "Поиск", openCommand: "Открыть палитру команд Hermes", title: "Найти и открыть", placeholder: "Поиск по продуктам и рабочим пространствам…", close: "Закрыть", loading: "Загружаем доступные вам пространства…", ready: "Введите запрос для поиска в Hermes Connect.", empty: "Нет доступных результатов по этому запросу.", enter: "Enter — открыть", products: "Продукты", workspaces: "Пространства", businesses: "Бизнесы", registrations: "Регистрации владельца", resultOne: "результат", resultMany: "результатов" },
+      uk: { trigger: "Пошук", openCommand: "Відкрити палітру команд Hermes", title: "Знайти й відкрити", placeholder: "Пошук продуктів і робочих просторів…", close: "Закрити", loading: "Завантажуємо доступні вам простори…", ready: "Введіть запит для пошуку в Hermes Connect.", empty: "Немає доступних результатів за цим запитом.", enter: "Enter — відкрити", products: "Продукти", workspaces: "Простори", businesses: "Бізнеси", registrations: "Реєстрації власника", resultOne: "результат", resultMany: "результатів" },
+      es: { trigger: "Buscar", openCommand: "Abrir la paleta de comandos de Hermes", title: "Buscar y abrir", placeholder: "Buscar productos y espacios…", close: "Cerrar", loading: "Cargando tus espacios permitidos…", ready: "Escribe para buscar en Hermes Connect.", empty: "No hay resultados permitidos.", enter: "Enter para abrir", products: "Productos", workspaces: "Espacios", businesses: "Negocios", registrations: "Registros del propietario", resultOne: "resultado", resultMany: "resultados" },
+      it: { trigger: "Cerca", openCommand: "Apri la palette comandi Hermes", title: "Cerca e apri", placeholder: "Cerca prodotti e spazi…", close: "Chiudi", loading: "Caricamento degli spazi consentiti…", ready: "Digita per cercare in Hermes Connect.", empty: "Nessun risultato consentito.", enter: "Invio per aprire", products: "Prodotti", workspaces: "Spazi", businesses: "Aziende", registrations: "Registrazioni proprietario", resultOne: "risultato", resultMany: "risultati" },
+      fr: { trigger: "Rechercher", openCommand: "Ouvrir la palette de commandes Hermes", title: "Rechercher et ouvrir", placeholder: "Rechercher produits et espaces…", close: "Fermer", loading: "Chargement de vos espaces autorisés…", ready: "Saisissez une recherche dans Hermes Connect.", empty: "Aucun résultat autorisé.", enter: "Entrée pour ouvrir", products: "Produits", workspaces: "Espaces", businesses: "Entreprises", registrations: "Inscriptions propriétaire", resultOne: "résultat", resultMany: "résultats" },
     };
     const copy = copies[locale] || copies.en;
 
@@ -99,13 +99,43 @@
       return `${url.pathname}${url.search}${url.hash}`;
     };
 
+    const staticCopy = {
+      en: {
+        repair: ["Repair Shops","CRM & booking"], load: ["Load Board","Logistics workspace"], academy: ["Academy","Training workspace"],
+        website: ["Website Factory","Project brief"], account: ["Hermes Account","Access & workspaces"], hub: ["Hermes Connect","Product Hub"]
+      },
+      ru: {
+        repair: ["СТО","CRM и запись"], load: ["Доска грузов","Логистическое пространство"], academy: ["Академия","Учебное пространство"],
+        website: ["Фабрика сайтов","Бриф проекта"], account: ["Аккаунт Hermes","Доступ и рабочие пространства"], hub: ["Hermes Connect","Центр продуктов"]
+      },
+      uk: {
+        repair: ["СТО","CRM і запис"], load: ["Дошка вантажів","Логістичний простір"], academy: ["Академія","Навчальний простір"],
+        website: ["Фабрика сайтів","Бриф проєкту"], account: ["Акаунт Hermes","Доступ і робочі простори"], hub: ["Hermes Connect","Центр продуктів"]
+      },
+      es: {
+        repair: ["Talleres","CRM y reservas"], load: ["Tablero de cargas","Espacio logístico"], academy: ["Academia","Espacio de formación"],
+        website: ["Fábrica de sitios web","Brief del proyecto"], account: ["Cuenta Hermes","Acceso y espacios"], hub: ["Hermes Connect","Centro de productos"]
+      },
+      it: {
+        repair: ["Officine","CRM e prenotazioni"], load: ["Bacheca carichi","Spazio logistico"], academy: ["Accademia","Spazio formativo"],
+        website: ["Fabbrica siti web","Brief di progetto"], account: ["Account Hermes","Accesso e spazi"], hub: ["Hermes Connect","Centro prodotti"]
+      },
+      fr: {
+        repair: ["Ateliers","CRM et réservations"], load: ["Tableau des chargements","Espace logistique"], academy: ["Académie","Espace de formation"],
+        website: ["Fabrique de sites web","Brief du projet"], account: ["Compte Hermes","Accès et espaces"], hub: ["Hermes Connect","Centre produits"]
+      }
+    }[locale] || {
+      repair: ["Repair Shops","CRM & booking"], load: ["Load Board","Logistics workspace"], academy: ["Academy","Training workspace"],
+      website: ["Website Factory","Project brief"], account: ["Hermes Account","Access & workspaces"], hub: ["Hermes Connect","Product Hub"]
+    };
+
     const staticResults: HermesSearchResult[] = [
-      { id: "product-hub", entityType: "product", title: "Hermes Connect", subtitle: "Product Hub", href: "/services/hermes-connect/", visibility: "public", source: "product_registry", keywords: ["hub", "operating system"] },
-      { id: "repair-shops", entityType: "product", title: "Repair Shops", subtitle: "CRM & booking", href: "/services/hermes-connect/repair-shops/", visibility: "public", source: "product_registry", keywords: ["repair", "shop", "crm", "booking"] },
-      { id: "load-board", entityType: "product", title: "Load Board", subtitle: "Logistics workspace", href: "/load-board/", visibility: "public", source: "product_registry", keywords: ["loads", "carrier", "logistics"] },
-      { id: "academy", entityType: "product", title: "Academy", subtitle: "Training workspace", href: "/services/hermes-connect/academy/", visibility: "public", source: "product_registry", keywords: ["training", "learning"] },
-      { id: "website-factory", entityType: "product", title: "Website Factory", subtitle: "Project brief", href: "/services/hermes-connect/website-factory/", visibility: "public", source: "product_registry", keywords: ["website", "brief", "build"] },
-      { id: "account-access", entityType: "product", title: "Hermes Account", subtitle: "Access & workspaces", href: "/services/hermes-connect/access/", visibility: "public", source: "product_registry", keywords: ["account", "login", "workspace"] },
+      { id: "product-hub", entityType: "product", title: staticCopy.hub[0], subtitle: staticCopy.hub[1], href: "/services/hermes-connect/", visibility: "public", source: "product_registry", keywords: ["hub", "operating system"] },
+      { id: "repair-shops", entityType: "product", title: staticCopy.repair[0], subtitle: staticCopy.repair[1], href: "/services/hermes-connect/repair-shops/", visibility: "public", source: "product_registry", keywords: ["repair", "shop", "crm", "booking"] },
+      { id: "load-board", entityType: "product", title: staticCopy.load[0], subtitle: staticCopy.load[1], href: "/load-board/", visibility: "public", source: "product_registry", keywords: ["loads", "carrier", "logistics"] },
+      { id: "academy", entityType: "product", title: staticCopy.academy[0], subtitle: staticCopy.academy[1], href: "/services/hermes-connect/academy/", visibility: "public", source: "product_registry", keywords: ["training", "learning"] },
+      { id: "website-factory", entityType: "product", title: staticCopy.website[0], subtitle: staticCopy.website[1], href: "/services/hermes-connect/website-factory/", visibility: "public", source: "product_registry", keywords: ["website", "brief", "build"] },
+      { id: "account-access", entityType: "product", title: staticCopy.account[0], subtitle: staticCopy.account[1], href: "/services/hermes-connect/access/", visibility: "public", source: "product_registry", keywords: ["account", "login", "workspace"] },
     ];
 
     let allResults: HermesSearchResult[] = [...staticResults];
@@ -172,7 +202,7 @@
       }
 
       status.textContent = input.value.trim()
-        ? `${matches.length} ${matches.length === 1 ? "result" : "results"}`
+        ? `${matches.length} ${matches.length === 1 ? copy.resultOne : copy.resultMany}`
         : copy.ready;
     };
 
