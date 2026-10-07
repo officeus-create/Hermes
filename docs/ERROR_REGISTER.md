@@ -570,3 +570,13 @@ MAIN SYNC: Rebased this same PR onto cc5a8ae58914a65a7cd43497a9cdad39ee2ab073 af
 MAIN SYNC AFTER #1752 (2026-10-08): Rebased existing #1757 onto 83aef305da82f5221b51d617da34c9f040cbc5cf. Shared-doc EOF conflicts resolved by retaining both complete Load Board and Repair records. Repair component/tests unchanged from prior green head9f83334d (2004 passed/16 skipped exact-head CI); fresh-head CI required, results recorded in same PR. No merge/deploy.
 
 RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 859dc26dc9d28b0c3a09f825751ad1317c6ffa18. Retained all fresh-main release records plus complete Repair follow-up records. Runtime/test files unchanged from prior551f3c74; only two repair Website/SEO sticky href entries and narrow regression coverage remain. Earlier CI/cancellation is historical coordination evidence, not this head qualification. Fresh required exact-head CI recorded in #1757; no merge/deploy.
+
+## 2026-10-07 — Runtime Repair Catalog had JavaScript-only hub discovery
+
+STATUS: REVIEW_IMPLEMENTATION; exact-head browser CI and owner-approved release/live readback pending.
+TARGET: `/businesses/connect/repair-shop/kittle-s-garage-a146544/`.
+ROOT_CAUSE: `/businesses/` serves static Astro cards; opted-in runtime repairs were added only by the client API renderer. Runtime sitemap membership, a self-canonical 200 and index,follow did not create a raw-HTML hub link.
+WORKING_APPROACH: Add a separate Pages hub function with visible escaped discovery links; share opt-in/identity/name/slug eligibility and canonical path across hub, profile, sitemap and API. Use no-store for fresh-request withdrawal, retain existing indexing and leave locale/counts work untouched. No new card renderer or production data mutation.
+EVIDENCE: Build and unit/publication/canonical/robots/schema/privacy regressions pass; local browser runner cannot complete navigation in this managed environment. This is not production resolution or indexing evidence. Release requires full exact-head browser CI and a bounded live readback. See `docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md`.
+PREVENTION: Public runtime owner release must verify a meaningful raw-HTML hub anchor, matching sitemap/profile canonical, withdrawal behavior and one client card. Mechanical eligibility does not replace verified facts, permitted public fields or the editorial Search Release Gate.
+NEXT_OWNER: Project31 / repository release owner. #1663 stale-base conflict remains with its original owner; do not replay that branch wholesale.
