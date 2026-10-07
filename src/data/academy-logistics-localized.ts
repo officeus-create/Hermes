@@ -191,7 +191,7 @@ export const localizedAcademyLogistics: Record<AcademyLogisticsLocale, AcademySu
       { title: "6. Decisione umana", body: "Un revisore decide se continuare, ripetere, cambiare percorso o mettere in pausa." },
     ],
     faq: [
-      { question: "Quale livello di inglese serve?", answer: "Chiamate dal vivo, negoziazione e comunicazione con vettori o broker USA richiedono inglese parlato B2+. Le attività senza comunicazione live possono essere valutate separatamente." },
+      { question: "Quale livello di inglese serve?", answer: "Chiamate dal vivo, negoziazione e comunicazione con vettori o broker USA richiedono inglese parlato B2+. Le attività senza comunicazione dal vivo possono essere valutate separatamente." },
       { question: "Posso partecipare senza esperienza logistica?", answer: "È possibile inviare una richiesta. Livello e continuazione dipendono da lingua, orario, disciplina, preparazione e formato approvato corrente." },
       { question: "Il corso garantisce lavoro o reddito?", answer: "No. La formazione può sviluppare capacità ed evidenza di preparazione, ma non garantisce lavoro, reddito, clienti, certificazione, promozione o futuro lavoro retribuito." },
       { question: "Userò carichi o dati reali?", answer: "Non di default. Gli esercizi pubblici usano informazioni approvate, sintetiche o anonimizzate. I dati operativi privati richiedono autorizzazione separata." },
@@ -235,7 +235,7 @@ export const localizedAcademyLogistics: Record<AcademyLogisticsLocale, AcademySu
       { title: "6. Décision humaine", body: "Un évaluateur décide de continuer, répéter, changer de parcours ou mettre en pause." },
     ],
     faq: [
-      { question: "Quel niveau d'anglais faut-il ?", answer: "Les appels en direct, la négociation et la communication avec transporteurs ou courtiers américains nécessitent un anglais parlé B2+. Les activités sans communication live peuvent être évaluées séparément." },
+      { question: "Quel niveau d'anglais faut-il ?", answer: "Les appels en direct, la négociation et la communication avec transporteurs ou courtiers américains nécessitent un anglais parlé B2+. Les activités sans communication en direct peuvent être évaluées séparément." },
       { question: "Puis-je participer sans expérience logistique ?", answer: "Vous pouvez envoyer une demande. Le niveau adapté et la continuité dépendent de la langue, des horaires, de la discipline, de la préparation et du format approuvé actuel." },
       { question: "Le cours garantit-il un emploi ou un revenu ?", answer: "Non. La formation peut développer des capacités et une preuve de préparation, mais elle ne garantit ni emploi, ni revenu, ni clients, ni certification, ni promotion, ni futur travail rémunéré." },
       { question: "Utiliserai-je des charges ou données réelles ?", answer: "Pas par défaut. Les exercices publics utilisent des informations approuvées, synthétiques ou anonymisées. Les données opérationnelles privées nécessitent une autorisation séparée." },
