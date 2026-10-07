@@ -99,7 +99,8 @@
       return `${url.pathname}${url.search}${url.hash}`;
     };
 
-    const staticCopy = {
+    type StaticCopyKey = "repair" | "load" | "academy" | "website" | "account" | "hub";
+    const staticCopies: Record<string, Record<StaticCopyKey, [string, string]>> = {
       en: {
         repair: ["Repair Shops","CRM & booking"], load: ["Load Board","Logistics workspace"], academy: ["Academy","Training workspace"],
         website: ["Website Factory","Project brief"], account: ["Hermes Account","Access & workspaces"], hub: ["Hermes Connect","Product Hub"]
@@ -124,10 +125,8 @@
         repair: ["Ateliers","CRM et réservations"], load: ["Tableau des chargements","Espace logistique"], academy: ["Académie","Espace de formation"],
         website: ["Fabrique de sites web","Brief du projet"], account: ["Compte Hermes","Accès et espaces"], hub: ["Hermes Connect","Centre produits"]
       }
-    }[locale] || {
-      repair: ["Repair Shops","CRM & booking"], load: ["Load Board","Logistics workspace"], academy: ["Academy","Training workspace"],
-      website: ["Website Factory","Project brief"], account: ["Hermes Account","Access & workspaces"], hub: ["Hermes Connect","Product Hub"]
     };
+    const staticCopy = staticCopies[locale] || staticCopies.en;
 
     const staticResults: HermesSearchResult[] = [
       { id: "product-hub", entityType: "product", title: staticCopy.hub[0], subtitle: staticCopy.hub[1], href: "/services/hermes-connect/", visibility: "public", source: "product_registry", keywords: ["hub", "operating system"] },
