@@ -11,7 +11,7 @@ test("Product Hub Russian locale translates the shared Hermes Connect module str
   const links = family.locator(":scope > a");
   await expect(links.nth(0)).toHaveText("Центр продуктов");
   await expect(links.nth(1)).toHaveText("СТО");
-  await expect(links.nth(2)).toHaveText("Load Board");
+  await expect(links.nth(2)).toHaveText("Доска грузов");
   await expect(links.nth(3)).toHaveText("ИИ-командный центр");
   await expect(links.nth(4)).toHaveText("Академия");
   await expect(links.nth(0)).toHaveAttribute("aria-current", "page");
@@ -51,7 +51,7 @@ test("Repair Shops Russian locale translates the mobile landing surface", async 
   await expect(links).toHaveCount(5);
   await expect(links.nth(0)).toHaveText("Центр продуктов");
   await expect(links.nth(1)).toHaveText("СТО");
-  await expect(links.nth(2)).toHaveText("Load Board");
+  await expect(links.nth(2)).toHaveText("Доска грузов");
   await expect(links.nth(3)).toHaveText("ИИ-командный центр");
   await expect(links.nth(4)).toHaveText("Академия");
   await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
