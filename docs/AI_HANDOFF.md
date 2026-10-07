@@ -1529,3 +1529,33 @@ handoff_to: NONE
 - Follow-up CI: `b4a41ed` passed quality/visual/contracts and two browser shards, but the new repeated-language scenarios continued failing after explicit scroll restoration. `afee4cb` diagnostics showed the mobile button visible with stable identical rectangles, loaded fonts, completed document and scrollY=0 across three samples, disproving a simple offscreen/geometry explanation. Browser actionability synchronization remains under investigation; do not describe the menu as fixed or the cause as established. The test-only `2e1fa1a` foreground/frame diagnostic had no pull-request CI run because later main changes caused a merge conflict; its behavior is unverified. No assertions/timeouts were relaxed or clicks forced.
 
 - 2026-10-06 11:36 UTC: reconciled the same branch with `09aa55a` main. Kept current contact-governance test chain and all independently closed error records; only appended this task record. No runtime change in this reconciliation. Build, static tests and new exact-head browser CI must be verified again.
+
+## 2026-10-07 — Codex — Retry-safe carrier dispatch intake
+
+```yaml
+ai_name: Codex
+model: GPT-6
+chat_or_thread: Marketing SEO/GEO implementation
+role: direct implementation owner
+department: Search / Marketing / Logistics conversion
+date: 2026-10-07
+contribution_type: Implementation Report
+confidence: 92
+task_id: CARRIER-INTAKE-IDEMPOTENCY-20261007
+source_of_truth: current main plus verified carrier intake and receiver contracts
+authority_scope: Review branch
+write_scope: [carrier intake enhancer, focused regression, error register, handoff]
+specialization: [conversion reliability, idempotent lead delivery, regression verification]
+not_specialized_in: [legal MC claims, production release approval]
+reviewed: [current main, carrier intake, logistics lead receiver, carrier tests, repository governance]
+not_reviewed: [production behavior after release]
+handoff_to: repository owner for review and release decision
+```
+
+- Branch: `codex/carrier-revenue-implementation-20261007`, based on current `origin/main` `e6f6224b0e409a49a54034bc88de06cce39b1a44`.
+- Outcome: an unchanged carrier request now keeps the same idempotency identity across an ambiguous failure and manual retry. Trusted edits reset the identity so a materially new request receives a new key.
+- Scope: existing `/logistics/start-car-hauling-dispatch/` owner and `/api/logistics-lead` receiver only. No new page, index owner, metadata, sitemap entry, schema, field, external integration, analytics field, MC claim, rate, load, or guarantee.
+- Verification: red regression captured the duplicate-risk behavior; focused Playwright passed 10/10 desktop/mobile; build passed with 399 pages and zero errors; full static/unit suite passed. A fresh CI-mode run completed all 1,992 browser cases with 1,971 passed, 16 skipped, two unrelated existing flaky scenarios, and three unrelated existing Home/consent failures after retry. The changed carrier scenario passed in both projects; exact-head GitHub CI remains required for the release gate.
+- Compounding scorecard: primary outcome = duplicate-resistant qualified carrier acquisition; conversion = ambiguous retries no longer create a second business identity; SEO/internal linking/content = unchanged; knowledge = durable regression plus error record; scale = reuse the same intent-identity rule in sibling lead forms after separate evidence; data/privacy = no new data and no payload exposure; architecture = browser behavior now matches the existing receiver idempotency contract.
+- Deferred: audit the separate Load Board carrier enhancer and shipper/dealer submission paths for the same retry invariant in their own bounded lanes. Do not claim production resolution until merge, deploy, and live readback are complete.
+- Release boundary: review branch only. Merge/deploy requires the repository owner's explicit confirmation.

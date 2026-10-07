@@ -479,3 +479,21 @@ REUSE_RULE: For any shared Astro/SSR route with multiple prop shapes, perform th
 - Correction: explicit EN/UK choice, saved choice, then English; use the existing header control only and limit page-owned link rewriting to content.
 - Evidence: `scripts/connect-auth-language-regression.test.mjs` executes actual page initializers and the chrome adapter; 15 failures before language correction, now 27/27 checks including preserved CTA icon and route-local document-transition opt-out. Build and full `npm test` pass on 6 October 12:22 UTC. In `cb78b27` CI, the mobile hit stack placed HTML above the visible menu; rAF callbacks previously stalled after navigation. Existing Kittle concept route already documents the same Chromium document-transition failure. The three auth routes now use that existing `@view-transition { navigation: none; }` pattern; compiled CSS order independently verified, ordinary Playwright clicks restored, all language/history assertions retained. Fresh exact-head browser CI remains required. No force-click, relaxed timeout or sitewide animation change. Local Chromium launch remains blocked by socket permissions.
 - Release: feature branch only; no merge/deploy. Search-owned configuration, URL ownership and metadata untouched.
+
+## 2026-10-07 — Carrier dispatch retry could create a duplicate lead
+
+STATUS: RESOLVED IN BRANCH / NOT RELEASED.
+
+PROBLEM: After an ambiguous network failure or browser timeout on `/logistics/start-car-hauling-dispatch/`, a carrier could choose Send again. The browser created a new request ID for the retry even when the reviewed form was unchanged. If the receiver had accepted the first request but its response never reached the browser, the second request could bypass receiver idempotency and create a duplicate Logistics Sales lead.
+
+ROOT_CAUSE: The carrier enhancer generated `crypto.randomUUID()` inside every send attempt. The receiver correctly deduplicates a repeated idempotency key, but the browser did not preserve that key for the lifetime of the reviewed carrier intent.
+
+FAILED_APPROACH: Treating every click as a new request identity makes a network retry indistinguishable from a changed carrier submission. A success-only UI guard also cannot cover the ambiguous-outcome case because the browser does not know whether the first delivery was accepted.
+
+WORKING_APPROACH: Keep one request ID with the active reviewed lead, reuse it for every retry while the form is unchanged, and clear it only after trusted form input/change or when review no longer produces a deliverable lead. Preserve the existing receiver, endpoint, payload, analytics, email fallback, qualification rules, and public route.
+
+EVIDENCE: The new regression failed before implementation because two attempts produced `synthetic-fixture-request-1` and `synthetic-fixture-request-2`. It now proves header/body identity, same-key retry after a simulated network failure, and a new key after trusted form input. The focused carrier suite passes 10/10 across desktop and mobile. `npm run build` completed with zero errors and 399 pages; full `npm test` passed. A fresh CI-mode run completed all 1,992 browser cases: 1,971 passed, 16 were skipped, two unrelated existing scenarios were flaky, and three unrelated existing Home/consent cases failed after retry. The changed carrier test passed in both projects. Exact-head GitHub CI remains the complete release gate.
+
+LESSON: An idempotency key identifies one business intent, not one click. A retry after an ambiguous outcome must reuse the same identity; a material user edit must create a new one.
+
+REUSE_RULE: Every browser-to-receiver lead flow with retryable ambiguous delivery must persist its request identity across unchanged retries and reset it on trusted intent changes. Test both the retry and new-intent boundaries.
