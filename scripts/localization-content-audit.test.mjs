@@ -278,7 +278,12 @@ if (!siteFooterSource.includes('connectRequestedLocale && connectRequestedLocale
   errors.push("Hermes Connect footer: all supported query locales must resolve through localeConfig");
 }
 
-for (const marker of ["nameEn?: string", "addressEn?: string", "localityEn?: string", "regionEn?: string", "servicesEn?: string[]", 'nameEn: "Kons na Bis"', 'localityEn: "Bila Tserkva"', 'regionEn: "Kyiv Oblast"']) {
+for (const marker of [
+  "nameEn?: string", "addressEn?: string", "localityEn?: string", "regionEn?: string", "servicesEn?: string[]",
+  'nameEn: "Kons na Bis"', 'localityEn: "Bila Tserkva"', 'regionEn: "Kyiv Oblast"',
+  'primaryIntent: "Ремонт телефонів та аксесуари"', 'primaryIntentEn: "Phone repair & accessories"',
+  'factsRequiringOwnerConfirmationEn: ["exact repair service menu"',
+]) {
   if (!catalogConceptSource.includes(marker)) errors.push(`Catalog presentation locale field is missing: ${marker}`);
 }
 for (const marker of ["business.nameEn ?? business.name", "business.localityEn ?? business.locality", "business.regionEn ?? business.region", "business.servicesEn ?? business.services"]) {
