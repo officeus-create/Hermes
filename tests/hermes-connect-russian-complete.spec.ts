@@ -68,7 +68,7 @@ test("Repair Shop family navigation stays task-focused in English", async ({ pag
   await expect(links).toHaveCount(5);
   await expect(links.nth(0)).toHaveText("Product Hub");
   await expect(links.nth(1)).toHaveText("Repair Shops");
-  await expect(links.nth(2)).toHaveText("Load Board");
+  await expect(links.nth(2)).toHaveText("Доска грузов");
   await expect(links.nth(3)).toHaveText("AI Command Center");
   await expect(links.nth(4)).toHaveText("Academy");
   await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
