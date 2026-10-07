@@ -24,6 +24,7 @@ export type CatalogBusinessConcept = {
   countrySlug: string;
   localitySlug: string;
   name: string;
+  nameEn?: string;
   status: "unclaimed" | "claimed" | "client";
   market: "us" | "international";
   catalogPriority: "primary" | "secondary";
@@ -39,8 +40,11 @@ export type CatalogBusinessConcept = {
   digitalAudit?: CatalogDigitalAudit;
   phone: string;
   address: string;
+  addressEn?: string;
   locality: string;
+  localityEn?: string;
   region: string;
+  regionEn?: string;
   postalCode?: string;
   countryCode: string;
   hours: string[];
@@ -48,8 +52,9 @@ export type CatalogBusinessConcept = {
   schemaHours?: string[];
   website?: string;
   services: string[];
+  servicesEn?: string[];
   trust?: { source: string; rating: number; reviewCount: number; observedAt: string };
-  channels: { label: string; url: string; direction: "primary" | "secondary" | "maps" }[];
+  channels: { label: string; labelEn?: string; url: string; direction: "primary" | "secondary" | "maps" }[];
   factsRequiringOwnerConfirmation: string[];
   factsRequiringOwnerConfirmationEn?: string[];
   localeCopy?: {
@@ -66,6 +71,7 @@ export type CatalogBusinessConcept = {
   };
   faq?: { question: string; answer: string; questionEn?: string; answerEn?: string }[];
   semanticCore?: string[];
+  semanticCoreEn?: string[];
   sourceRef: string;
 };
 
@@ -75,6 +81,7 @@ export const chaykaStoreConcept = Object.freeze({
   countrySlug: "ukraine",
   localitySlug: "chaiky",
   name: "Чайка Store",
+  nameEn: "Chayka Store",
   status: "unclaimed",
   market: "international",
   catalogPriority: "secondary",
@@ -84,17 +91,21 @@ export const chaykaStoreConcept = Object.freeze({
   secondaryIntent: "More Chay — tea",
   phone: "+380 63 924 22 22",
   address: "вул. Валерія Лобановського, 21/3",
+  addressEn: "21/3 Valeriia Lobanovskoho St",
   locality: "Чайки",
+  localityEn: "Chaiky",
   region: "Київська область",
+  regionEn: "Kyiv Oblast",
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Пн–Сб 10:00–19:00", "Нд 10:00–18:30"],
+  hoursEn: ["Mon–Sat 10:00–19:00", "Sun 10:00–18:30"],
   schemaHours: ["Mo-Sa 10:00-19:00", "Su 10:00-18:30"],
   services: ["Phone repair discovery", "Accessories discovery", "Tea direction"],
   trust: { source: "Google", rating: 5.0, reviewCount: 68, observedAt: "2026-09-24" },
   channels: [
     { label: "Google Maps", url: "https://maps.app.goo.gl/J49ktCNKXmkhbsLt7?g_st=ic", direction: "maps" },
-    { label: "Instagram · Чайка Store", url: "https://www.instagram.com/chayka_store1", direction: "primary" },
+    { label: "Instagram · Чайка Store", labelEn: "Instagram · Chayka Store", url: "https://www.instagram.com/chayka_store1", direction: "primary" },
     { label: "Instagram · More Chay", url: "https://www.instagram.com/more_chau", direction: "secondary" },
     { label: "Telegram · More Chay", url: "https://t.me/more_chay", direction: "secondary" }
   ],
@@ -128,10 +139,11 @@ export const chaykaStoreConcept = Object.freeze({
     }
   },
   faq: [
-    { question: "Чи можна уточнити ремонт телефону через цю сторінку?", answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом." },
-    { question: "Це офіційний сайт Чайка Store?", answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes." }
+    { question: "Чи можна уточнити ремонт телефону через цю сторінку?", answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом.", questionEn: "Can I ask about phone repair through this page?", answerEn: "Yes. You can submit a contact request; specific services, price, turnaround and warranty must be confirmed by the business." },
+    { question: "Це офіційний сайт Чайка Store?", answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes.", questionEn: "Is this the official Chayka Store website?", answerEn: "No. This is a Hermes Catalog website concept based on public and business-supplied data; the profile remains unclaimed by the owner in Hermes." }
   ],
   semanticCore: ["ремонт телефонів Чайки", "ремонт смартфонів Чайки", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
+  semanticCoreEn: ["phone repair Chaiky", "smartphone repair Chaiky", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
   sourceRef: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924"
 } satisfies CatalogBusinessConcept);
 
@@ -141,6 +153,7 @@ export const mangalIKazanConcept = Object.freeze({
   countrySlug: "ukraine",
   localitySlug: "chaiky",
   name: "Мангал і Казан",
+  nameEn: "Mangal i Kazan",
   status: "unclaimed",
   market: "international",
   catalogPriority: "secondary",
@@ -149,13 +162,18 @@ export const mangalIKazanConcept = Object.freeze({
   primaryIntent: "Halal restaurant and food delivery",
   phone: "+380 68 831 91 39",
   address: "вул. Валерія Лобановського, 35, корпус 9",
+  addressEn: "35 Valeriia Lobanovskoho St, Building 9",
   locality: "Чайки",
+  localityEn: "Chaiky",
   region: "Київська область",
+  regionEn: "Kyiv Oblast",
   countryCode: "UA",
   hours: ["Щодня 10:00–20:00"],
+  hoursEn: ["Daily 10:00–20:00"],
   schemaHours: ["Mo-Su 10:00-20:00"],
   website: "https://mangal-i-kazan.com.ua/",
   services: ["Шашлик", "Люля-кебаб", "Плов", "Манти", "Лагман", "Шурпа", "Доставка по ЖК Чайки"],
+  servicesEn: ["Shashlik", "Lula kebab", "Plov", "Manti", "Lagman", "Shurpa", "Delivery within the Chaiky residential complex"],
   channels: [
     { label: "Official website", url: "https://mangal-i-kazan.com.ua/", direction: "primary" }
   ],
@@ -169,6 +187,7 @@ export const trimmoConcept = Object.freeze({
   countrySlug: "ukraine",
   localitySlug: "chaiky",
   name: "TRIMMO II барбершоп",
+  nameEn: "TRIMMO II Barbershop",
   status: "unclaimed",
   market: "international",
   catalogPriority: "secondary",
@@ -177,13 +196,18 @@ export const trimmoConcept = Object.freeze({
   primaryIntent: "Barbershop and men's grooming",
   phone: "+380 98 802 09 09",
   address: "вул. Валерія Лобановського, 24",
+  addressEn: "24 Valeriia Lobanovskoho St",
   locality: "Чайки",
+  localityEn: "Chaiky",
   region: "Київська область",
+  regionEn: "Kyiv Oblast",
   postalCode: "08135",
   countryCode: "UA",
   hours: ["Пн–Сб 10:00–21:00", "Нд · потребує підтвердження"],
+  hoursEn: ["Mon–Sat 10:00–21:00", "Sun · confirmation required"],
   schemaHours: ["Mo-Sa 10:00-21:00"],
   services: ["Чоловіча стрижка", "Стрижка машинкою", "Стрижка бороди", "Камуфлювання голови", "Камуфлювання бороди"],
+  servicesEn: ["Men's haircut", "Clipper cut", "Beard trim", "Hair camouflage", "Beard camouflage"],
   trust: { source: "Google", rating: 5.0, reviewCount: 157, observedAt: "2026-09-29" },
   channels: [
     { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=TRIMMO%20II%20Chaiky&query_place_id=ChIJMS7DeQA1K0cRK1y1L5Z0iOE", direction: "maps" },
@@ -199,6 +223,7 @@ export const cvitVyshniConcept = Object.freeze({
   countrySlug: "ukraine",
   localitySlug: "irpin",
   name: "Квіткова студія Цвіт VYSHNI",
+  nameEn: "Tsvit VYSHNI Flower Studio",
   status: "unclaimed",
   market: "international",
   catalogPriority: "secondary",
@@ -207,13 +232,18 @@ export const cvitVyshniConcept = Object.freeze({
   primaryIntent: "Flower shop and floral studio",
   phone: "+380 99 401 86 27",
   address: "вул. Українська, 57 А",
+  addressEn: "57A Ukrainska St",
   locality: "Ірпінь",
+  localityEn: "Irpin",
   region: "Київська область",
+  regionEn: "Kyiv Oblast",
   postalCode: "08205",
   countryCode: "UA",
   hours: ["Щодня 09:00–20:00"],
+  hoursEn: ["Daily 09:00–20:00"],
   schemaHours: ["Mo-Su 09:00-20:00"],
   services: ["Квіти", "Букети", "Флористична студія"],
+  servicesEn: ["Flowers", "Bouquets", "Floral studio"],
   trust: { source: "Google", rating: 5.0, reviewCount: 39, observedAt: "2026-09-29" },
   channels: [
     { label: "Google Maps search", url: "https://www.google.com/maps/search/?api=1&query=Cvit%20VYSHNI%20Irpin&query_place_id=ChIJz2BQqVIzK0cRhKao5k9b71E", direction: "maps" }
@@ -228,6 +258,7 @@ export const konsNaBisConcept = Object.freeze({
   countrySlug: "ukraine",
   localitySlug: "bila-tserkva",
   name: "Конс на Бі$",
+  nameEn: "Kons na Bis",
   status: "client",
   market: "international",
   catalogPriority: "secondary",
@@ -250,8 +281,11 @@ export const konsNaBisConcept = Object.freeze({
   strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
   phone: "+380 67 11 55 111",
   address: "вул. Ярослава Мудрого, 16/2, 16",
+  addressEn: "16/2, 16 Yaroslava Mudroho St",
   locality: "Біла Церква",
+  localityEn: "Bila Tserkva",
   region: "Київська область",
+  regionEn: "Kyiv Oblast",
   postalCode: "09107",
   countryCode: "UA",
   hours: ["Онлайн-програми та бізнес-клуб · актуальний розклад уточнюйте на офіційному сайті"],
@@ -266,14 +300,23 @@ export const konsNaBisConcept = Object.freeze({
     "Найм і делегування",
     "Навчальні події та групові програми"
   ],
+  servicesEn: [
+    "Managed Business Growth Strategy · 7 weeks",
+    "Business club for entrepreneurs",
+    "Business audits",
+    "Marketing and customer-acquisition systemization",
+    "Sales systemization",
+    "Hiring and delegation",
+    "Educational events and group programs"
+  ],
   channels: [
     { label: "Official website", url: "https://kons-na-bis.com/", direction: "primary" },
     { label: "Instagram · @konsnabis", url: "https://www.instagram.com/konsnabis/", direction: "secondary" },
-    { label: "YouTube · Олександр Морозов", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", direction: "secondary" },
+    { label: "YouTube · Олександр Морозов", labelEn: "YouTube · Oleksandr Morozov", url: "https://www.youtube.com/@Oleksandr_Morozov_KnB", direction: "secondary" },
     { label: "TikTok · @konsnabis", url: "https://www.tiktok.com/@konsnabis", direction: "secondary" },
     { label: "Threads · @konsnabis", url: "https://www.threads.com/@konsnabis", direction: "secondary" },
-    { label: "Facebook · Конс на Бі$", url: "https://www.facebook.com/konsnabis/", direction: "secondary" },
-    { label: "Telegram · Конс на Бі$", url: "https://t.me/konsnabis", direction: "secondary" }
+    { label: "Facebook · Конс на Бі$", labelEn: "Facebook · Kons na Bis", url: "https://www.facebook.com/konsnabis/", direction: "secondary" },
+    { label: "Telegram · Конс на Бі$", labelEn: "Telegram · Kons na Bis", url: "https://t.me/konsnabis", direction: "secondary" }
   ],
   digitalAudit: {
     observedAt: "2026-10-05",
