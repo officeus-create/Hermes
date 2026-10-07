@@ -1,6 +1,6 @@
-# Hermes Connect CRM Architecture V1.3
+# Hermes Connect CRM Architecture V1.4.1
 
-Status: review-only adaptive product architecture. The private ChatGPT plugin release v1.3.0 exists for owner testing; no production Hermes MCP, external-customer authorization, merge or deployment is implied by this document.
+Status: private owner-test plugin v1.4.1 is current; the public MCP/plugin foundation is implemented in canonical PR #1738 and remains pre-merge/pre-production until exact-head CI and release gates pass. No external-customer private CRM authorization is implied.
 
 ## Why this exists
 
@@ -38,7 +38,9 @@ Do not greet a new external user with a CRM feature dump.
 
 Preferred first-contact loop:
 
-`language/context → business/work map → friction/priorities → smallest useful next step → advisory OR CRM blueprint OR secure workspace connection/provisioning`.
+`problem/outcome → smallest concrete action → minimum useful connector set → user approval → relevant source read → five-question intake only for unresolved gaps → ready CRM bootstrap prompt → advisory OR CRM blueprint OR secure workspace connection/provisioning`.
+
+Connector guidance is action-first rather than integration-first. Recommend normally 1–3 capabilities that directly reduce repeated entry or improve evidence. Use the AI host's native Connect/Install approval flow when available; a recommendation never grants access. Never request passwords, API keys, recovery codes, session cookies, or complete private chat history.
 
 Rules:
 - respond in the user's normal language; server/profile locale may guide localization when available;
@@ -282,13 +284,15 @@ Shared product changes become structured engineering requests with acceptance cr
 
 Current validated private plugin release:
 - technical package identity: `hermes-connect-operator` (retained to preserve the existing Plugin ID);
-- version: **1.3.0**;
+- Plugin ID: `Plugin_b1038b2f9cfc8191a81a96df9ee81186`;
+- version: **1.4.1**;
+- current release: `pluginrel_6ac64ad32f108191a36249f0b0311acf`;
 - display name: **Hermes Connect CRM**;
 - developer: **Hermes Logistics LLC**;
-- 14 skills / 10 schemas;
+- includes connector-guided onboarding plus identity, discovery, CRM design/provisioning, routing, change and privacy-safe learning skills;
 - discoverability: PRIVATE owner-test.
 
-The package intentionally omits a fake remote MCP endpoint. External customer use remains blocked until a real HTTPS tenant-scoped MCP, OAuth/account linking, server-authoritative role/capabilities, secure provisioning, revocation, audit/readback, privacy-safe learning and negative isolation tests are live.
+The private package does not invent customer authority. External private CRM access remains blocked until HTTPS tenant-scoped MCP, OAuth/account linking, server-authoritative role/capabilities, secure provisioning, revocation, audit/readback, privacy-safe learning and negative isolation tests are live.
 
 Approved Hermes Connect Option 02 continuous connected-flow mark remains the plugin identity.
 
@@ -308,8 +312,19 @@ Public-package rule:
 - current public release truthfully exposes no private CRM read/write capability.
 
 First public MCP endpoint contract: `https://hermeslogisticsus.com/api/hermes-connect/mcp`.
-Initial tools are intentionally bounded: `get_product_overview`, `recommend_start_path`, and explicit-consent `submit_product_feedback`. Product feedback stores only a small sanitized ProductLearningEvent and rejects common PII/credential patterns; it is not raw conversation ingestion and not marketing consent.
+Current public tool set is intentionally bounded to six tools: `get_product_overview`, `recommend_start_path`, `build_crm_onboarding_plan`, `get_hermes_business_routes`, `get_product_learning_policy`, and explicit-consent `submit_product_feedback`. `build_crm_onboarding_plan` returns the smallest connector capability set, minimum unresolved questions, a ready CRM bootstrap prompt, execution sequence, authorization rule, and durable-job continuity rule. Product feedback stores only a small sanitized ProductLearningEvent and rejects common PII/credential patterns; it is not raw conversation ingestion and not marketing consent.
 
 Public support/trust owner: `/services/hermes-connect/support/` with canonical Privacy/Terms/Legal links and explicit no-secrets guidance.
 
-Public submission remains a separate gate from code release: production HTTPS MCP + support page must be live, OpenAI domain verification must pass, developer identity must be verified as Hermes Logistics LLC, the five positive / three negative cases must be run, a reviewer-accessible demo recording must exist, and OpenAI review must approve the listing before Publish.
+Public submission remains a separate gate from code release: production HTTPS MCP + support page must be live, OpenAI domain verification must pass, developer identity must be verified as Hermes Logistics LLC, the current reviewer positive/negative cases must be run, including connector-guided onboarding and privacy/tenant denial, a reviewer-accessible demo recording must exist, and OpenAI review must approve the listing before Publish.
+
+
+## Cross-AI portability and action-first onboarding — v1.4.1
+
+Hermes Connect keeps one product/backend/business contract across AI hosts.
+
+- Use remote/custom MCP when the host supports it.
+- Otherwise use that host's native connector/function/tool-call adapter.
+- Do not fork a separate Hermes CRM, Catalog, identity model or knowledge authority per ChatGPT, Gemini, Grok, DeepSeek-compatible agent or other host.
+- The model may recommend a connector and surface the host's approval UI, but host/account/server authorization remains authoritative.
+- Conversation may continue during CRM setup only when Hermes has created a real durable `ProvisioningRequest/ProvisioningJob`; otherwise return the blueprint/request and do not claim background execution.
