@@ -61,8 +61,17 @@ const call = async (body, env = {}, headers = {}) => {
   const db={
     prepare(sql){
       return {
-        bind(...args){ return { async run(){ rows.push({sql,args}); return {success:true}; } }; },
-        async run(){ rows.push({sql,args:[]}); return {success:true}; }
+        bind(...args){
+          return {
+            async run(){ rows.push({sql,args,kind:'run'}); return {success:true}; },
+            async first(){
+              rows.push({sql,args,kind:'first'});
+              if (/COUNT\(\*\)/.test(sql)) return {count:0};
+              return null;
+            }
+          };
+        },
+        async run(){ rows.push({sql,args:[],kind:'run'}); return {success:true}; }
       };
     }
   };
@@ -70,8 +79,55 @@ const call = async (body, env = {}, headers = {}) => {
   assert.equal(json.result.structuredContent.accepted, true);
   assert.equal(json.result.structuredContent.status, 'stored_privacy_safe_product_learning_event');
   assert.equal('receipt_id' in json.result.structuredContent, false);
-  assert.equal(rows.length, 3);
+  assert.equal(rows.length, 5);
   assert.match(rows[1].sql, /DELETE FROM plugin_product_learning_events/);
+  assert.match(rows[2].sql, /COUNT\(\*\)/);
+  assert.match(rows[3].sql, /SELECT id FROM plugin_product_learning_events/);
+}
+
+{
+  const db={
+    prepare(sql){
+      return {
+        bind(...args){
+          return {
+            async run(){ return {success:true}; },
+            async first(){
+              if (/COUNT\(\*\)/.test(sql)) return {count:120};
+              return null;
+            }
+          };
+        },
+        async run(){ return {success:true}; }
+      };
+    }
+  };
+  const { json } = await call({jsonrpc:'2.0',id:71,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'follow up leakage',desired_capability:'reminder',outcome:'workflow_friction',consent_to_product_learning:true}}}, {DB:db});
+  assert.equal(json.result.structuredContent.accepted, false);
+  assert.equal(json.result.structuredContent.status, 'learning_rate_limited');
+}
+
+{
+  const db={
+    prepare(sql){
+      return {
+        bind(...args){
+          return {
+            async run(){ return {success:true}; },
+            async first(){
+              if (/COUNT\(\*\)/.test(sql)) return {count:1};
+              if (/SELECT id FROM plugin_product_learning_events/.test(sql)) return {id:'existing'};
+              return null;
+            }
+          };
+        },
+        async run(){ return {success:true}; }
+      };
+    }
+  };
+  const { json } = await call({jsonrpc:'2.0',id:72,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'follow up leakage',desired_capability:'reminder',outcome:'workflow_friction',consent_to_product_learning:true}}}, {DB:db});
+  assert.equal(json.result.structuredContent.accepted, true);
+  assert.equal(json.result.structuredContent.status, 'duplicate_product_learning_event');
 }
 
 {
