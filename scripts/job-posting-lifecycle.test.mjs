@@ -47,3 +47,5 @@ assert.throws(() => assertChronology({ ...synthetic, datePosted: "2026-08-11" })
 assert.throws(() => assertChronology({ ...synthetic, reviewedAt: "2026-09-02" }), /reviewedAt must not be after expiresAt/);
 
 console.log(`JobPosting lifecycle gate passed for ${active.length} owner-approved role record(s) at reference date ${referenceDate}; expired records are warning-only because publication eligibility now fails closed.`);
+
+await import("./wisconsin-vacancy-runtime-expiry.test.mjs");
