@@ -1,6 +1,6 @@
-# Hermes Connect Adaptive MCP Contract V1.3
+# Hermes Connect Adaptive MCP Contract V1.4.1
 
-Status: design contract for the adaptive Hermes Connect CRM identity/provisioning/action layer. No live remote MCP endpoint or external-customer production readiness is claimed by this document.
+Status: the public unauthenticated MCP foundation is implemented in canonical PR #1738 and remains pre-merge/pre-production until exact-head CI and deployment/readback gates pass. Authenticated customer CRM access remains a design/implementation gate and is not claimed live.
 
 ## Goal
 
@@ -44,6 +44,11 @@ For shared/production use, only validated Hermes credentials may select the firs
 ## Discovery/context boundary
 
 Unauthenticated/prospect users may receive business discovery and advisory help without a connected CRM. The system may use only relevant host-provided context, user-selected material and authorized connected sources. The MCP must not pull, reconstruct or persist complete raw ChatGPT history.
+
+Action-first onboarding contract:
+`PROBLEM → DESIRED OUTCOME → MINIMUM CONNECTOR SET → USER APPROVAL → RELEVANT SOURCE READ → MINIMUM INTAKE → CRM BOOTSTRAP PROMPT → BLUEPRINT → DURABLE PROVISIONING JOB WHEN AUTHENTICATED/AVAILABLE → READBACK`.
+
+The host should surface its native Connect/Install approval control when supported. Connector recommendation is not authorization. If direct connection is unavailable, continue with a truthful advisory/blueprint path rather than blocking or pretending access.
 
 ## Provisioning tools and state
 
@@ -321,9 +326,12 @@ Until this gate passes, the Customer package remains a preview and intentionally
 
 The same review lane now contains the first real public MCP runtime at `/api/hermes-connect/mcp` instead of a documentation-only contract.
 
-Initial public tools:
+Current public tools:
 - `get_product_overview`: public product truth and official Hermes links only;
 - `recommend_start_path`: low-data business/CRM routing without claiming unreleased verticals;
+- `build_crm_onboarding_plan`: connector-guided action plan, five-question unresolved-gap intake, ready CRM bootstrap prompt, authorization/continuity rules;
+- `get_hermes_business_routes`: bounded routing across Connect/Technology, Marketing, Logistics and Academy;
+- `get_product_learning_policy`: privacy-safe reusable-learning boundary;
 - `submit_product_feedback`: explicit-consent, bounded, privacy-safe product learning only.
 
 This initial endpoint is deliberately unauthenticated and public-data-only. It accepts no arbitrary private Company/Workspace identifier and has no private CRM read/write tool, so it does not weaken the future OAuth/tenant boundary.
@@ -331,3 +339,12 @@ This initial endpoint is deliberately unauthenticated and public-data-only. It a
 Authenticated customer tools remain the next layer. When added, they must derive identity and tenant scope from validated server credentials on every call, preserve the Capability Registry/Change Broker model, and pass cross-tenant/role/revocation tests before becoming available.
 
 Public plugin packaging must include this MCP from the first directory submission; do not publish a skills-only listing and try to attach MCP later.
+
+
+## Cross-AI transport
+
+The business contract is MCP-first, not vendor-forked. Hosts with remote/custom MCP support use the canonical Hermes endpoint. Other compatible AI hosts may call the same bounded operations through their native function/tool adapter. In every host:
+- connection approval remains user/host controlled;
+- server identity and tenant authorization remain authoritative;
+- no secrets are requested in chat;
+- no background CRM work is claimed without a persisted Hermes job ID/state.
