@@ -28,9 +28,9 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       <section class="kpis" aria-label="Business metrics">
         <article><span>Leads</span><strong data-kpi="totalLeads">0</strong><small>all tracked</small></article>
         <article><span>Booked rate</span><strong data-kpi="bookedRate">0%</strong><small>booked + active + completed</small></article>
-        <article><span>Revenue</span><strong data-kpi="revenueCents">$0</strong><small>recorded final amounts</small></article>
-        <article><span>Tracked gross</span><strong data-kpi="grossAfterTrackedCostsCents">$0</strong><small>revenue − lead cost − disposal</small></article>
-        <article><span>Avg ticket</span><strong data-kpi="averageTicketCents">$0</strong><small>completed jobs</small></article>
+        <article><span>Revenue</span><strong data-kpi="revenueCents">UNKNOWN</strong><small data-money-evidence="revenue">source-verified final amounts</small></article>
+        <article><span>Tracked gross</span><strong data-kpi="grossAfterTrackedCostsCents">UNKNOWN</strong><small data-money-evidence="gross">verified revenue − lead cost − disposal</small></article>
+        <article><span>Avg ticket</span><strong data-kpi="averageTicketCents">UNKNOWN</strong><small data-money-evidence="averageTicket">verified completed jobs</small></article>
         <article><span>Review rate</span><strong data-kpi="reviewRate">0%</strong><small>received / completed</small></article>
       </section>
 
@@ -58,6 +58,8 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
               <label>Approx. volume<input name="approximateVolume" placeholder="1/4 trailer, full trailer…" /></label>
               <label>Lead cost ($)<input name="leadCost" type="number" min="0" step="0.01" /></label>
               <label>Quote ($)<input name="quote" type="number" min="0" step="0.01" /></label>
+              <label class="wide">Lead cost source / evidence<input name="leadCostSourceRef" maxlength="300" placeholder="Ads export, provider invoice, CRM receipt…" /></label>
+              <label class="wide">Quote source / evidence<input name="quoteSourceRef" maxlength="300" placeholder="Quote document, estimate ID, CRM record…" /></label>
               <label>Status
                 <select name="status">
                   <option value="new">New</option><option value="contacted">Contacted</option><option value="quoted">Quoted</option>
@@ -69,6 +71,8 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
               <label>Assigned driver<input name="assignedDriver" /></label>
               <label>Final amount ($)<input name="finalAmount" type="number" min="0" step="0.01" /></label>
               <label>Dump / landfill ($)<input name="disposalCost" type="number" min="0" step="0.01" /></label>
+              <label class="wide">Final amount source / evidence<input name="finalAmountSourceRef" maxlength="300" placeholder="Paid invoice, receipt, transaction / job record…" /></label>
+              <label class="wide">Disposal cost source / evidence<input name="disposalCostSourceRef" maxlength="300" placeholder="Landfill / dump receipt, vendor record…" /></label>
               <label>Duration (minutes)<input name="durationMinutes" type="number" min="0" step="1" /></label>
               <label>Payment
                 <select name="paymentMethod"><option value="">—</option><option value="cash">Cash</option><option value="card">Card</option>
@@ -82,6 +86,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
               <label>Review received<input name="reviewReceivedAt" type="datetime-local" /></label>
               <label class="wide">Notes<textarea name="notes" rows="3"></textarea></label>
             </div>
+            <p class="privacy-note">Financial amount may be saved as observed, including a real $0. Revenue / cost / gross KPI remains <strong>UNKNOWN</strong> until the required amounts have private source references. Missing amount is never converted to $0.</p>
             <div class="form-actions"><button type="submit" class="primary">Save lead / job</button><button type="button" data-form-reset>Clear</button></div>
           </form>
         </article>
@@ -123,7 +128,10 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   let allLeads: Lead[] = [];
   let dashboard: any = null;
   const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector);
-  const money = (cents: number) => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format((Number(cents)||0)/100);
+  const money = (cents: number | null | undefined) =>
+    cents === null || cents === undefined
+      ? "UNKNOWN"
+      : new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(cents)/100);
   const percent = (value: number) => `${Math.round((Number(value)||0)*100)}%`;
   const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c] || c));
   const api = async (url: string, options: RequestInit = {}) => {
@@ -140,7 +148,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
     const rows = dashboard?.metrics?.[key] || [];
     node.innerHTML = rows.length ? rows.slice(0,12).map((row:any)=>`
       <div class="break-row"><div><strong>${escapeHtml(row.key)}</strong><small>${row.leads} leads · ${percent(row.bookedRate)} booked</small></div>
-      <div><b>${money(row.revenueCents)}</b><small>${money(row.grossAfterTrackedCostsCents)} tracked gross</small></div></div>`).join("") : '<p class="empty">No tracked data yet.</p>';
+      <div><b>${money(row.revenueCents)}</b><small>${money(row.grossAfterTrackedCostsCents)} tracked gross · ${row.moneyEvidence?.revenue?.verifiedCount??0}/${row.moneyEvidence?.revenue?.requiredCount??0} revenue evidence</small></div></div>`).join("") : '<p class="empty">No tracked data yet.</p>';
   }
 
   function renderLeads(filter = "") {
@@ -159,14 +167,16 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
   }
 
   function dateForInput(value: string | null) { if(!value)return ""; const d=new Date(value); if(Number.isNaN(d.getTime()))return value.slice(0,16); const local=new Date(d.getTime()-d.getTimezoneOffset()*60000); return local.toISOString().slice(0,16); }
-  function dollars(cents:number){return cents?String((Number(cents)||0)/100):"";}
+  function dollars(cents:number|null|undefined){return cents===null||cents===undefined?"":String(Number(cents)/100);}
   function editLead(id:string){
     const lead=allLeads.find((item)=>item.id===id); const form=$<HTMLFormElement>("[data-lead-form]"); if(!lead||!form)return;
     const set=(name:string,value:any)=>{const field=form.elements.namedItem(name) as HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement|null;if(field)field.value=String(value??"");};
     set("id",lead.id);set("customerName",lead.customerName);set("customerPhone",lead.customerPhone);set("customerEmail",lead.customerEmail);set("source",lead.source);
     set("searchQuery",lead.searchQuery);set("city",lead.city);set("postalCode",lead.postalCode);set("addressLine1",lead.addressLine1);set("jobType",lead.jobType);
-    set("approximateVolume",lead.approximateVolume);set("leadCost",dollars(lead.leadCostCents));set("quote",dollars(lead.quoteCents));set("status",lead.status);
+    set("approximateVolume",lead.approximateVolume);set("leadCost",dollars(lead.leadCostCents));set("quote",dollars(lead.quoteCents));
+    set("leadCostSourceRef",lead.leadCostSourceRef);set("quoteSourceRef",lead.quoteSourceRef);set("status",lead.status);
     set("jobStartAt",dateForInput(lead.jobStartAt));set("assignedDriver",lead.assignedDriver);set("finalAmount",dollars(lead.finalAmountCents));set("disposalCost",dollars(lead.disposalCostCents));
+    set("finalAmountSourceRef",lead.finalAmountSourceRef);set("disposalCostSourceRef",lead.disposalCostSourceRef);
     set("durationMinutes",lead.durationMinutes||"");set("paymentMethod",lead.paymentMethod);set("photoRefs",(lead.photoRefs||[]).join(", "));set("lossReason",lead.lossReason);
     set("followUpAt",dateForInput(lead.followUpAt));set("reviewRequestedAt",dateForInput(lead.reviewRequestedAt));set("reviewReceivedAt",dateForInput(lead.reviewReceivedAt));set("notes",lead.notes);
     form.scrollIntoView({behavior:"smooth",block:"start"});
@@ -188,7 +198,14 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       const name=$<HTMLElement>("[data-company-name]");if(name)name.textContent=dashboard?.company?.name||"Home Services";
       const catalog=$<HTMLAnchorElement>("[data-catalog-link]");if(catalog&&dashboard?.company?.slug)catalog.href="/businesses/connect/company/"+encodeURIComponent(dashboard.company.slug)+"/";
       const metrics=dashboard.metrics||{};const total=$<HTMLElement>('[data-kpi="totalLeads"]');if(total)total.textContent=String(metrics.totalLeads||0);
-      for(const key of ["revenueCents","grossAfterTrackedCostsCents","averageTicketCents"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=money(metrics[key]||0);}
+      for(const key of ["revenueCents","grossAfterTrackedCostsCents","averageTicketCents"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=money(metrics[key]);}
+      const evidence=metrics.moneyEvidence||{};
+      const revenueEvidence=$<HTMLElement>('[data-money-evidence="revenue"]');
+      if(revenueEvidence)revenueEvidence.textContent=`${evidence.revenue?.verifiedCount??0}/${evidence.revenue?.requiredCount??0} completed jobs source-verified`;
+      const grossEvidence=$<HTMLElement>('[data-money-evidence="gross"]');
+      if(grossEvidence)grossEvidence.textContent=`revenue ${evidence.revenue?.verifiedCount??0}/${evidence.revenue?.requiredCount??0} · lead cost ${evidence.leadCost?.verifiedCount??0}/${evidence.leadCost?.requiredCount??0} · disposal ${evidence.disposalCost?.verifiedCount??0}/${evidence.disposalCost?.requiredCount??0}`;
+      const averageEvidence=$<HTMLElement>('[data-money-evidence="averageTicket"]');
+      if(averageEvidence)averageEvidence.textContent=`${evidence.revenue?.verifiedCount??0}/${evidence.revenue?.requiredCount??0} completed jobs source-verified`;
       for(const key of ["bookedRate","reviewRate"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=percent(metrics[key]||0);}
       populateProfile(dashboard.profile);renderLeads($<HTMLInputElement>("[data-search]")?.value||"");
       ["byCity","bySource","byJobType","bySearchQuery"].forEach(renderBreakdown);
@@ -197,13 +214,17 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 
   $<HTMLFormElement>("[data-lead-form]")?.addEventListener("submit",async(event)=>{
     event.preventDefault();showAlert("");const form=event.currentTarget as HTMLFormElement;const data=new FormData(form);
-    const cents=(name:string)=>Math.round((Number(data.get(name))||0)*100);
+    const cents=(name:string)=>{const raw=String(data.get(name)??"").trim();if(!raw)return null;const value=Number(raw);return Number.isFinite(value)&&value>=0?Math.round(value*100):Number.NaN;};
     const toIso=(name:string)=>{const value=String(data.get(name)||"");return value?new Date(value).toISOString():"";};
     const id=String(data.get("id")||"");
     const payload:any={action:id?"update_lead":"create_lead",id,customerName:data.get("customerName"),customerPhone:data.get("customerPhone"),customerEmail:data.get("customerEmail"),
       source:data.get("source"),searchQuery:data.get("searchQuery"),city:data.get("city"),postalCode:data.get("postalCode"),addressLine1:data.get("addressLine1"),
-      jobType:data.get("jobType"),approximateVolume:data.get("approximateVolume"),leadCostCents:cents("leadCost"),quoteCents:cents("quote"),status:data.get("status"),
-      jobStartAt:toIso("jobStartAt"),assignedDriver:data.get("assignedDriver"),finalAmountCents:cents("finalAmount"),disposalCostCents:cents("disposalCost"),
+      jobType:data.get("jobType"),approximateVolume:data.get("approximateVolume"),
+      leadCostCents:cents("leadCost"),leadCostSourceRef:data.get("leadCostSourceRef"),
+      quoteCents:cents("quote"),quoteSourceRef:data.get("quoteSourceRef"),status:data.get("status"),
+      jobStartAt:toIso("jobStartAt"),assignedDriver:data.get("assignedDriver"),
+      finalAmountCents:cents("finalAmount"),finalAmountSourceRef:data.get("finalAmountSourceRef"),
+      disposalCostCents:cents("disposalCost"),disposalCostSourceRef:data.get("disposalCostSourceRef"),
       durationMinutes:Number(data.get("durationMinutes"))||0,paymentMethod:data.get("paymentMethod"),photoRefs:String(data.get("photoRefs")||"").split(",").map(v=>v.trim()).filter(Boolean),
       lossReason:data.get("lossReason"),followUpAt:toIso("followUpAt"),reviewRequestedAt:toIso("reviewRequestedAt"),reviewReceivedAt:toIso("reviewReceivedAt"),notes:data.get("notes")};
     try{await api("/api/hermes-connect/home-services/crm",{method:"POST",body:JSON.stringify(payload)});resetLeadForm();await load();}
