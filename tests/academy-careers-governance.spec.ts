@@ -87,7 +87,8 @@ test.describe("Academy and careers governance", () => {
     const response = await page.goto("/careers/wisconsin-owner-operators/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch");
-    await expect(page.getByText("Source reviewed October 3, 2026", { exact: true })).toBeVisible();
+    await expect(page.locator(".career-updated")).toHaveText("Source reviewed October 3, 2026");
+    await expect(page.locator(".career-updated")).toBeVisible();
     if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /View and apply on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
     await expect(page.getByRole("link", { name: /Open the Hermes employer page on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/c/hermeslogisticsus-com");
     await expect(page.getByText(/employer-profile reference and not as a complete vacancy directory/)).toBeVisible();
