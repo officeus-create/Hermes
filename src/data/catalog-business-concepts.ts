@@ -181,7 +181,8 @@ export const mangalIKazanConcept = Object.freeze({
   channels: [
     { label: "Official website", url: "https://mangal-i-kazan.com.ua/", direction: "primary" }
   ],
-  factsRequiringOwnerConfirmation: ["current full menu", "current prices", "delivery radius beyond ЖК Чайки", "official social accounts", "Google Business Profile ownership"],
+  factsRequiringOwnerConfirmation: ["актуальне повне меню", "актуальні ціни", "радіус доставки за межами ЖК Чайки", "офіційні соцмережі", "власник Google Business Profile"],
+  factsRequiringOwnerConfirmationEn: ["current full menu", "current prices", "delivery radius beyond the Chaiky residential complex", "official social accounts", "Google Business Profile ownership"],
   sourceRef: "PUBLIC-OWNER-SITE-MANGAL-I-KAZAN-20260929"
 } satisfies CatalogBusinessConcept);
 
