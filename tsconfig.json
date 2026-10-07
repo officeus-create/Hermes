@@ -1,5 +1,12 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "functions/api/carrier-contract.ts"]
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist",
+    "functions/api/carrier-contract.ts",
+    "workers/hermes-connect-mcp/**"
+  ]
 }
