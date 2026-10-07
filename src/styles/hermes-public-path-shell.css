@@ -281,7 +281,13 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
 
 @media (max-width: 720px) {
   .detail-page .detail-hero {
+    display: flex;
+    flex-direction: column;
     padding: 108px 0 48px;
+  }
+
+  .detail-page .detail-hero-content {
+    order: 1;
   }
 
   .detail-page .detail-hero h1 {
@@ -293,6 +299,7 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
   }
 
   .detail-page .detail-hero > img.detail-hero-media {
+    order: 2;
     border-radius: var(--hermes-radius-card);
   }
 
