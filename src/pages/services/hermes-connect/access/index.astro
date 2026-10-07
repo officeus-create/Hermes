@@ -5,13 +5,13 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 ---
 
 <BaseLayout
-  title="Вхід і реєстрація | Hermes Connect"
-  description="Один Hermes-акаунт і CRM, що підлаштовується під тип бізнесу: Repair Shop, Academy / Courses та інші vertical-specific workspaces."
+  title="Sign in and registration | Hermes Connect"
+  description="One Hermes account and a CRM matched to the business type: Repair Shop, Academy / Courses, and other vertical-specific workspaces."
   robots="noindex,nofollow"
-  htmlLang="uk"
-  locale="uk"
+  htmlLang="en"
+  locale="en"
 >
-  <SiteHeader activePath="/paths/technology/" theme="light" locale="uk" />
+  <SiteHeader activePath="/paths/technology/" theme="light" locale="en" />
   <main id="main-content" class="access-page">
     <div class="access-shell">
       <div class="access-toolbar">
@@ -134,14 +134,13 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   } as const;
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(window.location.search);
-  // Match the shared Connect shell: explicit choice, then saved choice, then English.
-  let savedLanguage: string | null = null;
-  try { savedLanguage = window.localStorage.getItem("hermes-connect-language"); } catch {}
-  let lang: Lang = (params.has("lang") ? params.get("lang") : savedLanguage) === "uk" ? "uk" : "en";
+  // Canonical clean route is English. Non-English variants are explicit URL locales.
+  let lang: Lang = params.get("lang") === "uk" ? "uk" : "en";
 
   const withLang = (path: string) => {
     const url = new URL(path, window.location.origin);
-    url.searchParams.set("lang", lang);
+    if (lang === "en") url.searchParams.delete("lang");
+    else url.searchParams.set("lang", lang);
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
