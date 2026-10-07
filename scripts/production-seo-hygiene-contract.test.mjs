@@ -104,7 +104,7 @@ assert.ok(sitemapPageUrls.includes(carrierLifecycleGuide), "bounded carrier-life
 
 const primarySitemap = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
 const businessDirectorySitemap = await readFile(new URL("../public/sitemap-business-directory.xml", import.meta.url), "utf8");
-const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");
+const digitalServicesSitemap = await readFile(new URL("../public/sitemap-digital-services.xml", import.meta.url), "utf8");\nassert.ok(digitalServicesSitemap.includes("/services/hermes-connect/support/"), "Hermes Connect Support/Trust owner must remain discoverable in the digital-services sitemap");
 for (const capability of ["ai-command-center","business-automation","load-analyzer","proposal-builder","rate-negotiator","roi-calculator","unified-inbox"]) {
   assert.ok(!digitalServicesSitemap.includes(`/services/hermes-connect/${capability}/`), `unreleased capability leaked into sitemap: ${capability}`);
 }
