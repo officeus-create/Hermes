@@ -40,6 +40,11 @@ const call = async (body, env = {}, headers = {}) => {
 }
 
 {
+  const { json } = await call({jsonrpc:'2.0',id:41,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'roofing company',primary_goal:'improve ads and website traffic'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_MARKETING');
+}
+
+{
   const { json } = await call({jsonrpc:'2.0',id:5,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'post estimate follow up',desired_capability:'automatic reminder after two days',outcome:'missing_capability',consent_to_product_learning:false}}});
   assert.equal(json.result.structuredContent.accepted, false);
   assert.equal(json.result.structuredContent.status, 'explicit_consent_required');
@@ -106,6 +111,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   const plan = json.result.structuredContent;
   assert.match(plan.strategy, /Problem -> minimum approved connections/);
   assert.ok(plan.recommended_connections.some((item) => item.capability === 'Business email'));
+  assert.equal(plan.recommended_connections.some((item) => item.capability === 'Marketing / analytics sources'), false);
   assert.match(plan.crm_bootstrap_prompt, /Use only the sources and connectors I explicitly approve/);
   assert.match(plan.continuity_rule, /durable provisioning job/);
   assert.match(plan.authorization_rule, /recommendation never grants access/);
