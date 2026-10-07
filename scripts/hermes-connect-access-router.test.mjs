@@ -18,14 +18,15 @@ test("Hermes Connect access routes one account into vertical-specific CRM", () =
   assert.match(page, /String\(owned\[0\]\.href\)/);
 });
 
-test("Access page keeps Ukrainian content and shares the header language preference", () => {
-  assert.match(page, /htmlLang="uk"/);
-  assert.match(page, /locale="uk"/);
+test("Access page defaults to English and uses explicit locale URLs", () => {
+  assert.match(page, /htmlLang="en"/);
+  assert.match(page, /locale="en"/);
   assert.match(page, /<SiteHeader\b/);
   assert.doesNotMatch(page, /<button[^>]*data-lang=/);
-  assert.match(page, /hermes-connect-language/);
-  assert.match(page, /window\.location\.assign/);
+  assert.match(page, /params\.get\("lang"\) === "uk" \? "uk" : "en"/);
+  assert.match(page, /url\.searchParams\.delete\("lang"\)/);
   assert.match(page, /url\.searchParams\.set\("lang", lang\)/);
+  assert.match(page, /window\.location\.assign/);
 });
 
 test("Access page does not pretend unreleased verticals are registrable", () => {
