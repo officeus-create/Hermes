@@ -209,10 +209,11 @@ const { loadBoardContext = false } = Astro.props;
     if (!header || document.querySelector("[data-hc-product-context]")) return;
 
     const isHub = path === "/services/hermes-connect/" || path === "/services/hermes-connect";
+    const isAccess = path.replace(/\/+$/, "/") === "/services/hermes-connect/access/";
     const isRepair = path.startsWith("/services/hermes-connect/repair-shops");
     const isLoadBoard = path === "/load-board/" || path.startsWith("/load-board/");
     const isBeauty = path === "/services/hermes-connect/beauty/workspace" || path.startsWith("/services/hermes-connect/beauty/workspace/");
-    const status = isHub
+    const status = (isHub || isAccess)
       ? chrome[locale].hub
       : isRepair
         ? chrome[locale].live
@@ -223,7 +224,7 @@ const { loadBoardContext = false } = Astro.props;
           : chrome[locale].reference;
 
     const context = document.createElement("section");
-    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : isLoadBoard ? "is-load-board" : isBeauty ? "is-private" : "is-reference"}`;
+    context.className = `hc-product-context ${isRepair ? "is-live" : (isHub || isAccess) ? "is-hub" : isLoadBoard ? "is-load-board" : isBeauty ? "is-private" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
     context.setAttribute("aria-label", chrome[locale].familyNavigation);
 
@@ -238,7 +239,9 @@ const { loadBoardContext = false } = Astro.props;
     const strong = document.createElement("strong");
     strong.textContent = status;
     const product = document.createElement("span");
-    product.textContent = isLoadBoard ? chrome[locale].loadBoardProduct : isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
+    product.textContent = isAccess
+      ? (locale === "uk" ? "СТО — поточний живий пілот; реєстрація не означає активацію бізнесу." : "Repair Shop is the current live pilot; account registration does not activate a shop.")
+      : isLoadBoard ? chrome[locale].loadBoardProduct : isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
     const contentLanguage = document.createElement("span");
     contentLanguage.className = "hc-content-language";
     contentLanguage.textContent = isBeauty && locale === "ru" ? "Язык контента: русский" : chrome[locale].content;
