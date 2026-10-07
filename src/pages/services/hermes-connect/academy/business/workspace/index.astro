@@ -152,6 +152,52 @@ import "../../../../../../styles/hermes-academy-app.css";
             <div><span>Renewal / club continuation</span><span>Program page</span><span>Needs freshness</span><span>Confirm current cohort scope</span></div>
           </div>
           <p class="academy-owner-boundary" data-i18n="proofBoundary">Це governance-demo, а не висновок про достовірність конкретної client claim. Canonical wording затверджує уповноважена людина після evidence review.</p>
+          <div class="academy-measurement-live" data-academy-measurement-live>
+            <div class="academy-owner-panel-head">
+              <div><p class="academy-app-eyebrow">LIVE EVIDENCE · PRIVATE</p><h3>Evidence → attribution → economics</h3></div>
+              <span class="academy-app-status">UNKNOWN ≠ 0</span>
+            </div>
+            <p>Це приватний реєстр доказів поточного Academy Business. Spend, revenue, CAC, LTV і ROMI не змішуються між валютами та не стають “відомими” без source reference, періоду й attribution scope.</p>
+            <form class="academy-measurement-form" data-measurement-form>
+              <label><span>Evidence kind *</span><select name="kind">
+                <option value="organic_baseline">Organic baseline</option>
+                <option value="paid_spend">Paid spend</option>
+                <option value="ltv">LTV evidence</option>
+                <option value="result_claim">Result claim</option>
+                <option value="business_result">Business result</option>
+                <option value="retention">Retention</option>
+                <option value="other">Other</option>
+              </select></label>
+              <label><span>Source channel</span><input name="sourceChannel" maxlength="80" placeholder="instagram / website"/></label>
+              <label><span>Campaign ID</span><input name="campaignId" maxlength="160" placeholder="paid-october"/></label>
+              <label><span>Content ID</span><input name="contentId" maxlength="160" placeholder="reel-001"/></label>
+              <label><span>Metric key</span><input name="metricKey" maxlength="120" placeholder="reach / retention"/></label>
+              <label><span>Metric value</span><input name="metricValue" type="number" step="any" placeholder="12500"/></label>
+              <label><span>Metric unit</span><input name="metricUnit" maxlength="40" placeholder="accounts / %"/></label>
+              <label><span>Money amount</span><input name="amountMajor" type="number" min="0" step="0.01" placeholder="100.00"/></label>
+              <label><span>Currency</span><input name="currency" maxlength="3" placeholder="EUR / USD / UAH"/></label>
+              <label><span>Observed at *</span><input name="observedAt" type="datetime-local" required/></label>
+              <label><span>Period start</span><input name="periodStart" type="date"/></label>
+              <label><span>Period end</span><input name="periodEnd" type="date"/></label>
+              <label class="academy-measurement-wide"><span>Source reference *</span><input name="sourceRef" required maxlength="600" placeholder="URL / document / CRM / ads export"/></label>
+              <label class="academy-measurement-wide"><span>Definition *</span><input name="definition" required maxlength="1200" placeholder="Population · period · calculation · exclusions"/></label>
+              <label><span>Evidence owner *</span><input name="evidenceOwnerLabel" required maxlength="180" placeholder="Marketing / Finance / Program owner"/></label>
+              <label><span>Claim state</span><select name="claimState">
+                <option value="evidence_only">Evidence only</option>
+                <option value="needs_review">Needs review</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="expired">Expired</option>
+              </select></label>
+              <label class="academy-measurement-wide"><span>Claim text</span><input name="claimText" maxlength="1200" placeholder="What we may want to say publicly"/></label>
+              <label class="academy-measurement-wide"><span>Approved wording</span><input name="approvedWording" maxlength="1200" placeholder="Human-approved site/social/sales wording"/></label>
+              <label><span>Review date</span><input name="reviewAt" type="date"/></label>
+              <button class="academy-app-button intelligence" type="submit">Save evidence</button>
+            </form>
+            <p class="academy-crm-core-status" data-measurement-status aria-live="polite"></p>
+            <div class="academy-measurement-economics" data-measurement-economics><p>Loading evidence economics…</p></div>
+            <div class="academy-measurement-records" data-measurement-records><p>Loading evidence registry…</p></div>
+          </div>
         </section>
 
         <section class="academy-owner-extended">
@@ -223,11 +269,11 @@ import "../../../../../../styles/hermes-academy-app.css";
           <div class="academy-owner-panel-head"><div><p class="academy-app-eyebrow">EXECUTIVE KPI DICTIONARY</p><h2 data-i18n="kpiDictionary">Спочатку визначення метрики — потім цифра.</h2></div><span class="academy-app-status" data-i18n="realOnly">лише з реальних даних</span></div>
           <p data-i18n="kpiDictionaryCopy">Шаблон готовий до фінансових і комерційних показників, але значення залишаються порожніми, доки не підключене надійне джерело.</p>
           <div class="academy-kpi-dictionary">
-            <div><b>Revenue</b><span>—</span></div><div><b>Profit</b><span>—</span></div>
+            <div><b>Revenue</b><span data-live-kpi="revenue">—</span></div><div><b>Profit</b><span>—</span></div>
             <div><b>Lead → sale conversion</b><span>—</span></div><div><b>Average check</b><span>—</span></div>
             <div><b>Sales productivity</b><span>—</span></div><div><b>Plan attainment</b><span>—</span></div>
-            <div><b>CAC</b><span>—</span></div><div><b>LTV</b><span>—</span></div>
-            <div><b>ROMI</b><span>—</span></div><div><b>Channel efficiency</b><span>—</span></div>
+            <div><b>CAC</b><span data-live-kpi="cac">—</span></div><div><b>LTV</b><span data-live-kpi="ltv">—</span></div>
+            <div><b>ROMI</b><span data-live-kpi="romi">—</span></div><div><b>Channel efficiency</b><span>—</span></div>
             <div><b>Program completion</b><span>—</span></div><div><b>Renewal / next program</b><span>—</span></div>
           </div>
         </section>
@@ -312,12 +358,24 @@ import "../../../../../../styles/hermes-academy-app.css";
   const loading=document.querySelector<HTMLElement>("[data-workspace-loading]");const content=document.querySelector<HTMLElement>("[data-workspace-content]");const alert=document.querySelector<HTMLElement>("[data-workspace-alert]");
   const json=async(url:string,options:RequestInit={})=>{const r=await fetch(url,{...options,headers:{Accept:"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});const p=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(p.error||`request_${r.status}`),{status:r.status,payload:p});return p;};
   const fail=(message:string)=>{if(alert){alert.textContent=message;alert.className="academy-app-alert show error";}};
-  const money=(cents:number|null|undefined)=>cents===null||cents===undefined?"—":new Intl.NumberFormat(lang==="uk"?"uk-UA":"en-US",{style:"currency",currency:"USD"}).format(cents/100);
+  const money=(cents:number|null|undefined,currency:string|null|undefined)=>{
+    const code=String(currency||"").toUpperCase();
+    if(cents===null||cents===undefined||!/^[A-Z]{3}$/.test(code))return "—";
+    try{return new Intl.NumberFormat(lang==="uk"?"uk-UA":"en-US",{style:"currency",currency:code}).format(Number(cents)/100);}
+    catch{return `${(Number(cents)/100).toFixed(2)} ${code}`;}
+  };
+  const revenueLabel=(metrics:any)=>{
+    const rows=Array.isArray(metrics?.revenueByCurrency)?metrics.revenueByCurrency:[];
+    if(!rows.length)return "—";
+    return rows.map((row:any)=>money(Number(row.cents),row.currency)).join(" · ");
+  };
   const renderCrmCore=(state:any)=>{
     const metrics=state?.metrics||{};
     document.querySelectorAll<HTMLElement>("[data-crm-metric]").forEach(node=>{const key=node.dataset.crmMetric||"";node.textContent=Number.isFinite(Number(metrics[key]))?String(metrics[key]):"—";});
     const revenue=document.querySelector<HTMLElement>("[data-crm-revenue]");
-    if(revenue)revenue.textContent=Number(metrics.revenueKnownCount)>0?money(Number(metrics.revenueCents||0)):"—";
+    if(revenue)revenue.textContent=revenueLabel(metrics);
+    const revenueKpi=document.querySelector<HTMLElement>('[data-live-kpi="revenue"]');
+    if(revenueKpi)revenueKpi.textContent=revenueLabel(metrics);
     const target=document.querySelector<HTMLElement>("[data-crm-recent]");
     if(!target)return;
     const leads=Array.isArray(state?.recentLeads)?state.recentLeads:[];
@@ -342,14 +400,92 @@ import "../../../../../../styles/hermes-academy-app.css";
       await json("/api/hermes-connect/academy/crm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_lead",...values})});
       form.reset();
       if(status){status.textContent="Lead збережено і перечитано з CRM.";status.className="academy-crm-core-status ok";}
-      await Promise.all([loadCrmCore(),loadProgramsCohorts()]);
+      await Promise.all([loadCrmCore(),loadProgramsCohorts(),loadMeasurement()]);
     }catch(error:any){
       const detail=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"crm_save_failed");
       if(status){status.textContent=detail;status.className="academy-crm-core-status error";}
     }
   });
 
-  const programSelect=()=>document.querySelector<HTMLSelectElement>("[data-academy-program-select]");
+  const renderMeasurement=(state:any)=>{
+    const measurement=state?.measurement||{};
+    const economics=Array.isArray(measurement.economics)?measurement.economics:[];
+    const records=Array.isArray(state?.recentEvidence)?state.recentEvidence:[];
+    const economicsTarget=document.querySelector<HTMLElement>("[data-measurement-economics]");
+    if(economicsTarget){
+      if(!economics.length)economicsTarget.innerHTML="<p>No source-gated paid economics yet / Доказаних paid economics ще немає.</p>";
+      else economicsTarget.replaceChildren(...economics.map((item:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");
+        title.textContent=[item.sourceChannel||"source",item.campaignId||"",item.contentId||""].filter(Boolean).join(" · ");
+        const scope=document.createElement("small");
+        scope.textContent=[item.periodStart||"period ?",item.periodEnd||"?",item.currency||""].filter(Boolean).join(" → ");
+        const values=document.createElement("span");
+        const cac=item.cacCents===null||item.cacCents===undefined?"CAC: UNKNOWN":"CAC: "+money(item.cacCents,item.currency);
+        const revenue=item.revenueCents===null||item.revenueCents===undefined?"Revenue: UNKNOWN":"Revenue: "+money(item.revenueCents,item.currency);
+        const romi=item.romiRatio===null||item.romiRatio===undefined?"ROMI: UNKNOWN":"ROMI: "+(Number(item.romiRatio)*100).toFixed(1)+"%";
+        values.textContent=`${cac} · ${revenue} · ${romi}`;
+        article.append(title,scope,values);return article;
+      }));
+    }
+    const recordsTarget=document.querySelector<HTMLElement>("[data-measurement-records]");
+    if(recordsTarget){
+      if(!records.length)recordsTarget.innerHTML="<p>No persisted evidence yet / Доказів ще немає.</p>";
+      else recordsTarget.replaceChildren(...records.slice(0,20).map((item:any)=>{
+        const article=document.createElement("article");
+        const title=document.createElement("strong");title.textContent=item.kind||"evidence";
+        const meta=document.createElement("small");
+        meta.textContent=[item.sourceChannel||"",item.campaignId||"",item.claimState||"",item.observedAt||""].filter(Boolean).join(" · ");
+        const definition=document.createElement("span");definition.textContent=item.approvedWording||item.claimText||item.definition||item.sourceRef||"";
+        article.append(title,meta,definition);return article;
+      }));
+    }
+    const cac=document.querySelector<HTMLElement>('[data-live-kpi="cac"]');
+    const romi=document.querySelector<HTMLElement>('[data-live-kpi="romi"]');
+    const ltv=document.querySelector<HTMLElement>('[data-live-kpi="ltv"]');
+    const one=economics.length===1?economics[0]:null;
+    if(cac)cac.textContent=one&&one.cacCents!==null?money(one.cacCents,one.currency):(economics.length>1?"MULTI":"—");
+    if(romi)romi.textContent=one&&one.romiRatio!==null?(Number(one.romiRatio)*100).toFixed(1)+"%":(economics.length>1?"MULTI":"—");
+    const ltvRows=Array.isArray(measurement.ltvEvidence)?measurement.ltvEvidence:[];
+    if(ltv)ltv.textContent=ltvRows.length===1?money(ltvRows[0].amountCents,ltvRows[0].currency):(ltvRows.length>1?"MULTI":"—");
+  };
+  const loadMeasurement=async()=>{const state=await json("/api/hermes-connect/academy/measurement?module=dashboard");renderMeasurement(state);};
+  document.querySelector<HTMLFormElement>("[data-measurement-form]")?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    const form=event.currentTarget as HTMLFormElement;
+    const status=document.querySelector<HTMLElement>("[data-measurement-status]");
+    const values:any=Object.fromEntries(new FormData(form).entries());
+    const amountMajor=String(values.amountMajor||"").trim();
+    delete values.amountMajor;
+    if(amountMajor){
+      const parsed=Number(amountMajor);
+      if(!Number.isFinite(parsed)||parsed<0){if(status){status.textContent="Invalid money amount";status.className="academy-crm-core-status error";}return;}
+      values.amountCents=Math.round(parsed*100);
+    }
+    for(const key of ["metricValue","sourceChannel","campaignId","contentId","metricKey","metricUnit","currency","periodStart","periodEnd","claimText","approvedWording","reviewAt"]){
+      if(values[key]==="")delete values[key];
+    }
+    if(status){status.textContent="Saving evidence…";status.className="academy-crm-core-status";}
+    try{
+      await json("/api/hermes-connect/academy/measurement",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"create_evidence",...values})});
+      form.reset();
+      const observed=form.querySelector<HTMLInputElement>('[name="observedAt"]');
+      if(observed){const now=new Date();observed.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);}
+      if(status){status.textContent="Evidence saved and reread.";status.className="academy-crm-core-status ok";}
+      await Promise.all([loadMeasurement(),loadCrmCore()]);
+    }catch(error:any){
+      const detail=Array.isArray(error?.payload?.errors)?error.payload.errors.join(", "):String(error?.message||"evidence_save_failed");
+      if(status){status.textContent=detail;status.className="academy-crm-core-status error";}
+    }
+  });
+  const setMeasurementObservedNow=()=>{
+    const observed=document.querySelector<HTMLInputElement>('[data-measurement-form] [name="observedAt"]');
+    if(!observed||observed.value)return;
+    const now=new Date();observed.value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  };
+  setMeasurementObservedNow();
+
+    const programSelect=()=>document.querySelector<HTMLSelectElement>("[data-academy-program-select]");
   const renderProgramsCohorts=(state:any)=>{
     const programs=Array.isArray(state?.programs)?state.programs:[];
     const cohorts=Array.isArray(state?.cohorts)?state.cohorts:[];
@@ -421,7 +557,7 @@ import "../../../../../../styles/hermes-academy-app.css";
       const b=state.academyBusiness;const name=document.querySelector<HTMLElement>("[data-business-name]");if(name)name.textContent=b.businessName||"Academy";
       const link=document.querySelector<HTMLAnchorElement>("[data-catalog-link]");if(link)link.href=b.catalogOptIn?`/businesses/connect/academy/${encodeURIComponent(b.slug)}/`:"/businesses/";
       loading?.classList.add("academy-app-hidden");content?.classList.remove("academy-app-hidden");
-      await loadCrmCore();
+      await Promise.all([loadCrmCore(),loadProgramsCohorts(),loadMeasurement()]);
     }catch(error:any){if(error?.status===401){location.assign("/services/hermes-connect/academy/business/auth/?mode=login");return;}fail(String(error?.message||"Could not load workspace"));}
   })();
   document.querySelector<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);location.assign("/services/hermes-connect/academy/business/auth/?mode=login");});
@@ -432,9 +568,10 @@ import "../../../../../../styles/hermes-academy-app.css";
   .academy-owner-lang{display:flex;border:1px solid rgba(148,163,184,.35);border-radius:999px;padding:3px;background:#fff}.academy-owner-lang button{border:0;background:transparent;border-radius:999px;padding:7px 10px;font-weight:900;cursor:pointer}.academy-owner-lang button.active{background:#111827;color:#fff}
   .academy-owner-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:18px 0}.academy-owner-kpis article{padding:18px;border:1px solid rgba(148,163,184,.28);border-radius:18px;background:#fff}.academy-owner-kpis span,.academy-owner-kpis small{display:block}.academy-owner-kpis span{font-size:12px;color:#64748b}.academy-owner-kpis strong{display:block;margin:7px 0;font-size:28px}.academy-owner-kpis small{font-size:10px;color:#94a3b8}
   .academy-crm-core-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.academy-crm-core-form label{display:grid;gap:6px}.academy-crm-core-form label>span{font-size:10px;font-weight:800;color:#64748b}.academy-crm-core-form input,.academy-crm-core-form select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:10px 11px;background:#fff;color:#0f172a}.academy-crm-core-wide{grid-column:span 2}.academy-crm-core-form button{align-self:end;min-height:41px}.academy-crm-core-status{min-height:20px;margin:12px 0 0;color:#64748b}.academy-crm-core-status.ok{color:#166534}.academy-crm-core-status.error{color:#b91c1c}.academy-crm-recent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.academy-crm-recent article{display:grid;gap:5px;padding:13px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-crm-recent small,.academy-crm-recent span{color:#64748b;font-size:10px}.academy-crm-recent strong{font-size:12px}
+  .academy-measurement-live{margin-top:18px;padding-top:18px;border-top:1px solid rgba(148,163,184,.22)}.academy-measurement-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}.academy-measurement-form label{display:grid;gap:5px}.academy-measurement-form label>span{font-size:10px;font-weight:800;color:#64748b}.academy-measurement-form input,.academy-measurement-form select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-measurement-wide{grid-column:span 2}.academy-measurement-form button{align-self:end;min-height:39px}.academy-measurement-economics,.academy-measurement-records{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.academy-measurement-economics article,.academy-measurement-records article{display:grid;gap:4px;padding:11px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-measurement-economics small,.academy-measurement-records small,.academy-measurement-economics span,.academy-measurement-records span{font-size:10px;color:#64748b;overflow-wrap:anywhere}
   .academy-program-live{margin-top:18px;padding-top:16px;border-top:1px solid rgba(148,163,184,.22)}.academy-program-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-program-live form{display:grid;gap:8px;padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:#fff}.academy-program-live input,.academy-program-live select{width:100%;border:1px solid rgba(148,163,184,.35);border-radius:10px;padding:9px 10px;background:#fff;color:#0f172a}.academy-program-live form>small{min-height:16px;color:#64748b}.academy-program-price{display:grid;grid-template-columns:1fr 1fr;gap:8px}.academy-program-records{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.academy-program-records>div{display:grid;gap:8px}.academy-program-records [data-academy-program-list],.academy-program-records [data-academy-cohort-list]{display:grid;gap:8px}.academy-program-records article{display:grid;gap:4px;padding:11px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-program-records small,.academy-program-records span{font-size:10px;color:#64748b}
     .academy-owner-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.academy-owner-pipeline{display:grid;grid-template-columns:repeat(10,minmax(150px,1fr));gap:10px;overflow:auto;margin-top:18px;padding-bottom:8px}.academy-owner-pipeline>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:14px;background:rgba(248,250,252,.86);min-height:210px}.academy-owner-pipeline>div>b{font-size:12px}.academy-owner-pipeline article{margin-top:10px;padding:10px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff}.academy-owner-pipeline article strong,.academy-owner-pipeline article small{display:block}.academy-owner-pipeline article small{margin-top:5px;color:#64748b}
   .academy-owner-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.academy-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.academy-role-grid article{padding:14px;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:#fff}.academy-role-grid span,.academy-role-grid b,.academy-role-grid small{display:block}.academy-role-grid span{color:#7c5cff;font-size:9px;font-weight:900;letter-spacing:.05em}.academy-role-grid b{margin:7px 0 5px;font-size:12px}.academy-role-grid small{color:#64748b;font-size:10px;line-height:1.45}.academy-owner-modules ul{padding-left:20px;line-height:1.8}.academy-assessment-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}.academy-assessment-head>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-assessment-head small,.academy-assessment-head strong{display:block}.academy-assessment-head small{color:#64748b;font-size:10px}.academy-assessment-head strong{margin-top:5px;font-size:12px}.academy-assessment-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.academy-assessment-grid>article{padding:18px;border:1px solid rgba(148,163,184,.24);border-radius:16px;background:#fff}.academy-assessment-grid>article>span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-grid h3{margin:8px 0}.academy-assessment-grid p{color:#64748b;line-height:1.6}.academy-assessment-sources{display:flex;gap:7px;flex-wrap:wrap}.academy-assessment-sources a,.academy-assessment-sources span{padding:6px 8px;border:1px solid rgba(148,163,184,.28);border-radius:999px;font-size:10px;text-decoration:none}.academy-assessment-flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:14px}.academy-assessment-flow b{padding:6px 8px;border-radius:8px;background:#f3f0ff;font-size:10px}.academy-assessment-flow i{font-style:normal;color:#94a3b8}.academy-training-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-training-method>div{display:grid;gap:5px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#f8fafc}.academy-training-method span{font-size:9px;color:#7c5cff;font-weight:900}.academy-training-method b{font-size:11px}.academy-assessment-rubric{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-rubric>div{display:grid;grid-template-columns:1fr auto;gap:5px 10px;padding:12px;border:1px solid rgba(148,163,184,.2);border-radius:12px;background:#fbfcfe}.academy-assessment-rubric b{font-size:11px}.academy-assessment-rubric span{font-size:10px;color:#7c5cff;font-weight:900}.academy-assessment-rubric small{grid-column:1/-1;color:#64748b;line-height:1.45}.academy-assessment-review{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}.academy-assessment-review span{padding:10px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:10px}.academy-acquisition-table{display:grid;margin-top:16px;overflow:auto}.academy-acquisition-table>div{display:grid;grid-template-columns:1fr 1.25fr 1.1fr 1.1fr 1fr;gap:10px;min-width:820px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-acquisition-table .academy-acq-head{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-acquisition-table span{color:#475569}.academy-proof-table{display:grid;margin-top:16px;overflow:auto}.academy-proof-table>div{display:grid;grid-template-columns:1.2fr 1.1fr .8fr 1.3fr;gap:10px;min-width:720px;padding:11px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:11px}.academy-proof-table>div:first-child{color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.04em}.academy-proof-table span{color:#475569}.academy-owner-extended{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:18px 0}.academy-program-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.academy-program-flow>div,.academy-sales-levels>div{padding:12px;border:1px solid rgba(148,163,184,.24);border-radius:12px;background:#fff}.academy-program-flow span,.academy-program-flow b,.academy-program-flow small,.academy-sales-levels span,.academy-sales-levels b,.academy-sales-levels small{display:block}.academy-program-flow span,.academy-sales-levels span{font-size:9px;color:#7c5cff;font-weight:900}.academy-program-flow b,.academy-sales-levels b{margin-top:7px;font-size:12px}.academy-program-flow small,.academy-sales-levels small{margin-top:5px;color:#64748b;font-size:10px;line-height:1.4}.academy-sales-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}.academy-executive-kpis{margin-bottom:18px}.academy-kpi-dictionary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}.academy-kpi-dictionary>div{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1px solid rgba(148,163,184,.22);border-radius:11px;background:#fff;font-size:11px}.academy-kpi-dictionary span{font-size:18px;color:#94a3b8}.academy-owner-metrics{display:grid;margin-top:16px}.academy-owner-metrics>div{display:grid;grid-template-columns:1.5fr repeat(4,.65fr);gap:10px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,.2);font-size:12px}.academy-owner-metrics em{font-style:normal;color:#a16207}.academy-owner-boundary{margin:18px 0;padding:16px;border-radius:14px;background:#fff7ed;color:#7c2d12;line-height:1.6;font-size:13px}
-  @media(max-width:900px){.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
-  @media(max-width:620px){.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
+  @media(max-width:900px){.academy-measurement-form{grid-template-columns:repeat(2,1fr)}.academy-measurement-economics,.academy-measurement-records{grid-template-columns:1fr}.academy-crm-core-form{grid-template-columns:repeat(2,1fr)}.academy-crm-recent{grid-template-columns:1fr}.academy-role-grid{grid-template-columns:repeat(2,1fr)}.academy-owner-kpis{grid-template-columns:repeat(2,1fr)}.academy-owner-modules,.academy-owner-extended,.academy-assessment-grid{grid-template-columns:1fr}.academy-program-flow,.academy-kpi-dictionary,.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:repeat(2,1fr)}.academy-owner-metrics>div{grid-template-columns:1fr 1fr}.academy-owner-metrics>div>b{grid-column:1/-1}}
+  @media(max-width:620px){.academy-measurement-form{grid-template-columns:1fr}.academy-measurement-wide{grid-column:span 1}.academy-role-grid{grid-template-columns:1fr}.academy-assessment-head,.academy-training-method,.academy-assessment-rubric,.academy-assessment-review{grid-template-columns:1fr}}
 </style>
