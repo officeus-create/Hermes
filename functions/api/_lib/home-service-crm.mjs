@@ -288,10 +288,12 @@ export function aggregateHomeServiceLeads(rows = []) {
     const quoteKnownCount = scopeRows.filter((row) => known(row, "quote_known")).length;
     const quoteVerifiedCount = scopeRows.filter((row) => verified(row, "quote_known", "quote_source_ref")).length;
 
-    const revenueComplete = finalVerifiedCount === completedScope.length;
-    const disposalComplete = disposalVerifiedCount === completedScope.length;
-    const leadCostComplete = leadCostVerifiedCount === scopeRows.length;
-    const quoteComplete = quoteVerifiedCount === scopeRows.length;
+    const revenueComplete = completedScope.length > 0
+      ? finalVerifiedCount === completedScope.length
+      : scopeRows.length > 0;
+    const disposalComplete = completedScope.length === 0 || disposalVerifiedCount === completedScope.length;
+    const leadCostComplete = scopeRows.length > 0 && leadCostVerifiedCount === scopeRows.length;
+    const quoteComplete = scopeRows.length > 0 && quoteVerifiedCount === scopeRows.length;
 
     const verifiedRevenueCents = sumVerified(completedScope, "final_amount_cents", "final_amount_known", "final_amount_source_ref");
     const verifiedDisposalCostCents = sumVerified(completedScope, "disposal_cost_cents", "disposal_cost_known", "disposal_cost_source_ref");
@@ -306,7 +308,7 @@ export function aggregateHomeServiceLeads(rows = []) {
         ? verifiedRevenueCents - verifiedDisposalCostCents - verifiedLeadCostCents
         : null,
       averageTicketCents: completedScope.length === 0
-        ? 0
+        ? null
         : revenueComplete ? Math.round(verifiedRevenueCents / completedScope.length) : null,
       verifiedRevenueCents,
       verifiedDisposalCostCents,
