@@ -46,13 +46,16 @@
 
     const supported = new Set(["en", "uk", "ru", "es", "it", "fr"]);
     const requested = new URLSearchParams(window.location.search).get("lang");
+    const documentLocale = String(document.documentElement.lang || "").toLowerCase();
     let stored = "";
     try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
     const locale = requested && supported.has(requested)
       ? requested
-      : supported.has(stored)
-        ? stored
-        : "en";
+      : supported.has(documentLocale)
+        ? documentLocale
+        : supported.has(stored)
+          ? stored
+          : "en";
 
     const copies: Record<string, Record<string, string>> = {
       en: { trigger: "Search", openCommand: "Open Hermes command palette", title: "Search & open", placeholder: "Search products and workspaces…", close: "Close", loading: "Loading your allowed workspaces…", ready: "Type to search Hermes Connect.", empty: "No allowed results match this search.", enter: "Enter to open", products: "Products", workspaces: "Workspaces", businesses: "Businesses", registrations: "Owner registrations" },
