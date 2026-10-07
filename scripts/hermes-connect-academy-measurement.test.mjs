@@ -166,7 +166,10 @@ test("Academy measurement keeps CAC source-scoped and ROMI UNKNOWN until attribu
   assert.equal(body.measurement.organicBaselines.length, 1);
   assert.equal(body.measurement.economics.length, 1);
   assert.equal(body.measurement.economics[0].spendCents, 10000);
+  assert.equal(body.measurement.economics[0].attributedLeads, 2);
   assert.equal(body.measurement.economics[0].attributedSales, 2);
+  assert.equal(body.measurement.economics[0].leadToSaleRatio, 1);
+  assert.equal(body.measurement.economics[0].costPerLeadCents, 5000);
   assert.equal(body.measurement.economics[0].cacCents, 5000);
   assert.equal(body.measurement.economics[0].revenueCents, null);
   assert.equal(body.measurement.economics[0].romiRatio, null);
@@ -261,6 +264,33 @@ test("Result claims require provenance, review date, and human-approved wording 
   const approvedBody = await approved.json();
   assert.equal(approvedBody.evidence.claimState, "approved");
   assert.match(approvedBody.evidence.approvedWording, /defined synthetic cohort/);
+
+  const stale = await mutateMeasurement({
+    request: request("/api/hermes-connect/academy/measurement", "token-one", "POST", {
+      action: "create_evidence",
+      kind: "result_claim",
+      claimText: "Historical synthetic claim.",
+      claimState: "approved",
+      approvedWording: "Historical wording that must not be release-ready now.",
+      sourceRef: "synthetic-report:claim-stale",
+      observedAt: "2020-01-01T09:00:00Z",
+      definition: "Historical synthetic definition.",
+      evidenceOwnerLabel: "Program owner",
+      reviewAt: "2020-02-01",
+    }),
+    env: { DB: db },
+  });
+  assert.equal(stale.status, 201);
+
+  const dashboard = await getMeasurement({
+    request: request("/api/hermes-connect/academy/measurement?module=dashboard", "token-one"),
+    env: { DB: db },
+  });
+  const dashboardBody = await dashboard.json();
+  assert.equal(dashboardBody.measurement.approvedClaimCount, 2);
+  assert.equal(dashboardBody.measurement.publicReadyClaimCount, 1);
+  assert.equal(dashboardBody.measurement.staleApprovedClaimCount, 1);
+  assert.equal(dashboardBody.measurement.publicReadyClaims[0].id, createdBody.evidence.id);
 });
 
 test("Measurement is owner/company scoped, same-origin guarded, and archive-only", async () => {
