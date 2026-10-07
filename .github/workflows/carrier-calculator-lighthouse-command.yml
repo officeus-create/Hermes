@@ -1,27 +1,20 @@
 name: Measure carrier calculator Lighthouse on command
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
-  group: carrier-calculator-lighthouse-${{ github.event.comment.id }}
+  group: carrier-calculator-lighthouse-manual
   cancel-in-progress: false
 
 jobs:
   measure:
-    if: >-
-      github.event.issue.number == 380 &&
-      github.event.comment.body == '/measure-carrier-calculators' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      GH_TOKEN: ${{ github.token }}
       RPM_URL: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
       FACTORING_URL: https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/
 
@@ -113,8 +106,7 @@ jobs:
             cat artifacts/carrier-calculator-lighthouse/summary.md
             echo
             echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
-          } > /tmp/carrier-calculator-lighthouse-comment.md
-          gh issue comment 380 --repo "${{ github.repository }}" --body-file /tmp/carrier-calculator-lighthouse-comment.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload lab reports
         if: always()
