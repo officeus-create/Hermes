@@ -315,3 +315,19 @@ Do not invite a real customer until:
 - one synthetic tenant journey passes end-to-end without privileged bypass.
 
 Until this gate passes, the Customer package remains a preview and intentionally omits `mcp.json`.
+
+
+## V1.4 public MCP implementation slice — 2026-10-07
+
+The same review lane now contains the first real public MCP runtime at `/api/hermes-connect/mcp` instead of a documentation-only contract.
+
+Initial public tools:
+- `get_product_overview`: public product truth and official Hermes links only;
+- `recommend_start_path`: low-data business/CRM routing without claiming unreleased verticals;
+- `submit_product_feedback`: explicit-consent, bounded, privacy-safe product learning only.
+
+This initial endpoint is deliberately unauthenticated and public-data-only. It accepts no arbitrary private Company/Workspace identifier and has no private CRM read/write tool, so it does not weaken the future OAuth/tenant boundary.
+
+Authenticated customer tools remain the next layer. When added, they must derive identity and tenant scope from validated server credentials on every call, preserve the Capability Registry/Change Broker model, and pass cross-tenant/role/revocation tests before becoming available.
+
+Public plugin packaging must include this MCP from the first directory submission; do not publish a skills-only listing and try to attach MCP later.
