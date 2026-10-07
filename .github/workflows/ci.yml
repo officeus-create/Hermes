@@ -16,6 +16,8 @@ permissions:
 jobs:
   contracts:
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_USE_SYSTEM_CHROME: "1"
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -101,9 +103,6 @@ jobs:
       - name: Validate Load Board curtain and Hermes Connect funnel
         run: node scripts/load-board-curtain-funnel.test.mjs
 
-      - name: Install browser for workflow tests
-        run: npx playwright install --with-deps chromium
-
       - name: Validate SEO analytics privacy browser flow
         run: npx playwright test tests/seo-analytics-privacy.spec.ts --project=desktop
 
@@ -125,6 +124,8 @@ jobs:
   browser-regression:
     name: browser-regression (shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_USE_SYSTEM_CHROME: "1"
     strategy:
       fail-fast: true
       matrix:
@@ -144,9 +145,6 @@ jobs:
 
       - name: Build website
         run: npm run build
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       - name: Run full browser regression shard
         run: npx playwright test --shard=${{ matrix.shard }}/3
