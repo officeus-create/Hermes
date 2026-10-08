@@ -1,0 +1,191 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+---
+<BaseLayout
+  title="Home Services CRM owner setup | Hermes Connect"
+  description="Owner-controlled Hermes Connect Home Services CRM access for junk removal and other local service businesses. One Hermes identity, private job records and separately approved Catalog publication."
+  robots="noindex,nofollow"
+  htmlLang="en"
+  locale="en"
+>
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="hs-onboarding" id="main-content">
+    <div class="shell">
+      <a class="back" href="/services/hermes-connect/access/">← Hermes Connect account options</a>
+      <div class="intro">
+        <p class="eyebrow">Hermes Connect · Home Services · Owner setup</p>
+        <h1>One account. Your Home Services CRM.</h1>
+        <p>For junk removal, cleanouts and other local service businesses. Record real leads, quotes, booked jobs, completed work, tracked costs, payments and reviews in a private workspace.</p>
+        <p class="pilot">Pilot access: creating an account does not prove client activation, publish your company, or populate revenue. Business information must be saved by an authorized owner.</p>
+      </div>
+      <div class="steps">
+        <section class="panel" data-auth-panel aria-labelledby="auth-title">
+          <p class="eyebrow">Step 1 · Hermes identity</p>
+          <h2 id="auth-title">Create an account or sign in</h2>
+          <div class="mode" role="group" aria-label="Account action">
+            <button type="button" data-auth-mode="register" aria-pressed="true">Create account</button>
+            <button type="button" data-auth-mode="login" aria-pressed="false">Sign in</button>
+          </div>
+          <p class="feedback" data-auth-message role="status" aria-live="polite" hidden></p>
+          <form data-register-form>
+            <label>Your name<input name="name" autocomplete="name" minlength="2" required /></label>
+            <label>Work email<input type="email" name="email" autocomplete="email" required /></label>
+            <label>Password<input type="password" name="password" autocomplete="new-password" minlength="8" required /></label>
+            <label>Your location<input name="location" placeholder="City, State" minlength="2" required /></label>
+            <button class="primary" type="submit">Create Hermes account</button>
+          </form>
+          <form data-login-form hidden>
+            <label>Work email<input type="email" name="email" autocomplete="username" required /></label>
+            <label>Password<input type="password" name="password" autocomplete="current-password" required /></label>
+            <button class="primary" type="submit">Sign in</button>
+          </form>
+        </section>
+        <section class="panel" data-company-panel aria-labelledby="company-title" hidden>
+          <p class="eyebrow">Step 2 · Your own business</p>
+          <h2 id="company-title">Confirm Home Services company</h2>
+          <p class="note">An existing company attached to this Hermes identity is reused, not duplicated. If your account belongs to a different business type, setup stops rather than overwriting it.</p>
+          <a class="existing" data-open-existing href="/services/hermes-connect/home-services/workspace/" hidden>Open existing Home Services workspace ↗</a>
+          <p class="feedback" data-company-message role="status" aria-live="polite" hidden></p>
+          <form data-company-form>
+            <label>Business name<input name="companyName" minlength="2" autocomplete="organization" required /></label>
+            <div class="two">
+              <label>City<input name="city" minlength="2" required /></label>
+              <label>U.S. state (2 letters)<input name="state" maxlength="2" minlength="2" pattern="[A-Za-z]{2}" placeholder="CA" autocapitalize="characters" required /></label>
+            </div>
+            <label>Official website (optional)<input name="website" type="url" placeholder="https://example.com" /></label>
+            <label>Business phone (optional)<input name="phone" type="tel" autocomplete="tel" /></label>
+            <label class="consent"><input name="catalogOptIn" type="checkbox" /><span><strong>Opt in to Hermes Catalog</strong> — show approved business-level information only, after the public Home Services profile is completed. Listing is self-submitted and verification pending; no customer or financial records are public.</span></label>
+            <button class="primary" type="submit">Save company and open CRM</button>
+          </form>
+        </section>
+      </div>
+      <p class="privacy">Private by design: customer contacts, addresses, job photos, quotes, disposal costs, payment details and CRM history never become public from account registration. A published Catalog profile requires an explicit company opt-in and a separately saved public business profile.</p>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script is:inline>
+(() => {
+  const $ = (selector) => document.querySelector(selector);
+  const registerForm = $("[data-register-form]");
+  const loginForm = $("[data-login-form]");
+  const companyForm = $("[data-company-form]");
+  const authPanel = $("[data-auth-panel]");
+  const companyPanel = $("[data-company-panel]");
+  const authMessage = $("[data-auth-message]");
+  const companyMessage = $("[data-company-message]");
+  const formMessage = (target, message, bad) => {
+    if (!target) return;
+    target.hidden = !message;
+    target.textContent = message || "";
+    target.dataset.error = bad ? "true" : "false";
+  };
+  const api = async (path, options = {}) => {
+    const res = await fetch(path, { ...options, credentials: "same-origin", cache: "no-store",
+      headers: { Accept: "application/json", "Content-Type": "application/json", ...(options.headers || {}) } });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || payload.success === false) {
+      throw Object.assign(new Error(payload.error || (Array.isArray(payload.errors) ? payload.errors.join(", ") : "") || "request_failed"), { status: res.status, payload });
+    }
+    return payload;
+  };
+  const mode = (action) => {
+    if (registerForm) registerForm.hidden = action !== "register";
+    if (loginForm) loginForm.hidden = action !== "login";
+    document.querySelectorAll("[data-auth-mode]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-auth-mode") === action));
+    });
+    formMessage(authMessage, "", false);
+  };
+  document.querySelectorAll("[data-auth-mode]").forEach((button) => {
+    button.addEventListener("click", () => mode(button.getAttribute("data-auth-mode")));
+  });
+  const showCompany = async () => {
+    const state = await api("/api/hermes-connect/company");
+    if (authPanel) authPanel.hidden = true;
+    if (companyPanel) companyPanel.hidden = false;
+    const existing = state.company;
+    if (existing && existing.companyType !== "home_service") {
+      if (companyForm) companyForm.hidden = true;
+      formMessage(companyMessage, "This Hermes identity already belongs to another company type. To protect that business record, Home Services setup is blocked. Use the authorized Home Services owner account.", true);
+      return;
+    }
+    if (existing && companyForm) {
+      const inputs = { companyName: existing.companyName, city: existing.city, state: existing.state,
+        website: existing.website || "", phone: existing.phone || "" };
+      Object.entries(inputs).forEach(([key, value]) => {
+        const input = companyForm.elements.namedItem(key);
+        if (input && "value" in input) input.value = String(value || "");
+      });
+      const consent = companyForm.elements.namedItem("catalogOptIn");
+      if (consent && "checked" in consent) consent.checked = Boolean(existing.catalogOptIn);
+      const open = $("[data-open-existing]");
+      if (open) open.hidden = false;
+      formMessage(companyMessage, "Your existing Home Services company was found. Review its details or open your private workspace.", false);
+    }
+  };
+  registerForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = registerForm.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    const data = new FormData(registerForm);
+    formMessage(authMessage, "Creating your account…", false);
+    try {
+      await api("/api/auth/register", { method: "POST", body: JSON.stringify({
+        name: data.get("name"), email: data.get("email"), password: data.get("password"),
+        role: "Home Services Owner", location: data.get("location"),
+        bio: "Authorized Home Services owner account for Hermes Connect CRM company onboarding."
+      }) });
+      await showCompany();
+    } catch (error) {
+      formMessage(authMessage, error?.message === "email_already_registered" ? "This email is registered. Choose Sign in." : "Account setup could not finish: " + error.message, true);
+    } finally { if (submit) submit.disabled = false; }
+  });
+  loginForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = loginForm.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    const data = new FormData(loginForm);
+    formMessage(authMessage, "Signing in…", false);
+    try {
+      await api("/api/auth/login", { method: "POST", body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
+      await showCompany();
+    } catch (error) {
+      formMessage(authMessage, "Sign-in failed: " + error.message, true);
+    } finally { if (submit) submit.disabled = false; }
+  });
+  companyForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submit = companyForm.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    const data = new FormData(companyForm);
+    const optIn = data.get("catalogOptIn") === "on";
+    formMessage(companyMessage, "Saving your company and verifying it…", false);
+    try {
+      const input = {
+        companyName: data.get("companyName"), companyType: "home_service", city: data.get("city"),
+        state: data.get("state"), countryCode: "US", website: data.get("website"),
+        phone: data.get("phone"), catalogOptIn: optIn,
+      };
+      const written = await api("/api/hermes-connect/company", { method: "POST", body: JSON.stringify(input) });
+      const readback = await api("/api/hermes-connect/company");
+      const company = readback.company;
+      if (!company || company.id !== written.company?.id || company.companyType !== "home_service" || Boolean(company.catalogOptIn) !== optIn) {
+        throw new Error("company_readback_not_confirmed");
+      }
+      window.location.assign("/services/hermes-connect/home-services/workspace/");
+    } catch (error) {
+      formMessage(companyMessage, "Company save not confirmed: " + error.message, true);
+    } finally { if (submit) submit.disabled = false; }
+  });
+  if (new URLSearchParams(window.location.search).get("mode") === "login") mode("login");
+  void (async () => {
+    try { await api("/api/auth/me"); await showCompany(); }
+    catch (error) { if (error?.status !== 401) formMessage(authMessage, "Session check unavailable: " + error.message, true); }
+  })();
+})();
+</script>
+<style>
+.hs-onboarding{background:#f4f7fa;color:#172033;min-height:75vh}.shell{width:min(1080px,calc(100% - 32px));margin:auto;padding:110px 0 80px}.back{font-weight:750;color:#22639b;text-decoration:none}.intro{max-width:900px;margin:30px 0}.eyebrow{color:#1b6c9c;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}.intro h1{font-size:clamp(38px,6vw,70px);letter-spacing:-.05em;line-height:1.02;margin:8px 0 18px}.intro>p{max-width:770px;line-height:1.65;color:#596a7e}.pilot,.privacy,.note{border-left:3px solid #4c8fbe;background:#eef6fc;padding:13px 16px;border-radius:0 12px 12px 0}.steps{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}.panel{padding:25px;border:1px solid #dce5ee;border-radius:20px;background:#fff;box-shadow:0 8px 25px rgba(23,43,68,.04)}.panel h2{font-size:25px;margin:6px 0 18px}.panel form{display:grid;gap:15px}.panel label{display:grid;gap:6px;font-weight:720;font-size:13px}.panel input:not([type="checkbox"]){min-height:44px;padding:10px 12px;border:1px solid #bfcfe0;border-radius:10px;font:inherit;color:#18283b;background:#fff;width:100%}.panel button,.existing{min-height:44px;padding:10px 14px;border:1px solid #cad6e3;border-radius:10px;background:#fff;font-weight:800;color:#1c5784;cursor:pointer}.panel button.primary{background:#172d45;color:#fff;border-color:#172d45}.panel button:disabled{opacity:.6;cursor:wait}.mode{display:flex;gap:7px;margin-bottom:16px}.mode button[aria-pressed="true"]{background:#e9f3fa;border-color:#7baacc}.two{display:grid;grid-template-columns:1fr 130px;gap:12px}.consent{display:grid!important;grid-template-columns:20px 1fr;align-items:start;line-height:1.55;color:#52657a;font-weight:400!important}.consent input{width:18px;height:18px}.existing{display:inline-flex;align-items:center;margin-bottom:15px;text-decoration:none}.feedback{padding:10px 12px;background:#eaf5fa;border-radius:9px;font-size:13px}.feedback[data-error="true"]{background:#fff0ef;color:#8c2d26}.privacy{margin-top:22px;line-height:1.6;color:#51647b}[hidden]{display:none!important}@media(max-width:740px){.steps{grid-template-columns:1fr}.shell{padding-top:90px}.panel{padding:19px}.two{grid-template-columns:1fr 110px}}
+</style>
