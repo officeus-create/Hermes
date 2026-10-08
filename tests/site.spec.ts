@@ -367,7 +367,7 @@ test("language menu preserves technology intent across localized destinations", 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.getByRole("heading", { name: "Четыре направления. Одна экосистема для роста." })).toBeVisible();
   await expect(page.locator('link[rel="alternate"][hreflang="uk"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/ua/");
-  await expect(page.getByText("AI и messaging-ассистенты", { exact: true })).toBeVisible();
+  await expect(page.getByText("AI-ассистенты и интеграции", { exact: true })).toBeVisible();
 
   await page.goto("/es/");
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
