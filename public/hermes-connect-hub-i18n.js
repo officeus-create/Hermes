@@ -239,6 +239,8 @@
 
   document.querySelectorAll("a[href]").forEach((link) => {
     if (!(link instanceof HTMLAnchorElement)) return;
+    // Language choices select a destination locale, not the current content locale.
+    if (link.hasAttribute("lang")) return;
     const raw = link.getAttribute("href") || "";
     if (!raw || raw.startsWith("mailto:") || raw.startsWith("tel:") || raw.startsWith("javascript:") || raw.startsWith("#")) return;
     const url = new URL(raw, window.location.href);
