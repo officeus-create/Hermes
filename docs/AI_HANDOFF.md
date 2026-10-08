@@ -1766,3 +1766,23 @@ handoff_to: repository owner for review
 - Locale release acceptance: #1755 clean English/query locales and actual EN→UK→FR→EN switching verified live; #1754 current public product truth verified on seven routes; #1764 completes Italian accademia title with unchanged H1/canonical/robots/hreflang. Footer locale work remains with its separate held owner.
 - Reuse: do not promote a PR description into implementation proof; inspect rendered acceptance targets. Do not treat one green test or merge as full live/commercial evidence.
 - This patch changes documentation only. Existing #1756 journal additions remain on their original branch/commits until this sole register lane is released, then reconcile them sequentially. Current #1758 exact-head CI is still required; no claim that this docs patch has merged or deployed.
+### Academy PR #1756 — localized course regression repair, 2026-10-08
+
+ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation Report; task_id: PR-1756; authority_scope: Branch write; source_of_truth: owner task + exact-head failed job 113042540715 + fresh main cc5a8ae58914a65a7cd43497a9cdad39ee2ab073. Historical project-state snapshots are stale for this task.
+
+- PROBLEM: PR head 4c8282a2929ff57617e00a3d36112374df4b6bab failed the Ukrainian Logistics whole-main language regression.
+- ROOT_CAUSE: a route-local related Marketing card retained `website-first`, `lead journey` and `sales follow-up` outside the translated Academy data object. This was a real visible copy defect, not a browser timing failure.
+- FAILED_APPROACH: translating shared curriculum alone left route-owned related copy unchanged.
+- WORKING_APPROACH: translate only that existing card title/description; strengthen the same whole-main regression to require the translated card and reject all three missed fragments. Keep href, route ownership, canonical, hreflang, robots, schema and course/admission/employment boundaries.
+- EVIDENCE: https://github.com/officeus-create/Hermes/actions/runs/37694452833/job/113042540715 ; rebased five existing feature commits cleanly on main after #1750. Fresh #1754 d875c9240fb2ce060a64ddc3554b2f81eec9fd14 has no file overlap with the Academy runtime/test delta.
+- LESSON / REUSE_RULE: language-purity review covers all rendered main content, including route-local overrides/related cards, not only imported curriculum. Do not weaken a whole-main assertion to hide untranslated visible prose.
+- Verification: current-tree local build/contracts/focused browser evidence and exact-head CI are reported in the task evidence packet; no old-head green promotion.
+- Compounding: primary = language-consistent existing course owner; SEO = no new owner/URL/index/schema surface; conversion/linking = clearer existing Marketing continuation, same target; knowledge/architecture = reusable whole-main regression and root-cause receipt; privacy = no new fields/events or real submissions; scale/AI/product/content distribution = not changed; deferred = unrelated jargon, new courses, admissions and recruitment claims.
+- Remaining owner gate: #1754 must precede #1756 under central semantic release order. No merge, deployment or outward communication authorized/performed by this task. Central release owner refreshes base/head and exact-head CI after any further main movement.
+
+
+### PR #1756 — current-main refresh after #1752, 2026-10-08
+
+- Rebased on `83aef305da82f5221b51d617da34c9f040cbc5cf`. Only additive EOF journal conflicts; complete Load Board and Academy records are retained. Five Academy runtime/test files are identical to `f07458d3db1885ef52501d06aa5560b0d5891a7f`.
+- That prior head passed local build (399 pages, 0 errors), full npm test and all 12 Academy desktop/mobile language-purity cases, one worker. The reused dependency tree initially contained upstream http-cache-semantics; local validation used this repository's existing vendored security patch without changing repository dependencies. Astro preview used its existing foreground-process flag. Fresh rebased-head CI is required; old CI is not promoted.
+- #1754 semantic release dependency remains with central release owner. No merge/deploy or new PR.

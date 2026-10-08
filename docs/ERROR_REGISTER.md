@@ -614,3 +614,6 @@ WORKING_APPROACH: Preserve visibility, enabled state, stable geometry, viewport 
 EVIDENCE: #1764 accepted25b82dc87fdba0934911a7564c00feb5622a13df merged1195b3533225d8646a099d8f775e44cae751d02d. Website37741601313/audit37741601304 SUCCESS, browser2026passed/16skipped/0failed/0flaky. Job113193747448 records initial HTML hit and subsequent successful test. Deploy37743142806 SUCCESS; Home runtime unchanged.
 REUSE_RULE: Stable geometry is not pointer actionability after browser history. Wait for the actual hit receiver; never force a click or remove assertions to make CI green.
 NEXT: Preserve the regression and consume current-main checks in existing blocked PRs; no duplicate Catalog/Academy implementation or customer evidence claim.
+## PR #1756 Academy language-purity regression — 2026-10-08
+
+Code correction prepared on the existing feature branch; exact-head CI required before release. Failed job 113042540715 found `follow-up` in the Ukrainian Logistics route-local related Marketing card. Translate the card rather than narrow the whole-main assertion; require the translated label/body and reject the other missed English fragments. Existing course/admission/employment boundaries and search owners are preserved. Release remains ordered after #1754 with the central owner.
