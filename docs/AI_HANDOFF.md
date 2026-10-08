@@ -1842,3 +1842,14 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Compounding: truthful editorial boundary and existing search/navigation preserved; ordinary company contact remains usable; focused regression prevents unowned lead CTA returning during later Stage2 reconciliation. No new receiver/product/search surface or telemetry.
 - LESSON / REUSE_RULE: scope no-lead-CTA assertions to article content, preserve unrelated standard contact, and inspect current overlapping branch heads before publishing ownership claims.
 - Remaining gate: independent editorial/search ACCEPT on new exact head, #1785 reconciliation/ACK and separate owner merge/deploy order; production unchanged. No merge/deploy/IndexNow in this task.
+
+## 2026-10-08 — PR #1732 manual-only production contact smoke correction
+
+- Agent/task owner: Codex, same existing governance PR #1732 and branch `fix/governance-retire-closed-monitor-sinks-20261007`.
+- Base/code commits: rebased on `85bcbed221b4d301028bee48a205bf7a87df4c0d`; governance sink cleanup `75b61a7a`; manual-only smoke correction `40d91c4f`. Final pushed exact head and terminal CI are recorded on PR #1732.
+- Behavior: governance/source/workflow-file merges can no longer trigger production `/api/logistics-lead`; `workflow_dispatch` retains the production HTML, first-send, duplicate-suppression and sanitized summary path for explicit manual use.
+- Preserved: closed sink removals #167/#264/#1349, Actions summaries/artifacts, read-only permissions, route screenshot workflow and scheduled public-read-only five-surface synthetic.
+- Verification: failing-first production-contact contract reproduced the auto-trigger; focused contracts PASS; `npm run build` PASS (401 pages, zero errors); full `npm test` PASS. Full local E2E on the preceding main snapshot reproduced independent Academy/Catalog failures and was stopped after 197 passed, 14 failed, 3 interrupted and 1 skipped; no governance-smoke failure and no green E2E claim.
+- Safety: production contact smoke was not dispatched; no form/lead, merge, deploy, production change or IndexNow action occurred.
+- Ecosystem compounding: safer release governance and reusable trigger contract; no new route, search owner, public claim, telemetry, product scope or automation surface.
+- Next owner/gate: exact-head GitHub CI and independent review decide READY/HOLD; merge/deploy remain separately authorized actions.

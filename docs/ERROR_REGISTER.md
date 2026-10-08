@@ -630,3 +630,13 @@ WORKING_APPROACH: replay only unique #1663 counts/filter logic on accepted main5
 EVIDENCE: synthetic regression covers mixed-case/whitespace US, non-US/unknown exclusion, duplicate identity, category/state counts and no invented state link; current-head full CI required. Local execution unavailable; no local validation claim.
 REUSE_RULE: presentation scope must not modify opt-in, canonical/indexing or sitemap ownership. #1751 publication helper/withdrawal rules untouched.
 NEXT_OWNER: Project31 release owner for acceptance after exact-head green; no merge/deploy by this task.
+
+## ERR-PR1732-PRODUCTION-CONTACT-AUTO-SUBMIT-20261008 — RESOLVED_IN_BRANCH / RELEASE_HOLD
+
+PROBLEM: `.github/workflows/production-contact-smoke.yml` ran on `push` to `main`, and its path filter included the workflow itself. Merging governance-only PR #1732 would therefore send one production `/api/logistics-lead` synthetic inquiry and a duplicate POST.
+ROOT_CAUSE: a production-mutating smoke was coupled to source/workflow-file merges instead of requiring an explicit operator dispatch.
+FAILED_APPROACH: removing closed issue #167 as a report sink and retaining the existing trigger did not make governance merges non-mutating.
+WORKING_APPROACH: keep the existing manual `workflow_dispatch`, production HTML check, first-send/duplicate verification, sanitized Actions summary and read-only permissions; remove only the automatic `push` trigger. Preserve the same-PR removals of closed issue sinks #167/#264/#1349 and their unnecessary write/token paths.
+EVIDENCE: failing-first `scripts/production-contact-smoke-contract.test.mjs` rejected the old `push`; targeted production-contact and Cloudflare ownership contracts pass after the change. Fresh build (401 pages, zero errors) and full `npm test` pass on base `85bcbed221b4d301028bee48a205bf7a87df4c0d`. Local full E2E remains blocked by unrelated current-main Academy/Catalog failures and must not be reported green; exact-head GitHub CI is the release gate.
+LESSON: production-mutating synthetic workflows must be manual or explicitly release-authorized; editing their own workflow file must never be sufficient to submit a production form.
+REUSE_RULE: contracts for a mutating smoke must assert the allowed trigger, not only the retained POST/observability behavior. No production smoke, form submission, merge, deployment or IndexNow action was performed.
