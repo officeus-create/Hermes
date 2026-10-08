@@ -71,7 +71,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <main class="shell main"><nav class="crumb"><a href="/businesses/">Catalog</a> / ${esc(row.company_name)}</nav>
 <section class="hero"><p class="eyebrow">${esc(String(row.service_subtype || "home service").replaceAll("_"," "))} · ${esc(row.city)}, ${esc(row.state)}</p>
 <span class="status">${esc(verification)}</span><h1>${esc(row.company_name)}</h1><p class="lead">${esc(summary)}</p>
-<div class="actions"><a class="btn primary" href="/services/hermes-connect/access/?lang=en">Owner CRM login</a>${websiteAction}${phoneAction}</div></section>
+<div class="actions"><a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>${websiteAction}${phoneAction}</div></section>
 <section class="grid"><article class="card"><p class="eyebrow">Services</p><h2>What the business handles</h2><ul>${serviceList}</ul></article>
 <article class="card"><p class="eyebrow">Service area</p><h2>Where the team operates</h2><ul>${areaList}</ul></article></section>
 <p class="note">This public Catalog page contains business-level facts only. Customer names, phone numbers, addresses, job photos, quotes, costs, payments and private CRM records are not published here.</p>
