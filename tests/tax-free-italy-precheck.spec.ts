@@ -11,6 +11,8 @@ test("Italy Tax Free precheck stays excluded from SEO and claims no operational 
   await expect(page.locator("main")).toContainText("Non emette fatture");
   await expect(page.locator("main")).toContainText("Nessun dato del modulo viene trasmesso a Hermes");
   await expect(page.locator('a[href="https://vatrefund.adm.gov.it/howto"]')).toBeVisible();
+  await expect(page.getByRole("link",{name:"Partecipa alla ricerca con Hermes"})).toHaveAttribute("href", /^mailto:officeus@hermeslogisticsus\.com\?subject=/);
+  await expect(page.locator("main")).toContainText("non conferma l'invio né la ricezione");
 });
 
 test("Italy precheck keeps > 70 euro threshold and end-of-third-month export window", async ({page}) => {
