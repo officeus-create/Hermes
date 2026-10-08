@@ -25,6 +25,36 @@ jobs:
       - name: Fetch current main
         run: git fetch origin main
 
+      - name: Reset existing publication approval before validation
+        id: early_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Execute the approval-state helper from trusted main, never from content HEAD.
+          git show origin/main:scripts/insights-pr-approval-gate.mjs > "$RUNNER_TEMP/insights-pr-approval-gate.mjs"
+          pr="$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')"
+          echo "number=$pr" >> "$GITHUB_OUTPUT"
+          if [ -z "$pr" ]; then
+            echo "No existing Insights PR needs an approval-state reset."
+            exit 0
+          fi
+          expected_head="$(git rev-parse HEAD)"
+          state_file="$RUNNER_TEMP/insights-pr-state.json"
+          gh pr view "$pr" --json number,headRefOid,isDraft,autoMergeRequest > "$state_file"
+          plan="$(node "$RUNNER_TEMP/insights-pr-approval-gate.mjs" --mode plan --state-file "$state_file" --expected-head "$expected_head")"
+          disable_auto_merge="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(String(p.disableAutoMerge))' "$plan")"
+          convert_to_draft="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(String(p.convertToDraft))' "$plan")"
+          if [ "$disable_auto_merge" = "true" ]; then
+            gh pr merge "$pr" --disable-auto
+          fi
+          if [ "$convert_to_draft" = "true" ]; then
+            gh pr ready "$pr" --undo
+          fi
+          gh pr view "$pr" --json number,headRefOid,isDraft,autoMergeRequest > "$state_file"
+          node "$RUNNER_TEMP/insights-pr-approval-gate.mjs" --mode verify --state-file "$state_file" --expected-head "$expected_head"
+
       - name: Enforce generated-content-only scope
         id: scope
         shell: bash
@@ -85,7 +115,7 @@ jobs:
           echo "number=$pr" >> "$GITHUB_OUTPUT"
           echo "Draft PR #$pr remains blocked until an authorized human reviews the exact head and explicitly releases it."
 
-      - name: Reset publication approval for exact head
+      - name: Verify publication remains blocked after validation
         if: steps.scope.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -96,7 +126,7 @@ jobs:
           expected_head="$(git rev-parse HEAD)"
           state_file="$RUNNER_TEMP/insights-pr-state.json"
           gh pr view "$PR_NUMBER" --json number,headRefOid,isDraft,autoMergeRequest > "$state_file"
-          plan="$(node scripts/insights-pr-approval-gate.mjs --mode plan --state-file "$state_file" --expected-head "$expected_head")"
+          plan="$(node "$RUNNER_TEMP/insights-pr-approval-gate.mjs" --mode plan --state-file "$state_file" --expected-head "$expected_head")"
           disable_auto_merge="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(String(p.disableAutoMerge))' "$plan")"
           convert_to_draft="$(node -e 'const p=JSON.parse(process.argv[1]); process.stdout.write(String(p.convertToDraft))' "$plan")"
           if [ "$disable_auto_merge" = "true" ]; then
@@ -106,4 +136,4 @@ jobs:
             gh pr ready "$PR_NUMBER" --undo
           fi
           gh pr view "$PR_NUMBER" --json number,headRefOid,isDraft,autoMergeRequest > "$state_file"
-          node scripts/insights-pr-approval-gate.mjs --mode verify --state-file "$state_file" --expected-head "$expected_head"
+          node "$RUNNER_TEMP/insights-pr-approval-gate.mjs" --mode verify --state-file "$state_file" --expected-head "$expected_head"
