@@ -23,6 +23,16 @@ test("Home Services owner gets private-company setup and explicit Catalog opt-in
     status: 401, contentType: "application/json",
     body: JSON.stringify({ success: false, error: "authentication_required" }),
   }));
+  // Stub read-only workspace data so this test cannot create real leads or public pages.
+  await page.route("**/api/hermes-connect/home-services/crm**", (route) => {
+    const isLeads = new URL(route.request().url()).searchParams.get("module") === "leads";
+    return route.fulfill({ status: 200, contentType: "application/json",
+      body: JSON.stringify(isLeads
+        ? { success: true, leads: [] }
+        : { success: true, company: { name: "Synthetic QA Removal", slug: "synthetic-qa",
+            catalogOptIn: false, catalogStatus: "self_submitted" }, profile: null,
+          metrics: { totalLeads: 0, bookedRate: 0, reviewRate: 0, byCity: [], bySource: [], byJobType: [], bySearchQuery: [] } }) });
+  });
   await page.route("**/api/auth/login", (route) => route.fulfill({
     status: 200, contentType: "application/json", body: JSON.stringify({ success: true }),
   }));
@@ -53,6 +63,8 @@ test("Home Services owner gets private-company setup and explicit Catalog opt-in
   await page.locator('[data-company-form] button[type="submit"]').click();
   await expect.poll(() => catalogPermission).toBe(false);
   await expect(page).toHaveURL(/\/services\/hermes-connect\/home-services\/workspace\/$/);
+  await expect(page.locator("[data-catalog-link]")).toBeHidden();
+  await expect(page.locator("[data-catalog-private]")).toContainText("Catalog private");
 });
 
 test("Home Services owner setup refuses to overwrite a different existing company type", async ({ page }) => {
