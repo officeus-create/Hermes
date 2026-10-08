@@ -6,6 +6,10 @@ import {
   safeHomeServiceLead,
   normalizeHomeServiceProfile,
 } from "../functions/api/_lib/home-service-crm.mjs";
+import {
+  getHomeServicePublicAssets,
+  normalizeHomeServiceWebsite,
+} from "../functions/api/_lib/home-service-public-assets.mjs";
 
 const lead = normalizeHomeServiceLead({
   source: "Google Search",
@@ -55,6 +59,13 @@ const profile = normalizeHomeServiceProfile({
 assert.equal(profile.serviceSubtype, "junk_removal");
 assert.deepEqual(profile.services, ["Junk removal", "Furniture removal"]);
 assert.deepEqual(profile.serviceAreas, ["Roseville", "Sacramento"]);
+
+assert.equal(normalizeHomeServiceWebsite("https://www.mzm-junk-removal.com/jobs"), "mzm-junk-removal.com");
+const mzmAssets = getHomeServicePublicAssets("https://mzm-junk-removal.com/");
+assert.equal(mzmAssets.length, 1);
+assert.equal(mzmAssets[0].href, "/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/");
+assert.equal(mzmAssets[0].sourceUrl, "https://mzm-junk-removal.com/");
+assert.equal(getHomeServicePublicAssets("https://example-home-service.invalid/").length, 0);
 
 const metrics = aggregateHomeServiceLeads([
   {
@@ -223,6 +234,7 @@ const workspace = read("src/pages/services/hermes-connect/home-services/workspac
 const crmHelper = read("functions/api/_lib/home-service-crm.mjs");
 const crmApi = read("functions/api/hermes-connect/home-services/crm.ts");
 const publicProfile = read("functions/businesses/connect/company/[slug].ts");
+const publicAssets = read("functions/api/_lib/home-service-public-assets.mjs");
 const clientConfig = read("src/data/catalog-client-mzm-junk-removal.ts");
 const homeServicesAccess = read("src/pages/services/hermes-connect/home-services/access/index.astro");
 const sharedAccess = read("src/pages/services/hermes-connect/access/index.astro");
@@ -239,6 +251,14 @@ assert.match(catalogRuntime, /const companyHref =/);
 assert.match(catalogRuntime, /companyType === 'home_service' && repairGrid && companyHref/);
 assert.match(sitemap, /homeServiceUrls/);
 assert.match(sitemap, /businesses\/connect\/company/);
+assert.match(crmApi, /module === "public_assets"/);
+assert.match(crmApi, /getHomeServicePublicAssets/);
+assert.match(workspace, /data-public-assets/);
+assert.match(workspace, /module=public_assets/);
+assert.match(publicProfile, /getHomeServicePublicAssets/);
+assert.match(publicProfile, /Published business insights/);
+assert.match(publicAssets, /mzm-junk-removal-real-job-evidence-local-seo/);
+assert.match(publicAssets, /FIRST_PARTY_PUBLIC_SOURCE/);
 
 for (const required of [
   "searchQuery",
