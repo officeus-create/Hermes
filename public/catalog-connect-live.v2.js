@@ -4,23 +4,94 @@
   const academyGrid = document.querySelector('[data-academy-catalog-grid]');
   if (!repairGrid && !academyGrid) return;
 
+  const catalogInput = document.querySelector('[data-catalog-input]');
+  const catalogSearch = document.querySelector('#catalog-search');
+  const catalogCategories = document.querySelector('.category-grid');
+
+  const bindDynamicCategory = (button, query) => {
+    button.addEventListener('click', () => {
+      if (catalogInput instanceof HTMLInputElement) {
+        catalogInput.value = query;
+        catalogInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      catalogSearch?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  };
+
+  const reconcileCategoryCount = (categoryLabel) => {
+    if (!catalogCategories || !categoryLabel) return;
+    const buttons = [...catalogCategories.querySelectorAll('[data-catalog-query]')];
+    let button = buttons.find((node) =>
+      String(node.getAttribute('data-catalog-query') || '').trim().toLowerCase() === categoryLabel.toLowerCase()
+    );
+    if (button) {
+      const countNode = button.querySelector('span');
+      const current = Number.parseInt(String(countNode?.textContent || '0'), 10) || 0;
+      const nextCount = current + 1;
+      if (countNode) countNode.textContent = `${nextCount} profile${nextCount === 1 ? '' : 's'}`;
+      return;
+    }
+
+    button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.catalogQuery = categoryLabel;
+    const label = document.createElement('strong');
+    label.textContent = categoryLabel;
+    const count = document.createElement('span');
+    count.textContent = '1 profile';
+    button.append(label, count);
+    bindDynamicCategory(button, categoryLabel);
+    catalogCategories.append(button);
+  };
+
+  const reconcileStateCount = (stateCode) => {
+    const normalizedState = String(stateCode || '').trim().toUpperCase();
+    if (!normalizedState) return;
+    const tile = [...document.querySelectorAll('.tile-map .state-tile')].find(
+      (node) => String(node.querySelector('strong')?.textContent || '').trim().toUpperCase() === normalizedState,
+    );
+    if (!(tile instanceof HTMLElement)) return;
+
+    let countNode = tile.querySelector('span');
+    const current = Number.parseInt(String(countNode?.textContent || '0'), 10) || 0;
+    const nextCount = current + 1;
+    if (!countNode) {
+      countNode = document.createElement('span');
+      tile.append(countNode);
+    }
+    countNode.textContent = String(nextCount);
+    const hasStatePage = tile instanceof HTMLAnchorElement && tile.hasAttribute('href');
+    tile.classList.toggle('active', hasStatePage);
+    tile.classList.toggle('has-profiles', !hasStatePage);
+    tile.classList.remove('pending');
+    const currentLabel = tile.getAttribute('aria-label') || tile.getAttribute('title') || normalizedState;
+    const stateName = currentLabel.split(':')[0]?.trim() || normalizedState;
+    const label = `${stateName}: ${nextCount} business profile${nextCount === 1 ? '' : 's'}${hasStatePage ? '' : '; available in catalog search; state directory page unavailable'}`;
+    tile.setAttribute('aria-label', label);
+    if (hasStatePage) tile.removeAttribute('title');
+    else tile.setAttribute('title', label);
+  };
+
   const makeCard = (company, profileHref = "") => {
     const article = document.createElement('article');
     article.className = 'business-card';
     article.dataset.catalogCard = '';
     article.dataset.catalogEntityId = String(company?.id || '');
 
+    const isRepair = company?.companyType === 'repair_shop';
     const isAcademy = company?.companyType === 'academy_business';
     const isGenericAcademyLike = ['business_club','business_academy','online_school','courses','coaching','corporate_academy'].includes(String(company?.companyType || ''));
     const isAcademyLike = isAcademy || isGenericAcademyLike;
     const isHomeService = company?.companyType === 'home_service';
-    const typeLabel = isAcademy
+    const typeLabel = isRepair
+      ? 'Auto Repair'
+      : isAcademy
       ? String(company.typeLabel || 'Academy / Courses')
       : isGenericAcademyLike
         ? String(company.typeLabel || company.companyType || 'Academy / Courses').replaceAll('_',' ')
         : isHomeService
           ? String(company.typeLabel || 'Home & Local Service')
-          : 'Repair Shop';
+          : 'Business';
     const services = Array.isArray(company.services) ? company.services.slice(0, 4).map(String) : [];
     article.dataset.searchText = [company.companyName, typeLabel, company.city, company.state, company.countryCode, ...services].filter(Boolean).join(' ').toLowerCase();
 
@@ -70,7 +141,7 @@
       actions.append(meta);
     }
     article.append(actions);
-    return article;
+    return { article, typeLabel };
   };
 
   fetch('/api/catalog/companies', { headers: { Accept: 'application/json' }, credentials: 'omit' })
@@ -93,23 +164,26 @@
           && String(company?.countryCode || '').toUpperCase() === 'UA'
           && ['business_club','business_academy','online_school','courses','coaching','corporate_academy'].includes(String(company?.companyType || ''));
 
-        if (company?.companyType === 'repair_shop' && repairGrid && repairHref && !repairExistingIds.has(id)) {
-          repairGrid.append(makeCard(company, repairHref));
+        if (company?.companyType === 'repair_shop' && String(company?.countryCode || '').trim().toUpperCase() === 'US' && repairGrid && repairHref && !repairExistingIds.has(id)) {
+          const rendered = makeCard(company, repairHref);
+          repairGrid.append(rendered.article);
           repairExistingIds.add(id);
+          reconcileCategoryCount(rendered.typeLabel);
+          reconcileStateCount(company?.state);
           continue;
         }
         if (company?.companyType === 'home_service' && repairGrid && companyHref && !repairExistingIds.has(id)) {
-          repairGrid.append(makeCard(company, companyHref));
+          repairGrid.append(makeCard(company, companyHref).article);
           repairExistingIds.add(id);
           continue;
         }
         if (company?.companyType === 'academy_business' && academyGrid && academyHref && !academyExistingIds.has(id)) {
-          academyGrid.append(makeCard(company, academyHref));
+          academyGrid.append(makeCard(company, academyHref).article);
           academyExistingIds.add(id);
           continue;
         }
         if (isGenericUaAcademyLike && academyGrid && !academyExistingIds.has(id)) {
-          academyGrid.append(makeCard(company, ''));
+          academyGrid.append(makeCard(company, '').article);
           academyExistingIds.add(id);
         }
       }
