@@ -101,6 +101,7 @@ const accessCenter = await text("src/pages/services/hermes-connect/access/index.
 assert(accessCenter.includes("data-ai-entry-context") && accessCenter.includes("Starting from"), "AI entry: Access Center must acknowledge an inbound AI handoff.");
 assert(accessCenter.includes('data-ai-route') && accessCenter.includes('url.searchParams.set("source", "ai")'), "AI entry: business selection must preserve AI source attribution.");
 assert(accessCenter.includes('url.searchParams.set("provider", aiProvider)') && accessCenter.includes("aiProviderLabels"), "AI entry: provider attribution must remain bounded and human-readable through onboarding.");
+assert(accessCenter.includes("Object.prototype.hasOwnProperty.call(aiProviderLabels, rawAiProvider)"), "AI entry: arbitrary provider query values must not enter attribution.");
 assert(accessCenter.includes("one Company / CRM / Catalog identity"), "AI entry: Access Center must preserve the one-business-identity contract.");
 
 const foundingPlan = await text("src/pages/services/hermes-connect/repair-shops/plan.astro");
