@@ -25,6 +25,12 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
         <p data-i18n="pilotBoundary">Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.</p>
       </section>
 
+      <aside class="ai-entry-context" data-ai-entry-context hidden aria-label="AI entry context">
+        <span class="option-state neutral">FREE BETA · AI ENTRY</span>
+        <strong>Starting from <span data-ai-provider-label>your AI assistant</span>.</strong>
+        <p>Choose the business you want to connect. Hermes keeps one Company / CRM / Catalog identity while preserving the AI source for this onboarding path.</p>
+      </aside>
+
       <section class="access-grid">
         <article class="access-card access-login" aria-labelledby="access-title">
           <div data-access-loading>
@@ -58,28 +64,28 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
           <p class="status" data-i18n="newBusiness">New business</p>
           <h2 data-i18n="chooseType">Choose a type — Hermes opens the right CRM.</h2>
           <div class="business-options">
-            <a class="business-option live" href="/services/hermes-connect/repair-shops/auth/?mode=register" data-route>
+            <a class="business-option live" href="/services/hermes-connect/repair-shops/auth/?mode=register" data-route data-ai-route>
               <span class="option-state" data-i18n="live">LIVE</span>
               <strong data-i18n="repair">Repair Shop</strong>
               <small data-i18n="repairCopy">Bookings, customers, vehicles, services, availability and follow-up.</small>
               <em data-i18n="register">Register →</em>
             </a>
 
-            <a class="business-option home-services" href="/services/hermes-connect/home-services/access/" data-route>
+            <a class="business-option home-services" href="/services/hermes-connect/home-services/access/" data-route data-ai-route>
               <span class="option-state neutral" data-i18n="homeServicesState">OWNER SETUP</span>
               <strong data-i18n="homeServices">Home Services / Junk Removal</strong>
               <small data-i18n="homeServicesCopy">Private leads, quotes, jobs, costs, revenue and reviews. Owner setup required; public Catalog is opt-in.</small>
               <em data-i18n="homeServicesStart">Set up →</em>
             </a>
 
-            <a class="business-option academy" href="/services/hermes-connect/academy/business/auth/?mode=register" data-route>
+            <a class="business-option academy" href="/services/hermes-connect/academy/business/auth/?mode=register" data-route data-ai-route>
               <span class="option-state" data-i18n="available">AVAILABLE</span>
               <strong data-i18n="academyOwner">Academy / Courses / Business Club</strong>
               <small data-i18n="academyOwnerCopy">Sales CRM, learners, cohorts, lessons, assignments, reviews, CAC/LTV/ROMI, HR and retention.</small>
               <em data-i18n="register">Register →</em>
             </a>
 
-            <a class="business-option learner" href="/services/hermes-connect/academy/auth/?mode=register" data-route>
+            <a class="business-option learner" href="/services/hermes-connect/academy/auth/?mode=register" data-route data-ai-route>
               <span class="option-state neutral" data-i18n="learnerState">LEARNER</span>
               <strong data-i18n="academyLearner">Academy learner</strong>
               <small data-i18n="academyLearnerCopy">A separate learner workspace for learning, evidence, progress and support.</small>
@@ -146,13 +152,38 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   } as const;
   type Lang = keyof typeof dictionary;
   const params = new URLSearchParams(window.location.search);
+  const aiSource = params.get("source") === "ai" ? "ai" : "";
+  const rawAiProvider = (params.get("provider") || "").toLowerCase().slice(0, 40);
+  const aiProviderLabels: Record<string, string> = {
+    chatgpt: "ChatGPT",
+    claude: "Claude",
+    gemini: "Gemini",
+    grok: "Grok",
+    perplexity: "Perplexity",
+    "copilot-studio": "Microsoft Copilot Studio",
+    deepseek: "DeepSeek",
+    mistral: "Mistral",
+    "meta-ai": "Meta AI / Llama",
+    poe: "Poe",
+  };
+  const aiProvider = Object.prototype.hasOwnProperty.call(aiProviderLabels, rawAiProvider) ? rawAiProvider : "";
+  if (typeof document !== "undefined" && aiSource === "ai") {
+    const aiContext = document.querySelector<HTMLElement>("[data-ai-entry-context]");
+    const aiLabel = document.querySelector<HTMLElement>("[data-ai-provider-label]");
+    if (aiLabel) aiLabel.textContent = aiProviderLabels[aiProvider] || "your AI assistant";
+    if (aiContext) aiContext.hidden = false;
+  }
   // The public clean route is English; Ukrainian is an explicit URL choice.
   let lang: Lang = params.get("lang") === "uk" ? "uk" : "en";
 
-  const withLang = (path: string) => {
+  const withLang = (path: string, preserveAi = false) => {
     const url = new URL(path, window.location.origin);
     if (lang === "en") url.searchParams.delete("lang");
     else url.searchParams.set("lang", lang);
+    if (preserveAi && aiSource === "ai") {
+      url.searchParams.set("source", "ai");
+      if (aiProvider) url.searchParams.set("provider", aiProvider);
+    }
     return url.pathname + url.search + url.hash;
   };
   const applyLanguage = (next: Lang) => {
@@ -166,7 +197,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       if (value) node.textContent = value;
     });
     document.querySelectorAll<HTMLAnchorElement>("[data-route]").forEach((link) => {
-      link.href = withLang(link.getAttribute("href") || "/");
+      link.href = withLang(link.getAttribute("href") || "/", link.hasAttribute("data-ai-route"));
     });
   };
   applyLanguage(lang);
@@ -243,7 +274,8 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
   @view-transition { navigation: none; }
   .access-page{min-height:100vh;padding:118px 24px 82px;background:radial-gradient(circle at 82% 8%,rgba(124,92,255,.11),transparent 30rem),#f4f6f8;color:#152033}.access-shell{width:min(1120px,100%);margin:auto}.access-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.access-toolbar>a{color:#334d69;text-decoration:none;font-weight:850}
   .access-intro{max-width:940px;margin-bottom:28px}.eyebrow,.status{margin:0 0 10px;color:#6d56d9;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.access-intro h1{max-width:900px;margin:0;font-size:clamp(46px,7vw,82px);line-height:.96;letter-spacing:-.055em}.access-intro>p:last-child{max-width:850px;color:#617087;line-height:1.7;font-size:17px}
-  .access-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:18px;align-items:start}.access-card{padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(24,40,68,.07)}.access-card h2{margin:0 0 10px;font-size:clamp(27px,3vw,36px);letter-spacing:-.025em}.muted{color:#68778a;line-height:1.6}.status.success{color:#16815f}.access-card form{display:grid;gap:14px}.access-card label{display:grid;gap:6px;font-size:12px;font-weight:800}.access-card input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #cfd9e4;border-radius:10px;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.access-card button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:800}.primary,.access-card button.primary{border:1px solid #151b27;background:#151b27;color:#fff}.access-card button:not(.primary){border:1px solid #cfd9e4;background:#fff;color:#244c73}.alert{min-height:1.4em;margin:0;color:#a33b3b;font-size:12px}
+  .ai-entry-context{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;margin:0 0 18px;padding:14px 16px;border:1px solid #d6cdf8;border-radius:16px;background:linear-gradient(135deg,#fff,#f7f3ff);box-shadow:0 12px 30px rgba(64,50,120,.05)}.ai-entry-context[hidden]{display:none}.ai-entry-context strong{font-size:14px}.ai-entry-context p{grid-column:1/-1;margin:0;color:#66758a;font-size:12px;line-height:1.55}
+    .access-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:18px;align-items:start}.access-card{padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(24,40,68,.07)}.access-card h2{margin:0 0 10px;font-size:clamp(27px,3vw,36px);letter-spacing:-.025em}.muted{color:#68778a;line-height:1.6}.status.success{color:#16815f}.access-card form{display:grid;gap:14px}.access-card label{display:grid;gap:6px;font-size:12px;font-weight:800}.access-card input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #cfd9e4;border-radius:10px;font:inherit}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.primary,.access-card button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border-radius:11px;text-decoration:none;font-weight:800}.primary,.access-card button.primary{border:1px solid #151b27;background:#151b27;color:#fff}.access-card button:not(.primary){border:1px solid #cfd9e4;background:#fff;color:#244c73}.alert{min-height:1.4em;margin:0;color:#a33b3b;font-size:12px}
   .business-options{display:grid;gap:10px;margin-top:18px}.business-option{display:grid;grid-template-columns:1fr auto;gap:6px 14px;padding:16px;border:1px solid #dce4ed;border-radius:16px;background:#fbfcfe;color:#1e2d40;text-decoration:none;transition:.15s ease}.business-option:hover,.business-option:focus-visible{transform:translateY(-1px);border-color:#9daec2;box-shadow:0 12px 28px rgba(32,58,88,.08)}.business-option.academy{border-color:#cfc5f0;background:linear-gradient(135deg,#fff,#f7f3ff)}.business-option.live{border-color:#bfd9ef;background:linear-gradient(135deg,#fff,#f2f9ff)}.business-option strong{font-size:17px}.business-option small{grid-column:1/-1;color:#68778a;line-height:1.5}.business-option em{grid-row:1;font-style:normal;color:#265e92;font-size:12px;font-weight:900;align-self:center}.option-state{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;background:#eaf5ff;color:#14679e;font-size:9px;font-weight:900;letter-spacing:.08em}.academy .option-state{background:#efe9ff;color:#6547af}.option-state.neutral{background:#edf1f5;color:#536479}
   .vertical-map{display:grid;grid-template-columns:.75fr 1.25fr;gap:22px;margin-top:20px;padding:26px;border:1px solid #dce4ed;border-radius:22px;background:#fff}.vertical-map h2{margin:4px 0 10px;font-size:clamp(28px,4vw,44px);letter-spacing:-.035em}.vertical-map>div>p:last-child{color:#67768a;line-height:1.65}.vertical-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vertical-list article{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:center;padding:13px;border:1px solid #e0e6ed;border-radius:14px;background:#fbfcfd}.vertical-list article>span{grid-row:1/3;color:#8995a5;font-size:10px;font-weight:900}.vertical-list strong{font-size:13px}.vertical-list small{color:#627287;font-size:10px}.vertical-list .preparing{opacity:.72}
   .access-boundary{margin:18px 0 0;padding:15px 17px;border:1px solid #f1dfb9;border-radius:14px;background:#fff9ec;color:#76571d;line-height:1.6;font-size:12px}

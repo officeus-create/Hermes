@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Wrench } from "@lucide
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
+import HermesConnectAIProviders from "../../../components/HermesConnectAIProviders.astro";
 
 const verticals = [
   {
@@ -138,6 +139,7 @@ const schema = [
             <a class="hc-secondary" href="/services/hermes-connect/repair-shops/">See live Repair Shops</a>
             <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/?mode=login">Repair Shop owner access</a>
             <a class="hc-secondary" href="/services/hermes-connect/academy/">Academy CRM / learner access</a>
+            <a class="hc-secondary" href="#use-your-ai">Connect from your AI · free beta</a>
             <a class="hc-secondary" href="/services/hermes-connect/support/">Support</a>
             <a class="hc-secondary" href="#choose-your-business">Compare business workspaces</a>
           </div>
@@ -201,6 +203,8 @@ const schema = [
         </div>
       </div>
     </section>
+
+    <HermesConnectAIProviders />
 
     <section class="hc-section" id="ai-customer-intake" aria-labelledby="ai-intake-title">
       <div class="hc-shell">
