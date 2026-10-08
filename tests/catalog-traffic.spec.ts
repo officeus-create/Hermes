@@ -30,6 +30,9 @@ test('Catalog public read binds one business and never writes or leaks identifie
   expect(response.headers.get('Cache-Control')).toBe('no-store');
   const invalid = await onRequestGet({request:new Request('https://hermeslogisticsus.com/api/catalog-business-event?path=/internal/secret/'),env:{DB}});
   expect(invalid.status).toBe(400);
+  const oversized = new URL('https://hermeslogisticsus.com/api/catalog-business-event');
+  for (let i=0;i<13;i++) oversized.searchParams.append('path', `/businesses/region/city/profile-${i}/`);
+  expect((await onRequestGet({request:new Request(oversized),env:{DB}})).status).toBe(400);
 });
 
 test('Catalog card badges and expandable profile details use profile-specific counts', async ({ page }) => {
