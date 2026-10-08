@@ -1,4 +1,5 @@
 <script>
+  import { repairSourceContext, repairIntakeContext } from "../lib/repair-attribution";
   const pushSeoAnalyticsEvent = (payload: Record<string, string>) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
@@ -30,6 +31,7 @@
       page_group: "digital_service",
       service_group: "seo_services",
       page_path: window.location.pathname,
+      ...repairSourceContext(window.location.pathname),
       destination_path: target.pathname,
     });
   };
@@ -257,6 +259,7 @@
       page_group: "marketing_contact",
       service_group: "seo_services",
       page_path: window.location.pathname,
+      ...repairIntakeContext(window.location.pathname, params),
     };
 
     const recordStart = (event: Event) => {
