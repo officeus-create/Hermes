@@ -80,3 +80,22 @@ test('Catalog country collection uses only trusted edge country after consent', 
   expect((await onRequestPost({request:rejected,env:{DB}})).status).toBe(400);
   expect(writes).toHaveLength(count);
 });
+
+for (const path of ['/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/', '/businesses/ukraine/bila-tserkva/kons-na-bis/']) {
+  test(`Catalog statistics remain readable with telemetry blocked: ${path}`, async ({ page }) => {
+    const writes: string[] = [];
+    page.on('request', request => {
+      if (request.method() === 'POST' && request.url().includes('/api/catalog-business-event')) writes.push(request.url());
+    });
+    await page.route('**/catalog-business-telemetry.js', route => route.abort('blockedbyclient'));
+    await page.route('**/api/catalog-business-event?*', route => route.fulfill({json:{success:true,profiles:[{path,state:'measured',views28d:12,views7d:6,viewsToday:2,countries:[{country:'US',views:7}],countriesState:'partial'}]}}));
+    await page.goto(path);
+    const detail = page.locator('[data-catalog-traffic="detail"]');
+    await expect(detail.locator('summary')).toContainText('12 in 28 days');
+    await detail.locator('summary').click();
+    await expect(detail).toContainText('United States: 7');
+    await expect(page.locator('script[src="/catalog-traffic-stats.js"]')).toHaveCount(1);
+    expect(writes).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
