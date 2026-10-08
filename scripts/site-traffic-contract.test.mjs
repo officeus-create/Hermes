@@ -64,7 +64,7 @@ assert.match(publicCounter, /localStaticHost/);
 assert.match(publicCounter, /browser sessions are not unique people/i);
 assert.doesNotMatch(publicCounter, />Live site traffic</i);
 assert.match(layout, /<SiteTrafficCollector \/>/);
-assert.match(layout, /<PublicTrafficCounter \/>/);
-assert.match(layout, /PUBLIC_TRAFFIC_BLOCKED_PREFIXES/);
+assert.doesNotMatch(layout, /<PublicTrafficCounter\s*\/>/, "Shared layout must not display site-wide totals as a public overlay");
+assert.doesNotMatch(layout, /showPublicTrafficCounter/);
 
 console.log("Owner site traffic counter contract OK");
