@@ -16,18 +16,18 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Three sequential Load Board mobile lab traces on 55eaf276
+    name: Three sequential Load Board mobile lab traces on 0dc12892
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      EXPECTED_SHA: 55eaf2762242fb830641e227280b98ad89966fe9
+      EXPECTED_SHA: 0dc12892d8c15b802a50be02bea238bd4291029d
       GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/load-board/
     steps:
       - name: Check out exact deployed main
         uses: actions/checkout@v4
         with:
-          ref: 55eaf2762242fb830641e227280b98ad89966fe9
+          ref: 0dc12892d8c15b802a50be02bea238bd4291029d
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,7 +51,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: load-board-mobile-three-traces-55eaf276
+          name: load-board-mobile-three-traces-0dc12892
           path: lighthouse-results/
           if-no-files-found: error
           retention-days: 30
