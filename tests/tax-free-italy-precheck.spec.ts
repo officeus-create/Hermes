@@ -7,7 +7,7 @@ test("Italy Tax Free precheck stays excluded from SEO and claims no operational 
   await expect(page.locator("html")).toHaveAttribute("lang","it");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content","noindex,nofollow");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://hermeslogisticsus.com/demos/hermes-connect/tax-free-italy/");
-  await expect(page.getByText(/NON RIMBORSO/).first()).toBeVisible();
+  await expect(page.getByText(/NESSUN RIMBORSO/).first()).toBeVisible();
   await expect(page.locator("main")).toContainText("Non emette fatture");
   await expect(page.locator("main")).toContainText("Nessun dato del modulo viene trasmesso a Hermes");
   await expect(page.locator('a[href="https://vatrefund.adm.gov.it/howto"]')).toBeVisible();
