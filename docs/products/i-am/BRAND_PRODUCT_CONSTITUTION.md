@@ -48,7 +48,7 @@ Never describe an untested product as '100% ahead'. Compare verified benchmark s
 
 ## SEO / GEO / editorial owners
 - `/businesses/concepts/i-am/` = concept only; `noindex,nofollow`; not canonical live Catalog Company.
-- `/insights/technology/i-am-vision/` = original founder product note; `noindex,nofollow`; not in Insights source registry/RSS until editorial owner approves.
+- `/insights/technology/i-am-vision/` = the one first-party **indexed development announcement** (after release approval and production verification), registered under Hermes Insights / Technology, with NewsArticle, dated first-party evidence, self-canonical, sitemap and RSS. The Catalog/incubation and app-preview URLs remain intentionally `noindex` and do not claim operating services.
 - No city/keyword SEO bulk. A new indexable I am page requires one intent owner, working real CTA, actual product, source evidence, Search Release Gate, monitoring and approval from existing Hermes Search owner.
 - Exact stage: code ≠ green CI ≠ merged ≠ deployed ≠ real user ≠ value/revenue.
 
