@@ -21,7 +21,7 @@ const schemas = [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json[
 });
 assert.ok(schemas.some(schema => schema["@type"] === "NewsArticle" && schema.mainEntityOfPage === url));
 assert.ok(schemas.some(schema => schema["@type"] === "BreadcrumbList" && schema.itemListElement?.some(item => item.position === 3 && item.item === url)));
-assert.ok(html.includes('href="/businesses/"'));
+assert.ok(html.includes('href="/businesses/italy/"'), "Stage 2 Catalog handoff must point to the dedicated I am Italy presentation");
 assert.ok(html.includes('href="/services/hermes-connect/"'));
 const rss = await readFile(new URL("../dist/insights/rss.xml", import.meta.url), "utf8");
 const sitemap = await readFile(new URL("../dist/sitemap-insights.xml", import.meta.url), "utf8");

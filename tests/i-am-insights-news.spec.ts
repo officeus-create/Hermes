@@ -17,8 +17,10 @@ test("I am development is the official Technology news item, not a shadow Catalo
   const featured=page.locator(".iam-news");
   await expect(featured).toBeVisible();
   await expect(featured.locator('svg[role="img"]')).toHaveCount(1);
-  await expect(featured.locator('a[href="/businesses/"]')).toBeVisible();
+  await expect(featured.locator('a[href="/businesses/italy/"]')).toBeVisible();
   await expect(featured.locator('a[href="/services/hermes-connect/"]')).toBeVisible();
+  await expect(featured).not.toContainText("welcomes exploratory strategic and private-investor discussions");
+  await expect(featured.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
 test("I am editorial is one indexable first-party NewsArticle and links only active stage owners",async({page}, testInfo)=>{
@@ -31,7 +33,7 @@ test("I am editorial is one indexable first-party NewsArticle and links only act
   await expect(page.getByRole("heading",{level:1})).toContainText("I am enters development");
   await expect(page.locator("main")).toContainText("Our 14-month development plan");
   await expect(page.locator("main")).toContainText("not a public offering of securities");
-  await expect(page.locator('main a[href="/businesses/"]').first()).toBeVisible();
+  await expect(page.locator('main a[href="/businesses/italy/"]').first()).toBeVisible();
   await expect(page.locator('main a[href="/services/hermes-connect/"]').first()).toBeVisible();
   await expect(page.locator("main")).not.toContainText("instant Tax Free refunds");
   await expect(page.locator('main a[href^="mailto:"]')).toHaveCount(0);

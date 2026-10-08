@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
+import IAmDevelopmentPath from "../../../../components/IAmDevelopmentPath.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import IAmItalyEditorialVisual from "../../../../components/IAmItalyEditorialVisual.astro";
 
@@ -62,13 +63,14 @@ const newsSchema = [
   <main class="iam-note" id="main-content">
     <div class="shell">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/insights/">Hermes Insights</a> / <a href="/paths/technology/">Technology</a> / I am development</nav>
-      <header class="hero">
+      <IAmDevelopmentPath active="Vision" />
+      <header class="iam-insights-hero">
         <p class="eyebrow">Hermes Insights · Technology / Development · <time datetime="2026-10-08">8 October 2026</time></p>
         <h1>I am enters development: a personal interface for travel, shopping and cross-border life.</h1>
         <p class="dek">Hermes Technology is building the first concept of <strong>I am</strong>: a voice-first interface that aims to help travellers and internationally active entrepreneurs find a clear route through shopping, Tax Free guidance and eventually permitted administrative procedures. Italy is the first exploration market; the proposed development horizon is 14 months.</p>
         <div class="status"><strong>Concept and demonstration only.</strong> I am does not currently have an incorporated operator, licences, government-system access, tourist payment services, verified partners or customer transactions.</div>
-        <a class="cta" href="/businesses/">Hermes Business Catalog · I am Italy presentation in development →</a>
-        <p class="secondary-cta"><a href="/services/hermes-connect/">See the Hermes Connect product foundation</a> · Full I am Catalog presentation and app demonstrations are upcoming stages.</p>
+        <a class="cta" href="/businesses/italy/">Explore I am Italy in Hermes Business Catalog →</a>
+        <p class="secondary-cta"><a href="/services/hermes-connect/">See the Hermes Connect product foundation</a> · The I am Catalog presentation is now available; application development continues as the next Hermes Connect stage.</p>
       </header>
       <article class="story">
         <div class="photo"><IAmItalyEditorialVisual /></div>
@@ -98,10 +100,11 @@ const newsSchema = [
           <p>A browser-based shopping shortlist is being developed and tested inside the Hermes Connect technology environment, with responsive desktop and mobile layouts. A future approved release may let travellers research official sellers and voluntarily store selected merchant identifiers; I am does not currently receive traveller passports, payments, flight details, merchant orders or sales commissions.</p>
           <p>Italy's first source-checked candidates include <a href="https://www.farfetch.com/it/pag1987.aspx" target="_blank" rel="noopener noreferrer">FARFETCH</a> and <a href="https://www.yoox.com/it/affiliation/program" target="_blank" rel="noopener noreferrer">YOOX</a>, which publish affiliate application programmes, plus <a href="https://www.thebicestercollection.com/fidenza-village/en/visit/" target="_blank" rel="noopener noreferrer">Fidenza Village's Shop from Home</a> and <a href="https://www.milanairports-shop.com/en/services/eboutique" target="_blank" rel="noopener noreferrer">Milan Airports Boutique's reservation service</a>. I am is not currently enrolled in these programmes and cannot record a commission.</p>
           <p>The Milan Airports Boutique reservation channel serves eligible departing passengers, not a promised collection on arrival. A purchase through a merchant website is not automatically an eligible in-store tourist Tax Free purchase. Those distinctions are essential to the future country's rules engine.</p>
-          <p><a href="/businesses/">Hermes Business Catalog</a> will host the dedicated I am Italy presentation after review. The future application and testing work belongs to <a href="/services/hermes-connect/">Hermes Connect</a>, not to the News publishing system.</p>
+          <p><a href="/businesses/italy/">Hermes Business Catalog now hosts the dedicated I am Italy startup presentation</a>. The future application and testing work belongs to <a href="/services/hermes-connect/">Hermes Connect</a>, not to the News publishing system.</p>
         </section>
         <section>
-          <h2>Our 14-month development plan</h2>
+          <h2>Our 14-month forward design horizon</h2>
+          <p>Our 14-month development plan is a forward-looking roadmap and strategy target, not shipped capability or a signed delivery commitment. Country-specific permissions, legal review, security and verified provider readiness determine what can become operational.</p>
           <div class="roadmap-milestones">
             <article><span>Months 1–2</span><strong>Research and foundations</strong><p>Italian merchant discovery, product brand, official-rule review, first public concept and scoped prototypes.</p></article>
             <article><span>Months 3–5</span><strong>Personal journey</strong><p>Test text and optional voice-led intent, user consent, private workflows and responsive interfaces against real needs.</p></article>
@@ -122,7 +125,7 @@ const newsSchema = [
           <h2>I am — Here. There. Everywhere.</h2>
           <p><strong>Strategic collaboration and private investor research:</strong> Potential technology partnerships, relationships with Italian retailers and strategic backing are conditional research topics for the proposed 14-month development journey. This article does not open a partnership or investor inquiry process. A legal issuer, financing structure, commercial terms, required permissions and investor eligibility have not been established. This announcement is not a public offering of securities or an invitation to transfer funds.</p>
           <p>This editorial announcement documents the proposed development journey and its current boundaries.</p>
-          <a class="cta" href="/businesses/">Explore Hermes Business Catalog · I am site is next →</a>
+          <a class="cta" href="/businesses/italy/">Explore the I am Italy startup website →</a>
         </section>
       </article>
       <p class="editorial">Editorial classification: first-party announcement about development work, not a government or financial services listing. Publication on this website does not establish Google indexing, user acquisition, investment commitments, independent company formation, merchant affiliation or live transactions. Search visibility and partner outcomes require separate evidence.</p>
@@ -132,7 +135,7 @@ const newsSchema = [
 </BaseLayout>
 <style>
 .iam-note{background:#fbfcfe;color:#172d40}.shell{max-width:1110px;margin:auto;padding:0 24px}.crumb{padding:26px 0;color:#6b8596;font-size:12px}.crumb a{color:#2a7182;text-decoration:none}
-.hero{padding:52px 0 62px}.eyebrow{color:#138e95;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.13em}
+.iam-insights-hero{display:block;overflow:visible;min-width:0;padding:52px 0 62px}.eyebrow{color:#138e95;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.13em}
 h1{font-size:clamp(38px,5.4vw,75px);line-height:1.09;letter-spacing:-.055em;max-width:1020px;margin:18px 0 30px}
 .dek{font-size:clamp(19px,2vw,25px);line-height:1.56;color:#516b7d;max-width:930px}.status{margin:24px 0;background:#eef7f8;color:#385e6e;border:1px solid #cbe2e7;border-radius:14px;padding:18px;line-height:1.6}
 .cta{display:inline-block;background:#114d5b;color:white;text-decoration:none;padding:16px 20px;border-radius:12px;font-weight:800;margin-top:12px}.cta:focus-visible,a:focus-visible{outline:3px solid #3ba9c5;outline-offset:3px}
@@ -148,5 +151,5 @@ h1{font-size:clamp(38px,5.4vw,75px);line-height:1.09;letter-spacing:-.055em;max-
 .roadmap-milestones span{display:block;color:#14838b;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
 .roadmap-milestones strong{display:block;margin-top:9px;color:#183b4a;font-size:17px}
 .roadmap-milestones p{font-size:13px;line-height:1.6;margin:8px 0 0}
-@media(max-width:620px){.shell{padding:0 16px}.hero{padding:28px 0 36px}.comparison,.principles,.roadmap-milestones{grid-template-columns:1fr}.story section{padding:30px 0}.closing{padding:23px!important}}
+@media(max-width:620px){.shell{padding:0 16px}.iam-insights-hero{padding:28px 0 36px}.comparison,.principles,.roadmap-milestones{grid-template-columns:1fr}.story section{padding:30px 0}.closing{padding:23px!important}}
 </style>
