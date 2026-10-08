@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-08-i-am-insights-development-first",
+  "generated_at": "2026-10-08T13:30:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/insights/technology/i-am-vision/",
+      "source_state": "current_main",
+      "indexability": "index",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/insights/technology/i-am-vision/",
+      "sitemap_owner": "sitemap-insights.xml",
+      "source_file": "src/pages/insights/technology/i-am-vision/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Development announcement only, not I am regulated live service, legal company or securities offering; Google indexing, investor reception and customer value remain unverified until external readback.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
