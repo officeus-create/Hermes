@@ -41,7 +41,7 @@ Head-to-head test on identical tasks: correct next step rate, time-to-guidance, 
 Never describe an untested product as '100% ahead'. Compare verified benchmark scores and iterate.
 
 ## Investment, ownership and legal truth
-- Public preview: no share price, $20m minimum, valuation, return promises or funding status. Restricted founder/investor note can discuss an indicative $20m+ strategic investment idea, not an actual open securities offering.
+- Public preview: no share price, investor minimum, valuation, return promises or funding status. Restricted founder/investor note can discuss an indicative private founder financing threshold+ strategic investment idea, not an actual open securities offering.
 - The startup has no verified incorporation, licences, government credentials, telephone numbers or payment rails. Do not present 2018 Hermes U.S. infrastructure as an I am subsidiary or legal agent without documented corporate/contractual rights.
 - U.S. investor fundraising regime (including public solicitation), Italian tax/legal rules, GDPR, IP/trademark and future MiCA require qualified reviews before claims or transactions.
 - Founder idea is not a verified Hermes Connect customer record and must not be inserted into a live customer Catalog company or revenue count.
