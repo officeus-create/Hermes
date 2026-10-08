@@ -79,7 +79,7 @@ const staticTrafficPaths = new Map<string, string>([
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const paths = [...new Set(new URL(request.url).searchParams.getAll("path"))];
-  if (!paths.length || paths.length > 40 || paths.some((path) => path.length > 240 || !/^\/businesses\/[a-z0-9/-]+\/$/.test(path) || path.includes("//"))) {
+  if (!paths.length || paths.length > 12 || paths.some((path) => path.length > 240 || !/^\/businesses\/[a-z0-9/-]+\/$/.test(path) || path.includes("//"))) {
     return jsonResponse(400, { success: false, error: "invalid_catalog_paths" });
   }
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
