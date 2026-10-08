@@ -43,9 +43,9 @@ test("Catalog publication remains separate from account registration", () => {
 
 
 test("Hermes Connect product entry routes through the business-aware access page", () => {
-  assert.match(product, /href="\/services\/hermes-connect\/access\/\?lang=uk"/);
+  assert.match(product, /href="\/services\/hermes-connect\/access\/"/);
   assert.match(product, /Choose business \/ Sign in/);
-  assert.match(product, /href="\/services\/hermes-connect\/academy\/\?lang=uk"/);
+  assert.match(product, /href="\/services\/hermes-connect\/academy\/"/);
 });
 
 
