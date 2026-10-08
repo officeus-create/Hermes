@@ -44,6 +44,12 @@ const academyRegistrationHref = business.vertical === "business_academy"
   ? `/services/hermes-connect/academy/business/auth/?mode=register&source=catalog&business=${encodeURIComponent(business.slug)}&lang=en`
   : "";
 const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
+const preparedUk = clientStrategy
+  ? "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records."
+  : "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.";
+const preparedEn = clientStrategy
+  ? "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
+  : "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately.";
 ---
 {conceptCTA ? <CatalogWebsiteDemo business={business} profileUrl={profileUrl} /> : <section class="catalog-concept" data-business-id={business.id} data-default-locale={defaultLocale} data-catalog-uk-en data-title-uk={`${business.name} | Hermes Catalog`}>
   <div class="concept-disclosure">
@@ -82,25 +88,19 @@ const label = (uk:string,en:string) => defaultLocale === "uk" ? uk : en;
   <section class="truth">
     <div><p class="kicker" data-uk="ПІДТВЕРДЖЕНІ ФАКТИ" data-en="BUSINESS TRUTH">{label("ПІДТВЕРДЖЕНІ ФАКТИ","BUSINESS TRUTH")}</p><h2 data-uk={localized?.uk.truthTitle} data-en={localized?.en.truthTitle}>{copy?.truthTitle ?? "Structured once. Reused across Hermes."}</h2></div>
     <div>
-      <div class="truth-labels"><span data-state="verified">{label("Підтверджені / публічні факти","Verified / public facts")}</span><span data-state="concept">{label("Концепція Hermes","Hermes concept")}</span><span data-state="owner">{label("Потрібне підтвердження власника","Owner confirmation required")}</span></div>
-      <dl><div><dt data-uk="Адреса" data-en="Address">{label("Адреса","Address")}</dt><dd data-uk={[ukBusiness.address,ukBusiness.locality,ukBusiness.region,business.postalCode].filter(Boolean).join(", ")} data-en={[enBusiness.address,enBusiness.locality,enBusiness.region,business.postalCode].filter(Boolean).join(", ")}>{[enBusiness.address,enBusiness.locality,enBusiness.region,business.postalCode].filter(Boolean).join(", ")}</dd></div><div><dt data-uk="Розклад" data-en="Hours">{label("Розклад","Hours")}</dt><dd data-uk={business.hours.join(" · ")} data-en={(business.hoursEn ?? business.hours).join(" · ")}>{label(business.hours.join(" · "),(business.hoursEn ?? business.hours).join(" · "))}</dd></div><div><dt data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">{label("Потрібне підтвердження власника","Needs owner confirmation")}</dt><dd data-uk={business.factsRequiringOwnerConfirmation.join(" · ")} data-en={(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · ")}>{label(business.factsRequiringOwnerConfirmation.join(" · "),(business.factsRequiringOwnerConfirmationEn ?? business.factsRequiringOwnerConfirmation).join(" · "))}</dd></div></dl>
+      <div class="truth-labels"><span data-state="verified" data-uk="Підтверджені / публічні факти" data-en="Verified / public facts">{label("Підтверджені / публічні факти","Verified / public facts")}</span><span data-state="concept" data-uk="Концепція Hermes" data-en="Hermes concept">{label("Концепція Hermes","Hermes concept")}</span><span data-state="owner" data-uk="Потрібне підтвердження власника" data-en="Owner confirmation required">{label("Потрібне підтвердження власника","Owner confirmation required")}</span></div>
+      <dl><div><dt data-uk="Адреса" data-en="Address">{label("Адреса","Address")}</dt><dd data-uk={[ukBusiness.address,ukBusiness.locality,ukBusiness.region,business.postalCode].filter(Boolean).join(", ")} data-en={[enBusiness.address,enBusiness.locality,enBusiness.region,business.postalCode].filter(Boolean).join(", ")}>{[enBusiness.address,enBusiness.locality,enBusiness.region,business.postalCode].filter(Boolean).join(", ")}</dd></div><div><dt data-uk="Розклад" data-en="Hours">{label("Розклад","Hours")}</dt><dd data-uk={ukBusiness.hours.join(" · ")} data-en={enBusiness.hours.join(" · ")}>{label(ukBusiness.hours.join(" · "),enBusiness.hours.join(" · "))}</dd></div><div><dt data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">{label("Потрібне підтвердження власника","Needs owner confirmation")}</dt><dd data-uk={ukBusiness.factsRequiringOwnerConfirmation.join(" · ")} data-en={enBusiness.factsRequiringOwnerConfirmation.join(" · ")}>{label(ukBusiness.factsRequiringOwnerConfirmation.join(" · "),enBusiness.factsRequiringOwnerConfirmation.join(" · "))}</dd></div></dl>
     </div>
   </section>
   {(business.strategyPreviewUrl || business.crmPreviewUrl) && <section class="prepared-work">
     <div>
       <p class="kicker" data-uk="ПІДГОТОВЛЕНА РОБОТА HERMES" data-en="PREPARED HERMES WORK">{label("ПІДГОТОВЛЕНА РОБОТА HERMES","PREPARED HERMES WORK")}</p>
       <h2 data-uk="Повний розбір і CRM-модель уже зібрані." data-en="The full strategy review and CRM model are already prepared.">{label("Повний розбір і CRM-модель уже зібрані.","The full strategy review and CRM model are already prepared.")}</h2>
-      <p>{clientStrategy ? label(
-        "Canonical Catalog profile уже містить Digital Audit, повну client strategy, organic-first readiness, CRM attribution, 3–6 month media plan і Candidate/content method. Academy business identity/profile persistence уже реалізовані; lead/cohort/assignment/HR модулі в окремому CRM demo поки показують product model і не видаються за live client records.",
-        "The canonical Catalog profile now contains the Digital Audit, full client strategy, organic-first readiness, CRM attribution, 3–6 month media plan, and the candidate/content method. Academy business identity/profile persistence is implemented; lead/cohort/assignment/HR modules in the separate CRM demo remain a product model and are not presented as live client records."
-      ) : label(
-        "Публічний профіль залишається коротким SEO/GEO owner. Детальний матеріал і CRM demo відкриваються окремо.",
-        "The public profile remains the concise SEO/GEO owner. Detailed work and the CRM demo open separately."
-      )}</p>
+      <p data-uk={preparedUk} data-en={preparedEn}>{label(preparedUk,preparedEn)}</p>
     </div>
     <div class="prepared-links">
-      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl}>{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
-      {business.crmPreviewUrl && <a href={business.crmPreviewUrl}>{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
+      {business.strategyPreviewUrl && <a href={business.strategyPreviewUrl} data-uk="Відкрити evidence strategy / audit →" data-en="Open evidence strategy / audit →">{label("Відкрити evidence strategy / audit →","Open evidence strategy / audit →")}</a>}
+      {business.crmPreviewUrl && <a href={business.crmPreviewUrl} data-uk="Відкрити Academy CRM demo →" data-en="Open Academy CRM demo →">{label("Відкрити Academy CRM demo →","Open Academy CRM demo →")}</a>}
       {academyRegistrationHref && <a href={academyRegistrationHref} data-catalog-academy-registration data-uk="Зареєструвати Academy workspace →" data-en="Register Academy workspace →">{label("Зареєструвати Academy workspace →","Register Academy workspace →")}</a>}
     </div>
   </section>}
