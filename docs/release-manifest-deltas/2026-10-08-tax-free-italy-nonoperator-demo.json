@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-08-tax-free-italy-nonoperator-demo",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/demos/hermes-connect/tax-free-italy/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/tax-free-italy/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/demos/hermes-connect/tax-free-italy/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Informational non-operator demo only; not authorized for VAT refund processing or indexable search ownership. Full eligibility, legal and SEO owner gates remain open.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
