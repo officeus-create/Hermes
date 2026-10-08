@@ -75,6 +75,13 @@ const stages = [
             <strong>Your proposed workflow will appear here.</strong>
             <p>No text is sent to Hermes or saved.</p>
           </div>
+          <section id="iam-workspace" class="temporary-workspace" aria-label="Your temporary menu" hidden>
+            <div class="workspace-heading">
+              <div><strong>Your temporary menu</strong><p>Example modules pinned for this page only. They disappear on reload; no account or data is created.</p></div>
+              <button type="button" id="iam-clear" class="clear-button">Clear menu</button>
+            </div>
+            <div id="iam-pinned" class="pinned-list" role="list"></div>
+          </section>
         </div>
       </div>
     </section>
@@ -111,26 +118,154 @@ const stages = [
   const form = document.querySelector<HTMLFormElement>("#iam-intent");
   const input = document.querySelector<HTMLTextAreaElement>("#iam-text");
   const result = document.querySelector<HTMLElement>("#iam-result");
+  const workspace = document.querySelector<HTMLElement>("#iam-workspace");
+  const pinnedList = document.querySelector<HTMLElement>("#iam-pinned");
+  const clearButton = document.querySelector<HTMLButtonElement>("#iam-clear");
+
+  // This is a deterministic browser-only illustration, not a language model,
+  // booking engine, eligibility decision, jurisdictional rules engine or account.
   const workflows = [
-    {pattern:/tax.free|refund|vat|iva|shopping|clothes|vestiti|italy|italia/i,title:"Italy · Tax Free guidance",steps:["Check the official eligibility rules for purchases and non-EU residence.","Review the merchant-issued documentation and the customs confirmation process.","If relevant, continue only with an authorized merchant or service operator."],note:"No payment, invoice, or tax refund is performed in this demonstration."},
-    {pattern:/company|incorporat|startup|business|register|token|crypto/i,title:"Cross-border business journey",steps:["Choose the destination jurisdiction and the type of activity.","Review its official company-registration, identity and residency requirements.","Use a verified local service provider if the particular procedure requires one."],note:"Company and crypto-asset issuance are not available services. Regulated financial steps would require separate approval."},
-    {pattern:/car|rent|travel|flight|hotel|plane|trip|journey/i,title:"Travel & mobility journey",steps:["Specify the destination, dates, passengers and mobility needs.","Compare real offers only from permissioned and verified providers.","Confirm terms, identity and payment directly with a licensed provider."],note:"No live booking inventory, prices or discounts are offered here."},
-    {pattern:/document|visa|identity|certificate|paperwork|permit/i,title:"Documents & registrations journey",steps:["Identify the destination and the type of required procedure.","Locate authoritative official requirements and the permitted submission channel.","Prepare a personal checklist and request explicit approval before any submission."],note:"No official application is created or submitted."},
-  ];
-  for(const button of document.querySelectorAll<HTMLButtonElement>("[data-example]")) button.addEventListener("click", () => { if(input){input.value=button.dataset.example??"";input.focus();} });
-  form?.addEventListener("submit",(event)=>{
+    {
+      id: "tax-free",
+      pattern: /\b(tax[\s-]?free|vat[\s-]?refund|vat|iva|refund|shopping|clothes|vestiti)\b/i,
+      title: "Italy · Tax Free guidance",
+      steps: [
+        "Check the official eligibility rules for purchases and non-EU residence.",
+        "Review the merchant-issued documentation and the customs confirmation process.",
+        "If relevant, continue only with an authorized merchant or service operator."
+      ],
+      note: "No payment, invoice, or tax refund is performed in this demonstration.",
+      sourceUrl: "https://www.adm.gov.it/portale/-/otello",
+      sourceLabel: "Read the official Italian customs guidance"
+    },
+    {
+      id: "business",
+      pattern: /\b(company|incorporat\w*|startup|start[\s-]?up|register (?:a |the )?business|business formation|form a business|form a company|set up a business|token|crypto(?:currency)?)\b/i,
+      title: "Cross-border business journey",
+      steps: [
+        "Choose the destination jurisdiction and the type of activity.",
+        "Review its official company-registration, identity and residency requirements.",
+        "Use a verified local service provider if the particular procedure requires one."
+      ],
+      note: "Company and crypto-asset issuance are not available services. Regulated financial steps would require separate approval."
+    },
+    {
+      id: "travel",
+      pattern: /\b(travel|travelling|traveling|flight|flights|hotel|hotels|plane|trip|journey|journeys|car|cars|rent|rental|airport|train|trains)\b/i,
+      title: "Travel & mobility journey",
+      steps: [
+        "Specify the destination, dates, passengers and mobility needs.",
+        "Compare real offers only from permissioned and verified providers.",
+        "Confirm terms, identity and payment directly with a licensed provider."
+      ],
+      note: "No live booking inventory, prices or discounts are offered here."
+    },
+    {
+      id: "documents",
+      pattern: /\b(document|documents|visa|visas|identity|certificate|certificates|paperwork|permit|permits|residency)\b/i,
+      title: "Documents & registrations journey",
+      steps: [
+        "Identify the destination and the type of required procedure.",
+        "Locate authoritative official requirements and the permitted submission channel.",
+        "Prepare a personal checklist and request explicit approval before any submission."
+      ],
+      note: "No official application is created or submitted."
+    }
+  ] as const;
+
+  // Only the selected module IDs are held in ephemeral memory for this page.
+  const pinned = new Set<string>();
+  const make = (tag: string, className: string, content: string) => {
+    const element = document.createElement(tag);
+    element.className = className;
+    element.textContent = content;
+    return element;
+  };
+  const updatePinLabels = () => {
+    result?.querySelectorAll<HTMLButtonElement>("button[data-pin-module]").forEach((button) => {
+      const id = button.dataset.pinModule ?? "";
+      button.disabled = pinned.has(id);
+      button.textContent = pinned.has(id) ? "Added to temporary menu" : "Pin this example";
+    });
+  };
+  const redrawMenu = () => {
+    if (!workspace || !pinnedList) return;
+    pinnedList.replaceChildren();
+    workspace.hidden = pinned.size === 0;
+    for (const id of pinned) {
+      const module = workflows.find((item) => item.id === id);
+      if (!module) continue;
+      const item = make("div", "pinned-item", module.title);
+      item.setAttribute("role", "listitem");
+      const remove = make("button", "remove-pin", "Remove");
+      remove.setAttribute("type", "button");
+      remove.setAttribute("aria-label", "Remove " + module.title);
+      remove.addEventListener("click", () => {
+        pinned.delete(id);
+        redrawMenu();
+      });
+      item.append(remove);
+      pinnedList.append(item);
+    }
+    updatePinLabels();
+  };
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-example]")) {
+    button.addEventListener("click", () => {
+      if (!input) return;
+      input.value = button.dataset.example ?? "";
+      input.focus();
+    });
+  }
+  clearButton?.addEventListener("click", () => {
+    pinned.clear();
+    redrawMenu();
+  });
+  form?.addEventListener("submit", (event) => {
     event.preventDefault();
-    if(!input || !result || !form?.reportValidity())return;
-    const raw=input.value.trim();
-    if(!raw)return;
-    const matches=workflows.filter(x=>x.pattern.test(raw));
-    const selected=matches[0];
-    const title=selected?.title??"Start with a country-specific plan";
-    const steps=selected?.steps??["Define your destination and what you want to achieve.","Consult the official country requirements for that task.","Review an authorized provider and decide whether to save this plan."];
+    if (!input || !result || !form?.reportValidity()) return;
+    const userRequest = input.value.trim();
+    if (!userRequest) return;
+    const matches = workflows.filter((item) => item.pattern.test(userRequest));
     result.replaceChildren();
-    const h=document.createElement("strong");h.textContent=title;result.append(h);
-    const list=document.createElement("ol");for(const step of steps){const li=document.createElement("li");li.textContent=step;list.append(li);}result.append(list);
-    const p=document.createElement("p");p.textContent=(selected?.note??"Further country and identity checks would be required.")+" Example only: no AI call, account or data storage.";result.append(p);
+    result.append(make("strong", "result-intro", matches.length
+      ? "Illustrative " + (matches.length === 1 ? "module" : "modules") + " for your request"
+      : "No verified service category found in this demo"));
+    if (matches.length === 0) {
+      result.append(make("p", "result-warning",
+        "This request needs country-specific research and official-source verification. The prototype does not invent a service, registration path, or permission."));
+    } else {
+      const cards = make("div", "intent-cards", "");
+      for (const module of matches) {
+        const card = make("article", "intent-card", "");
+        card.dataset.intentModule = module.id;
+        card.append(make("h3", "", module.title));
+        const steps = document.createElement("ol");
+        for (const step of module.steps) {
+          steps.append(make("li", "", step));
+        }
+        card.append(steps, make("p", "intent-note", module.note));
+        if ("sourceUrl" in module && module.sourceUrl) {
+          const source = make("a", "intent-source", module.sourceLabel);
+          source.setAttribute("href", module.sourceUrl);
+          source.setAttribute("target", "_blank");
+          source.setAttribute("rel", "noopener noreferrer");
+          card.append(source);
+        }
+        const pinButton = make("button", "pin-module", "Pin this example");
+        pinButton.setAttribute("type", "button");
+        pinButton.dataset.pinModule = module.id;
+        pinButton.addEventListener("click", () => {
+          pinned.add(module.id);
+          redrawMenu();
+        });
+        card.append(pinButton);
+        cards.append(card);
+      }
+      result.append(cards);
+      updatePinLabels();
+    }
+    result.append(make("p", "result-disclosure",
+      "Predefined example only: no AI call, account or data storage. Voice input, country-specific decisions and real submission are future product concepts."));
   });
 </script>
 
@@ -170,4 +305,21 @@ const stages = [
   @media(max-width:1050px){.iam-hero,.stage-grid{grid-template-columns:1fr}.iam-hero{padding-top:48px;padding-bottom:64px}.hero-visual{max-width:800px}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:620px){.shell{padding-left:16px;padding-right:16px}.iam-topbar{align-items:flex-start;flex-direction:column}.iam-mark{font-size:91px}.iam-hero{padding-top:36px}.actions a{width:100%;text-align:center}.experience{padding:64px 0}.stage-grid{gap:30px}.simulator{padding:18px}.module-grid,.roadmap-grid{grid-template-columns:1fr}.module{min-height:0}.roadmap-grid article{min-height:0}}
   @media(prefers-reduced-motion:reduce){.iam *{scroll-behavior:auto}}
+  .intent-cards{display:grid;gap:12px;margin-top:15px}
+  .intent-card{border:1px solid #c9e0e5;border-radius:14px;background:#fff;padding:15px}
+  .intent-card h3{margin:0 0 9px;font-size:16px;color:#143c4f}
+  .intent-card ol{margin:0 0 8px;padding-left:21px;color:#496777;font-size:14px;line-height:1.6}
+  .intent-note,.result-disclosure,.result-warning{font-size:12px;line-height:1.6;color:#5c7281}
+  .intent-source{display:inline-block;font-size:13px;font-weight:750;color:#176f86;margin:9px 0 12px}
+  .pin-module{display:block;width:100%;border:1px solid #17818b;border-radius:10px;background:#eaf7f7;color:#1a6370;padding:10px;font-size:13px;font-weight:800;cursor:pointer}
+  .pin-module:disabled{background:#edf3f4;color:#5e7781;cursor:default;border-color:#c9d9db}
+  .temporary-workspace{margin-top:18px;padding:17px;background:#f4f9fa;border:1px solid #c5dbe0;border-radius:15px}
+  .temporary-workspace[hidden]{display:none}
+  .workspace-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+  .workspace-heading strong{font-size:16px;color:#123c4c}
+  .workspace-heading p{font-size:12px;color:#5f7889;line-height:1.5;margin:7px 0}
+  .clear-button,.remove-pin{border:1px solid #bed1d8;background:white;color:#276578;border-radius:8px;cursor:pointer;padding:7px 9px;font-size:12px;flex-shrink:0}
+  .pinned-list{display:grid;gap:9px;margin-top:10px}
+  .pinned-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:10px;background:white;border:1px solid #dce9ed;font-size:13px;font-weight:750}
+
 </style>
