@@ -1,12 +1,10 @@
 name: Verify Hermes Connect Russian on command
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: hermes-connect-russian-production-command
@@ -14,10 +12,6 @@ concurrency:
 
 jobs:
   verify:
-    if: >-
-      github.event.issue.number == 220 &&
-      github.event.comment.body == '/verify-connect-ru' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -51,8 +45,6 @@ jobs:
 
       - name: Publish sanitized result to issue
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           {
             if [ -f artifacts/hermes-connect-russian-production.md ]; then
@@ -65,8 +57,7 @@ jobs:
             echo
             echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
             echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
-          } > /tmp/hermes-connect-russian-production-comment.md
-          gh issue comment 220 --repo "${{ github.repository }}" --body-file /tmp/hermes-connect-russian-production-comment.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload sanitized evidence
         if: always()
