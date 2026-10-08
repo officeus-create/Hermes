@@ -53,7 +53,7 @@ Page and merchant links have clear status labels: public programme != Hermes mem
 ## SEO/GEO and content
 - Insights `/insights/` features a truthful first-party startup development news item in Technology; the article itself may have genuine `NewsArticle` metadata for the **announcement event only**, not Product/Offer/merchant transactional claims. The linked Catalog and application demonstrations remain noindex.
 - Italy Catalog `/businesses/italy/`, I am concept `/businesses/concepts/i-am/` and browser preview `/demos/hermes-connect/i-am-shopping/` remain `noindex,nofollow` and outside sitemaps/IndexNow. The ONE indexed I am editorial search owner is `/insights/technology/i-am-vision/` after production release, with no duplicate actual-product or business entity claim.
-- Adding feature to Hermes Insights hub **does not itself mean the concept has been submitted to RSS, counted as organic article, or Google-indexed**. Editorial owner controls distribution and Search Release Gate.
+- The standalone first-party development article is now registered for the Technology feed, RSS and sitemap; noindex concept URLs are excluded. Release/HTTP 200/sitemap do **not** establish that Google has indexed, ranked or referred qualified visitors. The editorial owner controls actual publication state and Search Release Gate.
 - SEO measurement after deployment: URL health/robots/canonical/age, approved real search owner only where appropriate, qualified opt-in human enquiries separate from raw clicks and referrals.
 
 ## CI / acceptance gate
