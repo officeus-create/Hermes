@@ -1,0 +1,197 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+
+const admOverview = "https://www.adm.gov.it/portale/en/progetti-aida-otello";
+const admFaq = "https://www.adm.gov.it/portale/faq-otello2";
+---
+
+<BaseLayout
+  title="Tax Free in Italia · Verifica preliminare | Hermes Connect Demo"
+  description="Dimostrazione informativa: verifica preliminare delle condizioni Tax Free italiane. Non emette fatture, non valida l'esportazione e non gestisce rimborsi."
+  robots="noindex,nofollow"
+  locale="it"
+  htmlLang="it"
+>
+  <SiteHeader theme="light" locale="it" activePath="/it/tecnologia/" />
+  <main id="main-content" class="taxfree-page">
+    <div class="shell">
+      <div class="topline">
+        <span>HERMES CONNECT · ESPLORAZIONE PRODOTTO</span>
+        <span class="preview-label">DEMO INFORMATIVA · NESSUN RIMBORSO</span>
+      </div>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Italia · Retail Technology</p>
+          <h1>Tax Free, spiegato senza complicazioni.</h1>
+          <p class="lead">
+            Un primo strumento sperimentale per comprendere le condizioni generali
+            del Tax Free Shopping in Italia. Pensato per raccogliere feedback sul
+            lavoro dei negozi, non per gestire operazioni fiscali.
+          </p>
+          <a class="text-link" href="#verifica">Prova la verifica preliminare ↓</a>
+        </div>
+        <aside class="truth">
+          <strong>Che cosa NON fa questa demo</strong>
+          <p>Non emette fatture, non si collega a OTELLO 2.0, non valida l'uscita dall'UE, non determina il rimborso e non trasferisce denaro.</p>
+          <p>Hermes non dichiara di essere un operatore Tax Free autorizzato.</p>
+        </aside>
+      </header>
+      <section id="verifica" class="work-grid" aria-labelledby="verifica-title">
+        <div class="panel">
+          <p class="eyebrow">Strumento dimostrativo</p>
+          <h2 id="verifica-title">Verifica preliminare</h2>
+          <p class="muted">Compila solo dati generali. Nessun nome, passaporto, indirizzo, documento fiscale o dato di pagamento viene richiesto o inviato.</p>
+          <form id="italy-taxfree-check">
+            <label for="invoice-total">Totale della singola fattura, IVA inclusa (€)</label>
+            <input id="invoice-total" name="invoice-total" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Es. 250.00" required />
+            <label for="buyer-residence">Residenza o domicilio dell'acquirente</label>
+            <select id="buyer-residence" name="buyer-residence" required>
+              <option value="">Seleziona</option>
+              <option value="non-eu">Fuori dall'Unione europea</option>
+              <option value="eu">Nell'Unione europea</option>
+              <option value="unknown">Non so / serve una verifica</option>
+            </select>
+            <label for="goods-purpose">Destinazione dei beni</label>
+            <select id="goods-purpose" name="goods-purpose" required>
+              <option value="">Seleziona</option>
+              <option value="personal">Uso personale o familiare</option>
+              <option value="commercial">Uso commerciale / rivendita</option>
+              <option value="unknown">Non so / serve una verifica</option>
+            </select>
+            <div class="date-fields">
+              <div>
+                <label for="invoice-date">Data della fattura</label>
+                <input id="invoice-date" name="invoice-date" type="date" required />
+              </div>
+              <div>
+                <label for="export-date">Uscita prevista dei beni dall'UE</label>
+                <input id="export-date" name="export-date" type="date" required />
+              </div>
+            </div>
+            <button type="submit">Verifica le condizioni generali</button>
+          </form>
+          <p id="italy-taxfree-result" class="result" role="status" aria-live="polite">
+            Il risultato sarà una guida orientativa, non una conferma fiscale o doganale.
+          </p>
+        </div>
+        <div class="panel info">
+          <p class="eyebrow">Regole di riferimento</p>
+          <h2>Il processo ufficiale esiste già.</h2>
+          <dl>
+            <div><dt>Fattura</dt><dd>Importo complessivo superiore a 70 € (IVA inclusa).</dd></div>
+            <div><dt>Acquirente</dt><dd>Residenza o domicilio fuori dall'UE.</dd></div>
+            <div><dt>Tipo di acquisto</dt><dd>Beni destinati all'uso personale o familiare.</dd></div>
+            <div><dt>Esportazione</dt><dd>Uscita dall'UE entro il terzo mese successivo al mese della fattura, con prova doganale richiesta.</dd></div>
+            <div><dt>Documentazione</dt><dd>Il venditore deve seguire il processo elettronico OTELLO 2.0 dell'Agenzia delle Dogane e dei Monopoli.</dd></div>
+          </dl>
+          <p class="muted">
+            Il venditore può già usare gratuitamente lo strumento pubblico
+            «OTELLO – Gestione FTF», nei limiti e con le credenziali previsti dall'Agenzia.
+          </p>
+          <div class="source-links">
+            <a href={admOverview} target="_blank" rel="noopener noreferrer">Agenzia delle Dogane · OTELLO ↗</a>
+            <a href={admFaq} target="_blank" rel="noopener noreferrer">FAQ ufficiale e app gratuita ↗</a>
+          </div>
+        </div>
+      </section>
+      <section class="merchant" aria-labelledby="retail-title">
+        <div>
+          <p class="eyebrow">Per boutique e negozi</p>
+          <h2 id="retail-title">Stiamo studiando il lavoro reale dei retailer italiani.</h2>
+          <p>
+            Vorremmo capire dove un software più chiaro potrebbe ridurre la gestione manuale:
+            formazione del personale, procedure documentali, monitoraggio dei casi e rapporti
+            con i sistemi già autorizzati.
+          </p>
+          <p class="muted">Non stiamo offrendo rimborsi Tax Free operativi né garantendo risparmi, autorizzazioni o integrazioni esistenti.</p>
+        </div>
+        <a class="button-link" href="/it/tecnologia/">Parliamo del vostro flusso retail ↗</a>
+      </section>
+      <p class="footnote">
+        Questa pagina è un esperimento tecnico e informativo, non una consulenza fiscale
+        o legale. L'idoneità effettiva dipende da requisiti, prove e procedure
+        doganali applicabili. Nessun dato del modulo viene trasmesso a Hermes.
+      </p>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("#italy-taxfree-check");
+  const result = document.querySelector<HTMLElement>("#italy-taxfree-result");
+  const readValue = (name: string) => {
+    const input = form?.elements.namedItem(name);
+    return input instanceof HTMLInputElement || input instanceof HTMLSelectElement ? input.value : "";
+  };
+  function calendarDate(iso: string): Date | null {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+    const date = new Date(iso + "T00:00:00Z");
+    return Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== iso ? null : date;
+  }
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!result || !form?.reportValidity()) return;
+    const rawAmount = readValue("invoice-total");
+    const amount = Number(rawAmount);
+    const residence = readValue("buyer-residence");
+    const purpose = readValue("goods-purpose");
+    const invoice = calendarDate(readValue("invoice-date"));
+    const exit = calendarDate(readValue("export-date"));
+
+    let message = "";
+    let status = "review";
+    if (!rawAmount || !Number.isFinite(amount) || amount < 0 || !invoice || !exit) {
+      message = "Controlla importo e date: sono necessari dati completi e validi.";
+    } else if (residence === "eu" || purpose === "commercial" || amount <= 70) {
+      message = "Uno o più requisiti generali non risultano soddisfatti: la fattura deve superare 70 €, il compratore deve risiedere o avere domicilio fuori dall'UE e i beni devono essere per uso personale o familiare.";
+      status = "not-met";
+    } else if (exit.getTime() < invoice.getTime()) {
+      message = "La data di uscita non può precedere la fattura. Controlla le date.";
+    } else if (exit.getTime() > Date.UTC(invoice.getUTCFullYear(), invoice.getUTCMonth() + 4, 0)) {
+      message = "La data prevista supera il termine generale di esportazione (fine del terzo mese successivo alla fattura). Verifica il caso con il venditore e le autorità.";
+      status = "not-met";
+    } else if (residence === "unknown" || purpose === "unknown") {
+      message = "Occorre verificare prima la residenza o il domicilio e la destinazione dei beni. Questa demo non può confermare l'idoneità.";
+    } else {
+      message = "I requisiti generali selezionati sembrano compatibili con una valutazione Tax Free. Questo NON conferma il diritto al rimborso: servono fattura e procedure OTELLO, prova doganale dell'esportazione ed eventuali ulteriori verifiche.";
+      status = "preliminary";
+    }
+    result.dataset.status = status;
+    result.textContent = message;
+  });
+</script>
+
+<style>
+  .taxfree-page{background:#f5f7fb;color:#17263c;min-height:75vh}.shell{max-width:1180px;margin:auto;padding:48px 24px 80px}
+  .topline{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#617389;font-size:12px;font-weight:750;letter-spacing:.08em}
+  .preview-label{color:#6c5418;background:#fff2ca;border:1px solid #ead99b;padding:8px 12px;border-radius:999px}
+  .hero{display:grid;grid-template-columns:1.45fr .55fr;gap:24px;align-items:center;padding:64px 0 48px}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#226eab;margin:0 0 16px}
+  h1{max-width:840px;font-size:clamp(38px,5.4vw,76px);line-height:1.07;letter-spacing:-.045em;margin:0 0 24px}
+  .lead{max-width:760px;font-size:clamp(17px,2vw,21px);line-height:1.6;color:#495b73}
+  .text-link{display:inline-block;color:#175d9c;font-weight:750;margin-top:16px}
+  .truth,.panel,.merchant{border:1px solid #dfe5ee;border-radius:22px;background:#fff;box-shadow:0 12px 32px rgba(19,46,78,.035)}
+  .truth{padding:25px;background:#f1f6fb;line-height:1.55;color:#52657b}.truth strong{display:block;color:#14263d;font-size:17px}
+  .work-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}.panel{padding:32px}
+  h2{font-size:clamp(24px,3vw,35px);line-height:1.2;letter-spacing:-.025em;margin:0 0 16px}
+  .muted{color:#657589;line-height:1.6;font-size:14px}.panel form{display:grid;gap:11px;margin-top:26px}
+  label{color:#25384f;font-size:14px;font-weight:750;display:block;margin-top:9px}
+  input,select{width:100%;min-width:0;padding:13px 14px;border-radius:11px;border:1px solid #bdc8d7;background:#fff;color:#1a2b41;font:inherit}
+  input:focus-visible,select:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid #67acde;outline-offset:3px}
+  .date-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .date-fields label{min-height:38px}.date-fields input{margin-top:8px}
+  button,.button-link{border:0;border-radius:12px;background:#155b95;color:white;text-decoration:none;font-weight:750;padding:15px 20px;cursor:pointer;font:inherit}
+  button:hover,.button-link:hover{background:#103f6b}
+  .result{margin-top:19px;padding:16px;border:1px solid #d7e4f1;background:#eff6fc;color:#294e72;border-radius:12px;line-height:1.55}
+  .result[data-status="not-met"]{background:#fff6e9;border-color:#f3d7a7;color:#764b15}
+  .result[data-status="preliminary"]{background:#edf8f3;border-color:#b0dfc6;color:#215a3f}
+  dl{margin:20px 0}dl div{padding:13px 0;border-bottom:1px solid #edf1f6}dt{font-weight:800}dd{margin:5px 0 0;color:#596b7e;line-height:1.5}
+  .source-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}.source-links a{font-size:14px;color:#175d9c;font-weight:750}
+  .merchant{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:24px;padding:32px}
+  .merchant>div{max-width:720px}.merchant p:not(.eyebrow){line-height:1.6;color:#506178}.button-link{display:inline-block;text-align:center;white-space:normal;flex-shrink:0}
+  .footnote{font-size:13px;line-height:1.6;color:#66788b;margin:30px 0 0}
+  @media(max-width:800px){.topline,.merchant{align-items:flex-start;flex-direction:column}.hero,.work-grid{grid-template-columns:1fr}.hero{padding:42px 0 28px}.panel,.merchant{padding:22px}.date-fields{grid-template-columns:1fr}.date-fields label{min-height:0}.shell{padding:30px 16px 56px}}
+</style>
