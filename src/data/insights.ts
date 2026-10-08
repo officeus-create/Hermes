@@ -67,6 +67,7 @@ export interface InsightPost {
   authorName: string;
   keywords: string[];
   contentTier: InsightContentTier;
+  routeOwner?: "insights_dynamic" | "explicit_static";
   currentMarketClaim: boolean;
   telegram?: { group: string; messageId: number | null };
   evidence?: InsightEvidence[];
