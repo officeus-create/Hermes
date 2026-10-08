@@ -61,11 +61,12 @@ assert.deepEqual(profile.services, ["Junk removal", "Furniture removal"]);
 assert.deepEqual(profile.serviceAreas, ["Roseville", "Sacramento"]);
 
 assert.equal(normalizeHomeServiceWebsite("https://www.mzm-junk-removal.com/jobs"), "mzm-junk-removal.com");
-const mzmAssets = getHomeServicePublicAssets("https://mzm-junk-removal.com/");
+const mzmAssets = getHomeServicePublicAssets({ website: "https://mzm-junk-removal.com/", companyName: "MZM Junk Removal" });
 assert.equal(mzmAssets.length, 1);
 assert.equal(mzmAssets[0].href, "/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/");
 assert.equal(mzmAssets[0].sourceUrl, "https://mzm-junk-removal.com/");
-assert.equal(getHomeServicePublicAssets("https://example-home-service.invalid/").length, 0);
+assert.equal(getHomeServicePublicAssets({ website: "https://mzm-junk-removal.com/", companyName: "Different Business" }).length, 0);
+assert.equal(getHomeServicePublicAssets({ website: "https://example-home-service.invalid/", companyName: "MZM Junk Removal" }).length, 0);
 
 const metrics = aggregateHomeServiceLeads([
   {
