@@ -15,7 +15,7 @@ const isLocalizedConcept = Boolean(business.localeCopy);
 const en = localizedCatalogBusiness(business,"en");
 const title = `${en.name} | Hermes Catalog`;
 const description = `Public Hermes Catalog discovery profile for ${en.name} in ${en.locality}, ${en.region}. Facts and client/owner state are source-bounded.`;
-const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profileUrl }) : [];
+const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profileUrl, display: en, faqLocale: "en" }) : [];
 ---
 {isLocalizedConcept ? (
   <BaseLayout title={title} description={description} schema={schema}>
