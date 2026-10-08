@@ -6,6 +6,9 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 const admOverview = "https://www.adm.gov.it/portale/en/progetti-aida-otello";
 const admFaq = "https://www.adm.gov.it/portale/faq-otello2";
 const officialTravelerApp = "https://vatrefund.adm.gov.it/howto";
+const merchantResearchHref = "mailto:officeus@hermeslogisticsus.com?subject=" +
+  encodeURIComponent("Hermes | Italia Tax Free | Ricerca con negozi") +
+  "&body=" + encodeURIComponent("Buongiorno, vorrei condividere il processo Tax Free del mio negozio con Hermes.\nNegozio:\nCittà:\nCome gestiamo oggi il Tax Free:\nPrincipale problema o domanda:\n");
 ---
 
 <BaseLayout
@@ -109,7 +112,11 @@ const officialTravelerApp = "https://vatrefund.adm.gov.it/howto";
           </p>
           <p class="muted">Non stiamo offrendo rimborsi Tax Free operativi né garantendo risparmi, autorizzazioni o integrazioni esistenti.</p>
         </div>
-        <a class="button-link" href="/it/tecnologia/">Parliamo del vostro flusso retail ↗</a>
+        <div class="merchant-actions">
+          <a class="button-link" href={merchantResearchHref}>Partecipa alla ricerca con Hermes ↗</a>
+          <a class="research-secondary" href="/it/tecnologia/">Esplora Hermes Technology →</a>
+          <span class="muted">Il link apre la tua app email; non conferma l'invio né la ricezione da parte di Hermes. Nessun modulo Tax Free è operativo.</span>
+        </div>
       </section>
       <p class="footnote">
         Questa pagina è un esperimento tecnico e informativo, non una consulenza fiscale
@@ -193,6 +200,8 @@ const officialTravelerApp = "https://vatrefund.adm.gov.it/howto";
   dl{margin:20px 0}dl div{padding:13px 0;border-bottom:1px solid #edf1f6}dt{font-weight:800}dd{margin:5px 0 0;color:#596b7e;line-height:1.5}
   .source-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}.source-links a{font-size:14px;color:#175d9c;font-weight:750}
   .merchant{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:24px;padding:32px}
+  .merchant-actions{display:grid;justify-items:start;gap:12px;max-width:330px;flex-shrink:0}
+  .research-secondary{font-size:14px;color:#176188;font-weight:700}
   .merchant>div{max-width:720px}.merchant p:not(.eyebrow){line-height:1.6;color:#506178}.button-link{display:inline-block;text-align:center;white-space:normal;flex-shrink:0}
   .footnote{font-size:13px;line-height:1.6;color:#66788b;margin:30px 0 0}
   @media(max-width:800px){.topline,.merchant{align-items:flex-start;flex-direction:column}.hero,.work-grid{grid-template-columns:1fr}.hero{padding:42px 0 28px}.panel,.merchant{padding:22px}.date-fields{grid-template-columns:1fr}.date-fields label{min-height:0}.shell{padding:30px 16px 56px}}
