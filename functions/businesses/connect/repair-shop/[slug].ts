@@ -247,7 +247,8 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <nav class="audit-nav" aria-label="Digital audit channels">${auditNav}</nav><div class="audit-grid">${auditCards}</div>
 <div class="audit-actions"><a href="/businesses/marketing-growth-audit-example/">Hermes method: organic → paid learning → offer</a><a class="primary" data-catalog-event="growth_start" href="${growthHref}">Request a full audit</a></div></section>
 <p class="notice">Services, hours and address are subject to business confirmation. No private customer records, appointments or account details appear on this page.</p>
-</article></main><script src="/catalog-business-telemetry.js" data-catalog-business-id="${esc(catalogBusinessId)}" defer></script></body></html>`;
+</article></main><script src="/catalog-business-telemetry.js" data-catalog-business-id="${esc(catalogBusinessId)}" defer></script>
+<script src="/catalog-traffic-stats.js" data-catalog-traffic-loader defer></script></body></html>`;
 
   return new Response(html, {
     status: 200,
