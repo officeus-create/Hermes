@@ -109,12 +109,18 @@ export const mzmJunkRemovalClient = {
     contentRule:
       "Do not create one page per keyword. Route variants into durable service/city owners, local guides, real-job case studies, FAQs and source-backed news.",
   },
+  searchOwnership: {
+    primaryCommercialOwner: "https://mzm-junk-removal.com/",
+    hermesCatalogRole: "secondary_entity_discovery_and_attribution",
+    rule:
+      "The client website owns MZM branded, city and commercial service intent. Hermes Catalog may support entity discovery and attributed handoff, but must not clone the client's city/service landing-page family or become a competing canonical owner.",
+  },
   contentEngine: {
     sequence: [
       "catalog_profile",
       "crm_workspace",
       "semantic_clustering",
-      "evergreen_service_city_owners",
+      "client_site_evergreen_service_city_owners",
       "source_backed_news_and_local_guides",
       "gsc_and_crm_attribution",
       "paid_readiness_gate",
