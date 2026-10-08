@@ -100,5 +100,6 @@ test("Hermes Insights Technology includes I am as a standalone first-party devel
   const sitemap=await page.request.get("/sitemap-insights.xml");
   expect(await sitemap.text()).toContain("https://hermeslogisticsus.com/insights/technology/i-am-vision/");
   const sitemapIndex=await page.request.get("/sitemapindex.xml");
-  expect(await sitemapIndex.text()).toMatch(/sitemap-insights\\.xml<\\/loc>\\s*<lastmod>2026-10-08<\\/lastmod>/);
+  const parentEntry = (await sitemapIndex.text()).match(/<sitemap>[\s\S]*?<\/sitemap>/g)?.find(x=>x.includes("<loc>https://hermeslogisticsus.com/sitemap-insights.xml</loc>"));
+  expect(parentEntry).toContain("<lastmod>2026-10-08</lastmod>");
 });
