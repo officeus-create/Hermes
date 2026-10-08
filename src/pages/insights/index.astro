@@ -4,6 +4,7 @@ import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getInsightPath, insightDirectionMeta, insights, type InsightDirection } from "../../data/insights";
+import IAmItalyEditorialVisual from "../../components/IAmItalyEditorialVisual.astro";
 import "../../styles/hermes-insights.css";
 
 const directions = Object.keys(insightDirectionMeta) as InsightDirection[];
@@ -63,6 +64,24 @@ const collectionSchema = {
         </div>
       </header>
 
+      <section class="iam-news" aria-labelledby="iam-news-title">
+        <div class="shell iam-news-grid">
+          <IAmItalyEditorialVisual />
+          <div class="iam-news-copy">
+            <p class="iam-news-kicker">Founder announcement · Italy · 8 October 2026</p>
+            <h2 id="iam-news-title">I am: plan your Italy shopping before landing.</h2>
+            <p>A future travel workspace within Hermes Connect: discover official retailers, prepare a shortlist, check real partner channels and understand Tax Free guidance — without pretending that reservations or refunds are available through I am today.</p>
+            <p>Our first public concept and device-local shopping prototype are demonstrations, not a licensed operator, registered client, merchant partner or checkout.</p>
+            <div class="iam-news-actions">
+              <a href="/insights/technology/i-am-vision/">Read the I am founder story →</a>
+              <a href="/businesses/italy/">Explore Italy in Hermes Catalog →</a>
+              <a href="/demos/hermes-connect/i-am-shopping/">Try the shopping prototype →</a>
+            </div>
+            <small>No affiliate codes, orders, commission or tax refunds are active. This editorial concept is not listed as a live Hermes client.</small>
+          </div>
+        </div>
+      </section>
+
       <section class="insights-section">
         <div class="shell">
           <div class="insights-heading">
@@ -106,3 +125,16 @@ const collectionSchema = {
     <SiteFooter />
   </div>
 </BaseLayout>
+
+<style>
+  .iam-news{padding:58px 0;background:#eef4f7;border-bottom:1px solid #d9e4ea}
+  .iam-news-grid{display:grid;grid-template-columns:1.12fr .88fr;align-items:center;gap:38px}
+  .iam-news-copy{color:#16384b}.iam-news-kicker{text-transform:uppercase;letter-spacing:.13em;font-size:11px;font-weight:900;color:#127e8b}
+  .iam-news-copy h2{font-size:clamp(28px,3vw,44px);letter-spacing:-.035em;line-height:1.16;margin:14px 0 22px}
+  .iam-news-copy p:not(.iam-news-kicker){font-size:15px;line-height:1.65;color:#536e80;margin:0 0 16px}
+  .iam-news-actions{display:grid;gap:10px;margin:20px 0}.iam-news-actions a{font-size:13px;font-weight:850;color:#1a7480}
+  .iam-news-copy small{display:block;color:#6a7d88;font-size:11px;line-height:1.5}
+  .iam-news a:focus-visible{outline:3px solid #49b9bf;outline-offset:4px}
+  @media(max-width:900px){.iam-news-grid{grid-template-columns:1fr}.iam-news{padding:43px 0}}
+  @media(max-width:500px){.iam-news{padding:32px 0}.iam-news-grid{gap:23px}}
+</style>
