@@ -44,6 +44,9 @@ test('Catalog card badges and expandable profile details use profile-specific co
   const first = page.locator('.business-card').first();
   await expect(first.locator('[data-catalog-traffic="badge"]')).toHaveText('Views · 12 / 28d');
   await expect(page.locator('[data-public-traffic-counter]')).toHaveCount(0);
+  const example = page.locator('.business-card').filter({has:page.getByRole('heading',{name:'Business Academy Growth Strategy',exact:true})});
+  await expect(example).toHaveCount(1);
+  await expect(example.locator('[data-catalog-traffic="badge"]')).toHaveCount(0);
   const href = await first.locator('.business-card__actions a').first().getAttribute('href');
   await page.goto(href!);
   const detail = page.locator('[data-catalog-traffic="detail"]');
