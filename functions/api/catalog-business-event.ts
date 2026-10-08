@@ -1,3 +1,5 @@
+import { catalogTrafficPeriod, publicCatalogTrafficSummary, catalogCountryCode } from "./_lib/catalog-traffic-summary.mjs";
+import { repairCatalogPublication } from "./_lib/repair-catalog-publication.mjs";
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { catalogBusinessConcepts } from "../../src/data/catalog-business-concepts.ts";
 import { CATALOG_EVENT_TYPES, recordCatalogBusinessEvent } from "./_lib/catalog-business-events.mjs";
@@ -64,7 +66,51 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     catalogBusinessId,
     eventType,
     now: now.toISOString(),
+    country: catalogCountryCode((request as Request & { cf?: { country?: string } }).cf?.country),
   });
 
   return jsonResponse(202, { success: true }, { "Cache-Control": "no-store" });
+}
+
+const staticTrafficPaths = new Map([
+  ...repairShopDirectory.map((entry) => [`/businesses/${entry.stateSlug}/${entry.citySlug}/${entry.slug}/`, `repair-shop:${entry.stateSlug}/${entry.citySlug}/${entry.slug}`] as const),
+  ...catalogBusinessConcepts.map((entry) => [`/businesses/${entry.countrySlug}/${entry.localitySlug}/${entry.slug}/`, entry.id] as const),
+]);
+
+export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
+  const paths = [...new Set(new URL(request.url).searchParams.getAll("path"))];
+  if (!paths.length || paths.length > 40 || paths.some((path) => path.length > 240 || !/^\/businesses\/[a-z0-9/-]+\/$/.test(path) || path.includes("//"))) {
+    return jsonResponse(400, { success: false, error: "invalid_catalog_paths" });
+  }
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
+  const period = catalogTrafficPeriod();
+  try {
+    const profiles = [];
+    for (const path of paths) {
+      let id = staticTrafficPaths.get(path);
+      const repair = path.match(/^\/businesses\/connect\/repair-shop\/([a-z0-9-]+)\/$/);
+      if (!id && repair) {
+        const row = await env.DB.prepare("SELECT id,name,slug,catalog_opt_in FROM repair_shops WHERE slug = ? LIMIT 1").bind(repair[1]).first();
+        const publication = repairCatalogPublication(row);
+        if (publication.eligible && publication.path === path) id = publication.entityId;
+      }
+      // Unknown/withdrawn/uninstrumented profiles never inherit site totals or another tenant's data.
+      if (!id) {
+        profiles.push({ path, state: "unavailable", viewsToday: null, views7d: null, views28d: null, countries: [], countriesState: "unavailable" });
+        continue;
+      }
+      const rows = await env.DB.prepare("SELECT day,event_count,updated_at FROM catalog_business_events_daily WHERE catalog_business_id = ? AND event_type = 'profile_view' AND day >= ? AND day <= ?").bind(id, period.start, period.end).all();
+      let countries = null;
+      try {
+        const result = await env.DB.prepare("SELECT country,SUM(view_count) AS views FROM catalog_business_country_views_daily WHERE catalog_business_id = ? AND day >= ? AND day <= ? GROUP BY country").bind(id, period.start, period.end).all();
+        countries = result.results || [];
+      } catch { /* Country collection starts prospectively; a missing table is not zero history. */ }
+      profiles.push({ path, ...publicCatalogTrafficSummary(rows.results || [], countries, period) });
+    }
+    return jsonResponse(200, { success: true, metric: "consented_catalog_profile_views", timezone: "UTC", period, profiles,
+      disclosure: "Consented profile views, not unique people. Countries are prospective aggregates; groups below five views are not shown."
+    }, { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" });
+  } catch {
+    return jsonResponse(503, { success: false, error: "catalog_traffic_unavailable" }, { "Cache-Control": "no-store" });
+  }
 }
