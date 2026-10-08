@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, Mail } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import logisticsHeroImage from "../assets/path-logistics-system.jpg";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
 
@@ -23,6 +24,8 @@ export type CommercialPageContent = {
 
 interface Props { content: CommercialPageContent; }
 const { content } = Astro.props;
+// Bundled assets receive a content-hashed URL, avoiding stale long-lived public-file caches.
+const imageSrc = content.image === "/images/path-logistics-system.jpg" ? logisticsHeroImage.src : content.image;
 const canonicalPath = Astro.url.pathname;
 const absoluteUrl = `https://hermeslogisticsus.com${canonicalPath}`;
 const email = "mailto:officeus@hermeslogisticsus.com";
@@ -34,7 +37,7 @@ const schema = [
     "@id": `${absoluteUrl}#service`,
     name: content.h1,
     description: content.description,
-    image: new URL(content.image, "https://hermeslogisticsus.com").toString(),
+    image: new URL(imageSrc, "https://hermeslogisticsus.com").toString(),
     provider: { "@id": organizationId },
     areaServed: { "@type": "Country", name: "United States" },
     url: absoluteUrl,
@@ -60,8 +63,8 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={content.title} description={content.description} image={content.image} preloadImage={content.image} schema={schema}>
-  <SiteHeader />
+<BaseLayout title={content.title} description={content.description} image={imageSrc} preloadImage={imageSrc} schema={schema}>
+  <SiteHeader contactHref="#contact" />
   <main id="main-content" class="commercial-page">
     <section class="commercial-hero">
       <div class="shell">
@@ -91,7 +94,7 @@ const schema = [
             </div>
             {content.handoffNote && <p class="commercial-handoff-note">{content.handoffNote}</p>}
           </div>
-          <img src={content.image} alt={content.imageAlt} width="1400" height="1050" loading="eager" fetchpriority="high" decoding="async" sizes="(max-width: 800px) 100vw, 48vw" />
+          <img src={imageSrc} alt={content.imageAlt} width="1400" height="1050" loading="eager" fetchpriority="high" decoding="async" sizes="(max-width: 800px) 100vw, 48vw" />
         </div>
       </div>
     </section>

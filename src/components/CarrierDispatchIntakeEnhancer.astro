@@ -49,6 +49,7 @@
     }
 
     let activeLead: QualifiedCarrierLead | null = null;
+    let activeRequestId: string | null = null;
     let intakeStarted = false;
     let previewRecorded = false;
     let handoffRecorded = false;
@@ -85,6 +86,7 @@
     const resetPreparedState = (event: Event) => {
       if (!event.isTrusted) return;
       activeLead = null;
+      activeRequestId = null;
       previewRecorded = false;
       handoffRecorded = false;
       recordStart(event);
@@ -137,6 +139,7 @@
             email_body: dispatchPreview,
           }
         : null;
+      if (!activeLead) activeRequestId = null;
 
       decision.textContent = review.decision.replaceAll("_", " ");
       state.textContent = `Review state: ${review.vehicle_state.replaceAll("_", " ")}`;
@@ -208,7 +211,8 @@
 
       sendButton.disabled = true;
       deliveryStatus.textContent = "Sending the request securely…";
-      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      activeRequestId ||= typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const requestId = activeRequestId;
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), 10000);
 

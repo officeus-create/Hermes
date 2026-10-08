@@ -8,6 +8,7 @@ const syntax = spawnSync(process.execPath, ["--check", summarizer], { cwd: root,
 assert.equal(syntax.status, 0, `${summarizer} must pass node --check: ${syntax.stderr || syntax.stdout}`);
 
 const workflow = await readFile(new URL("../.github/workflows/production-lighthouse-command.yml", import.meta.url), "utf8");
+const baselineWorkflow = await readFile(new URL("../.github/workflows/production-lighthouse-baseline.yml", import.meta.url), "utf8");
 for (const required of [
   "workflow_dispatch:",
   "group: production-lighthouse-manual",
@@ -27,6 +28,13 @@ assert.equal(
   false,
   "Unrelated issue comments must not be able to cancel an active Lighthouse measurement",
 );
+
+assert.ok(baselineWorkflow.includes("max-parallel: 1"), "production baseline must serialize Chrome launches on the shared GitHub runner");
+assert.ok(baselineWorkflow.includes("for attempt in 1 2"), "production baseline must retry one transient Chrome launch failure");
+assert.ok(baselineWorkflow.includes('workflow_run:'), 'baseline must follow the completed deployment instead of racing its push');
+assert.ok(baselineWorkflow.includes('github.event.workflow_run.conclusion == \'success\''));
+assert.ok(baselineWorkflow.includes('node scripts/verify-lighthouse-release.mjs'));
+assert.equal(/^  push:/m.test(baselineWorkflow), false, 'a push must not measure the previous deployment');
 
 for (const retired of ["issue_comment:", "issues: write", "github.event.issue.number == 354", "gh issue comment 354"]) {
   assert.equal(workflow.includes(retired), false, `closed #354 routing must stay retired: ${retired}`);

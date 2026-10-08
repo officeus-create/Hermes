@@ -7,7 +7,7 @@ const SITE_ORIGIN = "https://hermeslogisticsus.com";
 const TRACKING_KEY = /^(utm_.+|gclid|dclid|fbclid|msclkid|_gl|gbraid|wbraid)$/i;
 const PRIVATE_PATHS = [
   /^\/demos\//,
-  /^\/services\/hermes-connect\/repair-shops\/(auth|dashboard|appointments|availability|booking|customers|vehicles|services|settings|plan|forgot-password|reset-password)(\/|$)/,
+  /^\/services\/hermes-connect\/repair-shops\/(auth|dashboard|appointments|availability|booking|customers|vehicles|services|settings|forgot-password|reset-password)(\/|$)/,
   /^\/services\/hermes-connect\/academy\/(auth|dashboard|lesson|program|progression|reviewer|submissions|support)(\/|$)/,
   /^\/services\/hermes-connect\/internal\//,
 ];

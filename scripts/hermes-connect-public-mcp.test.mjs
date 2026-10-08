@@ -1,0 +1,178 @@
+import assert from 'node:assert/strict';
+import { onRequest } from '../functions/api/hermes-connect/mcp.ts';
+
+const call = async (body, env = {}, headers = {}) => {
+  const request = new Request('https://hermeslogisticsus.com/api/hermes-connect/mcp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(body),
+  });
+  const response = await onRequest({ request, env });
+  return { response, json: response.status === 202 ? null : await response.json() };
+};
+
+{
+  const { response, json } = await call({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'test',version:'1'}}});
+  assert.equal(response.status, 200);
+  assert.equal(json.result.protocolVersion, '2025-06-18');
+  assert.equal(json.result.serverInfo.name, 'hermes-connect');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
+  const names = json.result.tools.map((tool) => tool.name);
+  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
+  assert.equal(json.result.tools[0].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[2].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[3].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[4].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[5].annotations.readOnlyHint, false);
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:3,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'auto repair shop',primary_goal:'reduce missed bookings'}}});
+  assert.equal(json.result.structuredContent.route, 'LIVE_REPAIR_SHOPS');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:4,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'roofing company',primary_goal:'leads are not followed up'}}});
+  assert.equal(json.result.structuredContent.route, 'CRM_BLUEPRINT');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:41,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'roofing company',primary_goal:'improve ads and website traffic'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_MARKETING');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:5,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'post estimate follow up',desired_capability:'automatic reminder after two days',outcome:'missing_capability',consent_to_product_learning:false}}});
+  assert.equal(json.result.structuredContent.accepted, false);
+  assert.equal(json.result.structuredContent.status, 'explicit_consent_required');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:6,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'shop owner john@example.com',problem_class:'follow up',desired_capability:'reminder',outcome:'missing_capability',consent_to_product_learning:true}}});
+  assert.equal(json.result.structuredContent.accepted, false);
+  assert.equal(json.result.structuredContent.status, 'feedback_contains_disallowed_sensitive_pattern');
+}
+
+{
+  const rows=[];
+  const db={
+    prepare(sql){
+      return {
+        bind(...args){
+          return {
+            async run(){ rows.push({sql,args,kind:'run'}); return {success:true}; },
+            async first(){
+              rows.push({sql,args,kind:'first'});
+              if (/COUNT\(\*\)/.test(sql)) return {count:0};
+              return null;
+            }
+          };
+        },
+        async run(){ rows.push({sql,args:[],kind:'run'}); return {success:true}; }
+      };
+    }
+  };
+  const { json } = await call({jsonrpc:'2.0',id:7,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'post estimate follow up',desired_capability:'automatic reminder after two days',outcome:'missing_capability',consent_to_product_learning:true}}}, {DB:db});
+  assert.equal(json.result.structuredContent.accepted, true);
+  assert.equal(json.result.structuredContent.status, 'stored_privacy_safe_product_learning_event');
+  assert.equal('receipt_id' in json.result.structuredContent, false);
+  assert.equal(rows.length, 5);
+  assert.match(rows[1].sql, /DELETE FROM plugin_product_learning_events/);
+  assert.match(rows[2].sql, /COUNT\(\*\)/);
+  assert.match(rows[3].sql, /SELECT id FROM plugin_product_learning_events/);
+}
+
+{
+  const db={
+    prepare(sql){
+      return {
+        bind(...args){
+          return {
+            async run(){ return {success:true}; },
+            async first(){
+              if (/COUNT\(\*\)/.test(sql)) return {count:120};
+              return null;
+            }
+          };
+        },
+        async run(){ return {success:true}; }
+      };
+    }
+  };
+  const { json } = await call({jsonrpc:'2.0',id:71,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'follow up leakage',desired_capability:'reminder',outcome:'workflow_friction',consent_to_product_learning:true}}}, {DB:db});
+  assert.equal(json.result.structuredContent.accepted, false);
+  assert.equal(json.result.structuredContent.status, 'learning_rate_limited');
+}
+
+{
+  const db={
+    prepare(sql){
+      return {
+        bind(...args){
+          return {
+            async run(){ return {success:true}; },
+            async first(){
+              if (/COUNT\(\*\)/.test(sql)) return {count:1};
+              if (/SELECT id FROM plugin_product_learning_events/.test(sql)) return {id:'existing'};
+              return null;
+            }
+          };
+        },
+        async run(){ return {success:true}; }
+      };
+    }
+  };
+  const { json } = await call({jsonrpc:'2.0',id:72,method:'tools/call',params:{name:'submit_product_feedback',arguments:{business_type:'home services',problem_class:'follow up leakage',desired_capability:'reminder',outcome:'workflow_friction',consent_to_product_learning:true}}}, {DB:db});
+  assert.equal(json.result.structuredContent.accepted, true);
+  assert.equal(json.result.structuredContent.status, 'duplicate_product_learning_event');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:8,method:'server/discover',params:{_meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28','io.modelcontextprotocol/clientCapabilities':{}}}}, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover'});
+  assert.equal(json.result.resultType, 'complete');
+  assert.ok(json.result.supportedVersions.includes('2026-07-28'));
+}
+
+console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
+
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:9,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'local contractor',primary_goal:'improve Google visibility and website leads'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_MARKETING');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:10,method:'tools/call',params:{name:'recommend_start_path',arguments:{business_type:'car hauling company',primary_goal:'improve carrier and dispatch operations'}}});
+  assert.equal(json.result.structuredContent.route, 'HERMES_LOGISTICS');
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:11,method:'tools/call',params:{name:'get_hermes_business_routes',arguments:{}}});
+  assert.equal(json.result.structuredContent.routes.length, 4);
+  assert.deepEqual(json.result.structuredContent.routes.map((route) => route.id), ['CONNECT','MARKETING','LOGISTICS','ACADEMY']);
+}
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:12,method:'tools/call',params:{name:'get_product_learning_policy',arguments:{}}});
+  assert.ok(json.result.structuredContent.excluded_data.includes('raw full conversations'));
+  assert.match(json.result.structuredContent.release_rule, /SkillCandidate|CapabilityCandidate/);
+}
+
+
+{
+  const { json } = await call({jsonrpc:'2.0',id:13,method:'tools/call',params:{name:'build_crm_onboarding_plan',arguments:{business_type:'roofing company',primary_problem:'leads arrive from several places and follow-up is inconsistent',desired_outcome:'one measurable follow-up pipeline',existing_crm:false,current_stack:['Google Workspace']}}});
+  const plan = json.result.structuredContent;
+  assert.match(plan.strategy, /Problem -> concrete actions/);
+  assert.equal(plan.do_now.length, 3);
+  assert.match(plan.do_now[0], /customer journey|current CRM/);
+  assert.ok(plan.need_from_you.length <= 5);
+  assert.match(plan.build_execute, /CRM blueprint|source of truth/);
+  assert.ok(plan.recommended_connections.some((item) => item.capability === 'Business email'));
+  assert.equal(plan.recommended_connections.some((item) => item.capability === 'Marketing / analytics sources'), false);
+  assert.match(plan.crm_bootstrap_prompt, /Use only the sources and connectors I explicitly approve/);
+  assert.match(plan.continuity_rule, /durable provisioning job/);
+  assert.match(plan.authorization_rule, /recommendation never grants access/);
+}

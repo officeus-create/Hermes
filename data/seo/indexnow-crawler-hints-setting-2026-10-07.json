@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-10-07",
+  "platform": "Cloudflare",
+  "zone": "hermeslogisticsus.com",
+  "setting": "Crawler Hints Beta",
+  "previous_value": true,
+  "current_value": false,
+  "reason": "Prevent broad duplicate IndexNow-style submission noise from competing with the canonical repository-controlled HTML release feed.",
+  "verification": "Authenticated owner UI switch readback returned Value: 0 immediately after the change."
+}

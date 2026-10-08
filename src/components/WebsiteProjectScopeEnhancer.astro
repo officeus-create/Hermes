@@ -56,7 +56,11 @@
   document.addEventListener("click", trackWebsiteRedesignClick);
 
   const setupWebsiteProjectScope = () => {
-    const requestedProject = new URLSearchParams(window.location.search).get("project") || "";
+    const params = new URLSearchParams(window.location.search);
+    const repairContext = params.get("vertical") === "auto_repair";
+    const sourcePath = repairContext && params.get("source_path") === "/services/auto-repair-website-design/"
+      ? "/services/auto-repair-website-design/" : "";
+    const requestedProject = params.get("project") || "";
     const config = websiteProjects[requestedProject];
     if (window.location.pathname !== "/paths/technology/" || !config) return;
 
@@ -70,7 +74,11 @@
     const email = root?.querySelector<HTMLAnchorElement>("[data-brief-email]");
     if (!root || !form || !firstPanel || !projects || !projectOne || !reviewPanel || !summary || !email) return;
 
-    projectOne.value = config.projectPrefill;
+    if (repairContext) {
+      const industry = form.querySelector<HTMLInputElement>('input[name="industry"]');
+      if (industry && !industry.value) industry.value = "Auto repair shop / service center";
+    }
+    projectOne.value = repairContext ? `Repair shop: ${config.projectPrefill}` : config.projectPrefill;
     projectOne.dispatchEvent(new Event("input", { bubbles: true }));
 
     const createLabel = (labelText: string, control: HTMLElement) => {
@@ -142,6 +150,7 @@
       { value: "new_website", label: "New website" },
       { value: "redesign", label: "Website redesign" },
       { value: "website_and_seo", label: "Website + SEO" },
+      ...(repairContext ? [{ value: "rebranding", label: "Website rebranding" }] : []),
     ]);
     projectType.value = config.projectType;
 
@@ -183,6 +192,8 @@
         : original;
       const scopeBlock = [
         marker,
+        ...(repairContext ? ["Business type: Repair shop / service center"] : []),
+        ...(sourcePath ? [`Source page: ${sourcePath}`] : []),
         `Project type: ${selectedLabel(projectType)}`,
         `Current website: ${clean(currentWebsite.value, 240) || "Not provided"}`,
         `Target U.S. market: ${clean(targetMarket.value, 240)}`,

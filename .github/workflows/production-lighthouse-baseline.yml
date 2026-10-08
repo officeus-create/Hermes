@@ -2,14 +2,17 @@ name: Production Lighthouse baseline
 
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows:
+      - Deploy approved main to Cloudflare Pages v2
+    types:
+      - completed
     branches:
       - main
-    paths:
-      - .github/workflows/production-lighthouse-baseline.yml
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: production-lighthouse-baseline
@@ -17,12 +20,13 @@ concurrency:
 
 jobs:
   lighthouse:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     name: Mobile lab baseline — ${{ matrix.page.slug }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         page:
           - slug: home
@@ -37,10 +41,21 @@ jobs:
             url: https://hermeslogisticsus.com/services/seo/
 
     steps:
+      - name: Check out the measurement revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Require successful exact-revision deployment before measurement
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: node scripts/verify-lighthouse-release.mjs
 
       - name: Run Lighthouse against production
         env:
@@ -48,17 +63,28 @@ jobs:
           PAGE_SLUG: ${{ matrix.page.slug }}
         run: |
           mkdir -p lighthouse-results
-          npx --yes lighthouse@13.4.1 "$TARGET_URL" \
-            --output=json \
-            --output-path="lighthouse-results/${PAGE_SLUG}.json" \
-            --only-categories=performance,accessibility,best-practices,seo \
-            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-            --quiet
+          succeeded=0
+          for attempt in 1 2; do
+            rm -f "lighthouse-results/${PAGE_SLUG}.json"
+            if npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+              --output=json \
+              --output-path="lighthouse-results/${PAGE_SLUG}.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet; then
+              succeeded=1
+              break
+            fi
+            echo "::warning::Lighthouse attempt ${attempt} failed for ${PAGE_SLUG}; retrying once after Chrome cleanup."
+            pkill -f chrome || true
+          done
+          test "$succeeded" -eq 1
 
       - name: Write sanitized score summary
         env:
           TARGET_URL: ${{ matrix.page.url }}
           PAGE_SLUG: ${{ matrix.page.slug }}
+          MEASUREMENT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           node <<'NODE'
           import fs from 'node:fs';
@@ -75,6 +101,7 @@ jobs:
             `- URL: ${targetUrl}`,
             `- Lighthouse: ${report.lighthouseVersion ?? 'unknown'}`,
             `- Fetch time: ${report.fetchTime ?? 'unknown'}`,
+            `- Deployment-verified measurement revision: ${process.env.MEASUREMENT_SHA}`,
             `- Performance: ${score('performance')}`,
             `- Accessibility: ${score('accessibility')}`,
             `- Best Practices: ${score('best-practices')}`,

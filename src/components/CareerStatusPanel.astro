@@ -33,17 +33,17 @@ const screening = [
   <div class="shell career-status-layout">
     <div>
       <p class="eyebrow">Current vacancy status</p>
-      <h2 id="career-status-title">{verifiedOpenVacancies.length > 0 ? "Verified public vacancies are open." : "General careers inquiries are open. No verified public vacancy is listed today."}</h2>
+      <h2 id="career-status-title" data-current-vacancy-heading>{verifiedOpenVacancies.length > 0 ? "Verified public vacancies are open." : "General careers inquiries are open. No verified public vacancy is listed today."}</h2>
       <p>Hermes publishes a specific vacancy only after the role, location, employment type, scope, application route, review date, and status are verified and owner-approved. General professional interest remains separate from a specific role application.</p>
       <div class="career-status-count" aria-label="Verified public vacancies">
         <BriefcaseBusiness size={22} aria-hidden="true" />
-        <strong>{verifiedOpenVacancies.length}</strong>
+        <strong data-current-vacancy-count>{verifiedOpenVacancies.length}</strong>
         <span>verified public vacancies</span>
       </div>
       {verifiedOpenVacancies.length > 0 && (
-        <div class="career-vacancy-list" aria-label="Open vacancies">
+        <div class="career-vacancy-list" aria-label="Published recruiting information">
           {verifiedOpenVacancies.map((vacancy) => (
-            <article>
+            <article data-vacancy-slug={vacancy.slug}>
               <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
               <h3>{vacancy.title}</h3>
               <p>{vacancy.locationLabel}</p>

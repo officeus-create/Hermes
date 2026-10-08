@@ -49,13 +49,14 @@ assert.ok(academyService, "Academy Service schema is required");
 assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]);
 
 assert.equal(publicVacancyRegistry.length, 2);
-assert.equal(verifiedOpenVacancies.length, 1);
-assert.ok(careers.includes("Verified public vacancies are open."));
-assert.ok(careers.includes("1</strong>"));
+const wisconsinIsCurrent = verifiedOpenVacancies.some((item) => item.slug === "wisconsin-owner-operators");
+assert.equal(verifiedOpenVacancies.length, wisconsinIsCurrent ? 1 : 0);
+assert.ok(careers.includes(wisconsinIsCurrent ? "Verified public vacancies are open." : "No verified public vacancy is listed today."));
+assert.ok(careers.includes(`${verifiedOpenVacancies.length}</strong>`));
 assert.ok(!careers.includes('href="/careers/car-hauling-dispatcher/"'));
-assert.ok(careers.includes('href="/careers/wisconsin-owner-operators/"'));
-assert.ok(careers.includes('href="https://100hires.com/j/G4ek3eN"'));
-assert.ok(careers.includes("View on 100Hires"));
+assert.equal(careers.includes('href="/careers/wisconsin-owner-operators/"'), wisconsinIsCurrent);
+assert.equal(careers.includes('href="https://100hires.com/j/G4ek3eN"'), wisconsinIsCurrent);
+assert.equal(careers.includes("View on 100Hires"), wisconsinIsCurrent);
 assert.ok(careers.includes('href="/logistics/apply/?for=career"'));
 assert.ok(careers.includes("does not guarantee review timing, interview, training access, team placement, employment"));
 assert.ok(!careers.includes('"@type":"JobPosting"'));
@@ -90,22 +91,27 @@ const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+t
     return Array.isArray(parsed) ? parsed : [parsed];
   });
 const ownerOperatorJobPostings = ownerOperatorSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
-assert.equal(ownerOperatorJobPostings.length, 1);
+assert.equal(ownerOperatorJobPostings.length, wisconsinIsCurrent ? 1 : 0);
+if (wisconsinIsCurrent) {
 assert.equal(ownerOperatorJobPostings[0].employmentType, "CONTRACTOR");
 assert.equal(ownerOperatorJobPostings[0].directApply, false);
 assert.equal(ownerOperatorJobPostings[0].sameAs, "https://100hires.com/j/G4ek3eN");
-assert.ok(wisconsinOwnerOperators.includes("Verified live source · updated October 3, 2026"));
+} else {
+  assert.ok(wisconsinOwnerOperators.includes("awaiting a fresh recruiting review"));
+  assert.ok(!wisconsinOwnerOperators.includes("data-external-job-apply"));
+}
+assert.ok(wisconsinOwnerOperators.includes("Source reviewed October 3, 2026"));
 assert.ok(wisconsinOwnerOperators.includes("exact 100Hires vacancy link is the only external source verified live"));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/c/hermeslogisticsus-com"'));
 assert.ok(wisconsinOwnerOperators.includes("employer-profile reference and not as a complete vacancy directory"));
 assert.ok(wisconsinOwnerOperators.includes("There are no active job postings right now"));
-assert.ok(wisconsinOwnerOperators.includes("does not update static HTML automatically between builds"));
+assert.ok(wisconsinOwnerOperators.includes("After expiry, this page is a recruiting reference"));
 assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
 assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"));
 assert.deepEqual(
   [...wisconsinOwnerOperators.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1]),
-  ["+14142697377", "+14142697377"],
+  Array(wisconsinIsCurrent ? 3 : 2).fill("+14142697377"),
 );
 assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
 assert.ok(wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));

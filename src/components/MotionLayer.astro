@@ -1,4 +1,8 @@
-<script is:inline src="/repair-owner-runtime-fixes.js"></script>
+---
+// This runtime has no behavior outside these authenticated Repair Shop owner routes.
+const isRepairOwnerRoute = /^\/services\/hermes-connect\/repair-shops\/(dashboard|appointments|availability|customers|vehicles|services|settings)\/?$/.test(Astro.url.pathname);
+---
+{isRepairOwnerRoute && <script is:inline src="/repair-owner-runtime-fixes.js"></script>}
 
 <script>
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");

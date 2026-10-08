@@ -1529,3 +1529,186 @@ handoff_to: NONE
 - Follow-up CI: `b4a41ed` passed quality/visual/contracts and two browser shards, but the new repeated-language scenarios continued failing after explicit scroll restoration. `afee4cb` diagnostics showed the mobile button visible with stable identical rectangles, loaded fonts, completed document and scrollY=0 across three samples, disproving a simple offscreen/geometry explanation. Browser actionability synchronization remains under investigation; do not describe the menu as fixed or the cause as established. The test-only `2e1fa1a` foreground/frame diagnostic had no pull-request CI run because later main changes caused a merge conflict; its behavior is unverified. No assertions/timeouts were relaxed or clicks forced.
 
 - 2026-10-06 11:36 UTC: reconciled the same branch with `09aa55a` main. Kept current contact-governance test chain and all independently closed error records; only appended this task record. No runtime change in this reconciliation. Build, static tests and new exact-head browser CI must be verified again.
+
+## 2026-10-07 — Codex — Retry-safe carrier dispatch intake
+
+```yaml
+ai_name: Codex
+model: GPT-6
+chat_or_thread: Marketing SEO/GEO implementation
+role: direct implementation owner
+department: Search / Marketing / Logistics conversion
+date: 2026-10-07
+contribution_type: Implementation Report
+confidence: 92
+task_id: CARRIER-INTAKE-IDEMPOTENCY-20261007
+source_of_truth: current main plus verified carrier intake and receiver contracts
+authority_scope: Review branch
+write_scope: [carrier intake enhancer, focused regression, error register, handoff]
+specialization: [conversion reliability, idempotent lead delivery, regression verification]
+not_specialized_in: [legal MC claims, production release approval]
+reviewed: [current main, carrier intake, logistics lead receiver, carrier tests, repository governance]
+not_reviewed: [production behavior after release]
+handoff_to: repository owner for review and release decision
+```
+
+- Branch: `codex/carrier-revenue-implementation-20261007`, based on current `origin/main` `e6f6224b0e409a49a54034bc88de06cce39b1a44`.
+- Outcome: an unchanged carrier request now keeps the same idempotency identity across an ambiguous failure and manual retry. Trusted edits reset the identity so a materially new request receives a new key.
+- Scope: existing `/logistics/start-car-hauling-dispatch/` owner and `/api/logistics-lead` receiver only. No new page, index owner, metadata, sitemap entry, schema, field, external integration, analytics field, MC claim, rate, load, or guarantee.
+- Verification: red regression captured the duplicate-risk behavior; focused Playwright passed 10/10 desktop/mobile; build passed with 399 pages and zero errors; full static/unit suite passed. A fresh CI-mode run completed all 1,992 browser cases with 1,971 passed, 16 skipped, two unrelated existing flaky scenarios, and three unrelated existing Home/consent failures after retry. The changed carrier scenario passed in both projects; exact-head GitHub CI remains required for the release gate.
+- Compounding scorecard: primary outcome = duplicate-resistant qualified carrier acquisition; conversion = ambiguous retries no longer create a second business identity; SEO/internal linking/content = unchanged; knowledge = durable regression plus error record; scale = reuse the same intent-identity rule in sibling lead forms after separate evidence; data/privacy = no new data and no payload exposure; architecture = browser behavior now matches the existing receiver idempotency contract.
+- Deferred: audit the separate Load Board carrier enhancer and shipper/dealer submission paths for the same retry invariant in their own bounded lanes. Do not claim production resolution until merge, deploy, and live readback are complete.
+- Release boundary: review branch only. Merge/deploy requires the repository owner's explicit confirmation.
+
+
+## 2026-10-08 — Codex / Project31 — Wisconsin vacancy runtime expiry
+
+- Contribution: Implementation Report; owner directive in Wisconsin recruiting thread, branch `fix/wisconsin-vacancy-runtime-expiry-20261008`, main base `d82279a8d81f5415137cefef4ac3cc656df52086`. Scope: existing Wisconsin page + Careers hub lifecycle, no new search owner.
+- Safe server-time guard removes expired JobPosting/Apply at validThrough without another build; shows review-required contact, updates hub open count, preserves reference links/canonical/robots/sitemap. Renewing requires dated owner-review provenance within the existing seven-day review window. No business terms or ATS state changed.
+- Current-head local evidence: build 399 pages/zero errors, full npm test, lifecycle boundaries and both route bundles PASS. Browser tests PENDING: preview startup recovered, Chromium 1228 executable missing and downloads truncated; selected 12 browser cases failed before launch. Exact-head CI/Pages preview mandatory; MERGED/DEPLOYED/LIVE not claimed.
+- Error: ERR-WI-JOBPOSTING-RUNTIME-20261008; full bounded evidence, seven business blockers and rollback appended to existing Recruiting Growth Loop runbook.
+- Compounding: SEO = truthful schema with existing owners retained; conversion = current-versus-reference CTA boundary; knowledge = expiry/renewal runbook; links = preserved page and hub references; architecture = two path-scoped middleware guards, no global rewrite/dependency; data/privacy = no applicant payload or analytics changes; scale/content reuse/AI = evaluated, deferred; verification = runtime fixture/static pass, browser/production pending.
+- Next owner: existing Wisconsin writer completes exact-head CI/preview; HR/CEO confirms operating model and actual applicant receiver; normal owner gate controls release.
+## 2026-10-08 — Codex — Repair Shop public entry and commercial context
+
+- TASK: owner-assigned safe CRM/Repair fixes after #1746/#1748/#1747, base `d82279a8d81f5415137cefef4ac3cc656df52086`; branch `fix/repair-public-entry-context-20261008`, PR https://github.com/officeus-create/Hermes/pull/1749.
+- VERIFIED_CAPABILITIES: fresh GitHub reads, local branch/code/build/contracts, connector feature-branch/PR writes. PRIMARY_WRITER: Codex for this bounded slice; REVIEWER: repository owner. CURRENT_STAGE: CODED / review-only PR. SYNC: ACCESS_GAP for cross-chat Master Board locks; no global SYNC_VERIFIED claim. Latest explicit owner instruction and fresh main/open-PR file evidence govern this slice; no Catalog takeover.
+- Changed: access page, access-only BaseLayout language resolver, HermesConnectExperience classification, DigitalServicePage CTA query, existing WebsiteProjectScope/SeoIntake enhancers, existing locale/access contracts, ten desktop/mobile regressions, error register and this handoff.
+- Result: clean access is English before JS, explicit Ukrainian stays supported, pilot explained separately from account registration/activation. Website/SEO links carry `vertical=auto_repair` and an encoded fixed public source path. Technology brief offers repair website rebranding and an editable industry; Website summary includes repair/source context. Marketing SEO form preselects repair business type and retains source in its existing private summary. No API/receiver/auth/booking/business-record mutations; no Sales-delivery or customer-result claim.
+- Overlap inventory: open #1744 includes access/BaseLayout and their existing tests; open #1673 includes DigitalServicePage styling; these must reconcile the narrow functional delta before merge. #1663 owns Catalog count/live renderer files. #1734/#1733 cover proof workflow retirement, #1689 marketing automation: no overlap with this runtime slice. Kittle link remains with Catalog owner. Broad source files in #1744 were not imported wholesale.
+- Verification: initial `npm run build` generated 399 pages with zero errors; `npm test` passed including locale/form/receiver/SEO contracts. Final revision build/static results are recorded in the PR. Local Playwright attempted using an existing Linux Chrome executable and temporary uncommitted config; browser launch was denied at Unix socket creation, before application assertions. Full e2e was attempted, stopped at the same environment gate, and remains unverified. Ten new cases are ready for current-head CI; no fabricated screenshots.
+- Failed approach / lesson: Astro 7 agent detection starts preview as a detached process, incompatible with this executor's child lifetime. Foreground preview mode reached startup; browser remained independently blocked by the executor's Unix socket permission. Do not relax security controls or mark browser UX verified from static output.
+- Compounding scorecard: primary/conversion = accurate pilot entry and retained commercial context; SEO = existing canonical/schema/robots/sitemap owners preserved; knowledge = regression/error evidence; linking = same Technology/Marketing owners with explicit repair context; scale/product = reuse existing enhancers; privacy = only fixed public route/category in query, visitor input remains private and excluded from added analytics; architecture = no second forms/receiver/auth; content reuse/new search surfaces = not applicable. Deferred = Sales human receipt proof, real shop activation/use, Kittle SSR link, broader i18n/Design reconciliation.
+- Rollback: revert this bounded feature commit. No production, merge, deployment or real submission performed. Next: exact-head CI + desktop/mobile preview verification, then owner merge decision; product/Sales owner separately supplies persisted request → receiver → human receipt evidence under #960.
+
+- Same-slice review: source attribution now requires the supplied `source_path` to exactly match the existing public repair service owner; a vertical-only or unapproved source query does not fabricate source attribution. The initial PR revision `e54243f3c35227aae37f2216b1a887829adad5d1` passed GitHub contracts; final runtime revision requires its own CI.
+
+### PR #1749 — same-slice CI follow-up, 2026-10-08
+
+- Owner delegated the exact failure in `tests/hermes-connect-auth-language.spec.ts`: saved Ukrainian incorrectly expected on clean access. Existing access behavior is preserved; Academy saved-locale behavior is preserved.
+- Regression now tests route-specific clean language, reload, explicit Ukrainian/reload and explicit English. No runtime or Catalog changes.
+- Prior `fbae1ddf` contracts and visual evidence succeeded; browser aggregate failed on the stale access assertion and other shards were cancelled by fail-fast. Do not call cancelled shards a completed green gate.
+- Current executor permissions now permit Linux Chrome startup. Focused desktop/mobile auth and Repair context checks execute locally; final output and the new exact-head rerun are attached to PR #1749. Earlier socket denial remains historical environment evidence, not a current blocker.
+
+- Second same-slice CI correction: repair B2B owner-map browser checks now assert the visible primary CTA and exact repair-context Website/SEO URL. Existing titles, H1, related owners and mobile action-bar expectations remain protected. No runtime change.
+
+## 2026-10-08 — safe Load Board intake package
+
+```yaml
+ai_name: Codex
+model: GPT-6
+chat_or_thread: Logistics — Load Board
+role: bounded implementation owner
+department: Logistics / public Load Board
+date: 2026-10-08
+contribution_type: Implementation Report
+confidence: 90
+task_id: LOAD-BOARD-TRUTHFUL-INTAKE-20261008
+source_of_truth: owner instruction to implement in this lane; current main after PRs 1746/1748/1747
+authority_scope: Branch write
+write_scope: [Load Board page and existing intake enhancers, local schema/CTA/anchors, focused tests, additive handoff/error and analytics registry corrections]
+specialization: [truthful submission UX, technical SEO, regression verification]
+not_specialized_in: [approved inventory sourcing, final email delivery, human sales review]
+reviewed: [main d82279a8, open PR file sets, actual public handlers and receiver, repository governance]
+not_reviewed: [production behavior after release, authenticated recipient mailbox]
+handoff_to: repository reviewer and Logistics operations
+```
+
+- Branch: `fix/load-board-truthful-intake-20261008`; review PR #1752. No merge/deploy performed. Main includes #1746, #1748, #1747. Open #1744 shared layout and #1679 header/product-test changes are avoided; only additive error/handoff entries overlap #1679 and later #1749/#1750/#1751.
+- Existing purpose preserved: carriers review approved public records when available, demo examples remain non-bookable, customers use the existing transport qualification path, authenticated company posting and source/freshness/rights gates are unchanged. No indexable route removed or newly noindexed; intake retains its existing noindex,follow policy.
+- Before/after: production Preview mode note becomes live request intake; generic HTTP 2xx no longer becomes “received by Sales.” Exact request acceptance is submitted, final delivery and human receipt remain unconfirmed. Changed reviewed intents use new IDs; an ambiguous retry of the same review reuses its ID.
+- Review correction: environments without crypto.randomUUID use a UUID v4 built from crypto.getRandomValues. No timestamp/Math.random identity is introduced. Focused unit and actual browser intake regressions cover this fallback without changing same-object retry identity.
+- JSON-LD describes the existing WebApplication filtering/calculator/request-review capabilities and canonical page only; no invented Offer, inventory, price, rating, or booking claim.
+- Analytics: replace the incorrect browser vehicle_transport_delivery_confirmed event with vehicle_transport_submitted. August audit snapshots are historical; old counts do not prove delivery. GA4 mapping and actual recipient reconciliation remain external work.
+- Final local verification: build exited 0 (399 pages); full npm test exited 0; all Load Board browser files plus direct customer-intake regression passed 58/58 desktop/mobile. Secure UUID fallback has a red/green unit regression and actual browser coverage with randomUUID unavailable; same-object retry keeps the ID. Mobile screenshot reviewed: customer CTA visible under H1, no horizontal overflow. Canonical/schema/robots/anchors and generic-2xx rejection were checked. Tests use intercepted synthetic fixtures, never production leads.
+- Earlier full E2E run: 1,970 passed, 16 skipped, 20 failed. Two Load Board failures came from newly added demo terminology; wording now explicitly says preview examples are not inventory, and the unchanged evergreen tests pass in the final 58-case run. The other 18 failing scenarios concern Academy/Catalog/Connect/London outside this patch; no current-main reproduction is claimed. Full-suite release remains unproven. Exact-head CI and final runtime state are recorded in PR #1752; draft/review only.
+- Compounding scorecard: outcome = clearer customer acquisition and honest carrier review; conversion = first-screen customer entry and recoverable idempotent intake; SEO = canonical/indexability preserved and real capabilities structured; internal links = existing commercial intake and contact targets; knowledge = receipt contract and durable error record; reuse = one shared receipt validator across existing handlers; privacy = no new data/PII analytics; architecture = existing receiver and business gates retained.
+- Rollback: revert this bounded branch; no data migration or runtime binding changes. Next reviewer action: exact-head CI/preview review, then authorized release and live readback. Operations must supply permitted active inventory and separate final-delivery/human-receipt evidence before those states can be claimed.
+
+### PR #1752 — main synchronization after #1749, 2026-10-08
+
+- Integrated main `84a787f169f6248edfcc5caa34953835f27ec00b` into the existing review branch. Only EOF additions in this handoff and ERROR_REGISTER conflicted; both tasks' complete records are retained.
+- Load Board runtime, schema, CTA, inventory boundaries, receipt validator, secure UUID fallback and targeted regressions are byte-identical to prior head `b9411c39ebc8c7e2448b5ed2bc83afb651667326`. Main's #1749 changes are retained without edits. Targeted desktop/mobile and exact-head terminal CI receipt are recorded in PR #1752. No new PR, production merge or deploy.
+
+### PR #1752 — rebase after #1750, 2026-10-08
+
+- Rebased the same bounded review package onto main `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Both #1749 and #1750 release records plus the prior Load Board synchronization receipt are preserved. Only additive journal conflicts required resolution. Load Board runtime and regression files remain byte-identical to `247a7ad2`; exact-head validation and merge readiness are recorded in PR #1752. No new PR, production merge or deploy.
+
+## Hermes mobile after #1747 — bounded implementation handoff, 2026-10-07 UTC
+
+```yaml
+ai_name: ChatGPT / Codex
+model: GPT-6 family (exact runtime model not exposed)
+chat_or_thread: Technology — WEB Сайт / Hermes mobile после 1747
+role: mobile evidence and bounded cache-delivery implementation
+department: Technology / WEB
+date: 2026-10-07
+contribution_type: Implementation Report
+confidence: 95
+task_id: existing WEB recovery task after PR 1747
+source_of_truth: latest owner instruction; docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md
+authority_scope: Branch write / Platform read / Draft PR; no merge or deploy
+write_scope: [LogisticsCommercialPage image URL, bundled approved image, provenance, focused tests, existing recovery/error/handoff docs]
+specialization: [Lighthouse repeated measurement, trace/network evidence, Astro media delivery]
+not_specialized_in: [field conversion attribution, CDN administrative mutation]
+reviewed: [AGENTS.md, collaboration protocol/current-state snapshot, current main d82279a8, PR1747, successful deploy37686365007, production run37686780431, active PR1744 and1679 overlap, six fresh production traces, six paired local traces, edge body hashes, build/contracts/browser results]
+not_reviewed: [field CrUX/conversions, after-patch production, inaccessible native current task Page]
+handoff_to: existing WEB release reviewer / owner
+```
+
+Same task and existing recovery artifact preserved. Main d822 is LIVE; old EVENT_WAIT superseded. Production Home median90/LCP2071.636ms/TBT0; Dealer79/LCP2579.6585ms/TBT0. No sustained concrete multi-second scripting stack; no global runtime/Home/CSS patch, preserving active writers1744/1679. Proven stale hero222111 vs optimized90337 bytes; bundled content-hashed URL fixes delivery identity, all business content/receivers intact. Controlled local Dealer medianLCP5649.966→5035.2165ms (three paired improvements); not production after.
+
+Build/full contracts pass; focused browser4/4 and visual readbacks390/768/1440 pass. Full local browser1965pass/25fail/16skip; six unrelated failures reproduce on main, others unresolved. New selector fixed and rerun green. No merge/deploy or real lead sends. NEXT: exact-head CI/review, independently authorized release then live byte/three-run production acceptance. Detailed settings, hashes, limitations and learning are in existing recovery/error register, not a parallel backlog.
+## 2026-10-07 — Repair service sticky CTA context follow-up (Codex)
+
+PROBLEM: Production 390×844 readback on both existing repair Website/SEO owners shows visible mobile sticky links omit vertical/source_path while hero links preserve them.
+ROOT_CAUSE: MoneyPageActionBar has independent hardcoded destinations; #1749 updated DigitalServicePage only.
+FAILED_APPROACH: New parity assertions fail on unchanged main for both owners in desktop/mobile (4 failed, 2 passed).
+WORKING_APPROACH: Change only the two repair href entries. Extend existing owner-map browser tests with exact hero/sticky parity, mobile click-to-existing-form/preselected repair context, desktop hidden state and unchanged generic owner destinations.
+EVIDENCE: Base main 84a787f169f6248edfcc5caa34953835f27ec00b. Branch fix/repair-sticky-context. Production before: Website /paths/technology/?project=website_development#project-brief; SEO /paths/marketing/?service=seo#contact. Candidate adds &vertical=auto_repair&source_path=<encoded existing owner> before the unchanged anchor. Validation and exact-head CI recorded in follow-up draft PR.
+LESSON: A primary CTA regression does not cover the separate mobile sticky conversion entry.
+REUSE_RULE: Check href parity plus actual mobile form context for every duplicated conversion entry.
+STATUS: Review-only candidate; production remains unfixed until separately authorized release and live readback. No merge/deploy, real lead submission or delivery claim.
+OWNERSHIP: Open PR file sets checked: no runtime/test overlap; additive handoff/error docs overlap #1750/#1751/#1752/#1753/#1679. Catalog #1751/#1663 and shared layout #1755 untouched.
+SCORECARD: Conversion/context +; durable knowledge +; reusable regression +; search owner/metadata/indexability unchanged; no new product/automation/public claims.
+NEXT: Exact-head CI review, then owner-authorized release and 390×844 production href/form readback.
+
+LOCAL VALIDATION: build PASS (399 pages); full npm test PASS; focused desktop/mobile owner-map + repair public/form/context suite 20/20 PASS. Screenshots captured for both mobile sticky entries. Full browser suite is delegated to exact-head PR CI; no local full-suite green claim. Canonical/robots/schema contracts and title/H1 assertions pass; sitemap file untouched.
+
+MAIN SYNC: Rebased this same PR onto cc5a8ae58914a65a7cd43497a9cdad39ee2ab073 after merged #1750. Rebase applied cleanly; all main/release records retained. Runtime/test diff remains exactly two repair href entries plus bounded existing owner-map assertions. Old-head local full E2E stopped for rebase: 901 passed, 8 failed outside repair CTA, 7 skipped, 4 interrupted, 1096 not run; not a green gate. Old-head contracts/audit passed; final rebased-head CI supersedes those. Fresh final-base build/unit/focused verification required and reported in the same draft PR. No merge/deploy.
+
+MAIN SYNC AFTER #1752 (2026-10-08): Rebased existing #1757 onto 83aef305da82f5221b51d617da34c9f040cbc5cf. Shared-doc EOF conflicts resolved by retaining both complete Load Board and Repair records. Repair component/tests unchanged from prior green head9f83334d (2004 passed/16 skipped exact-head CI); fresh-head CI required, results recorded in same PR. No merge/deploy.
+
+RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 859dc26dc9d28b0c3a09f825751ad1317c6ffa18. Retained all fresh-main release records plus complete Repair follow-up records. Runtime/test files unchanged from prior551f3c74; only two repair Website/SEO sticky href entries and narrow regression coverage remain. Earlier CI/cancellation is historical coordination evidence, not this head qualification. Fresh required exact-head CI recorded in #1757; no merge/deploy.
+
+## 2026-10-07 — Codex — Consent-aware runtime Catalog discovery
+
+- Status: review implementation only; Project31 / repository owner owns release. Base `d82279a8d81f5415137cefef4ac3cc656df52086`, branch `codex/catalog-runtime-discovery-20261007`.
+- Exact defect: Kittle’s existing runtime profile is in runtime sitemap and indexable, but its Catalog hub link was JavaScript-only. Source evidence is technical; GSC Discovered—not indexed is owner-export evidence and does not prove a unique cause.
+- Collision check: #1744 OPEN/non-draft `8aad6078`, #1663 OPEN/draft/not mergeable `d0ac1018`. Their root Astro/client renderer and browser test files are untouched. New Pages function wraps current static hub with a visible, escaped opt-in-derived link list outside its card grid/counts; no second card renderer.
+- Shared contract: opted-in public identity/name/valid slug determines mechanical publication eligibility and canonical path for profile, runtime XML, HTML navigation and card API. Existing opted-in indexing remains; withdrawal removes fresh-request discovery/feed/sitemap ownership and yields 404/noindex profile. Consent-sensitive responses use no-store. No production records changed, private data projection, invented services/reviews, business verification, customer claims or external sends.
+- Readiness limit: this mechanical guard does not establish individual-field consent or editorial Search Release Gate evidence. New-owner promotion, useful-content/vertical readiness, actual receiver delivery and complete discovery beyond the existing 100-record feed/root bound remain separately tracked; no mass noindex or automatic opt-in.
+- Verification: final build passed (399 pages; zero Astro errors/warnings). New behavior regression covers raw generated HTML, exact Kittle slug, duplicate paths, opt-out, invalid/missing fields, unavailable DB, headers, canonical, robots, AutoRepair JSON-LD and private-field exclusion. Full npm test rechecked. Local browser attempt is blocked: standard Chromium downloads were truncated; isolated packaged Chromium starts but closes the page during navigation in this managed environment. No browser pass or production fix is claimed; full exact-head CI/browser and owner-approved exact-SHA live readback remain release gates.
+- Plan/acceptance/rollback/source mapping: `docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md`. Revert this bounded PR to roll back; never withdraw/delete Kittle as a rollout shortcut. Existing owner opt-in API is unchanged.
+- Compounding scorecard: Search/internal discovery = strengthen existing owner without new URL family; conversion = preserve real booking/claim/contact path; knowledge = shared contract and consent/privacy regression; architecture = reuse Astro/renderer/CRM identity; privacy = minimal public projection and no persistent consent caches; scale = bounded later consent-aware pagination; content distribution/new products = deferred.
+
+### PR #1751 — current-main journal reconciliation, 2026-10-08
+
+- Updated existing branch with main `84a787f169f6248edfcc5caa34953835f27ec00b` after #1749. Only conflicts were concurrent append-only entries in AI_HANDOFF and ERROR_REGISTER; both histories retained. Catalog runtime/helper/tests remain byte-identical to the prior feature head; no locale/counts files changed relative to current main. Fresh build, targeted Catalog tests and exact-head CI are rerun; terminal results belong to the PR, not the historical browser-environment failure above. No merge/deploy.
+
+### PR #1751 — rebase after #1750, 2026-10-08
+
+- Rebased existing Catalog branch onto `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Retained all main journal entries and the prior Catalog reconciliation receipt. Only shared append-only journal conflicts were resolved; runtime/helper/tests remain unchanged. Prior exact head `bc2a52b4` completed every CI workflow successfully; that evidence is historical, not a substitute for new-head checks. Re-run build, Catalog/privacy/indexability tests and required exact-head CI. No merge/deploy or Catalog counts/locale edits.
+
+### PR #1751 — rebase after #1752, 2026-10-08
+
+- Owner-requested rebase onto main `83aef305da82f5221b51d617da34c9f040cbc5cf`. Only append-only journal conflicts; all verified main and prior Catalog entries retained. No Load Board/transport implementation delta replayed or altered. Catalog runtime/helper/tests remain unchanged, including opt-in/indexability, withdrawal, minimal public projection and one card renderer. Prior head `9c9cf340` passed every CI workflow; new exact-head tests/CI are required again. No new business facts, production mutations, merge or deployment.
+
+### PR #1751 — bounded release sync after #1757, 2026-10-08
+
+- Rebased existing PR onto main `0cba03b4bd6e462623d48980885b81293d349ddd`. Both journal histories and the #1753 hero regression plus Catalog regression in npm test retained. Repair CTA changes remain untouched. Per current owner directive, new SSR navigation is bounded to the existing Kittle canonical path; other opted-in profiles retain their existing helper eligibility, feed and sitemap ownership. No invented facts or consent changes. Prior local/CI evidence remains historical; fresh-head validation required. No merge/deploy.
+
+
+## 2026-10-08 — Academy measurement fixture stability prerequisite
+
+Owner: Academy / Codex; branch `fix/academy-measurement-fixture-clock-20261008`, base `55eaf2762242fb830641e227280b98ad89966fe9`. Changes: measurement test plus this handoff and ERROR_REGISTER. Reproduced 0 != 2 after UTC rollover; pinned only two in-memory lead creation timestamps to the unchanged synthetic spend period. Production attribution, campaign dates, public routes and claims remain unchanged. Focused test 4/4 PASS; full build/test and exact-head browser CI recorded in the PR. No UI change, screenshots unnecessary. Compounding: reusable deterministic measurement QA and durable failure lesson; no search surface, conversion or privacy change. Risk: real current timestamps are intentionally retained everywhere outside these two historical fixtures. Release/merge/deploy remain central gates. Preserve #1756 language work; resume only after #1754 and this prerequisite.

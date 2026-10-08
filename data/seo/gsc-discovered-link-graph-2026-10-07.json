@@ -1,0 +1,1212 @@
+{
+  "observed_at": "2026-10-07",
+  "built_pages": 421,
+  "reachable_pages": 377,
+  "method": "post-change local static build; unique internal anchor-source pages and shortest anchor click depth from homepage",
+  "rows": [
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/moldova/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/moldova/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/morocco/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/morocco/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/philippines/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/philippines/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/romania/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/romania/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/tajikistan/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/tajikistan/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/vietnam/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/academy/countries/vietnam/en/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alabama/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alabama/brookwood/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alabama/brookwood/diamondback-truck-trailer-repair-brookwood/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alaska/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alaska/palmer/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/alaska/palmer/gold-standard-diesel-and-fleet/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/cedarville/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/cedarville/the-dapper-wrench/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/guy/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/guy/clendenins-auto-repair/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/little-rock/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/sherwood/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/arkansas/sherwood/seans-autopro-mobile/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/california/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/california/colton/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/california/colton/westrux-international-colton/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/california/riverside/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/california/riverside/freightfix-riverside-county/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/connect/repair-shop/kittle-s-garage-a146544/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": false,
+      "internal_inlinks": 0,
+      "click_depth": null
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/illinois/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/illinois/crystal-lake/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/illinois/crystal-lake/carss-crystal-lake/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/illinois/east-dundee/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/illinois/east-dundee/dieselhub-service-east-dundee/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/iowa/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/iowa/bedford/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/iowa/bedford/hawhee-truck-repair-bedford/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/oklahoma/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/oklahoma/tulsa/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/oklahoma/tulsa/holt-truck-centers-tulsa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/south-dakota/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/south-dakota/mitchell/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/south-dakota/mitchell/ag-diesel-mitchell/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/texas/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/texas/dallas/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/texas/dallas/legacy-toyota-of-dallas/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/ukraine/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 4,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/ukraine/chaiky/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/ukraine/chaiky/chayka-store/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 4,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/wyoming/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/wyoming/glenrock/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/businesses/wyoming/glenrock/iron-nation-services/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/es/academia/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/es/academy/us-logistics-operations/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/es/logistica/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 33,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/es/marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/es/tecnologia/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/fr/academy/us-logistics-operations/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/academy/apply/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/academy/freight-dispatcher-training/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/academy/load-planner-training/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/academy/shipper-dealer-sales-training/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/beauty-salon-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/car-detailing-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/cleaning-company-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/content-reels-scripts/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/contractor-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/crm-automation/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/dental-clinic-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/google-business-profile/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/b2-english-us-logistics/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/digital-growth-system/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/dispatcher-vs-load-planner/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/local-seo-london/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/social-media-strategy/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/training-curriculum/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/us-logistics-roles/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/guides/website-seo-funnel/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/home-services-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/it-web-development/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/landing-page-development/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/local-seo/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/logistics-company-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/marketing-audit/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/meta-ads/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/restaurant-marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/seo-services/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/social-media-management/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/gb/london/website-development/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/insights/logistics/diesel-price-route-planning-september-2026/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/insights/logistics/fmcsa-fuel-hours-of-service-waiver-september-2026/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/insights/marketing/cloudflare-disallow-ai-training-search-visibility-september-2026/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/insights/marketing/meta-one-business-creator-tools-september-2026/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/it/academy/us-logistics-operations/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/it/tecnologia/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/box-truck/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/car-hauler/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 8,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/dry-van/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/flatbed/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 8,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/hotshot/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 8,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/power-only/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/reefer/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 8,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/equipment/step-deck/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 8,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/123loadboard/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/central-dispatch/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/dat/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/direct-freight/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/ship-cars/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/super-dispatch/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/load-board/providers/truckstop/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/broker/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 41,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/auburn-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/aurora-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/bridgeton-mo/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/brighton-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 4,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-heights-il/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/chicago-il/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/colorado-springs-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/commerce-city-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 4,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/denver-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 11,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/fountain-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/fremont-ca/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/graham-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/kansas-city-mo-ks/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/lynnwood-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/marysville-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/pueblo-co/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/puyallup-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/renton-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/rogersville-mo/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/seattle-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/springfield-mo/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/st-louis-mo/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/tacoma-wa/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/topeka-ks/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/car-hauler-loads/university-park-il/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/port-vehicle-pickup/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 10,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/broker-setup-packet-checklist/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/car-hauler-jobs-owner-operator-guide/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 13,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 9,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/rpm-calculator/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 11,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/logistics/resources/wisconsin-car-shipping-cost-guide/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/paths/logistics/customers/luxury-classic-vehicle/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ru/academy/us-logistics-operations/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 6,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ru/gb/london/it-web-development/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 4
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ru/gb/london/marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ru/gb/london/us-logistics-training/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 4
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ru/privacy/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 12,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/auto-repair-website-design/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 3,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/plan/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 14,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/hermes-connect/unified-inbox/",
+      "category": "MANUAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/services/seo-for-auto-repair-shops/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 2
+    },
+    {
+      "url": "https://hermeslogisticsus.com/terms/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 344,
+      "click_depth": 1
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/academy/apply/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 4
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/academy/marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 2,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/academy/us-logistics-operations/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 7,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/gb/london/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 5,
+      "click_depth": 3
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/gb/london/it-web-development/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 4
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/gb/london/marketing/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 4
+    },
+    {
+      "url": "https://hermeslogisticsus.com/ua/gb/london/us-logistics-training/",
+      "category": "CURRENT_CANONICAL_REVIEW",
+      "local_route_present": true,
+      "internal_inlinks": 1,
+      "click_depth": 4
+    }
+  ]
+}

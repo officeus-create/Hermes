@@ -56,7 +56,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   data-home-logistics-scene-image
                   data-logistics-scene-ready="car-hauler"
                   src="/images/logistics-living/car-hauler-512.webp"
-                  srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-887.webp 887w"
+                  srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
                   sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                   width="887"
                   height="1590"
@@ -69,7 +69,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               ) : (
                 <picture>
                   <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading={path.id === "marketing" ? "eager" : "lazy"} decoding="async" fetchpriority="auto" />
+                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
                 </picture>
               )}
             </span>
@@ -86,7 +86,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 <span class="home-logistics-weather"></span>
               </span>
             )}
-            {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves.webp" width="320" height="274" aria-hidden="true" alt="Green leaves" decoding="async" /></span>}
+            {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves-160.webp" srcset="/images/home-20261001/leaves-160.webp 160w, /images/home-20261001/leaves-256.webp 256w, /images/home-20261001/leaves.webp 320w" sizes="(max-width:700px) 27vw, 100px" width="320" height="274" aria-hidden="true" alt="Green leaves" loading="lazy" decoding="async" /></span>}
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
               <span class="home-live-kicker">Example workflow</span>
@@ -134,7 +134,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       if (!sceneImage) return Promise.resolve();
       const candidate = new Image();
       candidate.sizes = sceneImage.sizes;
-      candidate.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-887.webp 887w`;
+      candidate.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-768.webp 768w, /images/logistics-living/${scene}-887.webp 887w`;
       candidate.src = `/images/logistics-living/${scene}-512.webp`;
       if (candidate.decode) return candidate.decode();
       return new Promise<void>((resolve, reject) => {
@@ -153,12 +153,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         }
         if (request !== sceneRequest) return;
         sceneImage.src = `/images/logistics-living/${scene}-512.webp`;
-        sceneImage.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-887.webp 887w`;
+        sceneImage.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-768.webp 768w, /images/logistics-living/${scene}-887.webp 887w`;
         sceneImage.dataset.logisticsSceneReady = scene;
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
-      const next = scenes[(sceneIndex + 1) % scenes.length];
-      void preloadScene(next).catch(() => undefined);
     };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
@@ -168,7 +166,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       if (reduced.matches) {
         stop();
         sceneIndex = 0;
-        applyScene();
+        sceneRequest += 1;
+        if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
+          sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
+          sceneImage.srcset = `/images/logistics-living/${scenes[0]}-512.webp 512w, /images/logistics-living/${scenes[0]}-768.webp 768w, /images/logistics-living/${scenes[0]}-887.webp 887w`;
+          sceneImage.dataset.logisticsSceneReady = scenes[0];
+          logisticsEcho.dataset.logisticsEchoScene = scenes[0];
+        }
         logisticsEcho.dataset.logisticsEchoMotion = "reduced";
         return;
       }
@@ -192,7 +196,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     observer.observe(logisticsEcho);
     reduced.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
-    applyScene();
     update();
   }
 

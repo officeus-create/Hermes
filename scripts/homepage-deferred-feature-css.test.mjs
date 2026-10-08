@@ -53,6 +53,12 @@ assert.ok(
 );
 assert.ok(masterSource.includes("prefers-reduced-motion"), "master-scene motion must respect reduced-motion preferences");
 assert.ok(masterSource.includes(":focus-visible"), "master-scene navigation must preserve keyboard focus treatment");
+assert.ok(masterSource.includes("car-hauler-768.webp 768w"), "mobile LCP image must expose a right-sized 768px candidate");
+assert.ok(masterSource.includes("leaves-160.webp 160w"), "decorative leaves must expose a right-sized mobile candidate");
+assert.ok(masterSource.includes("leaves-256.webp 256w"), "decorative leaves must expose an intermediate high-density candidate");
+assert.equal(masterSource.includes('loading={path.id === "marketing" ? "eager" : "lazy"}'), false, "only the true LCP image should be eager on mobile");
+assert.equal(masterSource.includes("void preloadScene(next)"), false, "homepage must not download the next logistics scene before it is displayed");
+assert.equal(masterSource.trim().includes("applyScene();\n    update();"), false, "initial logistics artwork must not be decoded twice before rotation starts");
 
 for (const href of ["/paths/logistics/", "/paths/marketing/", "/paths/academy/", "/paths/technology/"]) {
   assert.ok(html.includes(`href="${href}"`), `homepage must link directly to ${href}`);

@@ -182,8 +182,31 @@ import "../styles/features/academy.css";
         <a class="button button-primary" href="/academy/apply/">Apply for human review <ChevronRight size={18} aria-hidden="true" /></a>
       </div>
     </div>
+    <section class="academy-public-entries" aria-labelledby="academy-public-entries-title">
+      <p class="eyebrow">Explore a learning direction</p>
+      <h2 id="academy-public-entries-title">IT, sales and operations start with practical work.</h2>
+      <p>These are learning directions, not an open paid cohort or a guarantee of employment. Participation is confirmed through human review.</p>
+      <div class="academy-public-entry-grid">
+        {academyPublicTracks.filter((track) => ["it", "sales", "operations"].includes(track.id)).map((track) => (
+          <article id={`academy-${track.id}`}>
+            <h3>{track.label}</h3>
+            <p>{track.body}</p>
+            <button type="button" class="button button-primary" data-academy-entry-track={track.id}>Explore this track <ChevronRight size={18} aria-hidden="true" /></button>
+            <a href={`mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`Hermes Academy ${track.label} inquiry`)}`}>Ask about this learning direction <ChevronRight size={18} aria-hidden="true" /></a>
+          </article>
+        ))}
+      </div>
+    </section>
   </div>
 </section>
+
+<style>
+  .academy-public-entries { margin-top: 2rem; }
+  .academy-public-entry-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .academy-public-entry-grid article { padding: 1.25rem; border: 1px solid #dce4ed; border-radius: 16px; background: #fff; scroll-margin-top: 11rem; }
+  .academy-public-entry-grid a { display: flex; align-items: center; gap: .5rem; min-height: 44px; margin-top: .75rem; }
+  @media (max-width: 760px) { .academy-public-entry-grid { grid-template-columns: 1fr; } }
+</style>
 
 <script is:inline define:vars={{ tracks: academyPublicTracks }}>
   document.querySelectorAll("[data-academy-flow]").forEach((flow) => {
@@ -243,6 +266,16 @@ import "../styles/features/academy.css";
         window.gtag?.("event", "academy_track_select", { track: selectedTrack.id });
       });
     });
+
+    flow.querySelectorAll("[data-academy-entry-track]").forEach((entry) => entry.addEventListener("click", () => {
+      const trackId = entry.getAttribute("data-academy-entry-track");
+      const tab = trackButtons.find((button) => button.getAttribute("data-academy-track") === trackId);
+      tab?.click();
+      renderTrack();
+      showScreen(2);
+      flow.querySelector('[data-academy-screen="2"] h2')?.setAttribute("tabindex", "-1");
+      flow.querySelector('[data-academy-screen="2"] h2')?.focus({ preventScroll: true });
+    }));
 
     flow.querySelectorAll("[data-academy-next]").forEach((button) => button.addEventListener("click", () => {
       renderTrack();

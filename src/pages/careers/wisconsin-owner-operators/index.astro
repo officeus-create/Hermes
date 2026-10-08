@@ -12,12 +12,8 @@ if (!vacancy) throw new Error("Wisconsin Owner-Operators vacancy record is missi
 const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
 const sourceUrl = vacancy.submissionUrl!;
-const title = vacancyIsCurrent
-  ? "Wisconsin Owner-Operator Opportunities | Hermes Logistics"
-  : "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
-const description = vacancyIsCurrent
-  ? "Review the verified Wisconsin owner-operator opportunity for operators with their own truck. Trailer and equipment eligibility are checked individually. See recruiting hours, honest terms, and the live 100Hires source."
-  : "Review the Wisconsin owner-operator recruiting scope and check the current Hermes careers hub for verified publication status.";
+const title = "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
+const description = "Review Wisconsin owner-operator recruiting, equipment-fit questions, individual operating terms, and the source review status before contacting Hermes.";
 
 const equipment = [
   "Dry Van",
@@ -58,7 +54,7 @@ const support = [
 const faq = [
   {
     question: "Is this a company-driver job?",
-    answer: "No. This verified opportunity is for Wisconsin owner-operators who already have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility are therefore confirmed individually before onboarding.",
+    answer: "No. This recruiting page is for Wisconsin owner-operators who already have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility are therefore confirmed individually before onboarding.",
   },
   {
     question: "Does Hermes force owner-operators to accept loads?",
@@ -70,7 +66,7 @@ const faq = [
   },
   {
     question: "Where is the verified external vacancy source?",
-    answer: "The currently verified external source is the live 100Hires listing linked on this page. Hermes adds another source only after that exact vacancy is publicly accessible and read back as current.",
+    answer: "The 100Hires source was reviewed on October 3, 2026. Current vacancy status requires a fresh recruiting review after the publication review expires. Source availability alone does not confirm a carrier program or operating authority.",
   },
 ];
 
@@ -136,7 +132,7 @@ const schema = [
   <div class="owner-operator-career-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
-      <section class="career-hero">
+      <section class="career-hero" id="apply">
         <div class="shell">
           <Breadcrumbs
             items={[
@@ -147,25 +143,29 @@ const schema = [
           />
           <p class="eyebrow">Hermes Logistics · Owner-Operator Recruiting — Wisconsin</p>
           <h1>{vacancy.title}</h1>
-          <p class="career-lead">Hermes is reviewing Wisconsin owner-operators who have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
-          <p class="career-updated">Verified live source · updated October 3, 2026</p>
+          <p class="career-lead">This page describes Wisconsin owner-operator recruiting for operators with their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
+          <p class="career-updated">Source reviewed October 3, 2026</p>
           <div class="career-facts" aria-label="Opportunity facts">
             <span><MapPin size={18} aria-hidden="true" /> Wisconsin</span>
             <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
             <span><ShieldCheck size={18} aria-hidden="true" /> No forced dispatch</span>
           </div>
-          {vacancyIsCurrent ? (
-            <div class="career-actions" id="apply">
+          {vacancyIsCurrent && (
+            <section class="career-actions" data-wi-vacancy-current>
               <a class="button button-primary" href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-job-apply>
                 View and apply on 100Hires <ExternalLink size={18} aria-hidden="true" />
               </a>
               <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Call recruiting</a>
-            </div>
-          ) : (
-            <div class="career-actions">
-              <a class="button button-primary" href="/logistics/careers/">Check current vacancies <ArrowRight size={18} aria-hidden="true" /></a>
-            </div>
+            </section>
           )}
+          <section class="career-review-required" data-wi-vacancy-expired hidden={vacancyIsCurrent} aria-labelledby="vacancy-review-title">
+            <h2 id="vacancy-review-title">Publication review due</h2>
+            <p>This vacancy is awaiting a fresh recruiting review. This page remains available for reference; it does not confirm a current opening, carrier program, operating authority, insurance, or onboarding availability.</p>
+            <div class="career-actions">
+              <a class="button button-primary" href="/logistics/careers/">Review careers information <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Ask recruiting about current status</a>
+            </div>
+          </section>
         </div>
       </section>
 
@@ -173,11 +173,11 @@ const schema = [
         <div class="shell split-grid">
           <div>
             <p class="eyebrow">Verified vacancy sources</p>
-            <h2 id="vacancy-sources-title">Use the source that is live today.</h2>
-            <p>As of October 3, 2026, the exact 100Hires vacancy link is the only external source verified live for this Wisconsin owner-operator opportunity. The separate 100Hires employer page currently reports no active postings, so it is shown only as an employer-profile reference and not as a complete vacancy directory.</p>
+            <h2 id="vacancy-sources-title">Review the dated recruiting source.</h2>
+            <p>As of October 3, 2026, the exact 100Hires vacancy link is the only external source verified live for this Wisconsin owner-operator opportunity. The separate 100Hires employer page reported no active postings at that review, so it is shown only as an employer-profile reference and not as a complete vacancy directory.</p>
           </div>
           <article class="source-card">
-            <span>Live external source</span>
+            <span>Source reviewed October 3, 2026</span>
             <h3>100Hires</h3>
             <p>Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch</p>
             <a href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-source>
@@ -187,7 +187,7 @@ const schema = [
               Open the Hermes employer page on 100Hires <ExternalLink size={17} aria-hidden="true" />
             </a>
             <small>The employer page said “There are no active job postings right now” at the October 3 source review. Use the exact vacancy link above for this role.</small>
-            <small>Publication eligibility is recalculated during each site build. It does not update static HTML automatically between builds; recruiting must reverify this source by October 10, 2026.</small>
+            <small>The publication review expires on October 10, 2026 at 23:59:59 UTC. After expiry, this page is a recruiting reference until a new review confirms current publication status.</small>
           </article>
         </div>
       </section>
@@ -288,6 +288,10 @@ const schema = [
   .career-hero h1 { max-width: 18ch; margin: .7rem 0 1rem; font-size: clamp(2.5rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.045em; }
   .career-lead { max-width: 780px; color: #d8e2ff; font-size: clamp(1.05rem, 1.7vw, 1.25rem); line-height: 1.7; }
   .career-updated { margin-top: 1rem; color: #aebdff; font-weight: 750; }
+  .career-review-required[hidden] { display: none; }
+  .career-review-required { margin-top: 1.5rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,.3); border-radius: 14px; }
+  .career-review-required h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
+  .career-review-required p { color: #d8e2ff; line-height: 1.6; }
   .career-facts, .career-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
   .career-facts span { display: inline-flex; align-items: center; gap: .5rem; padding: .65rem .8rem; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.08); }
   .career-actions .button:not(.button-primary) { color: white; border-color: rgba(255,255,255,.45); }
