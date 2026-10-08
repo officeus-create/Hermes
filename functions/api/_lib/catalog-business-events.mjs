@@ -49,6 +49,7 @@ export async function recordCatalogCountryView(db, { day, catalogBusinessId, cou
     view_count INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL,
     PRIMARY KEY(day, catalog_business_id, country)
   )`).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_catalog_business_country_day ON catalog_business_country_views_daily(catalog_business_id, day)").run();
   await db.prepare(`INSERT INTO catalog_business_country_views_daily (day,catalog_business_id,country,view_count,updated_at)
     VALUES (?,?,?,1,?) ON CONFLICT(day,catalog_business_id,country) DO UPDATE SET
     view_count = catalog_business_country_views_daily.view_count + 1, updated_at = excluded.updated_at`).bind(day,catalogBusinessId,country,now).run();
