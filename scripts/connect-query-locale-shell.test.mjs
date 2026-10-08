@@ -20,3 +20,28 @@ for(const [query,expected] of [['?lang=UK','uk'],['?lang=unsupported','en'],['',
   assert.equal(document.documentElement.lang,expected,`DOM-ready final locale for ${query}`);
 }
 console.log('Connect query-locale shell normalization and clean English owner contract PASS.');
+
+const hub=readFileSync('public/hermes-connect-hub-i18n.js','utf8');
+const routing=hub.slice(hub.indexOf('  document.querySelectorAll("a[href]")'),hub.lastIndexOf('})();'));
+class Anchor {
+  constructor(href,language=null){this.attrs={href};if(language)this.attrs.lang=language;}
+  getAttribute(name){return this.attrs[name]??null;}
+  hasAttribute(name){return Object.hasOwn(this.attrs,name);}
+  setAttribute(name,value){this.attrs[name]=value;}
+}
+for(const locale of ['en','uk','ru','es','it','fr']){
+  const languages=['en','uk','ru','es','it','fr'].map(language=>new Anchor('/services/hermes-connect/'+(language==='en'?'':'?lang='+language),language));
+  const original=languages.map(a=>a.getAttribute('href'));
+  const ordinary=new Anchor('/services/hermes-connect/access/?source=hub#choose');
+  const external=new Anchor('https://example.com/?lang=fr');
+  const document={querySelectorAll:()=>[...languages,ordinary,external]};
+  const window={location:{href:'https://hermeslogisticsus.com/services/hermes-connect/?lang='+locale,origin:'https://hermeslogisticsus.com'}};
+  vm.runInNewContext(routing,{document,window,locale,HTMLAnchorElement:Anchor,URL});
+  assert.deepEqual(languages.map(a=>a.getAttribute('href')),original,'language choices must remain distinct for '+locale);
+  const result=new URL(ordinary.getAttribute('href'),window.location.origin);
+  assert.equal(result.searchParams.get('lang'),locale==='en'?null:locale);
+  assert.equal(result.searchParams.get('source'),'hub');
+  assert.equal(result.hash,'#choose');
+  assert.equal(external.getAttribute('href'),'https://example.com/?lang=fr');
+}
+console.log('Connect language-choice hrefs and contextual links PASS (6 locales).');
