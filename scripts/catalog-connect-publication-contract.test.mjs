@@ -70,7 +70,7 @@ assert.doesNotMatch(connectCatalogSitemap, /client_email|client_phone|appointmen
 const staticDealerProfile = read("src/pages/businesses/[state]/[city]/[slug].astro");
 assert.match(staticDealerProfile, /class="catalog-profile-hero"/);
 assert.match(staticDealerProfile, /\.catalog-profile-hero\{/);
-assert.match(staticDealerProfile, /@media\(max-width:800px\)\{\.catalog-profile-hero/);
+assert.match(staticDealerProfile, /@media\(max-width:800px\)\{\.profile \.catalog-profile-hero/);
 assert.doesNotMatch(staticDealerProfile, /class="hero"/);
 assert.doesNotMatch(staticDealerProfile, /(?:^|[^-])\.hero\b/);
 for (const [route, shopName] of [

@@ -8,6 +8,8 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "path-academy", path: "/paths/academy/" },
   { id: "path-technology", path: "/paths/technology/" },
   { id: "hermes-catalog", path: "/businesses/" },
+  { id: "catalog-repair-profile", path: "/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/" },
+  { id: "catalog-uk-profile", path: "/businesses/ukraine/bila-tserkva/kons-na-bis/" },
   { id: "car-hauling-dispatch", path: "/logistics/car-hauling-dispatch/" },
   { id: "carrier-audience", path: "/logistics/carrier/" },
   { id: "carrier-sales", path: "/carrier/" },
