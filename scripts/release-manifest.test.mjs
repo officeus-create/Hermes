@@ -73,6 +73,14 @@ function parseCanonical(html, fallbackUrl) {
   return new URL(href, fallbackUrl).toString();
 }
 
+// Guard the reconciled release receipt against stale status restoration during journal merges.
+const errorRegister = await readFile(join(root, "docs", "ERROR_REGISTER.md"), "utf8");
+const crawlerReceipt = JSON.parse(await readFile(join(root, "data", "seo", "indexnow-crawler-hints-setting-2026-10-07.json"), "utf8"));
+assert(!/^<{7} |^={7}$|^>{7} /m.test(errorRegister), "Error register must not contain unresolved merge markers.");
+assert(errorRegister.includes("| ERR-CLOUDFLARE-CRAWLER-HINTS-20261006 | RESOLVED |"), "Dated crawler-hints resolution must not regress to pending.");
+assert(errorRegister.includes("data/seo/indexnow-crawler-hints-setting-2026-10-07.json"), "Crawler-hints status must retain its dated evidence pointer.");
+assert(crawlerReceipt && typeof crawlerReceipt === "object", "Crawler-hints evidence must remain readable JSON.");
+
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 const markdown = await readFile(markdownPath, "utf8");
 assert(manifest.schema_version === 1, "Release manifest schema_version must be 1.");
