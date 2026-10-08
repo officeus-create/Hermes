@@ -67,6 +67,30 @@ export const mzmJunkRemovalClient = {
     analysisDimensions: ["city", "source", "jobType", "searchQuery"],
     outcomeChain: ["search_query_or_source", "lead", "quote", "booked_job", "completed_job", "revenue", "review"],
   },
+  publicEvidence: {
+    officialWebsite: {
+      url: "https://mzm-junk-removal.com/",
+      observedAt: "2026-10-08",
+      evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
+      confirmsExistingManifest: [
+        "MZM Junk Removal identity",
+        "Roseville and Greater Sacramento market",
+        "junk removal / cleanout / furniture / appliance / construction debris / yard debris service scope",
+      ],
+      ownerReviewCandidates: {
+        serviceAreas: ["North Highlands"],
+        services: [
+          "Mattress removal",
+          "Eviction cleanouts",
+          "Office cleanouts",
+          "Storage unit cleanouts",
+          "Shed removal",
+        ],
+      },
+    },
+    volatilePublicClaimsPolicy:
+      "Public review totals, completed-job counters, same-day availability and similar changing website claims are observation-time facts only. They do not become canonical CRM outcomes, Hermes-attributed results or permanent Catalog claims without dated evidence and the applicable owner/CRM readback.",
+  },
   semanticCore: {
     sourceRef: "client-provided:MZM_Junk_Removal_Semantic_Core.xlsx",
     uniqueKeywords: 8155,
@@ -85,12 +109,18 @@ export const mzmJunkRemovalClient = {
     contentRule:
       "Do not create one page per keyword. Route variants into durable service/city owners, local guides, real-job case studies, FAQs and source-backed news.",
   },
+  searchOwnership: {
+    primaryCommercialOwner: "https://mzm-junk-removal.com/",
+    hermesCatalogRole: "secondary_entity_discovery_and_attribution",
+    rule:
+      "The client website owns MZM branded, city and commercial service intent. Hermes Catalog may support entity discovery and attributed handoff, but must not clone the client's city/service landing-page family or become a competing canonical owner.",
+  },
   contentEngine: {
     sequence: [
       "catalog_profile",
       "crm_workspace",
       "semantic_clustering",
-      "evergreen_service_city_owners",
+      "client_site_evergreen_service_city_owners",
       "source_backed_news_and_local_guides",
       "gsc_and_crm_attribution",
       "paid_readiness_gate",
