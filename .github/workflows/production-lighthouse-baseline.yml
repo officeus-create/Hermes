@@ -1,128 +1,57 @@
 name: Production Lighthouse baseline
 
 on:
+  push:
+    branches: [investigate/load-board-mobile-trace-20261008]
+    paths: [.github/workflows/production-lighthouse-baseline.yml]
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - Deploy approved main to Cloudflare Pages v2
-    types:
-      - completed
-    branches:
-      - main
 
 permissions:
   contents: read
   actions: read
 
 concurrency:
-  group: production-lighthouse-baseline
+  group: load-board-mobile-trace-20261008
   cancel-in-progress: false
 
 jobs:
   lighthouse:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    name: Mobile lab baseline — ${{ matrix.page.slug }}
+    name: Three sequential Load Board mobile lab traces
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        page:
-          - slug: home
-            url: https://hermeslogisticsus.com/
-          - slug: car-hauling-dispatch
-            url: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
-          - slug: dealer-vehicle-transportation
-            url: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
-          - slug: load-board
-            url: https://hermeslogisticsus.com/load-board/
-          - slug: logistics-seo
-            url: https://hermeslogisticsus.com/services/seo/
-
+    timeout-minutes: 25
+    env:
+      EXPECTED_SHA: 55eaf2762242fb830641e227280b98ad89966fe9
+      GH_TOKEN: ${{ github.token }}
+      TARGET_URL: https://hermeslogisticsus.com/load-board/
     steps:
-      - name: Check out the measurement revision
+      - name: Check out exact deployed main
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-
+          ref: 55eaf2762242fb830641e227280b98ad89966fe9
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Require successful exact-revision deployment before measurement
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: node scripts/verify-lighthouse-release.mjs
-
-      - name: Run Lighthouse against production
-        env:
-          TARGET_URL: ${{ matrix.page.url }}
-          PAGE_SLUG: ${{ matrix.page.slug }}
+      - name: Three sequential first-visit mobile passes
         run: |
           mkdir -p lighthouse-results
-          succeeded=0
-          for attempt in 1 2; do
-            rm -f "lighthouse-results/${PAGE_SLUG}.json"
-            if npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+          for pass in 1 2 3; do
+            node scripts/verify-lighthouse-release.mjs
+            ps -eo pid,pcpu,comm --sort=-pcpu | head -10
+            npx --yes lighthouse@13.4.1 "$TARGET_URL" \
               --output=json \
-              --output-path="lighthouse-results/${PAGE_SLUG}.json" \
+              --output-path="lighthouse-results/load-board-${pass}.json" \
               --only-categories=performance,accessibility,best-practices,seo \
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-              --quiet; then
-              succeeded=1
-              break
-            fi
-            echo "::warning::Lighthouse attempt ${attempt} failed for ${PAGE_SLUG}; retrying once after Chrome cleanup."
-            pkill -f chrome || true
+              --save-assets \
+              --quiet
           done
-          test "$succeeded" -eq 1
-
-      - name: Write sanitized score summary
-        env:
-          TARGET_URL: ${{ matrix.page.url }}
-          PAGE_SLUG: ${{ matrix.page.slug }}
-          MEASUREMENT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: |
-          node <<'NODE'
-          import fs from 'node:fs';
-
-          const slug = process.env.PAGE_SLUG;
-          const targetUrl = process.env.TARGET_URL;
-          const report = JSON.parse(fs.readFileSync(`lighthouse-results/${slug}.json`, 'utf8'));
-          const score = (key) => Math.round((report.categories?.[key]?.score ?? 0) * 100);
-          const display = (key) => report.audits?.[key]?.displayValue ?? 'n/a';
-
-          const summary = [
-            `## Production Lighthouse mobile lab baseline — ${slug}`,
-            '',
-            `- URL: ${targetUrl}`,
-            `- Lighthouse: ${report.lighthouseVersion ?? 'unknown'}`,
-            `- Fetch time: ${report.fetchTime ?? 'unknown'}`,
-            `- Deployment-verified measurement revision: ${process.env.MEASUREMENT_SHA}`,
-            `- Performance: ${score('performance')}`,
-            `- Accessibility: ${score('accessibility')}`,
-            `- Best Practices: ${score('best-practices')}`,
-            `- SEO: ${score('seo')}`,
-            `- FCP: ${display('first-contentful-paint')}`,
-            `- LCP: ${display('largest-contentful-paint')}`,
-            `- Speed Index: ${display('speed-index')}`,
-            `- Total Blocking Time: ${display('total-blocking-time')}`,
-            `- CLS: ${display('cumulative-layout-shift')}`,
-            '',
-            '> This is a single GitHub-hosted Lighthouse lab run. It is not Search Console data, CrUX field data, a conversion result, or a ranking claim.',
-          ].join('\n');
-
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summary}\n`);
-          NODE
-
-      - name: Upload Lighthouse JSON
+          node scripts/verify-lighthouse-release.mjs
+      - name: Upload exact-release reports and raw traces
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-mobile-${{ matrix.page.slug }}
-          path: lighthouse-results/${{ matrix.page.slug }}.json
+          name: load-board-mobile-three-traces-55eaf276
+          path: lighthouse-results/
           if-no-files-found: error
           retention-days: 30
