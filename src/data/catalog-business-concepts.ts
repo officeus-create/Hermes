@@ -256,7 +256,7 @@ export const konsNaBisConcept = Object.freeze({
     duration: "7 тижнів",
     durationEn: "7 weeks"
   },
-  crmPreviewUrl: "/demos/hermes-connect/academy-knb.html",
+  crmPreviewUrl: "/demos/hermes-connect/academy-knb",
   strategyPreviewUrl: "/businesses/concepts/kons-na-bis/",
   phone: "+380 67 11 55 111",
   address: "вул. Ярослава Мудрого, 16/2, 16",

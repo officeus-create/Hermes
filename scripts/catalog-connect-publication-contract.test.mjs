@@ -174,7 +174,7 @@ assert.match(knbCatalogHtml, /Telegram/);
 assert.match(knbCatalogHtml, /https:\/\/www\.facebook\.com\/konsnabis\//);
 assert.match(knbCatalogHtml, /https:\/\/t\.me\/konsnabis/);
 assert.match(knbCatalogHtml, /\/businesses\/concepts\/kons-na-bis\//);
-assert.match(knbCatalogHtml, /\/demos\/hermes-connect\/academy-knb\.html/);
+assert.match(knbCatalogHtml, /\/demos\/hermes-connect\/academy-knb(?:["?])/);
 assert.match(knbCatalogHtml, /PREPARED HERMES WORK/);
 assert.match(knbCatalogHtml, /schema\.org/);
 assert.doesNotMatch(knbCatalogHtml, /noindex,nofollow/);
@@ -288,3 +288,5 @@ assert.match(schemaSource, /item\.answerEn/);
 assert.match(schemaSource, /alternateName: display\.name/);
 assert.doesNotMatch(switcher, /pushState|replaceState|location\.replace/);
 console.log("Catalog Connect publication contract OK");
+
+await import("./hermes-connect-knb-academy-contract.test.mjs");
