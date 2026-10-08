@@ -28,13 +28,19 @@ test("I am local intent simulator suggests a conditional workflow, not an actual
   await expect(page.locator("#iam-result")).toContainText("not available services");
 });
 
-test("I am source-backed product note is a noindex concept and not an investor offer", async ({page}) => {
+test("I am has one canonical Technology development announcement, correct NewsArticle schema and no securities offer", async ({page}) => {
   await page.goto(note, {waitUntil:"domcontentloaded"});
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
-  await expect(page.getByRole("heading",{level:1})).toContainText("I am: a personal interface");
-  await expect(page.locator("main.iam-note")).toContainText("does not request an investment, offer securities");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/insights/technology/i-am-vision/");
+  await expect(page.getByRole("heading",{level:1})).toContainText("I am enters development");
+  await expect(page.locator("main.iam-note")).toContainText("14-month");
+  await expect(page.locator("main.iam-note")).toContainText("not a public offering of securities");
   await expect(page.getByRole("link",{name:"Official Italian Customs (ADM) OTELLO overview"})).toHaveAttribute("href", /adm\.gov\.it/);
-  await expect(page.locator('a[href="/businesses/concepts/i-am/"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/businesses/italy/"]').first()).toBeVisible();
+  const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const jsonSchemas = schemas.flatMap(s => { try { const data=JSON.parse(s); return Array.isArray(data) ? data : [data]; } catch { return []; } });
+  expect(jsonSchemas.some(x => x["@type"]==="NewsArticle" && x.mainEntityOfPage==="https://hermeslogisticsus.com/insights/technology/i-am-vision/")).toBeTruthy();
+  expect(jsonSchemas.some(x => x["@type"]==="Organization" && x.name==="I am")).toBeFalsy();
 });
 
 test("I am investor concept and product note fit a 390px viewport", async ({page}) => {
@@ -81,4 +87,18 @@ test("I am unknown intents display a truthful research gate, not a fabricated wo
   await expect(page.locator("#iam-result")).toContainText("No verified service category found");
   await expect(page.locator("#iam-result")).toContainText("does not invent a service");
   await expect(page.locator("#iam-result button[data-pin-module]")).toHaveCount(0);
+});
+
+test("Hermes Insights Technology includes I am as a standalone first-party development announcement", async ({page}) => {
+  await page.goto("/insights/", {waitUntil:"domcontentloaded"});
+  const section=page.locator("#technology");
+  await expect(section.getByRole("heading",{name:/I am enters development/})).toBeVisible();
+  await expect(section.locator('a[href="/insights/technology/i-am-vision/"]').first()).toBeVisible();
+  const rss=await page.request.get("/insights/rss.xml");
+  expect(rss.ok()).toBeTruthy();
+  expect(await rss.text()).toContain("https://hermeslogisticsus.com/insights/technology/i-am-vision/");
+  const sitemap=await page.request.get("/sitemap-insights.xml");
+  expect(await sitemap.text()).toContain("https://hermeslogisticsus.com/insights/technology/i-am-vision/");
+  const sitemapIndex=await page.request.get("/sitemapindex.xml");
+  expect(await sitemapIndex.text()).toMatch(/sitemap-insights\\.xml<\\/loc>\\s*<lastmod>2026-10-08<\\/lastmod>/);
 });
