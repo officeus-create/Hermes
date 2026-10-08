@@ -159,3 +159,6 @@ assert.match(loadBoardHtml, /PREVIEW|preview rows/i, "Load Board must keep its p
 assert.doesNotMatch(loadBoardHtml, /live freight available now/i, "Load Board must not imply live freight availability");
 
 console.log("Load Board unit and canonical search-owner checks passed.");
+
+// TR-058 shares the existing intake/receiver; keep its fixture in required contracts.
+await import('./broker-weight-contract.test.mjs');

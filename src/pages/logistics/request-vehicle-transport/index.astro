@@ -233,6 +233,18 @@ const schema = [
               </label>
             </div>
 
+            <fieldset data-broker-weight hidden disabled>
+              <legend>Broker cargo weight</legend>
+              <p class="transport-mode-note">Total cargo weight as supplied by you. Leave unknown if unavailable; this does not verify weight or carrier capacity.</p>
+              <label>Weight information
+                <select name="broker_weight_state"><option value="unknown">Unknown</option><option value="known">Known — enter value and unit</option></select>
+              </label>
+              <div class="transport-field-row">
+                <label>Total cargo weight<input name="broker_weight_value" inputmode="decimal" maxlength="24" placeholder="e.g. 3500.50" /></label>
+                <label>Original unit<select name="broker_weight_unit"><option value="">Unknown</option><option value="lb">lb</option><option value="kg">kg</option></select></label>
+              </div>
+            </fieldset>
+
             <label class="transport-consent">
               <input name="consent" type="checkbox" required />
               <span>I am authorized to request this business review and agree that Logistics Sales may contact me about the submitted transportation information.</span>

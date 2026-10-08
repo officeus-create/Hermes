@@ -1,3 +1,6 @@
+import { parseUnambiguousJson } from "./_lib/unambiguous-json.ts";
+import { brokerWeightEmailBody, brokerWeightSummary, validateBrokerWeight, type BrokerWeight } from "../../src/lib/broker-weight.ts";
+
 type KvNamespace = {
   get(key: string): Promise<string | null>;
   put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
@@ -21,6 +24,7 @@ type Context = {
 };
 
 type LeadInput = {
+  broker_weight?: unknown;
   request_id?: unknown;
   lead_type?: unknown;
   sales_tag?: unknown;
@@ -253,9 +257,13 @@ export async function onRequestPost({ request, env }: Context) {
 
   let input: LeadInput;
   try {
-    input = JSON.parse(raw) as LeadInput;
+    input = parseUnambiguousJson(raw) as LeadInput;
   } catch {
     return json(allowedOrigin, 400, { success: false, error: "invalid_json" });
+  }
+
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
   }
 
   const headerRequestId = clean(request.headers.get("Idempotency-Key"), 80);
@@ -277,6 +285,19 @@ export async function onRequestPost({ request, env }: Context) {
   if (!hasRequiredContact) {
     return json(allowedOrigin, 400, { success: false, error: "contact_details_required" });
   }
+
+  let brokerWeight: BrokerWeight | undefined;
+  if (input.broker_weight !== undefined) {
+    if (generalContact || leadType !== "posted_load" || salesTag !== "POSTED LOAD / BROKER") {
+      return json(allowedOrigin, 400, { success: false, error: "invalid_broker_weight_segment" });
+    }
+    try { brokerWeight = validateBrokerWeight(input.broker_weight); }
+    catch { return json(allowedOrigin, 400, { success: false, error: "invalid_broker_weight" }); }
+  }
+
+  let canonicalEmailBody = emailBody;
+  try { canonicalEmailBody = brokerWeightEmailBody(emailBody, brokerWeight); }
+  catch { return json(allowedOrigin, 400, { success: false, error: "conflicting_broker_weight_body" }); }
 
   const requestKey = `lead:id:${await hash(requestId)}`;
   if (await env.LEAD_LIMITS.get(requestKey)) {
@@ -302,7 +323,7 @@ export async function onRequestPost({ request, env }: Context) {
   }
 
   const replyTo = extractReplyTo(emailBody);
-  const deliveredBody = emailBody.replace(
+  const deliveredBody = canonicalEmailBody.replace(
     /^Delivery:\s*preview only.*$/im,
     "Delivery: securely received by the Hermes website endpoint.",
   );
@@ -310,6 +331,7 @@ export async function onRequestPost({ request, env }: Context) {
     ...(subject === CAR_HAULING_TEST_SUBJECT ? ["Lead classification: TEST/QA — exclude from Sales/CRM KPI.", ""] : []),
     deliveredBody,
     "",
+    ...(brokerWeight ? [brokerWeightSummary(brokerWeight), `Broker weight record: ${JSON.stringify(brokerWeight)}`, ""] : []),
     "Server delivery record",
     `Request ID: ${requestId}`,
     `Submitted at: ${submittedAt || "not provided"}`,
