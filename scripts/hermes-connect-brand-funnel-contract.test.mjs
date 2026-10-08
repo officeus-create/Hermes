@@ -97,6 +97,12 @@ assert(aiEntry.includes("ADAPTER PLANNED"), "AI entry: unverified consumer integ
 assert(aiEntry.includes("Provider plan and permission rules still apply.") && aiEntry.includes("does not charge without explicit confirmation"), "AI entry: provider-cost and Hermes-charge boundaries must remain explicit.");
 assert(!/official partner|official partnership|endorsed by/i.test(aiEntry), "AI entry: provider tiles must not imply endorsement or partnership.");
 
+const accessCenter = await text("src/pages/services/hermes-connect/access/index.astro");
+assert(accessCenter.includes("data-ai-entry-context") && accessCenter.includes("Starting from"), "AI entry: Access Center must acknowledge an inbound AI handoff.");
+assert(accessCenter.includes('data-ai-route') && accessCenter.includes('url.searchParams.set("source", "ai")'), "AI entry: business selection must preserve AI source attribution.");
+assert(accessCenter.includes('url.searchParams.set("provider", aiProvider)') && accessCenter.includes("aiProviderLabels"), "AI entry: provider attribution must remain bounded and human-readable through onboarding.");
+assert(accessCenter.includes("one Company / CRM / Catalog identity"), "AI entry: Access Center must preserve the one-business-identity contract.");
+
 const foundingPlan = await text("src/pages/services/hermes-connect/repair-shops/plan.astro");
 assert(foundingPlan.includes("var(--hermes-pearl)"), "Founding Plan: public shell must consume canonical Pearl.");
 assert(foundingPlan.includes("var(--hermes-obsidian)"), "Founding Plan: conversion hierarchy must retain an intentional Obsidian anchor.");
