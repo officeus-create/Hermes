@@ -51,3 +51,9 @@ test("GSC country and page scope cannot be faked by unrelated aggregates", () =>
   expect(result.ready).toBe(false);
   expect(result.scopeMismatches).toContain("page:/services/seo/!=/services/seo-for-logistics-companies/");
 });
+
+test("carrier GA4 acquisition requests acceptance rather than unproven delivery", () => {
+  const request = geoExternalEvidenceRequests.find(item => item.id === "ga4-carrier-delivery-exact-once");
+  expect(request?.requiredScope.event).toBe("carrier_submitted");
+  expect(request?.note).toContain("not delivery or human receipt");
+});

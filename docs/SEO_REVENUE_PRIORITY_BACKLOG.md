@@ -16,7 +16,9 @@ Traffic without a measurable CTA and follow-up path is not treated as a successf
 
 ## Current repository state
 
-The original commercial-routing sprint is complete at repository level. The audited Tier 1 and Tier 2 pages now have direct intent-matched commercial paths and privacy-safe event contracts. Current implementation authority is `docs/SEO_REVENUE_COMMERCIAL_URL_AUDIT_2026-08.md`.
+The original commercial-routing sprint recorded repository readiness in August 2026. `docs/SEO_REVENUE_COMMERCIAL_URL_AUDIT_2026-08.md` is a historical routing/readiness snapshot, not current implementation or delivery evidence. Current measurement/event authority: `docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md`, current receiver/source and their regression contracts.
+
+2026-10-08 carrier reconciliation: `carrier_submitted` means matching request-service acceptance only. Final delivery and human receipt remain UNKNOWN. The existing machine-readable August audit preserves its original carrier event family separately and reconciles the active carrier contract; other dated event families remain historical. Search routing still follows the existing guardrail and Search owner; this correction creates no new search surface.
 
 Remaining priority is measurement, proof, entity consistency and follow-up quality rather than adding more pages.
 
