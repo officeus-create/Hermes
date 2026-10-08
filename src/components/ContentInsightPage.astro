@@ -36,6 +36,7 @@ interface Props {
   sourceLabel: string;
   sourceUrl?: string | null;
   sourcePublishedAt?: string | null;
+  evidenceSources?: Array<{ label: string; url: string }>;
   datePublished: string;
   dateModified: string;
   directionName: string;
@@ -69,6 +70,7 @@ const {
   sourceLabel,
   sourceUrl = null,
   sourcePublishedAt = null,
+  evidenceSources = [],
   datePublished,
   dateModified,
   directionName,
@@ -267,6 +269,16 @@ const schema = [
               <article><strong>Original date</strong><p>{sourcePublishedAt ?? "Not yet verified"}</p></article>
               <article><strong>Website review</strong><p>Published {datePublished}; last modified {dateModified}.</p></article>
               <article><strong>External source link</strong><p>{sourceUrl && !sourceIsSynthetic ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Open the original source ↗</a> : "Held until a stable approved source URL is verified."}</p></article>
+              {evidenceSources.length > 1 && (
+                <article class="insight-evidence-links">
+                  <strong>Evidence sources</strong>
+                  <ul>
+                    {evidenceSources.map((item) => (
+                      <li><a href={item.url} target="_blank" rel="noopener noreferrer">{item.label} ↗</a></li>
+                    ))}
+                  </ul>
+                </article>
+              )}
             </div>
           </div>
         </section>
@@ -297,5 +309,5 @@ const schema = [
 </BaseLayout>
 
 <style>
-  .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}
+  .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}.insight-evidence-links{grid-column:1/-1}.insight-evidence-links ul{margin:.75rem 0 0;padding-left:1.15rem;display:grid;gap:.5rem}.insight-evidence-links li{line-height:1.45}
 </style>
