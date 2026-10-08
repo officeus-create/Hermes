@@ -617,3 +617,14 @@ NEXT: Preserve the regression and consume current-main checks in existing blocke
 ## PR #1756 Academy language-purity regression — 2026-10-08
 
 Code correction prepared on the existing feature branch; exact-head CI required before release. Failed job 113042540715 found `follow-up` in the Ukrainian Logistics route-local related Marketing card. Translate the card rather than narrow the whole-main assertion; require the translated label/body and reject the other missed English fragments. Existing course/admission/employment boundaries and search owners are preserved. Release remains ordered after #1754 with the central owner.
+
+## 2026-10-08 — PR #1663 count/facet and U.S. card scope reconciliation
+
+STATUS: REVIEW_IMPLEMENTATION; fresh exact-head CI pending in existing PR #1663.
+PROBLEM: count copy combines business/service entries; live repair insertion does not reconcile category/state facets and accepts non-US/unknown country into the U.S. grid.
+ROOT_CAUSE: static category/state counts and renderer lack normalized country scope; profile publication eligibility is a separate concern.
+WORKING_APPROACH: replay only unique #1663 counts/filter logic on accepted main55eaf276; increment facets after identity dedupe and actual U.S. card insertion; keep unbuilt state tiles passive and preserve Home Service/Academy current paths.
+EVIDENCE: synthetic regression covers mixed-case/whitespace US, non-US/unknown exclusion, duplicate identity, category/state counts and no invented state link; current-head full CI required. Local execution unavailable; no local validation claim.
+REUSE_RULE: presentation scope must not modify opt-in, canonical/indexing or sitemap ownership. #1751 publication helper/withdrawal rules untouched.
+NEXT_OWNER: Project31 release owner for acceptance after exact-head green; no merge/deploy by this task.
+
