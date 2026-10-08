@@ -256,6 +256,7 @@ assert.match(crmApi, /module === "public_assets"/);
 assert.match(crmApi, /getHomeServicePublicAssets/);
 assert.match(workspace, /data-public-assets/);
 assert.match(workspace, /module=public_assets/);
+assert.match(workspace, /public_assets"\)\.catch\(\(\)=>\(\{assets:\[\]\}\)\)/);
 assert.match(workspace, /Hermes Insights/);
 assert.match(workspace, /Hermes Catalog/);
 assert.match(publicProfile, /getHomeServicePublicAssets/);
