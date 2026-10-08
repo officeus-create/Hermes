@@ -1,4 +1,5 @@
 import { jsonResponse } from "../../_lib/session.mjs";
+import { getHomeServicePublicAssets } from "../../_lib/home-service-public-assets.mjs";
 import {
   aggregateHomeServiceLeads,
   getHomeServiceContext,
@@ -65,6 +66,13 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       success: true,
       company: ctx.company,
       profile: safeProfile(profile),
+    }, privateHeaders);
+  }
+
+  if (module === "public_assets") {
+    return jsonResponse(200, {
+      success: true,
+      assets: getHomeServicePublicAssets({ website: ctx.company.website }),
     }, privateHeaders);
   }
 
