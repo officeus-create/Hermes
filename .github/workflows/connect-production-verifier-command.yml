@@ -1,12 +1,10 @@
 name: Verify Connect production on command
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: connect-production-command
@@ -14,17 +12,12 @@ concurrency:
 
 jobs:
   verify:
-    if: >-
-      github.event.issue.number == 232 &&
-      github.event.comment.body == '/verify-connect-production' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
       CONNECT_EXPECTATION: approved_web_app
       CONNECT_CHECK_ATTEMPTS: "24"
       CONNECT_CHECK_DELAY_MS: "20000"
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - name: Check out approved main
@@ -61,8 +54,7 @@ jobs:
             echo
             echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
             echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
-          } > /tmp/connect-verification-comment.md
-          gh issue comment 232 --repo "${{ github.repository }}" --body-file /tmp/connect-verification-comment.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload sanitized report
         if: always()
