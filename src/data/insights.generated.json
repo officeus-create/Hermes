@@ -127,6 +127,148 @@
     }
   },
   {
+    "id": "mzm-junk-removal-real-job-evidence-local-seo-2026",
+    "direction": "marketing",
+    "slug": "mzm-junk-removal-real-job-evidence-local-seo",
+    "title": "MZM Junk Removal: Real Job Evidence for Local SEO | Hermes Insights",
+    "description": "A public-source analysis of how MZM Junk Removal uses recent-job proof, service-area pages and specific local details across Greater Sacramento without turning every keyword into a separate page.",
+    "eyebrow": "Local SEO Evidence · Greater Sacramento · 8 October 2026",
+    "h1": "What MZM Junk Removal’s public job evidence shows about evidence-driven local SEO",
+    "conciseAnswer": "MZM Junk Removal’s public website pairs service-area pages with recent-job evidence such as ZIP codes, job types, crew size, approximate load and time. That creates stronger local utility than city-name swaps alone. Hermes treats these as dated public observations—not as Hermes-attributed results, guaranteed rankings, or verified CRM revenue.",
+    "explanation": [
+      "The useful pattern is not page count. MZM’s public site connects a real service-area structure with concrete operating examples. Roseville pages show recent garage and side-yard work, while Sacramento, Rancho Cordova, Citrus Heights, Orangevale and Rocklin pages publish city-specific recent-job examples. Those examples include details such as ZIP code, job type, approximate crew size, load or time when the business has chosen to publish them. This gives a visitor a reason to trust that the page represents actual local work rather than a template with a city name replaced.",
+      "That matters for SEO/GEO because local search pages need distinct human value and truthful geography. A service-area page should answer whether the company really works there, what kinds of jobs occur there, what the process looks like and what action a visitor can take next. MZM’s public structure supplies several of those signals through recent-job modules, before-and-after proof, service lists, local coverage and a quote/call path. The evidence is useful because it is attached to the company’s own website and can be rechecked later.",
+      "The evidence boundary is equally important. Public review totals, completed-job counters and same-day availability can change. They should be treated as observation-time facts, not frozen permanently into structured data, CRM revenue or a marketing case study. Likewise, the existence of a city page or a public recent-job block does not prove Google indexation, ranking gains, lead volume or revenue. Those outcomes require authenticated Search Console, analytics and CRM evidence.",
+      "For Hermes, the correct ownership model is therefore client-site first. MZM’s own website remains the primary commercial owner for branded, city and junk-removal service intent. A Hermes Insight can analyze the reusable method and link back to the public source, while Hermes Catalog—if the owner explicitly opts in—should remain a secondary entity-discovery and attribution surface rather than cloning the client’s service/city landing-page family.",
+      "The next measurement step is straightforward: preserve one canonical owner per intent, connect site actions to source/query attribution in CRM, then compare impressions, clicks, qualified inquiries, booked jobs, completed jobs and verified revenue over comparable windows. Until MZM Search Console and authenticated owner data are available, those search and business outcomes remain ACCESS_GAP or UNKNOWN rather than zero."
+    ],
+    "takeaways": [
+      "Real local job evidence can add more value than creating another near-duplicate city page",
+      "City/service pages should connect truthful geography, specific user value, CTA and measurement",
+      "Changing review, job and availability claims must stay dated observations rather than permanent outcome claims",
+      "MZM’s website remains the primary commercial search owner; Hermes surfaces should support rather than cannibalize it",
+      "Ranking, leads and revenue stay UNKNOWN until authenticated search and CRM evidence exists"
+    ],
+    "faq": [
+      {
+        "question": "Does this prove MZM ranks well in Google?",
+        "answer": "No. Public pages and recent-job evidence show useful content and local relevance, but ranking and indexation require authenticated search evidence such as Google Search Console. Public discovery alone is not a ranking receipt."
+      },
+      {
+        "question": "Should Hermes create matching MZM city and service pages in Catalog?",
+        "answer": "No. The client website already owns the commercial city/service intent. Hermes Catalog should only become a secondary entity surface after explicit owner consent and should not clone the client’s landing-page family."
+      },
+      {
+        "question": "Can public job examples be copied into CRM as verified revenue or customer outcomes?",
+        "answer": "No. Public job examples can be stored as dated evidence candidates, but private CRM outcomes, revenue, costs and customer records require authenticated source-backed data. UNKNOWN must remain UNKNOWN."
+      },
+      {
+        "question": "What should be measured next?",
+        "answer": "Connect Search Console and analytics when authorized, then tie landing pages and queries to CRM source, lead, quote, booked job, completed job, review and source-verified revenue."
+      }
+    ],
+    "related": [
+      {
+        "title": "Hermes SEO Services",
+        "body": "Use the same canonical-owner, evidence and search-release rules for service businesses.",
+        "href": "/services/seo/"
+      },
+      {
+        "title": "Hermes Connect",
+        "body": "Connect search and marketing evidence to leads, jobs, follow-up and verified business outcomes.",
+        "href": "/services/hermes-connect/"
+      },
+      {
+        "title": "Hermes Business Catalog",
+        "body": "Catalog remains a separate consented entity-discovery surface rather than a replacement for the client website.",
+        "href": "/businesses/"
+      }
+    ],
+    "primaryAction": {
+      "label": "Review SEO Services",
+      "href": "/services/seo/"
+    },
+    "secondaryAction": {
+      "label": "Explore Hermes Connect",
+      "href": "/services/hermes-connect/"
+    },
+    "sourceLabel": "MZM Junk Removal official website — public service-area and recent-job evidence observed 8 October 2026",
+    "sourceUrl": "https://mzm-junk-removal.com/",
+    "sourcePublishedAt": "2026-10-08",
+    "datePublished": "2026-10-08",
+    "dateModified": "2026-10-08",
+    "authorName": "Hermes Editorial Team",
+    "keywords": [
+      "MZM Junk Removal",
+      "junk removal local SEO",
+      "Roseville local SEO",
+      "Greater Sacramento junk removal",
+      "service area SEO evidence",
+      "local business before and after SEO"
+    ],
+    "contentTier": "standalone",
+    "currentMarketClaim": true,
+    "evidence": [
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Junk Removal official website and Roseville recent-job evidence",
+        "use": "primary",
+        "url": "https://mzm-junk-removal.com/",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Primary public source for company identity, services, service areas, recent-job examples and current public claims. Changing counters remain observation-time only."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Sacramento recent-job page",
+        "use": "primary",
+        "url": "https://mzm-junk-removal.com/junk-removal-sacramento",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Public source for Sacramento-specific job examples and service-area content."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Rancho Cordova recent-job page",
+        "use": "context_only",
+        "url": "https://mzm-junk-removal.com/junk-removal-rancho-cordova",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Public source for city-specific job examples with ZIP, load, crew and time detail."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Citrus Heights recent-job page",
+        "use": "context_only",
+        "url": "https://mzm-junk-removal.com/junk-removal-citrus-heights",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Public source for local job examples and service-area detail."
+      }
+    ],
+    "publicationScore": {
+      "score": 88,
+      "recommendation": "standalone",
+      "reasons": [
+        "Current primary public business source with multiple city-specific real-job examples",
+        "Distinct informational intent about evidence-driven local SEO rather than junk-removal service intent",
+        "Strong reusable value for local service businesses",
+        "Clear canonical-owner and privacy boundaries",
+        "Direct connection to SEO measurement and CRM attribution"
+      ]
+    },
+    "privacyReview": {
+      "piiRemoved": true,
+      "privateFiguresRemoved": true,
+      "historicalClaimsRevalidated": true,
+      "reviewer": "Hermes Marketing public-source review"
+    }
+  },
+  {
     "id": "meta-organic-signals-paid-learning-october-2026",
     "direction": "marketing",
     "slug": "organic-social-before-paid-ads-meta-learning",
