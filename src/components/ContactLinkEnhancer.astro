@@ -8,6 +8,7 @@
 ></div>
 
 <script>
+  import { repairSourceContext, repairIntakeContext } from "../lib/repair-attribution";
   const status = document.querySelector<HTMLElement>("[data-contact-link-status]");
   let statusTimer = 0;
 
@@ -176,6 +177,7 @@
       intake_type: "website_project",
       page_group: "technology_project_brief",
       page_path: window.location.pathname,
+      ...repairIntakeContext(window.location.pathname, new URLSearchParams(window.location.search)),
     };
 
     const recordIntakeStart = (event: Event) => {
@@ -292,6 +294,7 @@
       page_group: "digital_service",
       service_group: "website_development",
       page_path: window.location.pathname,
+      ...repairSourceContext(window.location.pathname),
       destination_path: target.pathname,
     });
   };

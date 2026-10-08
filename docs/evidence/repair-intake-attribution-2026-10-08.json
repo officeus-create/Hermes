@@ -1,0 +1,1021 @@
+{
+  "base": "590bb3a35a227da322fcdd10d9025937f7873809",
+  "classification": "HERMES_SYNTHETIC",
+  "validation": "20/20 local isolated listener fixtures PASS, including symmetric opposite-mode rejection; no real form submission/provider/telemetry; not delivery or visual QA",
+  "results": [
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": "project",
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": "service",
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "seo_services",
+        "page_path": "/services/seo/",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "seo_services",
+        "page_path": "/services/seo/",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "website_development",
+        "page_path": "/services/website-development/",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "website_development",
+        "page_path": "/services/website-development/",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": "project",
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_seo",
+        "page_path": "/services/seo-for-auto-repair-shops/",
+        "source_path": "/services/seo-for-auto-repair-shops/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "auto_repair_seo",
+          "page_path": "/paths/marketing/",
+          "source_path": "/services/seo-for-auto-repair-shops/",
+          "vertical": "auto_repair",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": "service",
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "auto_repair_website",
+        "page_path": "/services/auto-repair-website-design/",
+        "source_path": "/services/auto-repair-website-design/",
+        "vertical": "auto_repair",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "source_path": "/services/auto-repair-website-design/",
+          "vertical": "auto_repair",
+          "service_group": "auto_repair_website",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "seo_services",
+        "page_path": "/services/seo/",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "seo_service_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "seo_services",
+        "page_path": "/services/seo/",
+        "destination_path": "/paths/marketing/"
+      },
+      "events": [
+        {
+          "event": "seo_intake_start",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/"
+        },
+        {
+          "event": "seo_intake_preview_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "seo_handoff_ready",
+          "intake_type": "seo_service",
+          "page_group": "marketing_contact",
+          "service_group": "seo_services",
+          "page_path": "/paths/marketing/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "body",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "website_development",
+        "page_path": "/services/website-development/",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    },
+    {
+      "synthetic": true,
+      "scope": "isolated listener fixture, no submission/provider",
+      "runtimeInputSha256": "2e04f82b1d9dbcb123c1118e9f229f548a2ff9c520416b02fb6ece80f3dfdc77",
+      "project": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "placement": "mobile action bar",
+      "rejectedOppositeMode": null,
+      "externalRequests": 0,
+      "sourceEvent": {
+        "event": "commercial_cta_click",
+        "cta_type": "website_project_intake",
+        "audience_type": "business",
+        "page_group": "digital_service",
+        "service_group": "website_development",
+        "page_path": "/services/website-development/",
+        "destination_path": "/paths/technology/"
+      },
+      "events": [
+        {
+          "event": "website_project_intake_start",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/"
+        },
+        {
+          "event": "website_project_preview_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "preview_status": "prepared"
+        },
+        {
+          "event": "website_handoff_ready",
+          "intake_type": "website_project",
+          "page_group": "technology_project_brief",
+          "page_path": "/paths/technology/",
+          "handoff_method": "email",
+          "preview_status": "prepared"
+        }
+      ]
+    }
+  ]
+}
