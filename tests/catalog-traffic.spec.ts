@@ -99,3 +99,57 @@ for (const path of ['/businesses/arkansas/little-rock/smart-bubble-mobile-auto-b
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
+
+test('Public home-service counters enforce publication gates and never write on GET', async () => {
+  const path = '/businesses/connect/company/public-company/';
+  const queries: {sql:string,args:unknown[]}[] = [];
+  let published = true;
+  const DB = { prepare(sql:string) { return { bind(...args:unknown[]) {
+    queries.push({sql,args});
+    return {
+      async first() {
+        expect(sql).toContain("JOIN hermes_home_service_profiles");
+        expect(sql).toContain("c.company_type='home_service'");
+        expect(sql).toContain("c.catalog_opt_in=1");
+        expect(sql).toContain("'self_submitted','verified_public'");
+        return published ? {id:'company-123',slug:'public-company'} : null;
+      },
+      async all() { return {results:sql.includes('country_views') ? [] : [{day:new Date().toISOString().slice(0,10),event_count:4}]}; },
+      async run() { throw new Error('Public GET must not write'); }
+    };
+  } }; } };
+  const get = () => onRequestGet({request:new Request('https://hermeslogisticsus.com/api/catalog-business-event?path='+encodeURIComponent(path)),env:{DB}});
+  const response = await get();
+  expect(response.status).toBe(200);
+  const payload = await response.json();
+  expect(payload.profiles[0].views28d).toBe(4);
+  expect(queries.filter(q=>q.sql.includes('catalog_business_')).every(q=>q.args[0]==='company-crm:company-123')).toBe(true);
+  expect(JSON.stringify(payload)).not.toContain('company-123');
+  published = false;
+  queries.length = 0;
+  const withdrawn = await (await get()).json();
+  expect(withdrawn.profiles[0].state).toBe('unavailable');
+  expect(withdrawn.profiles[0].views28d).toBeNull();
+  expect(queries).toHaveLength(1);
+});
+
+test('Home-service collection rejects missing consent and unpublished companies', async () => {
+  let published = false;
+  const writes: string[] = [];
+  let reads = 0;
+  const DB = { prepare(sql:string) { return {
+    async run() {},
+    bind() { return {
+      async first() { reads++; return published ? {id:'company-123'} : null; },
+      async run() { writes.push(sql); }
+    }; }
+  }; } };
+  const post = (consent:boolean) => onRequestPost({request:new Request('https://hermeslogisticsus.com/api/catalog-business-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({catalog_business_id:'company-crm:company-123',event_type:'profile_view',analytics_consent:consent})}),env:{DB}});
+  expect((await post(false)).status).toBe(400);
+  expect(reads).toBe(0);
+  expect((await post(true)).status).toBe(400);
+  expect(writes).toHaveLength(0);
+  published = true;
+  expect((await post(true)).status).toBe(202);
+  expect(writes.filter(sql=>sql.includes('INSERT INTO catalog_business_events_daily'))).toHaveLength(1);
+});
