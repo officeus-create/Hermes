@@ -29,8 +29,8 @@ test("production Catalog reconciles public CRM profiles with the single v2 runti
 
   const companies = Array.isArray(payload?.companies)
     ? payload.companies.filter(
-        (company: { companyType?: unknown; profileUrl?: unknown }) =>
-          company?.companyType === "repair_shop" && typeof company?.profileUrl === "string" && company.profileUrl,
+        (company: { companyType?: unknown; profileUrl?: unknown; countryCode?: unknown }) =>
+          company?.companyType === "repair_shop" && String(company?.countryCode || "").trim().toUpperCase() === "US" && typeof company?.profileUrl === "string" && company.profileUrl,
       )
     : [];
 
