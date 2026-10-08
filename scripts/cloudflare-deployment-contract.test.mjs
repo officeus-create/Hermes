@@ -341,14 +341,11 @@ assert.match(
 
 const paidIntentSmokeWorkflow = read(".github/workflows/repair-paid-intent-production-smoke.yml");
 const paidIntentScopeSource = read("scripts/paid-intent-smoke-scope.mjs");
-assert.match(paidIntentSmokeWorkflow, /schedule:\s*\n\s*- cron:/, "Paid-intent E2E needs a bounded recurring proof even without receiver code changes.");
-assert.match(paidIntentSmokeWorkflow, /Decide whether full receiver smoke is required/, "Every deploy should classify whether a real synthetic email is justified.");
-assert.match(paidIntentSmokeWorkflow, /steps\.scope\.outputs\.full == 'true'/, "Real receiver sends must be gated to relevant changes or the scheduled/manual proof.");
-assert.match(paidIntentScopeSource, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
-assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "A lightweight production readback must remain on every successful deployment.");
-assert.match(paidIntentSmokeWorkflow, /Check out exact deployed revision[\s\S]*ref: \$\{\{ env\.TESTED_SHA \}\}/, "Paid-intent scope classification must use the exact deployed revision.");
-assert.match(paidIntentSmokeWorkflow, /jq -c[\s\S]*node scripts\/paid-intent-smoke-scope\.mjs/, "Commit metadata must be reduced to filenames and streamed over stdin.");
-assert.doesNotMatch(paidIntentSmokeWorkflow, /COMMIT_JSON|commit_json/, "Full commit JSON must never be copied into process environment or argv.");
+await import("./repair-paid-intent-read-only.test.mjs");
+assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "Public page availability remains useful independently of receiver evidence.");
+assert.match(paidIntentSmokeWorkflow, /Check out exact deployed revision[\s\S]*ref: \$\{\{ env\.TESTED_SHA \}\}/, "Read-only smoke retains exact deployed revision provenance.");
+// Historical scope classifier is retained for compatibility, but cannot authorize writes.
+assert.match(paidIntentScopeSource, /fail_safe_large_or_missing_commit_file_list/);
 
 const paidIntentScopeScript = path.join(root, "scripts", "paid-intent-smoke-scope.mjs");
 const classifyPaidIntentScope = (input) => {
