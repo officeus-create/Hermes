@@ -1,4 +1,5 @@
 <script>
+  import { requireSubmittedReceipt, submittedReceiptCopy } from "../lib/logistics-submission-receipt";
   import {
     buildQualifiedCarrierLead,
     buildQualifiedCarrierMailto,
@@ -110,6 +111,9 @@
       event.preventDefault();
       alert.hidden = true;
       deliveryStatus.textContent = "";
+      deliveryStatus.dataset.submissionState = "unconfirmed";
+      deliveryStatus.dataset.deliveryState = "unconfirmed";
+      deliveryStatus.dataset.humanReceiptState = "unconfirmed";
 
       if (!form.checkValidity()) {
         form.reportValidity();
@@ -158,7 +162,7 @@
           : "The request is prepared for review. Open the email handoff; preview mode does not send or store it automatically."
         : "Correct the missing or invalid operating information before choosing a handoff.";
       boundary.textContent = live
-        ? "A success message appears only after the approved receiver confirms delivery. No dispatcher, load, rate, lane, or revenue is guaranteed."
+        ? "Submitted means the request service accepted the handoff. Delivery and human receipt require separate evidence. No dispatcher, load, rate, lane, or revenue is guaranteed."
         : "Preview mode creates no account, CRM record, dispatcher assignment, load booking, or automatic message.";
 
       result.dataset.decision = review.decision;
@@ -187,7 +191,7 @@
     });
 
     sendButton.addEventListener("click", async (event) => {
-      if (!event.isTrusted || !activeLead) return;
+      if (!event.isTrusted || !activeLead || sendButton.disabled || sendButton.hidden) return;
 
       if (!handoffRecorded) {
         handoffRecorded = true;
@@ -228,17 +232,23 @@
           }),
           signal: controller.signal,
         });
-        if (!response.ok) throw new Error("delivery_failed");
+        const receipt = await requireSubmittedReceipt(response, requestId);
 
-        deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review the authority, insurance, equipment, and dispatch scope.";
+        deliveryStatus.dataset.submissionState = receipt.submission;
+        deliveryStatus.dataset.deliveryState = receipt.delivery;
+        deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
+        deliveryStatus.textContent = submittedReceiptCopy;
         sendButton.hidden = true;
         pushEvent({
-          event: "carrier_delivery_confirmed",
+          event: "carrier_submitted",
           ...baseEvent,
           preview_status: result.dataset.decision || "unknown",
         });
       } catch {
-        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email to contact Logistics Sales.";
+        deliveryStatus.dataset.submissionState = "unconfirmed";
+        deliveryStatus.dataset.deliveryState = "unconfirmed";
+        deliveryStatus.dataset.humanReceiptState = "unconfirmed";
+        deliveryStatus.textContent = "Submission was not confirmed. The request may have been accepted; retry or use the prepared email. Delivery was not confirmed and human receipt remains unknown.";
       } finally {
         window.clearTimeout(timeout);
         sendButton.disabled = false;

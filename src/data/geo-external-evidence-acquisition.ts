@@ -82,11 +82,11 @@ export const geoExternalEvidenceRequests: GeoExternalEvidenceRequest[] = [
     type: "ga4_exact_once_receipt",
     canonicalOwner: "/logistics/car-hauling-dispatch/",
     source: "ga4",
-    requiredScope: { event: "carrier_delivery_confirmed", property: "existing_production_property" },
+    requiredScope: { event: "carrier_submitted", property: "existing_production_property" },
     requiredFields: ["event_name", "observed_at", "observed_count", "page_path", "page_group", "service_group", "evidence_reference"],
     forbiddenFields: commonForbidden,
     acceptedEvidenceClass: "platform_verified",
-    note: "Exact-once requires observed_count=1 on the existing production property. Do not create a replacement property for verification.",
+    note: "Exact-once requires observed_count=1 on the existing production property. Legacy queue ID retained: verify carrier_submitted acceptance; this is not delivery or human receipt. Historical carrier_delivery_confirmed counts require reconciliation. Do not create a replacement property for verification.",
   },
   {
     id: "private-owner-funnel-aggregate",
