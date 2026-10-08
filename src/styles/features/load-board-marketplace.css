@@ -20,6 +20,10 @@
   .hc-product-context.is-load-board .hc-product-context__summary {
     grid-column: 1 / -1;
     grid-row: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
   }
   .hc-product-context.is-load-board .hc-family-nav {
     grid-column: 1;
