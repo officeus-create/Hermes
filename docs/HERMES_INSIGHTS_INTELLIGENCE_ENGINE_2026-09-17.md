@@ -184,3 +184,28 @@ Use secondary metadata for product/topic/geography rather than creating many com
 ## Operational rule
 
 Volume is never the goal. The system may collect hundreds of signals and publish zero items if none add verified value. Historical first-party evidence is valuable because it can create original context, but private content is an input to analysis, never raw public copy.
+
+## Reusable learning receipt — publication approval boundary
+
+```text
+PROBLEM
+The generated-content workflow could create a publication-ready PR and queue auto-merge after machine checks without a human approval receipt.
+
+ROOT_CAUSE
+Content validation and publication authorization were treated as the same gate. Passing build, scope and SEO checks proves the artifact is mechanically valid; it does not prove that a human approved publishing the exact head.
+
+FAILED_APPROACH
+Relying on protected auto-merge when available, with a fallback that left the PR open, did not establish a mandatory or inspectable human decision in the workflow contract.
+
+WORKING_APPROACH
+Automation opens draft PRs only and never invokes `gh pr merge`. An authorized human reviews the exact PR head, marks the draft ready and merges through GitHub; those human actions are the retained approval receipt.
+
+EVIDENCE
+`scripts/insights-human-approval-contract.test.mjs` requires draft creation, exact-head receipt language and absence of every automated `gh pr merge`/`--auto` path.
+
+LESSON
+Machine validation establishes readiness for review, not permission to publish.
+
+REUSE_RULE
+For every content plugin or generated publication lane, separate `validated` from `approved_for_publication`; keep the artifact draft-only until an authorized human acts on the exact reviewed revision, and regression-test that automation cannot merge it.
+```

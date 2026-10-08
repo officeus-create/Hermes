@@ -62,13 +62,13 @@ jobs:
         if: steps.scope.outputs.has_changes == 'true'
         run: |
           node scripts/insights-pipeline.test.mjs
+          node scripts/insights-human-approval-contract.test.mjs
           node scripts/release-manifest.test.mjs
           node scripts/production-seo-hygiene-contract.test.mjs
           node scripts/internal-link-audit.test.mjs
 
-      - name: Create or find PR
+      - name: Create or find draft PR
         if: steps.scope.outputs.has_changes == 'true'
-        id: pr
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -76,18 +76,13 @@ jobs:
           set -euo pipefail
           pr="$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')"
           if [ -z "$pr" ]; then
-            gh pr create --base main --head "$GITHUB_REF_NAME" \
+            gh pr create --draft --base main --head "$GITHUB_REF_NAME" \
               --title "content(insights): publish reviewed Telegram news" \
-              --body "Generated Hermes Insights update. Scope is restricted to the Insights registry, sitemap, and release delta. This branch passed the full build and Insights release gates before PR creation."
+              --body "Generated Hermes Insights update. Scope is restricted to the Insights registry, sitemap, and release delta. This branch passed the full build and Insights release gates before PR creation. Publication remains blocked: an authorized human must review the exact PR head, mark the draft ready, and merge it through GitHub so the human action is retained as the approval receipt."
             pr="$(gh pr list --base main --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number')"
           fi
-          echo "number=$pr" >> "$GITHUB_OUTPUT"
+          echo "Draft PR #$pr remains blocked until an authorized human reviews the exact head and explicitly releases it."
 
-      - name: Queue protected auto-merge when available
+      - name: Confirm publication remains human-gated
         if: steps.scope.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ steps.pr.outputs.number }}
-        run: |
-          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch || \
-            echo "Auto-merge unavailable; validated PR remains open for the normal review/merge gate."
+        run: echo "Validation is complete; publication is still blocked on an authorized human action for the exact PR head."
