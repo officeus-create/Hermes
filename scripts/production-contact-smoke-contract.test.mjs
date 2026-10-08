@@ -32,14 +32,19 @@ assert.ok(
   "Production smoke footer marker must remain present in the canonical footer component",
 );
 
-for (const sourcePath of [
-  "src/components/HomeRecoveryFinish.astro",
-  "src/components/SiteFooter.astro",
-]) {
-  assert.ok(
-    workflow.includes(`- ${sourcePath}`),
-    `Production smoke must run when ${sourcePath} changes`,
-  );
-}
+assert.match(
+  workflow,
+  /^  workflow_dispatch:\s*$/m,
+  "Production contact smoke must remain manually runnable",
+);
+assert.doesNotMatch(
+  workflow,
+  /^  push:\s*$/m,
+  "Production contact smoke must never auto-submit a lead from a push or workflow-file merge",
+);
+assert.ok(
+  workflow.includes("GITHUB_STEP_SUMMARY"),
+  "Manual production contact smoke must retain sanitized Actions observability",
+);
 
 console.log("Production contact smoke contract passed.");
