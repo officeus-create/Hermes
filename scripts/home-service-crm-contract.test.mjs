@@ -255,6 +255,8 @@ assert.match(crmApi, /module === "public_assets"/);
 assert.match(crmApi, /getHomeServicePublicAssets/);
 assert.match(workspace, /data-public-assets/);
 assert.match(workspace, /module=public_assets/);
+assert.match(workspace, /Hermes Insights/);
+assert.match(workspace, /Hermes Catalog/);
 assert.match(publicProfile, /getHomeServicePublicAssets/);
 assert.match(publicProfile, /Published business insights/);
 assert.match(publicAssets, /mzm-junk-removal-real-job-evidence-local-seo/);
