@@ -55,8 +55,13 @@ test("Connect query language shell agrees with hub content and preserves private
 test("Connect header switches languages instead of rewriting every choice to the current locale", async ({ page }) => {
   await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
   for (const [locale, hero] of [["uk", "Керуйте бізнесом з AI."], ["fr", "Pilotez votre entreprise avec l’IA."], ["en", "Run your business with AI."]]) {
-    const menu = page.locator("[data-language-menu]:visible").first();
-    await menu.locator("summary").click();
+    const mobileToggle = page.locator("[data-menu-button]");
+    const isMobileMenu = await mobileToggle.isVisible();
+    if (isMobileMenu) await mobileToggle.click();
+    const menu = isMobileMenu
+      ? page.locator("[data-mobile-menu] .mobile-language-switcher")
+      : page.locator("[data-language-menu]:visible").first();
+    if (!isMobileMenu) await menu.locator("summary").click();
     const choice = menu.locator('a[lang="' + locale + '"]');
     await expect(choice).toHaveAttribute("href", locale === "en" ? "/services/hermes-connect/" : "/services/hermes-connect/?lang=" + locale);
     await choice.click();
