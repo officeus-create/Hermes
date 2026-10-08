@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Three sequential Load Board mobile lab traces
+    name: Three sequential Load Board mobile lab traces on 55eaf276
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
