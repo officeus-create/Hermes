@@ -93,3 +93,5 @@ assert.match(contentPrWorkflow, /has_changes=true/);
 assert.equal((contentPrWorkflow.match(/if: steps\.scope\.outputs\.has_changes == 'true'/g) || []).length, 6);
 assert.match(contentPrWorkflow, /Blocked automation change outside generated Insights scope/);
 console.log(`Insights publication contract passed: ${registry.length} reviewed record(s), ${routeKeys.size} unique route(s).`);
+
+await import("./i-am-editorial-only-contract.test.mjs");
