@@ -5,8 +5,11 @@ import SiteFooter from "./SiteFooter.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 import { buildCatalogRequestHref } from "../lib/catalog-request";
 import CatalogDigitalAudit from "./CatalogDigitalAudit.astro";
+import { localizedCatalogBusiness, localizedCatalogChannel } from "../lib/catalog-business-locale";
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
+const en = localizedCatalogBusiness(business,"en");
+const uk = localizedCatalogBusiness(business,"uk");
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
 const auditRequestHref = buildCatalogRequestHref("marketing-package", { businessId:business.id, businessName:business.name, profileUrl, city:business.locality, country:business.countryCode, sourceRef:business.sourceRef }, "Digital marketing audit");
 const mapChannel = business.channels.find((channel) => channel.direction === "maps");
@@ -21,6 +24,7 @@ const verticalLabel = {
   business_academy: "Business academy / club"
 }[business.vertical];
 const isVerifiedRelationship = business.status === "claimed" || business.status === "client";
+const leadUk = business.status === "client" ? "Це профіль підтвердженого клієнтського проєкту Hermes. Актуальні комерційні умови потребують окремої перевірки." : business.status === "claimed" ? "Власник підтвердив профіль. Актуальні дані потребують перевірки." : "Це публічна концепція для пошуку бізнесу, а не твердження про клієнтські відносини з Hermes.";
 const relationshipLead = business.status === "client"
   ? "This source-bounded Hermes Catalog profile represents a confirmed client workstream; changing commercial terms and owner-controlled facts still require current verification."
   : business.status === "claimed"
@@ -93,24 +97,24 @@ const schema = [
   ]}
 ];
 ---
-<BaseLayout title={`${business.name} — ${verticalLabel} in ${business.locality} | Hermes Catalog`} description={`Public Hermes Catalog discovery profile for ${business.name} in ${business.locality}, ${business.region}. Facts are source-bounded; owner verification is required for unconfirmed details.`} schema={schema}>
+<BaseLayout title={`${en.name} — ${verticalLabel} in ${en.locality} | Hermes Catalog`} description={`Public Hermes Catalog discovery profile for ${en.name} in ${en.locality}, ${en.region}. Facts are source-bounded; owner verification is required for unconfirmed details.`} schema={schema}>
 <SiteHeader theme="light" activePath="/businesses/" />
-<main class="page"><div class="shell">
+<main class="page" data-catalog-uk-en data-title-uk={`${uk.name} | Hermes Catalog`}><div class="shell">
   <a class="back" href="/businesses/#international-businesses">← International businesses</a>
   <header>
     <p class="eyebrow">Hermes Catalog · International · {verticalLabel}</p>
-    <h1>{business.name}</h1>
-    <p class="lead">{business.primaryIntent} · {business.locality}, {business.region}. {relationshipLead}</p>
+    <h1 data-uk={uk.name} data-en={en.name}>{en.name}</h1>
+    <p class="lead" data-uk={`${uk.primaryIntent} · ${uk.locality}, ${uk.region}. ${leadUk}`} data-en={`${en.primaryIntent} · ${en.locality}, ${en.region}. ${relationshipLead}`}>{en.primaryIntent} · {en.locality}, {en.region}. {relationshipLead}</p>
     <div class="badges"><span>{business.status}</span><span>{business.catalogPriority} catalog layer</span><span>{business.countryCode}</span></div>
   </header>
   <section class="grid">
     <article><h2>Business facts</h2><dl>
-      <div><dt>Address</dt><dd>{[business.address,business.locality,business.region,business.postalCode].filter(Boolean).join(", ")}</dd></div>
+      <div><dt data-uk="Адреса" data-en="Address">Address</dt><dd data-uk={[uk.address,uk.locality,uk.region,business.postalCode].filter(Boolean).join(", ")} data-en={[en.address,en.locality,en.region,business.postalCode].filter(Boolean).join(", ")}>{[en.address,en.locality,en.region,business.postalCode].filter(Boolean).join(", ")}</dd></div>
       <div><dt>Phone</dt><dd><a href={`tel:${business.phone.replace(/\s/g,"")}`}>{business.phone}</a></dd></div>
-      <div><dt>Hours</dt><dd>{business.hours.join(" · ")}</dd></div>
+      <div><dt data-uk="Години роботи" data-en="Hours">Hours</dt><dd data-uk={uk.hours.join(" · ")} data-en={en.hours.join(" · ")}>{en.hours.join(" · ")}</dd></div>
       {business.website && <div><dt>Website</dt><dd><a href={business.website} rel="noreferrer" target="_blank">{business.website}</a></dd></div>}
     </dl></article>
-    <article><h2>Current source-described scope</h2><ul>{business.services.map((service)=><li>{service}</li>)}</ul></article>
+    <article><h2 data-uk="Послуги за відкритими джерелами" data-en="Current source-described scope">Current source-described scope</h2><ul>{business.services.map((service,index)=><li data-uk={uk.services[index] ?? service} data-en={en.services[index] ?? service}>{en.services[index] ?? service}</li>)}</ul></article>
   </section>
   {business.featuredOffer && <section class="offer">
     <p class="eyebrow">Featured program / offer</p>
@@ -119,7 +123,7 @@ const schema = [
     <div class="offer-meta">{business.featuredOffer.duration && <span>{business.featuredOffer.duration}</span>}<a href={business.featuredOffer.url} rel="noreferrer" target="_blank">Official program page ↗</a></div>
   </section>}
   {business.trust && <section class="trust"><strong>{business.trust.rating.toFixed(1)}</strong><span>{business.trust.source} · {business.trust.reviewCount} reviews · observed {business.trust.observedAt}</span></section>}
-  <section class="channels"><h2>Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank">{channel.label} ↗</a>)}</div></section>
+  <section class="channels"><h2 data-uk="Публічні канали" data-en="Public channels">Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank" data-uk={`${channel.label} ↗`} data-en={`${localizedCatalogChannel(channel.label,"en")} ↗`}>{localizedCatalogChannel(channel.label,"en")} ↗</a>)}</div></section>
   <CatalogDigitalAudit business={business} requestHref={auditRequestHref} defaultLocale="en" />
   <section class="evidence">
     <p class="eyebrow">Evidence / relationship state</p>
@@ -131,7 +135,7 @@ const schema = [
     </dl>
     <p>{business.status === "client" ? "This profile records a confirmed Hermes client workstream while keeping changing business facts, pricing, dates and public claims evidence-gated." : "This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification."}</p>
   </section>
-  <section class="boundary"><h2>Needs owner confirmation</h2><p>Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.</p><ul>{business.factsRequiringOwnerConfirmation.map((fact)=><li>{fact}</li>)}</ul></section>
+  <section class="boundary"><h2 data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">Needs owner confirmation</h2><p data-uk="Hermes не вигадує робочі факти. Ці дані залишаються непідтвердженими, доки власник їх не перевірить." data-en="Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.">Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.</p><ul>{business.factsRequiringOwnerConfirmation.map((fact,index)=><li data-uk={uk.factsRequiringOwnerConfirmation[index] ?? fact} data-en={en.factsRequiringOwnerConfirmation[index] ?? fact}>{en.factsRequiringOwnerConfirmation[index] ?? fact}</li>)}</ul></section>
   <section class="faq"><p class="eyebrow">FAQ</p><h2>How this profile works</h2>{faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>
   <section class="growth"><div><p class="eyebrow">Hermes growth path</p><h2>From free discovery profile to an operating business system</h2><p>Claim the profile, verify facts, then activate only the modules this business needs: CRM, bookings or requests, customer history, website, local SEO/GEO, reviews and automation.</p></div><div class="actions">
     <a href={business.crmPreviewUrl ?? `/services/hermes-connect/demos/${business.slug}/`}>Open CRM preview</a>
@@ -139,6 +143,7 @@ const schema = [
     <a href="/services/local-seo/">SEO / GEO</a><a href="/services/website-development/">Website</a>
   </div></section>
 </div></main><SiteFooter/>
+<script is:inline src="/catalog-uk-en.js"></script>
 <script is:inline src="/catalog-business-telemetry.js" data-catalog-business-id={business.id}></script>
 </BaseLayout>
 <style>
