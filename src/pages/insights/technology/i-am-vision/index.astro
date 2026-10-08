@@ -1,0 +1,95 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+
+const competitorSources = [
+  { name: "Global Blue · Tax Free", url: "https://www.globalblue.com/en/about-us", description: "A mature merchant and traveller Tax Free ecosystem." },
+  { name: "Planet · Retail", url: "https://www.weareplanet.com/it/retail", description: "Merchant payments, order management and Tax Free integrated for retail." },
+  { name: "Estonia e-Residency", url: "https://www.e-resident.gov.ee/start-a-company/", description: "Official digital identity and remote company formation under Estonian rules." },
+  { name: "Stripe Atlas", url: "https://stripe.com/atlas", description: "A structured private provider for Delaware company incorporation." },
+] as const;
+const differentiation = [
+  { label: "Intention first", copy: "Start from a user's outcome, not a catalog of all possible features." },
+  { label: "Country-aware", copy: "Use official requirements with source/date/version and an honest unavailable state." },
+  { label: "Permission by design", copy: "Create a personal workspace only after consent and keep regulated actions with authorized providers." },
+  { label: "Proof before breadth", copy: "Measure real successful tasks before adding new jurisdictions or promising integrations." },
+] as const;
+---
+<BaseLayout
+  title="I am: designing a personal interface to cross-border life | Hermes Product Note"
+  description="Founder concept note: I am, a planned voice-first personal workflow interface for travellers and entrepreneurs, beginning with Italy Tax Free guidance. A future vision, not an operating regulated service."
+  robots="noindex,nofollow"
+  htmlLang="en"
+  image="/images/i-am-concept-globe.svg"
+>
+  <SiteHeader theme="light" activePath="/insights/" />
+  <main class="iam-note" id="main-content">
+    <div class="shell">
+      <nav class="crumb" aria-label="Breadcrumb"><a href="/insights/">Hermes Insights</a> / <a href="/businesses/concepts/i-am/">I am concept</a> / Product note</nav>
+      <header class="hero">
+        <p class="eyebrow">Hermes Technology · Founder vision · Prepared 8 October 2026</p>
+        <h1>I am: a personal interface to the world, built around what people need to do.</h1>
+        <p class="dek">Our latest incubated concept explores a simpler future for travel, Tax Free guidance, cross-border registrations and administrative tasks: describe your goal, then see a useful workflow rather than another app full of unrelated menus.</p>
+        <div class="status"><strong>Concept and demonstration only.</strong> I am does not currently have an incorporated operator, licences, government-system access, tourist payment services, verified partners or customer transactions.</div>
+        <a class="cta" href="/businesses/concepts/i-am/">Explore the interactive concept →</a>
+      </header>
+      <article class="story">
+        <div class="photo"><img src="/images/i-am-concept-globe.svg" alt="Illustrated early-stage I am interface concept, not a released product." loading="lazy" width="1100" height="770" /></div>
+        <section>
+          <h2>The problem is not a shortage of apps.</h2>
+          <p>People already have airline apps, e-government portals, immigration guidance, business formation providers and separate Tax Free tools. The difficult part is knowing which service is relevant, what a specific jurisdiction actually requires, which steps depend on one another, and whether the user has completed the real-world task.</p>
+          <p>I am proposes a different interface: a person explains the desired outcome in plain language, and the system suggests a country-aware route and asks whether to turn it into a persistent personal workspace. The aspiration is a useful, voice-first product, not a general chatbot promising legal answers or pretending to act for the state.</p>
+        </section>
+        <section>
+          <h2>Why begin with Italy and Tax Free shopping?</h2>
+          <p>Italy has an existing digital Tax Free administration process through the official OTELLO system. That makes an informational precheck and merchant research a bounded place to start. Italy was chosen as a first exploration market because Hermes already has an Italian-language Technology direction. This is not a finding that Italy has the lowest taxes or easiest financial regulation.</p>
+          <p>The initial prototype is restricted to general eligibility guidance. It cannot issue receipts, calculate guaranteed refunds, validate customs exports or distribute any money. These require the correct registered seller/operator, permissions, documentation and authorised financial rails.</p>
+          <p><a href="https://www.adm.gov.it/portale/en/progetti-aida-otello" target="_blank" rel="noopener noreferrer">Official Italian Customs (ADM) OTELLO overview ↗</a></p>
+        </section>
+        <section>
+          <h2>Where I am differs from current specialists</h2>
+          <p>We do not claim to have overtaken the established players. Global Blue and Planet have mature Tax Free and retail solutions; Estonia e-Residency offers a real state digital identity route; Stripe Atlas handles a specific incorporation process. Their strengths show why a future cross-border assistant should connect users to trusted existing systems rather than pretend to replace public authorities or licensed operators.</p>
+          <div class="comparison">{competitorSources.map(item=>(
+            <div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.name} ↗</a></h3><p>{item.description}</p></div>
+          ))}</div>
+          <div class="principles">{differentiation.map(item=>(
+            <div><strong>{item.label}</strong><p>{item.copy}</p></div>
+          ))}</div>
+        </section>
+        <section>
+          <h2>The 14-month planning horizon</h2>
+          <p>The proposal begins with an original visual identity, legal/brand verification, user research and a source-grounded Italian Tax Free informational journey. Next come a secure personal workspace, vendor-neutral AI orchestration, partner adapters and a second verified service journey. The final phase must focus on observed adoption, task completion, security and viable economics rather than a large page count or a menu of speculative government features.</p>
+          <p>Future company formation and digital-asset related journeys are ideas only. They will be evaluated under applicable jurisdictional laws and partner permissions. In the EU, crypto-asset offering and service activities can fall under MiCA; the prototype does not create, distribute or advise on tokens.</p>
+          <p><a href="https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica" target="_blank" rel="noopener noreferrer">European Securities and Markets Authority · MiCA ↗</a></p>
+        </section>
+        <section>
+          <h2>What will make the next version credible?</h2>
+          <p>Real, consented user research; clear comparison against an equivalent competitor task; measured time to a useful plan; successful, officially permitted handoffs; accessibility and language checks; privacy-preserving analytics; and a verified legal entity and ownership chain before any commercial launch. An attractive screen, a project plan or a successful build is not a customer, authorization or revenue event.</p>
+          <p>A relationship with existing Hermes infrastructure is a proposed product-development foundation, not proof that I am is an established U.S. subsidiary or has active telephone, banking, government or payment accounts of its own.</p>
+        </section>
+        <section class="closing">
+          <h2>Here. There. Everywhere. Eventually—one verified task at a time.</h2>
+          <p>We welcome research conversations about cross-border user experience and permitted technology collaboration. This product note does not request an investment, offer securities, or advertise financial returns.</p>
+          <a class="cta" href="/businesses/concepts/i-am/">See the I am concept page →</a>
+        </section>
+      </article>
+      <p class="editorial">Editorial status: original founder concept note. This page is intentionally not submitted for search indexing, feeds or official service listings while the product remains a concept. It does not advertise a live service or investment offer.</p>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<style>
+.iam-note{background:#fbfcfe;color:#172d40}.shell{max-width:1110px;margin:auto;padding:0 24px}.crumb{padding:26px 0;color:#6b8596;font-size:12px}.crumb a{color:#2a7182;text-decoration:none}
+.hero{padding:52px 0 62px}.eyebrow{color:#138e95;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.13em}
+h1{font-size:clamp(38px,5.4vw,75px);line-height:1.09;letter-spacing:-.055em;max-width:1020px;margin:18px 0 30px}
+.dek{font-size:clamp(19px,2vw,25px);line-height:1.56;color:#516b7d;max-width:930px}.status{margin:24px 0;background:#eef7f8;color:#385e6e;border:1px solid #cbe2e7;border-radius:14px;padding:18px;line-height:1.6}
+.cta{display:inline-block;background:#114d5b;color:white;text-decoration:none;padding:16px 20px;border-radius:12px;font-weight:800;margin-top:12px}.cta:focus-visible,a:focus-visible{outline:3px solid #3ba9c5;outline-offset:3px}
+.story{max-width:990px}.photo{border-radius:24px;overflow:hidden;background:#e8f4f9}.photo img{display:block;width:100%;height:auto}
+.story section{padding:38px 0;border-bottom:1px solid #e1eaf0}.story h2{font-size:clamp(29px,3.3vw,43px);letter-spacing:-.035em;margin:0 0 22px;line-height:1.17}
+.story p{font-size:17px;line-height:1.8;color:#526c7e}.story a:not(.cta){color:#167c8b}
+.comparison,.principles{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin:22px 0}
+.comparison>div,.principles>div{border:1px solid #dae5ec;border-radius:16px;background:#fff;padding:20px}.comparison h3{margin:0 0 10px;font-size:17px}.comparison p,.principles p{font-size:14px;line-height:1.6;margin:0}.principles strong{font-size:16px}
+.closing{background:#eaf4f5;border-radius:24px;padding:35px!important;margin:30px 0}.editorial{color:#7c8f9e;font-size:13px;line-height:1.6;padding-bottom:75px}
+@media(max-width:620px){.shell{padding:0 16px}.hero{padding:28px 0 36px}.comparison,.principles{grid-template-columns:1fr}.story section{padding:30px 0}.closing{padding:23px!important}}
+</style>
