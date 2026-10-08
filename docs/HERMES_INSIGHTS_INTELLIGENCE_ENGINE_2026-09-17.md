@@ -198,14 +198,14 @@ FAILED_APPROACH
 Relying on protected auto-merge when available, with a fallback that left the PR open, did not establish a mandatory or inspectable human decision in the workflow contract.
 
 WORKING_APPROACH
-Automation opens draft PRs only and never invokes `gh pr merge`. An authorized human reviews the exact PR head, marks the draft ready and merges through GitHub; those human actions are the retained approval receipt.
+Automation opens draft PRs only. On every generated head update it disables any inherited queued auto-merge, returns an existing ready PR to draft, verifies the exact head and blocked state, and never invokes a merge path other than `--disable-auto`. An authorized human must then review the new exact PR head, mark the draft ready and merge through GitHub; those later human actions are the retained approval receipt.
 
 EVIDENCE
-`scripts/insights-human-approval-contract.test.mjs` requires draft creation, exact-head receipt language and absence of every automated `gh pr merge`/`--auto` path.
+`scripts/insights-human-approval-contract.test.mjs` simulates a ready PR with queued auto-merge surviving a head replacement, requires both reset actions, rejects a head race, verifies the final blocked state and binds the next receipt requirement to the replacement SHA.
 
 LESSON
 Machine validation establishes readiness for review, not permission to publish.
 
 REUSE_RULE
-For every content plugin or generated publication lane, separate `validated` from `approved_for_publication`; keep the artifact draft-only until an authorized human acts on the exact reviewed revision, and regression-test that automation cannot merge it.
+For every content plugin or generated publication lane, separate `validated` from `approved_for_publication`; clear inherited approval and auto-merge state after every revision, keep the artifact draft-only until an authorized human acts on that exact reviewed revision, and regression-test the existing-ready-plus-new-head path.
 ```
