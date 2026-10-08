@@ -50,3 +50,18 @@ test("Connect query language shell agrees with hub content and preserves private
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://hermeslogisticsus.com/services/hermes-connect/access/');
 });
+
+
+test("Connect header switches languages instead of rewriting every choice to the current locale", async ({ page }) => {
+  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+  for (const [locale, hero] of [["uk", "Керуйте бізнесом з AI."], ["fr", "Pilotez votre entreprise avec l’IA."], ["en", "Run your business with AI."]]) {
+    const menu = page.locator("[data-language-menu]:visible").first();
+    await menu.locator("summary").click();
+    const choice = menu.locator('a[lang="' + locale + '"]');
+    await expect(choice).toHaveAttribute("href", locale === "en" ? "/services/hermes-connect/" : "/services/hermes-connect/?lang=" + locale);
+    await choice.click();
+    await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page.locator(".hc-copy h1")).toHaveText(hero);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/hermes-connect/");
+  }
+});
