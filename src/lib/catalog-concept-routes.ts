@@ -1,4 +1,5 @@
 import { catalogBusinessConcepts, type CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { localizedCatalogBusiness } from "./catalog-business-locale";
 
 export type CatalogConceptCountryRoute = {
   slug: string;
@@ -59,8 +60,8 @@ export const catalogConceptLocalityRoutes: readonly CatalogConceptLocalityRoute[
       countrySlug,
       countryName: countryName(first),
       slug: localitySlug,
-      name: first.locality,
-      region: first.region,
+      name: localizedCatalogBusiness(first,"en").locality,
+      region: localizedCatalogBusiness(first,"en").region,
       businesses,
     };
   }),
