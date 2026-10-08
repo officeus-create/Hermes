@@ -48,27 +48,27 @@
     ],
     "related": [
       {
-        "title": "I am · Italy Catalog concept",
-        "body": "Review sourced merchant discovery and clearly labeled concept status.",
-        "href": "/businesses/italy/"
+        "title": "Hermes Business Catalog",
+        "body": "The dedicated I am Italy presentation is the next publication stage.",
+        "href": "/businesses/"
       },
       {
-        "title": "I am · Hermes Connect lab",
-        "body": "Review the browser-only demonstration without mistaking it for a released application.",
-        "href": "/demos/hermes-connect/i-am-shopping/"
+        "title": "Hermes Connect CRM",
+        "body": "The future I am app and tests belong to the existing software platform.",
+        "href": "/services/hermes-connect/"
       },
       {
         "title": "Hermes Technology",
-        "body": "See the existing Hermes technology direction and real engineering capabilities.",
+        "body": "Explore existing software and workflows developed by Hermes.",
         "href": "/paths/technology/"
       }
     ],
     "primaryAction": {
-      "label": "Explore I am in Italy Catalog",
-      "href": "/businesses/italy/"
+      "label": "Explore Hermes Business Catalog",
+      "href": "/businesses/"
     },
     "secondaryAction": {
-      "label": "See Hermes Connect",
+      "label": "Learn about Hermes Connect",
       "href": "/services/hermes-connect/"
     },
     "sourceLabel": "Hermes I am development decision and implementation record · 8 October 2026",
