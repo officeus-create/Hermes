@@ -51,7 +51,7 @@ By default selected IDs live in JS page memory. An explicit checkbox writes only
 Page and merchant links have clear status labels: public programme != Hermes membership; catalog concept != entity/customer; generated guidance != official eligibility result.
 
 ## SEO/GEO and content
-- Insights `/insights/` may feature a truthful, image-backed editorial announcement pointing to noindex concept and research pages, without adding invented live-product NewsArticle/Product/Offer schema.
+- Insights `/insights/` features a truthful first-party startup development news item in Technology; the article itself may have genuine `NewsArticle` metadata for the **announcement event only**, not Product/Offer/merchant transactional claims. The linked Catalog and application demonstrations remain noindex.
 - Italy Catalog `/businesses/italy/`, I am concept `/businesses/concepts/i-am/`, original founder note `/insights/technology/i-am-vision/`, and browser preview `/demos/hermes-connect/i-am-shopping/` remain `noindex,nofollow` and outside canonical sitemaps/IndexNow. One Search owner decides any future real product canonical.
 - Adding feature to Hermes Insights hub **does not itself mean the concept has been submitted to RSS, counted as organic article, or Google-indexed**. Editorial owner controls distribution and Search Release Gate.
 - SEO measurement after deployment: URL health/robots/canonical/age, approved real search owner only where appropriate, qualified opt-in human enquiries separate from raw clicks and referrals.
