@@ -9,6 +9,8 @@ const competitorSources = [
   { name: "Planet · Retail", url: "https://www.weareplanet.com/it/retail", description: "Merchant payments, order management and Tax Free integrated for retail." },
   { name: "Estonia e-Residency", url: "https://www.e-resident.gov.ee/start-a-company/", description: "Official digital identity and remote company formation under Estonian rules." },
   { name: "Stripe Atlas", url: "https://stripe.com/atlas", description: "A structured private provider for Delaware company incorporation." },
+  { name: "TravelAI", url: "https://www.travelai.com/platform", description: "Travel-focused AI infrastructure with reported voice, portable memory and governed agent workflows." },
+  { name: "iVisa", url: "https://www.ivisa.com/blog/what-is-ivisa-how-the-service-works-step-by-step-guide", description: "Existing guided travel-document applications, compliance review and government filing support." },
 ] as const;
 const differentiation = [
   { label: "Intention first", copy: "Start from a user's outcome, not a catalog of all possible features." },
@@ -16,23 +18,57 @@ const differentiation = [
   { label: "Permission by design", copy: "Create a personal workspace only after consent and keep regulated actions with authorized providers." },
   { label: "Proof before breadth", copy: "Measure real successful tasks before adding new jurisdictions or promising integrations." },
 ] as const;
+
+const publicArticleUrl = "https://hermeslogisticsus.com/insights/technology/i-am-vision/";
+const publicationDate = "2026-10-08";
+const newsSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: "I am enters development: a personal interface for travel, shopping and cross-border life",
+    description: "Hermes Technology announces the development-stage I am concept, its Italy-first research journey, 14-month proposed roadmap and current implementation boundaries.",
+    datePublished: publicationDate,
+    dateModified: publicationDate,
+    mainEntityOfPage: publicArticleUrl,
+    author: { "@type": "Organization", name: "Hermes Technology" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+    about: { "@type": "Thing", name: "I am voice-first travel and cross-border services concept", url: publicArticleUrl },
+    articleSection: "Technology / Startup Development",
+    isAccessibleForFree: true,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Hermes Insights", item: "https://hermeslogisticsus.com/insights/" },
+      { "@type": "ListItem", position: 2, name: "Technology", item: "https://hermeslogisticsus.com/paths/technology/" },
+      { "@type": "ListItem", position: 3, name: "I am startup development", item: publicArticleUrl },
+    ],
+  },
+] as const;
 ---
 <BaseLayout
-  title="I am: designing a personal interface to cross-border life | Hermes Product Note"
-  description="Founder concept note: I am, a planned voice-first personal workflow interface for travellers and entrepreneurs, beginning with Italy Tax Free guidance. A future vision, not an operating regulated service."
-  robots="noindex,nofollow"
+  title="I am Startup Enters Development | Italy Shopping, Travel & 14-Month Roadmap | Hermes Insights"
+  description="Hermes Technology announces I am, a voice-first cross-border assistant under development. Italy shopping and Tax Free guidance first, with a sourced 14-month roadmap and partnership research."
+  robots="index,follow,max-image-preview:large"
   htmlLang="en"
+  schema={newsSchema as unknown as Record<string, unknown>[]}
+  ogType="article"
+  feedUrl="/insights/rss.xml"
+  articlePublishedTime="2026-10-08T12:00:00Z"
+  articleModifiedTime="2026-10-08T12:00:00Z"
 >
   <SiteHeader theme="light" activePath="/insights/" />
   <main class="iam-note" id="main-content">
     <div class="shell">
       <nav class="crumb" aria-label="Breadcrumb"><a href="/insights/">Hermes Insights</a> / <a href="/businesses/concepts/i-am/">I am concept</a> / Product note</nav>
       <header class="hero">
-        <p class="eyebrow">Hermes Technology · Founder vision · Prepared 8 October 2026</p>
-        <h1>I am: a personal interface to the world, built around what people need to do.</h1>
-        <p class="dek">Our latest incubated concept explores a simpler future for travel, Tax Free guidance, cross-border registrations and administrative tasks: describe your goal, then see a useful workflow rather than another app full of unrelated menus.</p>
+        <p class="eyebrow">Hermes Insights · Technology / Development · <time datetime="2026-10-08">8 October 2026</time></p>
+        <h1>I am enters development: a personal interface for travel, shopping and cross-border life.</h1>
+        <p class="dek">Hermes Technology is building the first concept of <strong>I am</strong>: a voice-first interface that aims to help travellers and internationally active entrepreneurs find a clear route through shopping, Tax Free guidance and eventually permitted administrative procedures. Italy is the first exploration market; the proposed development horizon is 14 months.</p>
         <div class="status"><strong>Concept and demonstration only.</strong> I am does not currently have an incorporated operator, licences, government-system access, tourist payment services, verified partners or customer transactions.</div>
-        <a class="cta" href="/businesses/concepts/i-am/">Explore the interactive concept →</a>
+        <a class="cta" href="/businesses/italy/">Explore I am in Italy Business Catalog →</a>
+        <p class="secondary-cta"><a href="/businesses/concepts/i-am/">View the wider I am concept</a> · <a href="/demos/hermes-connect/i-am-shopping/">Try the mobile/desktop shopping prototype</a></p>
       </header>
       <article class="story">
         <div class="photo"><IAmItalyEditorialVisual /></div>
@@ -49,7 +85,7 @@ const differentiation = [
         </section>
         <section>
           <h2>Where I am differs from current specialists</h2>
-          <p>We do not claim to have overtaken the established players. Global Blue and Planet have mature Tax Free and retail solutions; Estonia e-Residency offers a real state digital identity route; Stripe Atlas handles a specific incorporation process. Their strengths show why a future cross-border assistant should connect users to trusted existing systems rather than pretend to replace public authorities or licensed operators.</p>
+          <p>We do not claim to have overtaken established specialists. Global Blue and Planet have real Tax Free and retail systems; TravelAI describes AI-enabled travel memory and multi-channel assistance; iVisa helps travellers apply for visas and supporting documents; Estonia e-Residency and Stripe Atlas offer concrete company-formation routes. I am must compete on user task completion, verified country requirements and permissioned handoffs rather than an unsupported claim of being the first voice assistant or of already replacing those providers.</p>
           <div class="comparison">{competitorSources.map(item=>(
             <div><h3><a href={item.url} target="_blank" rel="noopener noreferrer">{item.name} ↗</a></h3><p>{item.description}</p></div>
           ))}</div>
@@ -65,7 +101,14 @@ const differentiation = [
           <p><a href="/businesses/italy/">Explore the Italy Catalog research page</a> and <a href="/demos/hermes-connect/i-am-shopping/">try the I am shopping workspace demo</a>.</p>
         </section>
         <section>
-          <h2>The 14-month planning horizon</h2>
+          <h2>Our 14-month development plan</h2>
+          <div class="roadmap-milestones">
+            <article><span>Months 1–2</span><strong>Research and foundations</strong><p>Italian merchant discovery, product brand, official-rule review, first public concept and scoped prototypes.</p></article>
+            <article><span>Months 3–5</span><strong>Personal journey</strong><p>Test text and optional voice-led intent, user consent, private workflows and responsive interfaces against real needs.</p></article>
+            <article><span>Months 6–8</span><strong>Approved partner actions</strong><p>Explore merchant or public-service handoffs only where authorization, privacy review and operational evidence exist.</p></article>
+            <article><span>Months 9–11</span><strong>Second verified use case</strong><p>Expand only to a service or country with documented partner capability and demonstrated user value.</p></article>
+            <article><span>Months 12–14</span><strong>Readiness and economics</strong><p>Review task completion, accessibility, security, unit economics and conditions for a legitimate commercial launch.</p></article>
+          </div>
           <p>The proposal begins with an original visual identity, legal/brand verification, user research and a source-grounded Italian Tax Free informational journey. Next come a secure personal workspace, vendor-neutral AI orchestration, partner adapters and a second verified service journey. The final phase must focus on observed adoption, task completion, security and viable economics rather than a large page count or a menu of speculative government features.</p>
           <p>Future company formation and digital-asset related journeys are ideas only. They will be evaluated under applicable jurisdictional laws and partner permissions. In the EU, crypto-asset offering and service activities can fall under MiCA; the prototype does not create, distribute or advise on tokens.</p>
           <p><a href="https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica" target="_blank" rel="noopener noreferrer">European Securities and Markets Authority · MiCA ↗</a></p>
@@ -76,12 +119,13 @@ const differentiation = [
           <p>A relationship with existing Hermes infrastructure is a proposed product-development foundation, not proof that I am is an established U.S. subsidiary or has active telephone, banking, government or payment accounts of its own.</p>
         </section>
         <section class="closing">
-          <h2>Here. There. Everywhere. Eventually—one verified task at a time.</h2>
-          <p>We welcome research conversations about cross-border user experience and permitted technology collaboration. This product note does not request an investment, offer securities, or advertise financial returns.</p>
-          <a class="cta" href="/businesses/concepts/i-am/">See the I am concept page →</a>
+          <h2>I am — Here. There. Everywhere.</h2>
+          <p><strong>Strategic collaboration and private investor research:</strong> Hermes is exploring conversations with technology partners, Italian retailers and prospective strategic backers about the proposed 14-month development journey. A legal issuer, financing structure, commercial terms, required permissions and investor eligibility have not been established. This announcement is not a public offering of securities or an invitation to transfer funds.</p>
+          <p>Prospective partners may <a href="mailto:officeus@hermeslogisticsus.com?subject=I%20am%20startup%20%E2%80%94%20strategic%20collaboration">start an exploratory email conversation with Hermes Technology</a>. Opening an email link does not establish that a message was sent, received or accepted.</p>
+          <a class="cta" href="/businesses/italy/">Discover the startup in Hermes Catalog →</a>
         </section>
       </article>
-      <p class="editorial">Editorial status: original founder concept note. This page is intentionally not submitted for search indexing, feeds or official service listings while the product remains a concept. It does not advertise a live service or investment offer.</p>
+      <p class="editorial">Editorial classification: first-party announcement about development work, not a government or financial services listing. Publication on this website does not establish Google indexing, user acquisition, investment commitments, independent company formation, merchant affiliation or live transactions. Search visibility and partner outcomes require separate evidence.</p>
     </div>
   </main>
   <SiteFooter />
@@ -98,5 +142,11 @@ h1{font-size:clamp(38px,5.4vw,75px);line-height:1.09;letter-spacing:-.055em;max-
 .comparison,.principles{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin:22px 0}
 .comparison>div,.principles>div{border:1px solid #dae5ec;border-radius:16px;background:#fff;padding:20px}.comparison h3{margin:0 0 10px;font-size:17px}.comparison p,.principles p{font-size:14px;line-height:1.6;margin:0}.principles strong{font-size:16px}
 .closing{background:#eaf4f5;border-radius:24px;padding:35px!important;margin:30px 0}.editorial{color:#7c8f9e;font-size:13px;line-height:1.6;padding-bottom:75px}
-@media(max-width:620px){.shell{padding:0 16px}.hero{padding:28px 0 36px}.comparison,.principles{grid-template-columns:1fr}.story section{padding:30px 0}.closing{padding:23px!important}}
+.secondary-cta{font-size:13px;color:#577b83;margin:13px 0}.secondary-cta a{color:#147c8c;font-weight:750}
+.roadmap-milestones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0}
+.roadmap-milestones article{border:1px solid #d7e6e9;border-radius:15px;padding:20px;background:#f5fafa}
+.roadmap-milestones span{display:block;color:#14838b;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.roadmap-milestones strong{display:block;margin-top:9px;color:#183b4a;font-size:17px}
+.roadmap-milestones p{font-size:13px;line-height:1.6;margin:8px 0 0}
+@media(max-width:620px){.shell{padding:0 16px}.hero{padding:28px 0 36px}.comparison,.principles,.roadmap-milestones{grid-template-columns:1fr}.story section{padding:30px 0}.closing{padding:23px!important}}
 </style>
