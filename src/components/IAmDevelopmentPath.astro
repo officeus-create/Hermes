@@ -1,0 +1,19 @@
+---
+interface Props { active: "Vision" | "Italy" | "Founder concept"; }
+const { active } = Astro.props;
+const links = [
+  { label: "Vision", href: "/insights/technology/i-am-vision/" },
+  { label: "Italy", href: "/businesses/italy/" },
+  { label: "Founder concept", href: "/businesses/concepts/i-am/" },
+  { label: "Build foundation", href: "/services/hermes-connect/" },
+];
+---
+<nav class="iam-development-path" aria-label="I am development path">
+  {links.map(({ label, href }) => <a href={href} aria-current={label === active ? "page" : undefined}>{label}</a>)}
+</nav>
+<style>
+  .iam-development-path{display:flex;flex-wrap:wrap;gap:8px;padding:16px 0;font-size:13px;line-height:1.5}
+  .iam-development-path a{display:block;max-width:100%;padding:8px 12px;border:1px solid #c5dce3;border-radius:8px;background:#fff;color:#164d60;text-decoration:none}
+  .iam-development-path a[aria-current="page"]{background:#164d60;color:#fff}
+  .iam-development-path a:focus-visible{outline:3px solid #35a7c8;outline-offset:3px}
+</style>

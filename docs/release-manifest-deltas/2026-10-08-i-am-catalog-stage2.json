@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-08-i-am-catalog-stage2",
+  "generated_at": "2026-10-08T15:20:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/businesses/concepts/i-am/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/businesses/concepts/i-am/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/businesses/concepts/i-am/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Founder incubation concept, not a verified legal entity/customer/licensed service. Public investor/startup presentation only; no search owner or transactional claims.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/businesses/italy/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/businesses/italy/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/businesses/italy/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Italy startup presentation is a Catalog incubation website, not a verified Italy Company profile or approved merchant network. App/CRM capabilities remain Stage 3.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
