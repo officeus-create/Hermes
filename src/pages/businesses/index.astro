@@ -11,6 +11,7 @@ import { hermesCatalogOffers, priorityGrowthCities } from "../../data/hermes-cat
 import { academyCountryRegistry, academyLaunchTracks } from "../../data/academy-country-registry";
 import { usStateDirectoryTiles } from "../../data/us-state-directory-map";
 import { catalogBusinessConcepts, type CatalogBusinessConcept } from "../../data/catalog-business-concepts";
+import { localizedCatalogBusiness } from "../../lib/catalog-business-locale";
 import { catalogConceptCountryRoutes } from "../../lib/catalog-concept-routes";
 
 const directoryUrl = "https://hermeslogisticsus.com/businesses/";
@@ -129,7 +130,7 @@ const schema = [
         </div>
       </section>
 
-      <section class="catalog-results international-results" id="international-businesses" aria-labelledby="international-businesses-title">
+      <section class="catalog-results international-results" id="international-businesses" data-catalog-uk-en aria-labelledby="international-businesses-title">
         <div class="section-heading">
           <div><p class="eyebrow">Secondary discovery layer</p><h2 id="international-businesses-title">International businesses</h2></div>
           <p>Indexable for useful local discovery, intentionally secondary to the U.S. catalog.</p>
@@ -141,16 +142,18 @@ const schema = [
         </nav>
         <div class="business-grid">
           {internationalBusinesses.map((business) => (
-            <article class="business-card" data-search-text={[business.name,business.primaryIntent,business.locality,business.region,...business.services].join(" ").toLowerCase()}>
-              <div class="business-card__top"><span>{business.primaryIntent}</span><span>{business.status === "client" ? "Hermes client" : business.status === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
-              <h3>{business.name}</h3>
-              <p>{business.locality}, {business.region} · {business.countryCode}</p>
-              <ul>{business.services.slice(0,4).map((service)=><li>{service}</li>)}</ul>
+            <article class="business-card" data-search-text={[business.name,localizedCatalogBusiness(business,"en").name,business.primaryIntent,localizedCatalogBusiness(business,"en").primaryIntent,business.locality,localizedCatalogBusiness(business,"en").locality,business.region,...business.services,...localizedCatalogBusiness(business,"en").services].join(" ").toLowerCase()}>
+              <div class="business-card__top"><span data-uk={localizedCatalogBusiness(business,"uk").primaryIntent} data-en={localizedCatalogBusiness(business,"en").primaryIntent}>{localizedCatalogBusiness(business,"en").primaryIntent}</span><span>{business.status === "client" ? "Hermes client" : business.status === "claimed" ? "Claimed" : "Unclaimed"}</span></div>
+              <h3 data-uk={localizedCatalogBusiness(business,"uk").name} data-en={localizedCatalogBusiness(business,"en").name}>{localizedCatalogBusiness(business,"en").name}</h3>
+              <p data-uk={`${business.locality}, ${business.region} · ${business.countryCode}`} data-en={`${localizedCatalogBusiness(business,"en").locality}, ${localizedCatalogBusiness(business,"en").region} · ${business.countryCode}`}>{localizedCatalogBusiness(business,"en").locality}, {localizedCatalogBusiness(business,"en").region} · {business.countryCode}</p>
+              <ul>{business.services.slice(0,4).map((service,index)=><li data-uk={localizedCatalogBusiness(business,"uk").services[index] ?? service} data-en={localizedCatalogBusiness(business,"en").services[index] ?? service}>{localizedCatalogBusiness(business,"en").services[index] ?? service}</li>)}</ul>
               <div class="business-card__actions"><a href={`/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`}>View profile</a><span>Free international discovery profile</span></div>
             </article>
           ))}
         </div>
       </section>
+
+      <script is:inline src="/catalog-uk-en.js"></script>
 
       <section class="global-markets" id="global-markets" aria-labelledby="global-markets-title">
         <div class="section-heading"><div><p class="eyebrow">Global market registry</p><h2 id="global-markets-title">Find your next market. Build your next team.</h2></div><p>The Academy registry contains 110 target countries. Marketing highlights priority cities for remote/selected-market delivery. A country or city becomes its own indexable SEO/GEO page only after real scope, unique value and evidence justify it.</p></div>

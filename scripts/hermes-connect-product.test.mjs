@@ -77,7 +77,7 @@ assert.match(hubSource, /PREVIEW CONFIGURATION/);
 assert.match(hubSource, /WORKSPACE PREVIEW · SAMPLE DATA/);
 assert.match(hubSource, /Configuration preview · not a released vertical/);
 assert.match(hubSource, /One product family/);
-assert.match(hubSource, /PRIVATE LEARNER WORKSPACE/);
+assert.match(hubSource, /BUSINESS CRM \+ LEARNER ACCESS/);
 assert.match(hubSource, /\/services\/hermes-connect\/academy\//);
 assert.match(hubSource, /Beauty & Wellness/);
 assert.match(hubSource, /PRIVATE OWNER FOUNDATION/);
@@ -102,3 +102,5 @@ assert.doesNotMatch(capabilityPage, /isPartOf:\s*\{[\s\S]*"@type": "WebApplicati
 assert.match(resourceHubSource, /guide\.href\.includes\("calculator"\)[\s\S]*"@type": "WebApplication"[\s\S]*offers:\s*\{[\s\S]*price: "0"[\s\S]*priceCurrency: "USD"/);
 
 console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, private Academy and Beauty entries with bounded scope, Load Analyzer demo boundary, and one canonical Repair Shop public live product.`);
+
+await import('./connect-query-locale-shell.test.mjs');

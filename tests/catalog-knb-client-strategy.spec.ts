@@ -2,6 +2,12 @@ import { expect, test } from "@playwright/test";
 
 test("KNB canonical Catalog profile exposes the complete reusable client strategy and correct public paths", async ({ page }) => {
   await page.goto("/businesses/ukraine/bila-tserkva/kons-na-bis/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByText("Hermes Catalog · Client Strategy", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Managed Business Growth Strategy", exact: true })).toBeVisible();
+
+  // The same canonical profile must restore its native Ukrainian content by language query.
+  await page.goto("/businesses/ukraine/bila-tserkva/kons-na-bis/?lang=uk", { waitUntil: "domcontentloaded" });
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
   await expect(page.getByText("Hermes Catalog · Стратегія клієнта", { exact: true })).toBeVisible();
 

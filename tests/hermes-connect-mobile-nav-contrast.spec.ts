@@ -90,7 +90,7 @@ test("Hermes Connect first clean mobile entry remains English when no language w
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });
 
-test("Hermes Connect clean mobile entry restores the previously selected Russian locale and the full language list remains usable", async ({ page }) => {
+test("Hermes Connect clean mobile entry remains English and explicit language selection stays usable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 600 });
   await page.addInitScript(() => {
     window.localStorage.setItem("hermes-connect-language", "ru");
@@ -107,8 +107,8 @@ test("Hermes Connect clean mobile entry restores the previously selected Russian
   }));
 
   await page.goto("/services/hermes-connect/");
-  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
-  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
 
   await page.locator("[data-menu-button]").click();
   const menu = page.locator("[data-mobile-menu]");
