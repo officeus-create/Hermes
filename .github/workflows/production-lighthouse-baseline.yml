@@ -16,18 +16,18 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Full three-pass repeat after NO_NAVSTART on 0dc12892
+    name: Three sequential Load Board mobile lab traces on bbddded9
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      EXPECTED_SHA: 0dc12892d8c15b802a50be02bea238bd4291029d
+      EXPECTED_SHA: bbddded92734ba6cd3ec3d522540e6717d6a102e
       GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/load-board/
     steps:
       - name: Check out exact deployed main
         uses: actions/checkout@v4
         with:
-          ref: 0dc12892d8c15b802a50be02bea238bd4291029d
+          ref: bbddded92734ba6cd3ec3d522540e6717d6a102e
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -51,7 +51,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: load-board-mobile-three-traces-0dc12892-repeat
+          name: load-board-mobile-three-traces-bbddded9
           path: lighthouse-results/
           if-no-files-found: error
           retention-days: 30
