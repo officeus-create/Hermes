@@ -72,7 +72,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   return jsonResponse(202, { success: true }, { "Cache-Control": "no-store" });
 }
 
-const staticTrafficPaths = new Map([
+const staticTrafficPaths = new Map<string, string>([
   ...repairShopDirectory.map((entry) => [`/businesses/${entry.stateSlug}/${entry.citySlug}/${entry.slug}/`, `repair-shop:${entry.stateSlug}/${entry.citySlug}/${entry.slug}`] as const),
   ...catalogBusinessConcepts.map((entry) => [`/businesses/${entry.countrySlug}/${entry.localitySlug}/${entry.slug}/`, entry.id] as const),
 ]);
@@ -92,7 +92,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       if (!id && repair) {
         const row = await env.DB.prepare("SELECT id,name,slug,catalog_opt_in FROM repair_shops WHERE slug = ? LIMIT 1").bind(repair[1]).first();
         const publication = repairCatalogPublication(row);
-        if (publication.eligible && publication.path === path) id = publication.entityId;
+        if (publication.eligible && publication.path === path && publication.entityId) id = publication.entityId;
       }
       // Unknown/withdrawn/uninstrumented profiles never inherit site totals or another tenant's data.
       if (!id) {
