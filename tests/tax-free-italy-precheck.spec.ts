@@ -27,7 +27,7 @@ test("Italy precheck keeps > 70 euro threshold and end-of-third-month export win
   await page.locator("#invoice-total").fill("70.01");
   await page.getByRole("button",{name:"Verifica le condizioni generali"}).click();
   await expect(page.locator("#italy-taxfree-result")).toContainText("NON conferma il diritto al rimborso");
-  await page.locator("#export-date").fill("2026-04-01");
+  await page.locator("#export-date").fill("2026-05-01");
   await page.getByRole("button",{name:"Verifica le condizioni generali"}).click();
   await expect(page.locator("#italy-taxfree-result")).toContainText("supera il termine generale");
 });
