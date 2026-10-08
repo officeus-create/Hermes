@@ -17,9 +17,9 @@ test("MZM Insight returns commercial intent to the client and exposes verifiable
     "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
   );
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
-  await expect(page.getByRole("link", { name: /Visit MZM Junk Removal/i }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Get a free quote from MZM/i }).first()).toHaveAttribute(
     "href",
-    "https://mzm-junk-removal.com/",
+    "https://mzm-junk-removal.com/?utm_source=hermes&utm_medium=referral&utm_campaign=mzm_local_seo_evidence#quote",
   );
 
   const evidence = page.locator(".insight-evidence-links");
