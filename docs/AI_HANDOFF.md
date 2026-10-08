@@ -1796,3 +1796,13 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Compounding: truthful count UX and search facets; existing canonical owners/CTA preserved; identity deduplication reused; synthetic browser tests cover country/passive tiles/counts; no new SEO surface or live sends. Broader catalog country navigation remains a separate owner-gated task.
 - LESSON: rebuild unique stale-branch hunks on fresh main, preserve newer vertical branches and accepted search/consent contracts, and verify current exact head rather than historical CI.
 
+## 2026-10-08 — Codex — Production verifier empty-env hotfix
+
+- Branch: `fix/production-verifier-empty-env-20261008`.
+- Commit(s): pending exact-head commit.
+- PR: pending.
+- What was done: removed the two empty job-level `env:` mappings left by #1731 and added a contract that rejects the same invalid shape in every retired production-router workflow. Closed issue routing and manual `workflow_dispatch` behavior remain unchanged.
+- Files changed: `.github/workflows/main-production-verifier-command.yml`, `.github/workflows/production-domain-verifier-command.yml`, `scripts/production-lighthouse-contract.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
+- Tests run (and result): focused contract PASS, YAML syntax validation PASS, and `git diff --check` PASS; exact-head CI pending.
+- Remaining / open items: merge through protected main, confirm exact deployment and absence of a jobless verifier failure on the hotfix push, then mark the error resolved from release evidence.
+- Next step / what's needed from a human or the other agent: central release owner completes the already-authorized PR/CI/merge sequence; no external account action is needed.
