@@ -61,13 +61,18 @@ test("Load Board context keeps search beside navigation without a third empty ro
   if ((page.viewportSize()?.width || 0) > 700) {
     const search = context.locator("[data-hc-command-trigger]");
     await expect(search).toBeVisible();
-    const geometry = await context.evaluate((root) => {
+    const originalViewport = page.viewportSize()!;
+    for (const width of [701, 768, 1024, originalViewport.width]) {
+      await page.setViewportSize({ width, height: originalViewport.height });
+      const geometry = await context.evaluate((root) => {
       const nav = root.querySelector(".hc-family-nav")!.getBoundingClientRect();
       const search = root.querySelector("[data-hc-command-trigger]")!.getBoundingClientRect();
       return { height: root.getBoundingClientRect().height, overlap: Math.min(nav.bottom, search.bottom) - Math.max(nav.top, search.top) };
     });
     expect(geometry.height).toBeLessThanOrEqual(100);
-    expect(geometry.overlap).toBeGreaterThan(0);
+      expect(geometry.overlap).toBeGreaterThan(0);
+    }
+    await page.setViewportSize(originalViewport);
     await search.click();
     await expect(page.locator("#hc-command-palette")).toBeVisible();
     await page.keyboard.press("Escape");
