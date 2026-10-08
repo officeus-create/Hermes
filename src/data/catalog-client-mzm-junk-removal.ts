@@ -67,6 +67,30 @@ export const mzmJunkRemovalClient = {
     analysisDimensions: ["city", "source", "jobType", "searchQuery"],
     outcomeChain: ["search_query_or_source", "lead", "quote", "booked_job", "completed_job", "revenue", "review"],
   },
+  publicEvidence: {
+    officialWebsite: {
+      url: "https://mzm-junk-removal.com/",
+      observedAt: "2026-10-08",
+      evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
+      confirmsExistingManifest: [
+        "MZM Junk Removal identity",
+        "Roseville and Greater Sacramento market",
+        "junk removal / cleanout / furniture / appliance / construction debris / yard debris service scope",
+      ],
+      ownerReviewCandidates: {
+        serviceAreas: ["North Highlands"],
+        services: [
+          "Mattress removal",
+          "Eviction cleanouts",
+          "Office cleanouts",
+          "Storage unit cleanouts",
+          "Shed removal",
+        ],
+      },
+    },
+    volatilePublicClaimsPolicy:
+      "Public review totals, completed-job counters, same-day availability and similar changing website claims are observation-time facts only. They do not become canonical CRM outcomes, Hermes-attributed results or permanent Catalog claims without dated evidence and the applicable owner/CRM readback.",
+  },
   semanticCore: {
     sourceRef: "client-provided:MZM_Junk_Removal_Semantic_Core.xlsx",
     uniqueKeywords: 8155,
