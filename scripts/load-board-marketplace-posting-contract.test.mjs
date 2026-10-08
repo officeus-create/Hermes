@@ -5,6 +5,8 @@ const schema = fs.readFileSync(new URL("../functions/api/_lib/load-board-market-
 const posts = fs.readFileSync(new URL("../functions/api/load-board/posts.ts", import.meta.url), "utf8");
 const archive = fs.readFileSync(new URL("../functions/api/load-board/posts/[id].ts", import.meta.url), "utf8");
 const ui = fs.readFileSync(new URL("../src/components/LoadBoardMarketplaceV2.astro", import.meta.url), "utf8");
+const page = fs.readFileSync(new URL("../src/pages/load-board.astro", import.meta.url), "utf8");
+const styles = fs.readFileSync(new URL("../src/styles/features/load-board-marketplace.css", import.meta.url), "utf8");
 
 assert.match(schema, /CREATE TABLE IF NOT EXISTS hermes_load_market_posts/);
 for (const type of ["broker", "shipper", "dealer"]) assert.match(schema, new RegExp(`"${type}"`));
@@ -45,7 +47,8 @@ assert.match(ui, /rights_attested/);
 assert.match(ui, /name="delivery_window"/);
 assert.match(ui, /name="weight_lbs"/);
 assert.match(ui, /name="length_feet"/);
-assert.match(ui, /Pearl|hermes-pearl|--hermes-pearl/);
+assert.match(page, /import "\.\.\/styles\/features\/load-board-marketplace\.css"/);
+assert.match(styles, /Pearl|hermes-pearl|--hermes-pearl/);
 assert.doesNotMatch(ui, /\.innerHTML\s*=/, "Load Board marketplace runtime must not use innerHTML sinks");
 
 console.log("load-board-marketplace-posting-contract: company posting, rights gate, carrier-only visibility, archive ownership and marketplace controls verified");

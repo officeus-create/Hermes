@@ -1,3 +1,4 @@
+import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../_lib/repair-catalog-publication.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
@@ -56,7 +57,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       LIMIT 500
     `).all(),
     env.DB.prepare(`
-      SELECT id,owner_specialist_id,name,slug,city,state,region,country_code,website,
+      SELECT id,owner_specialist_id,name,slug,catalog_opt_in,city,state,region,country_code,website,
              catalog_published_at,seo_geo_started_at,next_seo_report_at,created_at,updated_at
       FROM repair_shops
       WHERE catalog_opt_in=1
@@ -106,6 +107,8 @@ export async function onRequestGet({ env }: { env: Env }) {
   });
 
   for (const row of repairResult?.results || []) {
+    const publication = repairCatalogPublication(row);
+    if (!publication.eligible) continue;
     const services = await repairShopServices(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
     companies.push({
       id: `repair-shop-crm:${row.id}`,
@@ -117,7 +120,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       countryCode: row.country_code || "US",
       status: "self_submitted",
       source: "repair_shop_crm",
-      profileUrl: `/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug || ""))}/`,
+      profileUrl: publication.path,
       services,
       verificationLabel: "Self-submitted · verification pending",
       seoGeo: {
@@ -134,7 +137,7 @@ export async function onRequestGet({ env }: { env: Env }) {
 
   companies.sort((a: any, b: any) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
   return jsonResponse(200, { success: true, count: companies.length, companies }, {
-    "Cache-Control": "public, max-age=30, s-maxage=60",
+    "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL,
     "X-Robots-Tag": "noindex, nofollow",
   });
 }

@@ -11,6 +11,7 @@ assert.match(catalogProfileSource, /href="\/logistics\/car-hauling-dispatch\/">C
 
 const shop = {
   id: "shop-qa",
+  catalog_opt_in: 1,
   owner_specialist_id: "owner-qa",
   name: 'Example & <script>alert("x")</script> Repair',
   slug: "example-repair-qa",

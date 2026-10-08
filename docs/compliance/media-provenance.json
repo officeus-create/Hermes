@@ -651,6 +651,16 @@
       "source": null,
       "rightsEvidence": null,
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "src/assets/path-logistics-system.jpg",
+      "sha256": "9d965fe79dadec6075549ce07538056c60ec7952275e6a2a482a9e2061b4cb6c",
+      "firstTrackedCommit": "c926f46083745441c19363b0c40468277b3c9e0c",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
     }
   ]
 }

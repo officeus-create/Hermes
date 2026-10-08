@@ -538,3 +538,68 @@ PREVENTION: Receipt unit cases reject empty/error/mismatched responses and ignor
 EXTERNAL_GATE: Actual approved inventory and mailbox/human receipts require operational evidence; this branch creates none. Historical delivery-confirmed analytics counts remain non-delivery evidence.
 REVIEW_CORRECTION: Preserve older secure-browser compatibility when randomUUID is unavailable by generating UUID v4 from getRandomValues. Same-object retry reuses the stored ID; no timestamp or Math.random identity. Added failing-first unit regression and real browser fallback coverage.
 VERIFICATION: Final build and full npm test pass; all Load Board browser files and direct customer-intake regression pass 58/58. Earlier full suite had 1,970 passed, 16 skipped, 20 failed; the two package terminology failures are corrected and pass in the final scoped run. The 18 other scenarios remain outside this package and do not constitute a green release receipt. PR #1752 stays review-only pending exact-head CI and release decision.
+
+## ERR-MOBILE-HERO-CACHE-20261007 — IMPLEMENTED / RELEASE_GATE_PENDING
+
+PROBLEM: successful #1747 deploy still delivers old 222,111-byte logistics hero at unversioned URL.
+ROOT_CAUSE: long-lived cached public asset URL does not change when optimized bytes change; query revision returns exact main 90,337 bytes.
+FAILED_APPROACH: treating merge or build source byte count as live asset verification; attributing old single high TBT to a function from URL alone.
+WORKING_APPROACH: capture three production runs/trace per Home/Dealer, repeated edge GET pairs, then content-hash the same approved image and align hero/preload/schema.
+EVIDENCE: main d82279a8; deploy 37686365007; Lighthouse 37686780431; production medians Home90/2071.636ms/0, Dealer79/2579.6585ms/0. Controlled replay Dealer LCP median5649.966→5035.2165ms, three consistent pairs; payload222111→90337. Not production after.
+LESSON: MERGED != LIVE; check body hash/bytes and distinguish raw trace, simulated lab medians and field outcomes.
+REUSE_RULE: changed long-lived public media must get a content-versioned URL, identical preload/display/schema target, preserved provenance and functional CTA readback.
+NEXT: exact-head CI/browser acceptance, owner-authorized release, then live hashed-byte and three-run production check. Full local browser suite has unresolved unrelated failures; do not merge from a false green claim. Canonical evidence/status: docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md.
+## 2026-10-07 — Repair service sticky CTA context follow-up (Codex)
+
+PROBLEM: Production 390×844 readback on both existing repair Website/SEO owners shows visible mobile sticky links omit vertical/source_path while hero links preserve them.
+ROOT_CAUSE: MoneyPageActionBar has independent hardcoded destinations; #1749 updated DigitalServicePage only.
+FAILED_APPROACH: New parity assertions fail on unchanged main for both owners in desktop/mobile (4 failed, 2 passed).
+WORKING_APPROACH: Change only the two repair href entries. Extend existing owner-map browser tests with exact hero/sticky parity, mobile click-to-existing-form/preselected repair context, desktop hidden state and unchanged generic owner destinations.
+EVIDENCE: Base main 84a787f169f6248edfcc5caa34953835f27ec00b. Branch fix/repair-sticky-context. Production before: Website /paths/technology/?project=website_development#project-brief; SEO /paths/marketing/?service=seo#contact. Candidate adds &vertical=auto_repair&source_path=<encoded existing owner> before the unchanged anchor. Validation and exact-head CI recorded in follow-up draft PR.
+LESSON: A primary CTA regression does not cover the separate mobile sticky conversion entry.
+REUSE_RULE: Check href parity plus actual mobile form context for every duplicated conversion entry.
+STATUS: Review-only candidate; production remains unfixed until separately authorized release and live readback. No merge/deploy, real lead submission or delivery claim.
+OWNERSHIP: Open PR file sets checked: no runtime/test overlap; additive handoff/error docs overlap #1750/#1751/#1752/#1753/#1679. Catalog #1751/#1663 and shared layout #1755 untouched.
+SCORECARD: Conversion/context +; durable knowledge +; reusable regression +; search owner/metadata/indexability unchanged; no new product/automation/public claims.
+NEXT: Exact-head CI review, then owner-authorized release and 390×844 production href/form readback.
+
+LOCAL VALIDATION: build PASS (399 pages); full npm test PASS; focused desktop/mobile owner-map + repair public/form/context suite 20/20 PASS. Screenshots captured for both mobile sticky entries. Full browser suite is delegated to exact-head PR CI; no local full-suite green claim. Canonical/robots/schema contracts and title/H1 assertions pass; sitemap file untouched.
+
+MAIN SYNC: Rebased this same PR onto cc5a8ae58914a65a7cd43497a9cdad39ee2ab073 after merged #1750. Rebase applied cleanly; all main/release records retained. Runtime/test diff remains exactly two repair href entries plus bounded existing owner-map assertions. Old-head local full E2E stopped for rebase: 901 passed, 8 failed outside repair CTA, 7 skipped, 4 interrupted, 1096 not run; not a green gate. Old-head contracts/audit passed; final rebased-head CI supersedes those. Fresh final-base build/unit/focused verification required and reported in the same draft PR. No merge/deploy.
+
+MAIN SYNC AFTER #1752 (2026-10-08): Rebased existing #1757 onto 83aef305da82f5221b51d617da34c9f040cbc5cf. Shared-doc EOF conflicts resolved by retaining both complete Load Board and Repair records. Repair component/tests unchanged from prior green head9f83334d (2004 passed/16 skipped exact-head CI); fresh-head CI required, results recorded in same PR. No merge/deploy.
+
+RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 859dc26dc9d28b0c3a09f825751ad1317c6ffa18. Retained all fresh-main release records plus complete Repair follow-up records. Runtime/test files unchanged from prior551f3c74; only two repair Website/SEO sticky href entries and narrow regression coverage remain. Earlier CI/cancellation is historical coordination evidence, not this head qualification. Fresh required exact-head CI recorded in #1757; no merge/deploy.
+
+## 2026-10-07 — Runtime Repair Catalog had JavaScript-only hub discovery
+
+STATUS: REVIEW_IMPLEMENTATION; exact-head browser CI and owner-approved release/live readback pending.
+TARGET: `/businesses/connect/repair-shop/kittle-s-garage-a146544/`.
+ROOT_CAUSE: `/businesses/` serves static Astro cards; opted-in runtime repairs were added only by the client API renderer. Runtime sitemap membership, a self-canonical 200 and index,follow did not create a raw-HTML hub link.
+WORKING_APPROACH: Add a separate Pages hub function with visible escaped discovery links; share opt-in/identity/name/slug eligibility and canonical path across hub, profile, sitemap and API. Use no-store for fresh-request withdrawal, retain existing indexing and leave locale/counts work untouched. No new card renderer or production data mutation.
+EVIDENCE: Build and unit/publication/canonical/robots/schema/privacy regressions pass; local browser runner cannot complete navigation in this managed environment. This is not production resolution or indexing evidence. Release requires full exact-head browser CI and a bounded live readback. See `docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md`.
+PREVENTION: Public runtime owner release must verify a meaningful raw-HTML hub anchor, matching sitemap/profile canonical, withdrawal behavior and one client card. Mechanical eligibility does not replace verified facts, permitted public fields or the editorial Search Release Gate.
+NEXT_OWNER: Project31 / repository release owner. #1663 stale-base conflict remains with its original owner; do not replay that branch wholesale.
+
+## 2026-10-08 — Academy measurement synthetic lead timestamps drifted outside spend fixture
+
+STATUS: FIXED_IN_BRANCH; exact-head CI and central release acceptance pending.
+PROBLEM: On fresh main 55eaf2762242fb830641e227280b98ad89966fe9 the focused measurement test returned attributedLeads 0 instead of 2 after the UTC date rolled past October 7.
+ROOT_CAUSE: The real CRM handler correctly stamps current created_at, while the synthetic spend fixture ends on 2026-10-07. Production attribution correctly excludes those later-created fixtures.
+FAILED_APPROACH: Reproduced the unchanged test with the current clock: 3 pass, 1 fail (0 !== 2). No campaign-window extension or production workaround was attempted.
+WORKING_APPROACH: Set only the two in-memory synthetic lead created_at values to 2026-10-07T08:00:00.000Z, asserting each fixture update touches exactly one row. Retain the real handler path, fixed campaign period, attribution semantics and existing economics assertions.
+EVIDENCE: Focused node --experimental-strip-types --test scripts/hermes-connect-academy-measurement.test.mjs passes 4/4 on October 8. Full build/test and exact-head CI recorded in the bounded test-stability PR.
+LESSON: Historical attribution fixtures require explicit event timestamps rather than the runner wall clock.
+REUSE_RULE: Pin synthetic event dates inside their documented synthetic periods; never extend real periods to accommodate test drift.
+NEXT_OWNER: Central release coordination; #1756 stays behind #1754 and this prerequisite. No merge/deploy authorized here.
+
+## ERR-LOAD-BOARD-FIRST-PAINT-CSS-20261008 — IMPLEMENTED / RELEASE_GATE_PENDING
+
+PROBLEM: Load Board can paint the large legacy hero, then shrink it when conditional marketplace CSS arrives late in streamed body HTML.
+ROOT_CAUSE: existing hero rules are emitted about216KB into the body. Identical94px hero-grid movement appears in all3 primary production raw traces on deployed55eaf; deterministic desktop/mobile streaming regression reproduces it after fonts are ready. Font-timing correlation alone was an incorrect candidate explanation.
+FAILED_APPROACH: optimize JS from one TBT1382ms sample, infer field truth from Lighthouse, or select the better run. Stable primary TBT median0; secondary median0 despite one768ms outlier. Other body/context/font/counter CLS sources remain outside this one fix.
+WORKING_APPROACH: deliver unchanged24399-byte marketplace rules through the existing Load Board page's head stylesheet; keep component markup/scripts and every product/SEO/receipt/form/consent boundary unchanged. New regression fails2/2 before, passes2/2 after.
+EVIDENCE: approved-main37704990231; primary three-pass trace run37705761158/artifact11519501972; primary medians84/3103.386ms/0ms/0.091099; secondary37705825841 separately recorded. Build399 PASS, targeted browser60/60 PASS, receipt/fallback/handoff PASS. Full npm test blocked by clean-main Academy date fixture at measurement.test.mjs:169 after UTC October8 rollover; exact-head CI is required, not presumed green.
+LESSON: below-the-fold conditional CSS can mutate above-the-fold geometry after paint. Test a streamed first response with fonts settled, compare raw rectangles, and move rules without changing their values or product behavior.
+REUSE_RULE: existing-owner evidence -> reproducible trace/DOM cause -> one delivery fix -> current-head contracts/mobile/CI -> authorized release -> production remeasurement. Preserve partial evidence commit0cc7dba and all verified release entries.
+NEXT: Academy owner repairs its independent fixture; central coordinator provides fresh main for rebase and release. No merge/deploy or performance closure claimed. Main-chain receipt and current exact head are in the review PR.

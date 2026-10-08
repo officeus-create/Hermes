@@ -1,3 +1,4 @@
+import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../../../api/_lib/repair-catalog-publication.mjs";
 import { ensureRepairShopProfileSchema } from "../../../api/_lib/repair-shop-schema.mjs";
 import { ensureRepairShopAvailabilitySchema } from "../../../api/_lib/repair-shop-availability-schema.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../../../api/_lib/service-context.mjs";
@@ -61,23 +62,24 @@ async function servicesForShop(db: any, ownerId: string, shopId: string) {
 }
 
 export async function onRequestGet({ env, params }: { env: Env; params: { slug?: string } }) {
-  if (!env.DB) return new Response("Service unavailable", { status: 503 });
+  if (!env.DB) return new Response("Service unavailable", { status: 503, headers: { "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL } });
   await ensureRepairShopProfileSchema(env.DB);
-  const slug = String(params.slug || "").trim().slice(0, 80);
-  if (!/^[a-z0-9-]+$/i.test(slug)) return new Response("Not found", { status: 404 });
+  const slug = String(params.slug || "");
+  if (!/^[a-z0-9-]+$/i.test(slug) || slug.length > 80) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow", "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL } });
 
   const row = await env.DB.prepare(`
-    SELECT id,owner_specialist_id,name,slug,address_line1,city,state,region,country_code,postal_code,phone,website,
+    SELECT id,owner_specialist_id,name,slug,catalog_opt_in,address_line1,city,state,region,country_code,postal_code,phone,website,
            instagram_url,facebook_url,threads_url,catalog_published_at,seo_geo_started_at,next_seo_report_at,updated_at
     FROM repair_shops
     WHERE slug=? AND catalog_opt_in=1
     LIMIT 1
   `).bind(slug).first();
-  if (!row) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
+  const publication = repairCatalogPublication(row);
+  if (!publication.eligible) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow", "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL } });
 
   const services = await servicesForShop(env.DB, String(row.owner_specialist_id || ""), String(row.id || ""));
   const hours = await hoursForShop(env.DB, String(row.id || ""));
-  const canonical = `https://hermeslogisticsus.com/businesses/connect/repair-shop/${encodeURIComponent(String(row.slug))}/`;
+  const canonical = `https://hermeslogisticsus.com${publication.path}`;
   const catalogBusinessId = `repair-shop-crm:${String(row.id)}`;
   const location = [row.city, row.region || row.state].filter(Boolean).join(", ");
   const addressText = [row.address_line1, row.city, row.region || row.state, row.postal_code].filter(Boolean).join(", ");
@@ -251,7 +253,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
     status: 200,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "public, max-age=60, s-maxage=300",
+      "Cache-Control": REPAIR_CATALOG_CACHE_CONTROL,
     },
   });
 }

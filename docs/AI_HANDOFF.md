@@ -1633,3 +1633,97 @@ handoff_to: repository reviewer and Logistics operations
 ### PR #1752 — rebase after #1750, 2026-10-08
 
 - Rebased the same bounded review package onto main `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Both #1749 and #1750 release records plus the prior Load Board synchronization receipt are preserved. Only additive journal conflicts required resolution. Load Board runtime and regression files remain byte-identical to `247a7ad2`; exact-head validation and merge readiness are recorded in PR #1752. No new PR, production merge or deploy.
+
+## Hermes mobile after #1747 — bounded implementation handoff, 2026-10-07 UTC
+
+```yaml
+ai_name: ChatGPT / Codex
+model: GPT-6 family (exact runtime model not exposed)
+chat_or_thread: Technology — WEB Сайт / Hermes mobile после 1747
+role: mobile evidence and bounded cache-delivery implementation
+department: Technology / WEB
+date: 2026-10-07
+contribution_type: Implementation Report
+confidence: 95
+task_id: existing WEB recovery task after PR 1747
+source_of_truth: latest owner instruction; docs/WEB_PUBLIC_JOURNEY_RECOVERY_2026-10-07.md
+authority_scope: Branch write / Platform read / Draft PR; no merge or deploy
+write_scope: [LogisticsCommercialPage image URL, bundled approved image, provenance, focused tests, existing recovery/error/handoff docs]
+specialization: [Lighthouse repeated measurement, trace/network evidence, Astro media delivery]
+not_specialized_in: [field conversion attribution, CDN administrative mutation]
+reviewed: [AGENTS.md, collaboration protocol/current-state snapshot, current main d82279a8, PR1747, successful deploy37686365007, production run37686780431, active PR1744 and1679 overlap, six fresh production traces, six paired local traces, edge body hashes, build/contracts/browser results]
+not_reviewed: [field CrUX/conversions, after-patch production, inaccessible native current task Page]
+handoff_to: existing WEB release reviewer / owner
+```
+
+Same task and existing recovery artifact preserved. Main d822 is LIVE; old EVENT_WAIT superseded. Production Home median90/LCP2071.636ms/TBT0; Dealer79/LCP2579.6585ms/TBT0. No sustained concrete multi-second scripting stack; no global runtime/Home/CSS patch, preserving active writers1744/1679. Proven stale hero222111 vs optimized90337 bytes; bundled content-hashed URL fixes delivery identity, all business content/receivers intact. Controlled local Dealer medianLCP5649.966→5035.2165ms (three paired improvements); not production after.
+
+Build/full contracts pass; focused browser4/4 and visual readbacks390/768/1440 pass. Full local browser1965pass/25fail/16skip; six unrelated failures reproduce on main, others unresolved. New selector fixed and rerun green. No merge/deploy or real lead sends. NEXT: exact-head CI/review, independently authorized release then live byte/three-run production acceptance. Detailed settings, hashes, limitations and learning are in existing recovery/error register, not a parallel backlog.
+## 2026-10-07 — Repair service sticky CTA context follow-up (Codex)
+
+PROBLEM: Production 390×844 readback on both existing repair Website/SEO owners shows visible mobile sticky links omit vertical/source_path while hero links preserve them.
+ROOT_CAUSE: MoneyPageActionBar has independent hardcoded destinations; #1749 updated DigitalServicePage only.
+FAILED_APPROACH: New parity assertions fail on unchanged main for both owners in desktop/mobile (4 failed, 2 passed).
+WORKING_APPROACH: Change only the two repair href entries. Extend existing owner-map browser tests with exact hero/sticky parity, mobile click-to-existing-form/preselected repair context, desktop hidden state and unchanged generic owner destinations.
+EVIDENCE: Base main 84a787f169f6248edfcc5caa34953835f27ec00b. Branch fix/repair-sticky-context. Production before: Website /paths/technology/?project=website_development#project-brief; SEO /paths/marketing/?service=seo#contact. Candidate adds &vertical=auto_repair&source_path=<encoded existing owner> before the unchanged anchor. Validation and exact-head CI recorded in follow-up draft PR.
+LESSON: A primary CTA regression does not cover the separate mobile sticky conversion entry.
+REUSE_RULE: Check href parity plus actual mobile form context for every duplicated conversion entry.
+STATUS: Review-only candidate; production remains unfixed until separately authorized release and live readback. No merge/deploy, real lead submission or delivery claim.
+OWNERSHIP: Open PR file sets checked: no runtime/test overlap; additive handoff/error docs overlap #1750/#1751/#1752/#1753/#1679. Catalog #1751/#1663 and shared layout #1755 untouched.
+SCORECARD: Conversion/context +; durable knowledge +; reusable regression +; search owner/metadata/indexability unchanged; no new product/automation/public claims.
+NEXT: Exact-head CI review, then owner-authorized release and 390×844 production href/form readback.
+
+LOCAL VALIDATION: build PASS (399 pages); full npm test PASS; focused desktop/mobile owner-map + repair public/form/context suite 20/20 PASS. Screenshots captured for both mobile sticky entries. Full browser suite is delegated to exact-head PR CI; no local full-suite green claim. Canonical/robots/schema contracts and title/H1 assertions pass; sitemap file untouched.
+
+MAIN SYNC: Rebased this same PR onto cc5a8ae58914a65a7cd43497a9cdad39ee2ab073 after merged #1750. Rebase applied cleanly; all main/release records retained. Runtime/test diff remains exactly two repair href entries plus bounded existing owner-map assertions. Old-head local full E2E stopped for rebase: 901 passed, 8 failed outside repair CTA, 7 skipped, 4 interrupted, 1096 not run; not a green gate. Old-head contracts/audit passed; final rebased-head CI supersedes those. Fresh final-base build/unit/focused verification required and reported in the same draft PR. No merge/deploy.
+
+MAIN SYNC AFTER #1752 (2026-10-08): Rebased existing #1757 onto 83aef305da82f5221b51d617da34c9f040cbc5cf. Shared-doc EOF conflicts resolved by retaining both complete Load Board and Repair records. Repair component/tests unchanged from prior green head9f83334d (2004 passed/16 skipped exact-head CI); fresh-head CI required, results recorded in same PR. No merge/deploy.
+
+RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 859dc26dc9d28b0c3a09f825751ad1317c6ffa18. Retained all fresh-main release records plus complete Repair follow-up records. Runtime/test files unchanged from prior551f3c74; only two repair Website/SEO sticky href entries and narrow regression coverage remain. Earlier CI/cancellation is historical coordination evidence, not this head qualification. Fresh required exact-head CI recorded in #1757; no merge/deploy.
+
+## 2026-10-07 — Codex — Consent-aware runtime Catalog discovery
+
+- Status: review implementation only; Project31 / repository owner owns release. Base `d82279a8d81f5415137cefef4ac3cc656df52086`, branch `codex/catalog-runtime-discovery-20261007`.
+- Exact defect: Kittle’s existing runtime profile is in runtime sitemap and indexable, but its Catalog hub link was JavaScript-only. Source evidence is technical; GSC Discovered—not indexed is owner-export evidence and does not prove a unique cause.
+- Collision check: #1744 OPEN/non-draft `8aad6078`, #1663 OPEN/draft/not mergeable `d0ac1018`. Their root Astro/client renderer and browser test files are untouched. New Pages function wraps current static hub with a visible, escaped opt-in-derived link list outside its card grid/counts; no second card renderer.
+- Shared contract: opted-in public identity/name/valid slug determines mechanical publication eligibility and canonical path for profile, runtime XML, HTML navigation and card API. Existing opted-in indexing remains; withdrawal removes fresh-request discovery/feed/sitemap ownership and yields 404/noindex profile. Consent-sensitive responses use no-store. No production records changed, private data projection, invented services/reviews, business verification, customer claims or external sends.
+- Readiness limit: this mechanical guard does not establish individual-field consent or editorial Search Release Gate evidence. New-owner promotion, useful-content/vertical readiness, actual receiver delivery and complete discovery beyond the existing 100-record feed/root bound remain separately tracked; no mass noindex or automatic opt-in.
+- Verification: final build passed (399 pages; zero Astro errors/warnings). New behavior regression covers raw generated HTML, exact Kittle slug, duplicate paths, opt-out, invalid/missing fields, unavailable DB, headers, canonical, robots, AutoRepair JSON-LD and private-field exclusion. Full npm test rechecked. Local browser attempt is blocked: standard Chromium downloads were truncated; isolated packaged Chromium starts but closes the page during navigation in this managed environment. No browser pass or production fix is claimed; full exact-head CI/browser and owner-approved exact-SHA live readback remain release gates.
+- Plan/acceptance/rollback/source mapping: `docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md`. Revert this bounded PR to roll back; never withdraw/delete Kittle as a rollout shortcut. Existing owner opt-in API is unchanged.
+- Compounding scorecard: Search/internal discovery = strengthen existing owner without new URL family; conversion = preserve real booking/claim/contact path; knowledge = shared contract and consent/privacy regression; architecture = reuse Astro/renderer/CRM identity; privacy = minimal public projection and no persistent consent caches; scale = bounded later consent-aware pagination; content distribution/new products = deferred.
+
+### PR #1751 — current-main journal reconciliation, 2026-10-08
+
+- Updated existing branch with main `84a787f169f6248edfcc5caa34953835f27ec00b` after #1749. Only conflicts were concurrent append-only entries in AI_HANDOFF and ERROR_REGISTER; both histories retained. Catalog runtime/helper/tests remain byte-identical to the prior feature head; no locale/counts files changed relative to current main. Fresh build, targeted Catalog tests and exact-head CI are rerun; terminal results belong to the PR, not the historical browser-environment failure above. No merge/deploy.
+
+### PR #1751 — rebase after #1750, 2026-10-08
+
+- Rebased existing Catalog branch onto `cc5a8ae58914a65a7cd43497a9cdad39ee2ab073`. Retained all main journal entries and the prior Catalog reconciliation receipt. Only shared append-only journal conflicts were resolved; runtime/helper/tests remain unchanged. Prior exact head `bc2a52b4` completed every CI workflow successfully; that evidence is historical, not a substitute for new-head checks. Re-run build, Catalog/privacy/indexability tests and required exact-head CI. No merge/deploy or Catalog counts/locale edits.
+
+### PR #1751 — rebase after #1752, 2026-10-08
+
+- Owner-requested rebase onto main `83aef305da82f5221b51d617da34c9f040cbc5cf`. Only append-only journal conflicts; all verified main and prior Catalog entries retained. No Load Board/transport implementation delta replayed or altered. Catalog runtime/helper/tests remain unchanged, including opt-in/indexability, withdrawal, minimal public projection and one card renderer. Prior head `9c9cf340` passed every CI workflow; new exact-head tests/CI are required again. No new business facts, production mutations, merge or deployment.
+
+### PR #1751 — bounded release sync after #1757, 2026-10-08
+
+- Rebased existing PR onto main `0cba03b4bd6e462623d48980885b81293d349ddd`. Both journal histories and the #1753 hero regression plus Catalog regression in npm test retained. Repair CTA changes remain untouched. Per current owner directive, new SSR navigation is bounded to the existing Kittle canonical path; other opted-in profiles retain their existing helper eligibility, feed and sitemap ownership. No invented facts or consent changes. Prior local/CI evidence remains historical; fresh-head validation required. No merge/deploy.
+
+
+## 2026-10-08 — Academy measurement fixture stability prerequisite
+
+Owner: Academy / Codex; branch `fix/academy-measurement-fixture-clock-20261008`, base `55eaf2762242fb830641e227280b98ad89966fe9`. Changes: measurement test plus this handoff and ERROR_REGISTER. Reproduced 0 != 2 after UTC rollover; pinned only two in-memory lead creation timestamps to the unchanged synthetic spend period. Production attribution, campaign dates, public routes and claims remain unchanged. Focused test 4/4 PASS; full build/test and exact-head browser CI recorded in the PR. No UI change, screenshots unnecessary. Compounding: reusable deterministic measurement QA and durable failure lesson; no search surface, conversion or privacy change. Risk: real current timestamps are intentionally retained everywhere outside these two historical fixtures. Release/merge/deploy remain central gates. Preserve #1756 language work; resume only after #1754 and this prerequisite.
+
+## 2026-10-08 — Codex / Load Board first-paint CSS — bounded performance continuation
+
+- Owner: Load Board lane; stable deployed/main base `55eaf2762242fb830641e227280b98ad89966fe9`, approved-main deployment run 37704990231 SUCCESS. Prior partial evidence commit `0cc7dba63aa0c74badc7fe81811c980e24742972` remains preserved; it was not a closure receipt. Branch `fix/load-board-first-paint-css-20261008`.
+- Three sequential production mobile Lighthouse 13.4.1 passes, same simulated mobile settings on one idle GitHub runner: run 37705761158 SUCCESS, artifact 11519501972 (reports, raw trace, DevTools logs). Performance 84/81/88; LCP 3636.853/2980.374/3103.386ms; TBT 57/0/0ms; CLS 0.091099/0.190954/0.004487; SEO100 in each. Primary medians: Performance84, LCP3103.386ms, TBT0, CLS0.091099. Release verifier passes before every navigation and after the series. This is lab evidence, not CrUX, ranking, conversion or field outcome.
+- Connector commit-run discovery returned an empty list despite an existing run; an unnecessary second queued series resulted. Concurrency kept both series sequential, never overlapping. Secondary run 37705825841 SUCCESS, artifact 11519349071: Performance67/93/73; LCP3378.648/2672.087/3285.255ms; TBT768.244/0/0ms; CLS0.091099/0.003614/0.307177; secondary medians73/3285.255/0/0.091099. Do not select the better series or pool them into a misleading primary median. No further production sampling is needed before release.
+- Root cause reproduced: every primary raw trace records the same hero grid [16,257,380,566] -> [16,163,380,660] shift, score0.181572. Lighthouse CLS accounting varies with timing/window/input exclusions, so scores alone understate that repeated transition. The existing conditional marketplace style arrives about216KB into body HTML and overrides hero top padding128->34px and heading geometry. Separate body72px/context insertion, small font/nav and traffic-counter shifts are not fixed here. Sustained high TBT was not reproduced; no JS or analytics optimization is attempted.
+- Disproved hypothesis: attributing this hero movement to font swap from temporal proximity. Streaming regression waits for document.fonts.ready, then releases the remaining unmodified built HTML; desktop/mobile still fail on main because hero padding, heading size and height change. The new regression failed first on both projects (2/2), then passed after the CSS delivery change. It uses local GET-only fixtures, not production forms.
+- One fix: move exactly24399 bytes of existing LoadBoardMarketplaceV2 conditional global CSS into the existing page's imported feature stylesheet. CSS-rule SHA256 `ca3cc1caa5371878a4f9c8d37e550cc3b60c5aabf4c5ef11c322633423c5ffd5` is unchanged. No value/design/product change: rules become available in the head before hero paint. Existing page remains the sole search owner; no schema, canonical, robots, sitemap, inventory truth, receipts/idempotent UUID fallback, CTA receiver, forms, consent or JS changes. Temporary trace-workflow branch is measurement-only and must never be merged into the product PR.
+- Validation: fresh build PASS399 pages; receipt/secure-fallback and vehicle-handoff focused unit contracts PASS; all Load Board/customer-intake desktop/mobile tests PASS60/60 including streaming and screenshots. Full npm test reaches an unrelated Academy measurement fixture failure at scripts/hermes-connect-academy-measurement.test.mjs:169 (0 attributed leads vs2). Clean worktree55eaf reproduces it: the fixture creates leads on current UTC date but spends end2026-10-07, so October8 leads fall outside the period. No Academy assertion/runtime change is included. Exact-head CI and controlled-replay results are recorded in the PR; do not claim all contracts green.
+- Final settled hero screenshots are pixel-identical between main/candidate at1280px and390px; mobile first-screen CTA remains visible and overflow regression passes.
+- Controlled local alternating before/after replay (same Chrome/settings, clean main55eaf bundle vs candidate, three pairs, no concurrent build/tests): CLS median0.269057 ->0.120597; repeated raw hero CSS shift0.181572 is absent in all3 candidate traces. Body0.087485 remains; candidate font-related shift0.033112 remains. TBT0 in every local pass. LCP median5710.575 ->5785.563ms (+75ms,1.3%); no LCP gain or production-after claim. Local static API404s differ from production; this isolates CSS delivery, not operational inventory or field performance.
+- Ownership: open PR diffs checked; no overlap with page/component/new CSS/new test. Shared AI_HANDOFF/ERROR_REGISTER overlap #1758/#1756/#1663 is append-only. No forms, outreach, main merge or deployment performed.
+- Compounding: strengthens the existing commercial owner and first-screen stability without SEO expansion; reuses page-scoped CSS and streaming regression; preserves truthful conversion and consent; records lab/trace/release provenance for reuse. New public content, global design/JS optimization and automation deferred.
+- Safe release order: Academy owner fixes the independent date fixture in its own lane -> central coordinator lands that gate repair -> rebase this bounded CSS PR preserving all journal entries -> fresh build/npm test/desktop-mobile/exact-head terminal CI -> owner review/authorized merge+deploy -> exact-SHA readback and three sequential production passes. Candidate evidence is not production improvement or closure.

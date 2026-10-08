@@ -22,7 +22,7 @@ assert.match(catalogOwnerApi, /sameOrigin\(request\)/);
 assert.match(catalogOwnerApi, /catalog_opt_in=0,next_seo_report_at=NULL/);
 assert.doesNotMatch(catalogOwnerApi, /load_board_access|hermes_company_profiles/);
 assert.match(publicCatalogApi, /vertical_key='repair_shop'/);
-assert.match(publicCatalogApi, /profileUrl: `\/businesses\/connect\/repair-shop\//);
+assert.match(publicCatalogApi, /profileUrl: publication\.path/);
 assert.match(publicCatalogApi, /id: `repair-shop-crm:\${row\.id}`/);
 assert.doesNotMatch(publicCatalogApi, /id: `repair-shop:\${row\.id}`/);
 assert.doesNotMatch(publicCatalogApi, /\bphone\b|\bemail\b|client_name|appointment/);
@@ -65,7 +65,7 @@ assert.match(robots, /Sitemap: https:\/\/hermeslogisticsus\.com\/sitemapindex\.x
 assert.doesNotMatch(robots, /Sitemap: https:\/\/hermeslogisticsus\.com\/sitemap-connect-catalog\.xml/);
 assert.match(sitemapIndex, /https:\/\/hermeslogisticsus\.com\/sitemap-connect-catalog\.xml/);
 assert.match(connectCatalogSitemap, /WHERE catalog_opt_in=1/);
-assert.match(connectCatalogSitemap, /\/businesses\/connect\/repair-shop\/\$\{esc\(slug\)\}\//);
+assert.match(connectCatalogSitemap, /repairCatalogPublication\(row\)\.path/);
 assert.doesNotMatch(connectCatalogSitemap, /client_email|client_phone|appointment|customer/);
 const staticDealerProfile = read("src/pages/businesses/[state]/[city]/[slug].astro");
 assert.match(staticDealerProfile, /class="catalog-profile-hero"/);
