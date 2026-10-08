@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: cloudflare-five-surface-synthetic
@@ -86,19 +85,19 @@ jobs:
           if (failed) process.exit(1);
           NODE
 
-      - name: Report failure to canonical Cloudflare tracker
+      - name: Report failure in Actions summary
         if: steps.synthetic.outcome != 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          gh issue comment 1349 --repo "$GITHUB_REPOSITORY" --body "## Cloudflare five-surface synthetic — FAIL
-
-          One or more public availability checks failed in scheduled run `${GITHUB_RUN_ID}`.
-
-          Checked only these public surfaces: homepage, Repair Shops, Load Board, Connect, and app. No customer payload, production mutation, Cloudflare credential, or private identifier was used.
-
-          Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          {
+            echo "## Cloudflare five-surface synthetic — FAIL"
+            echo
+            echo "One or more public availability checks failed in scheduled run `${GITHUB_RUN_ID}`."
+            echo
+            echo "Checked only these public surfaces: homepage, Repair Shops, Load Board, Connect, and app. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
+            echo
+            echo "Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce synthetic result
         if: always()

@@ -373,6 +373,14 @@ assert.deepEqual(classifyPaidIntentScope("not-json"), {
   matched: ["fail_safe_invalid_commit_file_list"],
 });
 
+const productionContactSmokeWorkflow = read(".github/workflows/production-contact-smoke.yml");
+assert.match(productionContactSmokeWorkflow, /GITHUB_STEP_SUMMARY/, "Production contact smoke must retain sanitized Actions evidence.");
+assert.doesNotMatch(productionContactSmokeWorkflow, /gh issue comment 167|issues:\s*write/, "Closed #167 must not remain a production-smoke reporting sink.");
+
+const routeScreenshotWorkflow = read(".github/workflows/route-screenshot-evidence.yml");
+assert.match(routeScreenshotWorkflow, /workflow_dispatch:/, "Route screenshot evidence must remain manually runnable.");
+assert.match(routeScreenshotWorkflow, /GITHUB_STEP_SUMMARY/, "Route screenshot evidence must retain sanitized Actions evidence.");
+assert.doesNotMatch(routeScreenshotWorkflow, /issue_comment:|github\.event\.issue\.number == 264|gh issue comment 264|issues:\s*write/, "Closed #264 must not remain a screenshot command/report sink.");
 const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
 assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
 for (const surface of [
@@ -384,7 +392,8 @@ for (const surface of [
 ]) {
   assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
 }
-assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic failures must report to the sole canonical Cloudflare tracker.");
+assert.match(fiveSurfaceSyntheticWorkflow, /GITHUB_STEP_SUMMARY/, "Synthetic failures must remain visible in the Actions summary.");
+assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349|issues:\s*write/, "Closed #1349 must not remain a reporting sink or permission justification.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
