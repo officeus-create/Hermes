@@ -592,3 +592,14 @@ EVIDENCE: Focused node --experimental-strip-types --test scripts/hermes-connect-
 LESSON: Historical attribution fixtures require explicit event timestamps rather than the runner wall clock.
 REUSE_RULE: Pin synthetic event dates inside their documented synthetic periods; never extend real periods to accommodate test drift.
 NEXT_OWNER: Central release coordination; #1756 stays behind #1754 and this prerequisite. No merge/deploy authorized here.
+
+## ERR-LOAD-BOARD-FIRST-PAINT-CSS-20261008 — IMPLEMENTED / RELEASE_GATE_PENDING
+
+PROBLEM: Load Board can paint the large legacy hero, then shrink it when conditional marketplace CSS arrives late in streamed body HTML.
+ROOT_CAUSE: existing hero rules are emitted about216KB into the body. Identical94px hero-grid movement appears in all3 primary production raw traces on deployed55eaf; deterministic desktop/mobile streaming regression reproduces it after fonts are ready. Font-timing correlation alone was an incorrect candidate explanation.
+FAILED_APPROACH: optimize JS from one TBT1382ms sample, infer field truth from Lighthouse, or select the better run. Stable primary TBT median0; secondary median0 despite one768ms outlier. Other body/context/font/counter CLS sources remain outside this one fix.
+WORKING_APPROACH: deliver unchanged24399-byte marketplace rules through the existing Load Board page's head stylesheet; keep component markup/scripts and every product/SEO/receipt/form/consent boundary unchanged. New regression fails2/2 before, passes2/2 after.
+EVIDENCE: approved-main37704990231; primary three-pass trace run37705761158/artifact11519501972; primary medians84/3103.386ms/0ms/0.091099; secondary37705825841 separately recorded. Build399 PASS, targeted browser60/60 PASS, receipt/fallback/handoff PASS. Full npm test blocked by clean-main Academy date fixture at measurement.test.mjs:169 after UTC October8 rollover; exact-head CI is required, not presumed green.
+LESSON: below-the-fold conditional CSS can mutate above-the-fold geometry after paint. Test a streamed first response with fonts settled, compare raw rectangles, and move rules without changing their values or product behavior.
+REUSE_RULE: existing-owner evidence -> reproducible trace/DOM cause -> one delivery fix -> current-head contracts/mobile/CI -> authorized release -> production remeasurement. Preserve partial evidence commit0cc7dba and all verified release entries.
+NEXT: Academy owner repairs its independent fixture; central coordinator provides fresh main for rebase and release. No merge/deploy or performance closure claimed. Main-chain receipt and current exact head are in the review PR.
