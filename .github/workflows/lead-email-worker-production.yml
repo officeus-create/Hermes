@@ -46,6 +46,9 @@ jobs:
       - name: Validate Load Board inbound email bridge
         run: node scripts/load-board-intake-api-contract.test.mjs
 
+      - name: Validate Cold Fair fail-closed delivery contract
+        run: npm run test:cold-fair-outbound-guard
+
       - name: Dry-run hermes-lead-email package
         run: npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-dry-run
 
@@ -75,6 +78,8 @@ jobs:
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Config: \`workers/lead-email/wrangler.production.jsonc\`"
             echo "- Outbound account route: \`/v1/send-account\`"
+            echo "- Cold Fair route: \`/v1/cold-fair/send\` (runtime and promotional gates remain BLOCKED)"
+            echo "- Cold Fair activation requires an approved canonical-source service binding whose immutable snapshot supplies campaignOwnerId and an explicit windowKey for atomic cap scope; this release does not configure one."
             echo "- Car Hauling delivery: SQLite Durable Object outbox with per-destination receipts and alarms"
             echo "- Inbound Load Board target: \`loads@loadboard.hermeslogisticsus.com\`"
             echo "- Inbound activation still requires the approved Cloudflare Email Routing rule and runtime source/token configuration."

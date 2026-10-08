@@ -1,5 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore } from "./index.mjs";
+import { ColdFairActionLedgerCore } from "./cold-fair-action-ledger.mjs";
 import { handleLoadBoardInboundEmail } from "./load-board-inbound.mjs";
 
 export class CarHaulingDeliveryCoordinator extends DurableObject {
@@ -14,6 +15,17 @@ export class CarHaulingDeliveryCoordinator extends DurableObject {
 
   alarm() {
     return this.coordinator.alarm();
+  }
+}
+
+export class ColdFairActionLedger extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.ledger = new ColdFairActionLedgerCore(ctx);
+  }
+
+  fetch(request) {
+    return this.ledger.fetch(request);
   }
 }
 

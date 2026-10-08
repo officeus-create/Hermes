@@ -14,6 +14,8 @@
     "SALES_DESTINATION": "officeus@hermeslogisticsus.com",
     "SALES_SENDER": "website@hermeslogisticsus.com",
     "OWNER_LEAD_ALERT_RECIPIENT": "owner@example.com",
+    "COLD_FAIR_RUNTIME_MODE": "blocked",
+    "COLD_FAIR_PROMOTIONAL_SEND_GATE": "BLOCKED",
     "CAR_HAULING_DURABLE_OUTBOX_REQUIRED": "true",
     "LOADBOARD_EMAIL_RECIPIENT": "loads@loadboard.hermeslogisticsus.com",
     "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake",
@@ -24,11 +26,19 @@
       {
         "name": "CAR_HAULING_DELIVERY_COORDINATOR",
         "class_name": "CarHaulingDeliveryCoordinator"
+      },
+      {
+        "name": "COLD_FAIR_ACTION_LEDGER",
+        "class_name": "ColdFairActionLedger"
       }
     ]
   },
   "exports": {
     "CarHaulingDeliveryCoordinator": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    },
+    "ColdFairActionLedger": {
       "type": "durable-object",
       "storage": "sqlite"
     }
