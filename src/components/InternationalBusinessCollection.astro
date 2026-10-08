@@ -24,6 +24,15 @@ const localityHubs = breadcrumbs.length === 2
       { href: `/businesses/${business.countrySlug}/${business.localitySlug}/`, name: localizedCatalogBusiness(business,"en").locality, nameUk:business.locality, region:localizedCatalogBusiness(business,"en").region, regionUk:business.region },
     ])).values()]
   : [];
+const isCountryCollection = breadcrumbs.length === 2;
+const ukrainianLocality = businesses.length ? localizedCatalogBusiness(businesses[0],"uk").locality : "";
+const ukrainianRegion = businesses.length ? localizedCatalogBusiness(businesses[0],"uk").region : "";
+const ukrainianTitle = isCountryCollection ? "Компанії України" : `Компанії у місті ${ukrainianLocality}, ${ukrainianRegion}`;
+const ukrainianEyebrow = isCountryCollection ? "Каталог Hermes · Міжнародні компанії · Україна" : `Каталог Hermes · Україна · ${ukrainianLocality}`;
+const ukrainianDescription = isCountryCollection
+  ? "Вибрані компанії України з публічно перевіреними даними. Ці профілі є додатковим каталогом, а не підтвердженням клієнтських відносин з Hermes."
+  : "Профілі місцевих компаній за відкритими джерелами. Статус власника, послуги та комерційні умови потребують окремої перевірки.";
+const ukrainianBack = parentBreadcrumb.name === "Ukraine" ? "Україна" : "Каталог Hermes";
 const schema = [
   {
     "@context": "https://schema.org",
@@ -55,17 +64,17 @@ const schema = [
 ---
 <BaseLayout title={title} description={description} schema={schema} robots={robots}>
   <SiteHeader theme="light" activePath="/businesses/" />
-  <main id="main-content" class="intl-collection" data-catalog-uk-en>
+  <main id="main-content" class="intl-collection" data-catalog-uk-en data-title-uk={`${ukrainianTitle} | Hermes Catalog`}>
     <div class="shell">
-      <a class="back" href={parentHref}>← {parentBreadcrumb.name}</a>
+      <a class="back" href={parentHref} data-uk={`← ${ukrainianBack}`} data-en={`← ${parentBreadcrumb.name}`}>← {parentBreadcrumb.name}</a>
       <header>
-        <p class="eyebrow">{eyebrow}</p>
-        <h1>{title.replace(" | Hermes Catalog", "")}</h1>
-        <p>{description}</p>
+        <p class="eyebrow" data-uk={ukrainianEyebrow} data-en={eyebrow}>{eyebrow}</p>
+        <h1 data-uk={ukrainianTitle} data-en={title.replace(" | Hermes Catalog", "")}>{title.replace(" | Hermes Catalog", "")}</h1>
+        <p data-uk={ukrainianDescription} data-en={description}>{description}</p>
       </header>
       <section class="summary" aria-label="International Catalog summary">
-        <article><strong>{businesses.length}</strong><span>published profile{businesses.length === 1 ? "" : "s"}</span></article>
-        <article><strong>{new Set(businesses.map((business) => business.vertical)).size}</strong><span>business vertical{new Set(businesses.map((business) => business.vertical)).size === 1 ? "" : "s"}</span></article>
+        <article><strong>{businesses.length}</strong><span data-uk={businesses.length === 1 ? "опублікований профіль" : "опублікованих профілів"} data-en={`published profile${businesses.length === 1 ? "" : "s"}`}>published profile{businesses.length === 1 ? "" : "s"}</span></article>
+        <article><strong>{new Set(businesses.map((business) => business.vertical)).size}</strong><span data-uk="напрямів бізнесу" data-en={`business vertical${new Set(businesses.map((business) => business.vertical)).size === 1 ? "" : "s"}`}>business vertical{new Set(businesses.map((business) => business.vertical)).size === 1 ? "" : "s"}</span></article>
         <article><strong>Secondary</strong><span>catalog priority</span></article>
       </section>
       {localityHubs.length > 0 && (
@@ -78,7 +87,7 @@ const schema = [
       <section class="grid">
         {businesses.map((business) => (
           <article>
-            <div class="top"><span data-uk={localizedCatalogBusiness(business,"uk").primaryIntent} data-en={localizedCatalogBusiness(business,"en").primaryIntent}>{localizedCatalogBusiness(business,"en").primaryIntent}</span><span>{business.status}</span></div>
+            <div class="top"><span data-uk={localizedCatalogBusiness(business,"uk").primaryIntent} data-en={localizedCatalogBusiness(business,"en").primaryIntent}>{localizedCatalogBusiness(business,"en").primaryIntent}</span><span data-uk={business.status === "client" ? "Клієнт Hermes" : business.status === "claimed" ? "Підтверджено власником" : "Не підтверджено власником"} data-en={business.status}>{business.status}</span></div>
             <h2 data-uk={localizedCatalogBusiness(business,"uk").name} data-en={localizedCatalogBusiness(business,"en").name}>{localizedCatalogBusiness(business,"en").name}</h2>
             <p data-uk={`${localizedCatalogBusiness(business,"uk").primaryIntent} · ${business.locality}, ${business.region}`} data-en={`${localizedCatalogBusiness(business,"en").primaryIntent} · ${localizedCatalogBusiness(business,"en").locality}, ${localizedCatalogBusiness(business,"en").region}`}>{localizedCatalogBusiness(business,"en").primaryIntent} · {localizedCatalogBusiness(business,"en").locality}, {localizedCatalogBusiness(business,"en").region}</p>
             <ul>{business.services.slice(0,4).map((service,index)=><li data-uk={localizedCatalogBusiness(business,"uk").services[index] ?? service} data-en={localizedCatalogBusiness(business,"en").services[index] ?? service}>{localizedCatalogBusiness(business,"en").services[index] ?? service}</li>)}</ul>
@@ -88,7 +97,7 @@ const schema = [
       </section>
       <section class="boundary">
         <h2>How to read these profiles</h2>
-        <p>International Hermes Catalog pages are free public discovery profiles. They support useful local SEO/GEO coverage and a path to claim or activate Hermes services, but they do not imply a Hermes customer relationship unless the profile is explicitly marked claimed or client.</p>
+        <p data-uk="Міжнародні сторінки Hermes Catalog — безкоштовні публічні профілі компаній. Вони допомагають знаходити місцеві підприємства, підтвердити право власності та за потреби підключити Hermes Connect. Без підтвердженого статусу claimed або client такий профіль не означає клієнтських відносин з Hermes." data-en="International Hermes Catalog pages are free public discovery profiles. They support useful local SEO/GEO coverage and a path to claim or activate Hermes services, but they do not imply a Hermes customer relationship unless the profile is explicitly marked claimed or client.">International Hermes Catalog pages are free public discovery profiles. They support useful local SEO/GEO coverage and a path to claim or activate Hermes services, but they do not imply a Hermes customer relationship unless the profile is explicitly marked claimed or client.</p>
       </section>
     </div>
   </main>

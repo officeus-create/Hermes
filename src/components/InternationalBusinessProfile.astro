@@ -33,11 +33,15 @@ const relationshipLead = business.status === "client"
 const faq = [
   {
     question: "Is this an official Hermes customer profile?",
-    answer: isVerifiedRelationship ? `Yes. Hermes records this profile as ${business.status}; current operating and commercial details still require source or owner verification.` : "No. This is a public Hermes Catalog discovery profile. Owner verification is required before Hermes presents an active customer relationship."
+    questionUk: "Це офіційний профіль клієнта Hermes?",
+    answer: isVerifiedRelationship ? `Yes. Hermes records this profile as ${business.status}; current operating and commercial details still require source or owner verification.` : "No. This is a public Hermes Catalog discovery profile. Owner verification is required before Hermes presents an active customer relationship.",
+    answerUk: isVerifiedRelationship ? "Так. Hermes підтвердив статус співпраці, але актуальні умови та факти потребують перевірки у власника." : "Ні. Це публічний інформаційний профіль каталогу Hermes. Статус клієнта можна підтвердити лише після перевірки власником.",
   },
   {
     question: "Can the business activate Hermes Connect?",
-    answer: "Yes. An authorized owner can claim and verify the profile, then choose which Hermes Connect and growth modules to activate."
+    questionUk: "Чи може компанія підключити Hermes Connect?",
+    answer: "Yes. An authorized owner can claim and verify the profile, then choose which Hermes Connect and growth modules to activate.",
+    answerUk: "Так. Уповноважений власник може підтвердити профіль і вибрати потрібні модулі Hermes Connect та інструменти розвитку бізнесу."
   }
 ];
 const schema = [
@@ -105,7 +109,7 @@ const schema = [
     <p class="eyebrow">Hermes Catalog · International · {verticalLabel}</p>
     <h1 data-uk={uk.name} data-en={en.name}>{en.name}</h1>
     <p class="lead" data-uk={`${uk.primaryIntent} · ${uk.locality}, ${uk.region}. ${leadUk}`} data-en={`${en.primaryIntent} · ${en.locality}, ${en.region}. ${relationshipLead}`}>{en.primaryIntent} · {en.locality}, {en.region}. {relationshipLead}</p>
-    <div class="badges"><span>{business.status}</span><span>{business.catalogPriority} catalog layer</span><span>{business.countryCode}</span></div>
+    <div class="badges"><span data-uk={business.status === "client" ? "Клієнт Hermes" : business.status === "claimed" ? "Підтверджено власником" : "Не підтверджено власником"} data-en={business.status}>{business.status}</span><span data-uk="Додатковий каталог" data-en={`${business.catalogPriority} catalog layer`}>{business.catalogPriority} catalog layer</span><span>{business.countryCode}</span></div>
   </header>
   <section class="grid">
     <article><h2>Business facts</h2><dl>
@@ -118,9 +122,9 @@ const schema = [
   </section>
   {business.featuredOffer && <section class="offer">
     <p class="eyebrow">Featured program / offer</p>
-    <h2>{business.featuredOffer.name}</h2>
-    <p>{business.featuredOffer.description}</p>
-    <div class="offer-meta">{business.featuredOffer.duration && <span>{business.featuredOffer.duration}</span>}<a href={business.featuredOffer.url} rel="noreferrer" target="_blank">Official program page ↗</a></div>
+    <h2 data-uk={business.featuredOffer.name} data-en={business.featuredOffer.nameEn ?? business.featuredOffer.name}>{business.featuredOffer.nameEn ?? business.featuredOffer.name}</h2>
+    <p data-uk={business.featuredOffer.description} data-en={business.featuredOffer.descriptionEn ?? business.featuredOffer.description}>{business.featuredOffer.descriptionEn ?? business.featuredOffer.description}</p>
+    <div class="offer-meta">{business.featuredOffer.duration && <span data-uk={business.featuredOffer.duration} data-en={business.featuredOffer.durationEn ?? business.featuredOffer.duration}>{business.featuredOffer.durationEn ?? business.featuredOffer.duration}</span>}<a href={business.featuredOffer.url} rel="noreferrer" target="_blank">Official program page ↗</a></div>
   </section>}
   {business.trust && <section class="trust"><strong>{business.trust.rating.toFixed(1)}</strong><span>{business.trust.source} · {business.trust.reviewCount} reviews · observed {business.trust.observedAt}</span></section>}
   <section class="channels"><h2 data-uk="Публічні канали" data-en="Public channels">Public channels</h2><div>{business.channels.map((channel)=><a href={channel.url} rel="noreferrer" target="_blank" data-uk={`${channel.label} ↗`} data-en={`${localizedCatalogChannel(channel.label,"en")} ↗`}>{localizedCatalogChannel(channel.label,"en")} ↗</a>)}</div></section>
@@ -133,10 +137,10 @@ const schema = [
       <div><dt>Catalog priority</dt><dd>{business.catalogPriority}</dd></div>
       <div><dt>Evidence reference</dt><dd><code>{business.sourceRef}</code></dd></div>
     </dl>
-    <p>{business.status === "client" ? "This profile records a confirmed Hermes client workstream while keeping changing business facts, pricing, dates and public claims evidence-gated." : "This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification."}</p>
+    <p data-uk={business.status === "client" ? "Hermes підтвердив роботу з цим клієнтом, але актуальні ціни, дати та інші публічні твердження потребують перевірки." : "Цей профіль підтверджує лише інформацію про компанію з відкритих джерел. Він не доводить платні клієнтські відносини з Hermes."} data-en={business.status === "client" ? "This profile records a confirmed Hermes client workstream while keeping changing business facts, pricing, dates and public claims evidence-gated." : "This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification."}>{business.status === "client" ? "This profile records a confirmed Hermes client workstream while keeping changing business facts, pricing, dates and public claims evidence-gated." : "This profile proves a source-bounded business entity and a Hermes discovery/CRM concept. It does not prove a paid client relationship unless the relationship state is explicitly changed to client after verification."}</p>
   </section>
   <section class="boundary"><h2 data-uk="Потрібне підтвердження власника" data-en="Needs owner confirmation">Needs owner confirmation</h2><p data-uk="Hermes не вигадує робочі факти. Ці дані залишаються непідтвердженими, доки власник їх не перевірить." data-en="Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.">Hermes does not invent operating facts. These fields remain explicitly unverified until the owner confirms them.</p><ul>{business.factsRequiringOwnerConfirmation.map((fact,index)=><li data-uk={uk.factsRequiringOwnerConfirmation[index] ?? fact} data-en={en.factsRequiringOwnerConfirmation[index] ?? fact}>{en.factsRequiringOwnerConfirmation[index] ?? fact}</li>)}</ul></section>
-  <section class="faq"><p class="eyebrow">FAQ</p><h2>How this profile works</h2>{faq.map((item)=><article><h3>{item.question}</h3><p>{item.answer}</p></article>)}</section>
+  <section class="faq"><p class="eyebrow">FAQ</p><h2>How this profile works</h2>{faq.map((item)=><article><h3 data-uk={item.questionUk} data-en={item.question}>{item.question}</h3><p data-uk={item.answerUk} data-en={item.answer}>{item.answer}</p></article>)}</section>
   <section class="growth"><div><p class="eyebrow">Hermes growth path</p><h2>From free discovery profile to an operating business system</h2><p>Claim the profile, verify facts, then activate only the modules this business needs: CRM, bookings or requests, customer history, website, local SEO/GEO, reviews and automation.</p></div><div class="actions">
     <a href={business.crmPreviewUrl ?? `/services/hermes-connect/demos/${business.slug}/`}>Open CRM preview</a>
     <a href={`/businesses/request/?type=claim&business=${encodeURIComponent(business.name)}&profile=${encodeURIComponent(profileUrl)}&city=${encodeURIComponent(business.locality)}&country=Ukraine`}>Claim / verify</a>

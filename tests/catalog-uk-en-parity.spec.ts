@@ -49,3 +49,15 @@ test("Ukraine collection cards render translated services for both languages", a
   await expect(page.locator("main .grid")).toContainText("TRIMMO II барбершоп");
   await expect(page.locator("main .grid")).toContainText("Чоловіча стрижка");
 });
+
+test("Ukraine collection and business FAQ translate beyond names and services", async ({ page }) => {
+  await page.goto("/businesses/ukraine/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("main.intl-collection h1")).toContainText("Selected Businesses in Ukraine");
+  await page.goto("/businesses/ukraine/?lang=uk", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("main.intl-collection h1")).toHaveText("Компанії України");
+  await expect(page.locator("main.intl-collection .boundary")).toContainText("безкоштовні публічні профілі");
+  await page.goto("/businesses/ukraine/chaiky/mangal-i-kazan/?lang=uk", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("main .faq")).toContainText("Це офіційний профіль клієнта Hermes?");
+  await expect(page.locator("main .faq")).toContainText("Чи може компанія підключити Hermes Connect?");
+  await expect(page.locator('html')).toHaveAttribute("lang", "uk");
+});
