@@ -76,7 +76,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const countryCode = cleanCompanyText(body.countryCode || "US", 2).toUpperCase();
   const timezone = cleanCompanyText(body.timezone, 64);
   const publicSourceRef = cleanCompanyText(body.publicSourceRef, 160);
-  const catalogOptIn = body.catalogOptIn !== false;
+  // New Home Services profiles are private unless the owner explicitly opts into Catalog publication.
+  const catalogOptIn = companyType === "home_service" ? body.catalogOptIn === true : body.catalogOptIn !== false;
 
   const errors: string[] = [];
   if (companyName.length < 2) errors.push("company_name_required");
@@ -97,8 +98,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (errors.length) return jsonResponse(400, { success: false, errors });
 
   const existing = await env.DB.prepare(
-    "SELECT id, slug, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
-  ).bind(specialist.id).first() as { id?: string; slug?: string; created_at?: string } | null;
+    "SELECT id, slug, company_type, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
+  ).bind(specialist.id).first() as { id?: string; slug?: string; company_type?: string; created_at?: string } | null;
+  // Business-type migrations need a separate verified workflow; a Home Services signup must never overwrite
+  // an existing carrier/repair/other company, even when the endpoint is called outside the UI.
+  if (existing?.company_type && existing.company_type !== companyType &&
+      (existing.company_type === "home_service" || companyType === "home_service")) {
+    return jsonResponse(409, { success: false, error: "existing_company_type_locked" }, { "Cache-Control": "private, no-store" });
+  }
   const now = new Date().toISOString();
   const id = existing?.id || `company-${crypto.randomUUID()}`;
   const slug = existing?.slug || companySlug(companyName, specialist.id);
@@ -128,6 +135,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       catalog_status = CASE WHEN hermes_company_profiles.catalog_status = 'verified_public' THEN 'verified_public' ELSE 'self_submitted' END,
       load_board_access = excluded.load_board_access,
       updated_at = excluded.updated_at
+    WHERE hermes_company_profiles.company_type = excluded.company_type
+      OR (hermes_company_profiles.company_type <> 'home_service' AND excluded.company_type <> 'home_service')
   `).bind(
     id, specialist.id, companyName, slug, companyType, city, state, website || null,
     phone || null, addressLine1 || null, postalCode || null, countryCode, timezone || null, publicSourceRef || null,
@@ -137,6 +146,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const row = await env.DB.prepare(
     "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
+  // Fail closed if a concurrent write collided with the protected cross-vertical boundary.
+  if (row?.company_type !== companyType &&
+      (row?.company_type === "home_service" || companyType === "home_service")) {
+    return jsonResponse(409, { success: false, error: "existing_company_type_locked" }, { "Cache-Control": "private, no-store" });
+  }
 
   return jsonResponse(200, {
     success: true,
