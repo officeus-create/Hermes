@@ -45,3 +45,40 @@ test("I am investor concept and product note fit a 390px viewport", async ({page
     await expect(page.locator("main h1")).toBeVisible();
   }
 });
+
+
+test("I am country-only wording does not incorrectly turn car rental into Tax Free", async ({page}) => {
+  await page.goto(concept, {waitUntil: "domcontentloaded"});
+  await page.getByRole("textbox", {name:"What would you like to do?"}).fill("I will visit Italy and need to rent a car");
+  await page.getByRole("button", {name:"Create an example plan"}).click();
+  await expect(page.locator("#iam-result [data-intent-module='travel']")).toHaveCount(1);
+  await expect(page.locator("#iam-result [data-intent-module='tax-free']")).toHaveCount(0);
+});
+
+test("I am dynamically builds multiple example modules and temporary menu resets on reload", async ({page}) => {
+  await page.goto(concept, {waitUntil: "domcontentloaded"});
+  await page.getByRole("textbox", {name:"What would you like to do?"}).fill("I need Tax Free help after shopping and also want to rent a car");
+  await page.getByRole("button", {name:"Create an example plan"}).click();
+  const taxFree = page.locator("#iam-result [data-intent-module='tax-free']");
+  const travel = page.locator("#iam-result [data-intent-module='travel']");
+  await expect(taxFree).toBeVisible();
+  await expect(travel).toBeVisible();
+  await taxFree.getByRole("button",{name:"Pin this example"}).click();
+  await travel.getByRole("button",{name:"Pin this example"}).click();
+  await expect(page.locator("#iam-pinned [role='listitem']")).toHaveCount(2);
+  await expect(page.locator("#iam-workspace")).toContainText("disappear on reload");
+  await page.getByRole("button",{name:"Remove Travel & mobility journey"}).click();
+  await expect(page.locator("#iam-pinned [role='listitem']")).toHaveCount(1);
+  await page.reload({waitUntil:"domcontentloaded"});
+  await expect(page.locator("#iam-workspace")).toBeHidden();
+  await expect(page.locator("#iam-pinned [role='listitem']")).toHaveCount(0);
+});
+
+test("I am unknown intents display a truthful research gate, not a fabricated workflow", async ({page}) => {
+  await page.goto(concept, {waitUntil: "domcontentloaded"});
+  await page.getByRole("textbox", {name:"What would you like to do?"}).fill("I need a novel procedure for quantum licenses on the moon");
+  await page.getByRole("button", {name:"Create an example plan"}).click();
+  await expect(page.locator("#iam-result")).toContainText("No verified service category found");
+  await expect(page.locator("#iam-result")).toContainText("does not invent a service");
+  await expect(page.locator("#iam-result button[data-pin-module]")).toHaveCount(0);
+});
