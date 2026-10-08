@@ -1727,3 +1727,42 @@ Owner: Academy / Codex; branch `fix/academy-measurement-fixture-clock-20261008`,
 - Ownership: open PR diffs checked; no overlap with page/component/new CSS/new test. Shared AI_HANDOFF/ERROR_REGISTER overlap #1758/#1756/#1663 is append-only. No forms, outreach, main merge or deployment performed.
 - Compounding: strengthens the existing commercial owner and first-screen stability without SEO expansion; reuses page-scoped CSS and streaming regression; preserves truthful conversion and consent; records lab/trace/release provenance for reuse. New public content, global design/JS optimization and automation deferred.
 - Safe release order: Academy owner fixes the independent date fixture in its own lane -> central coordinator lands that gate repair -> rebase this bounded CSS PR preserving all journal entries -> fresh build/npm test/desktop-mobile/exact-head terminal CI -> owner review/authorized merge+deploy -> exact-SHA readback and three sequential production passes. Candidate evidence is not production improvement or closure.
+
+
+## 2026-10-08 — Codex — Search crawler-hints status reconciliation
+
+```yaml
+ai_name: Codex
+model: GPT-6.1
+chat_or_thread: Hermes Search demand, CTR, authority and AI visibility
+role: direct documentation owner
+department: Search / Marketing
+date: 2026-10-08
+contribution_type: Documentation reconciliation
+confidence: 99
+task_id: ERR-CLOUDFLARE-CRAWLER-HINTS-20261006
+source_of_truth: authenticated Cloudflare owner receipt on current main
+authority_scope: Review branch
+write_scope: [error register, handoff]
+specialization: [search operations, evidence reconciliation]
+not_specialized_in: [Cloudflare account administration, release approval]
+reviewed: [current main, crawler-hints receipt, indexing release record, search operating system]
+not_reviewed: [future settled Bing response, lead or revenue impact]
+handoff_to: repository owner for review
+```
+
+- Reconciled the stale `OWNER_ACTION` row with the existing authenticated receipt at `data/seo/indexnow-crawler-hints-setting-2026-10-07.json`: Cloudflare Crawler Hints is OFF and the repository-controlled IndexNow path remains the only intended notification owner.
+- No runtime, canonical page, robots, sitemap, schema, tracking, submission workflow or external account was changed. This documentation-only correction prevents a duplicate Cloudflare mutation while the team waits for a settled Bing comparison window.
+- Verification before the final release-queue rebase: exact-head `git diff --check`, `npm run build` (399 pages, zero errors) and `npm test` passed on base `83aef305da82f5221b51d617da34c9f040cbc5cf`. The same documentation-only delta was then rebased after #1753, #1757 and #1751 onto `55eaf2762242fb830641e227280b98ad89966fe9`; fresh exact-head CI is required before merge readiness can be claimed.
+- Release boundary: review branch only. No merge, deployment, traffic, lead or revenue claim.
+
+
+## 2026-10-08 — Existing release/error-register closeout
+
+- Scope: refresh the same #1758 documentation lane onto current main1195b3533225d8646a099d8f775e44cae751d02d, preserve every current-main journal entry and the prior crawler-hints receipt. No second register or writer is created.
+- Dated evidence independently reconciles Wisconsin runtime expiry (#1750/run37695299826), active main ruleset24686927 with six strict checks/no bypass, and synthetic Academy fixture repair (#1760/exact-head37706532079+37706532059/deploy37707840904). Business renewal, access expansion and real attribution outcomes are not inferred.
+- Closed the targeted late Load Board stylesheet defect with exact deploy and three production traces; retain slow-load warnings, invalid attempts and unchanged aggregate CLS limitations. No CrUX, lead or revenue improvement claim.
+- Recorded the repeatedly observed Home history hit-test readiness cause and bounded assertion-preserving test correction from #1764. Final CI includes2026passed/16skipped, no failures/flakes; this is not a change to Home runtime.
+- Locale release acceptance: #1755 clean English/query locales and actual EN→UK→FR→EN switching verified live; #1754 current public product truth verified on seven routes; #1764 completes Italian accademia title with unchanged H1/canonical/robots/hreflang. Footer locale work remains with its separate held owner.
+- Reuse: do not promote a PR description into implementation proof; inspect rendered acceptance targets. Do not treat one green test or merge as full live/commercial evidence.
+- This patch changes documentation only. Existing #1756 journal additions remain on their original branch/commits until this sole register lane is released, then reconcile them sequentially. Current #1758 exact-head CI is still required; no claim that this docs patch has merged or deployed.
