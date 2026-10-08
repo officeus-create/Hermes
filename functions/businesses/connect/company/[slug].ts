@@ -33,7 +33,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const services = readArray(row.services_json);
   const serviceAreas = readArray(row.service_areas_json);
   const website = safeHttpUrl(row.website);
-  const publicAssets = getHomeServicePublicAssets({ website });
+  const publicAssets = getHomeServicePublicAssets({ website, companyName: row.company_name });
   const phone = String(row.phone || "").trim();
   const phoneDial = phone.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
   const summary = String(row.public_summary || `${row.company_name} provides local home and property services in ${row.city}, ${row.state} and nearby communities.`);
