@@ -260,6 +260,7 @@ assert.match(crmHelper, /lead_cost_source_ref/);
 assert.match(crmHelper, /Historical zero stays UNKNOWN/);
 assert.match(crmApi, /same_origin_required/);
 assert.match(publicProfile, /"@type": "LocalBusiness"/);
+assert.match(publicProfile, /home-services\/access\/\?mode=login/);
 assert.match(publicProfile, /private CRM records are not published here/);
 assert.match(clientConfig, /uniqueKeywords: 8155/);
 assert.match(homeServicesAccess, /robots="noindex,nofollow"/);
