@@ -56,8 +56,8 @@
       if (heading) add(location.pathname, heading, true);
     }
     const paths = [...targets.keys()].filter((path) => !requested.has(path));
-    for (let offset = 0; offset < paths.length; offset += 40) {
-      const batch = paths.slice(offset, offset + 40); batch.forEach((path) => requested.add(path));
+    for (let offset = 0; offset < paths.length; offset += 12) {
+      const batch = paths.slice(offset, offset + 12); batch.forEach((path) => requested.add(path));
       const query = new URLSearchParams(); batch.forEach((path) => query.append('path', path));
       fetch('/api/catalog-business-event?' + query, { credentials: 'same-origin', cache: 'no-store' })
         .then(async (response) => { if (!response.ok) throw new Error('unavailable'); return response.json(); })
