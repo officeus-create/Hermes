@@ -167,9 +167,9 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     poe: "Poe",
   };
   const aiProvider = Object.prototype.hasOwnProperty.call(aiProviderLabels, rawAiProvider) ? rawAiProvider : "";
-  const aiContext = document.querySelector<HTMLElement>("[data-ai-entry-context]");
-  const aiLabel = document.querySelector<HTMLElement>("[data-ai-provider-label]");
-  if (aiSource === "ai") {
+  if (typeof document !== "undefined" && aiSource === "ai") {
+    const aiContext = document.querySelector<HTMLElement>("[data-ai-entry-context]");
+    const aiLabel = document.querySelector<HTMLElement>("[data-ai-provider-label]");
     if (aiLabel) aiLabel.textContent = aiProviderLabels[aiProvider] || "your AI assistant";
     if (aiContext) aiContext.hidden = false;
   }
