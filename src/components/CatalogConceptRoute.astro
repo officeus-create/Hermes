@@ -6,24 +6,23 @@ import CatalogWebsiteConcept from "./CatalogWebsiteConcept.astro";
 import InternationalBusinessProfile from "./InternationalBusinessProfile.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
 import { buildCatalogConceptSchema } from "../lib/catalog-concept-schema.mjs";
+import { localizedCatalogBusiness } from "../lib/catalog-business-locale";
 
 interface Props { business: CatalogBusinessConcept; }
 const { business } = Astro.props;
 const profileUrl = `https://hermeslogisticsus.com/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`;
 const isLocalizedConcept = Boolean(business.localeCopy);
-const title = business.id === "catalog-ua-chayka-store"
-  ? "Ремонт телефонів у Чайках | Чайка Store — Hermes Catalog"
-  : `${business.name} | Hermes Catalog`;
-const description = business.id === "catalog-ua-chayka-store"
-  ? "Hermes Catalog website concept for Чайка Store in Чайки: phone repair discovery, contacts and More Chay tea direction."
-  : `Public Hermes Catalog discovery profile for ${business.name} in ${business.locality}, ${business.region}.`;
+const en = localizedCatalogBusiness(business,"en");
+const title = `${en.name} | Hermes Catalog`;
+const description = `Public Hermes Catalog discovery profile for ${en.name} in ${en.locality}, ${en.region}. Facts and client/owner state are source-bounded.`;
 const schema = isLocalizedConcept ? buildCatalogConceptSchema({ business, profileUrl }) : [];
 ---
 {isLocalizedConcept ? (
   <BaseLayout title={title} description={description} schema={schema}>
     <SiteHeader theme="light" activePath="/businesses/" />
-    <main class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale="uk" /></main>
+    <main class="concept-page"><CatalogWebsiteConcept business={business} profileUrl={profileUrl} defaultLocale="en" /></main>
     <SiteFooter />
+    <script is:inline src="/catalog-uk-en.js"></script>
   </BaseLayout>
 ) : <InternationalBusinessProfile business={business} />}
 <style>.concept-page{min-height:80vh;background:#f6f6f1;color:#18201e;padding:118px max(16px,calc((100% - 1160px)/2)) 70px}@media(max-width:760px){.concept-page{padding-top:88px}}</style>
