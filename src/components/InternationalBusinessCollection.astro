@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
 import type { CatalogBusinessConcept } from "../data/catalog-business-concepts";
+import { localizedCatalogBusiness } from "../lib/catalog-business-locale";
 
 interface Props {
   title: string;
@@ -20,7 +21,7 @@ const parentHref = parentBreadcrumb.item.startsWith("http") ? new URL(parentBrea
 const localityHubs = breadcrumbs.length === 2
   ? [...new Map(businesses.map((business) => [
       `${business.countrySlug}/${business.localitySlug}`,
-      { href: `/businesses/${business.countrySlug}/${business.localitySlug}/`, name: business.locality, region: business.region },
+      { href: `/businesses/${business.countrySlug}/${business.localitySlug}/`, name: localizedCatalogBusiness(business,"en").locality, nameUk:business.locality, region:localizedCatalogBusiness(business,"en").region, regionUk:business.region },
     ])).values()]
   : [];
 const schema = [
@@ -54,7 +55,7 @@ const schema = [
 ---
 <BaseLayout title={title} description={description} schema={schema} robots={robots}>
   <SiteHeader theme="light" activePath="/businesses/" />
-  <main id="main-content" class="intl-collection">
+  <main id="main-content" class="intl-collection" data-catalog-uk-en>
     <div class="shell">
       <a class="back" href={parentHref}>← {parentBreadcrumb.name}</a>
       <header>
@@ -70,17 +71,17 @@ const schema = [
       {localityHubs.length > 0 && (
         <nav class="locality-hubs" aria-label="Browse business locations">
           {localityHubs.map((locality) => (
-            <a href={locality.href}><strong>{locality.name}</strong><span>{locality.region}</span></a>
+            <a href={locality.href}><strong data-uk={locality.nameUk} data-en={locality.name}>{locality.name}</strong><span data-uk={locality.regionUk} data-en={locality.region}>{locality.region}</span></a>
           ))}
         </nav>
       )}
       <section class="grid">
         {businesses.map((business) => (
           <article>
-            <div class="top"><span>{business.primaryIntent}</span><span>{business.status}</span></div>
-            <h2>{business.name}</h2>
-            <p>{business.primaryIntent} · {business.locality}, {business.region}</p>
-            <ul>{business.services.slice(0, 4).map((service) => <li>{service}</li>)}</ul>
+            <div class="top"><span data-uk={localizedCatalogBusiness(business,"uk").primaryIntent} data-en={localizedCatalogBusiness(business,"en").primaryIntent}>{localizedCatalogBusiness(business,"en").primaryIntent}</span><span>{business.status}</span></div>
+            <h2 data-uk={localizedCatalogBusiness(business,"uk").name} data-en={localizedCatalogBusiness(business,"en").name}>{localizedCatalogBusiness(business,"en").name}</h2>
+            <p data-uk={`${localizedCatalogBusiness(business,"uk").primaryIntent} · ${business.locality}, ${business.region}`} data-en={`${localizedCatalogBusiness(business,"en").primaryIntent} · ${localizedCatalogBusiness(business,"en").locality}, ${localizedCatalogBusiness(business,"en").region}`}>{localizedCatalogBusiness(business,"en").primaryIntent} · {localizedCatalogBusiness(business,"en").locality}, {localizedCatalogBusiness(business,"en").region}</p>
+            <ul>{business.services.slice(0,4).map((service,index)=><li data-uk={localizedCatalogBusiness(business,"uk").services[index] ?? service} data-en={localizedCatalogBusiness(business,"en").services[index] ?? service}>{localizedCatalogBusiness(business,"en").services[index] ?? service}</li>)}</ul>
             <a href={`/businesses/${business.countrySlug}/${business.localitySlug}/${business.slug}/`}>Open profile →</a>
           </article>
         ))}
@@ -92,6 +93,7 @@ const schema = [
     </div>
   </main>
   <SiteFooter />
+  <script is:inline src="/catalog-uk-en.js"></script>
 </BaseLayout>
 <style>
   .intl-collection{min-height:70vh;background:#f6f7f9;color:#172033}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:110px 0 80px}.back{color:#2168a6;text-decoration:none;font-weight:800}.eyebrow{margin:28px 0 8px;color:#2168a6;text-transform:uppercase;letter-spacing:.11em;font-size:11px;font-weight:900}header h1{max-width:920px;margin:0;font-size:clamp(38px,5.5vw,66px);line-height:1;letter-spacing:-.045em}header>p:last-child,.boundary p{max-width:850px;color:#657286;line-height:1.65}.summary{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.summary article{min-width:160px;padding:18px;border:1px solid #dfe6ed;border-radius:15px;background:#fff}.summary strong{display:block;font-size:28px}.summary span{color:#718095;font-size:12px}.locality-hubs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 20px}.locality-hubs a{display:grid;gap:4px;min-height:72px;padding:14px 16px;border:1px solid #d7e2ec;border-radius:14px;background:#fff;color:#1969b5;text-decoration:none}.locality-hubs span{color:#6d7b8e;font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.grid article{display:grid;gap:12px;padding:20px;border:1px solid #dfe6ed;border-radius:17px;background:#fff}.top{display:flex;justify-content:space-between;gap:8px;color:#607086;font-size:10px;font-weight:850;text-transform:uppercase}.grid h2{margin:0;font-size:24px}.grid p,.grid li{color:#667587;line-height:1.55}.grid ul{margin:0;padding-left:18px}.grid a{color:#1969b5;text-decoration:none;font-weight:850}.boundary{margin-top:20px;padding:22px;border:1px solid #dce5ef;border-radius:16px;background:#eef5fb}.boundary h2{margin-top:0}@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.grid,.locality-hubs{grid-template-columns:1fr}.summary{display:grid;grid-template-columns:1fr 1fr}.summary article:last-child{grid-column:1/-1}}
