@@ -128,8 +128,18 @@ export const chaykaStoreConcept = Object.freeze({
     }
   },
   faq: [
-    { question: "Чи можна уточнити ремонт телефону через цю сторінку?", answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом." },
-    { question: "Це офіційний сайт Чайка Store?", answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes." }
+    {
+      question: "Чи можна уточнити ремонт телефону через цю сторінку?",
+      answer: "Так. Ви можете залишити контактний запит; конкретні послуги, ціна, строки та гарантія мають бути підтверджені бізнесом.",
+      questionEn: "Can I ask about phone repairs through this page?",
+      answerEn: "Yes. You can send a contact request. The business must confirm its actual repair services, pricing, turnaround time and warranty."
+    },
+    {
+      question: "Це офіційний сайт Чайка Store?",
+      answer: "Ні. Це Hermes Catalog Website Concept на основі публічних і наданих бізнес-даних; профіль залишається непідтвердженим власником у Hermes.",
+      questionEn: "Is this the official Chayka Store website?",
+      answerEn: "No. This is a Hermes Catalog website concept based on public and business-provided facts. The owner has not claimed this profile through Hermes."
+    }
   ],
   semanticCore: ["ремонт телефонів Чайки", "ремонт смартфонів Чайки", "local entity + NAP", "Google Business", "FAQ + schema", "UA / EN"],
   sourceRef: "CLIENT-SUPPLIED-CHAYKA-STORE-20260924"
