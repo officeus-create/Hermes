@@ -113,7 +113,9 @@ Canonical workspace: `/logistics/start-car-hauling-dispatch/`
 | `carrier_intake_start` | First trusted focus/input/change in the direct carrier form | `audience_type`, `page_group`, `service_group`, `page_path` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Carrier began the direct intake. |
 | `carrier_intake_preview_ready` | Qualified local review generated | base parameters plus `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | A reviewable request was prepared locally; not delivered. |
 | `carrier_handoff_ready` | Email fallback clicked or secure delivery initiated | base parameters plus `handoff_method`, `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | User chose a handoff route; not confirmed delivery. |
-| `carrier_delivery_confirmed` | Approved receiver returned a successful response | base parameters plus `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED`; `DELIVERY_RECONCILIATION_REQUIRED` | Browser received delivery confirmation. Must be reconciled against receiver evidence and duplicate/test exclusion before reporting a delivered inquiry. |
+| `carrier_submitted` | Approved receiver returned `success: true` and the matching `request_id` | base parameters plus `preview_status` | `DATALAYER_PRESENT` | `GA4_UNVERIFIED` | Request service accepted the handoff. Delivery and human receipt remain unconfirmed. |
+
+2026-10-08 carrier correction: `carrier_delivery_confirmed` is retired from the browser intake because HTTP 2xx proves neither final delivery nor human receipt. Historical counts are not delivered leads. The current receiver has no genuine delivery-status contract; unsolicited delivery flags do not upgrade acceptance. `carrier_submitted` preserves the controlled carrier route/service attribution and consent gate, with no request IDs or submitted data in analytics. External GA4 collection/key-event migration remains owner-gated and UNVERIFIED.
 
 ## C. Direct dealer/shipper/broker/customer vehicle-transport intake
 
@@ -210,7 +212,7 @@ Status:
 
 | Direction | CTA/entry | Intake start | Preview ready | Handoff ready | Receiver-confirmed browser event | Qualified-lead reconciliation |
 | --- | --- | --- | --- | --- | --- | --- |
-| Carrier dispatch | Implemented | Implemented | Implemented | Implemented | Implemented in direct carrier intake | Required privately |
+| Carrier dispatch | Implemented | Implemented | Implemented | Implemented | Acceptance only; delivery UNKNOWN | Required privately |
 | Dealer/shipper/customer transport | Implemented | Implemented | Implemented | Implemented | Implemented in direct transport intake | Required privately |
 | Logistics Load Board demo | Implemented | Implemented | Implemented | Implemented | Not established in reviewed demo code | Do not treat as primary conversion |
 | SEO services | Implemented | Implemented | Implemented | Email handoff implemented | Not established as SEO-specific event | Required |
@@ -255,7 +257,7 @@ Priority sequence:
 2. `carrier_intake_start`;
 3. `carrier_intake_preview_ready`;
 4. `carrier_handoff_ready`;
-5. `carrier_delivery_confirmed`;
+5. `carrier_submitted` (acceptance only);
 6. `vehicle_transport_intake_start`;
 7. `vehicle_transport_preview_ready`;
 8. `vehicle_transport_handoff_ready`;
@@ -277,7 +279,7 @@ After transport is confirmed:
 
 Recommended initial key-event candidates after evidence review:
 
-- `carrier_delivery_confirmed`;
+- future carrier delivery confirmation only after a verified delivery receipt exists; `carrier_submitted` is acceptance only;
 - future vehicle-transport delivery confirmation only after a verified delivery receipt exists; `vehicle_transport_submitted` is not a completed human-reviewed lead;
 - later direction-specific secure-delivery confirmations only after implementation and receiver reconciliation.
 
@@ -322,7 +324,7 @@ Do not implement delivery-confirmed events by watching success text or click sta
 
 A valid delivery-confirmed event must fire only after:
 
-- the same-origin receiver returns the approved success response;
+- genuine downstream final-delivery evidence is available through an approved delivery-status contract; same-origin receiver success and a matching request ID establish submission acceptance only;
 - the event contains controlled context only;
 - no request ID, lead body, identity, provider detail, or operational value is included;
 - synthetic/test events can be excluded from KPI reporting;
@@ -353,7 +355,7 @@ Avoid synonyms such as `lead_sent`, `form_success`, `request_complete`, `contact
 - [ ] Each priority custom event is observed exactly once in DebugView using approved synthetic data.
 - [ ] Network requests contain only approved controlled parameters.
 - [ ] No names, emails, phones, companies, MC/USDOT, locations, messages, project details, vehicle data, rates, budgets, IDs, secrets, or infrastructure details enter analytics.
-- [ ] Carrier and vehicle-transport delivery-confirmed events reconcile with receiver evidence.
+- [ ] Historical carrier delivery-confirmed counts remain bounded to their dated legacy contract and are not treated as delivered leads; current carrier_submitted and vehicle_transport_submitted events reconcile with submission-acceptance evidence only. Any future final-delivery or human-receipt claim requires genuine downstream evidence under Decision B.
 - [ ] Tests and duplicates are excluded from business KPI counts.
 - [ ] SEO, website, Marketing, Academy, and IT delivery gaps are explicitly approved, implemented, or left as non-conversion events.
 - [ ] Event-scoped custom dimensions are created only where necessary.
