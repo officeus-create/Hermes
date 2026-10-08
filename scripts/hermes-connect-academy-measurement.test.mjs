@@ -118,6 +118,13 @@ test("Academy measurement keeps CAC source-scoped and ROMI UNKNOWN until attribu
   const leadOne = await createLead(db, "token-one", "Lead One", 7500);
   const leadTwo = await createLead(db, "token-one", "Lead Two", null);
 
+  // Keep synthetic lead creation inside the fixed spend period, independent of the runner date.
+  for (const lead of [leadOne, leadTwo]) {
+    const result = sqlite.prepare("UPDATE hermes_academy_business_leads SET created_at = ? WHERE id = ?")
+      .run("2026-10-07T08:00:00.000Z", lead.id);
+    assert.equal(Number(result.changes), 1);
+  }
+
   const baseline = await mutateMeasurement({
     request: request("/api/hermes-connect/academy/measurement", "token-one", "POST", {
       action: "create_evidence",

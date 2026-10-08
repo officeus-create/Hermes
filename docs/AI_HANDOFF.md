@@ -1707,3 +1707,8 @@ RELEASE BASE SYNC AFTER #1753 (2026-10-08): Rebased existing draft #1757 onto 85
 ### PR #1751 — bounded release sync after #1757, 2026-10-08
 
 - Rebased existing PR onto main `0cba03b4bd6e462623d48980885b81293d349ddd`. Both journal histories and the #1753 hero regression plus Catalog regression in npm test retained. Repair CTA changes remain untouched. Per current owner directive, new SSR navigation is bounded to the existing Kittle canonical path; other opted-in profiles retain their existing helper eligibility, feed and sitemap ownership. No invented facts or consent changes. Prior local/CI evidence remains historical; fresh-head validation required. No merge/deploy.
+
+
+## 2026-10-08 — Academy measurement fixture stability prerequisite
+
+Owner: Academy / Codex; branch `fix/academy-measurement-fixture-clock-20261008`, base `55eaf2762242fb830641e227280b98ad89966fe9`. Changes: measurement test plus this handoff and ERROR_REGISTER. Reproduced 0 != 2 after UTC rollover; pinned only two in-memory lead creation timestamps to the unchanged synthetic spend period. Production attribution, campaign dates, public routes and claims remain unchanged. Focused test 4/4 PASS; full build/test and exact-head browser CI recorded in the PR. No UI change, screenshots unnecessary. Compounding: reusable deterministic measurement QA and durable failure lesson; no search surface, conversion or privacy change. Risk: real current timestamps are intentionally retained everywhere outside these two historical fixtures. Release/merge/deploy remain central gates. Preserve #1756 language work; resume only after #1754 and this prerequisite.
