@@ -2,6 +2,13 @@
   const script = document.currentScript;
   const catalogBusinessId = String(script?.dataset?.catalogBusinessId || "").trim();
   if (!catalogBusinessId) return;
+  if (!document.querySelector('script[data-catalog-traffic-loader]')) {
+    const stats = document.createElement("script");
+    stats.src = "/catalog-traffic-stats.js";
+    stats.defer = true;
+    stats.dataset.catalogTrafficLoader = "true";
+    document.head.append(stats);
+  }
 
   const CONSENT_KEY = "hermes-analytics-consent";
   const sentOnce = new Set();
