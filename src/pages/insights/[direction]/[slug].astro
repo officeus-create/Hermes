@@ -10,6 +10,9 @@ export function getStaticPaths() {
 
 const { post } = Astro.props as { post: InsightPost };
 const meta = insightDirectionMeta[post.direction];
+const publicEvidenceSources = (post.evidence ?? [])
+  .filter((item) => Boolean(item.url) && item.use !== "private_signal")
+  .map((item) => ({ label: item.label, url: item.url as string }));
 ---
 
 <ContentInsightPage
@@ -28,6 +31,7 @@ const meta = insightDirectionMeta[post.direction];
   sourceLabel={post.sourceLabel}
   sourceUrl={post.sourceUrl}
   sourcePublishedAt={post.sourcePublishedAt}
+  evidenceSources={publicEvidenceSources}
   datePublished={post.datePublished}
   dateModified={post.dateModified}
   directionName={meta.label}
