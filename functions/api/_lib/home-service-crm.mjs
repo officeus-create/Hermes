@@ -9,10 +9,23 @@ const PAYMENT_METHODS = new Set(["", "cash", "card", "check", "zelle", "venmo", 
 export const cleanHomeServiceText = (value, max = 180) =>
   String(value ?? "").replace(CONTROL_CHARS, "").trim().slice(0, max);
 
-const moneyCents = (value) => {
-  const number = Number(value);
-  if (!Number.isFinite(number) || number < 0) return 0;
-  return Math.min(Math.round(number), 100_000_000);
+const hasOwn = (value, key) => Boolean(value && Object.prototype.hasOwnProperty.call(value, key));
+
+const moneyField = (body, key, existing, centsField, knownField) => {
+  if (!hasOwn(body, key)) {
+    return {
+      cents: Number(existing?.[centsField] || 0),
+      known: Number(existing?.[knownField] || 0) === 1,
+      invalid: false,
+    };
+  }
+  const raw = body[key];
+  if (raw === null || raw === undefined || String(raw).trim() === "") {
+    return { cents: 0, known: false, invalid: false };
+  }
+  const number = Number(raw);
+  if (!Number.isFinite(number) || number < 0) return { cents: 0, known: false, invalid: true };
+  return { cents: Math.min(Math.round(number), 100_000_000), known: true, invalid: false };
 };
 
 const nonNegativeInteger = (value, max = 100_000) => {
@@ -60,12 +73,20 @@ export async function ensureHomeServiceCrmSchema(db) {
       photo_refs_json TEXT NOT NULL DEFAULT '[]',
       approximate_volume TEXT,
       lead_cost_cents INTEGER NOT NULL DEFAULT 0,
+      lead_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (lead_cost_known IN (0,1)),
+      lead_cost_source_ref TEXT,
       quote_cents INTEGER NOT NULL DEFAULT 0,
+      quote_known INTEGER NOT NULL DEFAULT 0 CHECK (quote_known IN (0,1)),
+      quote_source_ref TEXT,
       status TEXT NOT NULL DEFAULT 'new',
       job_start_at TEXT,
       assigned_driver TEXT,
       final_amount_cents INTEGER NOT NULL DEFAULT 0,
+      final_amount_known INTEGER NOT NULL DEFAULT 0 CHECK (final_amount_known IN (0,1)),
+      final_amount_source_ref TEXT,
       disposal_cost_cents INTEGER NOT NULL DEFAULT 0,
+      disposal_cost_known INTEGER NOT NULL DEFAULT 0 CHECK (disposal_cost_known IN (0,1)),
+      disposal_cost_source_ref TEXT,
       duration_minutes INTEGER NOT NULL DEFAULT 0,
       payment_method TEXT,
       loss_reason TEXT,
@@ -77,6 +98,29 @@ export async function ensureHomeServiceCrmSchema(db) {
       updated_at TEXT NOT NULL
     )
   `).run();
+
+  const columns = await db.prepare("PRAGMA table_info(hermes_home_service_leads)").all();
+  const columnNames = new Set((columns?.results || []).map((row) => String(row.name || "")));
+  for (const [name, definition] of [
+    ["lead_cost_known", "INTEGER NOT NULL DEFAULT 0 CHECK (lead_cost_known IN (0,1))"],
+    ["lead_cost_source_ref", "TEXT"],
+    ["quote_known", "INTEGER NOT NULL DEFAULT 0 CHECK (quote_known IN (0,1))"],
+    ["quote_source_ref", "TEXT"],
+    ["final_amount_known", "INTEGER NOT NULL DEFAULT 0 CHECK (final_amount_known IN (0,1))"],
+    ["final_amount_source_ref", "TEXT"],
+    ["disposal_cost_known", "INTEGER NOT NULL DEFAULT 0 CHECK (disposal_cost_known IN (0,1))"],
+    ["disposal_cost_source_ref", "TEXT"],
+  ]) {
+    if (!columnNames.has(name)) await db.prepare(`ALTER TABLE hermes_home_service_leads ADD COLUMN ${name} ${definition}`).run();
+  }
+
+  // Conservative historical migration: a non-zero stored amount could not have come from an omitted field.
+  // Historical zero stays UNKNOWN because the old model could not distinguish omitted from observed zero.
+  await db.prepare("UPDATE hermes_home_service_leads SET lead_cost_known=1 WHERE lead_cost_known=0 AND lead_cost_cents<>0").run();
+  await db.prepare("UPDATE hermes_home_service_leads SET quote_known=1 WHERE quote_known=0 AND quote_cents<>0").run();
+  await db.prepare("UPDATE hermes_home_service_leads SET final_amount_known=1 WHERE final_amount_known=0 AND final_amount_cents<>0").run();
+  await db.prepare("UPDATE hermes_home_service_leads SET disposal_cost_known=1 WHERE disposal_cost_known=0 AND disposal_cost_cents<>0").run();
+
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_home_service_leads_owner_status ON hermes_home_service_leads(owner_specialist_id,status,updated_at)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_home_service_leads_owner_city ON hermes_home_service_leads(owner_specialist_id,city)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_home_service_leads_owner_source ON hermes_home_service_leads(owner_specialist_id,source)").run();
@@ -116,6 +160,16 @@ export function normalizeHomeServiceLead(body, existing = {}) {
   const paymentRaw = cleanHomeServiceText(body.paymentMethod ?? existing.payment_method ?? "", 30).toLowerCase().replace(/[\s-]+/g, "_");
   const paymentMethod = PAYMENT_METHODS.has(paymentRaw) ? paymentRaw : "other";
   const photoFallback = (() => { try { return JSON.parse(existing.photo_refs_json || "[]"); } catch { return []; } })();
+  const leadCost = moneyField(body, "leadCostCents", existing, "lead_cost_cents", "lead_cost_known");
+  const quote = moneyField(body, "quoteCents", existing, "quote_cents", "quote_known");
+  const finalAmount = moneyField(body, "finalAmountCents", existing, "final_amount_cents", "final_amount_known");
+  const disposalCost = moneyField(body, "disposalCostCents", existing, "disposal_cost_cents", "disposal_cost_known");
+  const invalidMoneyFields = [
+    leadCost.invalid ? "leadCostCents" : "",
+    quote.invalid ? "quoteCents" : "",
+    finalAmount.invalid ? "finalAmountCents" : "",
+    disposalCost.invalid ? "disposalCostCents" : "",
+  ].filter(Boolean);
   return {
     source: cleanHomeServiceText(body.source ?? existing.source ?? "direct", 80) || "direct",
     searchQuery: cleanHomeServiceText(body.searchQuery ?? existing.search_query, 240),
@@ -128,13 +182,21 @@ export function normalizeHomeServiceLead(body, existing = {}) {
     jobType: cleanHomeServiceText(body.jobType ?? existing.job_type, 120),
     photoRefs: safeJsonArray(body.photoRefs ?? photoFallback, 20, 500),
     approximateVolume: cleanHomeServiceText(body.approximateVolume ?? existing.approximate_volume, 120),
-    leadCostCents: moneyCents(body.leadCostCents ?? existing.lead_cost_cents),
-    quoteCents: moneyCents(body.quoteCents ?? existing.quote_cents),
+    leadCostCents: leadCost.cents,
+    leadCostKnown: leadCost.known,
+    leadCostSourceRef: leadCost.known ? cleanHomeServiceText(body.leadCostSourceRef ?? existing.lead_cost_source_ref, 300) : "",
+    quoteCents: quote.cents,
+    quoteKnown: quote.known,
+    quoteSourceRef: quote.known ? cleanHomeServiceText(body.quoteSourceRef ?? existing.quote_source_ref, 300) : "",
     status,
     jobStartAt: cleanHomeServiceText(body.jobStartAt ?? existing.job_start_at, 40),
     assignedDriver: cleanHomeServiceText(body.assignedDriver ?? existing.assigned_driver, 120),
-    finalAmountCents: moneyCents(body.finalAmountCents ?? existing.final_amount_cents),
-    disposalCostCents: moneyCents(body.disposalCostCents ?? existing.disposal_cost_cents),
+    finalAmountCents: finalAmount.cents,
+    finalAmountKnown: finalAmount.known,
+    finalAmountSourceRef: finalAmount.known ? cleanHomeServiceText(body.finalAmountSourceRef ?? existing.final_amount_source_ref, 300) : "",
+    disposalCostCents: disposalCost.cents,
+    disposalCostKnown: disposalCost.known,
+    disposalCostSourceRef: disposalCost.known ? cleanHomeServiceText(body.disposalCostSourceRef ?? existing.disposal_cost_source_ref, 300) : "",
     durationMinutes: nonNegativeInteger(body.durationMinutes ?? existing.duration_minutes, 7 * 24 * 60),
     paymentMethod,
     lossReason: cleanHomeServiceText(body.lossReason ?? existing.loss_reason, 300),
@@ -142,12 +204,23 @@ export function normalizeHomeServiceLead(body, existing = {}) {
     reviewRequestedAt: cleanHomeServiceText(body.reviewRequestedAt ?? existing.review_requested_at, 40),
     reviewReceivedAt: cleanHomeServiceText(body.reviewReceivedAt ?? existing.review_received_at, 40),
     notes: cleanHomeServiceText(body.notes ?? existing.notes, 1200),
+    invalidMoneyFields,
   };
+}
+
+export function homeServiceLeadErrors(value) {
+  return Array.isArray(value?.invalidMoneyFields)
+    ? value.invalidMoneyFields.map((field) => `invalid_money_value:${field}`)
+    : [];
 }
 
 export function safeHomeServiceLead(row) {
   let photoRefs = [];
   try { photoRefs = JSON.parse(row.photo_refs_json || "[]"); } catch {}
+  const leadCostKnown = Number(row.lead_cost_known || 0) === 1;
+  const quoteKnown = Number(row.quote_known || 0) === 1;
+  const finalAmountKnown = Number(row.final_amount_known || 0) === 1;
+  const disposalCostKnown = Number(row.disposal_cost_known || 0) === 1;
   return {
     id: String(row.id),
     source: String(row.source || "direct"),
@@ -161,13 +234,25 @@ export function safeHomeServiceLead(row) {
     jobType: row.job_type || "",
     photoRefs,
     approximateVolume: row.approximate_volume || "",
-    leadCostCents: Number(row.lead_cost_cents || 0),
-    quoteCents: Number(row.quote_cents || 0),
+    leadCostCents: leadCostKnown ? Number(row.lead_cost_cents || 0) : null,
+    leadCostKnown,
+    leadCostSourceRef: leadCostKnown ? (row.lead_cost_source_ref || "") : "",
+    leadCostVerified: leadCostKnown && Boolean(row.lead_cost_source_ref),
+    quoteCents: quoteKnown ? Number(row.quote_cents || 0) : null,
+    quoteKnown,
+    quoteSourceRef: quoteKnown ? (row.quote_source_ref || "") : "",
+    quoteVerified: quoteKnown && Boolean(row.quote_source_ref),
     status: row.status || "new",
     jobStartAt: row.job_start_at || null,
     assignedDriver: row.assigned_driver || "",
-    finalAmountCents: Number(row.final_amount_cents || 0),
-    disposalCostCents: Number(row.disposal_cost_cents || 0),
+    finalAmountCents: finalAmountKnown ? Number(row.final_amount_cents || 0) : null,
+    finalAmountKnown,
+    finalAmountSourceRef: finalAmountKnown ? (row.final_amount_source_ref || "") : "",
+    finalAmountVerified: finalAmountKnown && Boolean(row.final_amount_source_ref),
+    disposalCostCents: disposalCostKnown ? Number(row.disposal_cost_cents || 0) : null,
+    disposalCostKnown,
+    disposalCostSourceRef: disposalCostKnown ? (row.disposal_cost_source_ref || "") : "",
+    disposalCostVerified: disposalCostKnown && Boolean(row.disposal_cost_source_ref),
     durationMinutes: Number(row.duration_minutes || 0),
     paymentMethod: row.payment_method || "",
     lossReason: row.loss_reason || "",
@@ -183,35 +268,123 @@ export function safeHomeServiceLead(row) {
 export function aggregateHomeServiceLeads(rows = []) {
   const totalLeads = rows.length;
   const booked = rows.filter((row) => ["booked","in_progress","completed"].includes(String(row.status))).length;
-  const completed = rows.filter((row) => String(row.status) === "completed").length;
-  const revenueCents = rows.reduce((sum, row) => sum + Number(row.final_amount_cents || 0), 0);
-  const disposalCostCents = rows.reduce((sum, row) => sum + Number(row.disposal_cost_cents || 0), 0);
-  const leadCostCents = rows.reduce((sum, row) => sum + Number(row.lead_cost_cents || 0), 0);
-  const grossAfterTrackedCostsCents = revenueCents - disposalCostCents - leadCostCents;
-  const reviewed = rows.filter((row) => row.review_received_at).length;
+  const completedRows = rows.filter((row) => String(row.status) === "completed");
+  const completed = completedRows.length;
+  const reviewed = completedRows.filter((row) => row.review_received_at).length;
+
+  const summarizeMoney = (scopeRows) => {
+    const completedScope = scopeRows.filter((row) => String(row.status) === "completed");
+    const known = (row, field) => Number(row[field] || 0) === 1;
+    const verified = (row, knownField, sourceField) => known(row, knownField) && Boolean(cleanHomeServiceText(row[sourceField], 300));
+    const sumVerified = (list, centsField, knownField, sourceField) =>
+      list.filter((row) => verified(row, knownField, sourceField)).reduce((sum, row) => sum + Number(row[centsField] || 0), 0);
+
+    const finalKnownCount = completedScope.filter((row) => known(row, "final_amount_known")).length;
+    const finalVerifiedCount = completedScope.filter((row) => verified(row, "final_amount_known", "final_amount_source_ref")).length;
+    const disposalKnownCount = completedScope.filter((row) => known(row, "disposal_cost_known")).length;
+    const disposalVerifiedCount = completedScope.filter((row) => verified(row, "disposal_cost_known", "disposal_cost_source_ref")).length;
+    const leadCostKnownCount = scopeRows.filter((row) => known(row, "lead_cost_known")).length;
+    const leadCostVerifiedCount = scopeRows.filter((row) => verified(row, "lead_cost_known", "lead_cost_source_ref")).length;
+    const quoteKnownCount = scopeRows.filter((row) => known(row, "quote_known")).length;
+    const quoteVerifiedCount = scopeRows.filter((row) => verified(row, "quote_known", "quote_source_ref")).length;
+
+    const revenueComplete = completedScope.length > 0
+      ? finalVerifiedCount === completedScope.length
+      : scopeRows.length > 0;
+    const disposalComplete = completedScope.length === 0 || disposalVerifiedCount === completedScope.length;
+    const leadCostComplete = scopeRows.length > 0 && leadCostVerifiedCount === scopeRows.length;
+    const quoteComplete = scopeRows.length > 0 && quoteVerifiedCount === scopeRows.length;
+
+    const verifiedRevenueCents = sumVerified(completedScope, "final_amount_cents", "final_amount_known", "final_amount_source_ref");
+    const verifiedDisposalCostCents = sumVerified(completedScope, "disposal_cost_cents", "disposal_cost_known", "disposal_cost_source_ref");
+    const verifiedLeadCostCents = sumVerified(scopeRows, "lead_cost_cents", "lead_cost_known", "lead_cost_source_ref");
+    const grossComplete = revenueComplete && disposalComplete && leadCostComplete;
+
+    return {
+      revenueCents: revenueComplete ? verifiedRevenueCents : null,
+      disposalCostCents: disposalComplete ? verifiedDisposalCostCents : null,
+      leadCostCents: leadCostComplete ? verifiedLeadCostCents : null,
+      grossAfterTrackedCostsCents: grossComplete
+        ? verifiedRevenueCents - verifiedDisposalCostCents - verifiedLeadCostCents
+        : null,
+      averageTicketCents: completedScope.length === 0
+        ? null
+        : revenueComplete ? Math.round(verifiedRevenueCents / completedScope.length) : null,
+      verifiedRevenueCents,
+      verifiedDisposalCostCents,
+      verifiedLeadCostCents,
+      moneyEvidence: {
+        revenue: {
+          knownCount: finalKnownCount,
+          verifiedCount: finalVerifiedCount,
+          requiredCount: completedScope.length,
+          unknownCount: completedScope.length - finalKnownCount,
+          unverifiedCount: finalKnownCount - finalVerifiedCount,
+          complete: revenueComplete,
+        },
+        disposalCost: {
+          knownCount: disposalKnownCount,
+          verifiedCount: disposalVerifiedCount,
+          requiredCount: completedScope.length,
+          unknownCount: completedScope.length - disposalKnownCount,
+          unverifiedCount: disposalKnownCount - disposalVerifiedCount,
+          complete: disposalComplete,
+        },
+        leadCost: {
+          knownCount: leadCostKnownCount,
+          verifiedCount: leadCostVerifiedCount,
+          requiredCount: scopeRows.length,
+          unknownCount: scopeRows.length - leadCostKnownCount,
+          unverifiedCount: leadCostKnownCount - leadCostVerifiedCount,
+          complete: leadCostComplete,
+        },
+        quote: {
+          knownCount: quoteKnownCount,
+          verifiedCount: quoteVerifiedCount,
+          requiredCount: scopeRows.length,
+          unknownCount: scopeRows.length - quoteKnownCount,
+          unverifiedCount: quoteKnownCount - quoteVerifiedCount,
+          complete: quoteComplete,
+        },
+        grossComplete,
+      },
+    };
+  };
+
+  const overallMoney = summarizeMoney(rows);
   const byDimension = (field) => {
     const groups = new Map();
     for (const row of rows) {
       const key = cleanHomeServiceText(row[field], 120) || "Unknown";
-      const item = groups.get(key) || { key, leads: 0, booked: 0, completed: 0, revenueCents: 0, disposalCostCents: 0, leadCostCents: 0 };
+      const item = groups.get(key) || { key, rows: [], leads: 0, booked: 0, completed: 0 };
+      item.rows.push(row);
       item.leads += 1;
       if (["booked","in_progress","completed"].includes(String(row.status))) item.booked += 1;
       if (String(row.status) === "completed") item.completed += 1;
-      item.revenueCents += Number(row.final_amount_cents || 0);
-      item.disposalCostCents += Number(row.disposal_cost_cents || 0);
-      item.leadCostCents += Number(row.lead_cost_cents || 0);
       groups.set(key, item);
     }
-    return [...groups.values()].map((item) => ({
-      ...item,
-      grossAfterTrackedCostsCents: item.revenueCents - item.disposalCostCents - item.leadCostCents,
-      bookedRate: item.leads ? item.booked / item.leads : 0,
-    })).sort((a,b) => b.revenueCents - a.revenueCents || b.leads - a.leads);
+    return [...groups.values()].map((item) => {
+      const money = summarizeMoney(item.rows);
+      return {
+        key: item.key,
+        leads: item.leads,
+        booked: item.booked,
+        completed: item.completed,
+        ...money,
+        bookedRate: item.leads ? item.booked / item.leads : 0,
+      };
+    }).sort((a,b) =>
+      Number(b.revenueCents ?? b.verifiedRevenueCents ?? 0) - Number(a.revenueCents ?? a.verifiedRevenueCents ?? 0)
+      || b.leads - a.leads
+    );
   };
+
   return {
-    totalLeads, booked, completed, revenueCents, disposalCostCents, leadCostCents, grossAfterTrackedCostsCents,
+    totalLeads,
+    booked,
+    completed,
+    ...overallMoney,
     bookedRate: totalLeads ? booked / totalLeads : 0,
-    averageTicketCents: completed ? Math.round(revenueCents / completed) : 0,
     reviewRate: completed ? reviewed / completed : 0,
     byCity: byDimension("city"),
     bySource: byDimension("source"),
@@ -219,3 +392,4 @@ export function aggregateHomeServiceLeads(rows = []) {
     bySearchQuery: byDimension("search_query"),
   };
 }
+

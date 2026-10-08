@@ -181,7 +181,7 @@ test("Hermes Connect Hub presents one live product, private Academy and Beauty, 
   await expect(page.locator(".hc-static-mark img")).toHaveAttribute("src", "/demos/hermes-connect/mark-option02.svg");
 });
 
-test("Hermes Connect Hub keeps explicit Russian content and persists the selected locale on clean entries", async ({ page }) => {
+test("Hermes Connect Hub keeps explicit Russian content while clean entries remain English", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/?lang=ru");
 
@@ -195,11 +195,11 @@ test("Hermes Connect Hub keeps explicit Russian content and persists the selecte
   await expect(page.getByRole("link", { name: "Выбрать доступ владельца Academy или ученика" })).toHaveAttribute("href", "/services/hermes-connect/academy/?lang=ru");
 
   await page.goto("/services/hermes-connect/");
-  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
-  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
-  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
-  await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { name: "Run your business with AI." })).toBeVisible();
+  await expect(page.locator(".hc-content-language")).toHaveText("Content language: English");
+  await expect(page.locator("[data-language-menu] summary span")).toHaveText("English");
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
