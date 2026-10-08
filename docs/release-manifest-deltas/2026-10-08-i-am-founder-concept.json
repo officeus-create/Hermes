@@ -24,13 +24,13 @@
     {
       "route": "/insights/technology/i-am-vision/",
       "source_state": "current_main",
-      "indexability": "noindex",
-      "robots": "noindex,nofollow",
+      "indexability": "index",
+      "robots": "index,follow,max-image-preview:large",
       "canonical": "https://hermeslogisticsus.com/insights/technology/i-am-vision/",
-      "sitemap_owner": null,
+      "sitemap_owner": "sitemap-insights.xml",
       "source_file": "src/pages/insights/technology/i-am-vision/index.astro",
       "status": "COMPLETE",
-      "blocker": "Original founder note, not an approved Insights standalone search/news feed owner. Intentionally excluded until existing editorial/SEO release gates pass.",
+      "blocker": "First-party I am development news is an indexed editorial owner in Hermes Insights, not a claim of incorporated venture, licensed product or securities offering. Search indexation/traffic remains UNVERIFIED until production and GSC readback.",
       "response_status": 200,
       "comparison": {
         "production": "pending_deployment",
@@ -40,7 +40,7 @@
   ],
   "acceptance": {
     "route_count_added": 2,
-    "indexable_route_count_added": 0,
+    "indexable_route_count_added": 1,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
