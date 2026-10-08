@@ -83,3 +83,15 @@ test("Italy preview and Insights visual fit responsive 390px browser",async ({pa
     await expect(page.locator("main h1")).toBeVisible();
   }
 });
+
+
+test("Hermes Catalog shows Italy incubated startup as distinct from verified business profiles",async ({page})=>{
+  await page.goto("/businesses/",{waitUntil:"domcontentloaded"});
+  const nav=page.getByRole("navigation",{name:"Incubation concepts by market"});
+  const italy=nav.getByRole("link",{name:/Italy · I am travel startup concept/});
+  await expect(italy).toHaveAttribute("href","/businesses/italy/");
+  await expect(italy).toHaveAttribute("rel","nofollow");
+  await italy.click();
+  await expect(page).toHaveURL(/\/businesses\/italy\/$/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content","noindex,nofollow");
+});
