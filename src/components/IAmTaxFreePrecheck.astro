@@ -1,0 +1,115 @@
+<section class="taxfree-precheck" aria-labelledby="taxfree-precheck-title">
+  <div class="section-head">
+    <p class="eyebrow">Italy · first working journey</p>
+    <h2 id="taxfree-precheck-title">Check the general Tax Free conditions before you shop.</h2>
+    <p>This device-local pre-check uses reviewed public rules. It does not verify identity, issue an invoice, submit to OTELLO, calculate a guaranteed refund or send any form data to Hermes.</p>
+  </div>
+  <form id="iam-taxfree-check" class="taxfree-form">
+    <label>
+      <span>Single invoice total, VAT included (€)</span>
+      <input name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="250.00" required />
+    </label>
+    <label>
+      <span>Purchaser residence / domicile</span>
+      <select name="residence" required>
+        <option value="">Choose</option>
+        <option value="non-eu">Outside the European Union</option>
+        <option value="eu">Inside the European Union</option>
+        <option value="unknown">Not sure / needs review</option>
+      </select>
+    </label>
+    <label>
+      <span>Purpose of the goods</span>
+      <select name="purpose" required>
+        <option value="">Choose</option>
+        <option value="personal">Personal or family use</option>
+        <option value="commercial">Commercial use / resale</option>
+        <option value="unknown">Not sure / needs review</option>
+      </select>
+    </label>
+    <div class="taxfree-dates">
+      <label><span>Invoice date</span><input name="invoice" type="date" required /></label>
+      <label><span>Expected EU export date</span><input name="export" type="date" required /></label>
+    </div>
+    <button type="submit">Check general conditions →</button>
+  </form>
+  <div id="iam-taxfree-result" class="taxfree-result" role="status" aria-live="polite">
+    <strong>No eligibility result yet.</strong>
+    <p>Only general public conditions are checked in this browser.</p>
+  </div>
+  <div class="taxfree-official">
+    <a href="https://www.adm.gov.it/portale/en/progetti-aida-otello" target="_blank" rel="noopener noreferrer">ADM · OTELLO official overview ↗</a>
+    <a href="https://vatrefund.adm.gov.it/howto" target="_blank" rel="noopener noreferrer">ADM · traveller Vat Refund guide ↗</a>
+  </div>
+</section>
+
+<script>
+  const taxFreeForm = document.querySelector<HTMLFormElement>("#iam-taxfree-check");
+  const taxFreeResult = document.querySelector<HTMLElement>("#iam-taxfree-result");
+  const taxValue = (name: string) => {
+    const field = taxFreeForm?.elements.namedItem(name);
+    return field instanceof HTMLInputElement || field instanceof HTMLSelectElement ? field.value : "";
+  };
+  const parseCalendarDate = (iso: string): Date | null => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+    const value = new Date(iso + "T00:00:00Z");
+    return Number.isNaN(value.getTime()) || value.toISOString().slice(0,10) !== iso ? null : value;
+  };
+  taxFreeForm?.addEventListener("submit",(event)=>{
+    event.preventDefault();
+    if(!taxFreeResult || !taxFreeForm.reportValidity()) return;
+    const rawAmount=taxValue("amount");
+    const amount=Number(rawAmount);
+    const residence=taxValue("residence");
+    const purpose=taxValue("purpose");
+    const invoice=parseCalendarDate(taxValue("invoice"));
+    const exportDate=parseCalendarDate(taxValue("export"));
+    let state="REVIEW_REQUIRED";
+    let title="Needs review";
+    let message="The prototype cannot confirm eligibility from the supplied information.";
+    if(!rawAmount || !Number.isFinite(amount) || amount < 0 || !invoice || !exportDate){
+      message="Check the amount and dates. Complete, valid general inputs are required.";
+    } else if(residence==="eu" || purpose==="commercial" || amount<=70){
+      state="GENERAL_CONDITION_NOT_MET";
+      title="One or more general conditions are not met";
+      message="The invoice must exceed €70 including VAT, the purchaser must reside or be domiciled outside the EU, and the goods must be for personal or family use.";
+    } else if(exportDate.getTime() < invoice.getTime()){
+      message="The expected export date cannot be earlier than the invoice date.";
+    } else if(exportDate.getTime() > Date.UTC(invoice.getUTCFullYear(), invoice.getUTCMonth()+4, 0)){
+      state="GENERAL_CONDITION_NOT_MET";
+      title="Export date is outside the general window";
+      message="The goods must generally leave the EU by the end of the third month following the invoice month.";
+    } else if(residence==="unknown" || purpose==="unknown"){
+      message="Residence/domicile or the purpose of the goods still needs verification.";
+    } else {
+      state="PRELIMINARY_MATCH";
+      title="General conditions appear compatible";
+      message="This is not a right-to-refund decision. The seller, OTELLO process, customs export evidence and any additional checks still control the real outcome.";
+    }
+    taxFreeResult.dataset.state=state;
+    taxFreeResult.replaceChildren();
+    const strong=document.createElement("strong"); strong.textContent=title;
+    const p=document.createElement("p"); p.textContent=message;
+    taxFreeResult.append(strong,p);
+  });
+</script>
+
+<style>
+  .taxfree-precheck{padding-top:86px}
+  .taxfree-precheck .section-head{margin-bottom:20px}
+  .taxfree-precheck .eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:850;color:#098d90}
+  .taxfree-precheck h2{font-size:clamp(27px,3.2vw,40px);letter-spacing:-.035em;margin:11px 0}
+  .taxfree-precheck .section-head>p:last-child{font-size:14px;line-height:1.6;color:#677f8b;max-width:760px}
+  .taxfree-form{display:grid;grid-template-columns:1fr 1fr;gap:13px;padding:22px;border:1px solid #d7e4e8;border-radius:18px;background:#fff}
+  .taxfree-form label{display:grid;gap:7px;color:#2e5262;font-size:12px;font-weight:800}
+  .taxfree-form input,.taxfree-form select{width:100%;min-height:44px;border:1px solid #bfd1d8;border-radius:10px;background:#fbfdfd;padding:10px 12px;font:inherit;color:#173b4b}
+  .taxfree-form input:focus-visible,.taxfree-form select:focus-visible,.taxfree-form button:focus-visible,.taxfree-official a:focus-visible{outline:3px solid #49babb;outline-offset:3px}
+  .taxfree-dates{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .taxfree-form>button{grid-column:1/-1;border:0;border-radius:11px;background:#175f70;color:#fff;padding:13px;font:inherit;font-weight:850;cursor:pointer}
+  .taxfree-result{margin-top:12px;padding:17px;border:1px solid #cbdde2;border-radius:13px;background:#eef6f7;color:#385f6c}
+  .taxfree-result strong{color:#173e4f}.taxfree-result p{margin:7px 0 0;font-size:12px;line-height:1.6}
+  .taxfree-result[data-state="GENERAL_CONDITION_NOT_MET"]{background:#fff5e5;border-color:#efd6aa;color:#77572e}
+  .taxfree-result[data-state="PRELIMINARY_MATCH"]{background:#edf8f3;border-color:#b7ddc6;color:#285a43}
+  .taxfree-official{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px}.taxfree-official a{color:#17758a;font-size:12px;font-weight:800}
+  @media(max-width:550px){.taxfree-form,.taxfree-dates{grid-template-columns:1fr}}
+</style>

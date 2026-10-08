@@ -40,7 +40,7 @@ test("I am Italy site has real source links and no fake affiliate or app claims"
   await expect(page.locator('a[href="https://vatrefund.adm.gov.it/howto"]').first()).toBeVisible();
   await expect(page.locator('a[href="/insights/technology/i-am-vision/"]').first()).toBeVisible();
   await expect(page.locator('main a[href="/services/hermes-connect/"]:visible').first()).toBeVisible();
-  await expect(page.locator('a[href="/demos/hermes-connect/i-am-shopping/"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/demos/hermes-connect/i-am-shopping/"]')).toBeVisible();
 });
 
 test("Founder concept remains noindex and points to the official Insights announcement",async({page})=>{
