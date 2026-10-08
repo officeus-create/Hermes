@@ -1,12 +1,6 @@
 name: Production contact smoke
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/production-contact-smoke.yml
-      - src/components/HomeRecoveryFinish.astro
-      - src/components/SiteFooter.astro
   workflow_dispatch:
 
 permissions:
