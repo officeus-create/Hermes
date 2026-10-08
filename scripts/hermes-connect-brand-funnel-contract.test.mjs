@@ -80,6 +80,30 @@ assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy wo
 assert(hub.includes("$0 during Repair Shop setup · $99/month after setup if you continue"), "Hub: current free-setup to Founding Shop continuation offer must remain explicit.");
 assert(!/\$299|\$799/.test(hub), "Hub: retired planning-tier prices must not return as current pricing.");
 
+const aiEntry = await text("src/components/HermesConnectAIProviders.astro");
+assert(hub.includes("HermesConnectAIProviders") && hub.includes("<HermesConnectAIProviders />"), "Hub: provider-neutral AI entry must be mounted on the canonical Connect owner.");
+assert(hub.includes('href="#use-your-ai"') && hub.includes("Connect from your AI · free beta"), "Hub: hero must expose the free AI entry point.");
+assert(aiEntry.includes('id="use-your-ai"') && aiEntry.includes("Use the AI you already work in."), "AI entry: canonical provider section is required.");
+for (const provider of ["ChatGPT", "Claude", "Gemini", "Grok", "Perplexity", "Microsoft Copilot Studio", "DeepSeek", "Mistral", "Meta AI / Llama", "Poe"]) {
+  assert(aiEntry.includes(provider), `AI entry: missing provider tile: ${provider}`);
+}
+assert(aiEntry.includes("Free beta onboarding") && aiEntry.includes("One business identity") && aiEntry.includes("No provider-specific CRM fork"), "AI entry: free-beta and one-backend truth must remain explicit.");
+assert(aiEntry.includes("PUBLIC RELEASE IN PREPARATION"), "AI entry: ChatGPT must not be presented as publicly released before provider approval.");
+assert(aiEntry.includes("REMOTE MCP · CUSTOM CONNECTOR"), "AI entry: verified remote-MCP hosts must be described as connector paths, not Hermes-owned installations.");
+assert(aiEntry.includes("REMOTE MCP · SUPPORTED MODELS"), "AI entry: Gemini must preserve the model-dependent remote-MCP boundary.");
+assert(aiEntry.includes("MCP · AGENT BUILDER"), "AI entry: Microsoft support must be scoped to Copilot Studio rather than every Copilot surface.");
+assert(aiEntry.includes("TOOL CALLS · ADAPTER"), "AI entry: DeepSeek must remain an adapter path over the same Hermes backend.");
+assert(aiEntry.includes("ADAPTER PLANNED"), "AI entry: unverified consumer integrations must remain planned rather than falsely live.");
+assert(aiEntry.includes("Provider plan and permission rules still apply.") && aiEntry.includes("does not charge without explicit confirmation"), "AI entry: provider-cost and Hermes-charge boundaries must remain explicit.");
+assert(!/official partner|official partnership|endorsed by/i.test(aiEntry), "AI entry: provider tiles must not imply endorsement or partnership.");
+
+const accessCenter = await text("src/pages/services/hermes-connect/access/index.astro");
+assert(accessCenter.includes("data-ai-entry-context") && accessCenter.includes("Starting from"), "AI entry: Access Center must acknowledge an inbound AI handoff.");
+assert(accessCenter.includes('data-ai-route') && accessCenter.includes('url.searchParams.set("source", "ai")'), "AI entry: business selection must preserve AI source attribution.");
+assert(accessCenter.includes('url.searchParams.set("provider", aiProvider)') && accessCenter.includes("aiProviderLabels"), "AI entry: provider attribution must remain bounded and human-readable through onboarding.");
+assert(accessCenter.includes("Object.prototype.hasOwnProperty.call(aiProviderLabels, rawAiProvider)"), "AI entry: arbitrary provider query values must not enter attribution.");
+assert(accessCenter.includes("one Company / CRM / Catalog identity"), "AI entry: Access Center must preserve the one-business-identity contract.");
+
 const foundingPlan = await text("src/pages/services/hermes-connect/repair-shops/plan.astro");
 assert(foundingPlan.includes("var(--hermes-pearl)"), "Founding Plan: public shell must consume canonical Pearl.");
 assert(foundingPlan.includes("var(--hermes-obsidian)"), "Founding Plan: conversion hierarchy must retain an intentional Obsidian anchor.");
