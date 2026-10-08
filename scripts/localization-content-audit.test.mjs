@@ -28,6 +28,7 @@ const pages = [
   },
   {
     route: "/it/", path: "it/index.html", lang: "it",
+    requiredTitle: "Hermes | Logistica, marketing, accademia e sviluppo IT",
     requiredLabels: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
     requiredCtas: ["Scegli un'area", "Scrivi al team", "Invia la descrizione via email"],
     requiredCurrentTruth: ["Stato attuale dei prodotti", "Hermes Connect · Officine", "Logistica USA", "SEO/GEO"],
@@ -177,6 +178,7 @@ for (const page of pages) {
   }
 
   const title = getTagText(html, "title");
+  if (page.requiredTitle && title !== page.requiredTitle) errors.push(`${page.route}: expected localized title ${page.requiredTitle}; got ${title}`);
   const description = getMetaDescription(html);
   if (!title) errors.push(`${page.route}: localized title is missing`);
   if (!description) errors.push(`${page.route}: localized meta description is missing`);
