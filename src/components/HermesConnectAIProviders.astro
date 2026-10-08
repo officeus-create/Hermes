@@ -94,7 +94,7 @@ const providers = [
   },
 ];
 
-const accessHref = (slug) => `/services/hermes-connect/access/?source=ai&provider=${encodeURIComponent(slug)}`;
+const accessHref = (slug: string) => `/services/hermes-connect/access/?source=ai&provider=${encodeURIComponent(slug)}`;
 ---
 
 <section class="hc-ai-entry" id="use-your-ai" aria-labelledby="hc-ai-entry-title" data-hermes-ai-entry>
