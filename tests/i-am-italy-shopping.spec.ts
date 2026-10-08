@@ -13,7 +13,7 @@ test("Insights feed renders first-party I am Italy visual feature with honest st
   await expect(feature.locator('svg[role="img"]')).toHaveCount(1);
   await expect(feature.locator('a[href="/businesses/italy/"]')).toBeVisible();
   await expect(feature.locator('a[href="/demos/hermes-connect/i-am-shopping/"]')).toBeVisible();
-  await expect(feature).toContainText("no affiliate codes");
+  await expect(feature).toContainText("No affiliate codes");
   await expect(feature).toContainText("not a licensed operator");
 });
 
