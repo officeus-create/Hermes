@@ -45,7 +45,8 @@ test('Catalog card badges and expandable profile details use profile-specific co
   await page.goto(href!);
   const detail = page.locator('[data-catalog-traffic="detail"]');
   await expect(detail.locator('summary')).toContainText('12 in 28 days');
-  console.log('catalog-stats-visibility', JSON.stringify(await detail.evaluate((element) => { const summary = element.querySelector('summary')!; const nodes: any[] = []; for (let node: Element | null = summary; node; node = node.parentElement) { const css = getComputedStyle(node); const rect = node.getBoundingClientRect(); nodes.push({tag:node.tagName,class:node.className,hidden:node.hasAttribute('hidden'),display:css.display,visibility:css.visibility,contentVisibility:css.contentVisibility,rect:{x:rect.x,y:rect.y,width:rect.width,height:rect.height}}); } return {html:element.outerHTML,ancestors:nodes}; })));
+  await expect(detail.locator('summary')).toBeVisible();
+  expect(await detail.locator('summary').evaluate(element=>element.getBoundingClientRect().width)).toBeGreaterThan(150);
   await detail.locator('summary').click();
   await expect(detail).toContainText('United States: 7');
   await expect(detail).toContainText('not unique people');
