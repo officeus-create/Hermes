@@ -132,6 +132,23 @@ export const mzmJunkRemovalClient = {
       "Every item must have an internal-link destination and a measurable conversion path.",
       "Paid promotion remains gated until organic baseline and attribution are stable.",
     ],
+    publishedAssets: [
+      {
+        kind: "insight",
+        route: "/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+        publicUrl: "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+        state: "LIVE_VERIFIED",
+        verifiedAt: "2026-10-09",
+        evidenceClass: "PUBLIC_FIRST_PARTY_ANALYSIS",
+        clientBenefit: {
+          primaryAction: "https://mzm-junk-removal.com/",
+          role: "qualified_referral_to_client_commercial_owner",
+        },
+        tenantState: "EVIDENCE_CANDIDATE_ONLY_PENDING_AUTHENTICATED_OWNER_READBACK",
+        catalogState: "NO_PUBLICATION_INFERENCE",
+        outcomeState: "UNKNOWN",
+      },
+    ],
     initialBacklog: [
       {
         kind: "guide",
