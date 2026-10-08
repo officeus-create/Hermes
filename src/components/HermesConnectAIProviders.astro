@@ -1,0 +1,188 @@
+---
+import { ArrowRight, CircleCheck, PlugZap, ShieldCheck } from "@lucide/astro";
+
+const providers = [
+  {
+    name: "ChatGPT",
+    mark: "◎",
+    slug: "chatgpt",
+    status: "PLUGIN · PUBLIC RELEASE IN PREPARATION",
+    state: "primary",
+    path: "Primary Hermes path",
+    detail: "Private Hermes dogfood is active. Public directory access starts only after provider review and publication.",
+  },
+  {
+    name: "Claude",
+    mark: "C",
+    slug: "claude",
+    status: "REMOTE MCP · CUSTOM CONNECTOR",
+    state: "ready",
+    path: "Direct remote MCP",
+    detail: "Claude supports custom remote MCP connectors. A public Hermes directory listing is not claimed yet.",
+  },
+  {
+    name: "Gemini",
+    mark: "G",
+    slug: "gemini",
+    status: "REMOTE MCP · SUPPORTED MODELS",
+    state: "ready",
+    path: "Gemini Interactions API",
+    detail: "Streamable HTTP MCP is supported in the Interactions API where the selected Gemini model supports it.",
+  },
+  {
+    name: "Grok",
+    mark: "x",
+    slug: "grok",
+    status: "REMOTE MCP · CUSTOM CONNECTOR",
+    state: "ready",
+    path: "Direct remote MCP",
+    detail: "Grok supports custom remote MCP connectors that can point to the same Hermes backend.",
+  },
+  {
+    name: "Perplexity",
+    mark: "P",
+    slug: "perplexity",
+    status: "REMOTE MCP · ELIGIBLE PLANS",
+    state: "ready",
+    path: "Custom remote connector",
+    detail: "Eligible Perplexity plans support custom remote MCP connectors. Provider plan and permission rules still apply.",
+  },
+  {
+    name: "Microsoft Copilot Studio",
+    mark: "M",
+    slug: "copilot-studio",
+    status: "MCP · AGENT BUILDER",
+    state: "ready",
+    path: "Copilot Studio tool",
+    detail: "Hermes MCP can be added to a Copilot Studio agent. This does not claim availability in every consumer Copilot surface.",
+  },
+  {
+    name: "DeepSeek",
+    mark: "D",
+    slug: "deepseek",
+    status: "TOOL CALLS · ADAPTER",
+    state: "adapter",
+    path: "Thin function-call adapter",
+    detail: "DeepSeek tool calls can map to the same Hermes MCP contract without creating a second CRM or customer database.",
+  },
+  {
+    name: "Mistral",
+    mark: "M",
+    slug: "mistral",
+    status: "MCP · AGENTS / WORKFLOWS",
+    state: "adapter",
+    path: "MCP-capable agent path",
+    detail: "Mistral agent tooling supports external MCP. Consumer-surface availability can differ by product.",
+  },
+  {
+    name: "Meta AI / Llama",
+    mark: "L",
+    slug: "meta-ai",
+    status: "ADAPTER PLANNED",
+    state: "planned",
+    path: "Same Hermes backend",
+    detail: "A provider-specific end-user connection path is not yet verified, so Hermes does not present it as live.",
+  },
+  {
+    name: "Poe",
+    mark: "Poe",
+    slug: "poe",
+    status: "ADAPTER PLANNED",
+    state: "planned",
+    path: "Same Hermes backend",
+    detail: "A direct Hermes connector path is planned only after provider compatibility is verified.",
+  },
+];
+
+const accessHref = (slug) => `/services/hermes-connect/access/?source=ai&provider=${encodeURIComponent(slug)}`;
+---
+
+<section class="hc-ai-entry" id="use-your-ai" aria-labelledby="hc-ai-entry-title" data-hermes-ai-entry>
+  <div class="hc-ai-entry-shell">
+    <div class="hc-ai-entry-head">
+      <div>
+        <p class="hc-ai-entry-kicker"><PlugZap size={15} aria-hidden="true" />Bring your AI</p>
+        <h2 id="hc-ai-entry-title">Use the AI you already work in.</h2>
+      </div>
+      <div class="hc-ai-entry-copy">
+        <p>Connect your business to one Hermes Company / CRM / Catalog flow instead of rebuilding the same business separately inside every AI platform.</p>
+        <div class="hc-ai-entry-trust" aria-label="Hermes AI connection principles">
+          <span><CircleCheck size={14} aria-hidden="true" />Free beta onboarding</span>
+          <span><ShieldCheck size={14} aria-hidden="true" />One business identity</span>
+          <span><ShieldCheck size={14} aria-hidden="true" />No provider-specific CRM fork</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hc-ai-provider-grid" aria-label="AI connection paths">
+      {providers.map((provider) => (
+        <a
+          class={`hc-ai-provider is-${provider.state}`}
+          href={accessHref(provider.slug)}
+          aria-label={`Start Hermes Connect free beta from ${provider.name}`}
+          data-ai-provider={provider.slug}
+        >
+          <div class="hc-ai-provider-top">
+            <span class="hc-ai-provider-mark" aria-hidden="true">{provider.mark}</span>
+            <span class="hc-ai-provider-status">{provider.status}</span>
+          </div>
+          <strong>{provider.name}</strong>
+          <small>{provider.path}</small>
+          <p>{provider.detail}</p>
+          <span class="hc-ai-provider-cta">Start free beta <ArrowRight size={14} aria-hidden="true" /></span>
+        </a>
+      ))}
+    </div>
+
+    <div class="hc-ai-entry-foot">
+      <div>
+        <strong>Free beta means the AI entry layer is free.</strong>
+        <p>Business review, routing and the CRM blueprint can start at $0. Your AI provider subscription and any future paid Hermes service are separate; Hermes does not charge without explicit confirmation.</p>
+      </div>
+      <div class="hc-ai-entry-actions">
+        <a class="hc-ai-entry-primary" href="/services/hermes-connect/access/?source=ai">Start with any AI <ArrowRight size={16} aria-hidden="true" /></a>
+        <a class="hc-ai-entry-secondary" href="/services/hermes-connect/support/">Connection & privacy details</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hc-ai-entry{padding:clamp(4rem,7vw,6.5rem) 0;background:linear-gradient(180deg,var(--hermes-pearl) 0%,#fbfaf7 100%);border-block:1px solid var(--hermes-line-light-soft)}
+  .hc-ai-entry-shell{width:min(1380px,calc(100% - 2.5rem));margin:0 auto}
+  .hc-ai-entry-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.62fr);gap:clamp(1.5rem,4vw,4rem);align-items:end;margin-bottom:2rem}
+  .hc-ai-entry-kicker{display:flex;align-items:center;gap:.45rem;margin:0 0 .9rem;color:var(--hermes-violet);font:.8rem/1 var(--font-mono);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .hc-ai-entry h2{max-width:900px;margin:0;font-family:var(--font-display);font-size:clamp(2.8rem,5.5vw,5.7rem);font-weight:720;line-height:.92;letter-spacing:-.058em;text-wrap:balance}
+  .hc-ai-entry-copy>p{margin:0;color:var(--hermes-muted);font-size:1rem;line-height:1.7}
+  .hc-ai-entry-trust{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1rem}
+  .hc-ai-entry-trust span{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .65rem;border:1px solid var(--hermes-line-light);border-radius:999px;background:rgba(255,255,255,.72);font-size:.68rem;font-weight:700}
+  .hc-ai-provider-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.8rem}
+  .hc-ai-provider{position:relative;display:flex;flex-direction:column;min-height:255px;padding:1.05rem;border:1px solid var(--hermes-line-light);border-radius:20px;background:rgba(255,255,255,.82);box-shadow:0 10px 28px rgba(11,13,18,.045);color:var(--hermes-ink);text-decoration:none;transition:transform var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease}
+  .hc-ai-provider:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.26);box-shadow:0 16px 34px rgba(11,13,18,.07)}
+  .hc-ai-provider.is-primary{color:#fff;border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 100% 0%,rgba(124,92,255,.24),transparent 13rem),var(--hermes-obsidian)}
+  .hc-ai-provider-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.65rem}
+  .hc-ai-provider-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(124,92,255,.16);border-radius:14px;background:linear-gradient(145deg,rgba(124,92,255,.12),rgba(90,200,250,.08));font:800 .82rem/1 var(--font-display);letter-spacing:-.04em}
+  .is-primary .hc-ai-provider-mark{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.08)}
+  .hc-ai-provider-status{max-width:150px;color:#66707f;font:700 .52rem/1.25 var(--font-mono);letter-spacing:.055em;text-align:right;text-transform:uppercase}
+  .is-primary .hc-ai-provider-status{color:#aeb8c9}
+  .hc-ai-provider>strong{margin-top:1.3rem;font-family:var(--font-display);font-size:1.18rem;letter-spacing:-.03em}
+  .hc-ai-provider>small{margin-top:.28rem;color:var(--hermes-violet);font-size:.63rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+  .is-primary>small{color:#a99aff}
+  .hc-ai-provider>p{margin:.7rem 0 0;color:var(--hermes-muted);font-size:.76rem;line-height:1.52}
+  .is-primary>p{color:#aeb7c7}
+  .hc-ai-provider-cta{display:inline-flex;align-items:center;gap:.32rem;margin-top:auto;padding-top:1rem;font-size:.7rem;font-weight:800}
+  .is-ready .hc-ai-provider-cta{color:#23765b}
+  .is-adapter .hc-ai-provider-cta{color:#5b4bbd}
+  .is-planned .hc-ai-provider-cta{color:#777e89}
+  .hc-ai-entry-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center;margin-top:1rem;padding:1.2rem 1.3rem;border:1px solid var(--hermes-line-light);border-radius:20px;background:rgba(255,255,255,.68)}
+  .hc-ai-entry-foot strong{font-size:.88rem}
+  .hc-ai-entry-foot p{max-width:820px;margin:.28rem 0 0;color:var(--hermes-muted);font-size:.75rem;line-height:1.55}
+  .hc-ai-entry-actions{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:flex-end}
+  .hc-ai-entry-primary,.hc-ai-entry-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px;padding:.68rem .9rem;border-radius:999px;font-size:.74rem;font-weight:800;text-decoration:none}
+  .hc-ai-entry-primary{color:#fff;background:var(--hermes-obsidian)}
+  .hc-ai-entry-secondary{color:var(--hermes-ink);border:1px solid var(--hermes-line-light);background:rgba(255,255,255,.78)}
+  @media(max-width:1180px){.hc-ai-provider-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:820px){.hc-ai-entry-shell{width:min(100% - 1rem,1380px)}.hc-ai-entry-head,.hc-ai-entry-foot{grid-template-columns:1fr}.hc-ai-provider-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hc-ai-entry-actions{justify-content:flex-start}}
+  @media(max-width:540px){.hc-ai-provider-grid{grid-template-columns:1fr}.hc-ai-provider{min-height:220px}.hc-ai-entry-actions{display:grid}.hc-ai-entry-primary,.hc-ai-entry-secondary{width:100%}}
+  @media(prefers-reduced-motion:reduce){.hc-ai-provider{transition:none}}
+</style>
