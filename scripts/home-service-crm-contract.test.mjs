@@ -278,7 +278,13 @@ assert.match(clientConfig, /do not become canonical CRM outcomes/);
 assert.ok(clientConfig.includes('primaryCommercialOwner: "https://mzm-junk-removal.com/"'));
 assert.match(clientConfig, /hermesCatalogRole: "secondary_entity_discovery_and_attribution"/);
 assert.ok(clientConfig.includes("must not clone the client\'s city/service landing-page family"));
-assert.match(clientConfig, /client_site_evergreen_service_city_owners/);
+assert.match(clientConfig, /client_site_evergreen_service_city_owners/);\nassert.match(clientConfig, /publishedAssets/);
+assert.ok(clientConfig.includes('publicUrl: "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/"'));
+assert.ok(clientConfig.includes('primaryAction: "https://mzm-junk-removal.com/"'));
+assert.match(clientConfig, /EVIDENCE_CANDIDATE_ONLY_PENDING_AUTHENTICATED_OWNER_READBACK/);
+assert.match(clientConfig, /catalogState: "NO_PUBLICATION_INFERENCE"/);
+assert.match(clientConfig, /outcomeState: "UNKNOWN"/);
+
 assert.doesNotMatch(clientConfig, /reviewCount\\s*:/);
 assert.doesNotMatch(clientConfig, /jobsCompleted\\s*:/);
 assert.match(homeServicesAccess, /robots="noindex,nofollow"/);
