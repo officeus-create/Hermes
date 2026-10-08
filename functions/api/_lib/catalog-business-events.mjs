@@ -25,6 +25,7 @@ export async function ensureCatalogBusinessEventSchema(db) {
   ).run();
 }
 
+/** @param {any} db @param {{ day: string, catalogBusinessId: string, eventType: string, now: string, country?: string | null }} event */
 export async function recordCatalogBusinessEvent(db, { day, catalogBusinessId, eventType, now, country = null }) {
   await ensureCatalogBusinessEventSchema(db);
   await db.prepare(`
