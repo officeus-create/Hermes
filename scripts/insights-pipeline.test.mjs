@@ -1,6 +1,7 @@
 import "./insights-sitemap-maintenance.test.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import "./insights-source-registry.test.mjs";
 
 const registry = JSON.parse(await readFile(new URL("../src/data/insights.generated.json", import.meta.url), "utf8"));
@@ -23,6 +24,16 @@ for (const post of registry) {
   assert.ok(post.contentTier !== "standalone" || post.faq.length >= 3, `${post.id}: standalone FAQ missing`);
   assert.ok(post.related.length >= (post.contentTier === "standalone" ? 2 : 1) && post.related.every((item) => item.href.startsWith("/")), `${post.id}: internal related links required`);
   assert.ok(post.primaryAction.href.startsWith("/") && post.secondaryAction.href.startsWith("/"), `${post.id}: CTAs must remain internal`);
+  if (post.routeOwner !== undefined) {
+    assert.ok(["insights_dynamic", "explicit_static"].includes(post.routeOwner), `${post.id}: unknown route owner`);
+  }
+  if (post.contentTier === "standalone" && post.routeOwner === "explicit_static") {
+    const explicitPath = new URL(`../src/pages/insights/${post.direction}/${post.slug}/index.astro`, import.meta.url);
+    assert.ok(existsSync(explicitPath), `${post.id}: static article owner route missing`);
+    const explicitSource = await readFile(explicitPath, "utf8");
+    assert.ok(explicitSource.includes('robots="index,follow,max-image-preview:large"'), `${post.id}: indexed Insights owner must be explicitly indexable`);
+    assert.ok(!explicitSource.includes('robots="noindex'), `${post.id}: indexed Insight must not retain preview robots`);
+  }
   const route = `${post.direction}/${post.slug}`;
   assert.ok(!routeKeys.has(route), `${post.id}: duplicate insight route`);
   routeKeys.add(route);
