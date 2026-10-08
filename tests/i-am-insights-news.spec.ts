@@ -62,8 +62,10 @@ test("News enters RSS and one Insights sitemap owner, no listing as licensed ser
  expect((xml.match(/https:\/\/hermeslogisticsus\.com\/insights\/technology\/i-am-vision\//g)||[]).length).toBe(1);
  const index=await page.request.get("/sitemapindex.xml");
  expect(index.ok()).toBe(true);
+ const childLastmods=[...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(match=>match[1]).sort();
+ const expectedLatest=childLastmods.at(-1);
  const parent=(await index.text()).match(/<sitemap>[\s\S]*?<\/sitemap>/g)?.find(x=>x.includes("https://hermeslogisticsus.com/sitemap-insights.xml"));
- expect(parent).toContain("<lastmod>2026-10-08</lastmod>");
+ expect(parent).toContain(`<lastmod>${expectedLatest}</lastmod>`);
 });
 
 test("I am technology news and visual remain usable on mobile",async({page})=>{
