@@ -23,7 +23,10 @@ for (const post of registry) {
   assert.ok(post.takeaways.length >= (post.contentTier === "standalone" ? 3 : 1), `${post.id}: takeaways missing`);
   assert.ok(post.contentTier !== "standalone" || post.faq.length >= 3, `${post.id}: standalone FAQ missing`);
   assert.ok(post.related.length >= (post.contentTier === "standalone" ? 2 : 1) && post.related.every((item) => item.href.startsWith("/")), `${post.id}: internal related links required`);
-  assert.ok(post.primaryAction.href.startsWith("/") && post.secondaryAction.href.startsWith("/"), `${post.id}: CTAs must remain internal`);
+  const primaryActionIsInternal = post.primaryAction.href.startsWith("/");
+  const primaryActionIsVerifiedSource = post.primaryAction.href === post.sourceUrl;
+  assert.ok(primaryActionIsInternal || primaryActionIsVerifiedSource, `${post.id}: primary CTA must stay internal or equal the verified source URL`);
+  assert.ok(post.secondaryAction.href.startsWith("/"), `${post.id}: secondary CTA must remain internal`);
   if (post.routeOwner !== undefined) {
     assert.ok(["insights_dynamic", "explicit_static"].includes(post.routeOwner), `${post.id}: unknown route owner`);
   }
