@@ -209,6 +209,11 @@ assert.equal(safeZero.finalAmountVerified, true);
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const companyTypes = read("functions/api/_lib/hermes-company-profiles.mjs");
 const companyApi = read("functions/api/hermes-connect/company.ts");
+// The backend must enforce the cross-vertical company safety boundary, not only the onboarding UI.
+assert.match(companyApi, /existing_company_type_locked/);
+assert.match(companyApi, /SELECT id, slug, company_type, created_at FROM hermes_company_profiles/);
+assert.match(companyApi, /WHERE hermes_company_profiles\.company_type = excluded\.company_type/);
+assert.match(companyApi, /row\?\.company_type !== companyType/);
 const accountApi = read("functions/api/hermes-connect/account.ts");
 const catalogApi = read("functions/api/catalog/companies.ts");
 const catalogRuntime = read("public/catalog-connect-live.v2.js");
