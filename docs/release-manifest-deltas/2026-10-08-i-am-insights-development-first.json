@@ -8,10 +8,10 @@
     {
       "route": "/insights/technology/i-am-vision/",
       "source_state": "current_main",
-      "indexability": "index",
+      "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
       "canonical": "https://hermeslogisticsus.com/insights/technology/i-am-vision/",
-      "sitemap_owner": "sitemap-insights.xml",
+      "sitemap_owner": "public/sitemap-insights.xml",
       "source_file": "src/pages/insights/technology/i-am-vision/index.astro",
       "status": "COMPLETE",
       "blocker": "Development announcement only, not I am regulated live service, legal company or securities offering; Google indexing, investor reception and customer value remain unverified until external readback.",
