@@ -217,7 +217,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       const [dashboardResult,all,publicAssets]=await Promise.all([
         api("/api/hermes-connect/home-services/crm?module=dashboard"),
         api("/api/hermes-connect/home-services/crm?module=leads"),
-        api("/api/hermes-connect/home-services/crm?module=public_assets"),
+        api("/api/hermes-connect/home-services/crm?module=public_assets").catch(()=>({assets:[]})),
       ]);
       dashboard=dashboardResult;
       allLeads=Array.isArray(all.leads)?all.leads:[];
