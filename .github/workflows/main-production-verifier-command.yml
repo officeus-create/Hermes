@@ -14,8 +14,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    env:
-
     steps:
       - name: Check out approved main
         uses: actions/checkout@v6
