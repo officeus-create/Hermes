@@ -2,6 +2,7 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
+import IAmItalyEditorialVisual from "../../../../components/IAmItalyEditorialVisual.astro";
 
 const competitorSources = [
   { name: "Global Blue · Tax Free", url: "https://www.globalblue.com/en/about-us", description: "A mature merchant and traveller Tax Free ecosystem." },
@@ -34,7 +35,7 @@ const differentiation = [
         <a class="cta" href="/businesses/concepts/i-am/">Explore the interactive concept →</a>
       </header>
       <article class="story">
-        <div class="photo"><img src="/images/i-am-concept-globe.svg" alt="Illustrated early-stage I am interface concept, not a released product." loading="lazy" width="1100" height="770" /></div>
+        <div class="photo"><IAmItalyEditorialVisual /></div>
         <section>
           <h2>The problem is not a shortage of apps.</h2>
           <p>People already have airline apps, e-government portals, immigration guidance, business formation providers and separate Tax Free tools. The difficult part is knowing which service is relevant, what a specific jurisdiction actually requires, which steps depend on one another, and whether the user has completed the real-world task.</p>
@@ -55,6 +56,13 @@ const differentiation = [
           <div class="principles">{differentiation.map(item=>(
             <div><strong>{item.label}</strong><p>{item.copy}</p></div>
           ))}</div>
+        </section>
+        <section>
+          <h2>Shop planning begins before you land</h2>
+          <p>An early I am browser workspace now demonstrates a traveller's short list of publicly documented Italian shopping channels. It is designed for desktop and mobile. Only merchant identifiers can optionally be saved on the visitor's own device; no passport, payment, flight number or order is collected. Editing an already-loaded page can work without connectivity; visiting external shops, reservations and checkout require a connection.</p>
+          <p>Italy's first source-checked candidates include <a href="https://www.farfetch.com/it/pag1987.aspx" target="_blank" rel="noopener noreferrer">FARFETCH</a> and <a href="https://www.yoox.com/it/affiliation/program" target="_blank" rel="noopener noreferrer">YOOX</a>, which publish affiliate application programmes, plus <a href="https://www.thebicestercollection.com/fidenza-village/en/visit/" target="_blank" rel="noopener noreferrer">Fidenza Village's Shop from Home</a> and <a href="https://www.milanairports-shop.com/en/services/eboutique" target="_blank" rel="noopener noreferrer">Milan Airports Boutique's reservation service</a>. I am is not currently enrolled in these programmes and cannot record a commission.</p>
+          <p>The Milan Airports Boutique reservation channel serves eligible departing passengers, not a promised collection on arrival. A purchase through a merchant website is not automatically an eligible in-store tourist Tax Free purchase. Those distinctions are essential to the future country's rules engine.</p>
+          <p><a href="/businesses/italy/">Explore the Italy Catalog research page</a> and <a href="/demos/hermes-connect/i-am-shopping/">try the I am shopping workspace demo</a>.</p>
         </section>
         <section>
           <h2>The 14-month planning horizon</h2>
