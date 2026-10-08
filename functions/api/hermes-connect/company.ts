@@ -76,7 +76,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const countryCode = cleanCompanyText(body.countryCode || "US", 2).toUpperCase();
   const timezone = cleanCompanyText(body.timezone, 64);
   const publicSourceRef = cleanCompanyText(body.publicSourceRef, 160);
-  const catalogOptIn = body.catalogOptIn !== false;
+  // New Home Services profiles are private unless the owner explicitly opts into Catalog publication.
+  const catalogOptIn = companyType === "home_service" ? body.catalogOptIn === true : body.catalogOptIn !== false;
 
   const errors: string[] = [];
   if (companyName.length < 2) errors.push("company_name_required");
