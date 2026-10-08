@@ -273,6 +273,12 @@ test('Home subjects use finite cycles, pause offscreen and settle to still artwo
  expect(timing.iterations).toBe(3);
  await page.locator('footer').scrollIntoViewIfNeeded();
  await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
+ // pause() is asynchronous: the app marker precedes the browser's pending pause task.
+ // Wait for actual Web Animations state before taking the unchanged-time baseline.
+ await expect.poll(async()=>layers.first().evaluate(node=>{
+  const animation=node.getAnimations()[0];
+  return {playState:animation?.playState,pending:animation?.pending};
+ })).toEqual({playState:'paused',pending:false});
  const time=await layers.first().evaluate(node=>node.getAnimations()[0].currentTime);
  await page.waitForTimeout(180);
  expect(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime)).toBe(time);

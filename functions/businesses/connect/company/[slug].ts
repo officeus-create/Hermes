@@ -75,6 +75,6 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <section class="grid"><article class="card"><p class="eyebrow">Services</p><h2>What the business handles</h2><ul>${serviceList}</ul></article>
 <article class="card"><p class="eyebrow">Service area</p><h2>Where the team operates</h2><ul>${areaList}</ul></article></section>
 <p class="note">This public Catalog page contains business-level facts only. Customer names, phone numbers, addresses, job photos, quotes, costs, payments and private CRM records are not published here.</p>
-</main></body></html>`;
+</main><script src="/catalog-business-telemetry.js" data-catalog-business-id="company-crm:${esc(String(row.id))}" defer></script><script src="/catalog-traffic-stats.js" data-catalog-traffic-loader defer></script></body></html>`;
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, s-maxage=300" } });
 }

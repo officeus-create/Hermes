@@ -25,6 +25,11 @@ const staticBusinessIds = new Set([
 
 async function validCatalogBusinessId(db: any, value: string) {
   if (staticBusinessIds.has(value)) return true;
+  const company = value.match(/^company-crm:([a-zA-Z0-9_-]{6,160})$/);
+  if (company) {
+    const row = await db.prepare("SELECT c.id FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
+    return Boolean(row?.id);
+  }
   const match = value.match(/^repair-shop-crm:([a-zA-Z0-9_-]{6,160})$/);
   if (!match) return false;
   await ensureRepairShopProfileSchema(db);
@@ -93,6 +98,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         const row = await env.DB.prepare("SELECT id,name,slug,catalog_opt_in FROM repair_shops WHERE slug = ? LIMIT 1").bind(repair[1]).first();
         const publication = repairCatalogPublication(row);
         if (publication.eligible && publication.path === path && publication.entityId) id = publication.entityId;
+      }
+      const company = path.match(/^\/businesses\/connect\/company\/([a-z0-9-]+)\/$/);
+      if (!id && company) {
+        const row = await env.DB.prepare("SELECT c.id,c.slug FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
+        if (row?.id && row.slug === company[1]) id = `company-crm:${row.id}`;
       }
       // Unknown/withdrawn/uninstrumented profiles never inherit site totals or another tenant's data.
       if (!id) {
