@@ -72,7 +72,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (module === "public_assets") {
     return jsonResponse(200, {
       success: true,
-      assets: getHomeServicePublicAssets({ website: ctx.company.website }),
+      assets: getHomeServicePublicAssets({ website: ctx.company.website, companyName: ctx.company.company_name }),
     }, privateHeaders);
   }
 
