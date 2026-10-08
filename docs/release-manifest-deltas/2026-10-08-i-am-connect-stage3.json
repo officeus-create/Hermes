@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-08-i-am-connect-stage3",
+  "generated_at": "2026-10-08T15:35:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/demos/hermes-connect/i-am-shopping/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/i-am-shopping/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/demos/hermes-connect/i-am-shopping/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Single Stage 3 Hermes Connect product-lab route. No separate I am app hub, merchant integration, affiliate approval, checkout, payment, authenticated I am tenant, cross-device sync or regulated Tax Free operation is verified.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

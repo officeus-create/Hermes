@@ -1,0 +1,504 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import IAmTaxFreePrecheck from "../../../../components/IAmTaxFreePrecheck.astro";
+import { iamItalyMerchantCandidates } from "../../../../data/i-am-italy-merchant-candidates";
+import { iamConnectCapabilities, iamCapabilityCounts } from "../../../../data/i-am-connect-capabilities";
+import { iamCountryRuleSets } from "../../../../data/i-am-country-rules";
+import { iamAffiliateStates, iamEvidenceRules, italyShoppingPrototypeJourney } from "../../../../data/i-am-journey-state";
+import { iamTravelProviderCandidates } from "../../../../data/i-am-provider-candidates";
+
+const italyRuleSet = iamCountryRuleSets.IT;
+
+const stageLabels = {
+  "merchant-online-checkout": "External retailer checkout",
+  "direct-boutique-contact": "Ask the boutique directly",
+  "airport-departure-reserve": "Reserve for departure, not arrival",
+} as const;
+---
+<BaseLayout
+  title="I am · Italy Shopping Workspace Demo | Hermes Connect"
+  description="Try a device-local, responsive travel shopping shortlist for Italy. Discover official merchants and departure-only airport reservations. No live orders, affiliates or Tax Free refunds."
+  robots="noindex,follow"
+  locale="en"
+  htmlLang="en"
+>
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="shop-demo" id="main-content">
+    <div class="shell">
+      <nav class="breadcrumbs"><a href="/services/hermes-connect/">Hermes Connect</a><span> / </span><a href="/businesses/italy/">Catalog · Italy</a><span> / I am Shopping Workspace</span></nav>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">I am · Hermes Connect Capability Lab · Stage 3 prototype</p>
+          <h1>Make your Italy shopping list before landing.</h1>
+          <p class="intro">I am is being developed inside the existing Hermes Connect capability model. This prototype tests one narrow travel-shopping workflow before any authenticated customer workspace is activated. This first responsive browser demo helps you pick official shopping channels and create a shortlist, without accounts, payments or personal data.</p>
+          <div class="hero-actions"><a href="#merchant-list" class="primary">Explore retailers →</a><a href="/businesses/italy/" class="secondary">Italy Catalog research</a></div>
+          <p class="reality"><strong>Preview only:</strong> this is not a reservation, a shopping cart, a store connection, an affiliate link, a VAT refund or a live merchant CRM. Official sellers control their own prices, availability, orders and collection.</p>
+        </div>
+        <aside class="assistant-card">
+          <span class="assistant-mark">i<span>·</span>am</span>
+          <p class="small">My Italy trip · locally planned</p>
+          <div class="assistant-row"><span>01</span> Discover stores</div>
+          <div class="assistant-row"><span>02</span> Pin to my shortlist</div>
+          <div class="assistant-row"><span>03</span> Continue on official store</div>
+          <div class="assistant-footer">Mobile & desktop browser · no server order</div>
+        </aside>
+      </header>
+      <div class="lab-banner"><span class="pulse"></span><p>Works for list editing without connectivity <strong>after this page has loaded</strong>. Opening or reloading the website while offline may not work; checkout and official store links require connectivity.</p></div>
+
+      <section class="journey-composer" aria-labelledby="journey-composer-title">
+        <div class="composer-copy">
+          <p class="eyebrow">I am · intent-first interface</p>
+          <h2 id="journey-composer-title">Tell I am what you want to do.</h2>
+          <p>Current demo uses a deterministic browser-only router. It does not call an AI model, record audio, submit a form or decide legal eligibility.</p>
+        </div>
+        <form id="iam-journey-form">
+          <label for="iam-journey-intent">Your travel or cross-border goal</label>
+          <textarea id="iam-journey-intent" rows="3" maxlength="260" placeholder="Example: I'm going to Italy, want to shop and understand Tax Free..." required></textarea>
+          <p class="composer-privacy">Prototype input stays in this page session. Do not enter passport details, payment data, passwords, government identifiers or other confidential information.</p>
+          <div class="composer-examples">
+            <button type="button" data-journey-example="I am going to Italy and want to shop and understand Tax Free.">Italy shopping + Tax Free</button>
+            <button type="button" data-journey-example="I need a rental car and travel plan in Europe.">Travel + mobility</button>
+            <button type="button" data-journey-example="I want to understand how to open a company abroad.">Company formation</button>
+            <button type="button" data-journey-example="I need documents and registration guidance in another country.">Documents</button>
+          </div>
+          <button class="composer-submit" type="submit">Build an example journey →</button>
+        </form>
+        <div id="iam-journey-result" class="journey-result" role="status" aria-live="polite">
+          <strong>No journey generated yet.</strong>
+          <p>Only predefined capability IDs can be suggested; unsupported requests remain in research state.</p>
+        </div>
+        <div id="iam-journey-menu" class="journey-menu" hidden>
+          <div><strong>My temporary I am menu</strong><span>Page memory only · no account</span></div>
+          <ol id="iam-journey-modules"></ol>
+          <button type="button" id="iam-journey-clear">Clear modules</button>
+        </div>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="retail-section" id="merchant-list" aria-labelledby="merchant-list-title">
+          <div class="section-head">
+            <p class="eyebrow">Official retailers · not Hermes partners</p>
+            <h2 id="merchant-list-title">Choose which channel to explore.</h2>
+            <p>Source-checked direct sites. Availability, referral eligibility and official preorders are controlled by the providers. All links currently have zero verified I am affiliate status.</p>
+          </div>
+          <fieldset class="stage-filter" aria-label="Shopping stage">
+            <legend>I'm planning:</legend>
+            <label><input type="radio" name="shopping-stage" value="all" checked /> All options</label>
+            <label><input type="radio" name="shopping-stage" value="arrival" /> After arrival</label>
+            <label><input type="radio" name="shopping-stage" value="departure" /> Airport departure</label>
+          </fieldset>
+          <div class="retail-grid">
+            {iamItalyMerchantCandidates.map((merchant) => (
+              <article
+                class="store-card"
+                data-merchant-id={merchant.id}
+                data-fulfillment={merchant.fulfillment}
+                data-name={merchant.name}
+              >
+                <div class="store-top">
+                  <span>{merchant.category.replaceAll("-", " ")}</span>
+                  <span class="not-partnered">NOT AFFILIATED</span>
+                </div>
+                <h3>{merchant.name}</h3>
+                <p>{merchant.summary}</p>
+                <p class="fulfillment"><strong>How to continue:</strong> {stageLabels[merchant.fulfillment]}</p>
+                <div class="store-actions">
+                  <button type="button" data-save-store={merchant.id} aria-label={"Add " + merchant.name + " to shortlist"}>Add to my shortlist</button>
+                  <a href={merchant.shopUrl} target="_blank" rel="noopener noreferrer" aria-label={"Open official " + merchant.name + " website"}>
+                    Official website ↗
+                  </a>
+                </div>
+                <a class="store-source" href={merchant.sourceUrl} target="_blank" rel="noopener noreferrer">Official source / programme terms ↗</a>
+              </article>
+            ))}
+          </div>
+          <p class="source-disclosure">Retailer URLs are ordinary, non-affiliate external links. I am has not applied, been accepted, connected a product feed, tracked a sale, earned a commission or made a reservation with any listed provider.</p>
+        </section>
+
+        <aside class="trip-workspace" aria-labelledby="trip-workspace-title">
+          <p class="eyebrow">Your temporary trip plan</p>
+          <h2 id="trip-workspace-title">My Italy shortlist <span id="saved-count">0</span></h2>
+          <p>Choose retailers you might visit or contact. No personal identity, passport, flight number, credit card or order is requested.</p>
+          <ol id="my-merchant-list" aria-live="polite">
+            <li class="empty-state">Your shortlist is empty. Add a retailer on the left to begin.</li>
+          </ol>
+          <label class="save-option">
+            <input type="checkbox" id="save-on-device" />
+            <span><strong>Remember only store names on this device</strong><small>Optional browser storage. No cross-device sync. Uncheck or clear to remove it.</small></span>
+          </label>
+          <div class="workspace-actions"><button type="button" id="clear-list" class="secondary-button">Clear shortlist and saved data</button></div>
+          <div class="handoff-state">
+            <strong>Next stage: official merchant checkout</strong>
+            <p>Follow the retailer's own website, conditions and instructions when connected. I am cannot transmit this list or confirm an order. A future authorized Hermes Connect integration would require explicit consent and real partner evidence.</p>
+          </div>
+        </aside>
+      </div>
+      <IAmTaxFreePrecheck />
+
+      <section class="country-rule-lab" aria-labelledby="country-rule-title">
+        <div class="section-head">
+          <p class="eyebrow">Italy · source-backed rule registry</p>
+          <h2 id="country-rule-title">The assistant should know why it says something.</h2>
+          <p>These are public-rule records used for informational guidance only. Each rule carries a government source and a review date; operational actions remain blocked unless an authorized provider is available.</p>
+        </div>
+        <div class="rule-meta">
+          <span><strong>{italyRuleSet.countryName}</strong></span>
+          <span>Reviewed {italyRuleSet.reviewedAt}</span>
+          <span>{italyRuleSet.operationalStatus}</span>
+        </div>
+        <div class="rule-grid">
+          {italyRuleSet.rules.map((rule)=>(
+            <article data-country-rule-id={rule.id} data-rule-implementation={rule.implementationState}>
+              <div class="rule-top"><span>{rule.topic}</span><span>{rule.implementationState.toUpperCase()}</span></div>
+              <h3>{rule.statement}</h3>
+              <p>{rule.operationalEffect}</p>
+              <a href={rule.sourceUrl} target="_blank" rel="noopener noreferrer">{rule.sourceAuthority} · source ↗</a>
+            </article>
+          ))}
+        </div>
+        <p class="source-disclosure">{italyRuleSet.disclaimer}</p>
+      </section>
+
+      <section class="capability-lab" aria-labelledby="capability-lab-title">
+        <div class="section-head">
+          <p class="eyebrow">Hermes Connect capability registry</p>
+          <h2 id="capability-lab-title">What exists, what is research, and what is blocked.</h2>
+          <p>Each module is versioned by evidence state. A future idea does not become a released feature because it appears in this product lab.</p>
+        </div>
+        <div class="capability-summary" aria-label="Capability status counts">
+          <span><strong>{iamCapabilityCounts.prototype}</strong> prototype</span>
+          <span><strong>{iamCapabilityCounts.research}</strong> research</span>
+          <span><strong>{iamCapabilityCounts.blocked}</strong> blocked</span>
+          <span><strong>{iamCapabilityCounts.future}</strong> future</span>
+        </div>
+        <div class="capability-grid">
+          {iamConnectCapabilities.map((capability)=>(
+            <article data-capability-id={capability.id} data-capability-state={capability.state}>
+              <div class="capability-top"><span>{capability.country}</span><span>{capability.state.toUpperCase()}</span></div>
+              <h3>{capability.label}</h3>
+              <p>{capability.userValue}</p>
+              <dl>
+                <div><dt>Current truth</dt><dd>{capability.currentTruth}</dd></div>
+                <div><dt>Next gate</dt><dd>{capability.nextGate}</dd></div>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="provider-research" aria-labelledby="provider-research-title">
+        <div class="section-head">
+          <p class="eyebrow">Future provider layer · research only</p>
+          <h2 id="provider-research-title">Use specialists for inventory and fulfillment instead of rebuilding them.</h2>
+          <p>These official programmes could eventually supply flights, hotels, cars or experiences after application and approval. Today every record is <strong>NOT APPLIED / NOT PARTNERED</strong>.</p>
+        </div>
+        <div class="provider-grid">
+          {iamTravelProviderCandidates.map((provider)=>(
+            <article data-provider-candidate={provider.id}>
+              <div class="provider-top"><span>{provider.category.replaceAll("-"," ")}</span><span>{provider.hermesStatus.replaceAll("_"," ")}</span></div>
+              <h3>{provider.name}</h3>
+              <span class:list={["provider-fit",provider.providerFit === "SEPARATE_TECH_PARTNERSHIP_REQUIRED" && "provider-fit--gate"]}>{provider.providerFit.replaceAll("_"," ")}</span>
+              <p>{provider.publicTermsSummary}</p>
+              <p class="provider-caveat"><strong>Gate:</strong> {provider.eligibilityCaveat}</p>
+              <div class="provider-modes">{provider.integrationModes.map(mode=><span>{mode}</span>)}</div>
+              <a href={provider.officialProgramUrl} target="_blank" rel="noopener noreferrer">Official partner programme ↗</a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="evidence-ladder" aria-labelledby="evidence-ladder-title">
+        <div class="section-head">
+          <p class="eyebrow">Evidence before revenue</p>
+          <h2 id="evidence-ladder-title">One click is not an order. One order is not a commission.</h2>
+          <p>The CRM must keep journey progress, provider acknowledgement and financial attribution as different receipts. The current Italy prototype is only <strong>{italyShoppingPrototypeJourney.state}</strong>.</p>
+        </div>
+        <div class="evidence-chain" aria-label="Future affiliate evidence states">
+          {iamAffiliateStates.map((state,index)=><span><b>{String(index+1).padStart(2,"0")}</b>{state.replaceAll("_"," ")}</span>)}
+        </div>
+        <div class="evidence-rules">
+          <span data-evidence-rule="click-order">{iamEvidenceRules.clickIsNotOrder ? "Click ≠ order" : ""}</span>
+          <span data-evidence-rule="order-commission">{iamEvidenceRules.orderIsNotCommission ? "Order ≠ commission" : ""}</span>
+          <span data-evidence-rule="commission-payout">{iamEvidenceRules.commissionIsNotPayout ? "Commission ≠ payout" : ""}</span>
+          <span data-evidence-rule="source-eligibility">{iamEvidenceRules.sourceReadIsNotLegalEligibility ? "Source read ≠ legal determination" : ""}</span>
+        </div>
+      </section>
+
+      <section class="commerce-states" aria-labelledby="commerce-states-title">
+        <p class="eyebrow">Hermes Connect · incremental roadmap</p>
+        <h2 id="commerce-states-title">A working preview today, reusable capabilities tomorrow.</h2>
+        <div class="state-grid">
+          <article><span>PREVIEW / AVAILABLE</span><h3>Browser shortlist</h3><p>Choose and remove public store candidates. Optional device-only storage, no buyer data.</p></article>
+          <article><span>FUTURE / APPROVAL REQUIRED</span><h3>Merchant connectivity</h3><p>Inventory/availability, delivery and real pickup times depend on merchant-authorized feeds.</p></article>
+          <article><span>FUTURE / FINANCIAL GATE</span><h3>Affiliate attribution</h3><p>Only approved tracked links, validated sales, refunds/returns and payout records would create commissions.</p></article>
+          <article><span>FUTURE / HERMES CORE</span><h3>Shared customer workspace</h3><p>Secure identity, consent, trips, receipts, support and cross-device sync reuse the existing Hermes Connect operating model.</p></article>
+        </div>
+        <p class="disclaimer">The airport's official Milan Airports Boutique offers advance reservations for eligible <strong>departure</strong> flights with provider-side collection; this is separate from shopping after arrival and from customs-issued Tax Free refunds. <a href="https://www.milanairports-shop.com/en/services/eboutique" rel="noopener noreferrer" target="_blank">Official airport terms ↗</a></p>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script>
+  // No server, API, personal data, order, telemetry or affiliate link is created.
+  // Store selection may be saved ONLY after affirmative opt-in, and contains IDs.
+  const key = "iam-italy-shortlist-v1";
+  const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-merchant-id]"));
+  const allowList = new Set(cards.map(card => card.dataset.merchantId).filter((id): id is string => Boolean(id)));
+  const list = document.querySelector<HTMLOListElement>("#my-merchant-list");
+  const count = document.querySelector<HTMLElement>("#saved-count");
+  const storageToggle = document.querySelector<HTMLInputElement>("#save-on-device");
+  const clear = document.querySelector<HTMLButtonElement>("#clear-list");
+  const selected = new Set<string>();
+  const filter = document.querySelectorAll<HTMLInputElement>('input[name="shopping-stage"]');
+  const journeyForm = document.querySelector<HTMLFormElement>("#iam-journey-form");
+  const journeyInput = document.querySelector<HTMLTextAreaElement>("#iam-journey-intent");
+  const journeyResult = document.querySelector<HTMLElement>("#iam-journey-result");
+  const journeyMenu = document.querySelector<HTMLElement>("#iam-journey-menu");
+  const journeyModules = document.querySelector<HTMLOListElement>("#iam-journey-modules");
+  const journeyClear = document.querySelector<HTMLButtonElement>("#iam-journey-clear");
+  const pinnedModules = new Set<string>();
+  const intentRules = [
+    { id: "italy-shopping-shortlist", pattern: /\b(shop|shopping|boutique|fashion|clothes|store|stores|retail)\b/i, label: "Italy Shopping Shortlist" },
+    { id: "italy-tax-free-guidance", pattern: /\b(tax[\s-]?free|vat|iva|refund)\b/i, label: "Italy Tax Free Guidance" },
+    { id: "travel-mobility", pattern: /\b(travel|trip|flight|hotel|rent|rental|car|train|airport|mobility)\b/i, label: "Travel & Mobility" },
+    { id: "company-formation", pattern: /\b(company|incorporat|business formation|open a business|register a business|startup)\b/i, label: "Company Formation" },
+    { id: "documents-registrations", pattern: /\b(document|documents|visa|permit|registration|certificate|identity)\b/i, label: "Documents & Registrations" },
+  ] as const;
+  const renderJourneyMenu = () => {
+    if (!journeyMenu || !journeyModules) return;
+    journeyModules.replaceChildren();
+    journeyMenu.hidden = pinnedModules.size === 0;
+    for (const id of pinnedModules) {
+      const rule = intentRules.find(item => item.id === id);
+      const item = document.createElement("li");
+      const label = document.createElement("span");
+      label.textContent = rule?.label ?? id;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", "Remove " + label.textContent);
+      remove.addEventListener("click", () => { pinnedModules.delete(id); renderJourneyMenu(); });
+      item.append(label, remove);
+      journeyModules.append(item);
+    }
+  };
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-journey-example]")) {
+    button.addEventListener("click", () => {
+      if (!journeyInput) return;
+      journeyInput.value = button.dataset.journeyExample ?? "";
+      journeyInput.focus();
+    });
+  }
+  journeyClear?.addEventListener("click", () => { pinnedModules.clear(); renderJourneyMenu(); });
+  journeyForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!journeyInput || !journeyResult || !journeyForm.reportValidity()) return;
+    const request = journeyInput.value.trim();
+    const matches = intentRules.filter(rule => rule.pattern.test(request));
+    journeyResult.replaceChildren();
+    const heading = document.createElement("strong");
+    if (!matches.length) {
+      heading.textContent = "Needs country-specific research";
+      const explanation = document.createElement("p");
+      explanation.textContent = "No supported capability can be selected safely from this request. I am would ask for more context or route the task to research instead of inventing a procedure.";
+      journeyResult.append(heading, explanation);
+      return;
+    }
+    heading.textContent = matches.length === 1 ? "1 example module matched" : matches.length + " example modules matched";
+    journeyResult.append(heading);
+    const list = document.createElement("div");
+    list.className = "journey-match-list";
+    for (const match of matches) {
+      const row = document.createElement("div");
+      row.dataset.journeyCapability = match.id;
+      const label = document.createElement("span");
+      label.textContent = match.label;
+      const pin = document.createElement("button");
+      pin.type = "button";
+      pin.textContent = pinnedModules.has(match.id) ? "Added" : "Add to my menu";
+      pin.disabled = pinnedModules.has(match.id);
+      pin.addEventListener("click", () => {
+        pinnedModules.add(match.id);
+        pin.textContent = "Added";
+        pin.disabled = true;
+        renderJourneyMenu();
+      });
+      row.append(label, pin);
+      list.append(row);
+    }
+    journeyResult.append(list);
+    const disclosure = document.createElement("p");
+    disclosure.textContent = "Example routing only: no AI call, voice recording, account, legal decision or external submission.";
+    journeyResult.append(disclosure);
+  });
+  let storageEnabled = false;
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const values: unknown = JSON.parse(stored);
+      if (Array.isArray(values) && values.length <= allowList.size && values.every(id => typeof id === "string" && allowList.has(id))) {
+        values.forEach(id => selected.add(id));
+        storageEnabled = true;
+        if (storageToggle) storageToggle.checked = true;
+      }
+    }
+  } catch {
+    // Storage can be disabled in private browsing; in-memory operation still works.
+  }
+  function persist() {
+    if (!storageEnabled || !storageToggle?.checked) return;
+    try {
+      localStorage.setItem(key, JSON.stringify([...selected]));
+    } catch {
+      storageEnabled = false;
+      if (storageToggle) storageToggle.checked = false;
+    }
+  }
+  function removeStoredShortlist() {
+    if (!storageEnabled) return;
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Storage can be disabled; the in-memory shortlist is still cleared below.
+    } finally {
+      storageEnabled = false;
+    }
+  }
+  function render() {
+    if (!list) return;
+    list.replaceChildren();
+    if (count) count.textContent = String(selected.size);
+    if (!selected.size) {
+      const empty = document.createElement("li");
+      empty.className = "empty-state";
+      empty.textContent = "Your shortlist is empty. Add a retailer on the left to begin.";
+      list.append(empty);
+    }
+    for (const id of selected) {
+      const card = cards.find(element => element.dataset.merchantId === id);
+      if (!card) continue;
+      const row = document.createElement("li");
+      const name = document.createElement("span");
+      name.textContent = card.dataset.name ?? id;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Remove";
+      remove.setAttribute("aria-label", "Remove " + name.textContent);
+      remove.addEventListener("click", () => {
+        selected.delete(id);
+        persist();
+        render();
+      });
+      row.append(name, remove);
+      list.append(row);
+    }
+    document.querySelectorAll<HTMLButtonElement>("[data-save-store]").forEach(button => {
+      const id = button.dataset.saveStore ?? "";
+      button.disabled = selected.has(id);
+      button.textContent = selected.has(id) ? "Added to shortlist" : "Add to my shortlist";
+    });
+  }
+  document.querySelectorAll<HTMLButtonElement>("[data-save-store]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.saveStore;
+      if (!id || !allowList.has(id)) return;
+      selected.add(id);
+      persist();
+      render();
+    });
+  });
+  storageToggle?.addEventListener("change", () => {
+    if (storageToggle.checked) {
+      storageEnabled = true;
+      persist();
+    } else {
+      removeStoredShortlist();
+    }
+  });
+  clear?.addEventListener("click", () => {
+    selected.clear();
+    removeStoredShortlist();
+    if (storageToggle) storageToggle.checked = false;
+    render();
+  });
+  for (const control of filter) {
+    control.addEventListener("change", () => {
+      if (!control.checked) return;
+      const phase = control.value;
+      cards.forEach(card => {
+        const airportDeparture = card.dataset.fulfillment === "airport-departure-reserve";
+        card.hidden = phase === "arrival" ? airportDeparture : phase === "departure" ? !airportDeparture : false;
+      });
+    });
+  }
+  render();
+</script>
+<style>
+  .shop-demo{background:#f6f9fb;color:#143043;min-height:75vh}
+  .shell{max-width:1240px;margin:auto;padding:0 25px 95px}
+  .breadcrumbs{display:flex;gap:10px;flex-wrap:wrap;padding:26px 0 10px;font-size:12px;color:#728a9b}
+  .breadcrumbs a{color:#1e7389}
+  .hero{display:grid;grid-template-columns:1.3fr .7fr;align-items:center;gap:48px;padding:48px 0 42px}
+  .eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:850;color:#098d90}
+  h1{font-size:clamp(39px,5.5vw,72px);letter-spacing:-.055em;line-height:1.1;margin:17px 0}
+  .intro{max-width:720px;font-size:clamp(17px,1.6vw,21px);line-height:1.65;color:#536d7f}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}
+  .hero-actions a{display:inline-flex;min-height:46px;align-items:center;border-radius:11px;padding:13px 17px;font-size:14px;font-weight:750;text-decoration:none}
+  .primary{background:#175c73;color:#fff}
+  .secondary{color:#175c73;border:1px solid #c2d7df;background:#fff}
+  .reality{font-size:12px;line-height:1.6;color:#756041;background:#fff4e1;border-radius:12px;padding:15px 18px}
+  .assistant-card{background:linear-gradient(160deg,#fff 5%,#daf1ef 100%);border:1px solid #c8e3e3;box-shadow:0 22px 50px rgba(20,66,81,.12);padding:30px;border-radius:24px}
+  .assistant-mark{font-size:49px;color:#17364c;font-weight:900;letter-spacing:-.075em}.assistant-mark span{color:#16b4ab}
+  .assistant-card .small{font-size:13px;color:#6b8998;margin:0 0 17px}
+  .assistant-row{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #d9e8eb;padding:16px;border-radius:13px;font-weight:750;font-size:14px;margin-top:9px}
+  .assistant-row span{color:#168a91;font-size:12px}.assistant-footer{font-size:12px;color:#708e9a;margin-top:20px}
+  .lab-banner{display:flex;gap:12px;align-items:center;background:#e7f4f3;border:1px solid #cde7e4;padding:13px 17px;border-radius:13px;color:#365f67;line-height:1.5;font-size:13px;margin:3px 0 30px}
+  .lab-banner p{margin:0}.pulse{width:11px;height:11px;flex-shrink:0;border-radius:50%;background:#0da68f}
+  .journey-composer{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;margin:0 0 34px;padding:26px;border:1px solid #cfe0e5;border-radius:21px;background:#eef6f6}.composer-copy h2{font-size:clamp(27px,3vw,40px);letter-spacing:-.04em;margin:10px 0 12px}.composer-copy p:last-child{color:#5c7785;line-height:1.65;font-size:13px}.journey-composer form{display:grid;gap:10px}.journey-composer label{font-size:13px;font-weight:850}.journey-composer textarea{resize:vertical;width:100%;min-height:88px;border:1px solid #bdd1d7;border-radius:12px;background:white;padding:13px;font:inherit;line-height:1.5}.composer-privacy{margin:0;color:#7b6549;font-size:11px;line-height:1.5}.composer-examples{display:flex;flex-wrap:wrap;gap:7px}.composer-examples button{border:1px solid #c8dce0;border-radius:999px;background:#fff;color:#236273;padding:8px 10px;font-size:11px;cursor:pointer}.composer-submit{border:0;border-radius:10px;background:#145f70;color:#fff;padding:12px 14px;font-weight:800;cursor:pointer}.journey-result,.journey-menu{grid-column:1/-1;padding:16px;border-radius:13px;background:#fff;border:1px solid #d4e2e5}.journey-result>p{color:#667d8a;font-size:12px;line-height:1.55;margin-bottom:0}.journey-match-list{display:grid;gap:8px;margin-top:12px}.journey-match-list>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px;border-radius:10px;background:#f1f7f7}.journey-match-list span{font-size:13px;font-weight:800}.journey-match-list button,.journey-menu button{border:1px solid #b9d2d7;background:white;color:#1e6978;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer}.journey-match-list button:disabled{color:#789098;background:#edf2f3}.journey-menu>div{display:flex;justify-content:space-between;gap:10px}.journey-menu>div span{color:#6b808b;font-size:11px}.journey-menu ol{display:grid;gap:8px;padding:0;list-style:none}.journey-menu li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f2;font-size:13px;font-weight:750}
+  .workspace-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.65fr);gap:22px;align-items:start}
+  .section-head{margin-bottom:20px}.section-head h2,.commerce-states h2{font-size:clamp(27px,3.2vw,40px);letter-spacing:-.035em;margin:11px 0}
+  .section-head p:last-child{font-size:14px;line-height:1.6;color:#677f8b;max-width:740px}
+  .stage-filter{border:0;padding:0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:19px}
+  .stage-filter legend{font-size:13px;font-weight:750;margin-bottom:10px}.stage-filter label{display:inline-flex;align-items:center;gap:6px;padding:10px 12px;background:#fff;border:1px solid #d6e4e6;border-radius:11px;color:#31596a;font-weight:700;font-size:13px;cursor:pointer}
+  .retail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+  .store-card{display:flex;flex-direction:column;gap:8px;padding:22px;background:#fff;border:1px solid #d9e5eb;border-radius:18px;min-height:300px}
+  .store-card[hidden]{display:none}
+  .store-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:#6f8792}
+  .not-partnered{color:#8c5e2c}.store-card h3{font-size:22px;margin:11px 0 2px}
+  .store-card>p{font-size:13px;line-height:1.55;color:#627a8b;margin:0}
+  .store-card .fulfillment{font-size:12px;margin-top:auto}
+  .store-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 1px}
+  .store-actions button,.store-actions a{min-height:41px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;padding:11px 12px;border:1px solid #cddce0;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none}
+  .store-actions button{color:#fff;background:#18687b;border-color:#18687b}
+  .store-actions button:disabled{background:#e1eaf0;color:#557287;border-color:#d3e0e7;cursor:default}
+  .store-actions a{color:#18687b;background:#f1f8fa}
+  .store-source{font-size:12px;color:#2b7587;margin-top:7px}
+  .source-disclosure{font-size:12px;line-height:1.6;color:#728793;margin-top:18px}
+  .trip-workspace{background:linear-gradient(180deg,#123c52,#10293b);color:#fff;border-radius:21px;padding:26px;position:sticky;top:26px;box-shadow:0 16px 40px rgba(10,37,52,.15)}
+  .trip-workspace .eyebrow{color:#75d7cf}.trip-workspace h2{font-size:29px;letter-spacing:-.035em;margin:14px 0}
+  .trip-workspace h2 span{color:#b0e7e1;font-size:17px;background:#2d5c66;border-radius:99px;padding:5px 12px}
+  .trip-workspace>p:not(.eyebrow){color:#bad2d8;line-height:1.6;font-size:13px}
+  #my-merchant-list{padding:0;list-style:none;display:grid;gap:9px;margin:20px 0}
+  #my-merchant-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px;background:#245063;border-radius:11px;font-size:13px}
+  #my-merchant-list .empty-state{color:#bed5de}
+  #my-merchant-list button{background:transparent;color:#ddf4f3;border:1px solid #86bac0;border-radius:8px;font-size:11px;padding:7px;cursor:pointer}
+  .save-option{display:flex;gap:12px;align-items:start;border-top:1px solid #3b6475;padding-top:19px;color:#d9eaea}
+  .save-option input{margin-top:5px;width:17px;height:17px;accent-color:#5cccbf}
+  .save-option span{display:grid;gap:6px;font-size:13px}.save-option small{line-height:1.4;color:#a9c7d0}
+  .workspace-actions{margin-top:16px}.secondary-button{padding:10px 13px;border:1px solid #8ab2be;background:none;color:#e3f8fb;border-radius:9px;font-weight:750;cursor:pointer}
+  .handoff-state{background:#204758;border-radius:12px;padding:17px;margin-top:20px}.handoff-state strong{font-size:13px}.handoff-state p{font-size:12px;color:#bcd7dd;line-height:1.6;margin-bottom:0}
+  .country-rule-lab{padding-top:86px}.rule-meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.rule-meta span{padding:8px 11px;border-radius:999px;background:#edf5f6;color:#426573;font-size:11px;font-weight:750}.rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.rule-grid article{padding:20px;border:1px solid #d9e5e8;border-radius:16px;background:white}.rule-top{display:flex;justify-content:space-between;gap:10px;color:#137982;font-size:10px;font-weight:900;letter-spacing:.07em}.rule-grid h3{font-size:17px;line-height:1.4;margin:13px 0 9px}.rule-grid p{font-size:12px;color:#647d8b;line-height:1.6}.rule-grid a{font-size:12px;color:#187385;font-weight:800}
+  .capability-lab{padding-top:86px}.capability-summary{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 22px}.capability-summary span{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;border:1px solid #d5e4e8;border-radius:999px;background:#fff;color:#56717f;font-size:12px}.capability-summary strong{color:#174d60}.capability-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.capability-grid article{padding:21px;border:1px solid #dbe6eb;border-radius:17px;background:#fff}.capability-top{display:flex;justify-content:space-between;gap:10px;color:#18808a;font-size:10px;font-weight:900;letter-spacing:.08em}.capability-grid h3{font-size:20px;margin:14px 0 8px}.capability-grid>article>p{font-size:13px;line-height:1.6;color:#5f7787}.capability-grid dl{display:grid;gap:10px;margin:15px 0 0}.capability-grid dl div{padding-top:10px;border-top:1px solid #edf1f3}.capability-grid dt{font-size:11px;font-weight:850;color:#294f61}.capability-grid dd{margin:5px 0 0;color:#6b7f8c;font-size:12px;line-height:1.55}
+  .provider-research{padding-top:86px}.provider-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.provider-grid article{padding:21px;border:1px solid #d8e5e9;border-radius:17px;background:#fff}.provider-top{display:flex;justify-content:space-between;gap:10px;color:#6a7d89;font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.provider-grid h3{font-size:20px;margin:14px 0 8px}.provider-grid p{color:#607887;font-size:12px;line-height:1.6}.provider-fit{display:inline-flex;width:max-content;max-width:100%;margin:2px 0 5px;padding:5px 7px;border-radius:999px;background:#e7f5ef;color:#2e6c54;font-size:9px;font-weight:900;letter-spacing:.04em}.provider-fit--gate{background:#fff1df;color:#8a5d25}.provider-caveat{padding:10px 12px;border-left:3px solid #d6e2e6;background:#f7fafb}.provider-caveat strong{color:#31596a}.provider-grid a{display:inline-block;margin-top:12px;color:#17768a;font-size:12px;font-weight:850}.provider-modes{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.provider-modes span{padding:5px 7px;border-radius:999px;background:#edf5f6;color:#396576;font-size:10px}
+  .evidence-ladder{padding-top:86px}.evidence-chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.evidence-chain span{display:flex;gap:8px;align-items:center;padding:12px;border:1px solid #d8e4e7;border-radius:11px;background:#fff;color:#456675;font-size:11px;font-weight:750}.evidence-chain b{color:#14838a}.evidence-rules{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.evidence-rules span{padding:8px 10px;border-radius:999px;background:#fff3df;color:#765d35;font-size:11px;font-weight:800}
+  .commerce-states{padding-top:86px}.state-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .state-grid article{background:#e8f3f4;border-radius:15px;border:1px solid #cfdee4;padding:20px}
+  .state-grid span{font-size:11px;font-weight:850;letter-spacing:.07em;color:#1c8189}.state-grid h3{font-size:18px;margin:15px 0 8px}.state-grid p{font-size:13px;line-height:1.55;color:#5a7384;margin:0}
+  .disclaimer{font-size:13px;color:#657d8a;line-height:1.75;margin-top:27px}.disclaimer a{color:#187082}
+  .shop-demo a:focus-visible,.shop-demo button:focus-visible,.shop-demo input:focus-visible{outline:3px solid #49babb;outline-offset:3px}
+  @media(max-width:950px){.hero,.workspace-grid,.journey-composer{grid-template-columns:1fr}.assistant-card{max-width:490px}.trip-workspace{position:static}.state-grid,.capability-grid,.rule-grid,.evidence-chain,.provider-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:550px){.shell{padding:0 16px 70px}.hero{padding:30px 0}.hero-actions a{width:100%;justify-content:center}.retail-grid,.state-grid,.capability-grid,.rule-grid,.evidence-chain,.provider-grid{grid-template-columns:1fr}.store-card{min-height:0}.trip-workspace{padding:21px}.stage-filter{display:grid;grid-template-columns:1fr}.stage-filter label{min-height:43px}}
+</style>

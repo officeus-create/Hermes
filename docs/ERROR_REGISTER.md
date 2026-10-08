@@ -640,3 +640,19 @@ WORKING_APPROACH: keep the existing manual `workflow_dispatch`, production HTML 
 EVIDENCE: failing-first `scripts/production-contact-smoke-contract.test.mjs` rejected the old `push`; targeted production-contact and Cloudflare ownership contracts pass after the change. Fresh build (401 pages, zero errors) and full `npm test` pass on base `85bcbed221b4d301028bee48a205bf7a87df4c0d`. Local full E2E remains blocked by unrelated current-main Academy/Catalog failures and must not be reported green; exact-head GitHub CI is the release gate.
 LESSON: production-mutating synthetic workflows must be manual or explicitly release-authorized; editing their own workflow file must never be sufficient to submit a production form.
 REUSE_RULE: contracts for a mutating smoke must assert the allowed trigger, not only the retained POST/observability behavior. No production smoke, form submission, merge, deployment or IndexNow action was performed.
+
+## ERR-I-AM-STAGE3-CONSENT-AND-STALE-STACK-20261008 — RESOLVED_IN_BRANCH / RELEASE_HOLD
+
+PROBLEM: The former PR #1787 carried an 86-commit stale stack and its shortlist helper called `localStorage.removeItem` during ordinary pre-consent interactions. Replaying the whole branch would also reintroduce an I am option/classifier into Direct Lead Intake, creating an unnecessary path into the existing PII-bearing lead store.
+
+ROOT_CAUSE: Stage 3 product-lab work was layered on historical branches instead of the accepted Stage 2 release base, while the persistence helper treated the absence of opt-in as a request to delete storage.
+
+FAILED_APPROACH: Rebase or cherry-pick of the former branch would preserve unrelated history and the lead-intake expansion. A UI-only checkbox assertion would not prove that `setItem`, `removeItem` and `clear` remain untouched before affirmative consent.
+
+WORKING_APPROACH: Rebuild once from exact merged Stage 2 main `a9b57ad84b059774b5720cb63b109dbf15af1be1`; retain only the one-route Stage 3 lab, controlled workspace context and Italy CTA. Keep I am out of Direct Lead Intake and the AI front-door classifier. Before opt-in, keep the shortlist in page memory and never call a storage mutation; after opt-in, persist only allowlisted merchant IDs.
+
+EVIDENCE: Failing-first browser tests began with 8/8 expected failures on the clean Stage 2 base. The rebuilt payload passes 9/9 focused cases in desktop and 9/9 in the 390px mobile project, including clean load, corrupt stored input, add/remove/clear before opt-in, allowlisted persistence after opt-in, local-only composer and Tax Free interactions, no main mailto/PII fields, no interaction network/native submission/navigation, and sitemap/IndexNow exclusion. Fresh full build, unit, browser and exact-head GitHub CI evidence is recorded in PR #1787 before release disposition.
+
+LESSON: Consent is an operation boundary, not only a saved-state boundary. A no-consent path must avoid every storage mutation, including cleanup.
+
+REUSE_RULE: When a stale product PR depends on an accepted predecessor, rebuild only its unique bounded delta on the exact merged base; instrument browser storage methods and preserve PII-capable shared intake as a separate explicitly authorized scope.
