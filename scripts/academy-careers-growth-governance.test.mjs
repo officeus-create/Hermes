@@ -100,11 +100,13 @@ assert.equal(ownerOperatorJobPostings[0].sameAs, "https://100hires.com/j/G4ek3eN
   assert.ok(wisconsinOwnerOperators.includes("awaiting a fresh recruiting review"));
   assert.ok(!wisconsinOwnerOperators.includes("data-external-job-apply"));
 }
-assert.ok(wisconsinOwnerOperators.includes("Source reviewed October 3, 2026"));
-assert.ok(wisconsinOwnerOperators.includes("exact 100Hires vacancy link is the only external source verified live"));
+assert.ok(wisconsinOwnerOperators.includes("Source reviewed October 8, 2026"));
+assert.ok(wisconsinOwnerOperators.includes("exact 100Hires vacancy remains accessible with status Unlisted"));
+assert.ok(wisconsinOwnerOperators.includes("The separate 100Hires employer page reported no active postings on October 3"));
+assert.ok(!wisconsinOwnerOperators.includes("only external source verified live"));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/c/hermeslogisticsus-com"'));
-assert.ok(wisconsinOwnerOperators.includes("employer-profile reference and not as a complete vacancy directory"));
+assert.ok(wisconsinOwnerOperators.includes("employer-profile reference rather than a complete vacancy directory"));
 assert.ok(wisconsinOwnerOperators.includes("There are no active job postings right now"));
 assert.ok(wisconsinOwnerOperators.includes("After expiry, this page is a recruiting reference"));
 assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
@@ -114,8 +116,10 @@ assert.deepEqual(
   Array(wisconsinIsCurrent ? 3 : 2).fill("+14142697377"),
 );
 assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
-assert.ok(wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));
-assert.ok(wisconsinOwnerOperators.includes("Trailer and equipment eligibility are therefore confirmed individually"));
+assert.ok(!wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));
+assert.ok(wisconsinOwnerOperators.includes("Hermes Logistics LLC works as an agent with multiple transportation companies"));
+assert.ok(wisconsinOwnerOperators.includes("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding."));
+assert.ok(wisconsinOwnerOperators.includes("The publication review expires on October 15, 2026 at 23:59:59 UTC."));
 assert.ok(wisconsinOwnerOperators.includes("does not guarantee"));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed loads"));
 assert.ok(!wisconsinOwnerOperators.includes("guaranteed income"));
