@@ -51,3 +51,34 @@ test("Load Board hero keeps its final layout while the rest of server HTML is de
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }
 });
+
+
+test("Load Board context keeps search beside navigation without a third empty row", async ({ page }, testInfo) => {
+  await page.goto("/load-board/", { waitUntil: "domcontentloaded" });
+  const context = page.locator(".hc-product-context.is-load-board");
+  await expect(context).toBeVisible();
+  await expect(context.locator('.hc-family-nav a[aria-current="page"]')).toHaveAttribute("href", "/load-board/");
+  if ((page.viewportSize()?.width || 0) > 700) {
+    const search = context.locator("[data-hc-command-trigger]");
+    await expect(search).toBeVisible();
+    const originalViewport = page.viewportSize()!;
+    for (const width of [701, 768, 1024, originalViewport.width]) {
+      await page.setViewportSize({ width, height: originalViewport.height });
+      const geometry = await context.evaluate((root) => {
+      const nav = root.querySelector(".hc-family-nav")!.getBoundingClientRect();
+      const search = root.querySelector("[data-hc-command-trigger]")!.getBoundingClientRect();
+      return { height: root.getBoundingClientRect().height, overlap: Math.min(nav.bottom, search.bottom) - Math.max(nav.top, search.top) };
+    });
+    expect(geometry.height).toBeLessThanOrEqual(100);
+      expect(geometry.overlap).toBeGreaterThan(0);
+    }
+    await page.setViewportSize(originalViewport);
+    await search.click();
+    await expect(page.locator("#hc-command-palette")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#hc-command-palette")).not.toBeVisible();
+  }
+  await expect(page.locator("[data-hero-transport-cta]")).toHaveAttribute("href", "/logistics/request-vehicle-transport/#transport-intake");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await testInfo.attach("load-board-compact-context", { body: await page.screenshot(), contentType: "image/png" });
+});
