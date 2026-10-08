@@ -21,14 +21,17 @@ async function clickHistoryTarget(page: Page, target: Locator) {
  const viewport=page.viewportSize()!;
  expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
  expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
- const hitState=await target.evaluate((node,{x,y})=>{
-  const hit=document.elementFromPoint(x,y);
-  return {receivesPointer:hit===node||node.contains(hit), target:node.outerHTML.slice(0,500),
-   hit:hit?.outerHTML.slice(0,500), x,y, scrollX,scrollY, innerWidth,innerHeight,
-   visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop,scale:visualViewport!.scale}:null};
- },{x,y});
- console.log("HOME_HISTORY_HIT_TARGET",JSON.stringify(hitState));
- expect(hitState.receivesPointer,JSON.stringify(hitState)).toBe(true);
+ // Browser history may restore stable boxes before hit testing is ready.
+ // Poll the real pointer receiver; never force a click or relax the assertion.
+ await expect.poll(async()=>{
+  const hitState=await target.evaluate((node,{x,y})=>{
+   const hit=document.elementFromPoint(x,y);
+   return {receivesPointer:hit===node||node.contains(hit),target:node.outerHTML.slice(0,500),
+    hit:hit?.outerHTML.slice(0,500),x,y,scrollX,scrollY,innerWidth,innerHeight};
+  },{x,y});
+  if(!hitState.receivesPointer) console.log("HOME_HISTORY_HIT_TARGET",JSON.stringify(hitState));
+  return hitState.receivesPointer;
+ },{timeout:5000,intervals:[100,250,500],message:"History-restored control must receive pointer input"}).toBe(true);
  await page.mouse.click(x,y);
 }
 
