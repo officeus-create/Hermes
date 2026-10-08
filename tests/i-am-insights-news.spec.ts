@@ -1,0 +1,56 @@
+import { expect, test } from "@playwright/test";
+
+const news = "/insights/technology/i-am-vision/";
+
+test("I am development is the official Technology news item, not a shadow Catalog profile", async ({page}) => {
+  await page.goto("/insights/",{waitUntil:"domcontentloaded"});
+  const tech=page.locator("#technology");
+  await expect(tech.getByRole("heading",{name:/I am enters development/})).toBeVisible();
+  await expect(tech.locator('a[href="/insights/technology/i-am-vision/"]')).toBeVisible();
+  const featured=page.locator(".iam-news");
+  await expect(featured).toBeVisible();
+  await expect(featured.locator('svg[role="img"]')).toHaveCount(1);
+  await expect(featured.locator('a[href="/businesses/"]')).toBeVisible();
+  await expect(featured.locator('a[href="/services/hermes-connect/"]')).toBeVisible();
+});
+
+test("I am editorial is one indexable first-party NewsArticle and links only active stage owners",async({page})=>{
+  await page.goto(news,{waitUntil:"domcontentloaded"});
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content","index,follow,max-image-preview:large");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://hermeslogisticsus.com/insights/technology/i-am-vision/");
+  await expect(page.locator('head > title')).toHaveCount(1);
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page.getByRole("heading",{level:1})).toContainText("I am enters development");
+  await expect(page.locator("main")).toContainText("Our 14-month development plan");
+  await expect(page.locator("main")).toContainText("not a public offering of securities");
+  await expect(page.locator('main a[href="/businesses/"]').first()).toBeVisible();
+  await expect(page.locator('main a[href="/services/hermes-connect/"]').first()).toBeVisible();
+  await expect(page.locator("main")).not.toContainText("instant Tax Free refunds");
+  const structuredData=await page.locator('script[type="application/ld+json"]').allTextContents();
+  const schemas=structuredData.flatMap(text=>{try{const s=JSON.parse(text);return Array.isArray(s)?s:[s]}catch{return []}});
+  expect(schemas.some(obj=>obj["@type"]==="NewsArticle"&&obj.mainEntityOfPage==="https://hermeslogisticsus.com/insights/technology/i-am-vision/")).toBe(true);
+});
+
+test("News enters RSS and one Insights sitemap owner, no listing as licensed service",async({page})=>{
+ const rss=await page.request.get("/insights/rss.xml");
+ expect(rss.ok()).toBe(true);
+ expect(await rss.text()).toContain("https://hermeslogisticsus.com/insights/technology/i-am-vision/");
+ const sitemap=await page.request.get("/sitemap-insights.xml");
+ expect(sitemap.ok()).toBe(true);
+ const xml=await sitemap.text();
+ expect((xml.match(/https:\/\/hermeslogisticsus\.com\/insights\/technology\/i-am-vision\//g)||[]).length).toBe(1);
+ const index=await page.request.get("/sitemapindex.xml");
+ expect(index.ok()).toBe(true);
+ const parent=(await index.text()).match(/<sitemap>[\s\S]*?<\/sitemap>/g)?.find(x=>x.includes("https://hermeslogisticsus.com/sitemap-insights.xml"));
+ expect(parent).toContain("<lastmod>2026-10-08</lastmod>");
+});
+
+test("I am technology news and visual remain usable on mobile",async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ for(const path of ["/insights/",news]){
+  await page.goto(path,{waitUntil:"domcontentloaded"});
+  await expect(page.locator("main h1")).toBeVisible();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+  expect(overflow,path).toBeLessThanOrEqual(2);
+ }
+});
