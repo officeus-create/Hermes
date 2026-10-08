@@ -87,11 +87,11 @@ test.describe("Academy and careers governance", () => {
     const response = await page.goto("/careers/wisconsin-owner-operators/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch");
-    await expect(page.locator(".career-updated")).toHaveText("Source reviewed October 3, 2026");
+    await expect(page.locator(".career-updated")).toHaveText("Source reviewed October 8, 2026");
     await expect(page.locator(".career-updated")).toBeVisible();
     if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /View and apply on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
     await expect(page.getByRole("link", { name: /Open the Hermes employer page on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/c/hermeslogisticsus-com");
-    await expect(page.getByText(/employer-profile reference and not as a complete vacancy directory/)).toBeVisible();
+    await expect(page.getByText(/employer-profile reference rather than a complete vacancy directory/)).toBeVisible();
     await expect(page.getByText(/There are no active job postings right now/)).toBeVisible();
     await expect(page.getByText(/After expiry, this page is a recruiting reference/)).toBeVisible();
     if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Call recruiting/ })).toHaveAttribute("href", "tel:+14142697377");
@@ -99,10 +99,11 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText("Milwaukee", { exact: true })).toBeVisible();
     await expect(page.getByText("Madison", { exact: true })).toBeVisible();
     await expect(page.getByText("No forced dispatch. No invented income promise.", { exact: true })).toBeVisible();
-    await expect(page.getByText("Power Only — trailer and operating arrangement reviewed individually", { exact: true })).toBeVisible();
+    await expect(page.getByText("Power Only — trailer and operating arrangement reviewed individually", { exact: true })).toHaveCount(0);
+    await expect(page.getByText(/Hermes Logistics LLC works as an agent with multiple transportation companies/)).toBeVisible();
     const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
     await companyDriverFaq.locator("summary").click();
-    await expect(companyDriverFaq.getByText(/Trailer and equipment eligibility are therefore confirmed individually/)).toBeVisible();
+    await expect(companyDriverFaq.getByText("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.", { exact: true })).toBeVisible();
     await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(2);
     for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
       expect(href).toBe("tel:+14142697377");

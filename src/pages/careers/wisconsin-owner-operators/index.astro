@@ -14,6 +14,12 @@ const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString()
 const sourceUrl = vacancy.submissionUrl!;
 const title = "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
 const description = "Review Wisconsin owner-operator recruiting, equipment-fit questions, individual operating terms, and the source review status before contacting Hermes.";
+const reviewExpiryLabel = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(`${vacancy.expiresAt}T00:00:00Z`));
 
 const equipment = [
   "Dry Van",
@@ -23,7 +29,6 @@ const equipment = [
   "Car Hauler",
   "Hotshot",
   "Box Truck",
-  "Power Only — trailer and operating arrangement reviewed individually",
   "Conestoga",
   "RGN / Lowboy",
   "Other commercial truck and trailer combinations",
@@ -44,7 +49,8 @@ const wisconsinMarkets = [
 ];
 
 const support = [
-  "Load search and booking support where the applicable carrier program permits",
+  "Hermes dispatchers and Load Board access",
+  "Load search and booking support where the applicable transportation company permits",
   "Rate negotiation and broker or shipper communication",
   "Route, pickup, and delivery coordination",
   "Rate Confirmation and paperwork support",
@@ -54,7 +60,7 @@ const support = [
 const faq = [
   {
     question: "Is this a company-driver job?",
-    answer: "No. This recruiting page is for Wisconsin owner-operators who already have their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility are therefore confirmed individually before onboarding.",
+    answer: "No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.",
   },
   {
     question: "Does Hermes force owner-operators to accept loads?",
@@ -66,16 +72,16 @@ const faq = [
   },
   {
     question: "Where is the verified external vacancy source?",
-    answer: "The 100Hires source was reviewed on October 3, 2026. Current vacancy status requires a fresh recruiting review after the publication review expires. Source availability alone does not confirm a carrier program or operating authority.",
+    answer: "The 100Hires source and the ongoing recruiting decision were reviewed on October 8, 2026. Current vacancy status requires another fresh recruiting review after the publication review expires. Source availability alone does not confirm operating authority, insurance, or a specific transportation-company program.",
   },
 ];
 
 const jobDescription = [
-  "Hermes is reviewing Wisconsin owner-operators who have their own commercial truck for compatible carrier or operating programs. The source title says own truck and trailer; Power Only and other equipment arrangements are reviewed individually before eligibility is confirmed.",
+  "Hermes Logistics LLC works as an agent with multiple transportation companies and is continuously recruiting Wisconsin owner-operators with their own commercial truck and trailer for individual fit review.",
   `Wisconsin markets: ${wisconsinMarkets.join(", ")}.`,
   `Equipment that may be considered: ${equipment.join(", ")}.`,
   "No forced dispatch. The owner-operator reviews the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.",
-  "Compensation, percentage, carrier requirements, authority arrangements, deductions, and final operating terms are discussed individually. No loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time are guaranteed.",
+  "Compensation, percentage, transportation-company requirements, deductions, support configuration, and final operating terms are discussed individually after reviewing skills, experience, equipment, locations, shippers, dealers, and preferred lanes. No loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time are guaranteed.",
   "Application route: review the live 100Hires source or call Owner-Operator Recruiting — Wisconsin during the published Central Time hours.",
 ].join("\n\n");
 
@@ -143,8 +149,8 @@ const schema = [
           />
           <p class="eyebrow">Hermes Logistics · Owner-Operator Recruiting — Wisconsin</p>
           <h1>{vacancy.title}</h1>
-          <p class="career-lead">This page describes Wisconsin owner-operator recruiting for operators with their own commercial truck. The source title says own truck and trailer, while Power Only is also listed as equipment that may be considered. Trailer and equipment eligibility, experience, safety history, home base, preferred lanes, schedule, and support needs are reviewed before any carrier or operating program is discussed.</p>
-          <p class="career-updated">Source reviewed October 3, 2026</p>
+          <p class="career-lead">Hermes Logistics LLC works as an agent with multiple transportation companies and continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. Skills, experience, equipment, safety history, home base, knowledge of locations, shippers and dealers, preferred lanes, schedule, and support needs are reviewed before individual terms are discussed.</p>
+          <p class="career-updated">Source reviewed October 8, 2026</p>
           <div class="career-facts" aria-label="Opportunity facts">
             <span><MapPin size={18} aria-hidden="true" /> Wisconsin</span>
             <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
@@ -174,10 +180,10 @@ const schema = [
           <div>
             <p class="eyebrow">Verified vacancy sources</p>
             <h2 id="vacancy-sources-title">Review the dated recruiting source.</h2>
-            <p>As of October 3, 2026, the exact 100Hires vacancy link is the only external source verified live for this Wisconsin owner-operator opportunity. The separate 100Hires employer page reported no active postings at that review, so it is shown only as an employer-profile reference and not as a complete vacancy directory.</p>
+            <p>As of October 8, 2026, the exact 100Hires vacancy remains accessible with status Unlisted. The separate 100Hires employer page reported no active postings on October 3, so it remains an employer-profile reference rather than a complete vacancy directory.</p>
           </div>
           <article class="source-card">
-            <span>Source reviewed October 3, 2026</span>
+            <span>Source reviewed October 8, 2026</span>
             <h3>100Hires</h3>
             <p>Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch</p>
             <a href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-vacancy-source>
@@ -187,7 +193,7 @@ const schema = [
               Open the Hermes employer page on 100Hires <ExternalLink size={17} aria-hidden="true" />
             </a>
             <small>The employer page said “There are no active job postings right now” at the October 3 source review. Use the exact vacancy link above for this role.</small>
-            <small>The publication review expires on October 10, 2026 at 23:59:59 UTC. After expiry, this page is a recruiting reference until a new review confirms current publication status.</small>
+            <small>The publication review expires on {reviewExpiryLabel} at 23:59:59 UTC. After expiry, this page is a recruiting reference until a new review confirms current publication status.</small>
           </article>
         </div>
       </section>
@@ -197,7 +203,7 @@ const schema = [
           <div class="section-heading">
             <p class="eyebrow">Who this is for</p>
             <h2 id="who-fits-title">Wisconsin owner-operators with commercial equipment.</h2>
-            <p>This is not a company-driver vacancy. The opportunity is for an owner-operator with their own commercial truck. Trailer requirements and Power Only eligibility are confirmed individually together with home base, experience, safety history, preferred lanes, schedule, and operating support needs.</p>
+            <p>This is not a company-driver vacancy. The opportunity is for an owner-operator with their own commercial truck and trailer. Equipment, home base, experience, safety history, knowledge of locations, shippers and dealers, preferred lanes, schedule, and operating support needs are reviewed individually.</p>
           </div>
           <div class="detail-grid">
             <article>
@@ -212,7 +218,7 @@ const schema = [
             </article>
             <article>
               <ShieldCheck size={22} aria-hidden="true" />
-              <h3>Support may include</h3>
+              <h3>Hermes support infrastructure</h3>
               <ul>{support.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
             </article>
           </div>
@@ -225,7 +231,7 @@ const schema = [
             <p class="eyebrow">Public recruiting contact</p>
             <h2 id="recruiting-contact-title">Owner-Operator Recruiting — Wisconsin</h2>
             <a class="recruiting-phone" href="tel:+14142697377">+1 (414) 269-7377</a>
-            <p>The recruiting number is candidate-facing. Account-verification numbers are not published on this page.</p>
+            <p>This candidate-facing number reaches the Hermes Logistics LLC contracting contact for individual recruiting and operating-term discussions. Account-verification numbers are not published on this page.</p>
           </div>
           <div class="hours-card">
             <Clock3 size={24} aria-hidden="true" />
@@ -244,7 +250,7 @@ const schema = [
             <p class="eyebrow">Operating terms</p>
             <h2 id="terms-title">No forced dispatch. No invented income promise.</h2>
             <p>The owner-operator keeps the final decision on the loads they run. Review the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>
-            <p>Compensation, percentage, carrier-specific requirements, authority arrangements, deductions, and final operating terms are discussed individually by phone before onboarding.</p>
+            <p>Compensation, percentage, transportation-company requirements, deductions, dispatcher support, Load Board access, infrastructure, and final operating terms are discussed individually by phone after the interview and fit review.</p>
           </div>
           <aside class="boundary-card">
             <h3>This posting does not guarantee:</h3>
