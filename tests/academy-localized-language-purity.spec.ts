@@ -53,3 +53,18 @@ for (const entry of cases) {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   });
 }
+
+for (const width of [390, 1024, 1180, 1440]) {
+  test(`Italian Academy participation heading fits at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({width,height:900});
+    await page.goto('/it/academy/us-logistics-operations/');
+    await page.evaluate(() => document.fonts.ready);
+    const heading = page.locator('.academy-public-page .resource-safety-card h2');
+    await expect(heading).toHaveText('Prima, un ambito di partecipazione chiaro.');
+    await expect(heading).toBeVisible();
+    const sizes = await heading.evaluate(node=>({scroll:node.scrollWidth,client:node.clientWidth,overflow:getComputedStyle(node).overflowX}));
+    expect(sizes.scroll).toBeLessThanOrEqual(sizes.client+1);
+    expect(sizes.overflow).toBe('visible');
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  });
+}
