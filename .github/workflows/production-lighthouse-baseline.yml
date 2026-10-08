@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Three sequential Load Board mobile lab traces on 0dc12892
+    name: Full three-pass repeat after NO_NAVSTART on 0dc12892
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -51,7 +51,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: load-board-mobile-three-traces-0dc12892
+          name: load-board-mobile-three-traces-0dc12892-repeat
           path: lighthouse-results/
           if-no-files-found: error
           retention-days: 30
