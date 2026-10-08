@@ -580,3 +580,15 @@ WORKING_APPROACH: Add a separate Pages hub function with visible escaped discove
 EVIDENCE: Build and unit/publication/canonical/robots/schema/privacy regressions pass; local browser runner cannot complete navigation in this managed environment. This is not production resolution or indexing evidence. Release requires full exact-head browser CI and a bounded live readback. See `docs/CATALOG_RUNTIME_DISCOVERY_2026-10-07.md`.
 PREVENTION: Public runtime owner release must verify a meaningful raw-HTML hub anchor, matching sitemap/profile canonical, withdrawal behavior and one client card. Mechanical eligibility does not replace verified facts, permitted public fields or the editorial Search Release Gate.
 NEXT_OWNER: Project31 / repository release owner. #1663 stale-base conflict remains with its original owner; do not replay that branch wholesale.
+
+## 2026-10-08 — Academy measurement synthetic lead timestamps drifted outside spend fixture
+
+STATUS: FIXED_IN_BRANCH; exact-head CI and central release acceptance pending.
+PROBLEM: On fresh main 55eaf2762242fb830641e227280b98ad89966fe9 the focused measurement test returned attributedLeads 0 instead of 2 after the UTC date rolled past October 7.
+ROOT_CAUSE: The real CRM handler correctly stamps current created_at, while the synthetic spend fixture ends on 2026-10-07. Production attribution correctly excludes those later-created fixtures.
+FAILED_APPROACH: Reproduced the unchanged test with the current clock: 3 pass, 1 fail (0 !== 2). No campaign-window extension or production workaround was attempted.
+WORKING_APPROACH: Set only the two in-memory synthetic lead created_at values to 2026-10-07T08:00:00.000Z, asserting each fixture update touches exactly one row. Retain the real handler path, fixed campaign period, attribution semantics and existing economics assertions.
+EVIDENCE: Focused node --experimental-strip-types --test scripts/hermes-connect-academy-measurement.test.mjs passes 4/4 on October 8. Full build/test and exact-head CI recorded in the bounded test-stability PR.
+LESSON: Historical attribution fixtures require explicit event timestamps rather than the runner wall clock.
+REUSE_RULE: Pin synthetic event dates inside their documented synthetic periods; never extend real periods to accommodate test drift.
+NEXT_OWNER: Central release coordination; #1756 stays behind #1754 and this prerequisite. No merge/deploy authorized here.
