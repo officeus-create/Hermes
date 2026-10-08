@@ -140,6 +140,9 @@ const schema = [
             <a href={`/businesses/${country.slug}/`}>Browse {country.name} businesses →</a>
           ))}
         </nav>
+        <nav class="international-country-nav" aria-label="Incubation concepts by market">
+          <a href="/businesses/italy/" rel="nofollow">Italy · I am travel startup concept (not a listed business) →</a>
+        </nav>
         <div class="business-grid">
           {internationalBusinesses.map((business) => (
             <article class="business-card" data-search-text={[business.name,localizedCatalogBusiness(business,"en").name,business.primaryIntent,localizedCatalogBusiness(business,"en").primaryIntent,business.locality,localizedCatalogBusiness(business,"en").locality,business.region,...business.services,...localizedCatalogBusiness(business,"en").services].join(" ").toLowerCase()}>
