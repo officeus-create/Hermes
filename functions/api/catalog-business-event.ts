@@ -1,4 +1,5 @@
 import { catalogTrafficPeriod, publicCatalogTrafficSummary, catalogCountryCode } from "./_lib/catalog-traffic-summary.mjs";
+import { resolveCuratedCatalogProjection } from "./_lib/catalog-public-projection.mjs";
 import { repairCatalogPublication } from "./_lib/repair-catalog-publication.mjs";
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { catalogBusinessConcepts } from "../../src/data/catalog-business-concepts.ts";
@@ -23,8 +24,23 @@ const staticBusinessIds = new Set([
   ...catalogBusinessConcepts.map((entry) => entry.id),
 ]);
 
+
+const academyCompanyId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Academy's existing public template emits its raw canonical company UUID.
+// Reuse its joined publication gates without schema initialization or a second owner.
+async function publicAcademyOwner(db: any, value: string, bySlug = false) {
+  const row = await db.prepare(`SELECT c.id,c.slug,c.website FROM hermes_company_profiles c JOIN hermes_academy_business_profiles a ON a.company_id=c.id WHERE c.${bySlug ? "slug" : "id"}=? AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1`).bind(value).first();
+  if (!row || !academyCompanyId.test(String(row.id)) || !/^[a-z0-9-]{1,100}$/.test(String(row.slug))) return null;
+  if ((bySlug ? row.slug : row.id) !== value) return null;
+  // A redirected Academy has a curated static owner; never split its counters.
+  if (resolveCuratedCatalogProjection({ vertical: "academy_business", website: row.website })) return null;
+  return row;
+}
+
 async function validCatalogBusinessId(db: any, value: string) {
   if (staticBusinessIds.has(value)) return true;
+  if (academyCompanyId.test(value)) return Boolean(await publicAcademyOwner(db, value));
   const company = value.match(/^company-crm:([a-zA-Z0-9_-]{6,160})$/);
   if (company) {
     const row = await db.prepare("SELECT c.id FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
@@ -103,6 +119,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       if (!id && company) {
         const row = await env.DB.prepare("SELECT c.id,c.slug FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
         if (row?.id && row.slug === company[1]) id = `company-crm:${row.id}`;
+      }
+      const academy = path.match(/^\/businesses\/connect\/academy\/([a-z0-9-]+)\/$/);
+      if (!id && academy) {
+        const row = await publicAcademyOwner(env.DB, academy[1], true);
+        if (row) id = row.id;
       }
       // Unknown/withdrawn/uninstrumented profiles never inherit site totals or another tenant's data.
       if (!id) {

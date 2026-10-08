@@ -156,3 +156,89 @@ test('Home-service collection rejects missing consent and unpublished companies'
   expect((await post(true)).status).toBe(202);
   expect(writes.filter(sql=>sql.includes('INSERT INTO catalog_business_events_daily'))).toHaveLength(1);
 });
+
+
+// Synthetic in-memory Academy owners only; no production traffic or CRM records.
+test('Academy raw UUID adapter shares public gates, preserves unknowns and never writes on GET', async () => {
+  const id = '00000000-0000-4000-8000-000000000001';
+  const path = '/businesses/connect/academy/synthetic-academy/';
+  let optIn = 1;
+  let status = 'self_submitted';
+  let hasExtension = true;
+  let website = '';
+  let observed = true;
+  let reads = 0;
+  const summaries: unknown[] = [];
+  const writes: {sql:string,args:unknown[]}[] = [];
+  const DB = { prepare(sql:string) { return {
+    async run() { writes.push({sql,args:[]}); },
+    bind(...args:unknown[]) { return {
+      async first() {
+        reads++;
+        expect(sql).toContain('JOIN hermes_academy_business_profiles a ON a.company_id=c.id');
+        expect(sql).toContain('c.catalog_opt_in=1');
+        expect(sql).toContain("c.catalog_status IN ('self_submitted','verified_public')");
+        const match = sql.includes('WHERE c.slug=?') ? args[0] === 'synthetic-academy' : args[0] === id;
+        return hasExtension && optIn === 1 && ['self_submitted','verified_public'].includes(status) && match
+          ? {id,slug:'synthetic-academy',website} : null;
+      },
+      async all() {
+        summaries.push(args[0]);
+        return {results:sql.includes('country_views') || !observed ? [] : [{day:new Date().toISOString().slice(0,10),event_count:4}]};
+      },
+      async run() { writes.push({sql,args}); }
+    }; }
+  }; } };
+  const get = (requested=path) => onRequestGet({request:new Request('https://hermeslogisticsus.com/api/catalog-business-event?path='+encodeURIComponent(requested)),env:{DB}});
+  const post = (value=id,consent=true) => onRequestPost({request:new Request('https://hermeslogisticsus.com/api/catalog-business-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({catalog_business_id:value,event_type:'profile_view',analytics_consent:consent})}),env:{DB}});
+
+  for (const publicStatus of ['self_submitted','verified_public']) {
+    status = publicStatus;
+    const response = await get();
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload.profiles[0].views28d).toBe(4);
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow');
+    expect(JSON.stringify(payload)).not.toMatch(/00000000|catalog_business_id|owner_specialist_id|email|phone|website/);
+  }
+  expect(summaries.every(value=>value===id)).toBe(true);
+  expect(writes).toEqual([]);
+  observed = false;
+  const unknown = await (await get()).json();
+  expect(unknown.profiles[0].state).toBe('no_observations');
+  expect(unknown.profiles[0].views28d).toBeNull();
+  expect(writes).toEqual([]);
+
+  const readsBeforeConsent = reads;
+  expect((await post(id,false)).status).toBe(400);
+  expect(reads).toBe(readsBeforeConsent);
+  expect(writes).toEqual([]);
+  expect((await post()).status).toBe(202);
+  expect(writes.filter(row=>row.sql.includes('INSERT INTO catalog_business_events_daily'))).toHaveLength(1);
+  expect(writes.find(row=>row.sql.includes('INSERT INTO catalog_business_events_daily'))?.args[1]).toBe(id);
+  writes.length = 0;
+
+  for (const gate of ['opt-out','unpublished','missing-extension','curated-redirect']) {
+    optIn = gate === 'opt-out' ? 0 : 1;
+    status = gate === 'unpublished' ? 'draft' : 'self_submitted';
+    hasExtension = gate !== 'missing-extension';
+    website = gate === 'curated-redirect' ? 'https://kons-na-bis.com/' : '';
+    summaries.length = 0;
+    const payload = await (await get()).json();
+    expect(payload.profiles[0].state).toBe('unavailable');
+    expect(payload.profiles[0].views28d).toBeNull();
+    expect(summaries).toEqual([]);
+    expect((await post()).status).toBe(400);
+    expect(writes).toEqual([]);
+  }
+  optIn = 1; status = 'self_submitted'; hasExtension = true; website = '';
+  for (const wrong of ['00000000-0000-4000-8000-000000000002','not-a-company','academy-crm:'+id]) {
+    expect((await post(wrong)).status).toBe(400);
+    expect(writes).toEqual([]);
+  }
+  summaries.length = 0;
+  expect((await (await get('/businesses/connect/academy/other-owner/')).json()).profiles[0].views28d).toBeNull();
+  expect(summaries).toEqual([]);
+  expect(writes).toEqual([]);
+});
