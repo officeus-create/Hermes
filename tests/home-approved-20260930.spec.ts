@@ -21,9 +21,14 @@ async function clickHistoryTarget(page: Page, target: Locator) {
  const viewport=page.viewportSize()!;
  expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThan(viewport.width);
  expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThan(viewport.height);
- expect(await target.evaluate((node,{x,y})=>{
-  const hit=document.elementFromPoint(x,y);return hit===node||node.contains(hit);
- },{x,y})).toBe(true);
+ const hitState=await target.evaluate((node,{x,y})=>{
+  const hit=document.elementFromPoint(x,y);
+  return {receivesPointer:hit===node||node.contains(hit), target:node.outerHTML.slice(0,500),
+   hit:hit?.outerHTML.slice(0,500), x,y, scrollX,scrollY, innerWidth,innerHeight,
+   visualViewport:window.visualViewport?{width:visualViewport!.width,height:visualViewport!.height,offsetLeft:visualViewport!.offsetLeft,offsetTop:visualViewport!.offsetTop,scale:visualViewport!.scale}:null};
+ },{x,y});
+ console.log("HOME_HISTORY_HIT_TARGET",JSON.stringify(hitState));
+ expect(hitState.receivesPointer,JSON.stringify(hitState)).toBe(true);
  await page.mouse.click(x,y);
 }
 
