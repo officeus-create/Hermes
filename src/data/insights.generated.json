@@ -185,18 +185,18 @@
       }
     ],
     "primaryAction": {
-      "label": "Review SEO Services",
-      "href": "/services/seo/"
+      "label": "Visit MZM Junk Removal",
+      "href": "https://mzm-junk-removal.com/"
     },
     "secondaryAction": {
-      "label": "Explore Hermes Connect",
-      "href": "/services/hermes-connect/"
+      "label": "Review Hermes SEO Services",
+      "href": "/services/seo/"
     },
     "sourceLabel": "MZM Junk Removal official website — public service-area and recent-job evidence observed 8 October 2026",
     "sourceUrl": "https://mzm-junk-removal.com/",
     "sourcePublishedAt": "2026-10-08",
     "datePublished": "2026-10-08",
-    "dateModified": "2026-10-08",
+    "dateModified": "2026-10-09",
     "authorName": "Hermes Editorial Team",
     "keywords": [
       "MZM Junk Removal",
@@ -248,6 +248,26 @@
         "observedAt": "2026-10-08",
         "eventDate": "2026-10-08",
         "notes": "Public source for local job examples and service-area detail."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Rocklin recent-job page",
+        "use": "context_only",
+        "url": "https://mzm-junk-removal.com/junk-removal-rocklin",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Public source for Rocklin-specific recent-job examples and service-area detail."
+      },
+      {
+        "sourceId": "PUBLIC-WEB-CURRENT",
+        "kind": "public_external",
+        "label": "MZM Orangevale recent-job page",
+        "use": "context_only",
+        "url": "https://mzm-junk-removal.com/junk-removal-orangevale",
+        "observedAt": "2026-10-08",
+        "eventDate": "2026-10-08",
+        "notes": "Public source for Orangevale-specific before-and-after job examples and service-area detail."
       }
     ],
     "publicationScore": {
