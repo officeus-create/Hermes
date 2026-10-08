@@ -23,7 +23,6 @@ import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
 import TrackingConsent from "../components/TrackingConsent.astro";
 import SiteTrafficCollector from "../components/SiteTrafficCollector.astro";
-import PublicTrafficCounter from "../components/PublicTrafficCounter.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
@@ -77,21 +76,6 @@ const CLARITY_BLOCKED_PATH_PREFIXES = [
 ];
 const clarityEligible = !robots.toLowerCase().includes("noindex")
   && !CLARITY_BLOCKED_PATH_PREFIXES.some((prefix) => Astro.url.pathname.startsWith(prefix));
-const PUBLIC_TRAFFIC_BLOCKED_PREFIXES = [
-  "/internal/",
-  "/sign",
-  "/privacy-choices",
-  "/logistics/apply",
-  "/logistics/carrier-onboarding",
-  "/services/hermes-connect/access",
-  "/services/hermes-connect/repair-shops/auth",
-  "/services/hermes-connect/repair-shops/dashboard",
-  "/services/hermes-connect/repair-shops/password",
-  "/services/hermes-connect/repair-shops/profile",
-  "/services/hermes-connect/academy/business",
-];
-const showPublicTrafficCounter = !robots.toLowerCase().includes("noindex")
-  && !PUBLIC_TRAFFIC_BLOCKED_PREFIXES.some((prefix) => Astro.url.pathname.startsWith(prefix));
 const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
 const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);
 const socialImageType = useHermesConnectSocialCard ? "image/png" : "image/jpeg";
@@ -271,7 +255,6 @@ const safeSchema = schema
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
     <TrackingConsent clarityEligible={clarityEligible} locale={locale} />
     <SiteTrafficCollector />
-    {showPublicTrafficCounter && <PublicTrafficCounter />}
     <MoneyPageActionBar />
     <CarrierContractJourney />
     <CarrierContractSafetyEnhancer />
