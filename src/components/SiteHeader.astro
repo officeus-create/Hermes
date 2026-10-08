@@ -64,7 +64,8 @@ const publicWorkspace: "repair" | "academy" | "beauty" | "neutral" = currentPath
       ? "beauty"
       : "neutral";
 const requestedLocale = Astro.url.searchParams.get("lang");
-const activeLocale = isHermesConnectExperienceRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
+const isCatalogLocaleRoute = currentPath === "/businesses/" || currentPath.startsWith("/businesses/");
+const activeLocale = requestedLocale && ((isHermesConnectExperienceRoute && siteLocales.includes(requestedLocale as SiteLocale)) || (isCatalogLocaleRoute && (requestedLocale === "en" || requestedLocale === "uk")))
   ? requestedLocale as SiteLocale
   : locale;
 const localizedLabels = {
@@ -103,7 +104,14 @@ const section = (["logistics", "marketing", "technology", "academy"] as Directio
 const localizedOwnerDirection = directionForOwnerPath(currentPath);
 const languageDirection = section ?? localizedOwnerDirection;
 const academyLogisticsOwner = isAcademyLogisticsOwnerPath(currentPath);
-const languageLinks = siteLocales.map((language) => {
+const languageLinks = siteLocales.filter((language) => !isCatalogRoute || language === "en" || language === "uk").map((language) => {
+  if (isCatalogRoute) {
+    const params = new URLSearchParams(Astro.url.searchParams);
+    if (language === "en") params.delete("lang");
+    else params.set("lang","uk");
+    const query = params.toString();
+    return { locale:language, name:localeConfig[language].name, href:`${currentPath}${query ? `?${query}` : ""}` };
+  }
   if (isHermesConnectExperienceRoute) {
     const params = new URLSearchParams(Astro.url.searchParams);
     if (language === "en") params.delete("lang");
