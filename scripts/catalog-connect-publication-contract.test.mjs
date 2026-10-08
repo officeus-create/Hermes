@@ -115,7 +115,7 @@ assert.match(websiteConcept, /data-en/);
 assert.match(websiteConcept, /semanticCore/);
 assert.match(websiteConcept, /business\.faq/);
 assert.match(catalogConceptRouteOwner, /CatalogWebsiteConcept business=\{business\}/);
-assert.match(catalogConceptRouteOwner, /defaultLocale="uk"/);
+assert.match(catalogConceptRouteOwner, /defaultLocale="en"/);
 assert.doesNotMatch(catalogConceptRouteOwner, /data-lang|data-lead|form\?\.addEventListener/);
 assert.match(conceptRouteRegistry, /catalogConceptCountryRoutes/);
 assert.match(conceptRouteRegistry, /catalogConceptLocalityRoutes/);
