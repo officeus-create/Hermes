@@ -2,6 +2,9 @@ const PUBLIC_ASSETS = Object.freeze([
   Object.freeze({
     id: "mzm-junk-removal-real-job-evidence-local-seo-2026",
     website: "https://mzm-junk-removal.com/",
+    companyName: "MZM Junk Removal",
+    city: "Roseville",
+    state: "CA",
     kind: "insight",
     title: "MZM Junk Removal: real-job evidence for local SEO",
     summary: "Source-backed Hermes analysis of MZM's public recent-job proof, service-area structure and evidence-driven local SEO.",
@@ -22,14 +25,22 @@ export const normalizeHomeServiceWebsite = (value) => {
   }
 };
 
+const normalizeText = (value) => String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+
 export function getHomeServicePublicAssets(companyOrWebsite) {
-  const website = typeof companyOrWebsite === "string"
+  const isWebsiteOnly = typeof companyOrWebsite === "string";
+  const website = isWebsiteOnly
     ? companyOrWebsite
     : companyOrWebsite?.website ?? companyOrWebsite?.company_website ?? "";
   const key = normalizeHomeServiceWebsite(website);
   if (!key) return [];
+  const companyName = isWebsiteOnly ? "" : normalizeText(companyOrWebsite?.companyName ?? companyOrWebsite?.company_name);
   return PUBLIC_ASSETS
-    .filter((asset) => normalizeHomeServiceWebsite(asset.website) === key)
+    .filter((asset) => {
+      if (normalizeHomeServiceWebsite(asset.website) !== key) return false;
+      if (!isWebsiteOnly && normalizeText(asset.companyName) !== companyName) return false;
+      return true;
+    })
     .map((asset) => ({ ...asset }));
 }
 
