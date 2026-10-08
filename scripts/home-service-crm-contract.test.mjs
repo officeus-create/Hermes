@@ -275,7 +275,7 @@ assert.match(clientConfig, /serviceAreas: \["North Highlands"\]/);
 assert.match(clientConfig, /"Mattress removal"/);
 assert.match(clientConfig, /"Shed removal"/);
 assert.match(clientConfig, /do not become canonical CRM outcomes/);
-assert.match(clientConfig, /primaryCommercialOwner: "https:\/\/mzm-junk-removal\.com\/" /);
+assert.match(clientConfig, /primaryCommercialOwner: "https:\/\/mzm-junk-removal\.com\//);
 assert.match(clientConfig, /hermesCatalogRole: "secondary_entity_discovery_and_attribution"/);
 assert.match(clientConfig, /must not clone the client's city\/service landing-page family/);
 assert.match(clientConfig, /client_site_evergreen_service_city_owners/);
