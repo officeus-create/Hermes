@@ -196,6 +196,10 @@ test("MZM managed-client workflow uses bounded OIDC and never impersonates the c
   expect(workflow).toContain("catalog_sitemap_fail_closed_failed");
   expect(workflow).toContain("catalog_api_fail_closed_failed");
   expect(workflow).toContain("internal_owner_receipt_boundary_failed");
+  expect(workflow).toContain(`if (.catalog_owner_consent_claimed | type) == "boolean" then .catalog_owner_consent_claimed else "__invalid__" end`);
+  expect(workflow).toContain(`if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end`);
+  expect(workflow).not.toContain(".catalog_owner_consent_claimed // true");
+  expect(workflow).not.toContain(".owner_authentication_claimed // true");
   expect(endpoint).not.toContain("INSERT INTO specialists");
   expect(endpoint).not.toContain("INSERT INTO sessions");
 });
