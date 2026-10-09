@@ -57,7 +57,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (ctx.error) return errorResponse(ctx.error);
   const url = new URL(request.url);
   const module = url.searchParams.get("module") || "dashboard";
-  const ownerId = String(ctx.specialist.id);
+  const ownerId = String(ctx.dataOwnerId || ctx.specialist.id);
 
   if (module === "profile") {
     const profile = await readProfile(env.DB, ownerId);
@@ -97,6 +97,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         website: ctx.company.website || null,
         catalogOptIn: Number(ctx.company.catalog_opt_in || 0) === 1,
         catalogStatus: String(ctx.company.catalog_status || "self_submitted"),
+        managementMode: String(ctx.company.management_mode || "owner_managed"),
+        publicationBasis: String(ctx.company.catalog_publication_basis || "owner_opt_in"),
+        accessMode: String(ctx.accessMode || "owner_managed"),
       },
       profile: safeProfile(profile),
       metrics: aggregateHomeServiceLeads(rows),
