@@ -93,6 +93,11 @@ const publisher = await readFile(new URL("./publish-insight.mjs", import.meta.ur
 assert.match(publisher, /primaryActionIsVerifiedSource = primaryActionHref === post\.sourceUrl/);
 assert.match(publisher, /primaryAction must use an internal href or exactly match sourceUrl/);
 assert.match(publisher, /secondaryAction must use an internal href/);
+const insightComponent = await readFile(new URL("../src/components/ContentInsightPage.astro", import.meta.url), "utf8");
+assert.match(insightComponent, /data-insight-source-cta/);
+assert.match(insightComponent, /trackEvent\("insight_source_click"/);
+assert.match(insightComponent, /page_group:\s*"insights"/);
+assert.match(insightComponent, /source_host:\s*sourceHost/);
 const contentPrWorkflow = await readFile(new URL("../.github/workflows/insights-content-pr.yml", import.meta.url), "utf8");
 assert.match(contentPrWorkflow, /No unpublished Insights delta; PR already merged or no content generated/);
 assert.match(contentPrWorkflow, /has_changes=false/);
