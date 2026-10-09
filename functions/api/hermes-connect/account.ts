@@ -1,6 +1,8 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
-import { getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
+import { getBeautySalonById, getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
+import { createBusinessRef, parseBusinessRef } from "../_lib/business-identity.mjs";
+import { BEAUTY_SALON_WORKSPACE_REF, decideHermesBusinessAccess, listHermesWorkspaceMemberships } from "../_lib/hermes-workspace-membership";
 import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 import {
   ensureAcademySchema,
@@ -22,6 +24,21 @@ type OwnedBusiness = {
   slug: string;
   href: string;
   workspace_state: "live" | "private_foundation" | "academy_vertical";
+  business_ref: string;
+};
+
+type AccessibleBusiness = {
+  key: "beauty_salon";
+  kind: "delegated_business";
+  id: string;
+  name: string;
+  slug: string;
+  href: string;
+  workspace_state: "private_foundation";
+  business_ref: string;
+  workspace_ref: string;
+  role: "admin" | "member" | "read_only";
+  grant_source: string;
 };
 
 type Workspace = {
@@ -84,7 +101,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyBusiness, hermesCompany, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess, delegatedMemberships] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
     getOwnedAcademyBusiness(env.DB, specialist.id),
@@ -94,6 +111,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     getAcademyReviewerAccess(env.DB, specialist.id),
     getInternalAiAccess(env.DB, specialist.id),
     getHrReviewerAccess(env.DB, specialist.id),
+    listHermesWorkspaceMemberships(env.DB, specialist.id),
   ]);
 
   const ownedBusinesses: OwnedBusiness[] = [];
@@ -106,6 +124,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(repairShop.slug || ""),
       href: "/services/hermes-connect/repair-shops/dashboard/",
       workspace_state: "live",
+      business_ref: createBusinessRef("repair_shop", repairShop.id) || "",
     });
   }
   if (beautySalon) {
@@ -117,6 +136,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(beautySalon.slug || ""),
       href: "/services/hermes-connect/beauty/workspace/",
       workspace_state: "private_foundation",
+      business_ref: createBusinessRef("beauty_salon", beautySalon.id) || "",
     });
   }
   if (academyBusiness) {
@@ -128,6 +148,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(academyBusiness.slug || ""),
       href: "/services/hermes-connect/academy/business/workspace/",
       workspace_state: "academy_vertical",
+      business_ref: createBusinessRef("company", academyBusiness.id) || "",
     });
   }
   if (hermesCompany && String(hermesCompany.company_type) === "home_service") {
@@ -139,6 +160,40 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       slug: String(hermesCompany.slug || ""),
       href: "/services/hermes-connect/home-services/workspace/",
       workspace_state: "live",
+      business_ref: createBusinessRef("company", hermesCompany.id) || "",
+    });
+  }
+
+  const ownedRefs = new Set(ownedBusinesses.map((item) => item.business_ref).filter(Boolean));
+  const accessibleBusinesses: AccessibleBusiness[] = [];
+  for (const membership of delegatedMemberships) {
+    const parsed = parseBusinessRef(membership.business_ref);
+    if (!parsed || parsed.namespace !== "beauty_salon") continue;
+    if (membership.workspace_ref !== BEAUTY_SALON_WORKSPACE_REF) continue;
+    if (ownedRefs.has(parsed.ref)) continue;
+    const salon = await getBeautySalonById(env.DB, parsed.native_id);
+    if (!salon) continue;
+    const decision = decideHermesBusinessAccess({
+      specialistId: specialist.id,
+      businessRef: parsed.ref,
+      workspaceRef: BEAUTY_SALON_WORKSPACE_REF,
+      action: "company.read",
+      ownerSpecialistId: salon.owner_specialist_id,
+      delegatedMembership: membership,
+    });
+    if (!decision.allowed || decision.source !== "delegated_membership") continue;
+    accessibleBusinesses.push({
+      key: "beauty_salon",
+      kind: "delegated_business",
+      id: String(salon.id),
+      name: String(salon.name || "Beauty Salon"),
+      slug: String(salon.slug || ""),
+      href: `/services/hermes-connect/beauty/workspace/?business_ref=${encodeURIComponent(parsed.ref)}`,
+      workspace_state: "private_foundation",
+      business_ref: parsed.ref,
+      workspace_ref: BEAUTY_SALON_WORKSPACE_REF,
+      role: decision.role,
+      grant_source: membership.grant_source,
     });
   }
 
@@ -221,11 +276,13 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       location: specialist.location || null,
     },
     owned_businesses: ownedBusinesses,
+    accessible_businesses: accessibleBusinesses,
     workspaces,
     capabilities: {
       load_board: Boolean(hermesCompany && Number(hermesCompany.load_board_access) === 1),
       internal_ai: Boolean(internalAiAccess),
       hr_review: Boolean(hrReviewerAccess),
+      delegated_business_access: accessibleBusinesses.length > 0,
     },
   }, privateHeaders);
 }

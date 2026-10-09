@@ -1,4 +1,4 @@
-const BUSINESS_NAMESPACES = new Set(["company", "repair_shop"]);
+const BUSINESS_NAMESPACES = new Set(["company", "repair_shop", "beauty_salon"]);
 const NATIVE_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$/;
 const LINK_ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,159}$/;
 const EVIDENCE_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,239}$/;

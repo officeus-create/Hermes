@@ -13,6 +13,16 @@ export async function getOwnedBeautySalon(db, ownerId) {
   `).bind(ownerId).first();
 }
 
+export async function getBeautySalonById(db, salonId) {
+  await ensureBeautySalonSchema(db);
+  return db.prepare(`
+    SELECT id,owner_specialist_id,name,slug,phone,website,address_line1,city,region,postal_code,country_code,timezone,created_at,updated_at
+    FROM beauty_salons
+    WHERE id = ?
+    LIMIT 1
+  `).bind(String(salonId || "")).first();
+}
+
 export async function ensureBeautySalonServiceContext(db, ownerId, salon = null) {
   const ownedSalon = salon?.id ? salon : await getOwnedBeautySalon(db, ownerId);
   if (!ownedSalon) return null;

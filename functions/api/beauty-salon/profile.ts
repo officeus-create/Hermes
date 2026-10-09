@@ -1,6 +1,8 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureBeautySalonSchema } from "../_lib/beauty-salon-schema.mjs";
-import { ensureBeautySalonServiceContext, getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
+import { ensureBeautySalonServiceContext, getBeautySalonById, getOwnedBeautySalon } from "../_lib/beauty-salon-context.mjs";
+import { createBusinessRef, parseBusinessRef } from "../_lib/business-identity.mjs";
+import { BEAUTY_SALON_WORKSPACE_REF, resolveHermesBusinessAccess } from "../_lib/hermes-workspace-membership";
 
 type Env = { DB?: any };
 type ProfileInput = {
@@ -74,12 +76,51 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
 
   await ensureBeautySalonSchema(env.DB);
-  const salon = await getOwnedBeautySalon(env.DB, specialist.id);
-  const scoped = salon ? await ensureBeautySalonServiceContext(env.DB, specialist.id, salon) : null;
+  const ownedSalon = await getOwnedBeautySalon(env.DB, specialist.id);
+  if (ownedSalon) {
+    const scoped = await ensureBeautySalonServiceContext(env.DB, specialist.id, ownedSalon);
+    return jsonResponse(200, {
+      success: true,
+      salon: ownedSalon,
+      service_context: serviceContextPayload(scoped?.context),
+      access: {
+        business_ref: createBusinessRef("beauty_salon", ownedSalon.id),
+        workspace_ref: BEAUTY_SALON_WORKSPACE_REF,
+        role: "owner",
+        source: "owner_adapter",
+      },
+    });
+  }
+
+  const requestedBusinessRef = new URL(request.url).searchParams.get("business_ref") || "";
+  const parsedBusinessRef = parseBusinessRef(requestedBusinessRef);
+  if (!parsedBusinessRef || parsedBusinessRef.namespace !== "beauty_salon") {
+    return requestedBusinessRef
+      ? jsonResponse(400, { success: false, error: "invalid_business_ref" })
+      : jsonResponse(200, { success: true, salon: null, service_context: null });
+  }
+
+  const salon = await getBeautySalonById(env.DB, parsedBusinessRef.native_id);
+  if (!salon) return jsonResponse(404, { success: false, error: "salon_not_found" });
+  const access = await resolveHermesBusinessAccess(env.DB, {
+    specialistId: specialist.id,
+    businessRef: parsedBusinessRef.ref,
+    workspaceRef: BEAUTY_SALON_WORKSPACE_REF,
+    action: "company.read",
+    ownerSpecialistId: salon.owner_specialist_id,
+  });
+  if (!access.allowed) return jsonResponse(403, { success: false, error: "beauty_salon_access_denied" });
+
   return jsonResponse(200, {
     success: true,
-    salon: salon ?? null,
-    service_context: serviceContextPayload(scoped?.context),
+    salon,
+    service_context: null,
+    access: {
+      business_ref: parsedBusinessRef.ref,
+      workspace_ref: BEAUTY_SALON_WORKSPACE_REF,
+      role: access.role,
+      source: access.source,
+    },
   });
 }
 

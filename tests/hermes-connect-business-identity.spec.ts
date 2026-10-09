@@ -22,7 +22,9 @@ const verifiedLink = {
 test("business refs keep namespace and native identity separate", () => {
   expect(createBusinessRef("company", "same_1")).toBe("company:same_1");
   expect(createBusinessRef("repair_shop", "same_1")).toBe("repair_shop:same_1");
+  expect(createBusinessRef("beauty_salon", "same_1")).toBe("beauty_salon:same_1");
   expect(sameBusinessRef("company:same_1", "repair_shop:same_1")).toBe(false);
+  expect(sameBusinessRef("repair_shop:same_1", "beauty_salon:same_1")).toBe(false);
   expect(parseBusinessRef("company:same_1")).toEqual({
     ref: "company:same_1",
     namespace: "company",
