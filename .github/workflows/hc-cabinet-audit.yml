@@ -1,24 +1,17 @@
 name: Audit Hermes Connect cabinets
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
-  issues: write
 
 jobs:
   audit:
-    if: >-
-      github.event.issue.number == 671 &&
-      github.event.comment.body == '/audit-hc-cabinets' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      GH_TOKEN: ${{ github.token }}
       BASE_URL: https://hermeslogisticsus.com
       OIDC_AUDIENCE: hermes-connect-cabinet-audit
 
@@ -180,7 +173,7 @@ jobs:
         run: |
           RESULT="${RUNNER_TEMP}/hc-cabinet-audit/result.md"
           if [ -f "$RESULT" ]; then
-            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+            cat "$RESULT" >> "$GITHUB_STEP_SUMMARY"
           else
-            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body $'## Hermes Connect cabinet audit — FAILED\n\nThe audit stopped before a sanitized result was produced. No runtime records were changed.'
+            printf '%s\n' '## Hermes Connect cabinet audit — FAILED' '' 'The audit stopped before a sanitized result was produced. No runtime records were changed.' >> "$GITHUB_STEP_SUMMARY"
           fi
