@@ -98,6 +98,24 @@ import "../../../../../styles/hermes-academy-app.css";
         </section>
 
         <section class="academy-app-panel" style="margin-top:18px">
+          <p class="academy-app-eyebrow">Academy Business invitation</p>
+          <h2>Claim a business program participant link</h2>
+          <p>An Academy Business owner may give you a participant ID and one-time claim token. Claiming uses this authenticated Hermes identity. The owner cannot attach you by guessing your email, name or account ID.</p>
+          <form class="academy-app-form" data-business-participant-claim-form>
+            <div class="academy-app-field">
+              <label for="academy-business-participant-id">Participant ID</label>
+              <input id="academy-business-participant-id" name="participantId" required maxlength="140" autocomplete="off" placeholder="academy-business-participant-…"/>
+            </div>
+            <div class="academy-app-field">
+              <label for="academy-business-claim-token">One-time claim token</label>
+              <input id="academy-business-claim-token" name="claimToken" required minlength="48" maxlength="160" autocomplete="off" placeholder="One-time token from the business owner"/>
+            </div>
+            <button class="academy-app-button intelligence" type="submit">Claim participant invitation</button>
+          </form>
+          <div class="academy-app-note" style="margin-top:14px">Claiming a business-program link does not change your Hermes Academy enrollment, hiring status, employment status or access rights. The business owner may see your participant status and a bounded delivery/progression summary (counts, state and human-decision timestamp); private submission content and reviewer feedback stay in the canonical learner/reviewer workspace. If the business uses a Hermes Academy delivery adapter, the matching canonical enrollment must already exist.</div>
+        </section>
+
+        <section class="academy-app-panel" style="margin-top:18px">
           <p class="academy-app-eyebrow">Enrollment state</p>
           <h2>Your programs</h2>
           <p data-enrollment-empty>No program request yet. Review the public curriculum first, then submit one program for human review.</p>
@@ -139,6 +157,7 @@ import "../../../../../styles/hermes-academy-app.css";
   const alert = document.querySelector<HTMLElement>("[data-dashboard-alert]");
   const profileForm = document.querySelector<HTMLFormElement>("[data-profile-form]");
   const enrollmentForm = document.querySelector<HTMLFormElement>("[data-enrollment-form]");
+  const businessParticipantClaimForm = document.querySelector<HTMLFormElement>("[data-business-participant-claim-form]");
 
   const programNames: Record<string, string> = {
     "us-logistics-operations": "U.S. Logistics Operations",
@@ -304,6 +323,30 @@ import "../../../../../styles/hermes-academy-app.css";
       showAlert(data.existing ? "This program request already exists." : "Program request recorded as Applied. Human review is still required.", "success");
     } catch (error) {
       showAlert(error instanceof Error ? error.message : "Could not create program request");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  businessParticipantClaimForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = businessParticipantClaimForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = Object.fromEntries(new FormData(businessParticipantClaimForm).entries());
+      const response = await fetch("/api/hermes-connect/academy/participant-claim", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not claim participant invitation");
+      businessParticipantClaimForm.reset();
+      showAlert("Participant invitation claimed with your authenticated Hermes identity.", "success");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not claim participant invitation");
     } finally {
       if (button) button.disabled = false;
     }

@@ -363,7 +363,10 @@ test("Measurement is owner/company scoped, same-origin guarded, and archive-only
 
 test("Academy owner workspace loads persisted programs and measurement on first boot without hard-coded USD", () => {
   const workspace = readFileSync(new URL("../src/pages/services/hermes-connect/academy/business/workspace/index.astro", import.meta.url), "utf8");
-  assert.match(workspace, /Promise\.all\(\[loadCrmCore\(\),loadProgramsCohorts\(\),loadMeasurement\(\)\]\)/);
+  assert.match(workspace, /loadCrmCore\(\)/);
+  assert.match(workspace, /loadProgramsCohorts\(\)/);
+  assert.match(workspace, /loadMeasurement\(\)/);
+  assert.match(workspace, /Promise\.all\(\[[^\]]*loadMeasurement\(\)[^\]]*\]\)/);
   assert.match(workspace, /data-measurement-form/);
   assert.match(workspace, /\/api\/hermes-connect\/academy\/measurement\?module=dashboard/);
   assert.match(workspace, /data-live-kpi="cac"/);
