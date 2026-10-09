@@ -30,6 +30,13 @@ const first5ActivationClaims = {
   event_name: "issue_comment",
 };
 
+const mzmManagedClientClaims = {
+  ...baseClaims,
+  aud: "hermes-connect-mzm-managed-client",
+  workflow_ref: "officeus-create/Hermes/.github/workflows/mzm-managed-client.yml@refs/heads/main",
+  event_name: "issue_comment",
+};
+
 test("weekly reminder scheduler accepts only the expected GitHub Actions identity", async () => {
   expect(oidc.validateGitHubOidcClaims(baseClaims, now)).toBe(true);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
@@ -151,4 +158,36 @@ test("First-5 trial provisioning reuses bounded OIDC and keeps credentials out o
   expect(endpoint).toContain("credential_delivery_failed_password_restored");
   expect(endpoint).not.toContain("INSERT INTO specialists");
   expect(endpoint).not.toContain("erik@kittlesgarage.com");
+});
+
+test("MZM managed-client operator accepts only the exact main issue-comment workflow identity", async () => {
+  expect(oidc.validateGitHubMzmManagedClientOidcClaims(mzmManagedClientClaims, now)).toBe(true);
+  expect(oidc.validateGitHubMzmManagedClientOidcClaims({ ...mzmManagedClientClaims, aud: first5ActivationClaims.aud }, now)).toBe(false);
+  expect(oidc.validateGitHubMzmManagedClientOidcClaims({ ...mzmManagedClientClaims, workflow_ref: first5ActivationClaims.workflow_ref }, now)).toBe(false);
+  expect(oidc.validateGitHubMzmManagedClientOidcClaims({ ...mzmManagedClientClaims, event_name: "workflow_dispatch" }, now)).toBe(false);
+  expect(oidc.validateGitHubMzmManagedClientOidcClaims({ ...mzmManagedClientClaims, ref: "refs/heads/feature" }, now)).toBe(false);
+});
+
+test("MZM managed-client workflow uses bounded OIDC and never impersonates the client owner", async () => {
+  const workflow = await readFile(".github/workflows/mzm-managed-client.yml", "utf8");
+  const endpoint = await readFile("functions/api/internal/mzm-managed-client.ts", "utf8");
+
+  expect(workflow).toContain("id-token: write");
+  expect(workflow).toContain("OIDC_AUDIENCE: hermes-connect-mzm-managed-client");
+  expect(workflow).toContain("Authorization: Bearer ${OIDC_TOKEN}");
+  expect(workflow).toContain("/api/internal/mzm-managed-client");
+  expect(workflow).toContain("/provision-mzm-managed");
+  expect(workflow).not.toContain("CLOUDFLARE_D1_API_TOKEN");
+  expect(workflow).not.toContain("CLOUDFLARE_ACCOUNT_ID");
+  expect(workflow).not.toContain("/api/auth/login");
+
+  expect(endpoint).toContain("verifyGitHubMzmManagedClientOidcToken");
+  expect(endpoint).toContain('const DATA_OWNER_ID = "hermes-managed:mzm-junk-removal"');
+  expect(endpoint).toContain('const MANAGEMENT_MODE = "hermes_managed"');
+  expect(endpoint).toContain('const PUBLICATION_BASIS = "client_relationship_public_evidence"');
+  expect(endpoint).toContain("catalog_owner_consent_claimed: false");
+  expect(endpoint).toContain("owner_authentication_claimed: false");
+  expect(endpoint).toContain("real_leads_tracked");
+  expect(endpoint).not.toContain("INSERT INTO specialists");
+  expect(endpoint).not.toContain("INSERT INTO sessions");
 });
