@@ -1,13 +1,11 @@
 name: Repair Shop locale and session production proof
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
   checks: read
-  issues: write
 
 concurrency:
   group: repair-p0-production-closure-proof
@@ -15,16 +13,9 @@ concurrency:
 
 jobs:
   verify:
-    if: >-
-      github.event.issue.number == 1192 &&
-      github.event.comment.body == '/verify-repair-locale-session-production' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     name: Verify production Repair Shop locale and session boundaries
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      GH_TOKEN: ${{ github.token }}
-
     steps:
       - name: Check out exact main revision
         uses: actions/checkout@v6
@@ -73,13 +64,13 @@ jobs:
               echo "- ✅ Synthetic owner/session rows were cleaned through the existing bounded Repair Shop QA cleanup lane."
               echo "- Classification: **LIVE_REPAIR_LOCALE_SESSION_BOUNDARY_PASS**"
             else
-              echo "- ❌ One or more exact-production locale/session checks failed. Do not close #1192 from this run."
+              echo "- ❌ One or more exact-production locale/session checks failed."
               echo "- Classification: **LIVE_REPAIR_LOCALE_SESSION_BOUNDARY_FAIL**"
             fi
             echo
             echo "> Synthetic verification only. No credential value, private customer identifier, or real-shop data is published."
           } > "${RUNNER_TEMP}/repair-locale-session-proof.md"
-          gh issue comment 1192 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/repair-locale-session-proof.md"
+          cat "${RUNNER_TEMP}/repair-locale-session-proof.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce live locale/session result
         shell: bash
