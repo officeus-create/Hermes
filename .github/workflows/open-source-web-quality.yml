@@ -3,15 +3,6 @@ name: Open-source web quality audit
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "src/**"
-      - "public/**"
-      - "tests/**"
-      - "scripts/**"
-      - "package.json"
-      - "package-lock.json"
-      - ".pa11yci.cjs"
-      - ".github/workflows/open-source-web-quality.yml"
   workflow_dispatch:
 
 permissions:
