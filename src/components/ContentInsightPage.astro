@@ -254,7 +254,7 @@ const schema = [
             <div>
               <p class="eyebrow">Expanded explanation</p>
               <h2 id="insight-explanation-title">Connect the source to a complete decision.</h2>
-              <p>A social post supplies an idea or proof point. The website version must add enough context, evidence, boundaries, links, and next steps to stand on its own.</p>
+              <p>A verified source supplies facts or proof points. The website analysis must add enough context, evidence, boundaries, links, and next steps to stand on its own.</p>
             </div>
             <dl>
               {explanation.map((item, index) => <div><dt>{index + 1}. Review point</dt><dd>{item}</dd></div>)}
@@ -289,7 +289,7 @@ const schema = [
 
         <section class="section" aria-labelledby="insight-faq-title">
           <div class="shell digital-faq-layout">
-            <div><p class="eyebrow">Frequently asked questions</p><h2 id="insight-faq-title">Questions the short social post could not fully answer.</h2></div>
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="insight-faq-title">Questions the source alone may not fully answer.</h2></div>
             <div class="digital-faq-list">
               {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
             </div>
