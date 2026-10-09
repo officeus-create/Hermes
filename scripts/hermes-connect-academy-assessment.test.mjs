@@ -365,7 +365,11 @@ test("Academy assessment owner workspace boots persisted assessment UI and keeps
   assert.match(workspace, /data-assessment-assignment-form/);
   assert.match(workspace, /data-assessment-review-form/);
   assert.match(workspace, /loadAssessments\(\)/);
-  assert.match(workspace, /Promise\.all\(\[loadCrmCore\(\),loadProgramsCohorts\(\),loadMeasurement\(\),loadAssessments\(\)\]\)/);
+  assert.match(workspace, /loadCrmCore\(\)/);
+  assert.match(workspace, /loadProgramsCohorts\(\)/);
+  assert.match(workspace, /loadMeasurement\(\)/);
+  assert.match(workspace, /loadAssessments\(\)/);
+  assert.match(workspace, /Promise\.all\(\[[^\]]*loadAssessments\(\)[^\]]*\]\)/);
   assert.match(workspace, /One-time token/);
   assert.match(workspace, /Final employment action.*canonical Hermes HR human-review flow/i);
   assert.match(ownerApi, /candidateSearch:\s*false/);
