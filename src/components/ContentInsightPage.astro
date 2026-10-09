@@ -50,8 +50,7 @@ interface Props {
   hubLabel?: string;
   hubUrl?: string;
   showServiceSchema?: boolean;
-  feedUrl?: string;
-}
+  feedUrl?: string;\n  evidenceSources?: Array<{ label: string; url: string; note?: string }>;\n}
 
 const {
   title,
@@ -83,8 +82,7 @@ const {
   hubLabel,
   hubUrl,
   showServiceSchema = true,
-  feedUrl,
-} = Astro.props;
+  feedUrl,\n  evidenceSources = [],\n} = Astro.props;
 
 const canonicalUrl = new URL(canonicalPath, Astro.site).toString();\nconst primaryActionIsExternal = /^https:\\/\\//.test(primaryAction.href);
 const directionUrl = new URL(directionOwnerUrl, Astro.site).toString();
@@ -268,6 +266,19 @@ const schema = [
               <article><strong>Website review</strong><p>Published {datePublished}; last modified {dateModified}.</p></article>
               <article><strong>External source link</strong><p>{sourceUrl && !sourceIsSynthetic ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Open the original source ↗</a> : "Held until a stable approved source URL is verified."}</p></article>
             </div>
+            {evidenceSources.length > 0 && (
+              <div class="insight-evidence-sources" aria-label="Public evidence sources">
+                <h3>Evidence sources</h3>
+                <ul>
+                  {evidenceSources.map((source) => (
+                    <li>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>
+                      {source.note && <span>{source.note}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
 
@@ -297,6 +308,6 @@ const schema = [
 </BaseLayout>
 
 <style>
-  .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}
+  .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}.insight-evidence-sources{margin-top:24px;padding:20px;border:1px solid rgba(18,84,110,.16);border-radius:16px;background:#f7fafb}.insight-evidence-sources h3{margin:0 0 12px}.insight-evidence-sources ul{margin:0;padding-left:20px;display:grid;gap:10px}.insight-evidence-sources li{line-height:1.45}.insight-evidence-sources a{font-weight:800;color:inherit;text-underline-offset:.18em}.insight-evidence-sources span{display:block;color:#607681;font-size:.83rem;margin-top:2px}
 </style>
 \n<script>\n  import { trackEvent } from "../lib/analytics";\n\n  document.querySelectorAll("[data-insight-source-cta=true]").forEach((node) => {\n    if (!(node instanceof HTMLAnchorElement)) return;\n    node.addEventListener("click", (event) => {\n      if (!event.isTrusted) return;\n      let sourceHost = "";\n      try { sourceHost = new URL(node.href).hostname; } catch {}\n      trackEvent("insight_source_click", {\n        page_group: "insights",\n        module_id: "verified_source_cta",\n        page_path: window.location.pathname,\n        source_host: sourceHost,\n      });\n    });\n  });\n</script>\n
