@@ -68,6 +68,10 @@ const ROLE_GRANTS: Record<HermesMembershipRole, ReadonlySet<HermesPermissionActi
 
 const clean = (value: unknown) => String(value ?? "").trim();
 
+function isHermesMembershipRole(value: unknown): value is HermesMembershipRole {
+  return typeof value === "string" && Object.prototype.hasOwnProperty.call(ROLE_GRANTS, value);
+}
+
 export function isHermesPermissionAction(value: unknown): value is HermesPermissionAction {
   return new Set<string>([
     "workspace.read",
@@ -86,7 +90,9 @@ export function membershipMatchesHermesScope(
   membership: HermesMembership,
   request: HermesPermissionRequest,
 ) {
-  if (!membership.active) return false;
+  if (membership.active !== true || !isHermesMembershipRole(membership.role)) return false;
+  if (!clean(request.specialistId) || !clean(request.companyId)) return false;
+  if (!clean(membership.specialistId) || !clean(membership.companyId)) return false;
   if (clean(membership.specialistId) !== clean(request.specialistId)) return false;
   if (clean(membership.companyId) !== clean(request.companyId)) return false;
 
@@ -103,6 +109,7 @@ export type HermesPermissionDecision =
       allowed: false;
       reason:
         | "invalid_action"
+        | "invalid_role"
         | "membership_inactive"
         | "identity_mismatch"
         | "company_scope_mismatch"
@@ -115,7 +122,14 @@ export function decideHermesPermission(
   request: Omit<HermesPermissionRequest, "action"> & { action: unknown },
 ): HermesPermissionDecision {
   if (!isHermesPermissionAction(request.action)) return { allowed: false, reason: "invalid_action" };
-  if (!membership.active) return { allowed: false, reason: "membership_inactive" };
+  if (membership.active !== true) return { allowed: false, reason: "membership_inactive" };
+  if (!isHermesMembershipRole(membership.role)) return { allowed: false, reason: "invalid_role" };
+  if (!clean(request.specialistId) || !clean(membership.specialistId)) {
+    return { allowed: false, reason: "identity_mismatch" };
+  }
+  if (!clean(request.companyId) || !clean(membership.companyId)) {
+    return { allowed: false, reason: "company_scope_mismatch" };
+  }
   if (clean(membership.specialistId) !== clean(request.specialistId)) {
     return { allowed: false, reason: "identity_mismatch" };
   }

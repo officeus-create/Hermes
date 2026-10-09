@@ -87,3 +87,33 @@ test("unknown or consequential actions are not silently promoted into RBAC", () 
   expect(HERMES_CONSEQUENTIAL_ACTIONS_OUTSIDE_MEMBERSHIP_V1).toContain("credential.manage");
   expect(HERMES_CONSEQUENTIAL_ACTIONS_OUTSIDE_MEMBERSHIP_V1).toContain("production.release");
 });
+
+test("empty or whitespace identity and company scope never authorize a role", () => {
+  const base = { specialistId: "specialist-1", companyId: "company-1", workspaceId: "workspace-1", action: "crm.read" as const };
+  const emptyActor = { ...base, specialistId: " " };
+  const emptyCompany = { ...base, companyId: "" };
+  expect(membershipMatchesHermesScope(member({ specialistId: " " }), emptyActor)).toBe(false);
+  expect(membershipMatchesHermesScope(member({ companyId: "" }), emptyCompany)).toBe(false);
+  expect(decideHermesPermission(member({ specialistId: " " }), emptyActor)).toEqual({
+    allowed: false, reason: "identity_mismatch",
+  });
+  expect(decideHermesPermission(member({ companyId: "" }), emptyCompany)).toEqual({
+    allowed: false, reason: "company_scope_mismatch",
+  });
+});
+
+test("untrusted role strings and prototype keys deny instead of throwing or granting", () => {
+  const base = { specialistId: "specialist-1", companyId: "company-1", workspaceId: "workspace-1", action: "crm.read" as const };
+  for (const role of ["__proto__", "toString", "superadmin", "", null]) {
+    const untrusted = member({ role: role as HermesMembership["role"] });
+    expect(membershipMatchesHermesScope(untrusted, base)).toBe(false);
+    expect(decideHermesPermission(untrusted, base)).toEqual({ allowed: false, reason: "invalid_role" });
+  }
+});
+
+test("only explicit boolean active state grants access", () => {
+  const base = { specialistId: "specialist-1", companyId: "company-1", workspaceId: "workspace-1", action: "crm.read" as const };
+  const untrusted = member({ active: "true" as unknown as boolean });
+  expect(membershipMatchesHermesScope(untrusted, base)).toBe(false);
+  expect(decideHermesPermission(untrusted, base)).toEqual({ allowed: false, reason: "membership_inactive" });
+});
