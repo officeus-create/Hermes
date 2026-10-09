@@ -98,6 +98,7 @@ jobs:
           LEADS="$(jq -r '.real_leads_tracked // 0' "${TMP}/provision.json")"
           OWNER_CONSENT="$(jq -r '.catalog_owner_consent_claimed // true' "${TMP}/provision.json")"
           OWNER_AUTH="$(jq -r '.owner_authentication_claimed // true' "${TMP}/provision.json")"
+          INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
 
           [ -z "${PROFILE_PATH}" ] \
             || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
@@ -109,6 +110,8 @@ jobs:
             || fail "publication_basis_mismatch" "Catalog publication must remain pending owner consent."
           [ "${OWNER_CONSENT}" = false ] && [ "${OWNER_AUTH}" = false ] \
             || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
+          [ "${INTERNAL_UI}" = "REQUIRED_SEPARATELY" ] \
+            || fail "internal_owner_receipt_boundary_failed" "Managed provisioning must not pretend an authenticated internal-owner UI session was verified."
 
           PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
@@ -135,6 +138,7 @@ jobs:
           - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
           - ✅ Public Catalog remains fail-closed: publication basis is `${BASIS}`, profile returns 404, and Catalog API/sitemap do not expose MZM.
           - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
+          - ⚠️ Actual private workspace traversal remains a separate authenticated `HERMES_INTERNAL_OWNER` readback; provisioning does not fabricate that receipt.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
           - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
 
