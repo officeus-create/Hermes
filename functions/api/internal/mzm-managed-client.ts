@@ -109,7 +109,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     0,
     createdAt,
     now,
-    null,
+    mzmJunkRemovalClient.phone,
     null,
     null,
     mzmJunkRemovalClient.base.countryCode,
