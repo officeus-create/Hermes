@@ -167,6 +167,15 @@ jobs:
               forbiddenMarkers: ["14-day launch offer", "registration stays free until it is"],
             },
             {
+              url: "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+              markers: [
+                "What MZM Junk Removal’s public job evidence shows about evidence-driven local SEO",
+                "Visit MZM Junk Removal",
+                "Evidence sources",
+                "Ranking, leads and revenue stay UNKNOWN",
+              ],
+            },
+            {
               url: "https://hermeslogisticsus.com/",
               markers: ["Hermes Connect", "Open Hermes Connect Product Hub"],
             },
