@@ -4,6 +4,7 @@ export const mzmJunkRemovalClient = {
   companyType: "home_service",
   serviceSubtype: "junk_removal",
   website: "https://mzm-junk-removal.com/",
+  phone: "(279) 239-1800",
   base: { city: "Roseville", state: "CA", countryCode: "US", timezone: "America/Los_Angeles" },
   relationship: "client_owner_confirmed",
   publicSummary:
@@ -74,6 +75,7 @@ export const mzmJunkRemovalClient = {
       evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
       confirmsExistingManifest: [
         "MZM Junk Removal identity",
+        "public phone (279) 239-1800",
         "Roseville and Greater Sacramento market",
         "junk removal / cleanout / furniture / appliance / construction debris / yard debris service scope",
       ],
@@ -160,7 +162,7 @@ export const mzmJunkRemovalClient = {
     ],
   },
   boundaries: {
-    catalogPublic: ["companyName", "website", "base", "publicSummary", "services", "serviceAreas"],
+    catalogPublic: ["companyName", "website", "phone", "base", "publicSummary", "services", "serviceAreas"],
     crmPrivate: [
       "customerName",
       "customerPhone",
