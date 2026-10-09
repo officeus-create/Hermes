@@ -215,6 +215,9 @@ assert.match(companyApi, /companyType === "home_service" \? body\.catalogOptIn =
 assert.match(companyApi, /SELECT id, slug, company_type, created_at FROM hermes_company_profiles/);
 assert.match(companyApi, /WHERE hermes_company_profiles\.company_type = excluded\.company_type/);
 assert.match(companyApi, /row\?\.company_type !== companyType/);
+assert.match(companyApi, /managed_company_claim_required/);
+assert.match(companyApi, /management_mode='hermes_managed'/);
+assert.match(companyApi, /next_url: "\/contacts\//);
 const accountApi = read("functions/api/hermes-connect/account.ts");
 const catalogApi = read("functions/api/catalog/companies.ts");
 const catalogRuntime = read("public/catalog-connect-live.v2.js");
@@ -310,7 +313,11 @@ assert.match(publicProfile, /Hermes-managed client profile · public facts verif
 assert.match(catalogApi, /catalog_publication_basis/);
 assert.match(managedEndpoint, /mzmJunkRemovalClient/);
 assert.match(managedEndpoint, /hermes-managed:mzm-junk-removal/);
-assert.match(managedEndpoint, /client_relationship_public_evidence/);
+assert.match(managedEndpoint, /owner_consent_pending/);
+assert.match(managedEndpoint, /catalog_publication_eligible: false/);
+assert.match(managedEndpoint, /public_profile_path: null/);
+assert.match(managedEndpoint, /"managed_private"/);
+assert.match(managedEndpoint, /Number\(company\?\.catalog_opt_in \|\| 0\) === 0/);
 assert.match(managedEndpoint, /catalog_owner_consent_claimed: false/);
 assert.match(managedEndpoint, /owner_authentication_claimed: false/);
 assert.doesNotMatch(managedEndpoint, /INSERT INTO specialists/);
@@ -320,5 +327,10 @@ assert.match(managedWorkflow, /github\.event\.comment\.body == '\/provision-mzm-
 assert.match(managedWorkflow, /id-token: write/);
 assert.doesNotMatch(managedWorkflow, /CLOUDFLARE_D1_API_TOKEN/);
 assert.doesNotMatch(managedWorkflow, /\/api\/auth\/login/);
+assert.match(managedWorkflow, /owner_consent_pending/);
+assert.match(managedWorkflow, /catalog_fail_closed_failed/);
+assert.match(managedWorkflow, /PROFILE_HTTP.*404/s);
+assert.match(managedWorkflow, /! grep -Fq.*sitemap/s);
+assert.match(managedWorkflow, /! jq -e.*mzm-junk-removal/s);
 
 console.log("home-service-crm-contract: ok");
