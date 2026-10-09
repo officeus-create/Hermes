@@ -40,4 +40,7 @@ const meta = insightDirectionMeta[post.direction];
   hubUrl="/insights/"
   showServiceSchema={false}
   feedUrl="/insights/rss.xml"
+  evidenceSources={(post.evidence ?? [])
+    .filter((item) => item.kind === "public_external" && Boolean(item.url))
+    .map((item) => ({ label: item.label, url: item.url as string, note: item.notes }))}
 />

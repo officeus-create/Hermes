@@ -89,6 +89,20 @@ for (const post of registry.filter((item) => item.contentTier === "standalone"))
 }
 const rss = await readFile(new URL("../src/pages/insights/rss.xml.ts", import.meta.url), "utf8");
 assert.ok(rss.includes("application/rss+xml"), "RSS route must emit RSS content type");
+const publisher = await readFile(new URL("./publish-insight.mjs", import.meta.url), "utf8");
+assert.match(publisher, /primaryActionIsVerifiedSource = primaryActionHref === post\.sourceUrl/);
+assert.match(publisher, /primaryAction must use an internal href or exactly match sourceUrl/);
+assert.match(publisher, /secondaryAction must use an internal href/);
+const insightComponent = await readFile(new URL("../src/components/ContentInsightPage.astro", import.meta.url), "utf8");
+assert.match(insightComponent, /data-insight-source-cta/);
+assert.match(insightComponent, /trackEvent\("insight_source_click"/);
+assert.match(insightComponent, /page_group:\s*"insights"/);
+assert.match(insightComponent, /source_host:\s*sourceHost/);
+assert.match(insightComponent, /Evidence sources/);
+assert.match(insightComponent, /evidenceSources\.map/);
+const dynamicInsightRoute = await readFile(new URL("../src/pages/insights/[direction]/[slug].astro", import.meta.url), "utf8");
+assert.match(dynamicInsightRoute, /item\.kind === "public_external"/);
+assert.match(dynamicInsightRoute, /evidenceSources=/);
 const contentPrWorkflow = await readFile(new URL("../.github/workflows/insights-content-pr.yml", import.meta.url), "utf8");
 assert.match(contentPrWorkflow, /No unpublished Insights delta; PR already merged or no content generated/);
 assert.match(contentPrWorkflow, /has_changes=false/);
