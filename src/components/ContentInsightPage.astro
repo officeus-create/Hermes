@@ -50,7 +50,9 @@ interface Props {
   hubLabel?: string;
   hubUrl?: string;
   showServiceSchema?: boolean;
-  feedUrl?: string;\n  evidenceSources?: Array<{ label: string; url: string; note?: string }>;\n}
+  feedUrl?: string;
+  evidenceSources?: Array<{ label: string; url: string; note?: string }>;
+}
 
 const {
   title,
@@ -82,9 +84,12 @@ const {
   hubLabel,
   hubUrl,
   showServiceSchema = true,
-  feedUrl,\n  evidenceSources = [],\n} = Astro.props;
+  feedUrl,
+  evidenceSources = [],
+} = Astro.props;
 
-const canonicalUrl = new URL(canonicalPath, Astro.site).toString();\nconst primaryActionIsExternal = /^https:\\/\\//.test(primaryAction.href);
+const canonicalUrl = new URL(canonicalPath, Astro.site).toString();
+const primaryActionIsExternal = /^https:\/\//.test(primaryAction.href);
 const directionUrl = new URL(directionOwnerUrl, Astro.site).toString();
 const sourceIsSynthetic = sourceUrl?.includes("example.invalid") ?? false;
 const hasVideoSchema = Boolean(
@@ -310,4 +315,22 @@ const schema = [
 <style>
   .insight-publish-meta{margin:.35rem 0 1rem;color:rgba(255,255,255,.66);font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em}.capacity-boundary-grid a{color:inherit;font-weight:800;text-underline-offset:.18em}.insight-evidence-sources{margin-top:24px;padding:20px;border:1px solid rgba(18,84,110,.16);border-radius:16px;background:#f7fafb}.insight-evidence-sources h3{margin:0 0 12px}.insight-evidence-sources ul{margin:0;padding-left:20px;display:grid;gap:10px}.insight-evidence-sources li{line-height:1.45}.insight-evidence-sources a{font-weight:800;color:inherit;text-underline-offset:.18em}.insight-evidence-sources span{display:block;color:#607681;font-size:.83rem;margin-top:2px}
 </style>
-\n<script>\n  import { trackEvent } from "../lib/analytics";\n\n  document.querySelectorAll("[data-insight-source-cta=true]").forEach((node) => {\n    if (!(node instanceof HTMLAnchorElement)) return;\n    node.addEventListener("click", (event) => {\n      if (!event.isTrusted) return;\n      let sourceHost = "";\n      try { sourceHost = new URL(node.href).hostname; } catch {}\n      trackEvent("insight_source_click", {\n        page_group: "insights",\n        module_id: "verified_source_cta",\n        page_path: window.location.pathname,\n        source_host: sourceHost,\n      });\n    });\n  });\n</script>\n
+
+<script>
+  import { trackEvent } from "../lib/analytics";
+
+  document.querySelectorAll("[data-insight-source-cta=true]").forEach((node) => {
+    if (!(node instanceof HTMLAnchorElement)) return;
+    node.addEventListener("click", (event) => {
+      if (!event.isTrusted) return;
+      let sourceHost = "";
+      try { sourceHost = new URL(node.href).hostname; } catch {}
+      trackEvent("insight_source_click", {
+        page_group: "insights",
+        module_id: "verified_source_cta",
+        page_path: window.location.pathname,
+        source_host: sourceHost,
+      });
+    });
+  });
+</script>
