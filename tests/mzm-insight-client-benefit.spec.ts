@@ -67,4 +67,24 @@ test("MZM Insight keeps client ownership, visible evidence, and bounded referral
   await expect(page.locator("main")).toContainText("Ranking, leads and revenue stay UNKNOWN");
   await expect(page.locator("main")).toContainText("A verified source supplies facts or proof points.");
   await expect(page.locator("main")).not.toContainText("A social post supplies an idea or proof point.");
+
+  const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const schemas = jsonLd.flatMap((text) => {
+    try {
+      const parsed = JSON.parse(text);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      return [];
+    }
+  });
+  const article = schemas.find((item: any) => item?.["@type"] === "BlogPosting");
+  expect(article).toBeTruthy();
+  expect(article.citation).toEqual(expect.arrayContaining([
+    "https://mzm-junk-removal.com/",
+    "https://mzm-junk-removal.com/junk-removal-sacramento",
+    "https://mzm-junk-removal.com/junk-removal-rancho-cordova",
+    "https://mzm-junk-removal.com/junk-removal-citrus-heights",
+    "https://mzm-junk-removal.com/junk-removal-rocklin",
+    "https://mzm-junk-removal.com/junk-removal-orangevale",
+  ]));
 });
