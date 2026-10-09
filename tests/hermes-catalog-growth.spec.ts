@@ -28,7 +28,7 @@ test("Catalog search spans first-party Hermes services and external profiles", a
   await input.fill("Hermes Connect CRM");
   await expect(page.locator('[data-catalog-card]:not([hidden])')).toHaveCount(1);
   await expect(page.getByRole("heading", { name: "Hermes Connect CRM" })).toBeVisible();
-  await expect(page.locator("[data-catalog-count]")).toHaveText("1 searchable entry");
+  await expect(page.locator("[data-catalog-count]")).toHaveText("1 matching Catalog entry across business profiles, Hermes services, and strategy examples");
 });
 
 test("self-promo rail appears in Catalog and every top-level direction", async ({ page }) => {

@@ -1,0 +1,328 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import IAmDevelopmentPath from "../../../../components/IAmDevelopmentPath.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import IAmItalyEditorialVisual from "../../../../components/IAmItalyEditorialVisual.astro";
+
+const modules = [
+  { number: "01", name: "Tax Free · Italy", state: "First concept", copy: "Understand general eligibility and prepare a compliant handoff. No VAT refunds or tax documents are processed by I am today." },
+  { number: "02", name: "Travel & mobility", state: "Future", copy: "Find permissioned flights, vehicle rentals and local services without promising unverified availability or discounts." },
+  { number: "03", name: "Business formation", state: "Future", copy: "Choose a jurisdiction, review the official procedure and follow tasks through verified providers." },
+  { number: "04", name: "Documents & life", state: "Future", copy: "A consent-based view of country-specific applications, signatures, deadlines and official handoffs." },
+] as const;
+const stages = [
+  { period: "Months 01–02", title: "Discover & establish trust", copy: "Brand clearance, user interviews, Italy Tax Free guidance, evidence-backed country rules and consent design." },
+  { period: "Months 03–05", title: "Build a real personal workspace", copy: "One intent → a guided action plan → an optional saved workspace. Test utility with real users." },
+  { period: "Months 06–08", title: "Validate partner operations", copy: "Work only with authorized merchants, public services and payment partners where lawful." },
+  { period: "Months 09–11", title: "Add a second verified journey", copy: "Expand into one additional supported geography or use case after its data, permissions and economics are proven." },
+  { period: "Months 12–14", title: "Prove repeatable value", copy: "Measure completion, user time saved, partner economics, security and evidence quality before scaling." },
+] as const;
+---
+<BaseLayout
+  title="I am — A personal interface to the world | Concept by Hermes Connect"
+  description="I am is an early-stage concept for a voice-first personal interface for travel, cross-border tasks and approved country services. Founder vision and interactive browser-only demonstration, not an operational government or financial service."
+  robots="noindex,nofollow"
+  htmlLang="en"
+  locale="en"
+>
+  <SiteHeader theme="light" locale="en" activePath="/businesses/" />
+  <main id="main-content" class="iam">
+    <div class="iam-topbar shell">
+      <a href="/businesses/" class="back">← Hermes Catalog</a>
+      <span class="state">FOUNDER CONCEPT · NOT A REGISTERED I AM COMPANY</span>
+    </div>
+    <div class="shell"><IAmDevelopmentPath active="Founder concept" /></div>
+    <section class="iam-hero shell" aria-labelledby="iam-title">
+      <div class="hero-copy">
+        <div class="eyebrow">A Hermes Connect incubation concept</div>
+        <h1 id="iam-title"><span class="iam-mark"><span class="i-dot">I</span> am<span class="period">.</span></span><span class="tagline">Here. There. Everywhere.</span></h1>
+        <p class="intro">A personal interface to the world. Tell it what you want to do; see a useful, permission-aware path instead of endless forms, disconnected apps and menus.</p>
+        <p class="honesty">This is a product vision and interactive concept. I am is not yet an incorporated or licensed service, and its future government, Tax Free, payments and company-registration integrations are not operational.</p>
+        <div class="actions">
+          <a href="#experience" class="primary">Explore the interface concept</a>
+          <a href="/insights/technology/i-am-vision/" class="secondary">Read the founder's product note →</a>
+        </div>
+        <div class="facts">
+          <span><b>Italy</b> first exploration</span>
+          <span><b>14 months</b> design horizon</span>
+          <span><b>Hermes Connect</b> proposed platform foundation</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <IAmItalyEditorialVisual />
+      </div>
+    </section>
+    <section id="experience" class="experience">
+      <div class="shell stage-grid">
+        <div class="stage-intro">
+          <div class="eyebrow">The experience we want to build</div>
+          <h2>Speak naturally. Keep only what matters.</h2>
+          <p>In the planned product, a traveller describes an outcome by voice or text. I am identifies the right country rules, proposes a next action and builds a personal workspace only with the person's consent.</p>
+          <p>Try the <b>offline concept simulator</b>: it classifies a few example requests in this browser only. It is not an AI model, a live search, a government service or a real registration.</p>
+        </div>
+        <div class="simulator">
+          <div class="sim-header"><span class="sim-dot"></span><b>I am / prototype</b><span>LOCAL DEMO</span></div>
+          <form id="iam-intent" class="intent-form">
+            <label for="iam-text">What would you like to do?</label>
+            <textarea id="iam-text" name="intent" rows="3" maxlength="240" placeholder="I'm visiting Italy and want to understand Tax Free shopping..." required></textarea>
+            <button type="submit">Create an example plan →</button>
+          </form>
+          <div class="prompt-grid" aria-label="Example intents">
+            <button type="button" data-example="I want to buy clothes in Italy and understand Tax Free.">Tax Free Italy</button>
+            <button type="button" data-example="I want to travel and rent a car in Europe.">Travel & mobility</button>
+            <button type="button" data-example="I want to form a company in Europe.">Business formation</button>
+            <button type="button" data-example="I need to understand which documents I may need abroad.">Documents</button>
+          </div>
+          <div class="example-result" id="iam-result" role="status" aria-live="polite">
+            <strong>Your proposed workflow will appear here.</strong>
+            <p>No text is sent to Hermes or saved.</p>
+          </div>
+          <section id="iam-workspace" class="temporary-workspace" aria-label="Your temporary menu" hidden>
+            <div class="workspace-heading">
+              <div><strong>Your temporary menu</strong><p>Example modules pinned for this page only. They disappear on reload; no account or data is created.</p></div>
+              <button type="button" id="iam-clear" class="clear-button">Clear menu</button>
+            </div>
+            <div id="iam-pinned" class="pinned-list" role="list"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+    <section class="shell modules" aria-labelledby="module-title">
+      <div class="section-heading"><div class="eyebrow">One conversation · modular journeys</div><h2 id="module-title">Only the tools your life needs.</h2><p>Each service module earns its place through real customer need, official data and compliant providers. We don't need to deploy all government services at once.</p></div>
+      <div class="module-grid">{modules.map(module => (
+        <article class="module">
+          <span>{module.number} · {module.state}</span>
+          <h3>{module.name}</h3>
+          <p>{module.copy}</p>
+        </article>
+      ))}</div>
+    </section>
+    <section class="roadmap">
+      <div class="shell">
+        <div class="section-heading"><div class="eyebrow">14-month development hypothesis</div><h2>Build for the moment it matters.</h2><p>Planning stages, not signed delivery promises. Licensing, partners, security and country-specific rules determine what can become operational.</p></div>
+        <div class="roadmap-grid">{stages.map(stage => (
+          <article><span>{stage.period}</span><h3>{stage.title}</h3><p>{stage.copy}</p></article>
+        ))}</div>
+      </div>
+    </section>
+    <section class="shell close">
+      <div class="eyebrow">Startup in exploration</div>
+      <h2>One identity. Many possibilities. Verified steps.</h2>
+      <p>I am is being designed as a separate future product using reusable patterns from Hermes Connect. The existing Hermes business infrastructure should not be confused with I am registration, licensing, ownership, customers or investment commitments.</p>
+      <div class="actions"><a href="/insights/technology/i-am-vision/" class="primary">Read the product announcement</a><a href="/it/tecnologia/" class="secondary">Explore current Hermes Technology →</a></div>
+      <p class="legal">Concept information only; not an offer of securities, investment opportunity, tax/legal advice, financial services, government affiliation or a claim of active regulated operations. Any eventual investor conversation depends on verified corporate records and appropriate legal review.</p>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("#iam-intent");
+  const input = document.querySelector<HTMLTextAreaElement>("#iam-text");
+  const result = document.querySelector<HTMLElement>("#iam-result");
+  const workspace = document.querySelector<HTMLElement>("#iam-workspace");
+  const pinnedList = document.querySelector<HTMLElement>("#iam-pinned");
+  const clearButton = document.querySelector<HTMLButtonElement>("#iam-clear");
+
+  // This is a deterministic browser-only illustration, not a language model,
+  // booking engine, eligibility decision, jurisdictional rules engine or account.
+  const workflows = [
+    {
+      id: "tax-free",
+      pattern: /\b(tax[\s-]?free|vat[\s-]?refund|vat|iva|refund|shopping|clothes|vestiti)\b/i,
+      title: "Italy · Tax Free guidance",
+      steps: [
+        "Check the official eligibility rules for purchases and non-EU residence.",
+        "Review the merchant-issued documentation and the customs confirmation process.",
+        "If relevant, continue only with an authorized merchant or service operator."
+      ],
+      note: "No payment, invoice, or tax refund is performed in this demonstration.",
+      sourceUrl: "https://www.adm.gov.it/portale/-/otello",
+      sourceLabel: "Read the official Italian customs guidance"
+    },
+    {
+      id: "business",
+      pattern: /\b(company|incorporat\w*|startup|start[\s-]?up|register (?:a |the )?business|business formation|form a business|form a company|set up a business|token|crypto(?:currency)?)\b/i,
+      title: "Cross-border business journey",
+      steps: [
+        "Choose the destination jurisdiction and the type of activity.",
+        "Review its official company-registration, identity and residency requirements.",
+        "Use a verified local service provider if the particular procedure requires one."
+      ],
+      note: "Company and crypto-asset issuance are not available services. Regulated financial steps would require separate approval."
+    },
+    {
+      id: "travel",
+      pattern: /\b(travel|travelling|traveling|flight|flights|hotel|hotels|plane|trip|journey|journeys|car|cars|rent|rental|airport|train|trains)\b/i,
+      title: "Travel & mobility journey",
+      steps: [
+        "Specify the destination, dates, passengers and mobility needs.",
+        "Compare real offers only from permissioned and verified providers.",
+        "Confirm terms, identity and payment directly with a licensed provider."
+      ],
+      note: "No live booking inventory, prices or discounts are offered here."
+    },
+    {
+      id: "documents",
+      pattern: /\b(document|documents|visa|visas|identity|certificate|certificates|paperwork|permit|permits|residency)\b/i,
+      title: "Documents & registrations journey",
+      steps: [
+        "Identify the destination and the type of required procedure.",
+        "Locate authoritative official requirements and the permitted submission channel.",
+        "Prepare a personal checklist and request explicit approval before any submission."
+      ],
+      note: "No official application is created or submitted."
+    }
+  ] as const;
+
+  // Only the selected module IDs are held in ephemeral memory for this page.
+  const pinned = new Set<string>();
+  const make = (tag: string, className: string, content: string) => {
+    const element = document.createElement(tag);
+    element.className = className;
+    element.textContent = content;
+    return element;
+  };
+  const updatePinLabels = () => {
+    result?.querySelectorAll<HTMLButtonElement>("button[data-pin-module]").forEach((button) => {
+      const id = button.dataset.pinModule ?? "";
+      button.disabled = pinned.has(id);
+      button.textContent = pinned.has(id) ? "Added to temporary menu" : "Pin this example";
+    });
+  };
+  const redrawMenu = () => {
+    if (!workspace || !pinnedList) return;
+    pinnedList.replaceChildren();
+    workspace.hidden = pinned.size === 0;
+    for (const id of pinned) {
+      const module = workflows.find((item) => item.id === id);
+      if (!module) continue;
+      const item = make("div", "pinned-item", module.title);
+      item.setAttribute("role", "listitem");
+      const remove = make("button", "remove-pin", "Remove");
+      remove.setAttribute("type", "button");
+      remove.setAttribute("aria-label", "Remove " + module.title);
+      remove.addEventListener("click", () => {
+        pinned.delete(id);
+        redrawMenu();
+      });
+      item.append(remove);
+      pinnedList.append(item);
+    }
+    updatePinLabels();
+  };
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-example]")) {
+    button.addEventListener("click", () => {
+      if (!input) return;
+      input.value = button.dataset.example ?? "";
+      input.focus();
+    });
+  }
+  clearButton?.addEventListener("click", () => {
+    pinned.clear();
+    redrawMenu();
+  });
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!input || !result || !form?.reportValidity()) return;
+    const userRequest = input.value.trim();
+    if (!userRequest) return;
+    const matches = workflows.filter((item) => item.pattern.test(userRequest));
+    result.replaceChildren();
+    result.append(make("strong", "result-intro", matches.length
+      ? "Illustrative " + (matches.length === 1 ? "module" : "modules") + " for your request"
+      : "No verified service category found in this demo"));
+    if (matches.length === 0) {
+      result.append(make("p", "result-warning",
+        "This request needs country-specific research and official-source verification. The prototype does not invent a service, registration path, or permission."));
+    } else {
+      const cards = make("div", "intent-cards", "");
+      for (const module of matches) {
+        const card = make("article", "intent-card", "");
+        card.dataset.intentModule = module.id;
+        card.append(make("h3", "", module.title));
+        const steps = document.createElement("ol");
+        for (const step of module.steps) {
+          steps.append(make("li", "", step));
+        }
+        card.append(steps, make("p", "intent-note", module.note));
+        if ("sourceUrl" in module && module.sourceUrl) {
+          const source = make("a", "intent-source", module.sourceLabel);
+          source.setAttribute("href", module.sourceUrl);
+          source.setAttribute("target", "_blank");
+          source.setAttribute("rel", "noopener noreferrer");
+          card.append(source);
+        }
+        const pinButton = make("button", "pin-module", "Pin this example");
+        pinButton.setAttribute("type", "button");
+        pinButton.dataset.pinModule = module.id;
+        pinButton.addEventListener("click", () => {
+          pinned.add(module.id);
+          redrawMenu();
+        });
+        card.append(pinButton);
+        cards.append(card);
+      }
+      result.append(cards);
+      updatePinLabels();
+    }
+    result.append(make("p", "result-disclosure",
+      "Predefined example only: no AI call, account or data storage. Voice input, country-specific decisions and real submission are future product concepts."));
+  });
+</script>
+
+<style>
+  .iam{color:#10263b;background:#f7fafb}.shell{max-width:1260px;margin:0 auto;padding-left:24px;padding-right:24px}
+  .iam-topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;padding-top:28px;color:#55768a;font-size:12px;font-weight:750}
+  .back{color:#246a82;text-decoration:none}.state{border:1px solid #c6d9e2;border-radius:999px;padding:8px 12px;letter-spacing:.06em}
+  .iam-hero{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;min-height:650px;padding-top:40px;padding-bottom:80px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:12px;font-weight:850;color:#187989}
+  h1,h2,h3,p{margin-top:0}.iam-mark{font-weight:900;letter-spacing:-.08em;display:block;font-size:clamp(78px,10vw,160px);line-height:1}.i-dot,.period{color:#19acae}
+  .tagline{display:block;font-size:clamp(27px,3.1vw,49px);line-height:1.16;letter-spacing:-.035em;margin-top:14px}
+  .intro{font-size:clamp(18px,1.65vw,23px);color:#3d586b;line-height:1.6;max-width:620px;margin-top:26px}
+  .honesty{max-width:620px;color:#697d89;font-size:14px;line-height:1.6}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+  .actions a{padding:15px 19px;border-radius:13px;text-decoration:none;font-size:14px;font-weight:800}
+  .primary{background:#123f50;color:white}.secondary{border:1px solid #b6d2d8;color:#1a5867;background:white}
+  .actions a:hover{filter:brightness(.93)}.actions a:focus-visible,.prompt-grid button:focus-visible,.intent-form button:focus-visible{outline:3px solid #258bbc;outline-offset:4px}
+  .facts{display:flex;gap:15px;flex-wrap:wrap;margin-top:30px;font-size:12px;color:#4b6a7d}
+  .facts span{background:#e9f3f5;padding:10px 13px;border-radius:10px}.facts b{color:#15384b}
+  .hero-visual{position:relative}.hero-visual :global(.visual svg){box-shadow:0 28px 70px rgba(18,48,72,.13)}
+  .experience{background:#e9f4f5;padding:84px 0}.stage-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:center}
+  h2{font-size:clamp(30px,3.6vw,52px);line-height:1.11;letter-spacing:-.045em;margin:16px 0 24px}
+  .stage-intro p,.section-heading p,.close p{color:#547082;line-height:1.65;font-size:17px;max-width:740px}
+  .simulator{background:#fff;border:1px solid #cfdee3;border-radius:24px;box-shadow:0 20px 50px rgba(17,54,73,.1);padding:28px}
+  .sim-header{display:flex;align-items:center;gap:10px;font-size:13px;color:#234b5c;border-bottom:1px solid #e7eef1;padding-bottom:17px}
+  .sim-header>span:last-child{margin-left:auto;font-size:10px;letter-spacing:.07em;color:#638597}.sim-dot{width:9px;height:9px;border-radius:50%;background:#11b6af}
+  .intent-form{display:grid;gap:12px;padding-top:20px}.intent-form label{font-weight:800;color:#123345}.intent-form textarea{width:100%;resize:vertical;min-height:95px;border:1px solid #b7cad1;border-radius:12px;padding:14px;font:inherit;line-height:1.5;background:#f8fcfc;color:#133344}
+  .intent-form button{background:#167b87;border:0;color:white;font:inherit;font-weight:800;border-radius:10px;padding:13px;cursor:pointer}.prompt-grid{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0}
+  .prompt-grid button{background:#f0f6f8;border:1px solid #d3e2e6;border-radius:999px;padding:8px 11px;color:#316478;cursor:pointer;font-size:12px}
+  .example-result{padding:17px;border:1px solid #c5dde2;background:#eaf6f6;border-radius:13px;color:#244657;line-height:1.6}.example-result ol{padding-left:23px}.example-result p{font-size:12px;color:#647a89;margin-bottom:0}
+  .modules{padding-top:100px;padding-bottom:100px}.section-heading{max-width:780px;margin-bottom:36px}
+  .module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.module{background:#fff;border:1px solid #dfe8ed;border-radius:20px;padding:26px;min-height:240px}
+  .module span,.roadmap-grid article span{color:#17838f;font-size:12px;font-weight:800;letter-spacing:.04em}.module h3,.roadmap-grid h3{font-size:21px;line-height:1.3;margin:22px 0 12px}.module p,.roadmap-grid p{color:#62798a;font-size:14px;line-height:1.65}
+  .roadmap{background:#10283e;color:#fff;padding:92px 0}.roadmap h2,.roadmap h3{color:#fff}.roadmap .section-heading p,.roadmap-grid p{color:#bbd2df}
+  .roadmap .eyebrow,.roadmap-grid article span{color:#73d8d6}.roadmap-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px}.roadmap-grid article{padding:20px;background:#1a3850;border-radius:14px;border:1px solid #36536b;min-height:240px}
+  .close{padding-top:96px;padding-bottom:120px}.legal{font-size:12px!important;color:#7c8d9b!important;margin-top:38px;max-width:900px}
+  @media(max-width:1050px){.iam-hero,.stage-grid{grid-template-columns:1fr}.iam-hero{padding-top:48px;padding-bottom:64px}.hero-visual{max-width:800px}.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.shell{padding-left:16px;padding-right:16px}.iam-topbar{align-items:flex-start;flex-direction:column}.iam-mark{font-size:91px}.iam-hero{padding-top:36px}.actions a{width:100%;text-align:center}.experience{padding:64px 0}.stage-grid{gap:30px}.simulator{padding:18px}.module-grid,.roadmap-grid{grid-template-columns:1fr}.module{min-height:0}.roadmap-grid article{min-height:0}}
+  @media(prefers-reduced-motion:reduce){.iam *{scroll-behavior:auto}}
+  .intent-cards{display:grid;gap:12px;margin-top:15px}
+  .intent-card{border:1px solid #c9e0e5;border-radius:14px;background:#fff;padding:15px}
+  .intent-card h3{margin:0 0 9px;font-size:16px;color:#143c4f}
+  .intent-card ol{margin:0 0 8px;padding-left:21px;color:#496777;font-size:14px;line-height:1.6}
+  .intent-note,.result-disclosure,.result-warning{font-size:12px;line-height:1.6;color:#5c7281}
+  .intent-source{display:inline-block;font-size:13px;font-weight:750;color:#176f86;margin:9px 0 12px}
+  .pin-module{display:block;width:100%;border:1px solid #17818b;border-radius:10px;background:#eaf7f7;color:#1a6370;padding:10px;font-size:13px;font-weight:800;cursor:pointer}
+  .pin-module:disabled{background:#edf3f4;color:#5e7781;cursor:default;border-color:#c9d9db}
+  .temporary-workspace{margin-top:18px;padding:17px;background:#f4f9fa;border:1px solid #c5dbe0;border-radius:15px}
+  .temporary-workspace[hidden]{display:none}
+  .workspace-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+  .workspace-heading strong{font-size:16px;color:#123c4c}
+  .workspace-heading p{font-size:12px;color:#5f7889;line-height:1.5;margin:7px 0}
+  .clear-button,.remove-pin{border:1px solid #bed1d8;background:white;color:#276578;border-radius:8px;cursor:pointer;padding:7px 9px;font-size:12px;flex-shrink:0}
+  .pinned-list{display:grid;gap:9px;margin-top:10px}
+  .pinned-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:10px;background:white;border:1px solid #dce9ed;font-size:13px;font-weight:750}
+
+</style>

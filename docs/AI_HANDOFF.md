@@ -1766,3 +1766,104 @@ handoff_to: repository owner for review
 - Locale release acceptance: #1755 clean English/query locales and actual EN→UK→FR→EN switching verified live; #1754 current public product truth verified on seven routes; #1764 completes Italian accademia title with unchanged H1/canonical/robots/hreflang. Footer locale work remains with its separate held owner.
 - Reuse: do not promote a PR description into implementation proof; inspect rendered acceptance targets. Do not treat one green test or merge as full live/commercial evidence.
 - This patch changes documentation only. Existing #1756 journal additions remain on their original branch/commits until this sole register lane is released, then reconcile them sequentially. Current #1758 exact-head CI is still required; no claim that this docs patch has merged or deployed.
+### Academy PR #1756 — localized course regression repair, 2026-10-08
+
+ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation Report; task_id: PR-1756; authority_scope: Branch write; source_of_truth: owner task + exact-head failed job 113042540715 + fresh main cc5a8ae58914a65a7cd43497a9cdad39ee2ab073. Historical project-state snapshots are stale for this task.
+
+- PROBLEM: PR head 4c8282a2929ff57617e00a3d36112374df4b6bab failed the Ukrainian Logistics whole-main language regression.
+- ROOT_CAUSE: a route-local related Marketing card retained `website-first`, `lead journey` and `sales follow-up` outside the translated Academy data object. This was a real visible copy defect, not a browser timing failure.
+- FAILED_APPROACH: translating shared curriculum alone left route-owned related copy unchanged.
+- WORKING_APPROACH: translate only that existing card title/description; strengthen the same whole-main regression to require the translated card and reject all three missed fragments. Keep href, route ownership, canonical, hreflang, robots, schema and course/admission/employment boundaries.
+- EVIDENCE: https://github.com/officeus-create/Hermes/actions/runs/37694452833/job/113042540715 ; rebased five existing feature commits cleanly on main after #1750. Fresh #1754 d875c9240fb2ce060a64ddc3554b2f81eec9fd14 has no file overlap with the Academy runtime/test delta.
+- LESSON / REUSE_RULE: language-purity review covers all rendered main content, including route-local overrides/related cards, not only imported curriculum. Do not weaken a whole-main assertion to hide untranslated visible prose.
+- Verification: current-tree local build/contracts/focused browser evidence and exact-head CI are reported in the task evidence packet; no old-head green promotion.
+- Compounding: primary = language-consistent existing course owner; SEO = no new owner/URL/index/schema surface; conversion/linking = clearer existing Marketing continuation, same target; knowledge/architecture = reusable whole-main regression and root-cause receipt; privacy = no new fields/events or real submissions; scale/AI/product/content distribution = not changed; deferred = unrelated jargon, new courses, admissions and recruitment claims.
+- Remaining owner gate: #1754 must precede #1756 under central semantic release order. No merge, deployment or outward communication authorized/performed by this task. Central release owner refreshes base/head and exact-head CI after any further main movement.
+
+
+### PR #1756 — current-main refresh after #1752, 2026-10-08
+
+- Rebased on `83aef305da82f5221b51d617da34c9f040cbc5cf`. Only additive EOF journal conflicts; complete Load Board and Academy records are retained. Five Academy runtime/test files are identical to `f07458d3db1885ef52501d06aa5560b0d5891a7f`.
+- That prior head passed local build (399 pages, 0 errors), full npm test and all 12 Academy desktop/mobile language-purity cases, one worker. The reused dependency tree initially contained upstream http-cache-semantics; local validation used this repository's existing vendored security patch without changing repository dependencies. Astro preview used its existing foreground-process flag. Fresh rebased-head CI is required; old CI is not promoted.
+- #1754 semantic release dependency remains with central release owner. No merge/deploy or new PR.
+
+## PR #1663 — fresh-main count/country reconciliation, 2026-10-08
+
+- Owner: Codex / Catalog; release owner Project31. Existing branch fix/catalog-count-clarity-20261003 rebuilt as one bounded commit on main 55eaf2762242fb830641e227280b98ad89966fe9 after #1751 release acceptance. Owner reports approved-main deploy37704990231, Catalog smoke37704990247 and live SSR/profile/sitemap readback passed; this is accepted release evidence, not new #1663 production evidence.
+- Unique #1663 logic only: separate business/service count copy; live U.S. repair category/state facets count each newly inserted CRM identity once; explicit normalized US card filter; missing/non-US country not displayed in the U.S. repair grid; a state without an existing directory stays non-link/passive. Current Home Service and Academy renderer paths retained. Already-merged production grid selector was not replayed; production smoke aligned with country filter.
+- #1751 shared eligibility/canonical helper, SSR Kittle bound, profile, runtime sitemap, API, consent and cache policy unchanged. No new index owner, geographic route, second renderer, facts, private projection or CRM mutation. Country filter is display scope, not publication eligibility or opt-out.
+- Validation: local exec service unavailable before edits; remote connector rebuild from exact main and full exact-head CI are the validation path. No local build/browser pass claimed. Terminal results recorded in this existing PR; draft/review only, no merge/deploy.
+- Compounding: truthful count UX and search facets; existing canonical owners/CTA preserved; identity deduplication reused; synthetic browser tests cover country/passive tiles/counts; no new SEO surface or live sends. Broader catalog country navigation remains a separate owner-gated task.
+- LESSON: rebuild unique stale-branch hunks on fresh main, preserve newer vertical branches and accepted search/consent contracts, and verify current exact head rather than historical CI.
+
+## 2026-10-08 — Codex — Production verifier empty-env hotfix
+
+- Branch: `fix/production-verifier-empty-env-20261008`.
+- Commit(s): pending exact-head commit.
+- PR: pending.
+- What was done: removed the two empty job-level `env:` mappings left by #1731 and added a contract that rejects the same invalid shape in every retired production-router workflow. Closed issue routing and manual `workflow_dispatch` behavior remain unchanged.
+- Files changed: `.github/workflows/main-production-verifier-command.yml`, `.github/workflows/production-domain-verifier-command.yml`, `scripts/production-lighthouse-contract.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
+- Tests run (and result): focused contract PASS, YAML syntax validation PASS, and `git diff --check` PASS; exact-head CI pending.
+- Remaining / open items: merge through protected main, confirm exact deployment and absence of a jobless verifier failure on the hotfix push, then mark the error resolved from release evidence.
+- Next step / what's needed from a human or the other agent: central release owner completes the already-authorized PR/CI/merge sequence; no external account action is needed.
+
+## Repair Website/SEO intake attribution — Project31, 2026-10-08
+
+- Owner: existing Codex Project31 sole writer; branch `fix/repair-intake-attribution-20261008`, current replay base `70b7eaabbb154a5de9cef7f138f1b7bc423b9616` (original base `4f1fb7b8588e957f78407d242e0053efea5fff17`). Review-only draft; no release authority in this mission. Fresh open-PR file readback found no overlapping writer for the two handlers, repair attribution helper or scoped regressions.
+- PROBLEM / ROOT_CAUSE: source CTAs already encode repair context, but Website funnel event base omits it and SEO event base hardcodes generic `seo_services`. This is attribution loss, not delivery failure.
+- WORKING_APPROACH: one fixed allowlist derives exact `source_path`, `vertical=auto_repair`, `service_group=auto_repair_website|auto_repair_seo`; only matching destination/mode/source triples qualify. Duplicate control parameters fail closed; arbitrary query fields are never copied. `page_path` remains the actual current screen. Generic Website/SEO taxonomy and all form/receiver/consent behavior are preserved.
+- EVIDENCE: local build 400 pages / zero errors; focused allowlist contract passed. Full local npm test and 16/16 desktop 1440×1000/mobile 390×844 source-click → start → preview → handoff listener fixtures passed. Immutable sanitized payload evidence: `docs/evidence/repair-intake-attribution-2026-10-08.json`. Fresh exact-head CI remains required before acceptance. Fixtures omit all provider/contact submission runtime and abort non-navigation requests; synthetic evidence is not a lead or a delivery proof. Terminal evidence is recorded in the PR. No UI/copy/routes/metadata changes; no visual claim.
+- Compounding: reusable privacy-safe measurement improves attribution across existing Technology/Marketing repair lanes; existing canonical owners, CTA paths and generic entry semantics retained. No new search surface, integrations or telemetry send.
+- LESSON / REUSE_RULE: keep original acquisition context in an explicit allowlisted `source_path`, separate from current-screen `page_path`; derive classifications from approved source/destination pairs rather than caller-controlled group values. Broader analytics/delivery work remains outside this patch.
+- Next action: central owner independent regression acceptance and separate release order after exact-head gates; no merge/deploy in this mission.
+- Same-PR replay after #1782: only shared journal conflicts; retained both owners’ records and current-main verifier fixes. Seven attribution/runtime/test/evidence blobs identical to prior payload `306ce8d0`; immutable local fixture provenance remains its original base. New-head CI is required, prior-head green is not promoted.
+
+## PR #1783 — opposite-mode fail-closed REWORK, 2026-10-08
+
+- Owner: existing Project31 sole writer. Supersedes the earlier payload snapshot above; same draft PR on explicit exact main `590bb3a35a227da322fcdd10d9025937f7873809`. No new PR, merge, deploy, form submission or telemetry send.
+- PROBLEM / ROOT_CAUSE: central independent review reproduced both `project` and `service` keys accepted simultaneously at head `624be2bf`; duplicate-value rejection alone did not enforce an exact mode pair.
+- WORKING_APPROACH: Technology requires `service` absent; Marketing requires `project` absent, including empty opposite keys. Accepted repair pairs retain original context, ambiguous pairs fall back to existing generic events. No routing, form, receiver or consent changes.
+- EVIDENCE: fresh local build 400 pages / 0 errors; full npm test PASS; 20/20 desktop1440×1000/mobile390×844 listener fixtures PASS, including both opposite-mode cases in all three destination events. Contract also tests empty opposite keys. Updated sanitized payload artifact uses one corrected-runtime hash and exact replay base. Fresh full exact-head CI and independent re-review remain required; earlier green is not promoted.
+- LESSON / REUSE_RULE: an exact destination/mode allowlist must exclude conflicting keys explicitly, rather than checking only recognized positive values or duplicate counts. Preserve generic fallback and test both symmetric negatives. Existing Technology/Marketing measurement is reused; no search or product expansion.
+- Release remains DRAFT/HOLD until central independent acceptance and separate release order. Attribution production defect remains ACTIVE until approved live verification.
+
+
+## 2026-10-08 — I am editorial-only same-PR review correction
+
+- Agent/task owner: existing Development/Project31 sole writer; Marketing assignment thread `01a0f744-7f8b-70d2-8dd8-349b1ef820ab`, central review thread `01a0f3a2-262d-7173-94db-1cb154c2798e`. Release remains central owner.
+- Branch/PR: `fix/i-am-editorial-only-20261008`, #1789 only; base `f43483c680ebc63278a2b4dfd50573642c0ebb79` (central fresh-main replay). New exact head and CI are recorded in the same PR. Initial e1868758 is superseded/REWORK; content at 76deaffd accepted but mandatory audit exposed TS7006 in the BreadcrumbList test, corrected with explicit callback type before fresh CI.
+- PROBLEM: article-level investor/partner mailto implies an inquiry path without terminal receiver/owner/disposition; wording claims active conversations without dated evidence.
+- ROOT_CAUSE: editorial content mixes research with an unverified lead action. Initial fix overreached into standard footer contact and used a stale PR ownership snapshot.
+- FAILED_APPROACH: hiding shared footer email and asserting whole-route no-mailto. Initial local tests passed but did not represent the accepted boundary.
+- WORKING_APPROACH: remove only article lead CTA, make partnership/backing conditional editorial research with no inquiry-process claim, preserve standard footer unchanged. Preserve article facts, legal/concept disclaimers, existing navigation, canonical/robots/H1/NewsArticle/BreadcrumbList/RSS/sitemap.
+- Ownership: current #1785 head `8c6d2631d74fb2de22551bcd8976f0c438956fbb` overlaps the article and browser test; previous no-overlap statement is withdrawn. Its owner must rebase/reconcile after accepted #1789 and preserve this editorial boundary. Handoff posted at https://github.com/officeus-create/Hermes/pull/1785#issuecomment-6064053634 ; ACK/independent reconciliation remains pending. No edits to #1785. #1777 is closed and does not own Insights. SiteFooter is unchanged, removing the former #1685 file overlap.
+- Files: article, dedicated built-output contract, existing Insights contract hook, existing I am browser spec, error register and this handoff (six files).
+- EVIDENCE: fresh full build/npm test, eight desktop/mobile browser cases/screenshots and exact-head required CI must pass on the corrected payload; terminal results recorded in PR. Local browser blocks external requests, denies consent and submits no form/email/inquiry.
+- Compounding: truthful editorial boundary and existing search/navigation preserved; ordinary company contact remains usable; focused regression prevents unowned lead CTA returning during later Stage2 reconciliation. No new receiver/product/search surface or telemetry.
+- LESSON / REUSE_RULE: scope no-lead-CTA assertions to article content, preserve unrelated standard contact, and inspect current overlapping branch heads before publishing ownership claims.
+- Remaining gate: independent editorial/search ACCEPT on new exact head, #1785 reconciliation/ACK and separate owner merge/deploy order; production unchanged. No merge/deploy/IndexNow in this task.
+
+## 2026-10-08 — PR #1732 manual-only production contact smoke correction
+
+- Agent/task owner: Codex, same existing governance PR #1732 and branch `fix/governance-retire-closed-monitor-sinks-20261007`.
+- Base/code commits: rebased on `85bcbed221b4d301028bee48a205bf7a87df4c0d`; governance sink cleanup `75b61a7a`; manual-only smoke correction `40d91c4f`. Final pushed exact head and terminal CI are recorded on PR #1732.
+- Behavior: governance/source/workflow-file merges can no longer trigger production `/api/logistics-lead`; `workflow_dispatch` retains the production HTML, first-send, duplicate-suppression and sanitized summary path for explicit manual use.
+- Preserved: closed sink removals #167/#264/#1349, Actions summaries/artifacts, read-only permissions, route screenshot workflow and scheduled public-read-only five-surface synthetic.
+- Verification: failing-first production-contact contract reproduced the auto-trigger; focused contracts PASS; `npm run build` PASS (401 pages, zero errors); full `npm test` PASS. Full local E2E on the preceding main snapshot reproduced independent Academy/Catalog failures and was stopped after 197 passed, 14 failed, 3 interrupted and 1 skipped; no governance-smoke failure and no green E2E claim.
+- Safety: production contact smoke was not dispatched; no form/lead, merge, deploy, production change or IndexNow action occurred.
+- Ecosystem compounding: safer release governance and reusable trigger contract; no new route, search owner, public claim, telemetry, product scope or automation surface.
+- Next owner/gate: exact-head GitHub CI and independent review decide READY/HOLD; merge/deploy remain separately authorized actions.
+
+## 2026-10-08 — PR #1787 I am Hermes Connect Stage 3 one-time restack
+
+- Agent/task owner: Codex, bounded Stage 3 implementation owner. Release owner remains the human owner.
+- Branch/PR: `feat/i-am-connect-stage3-20261008`, existing PR #1787, rebuilt from exact merged Stage 2 main `a9b57ad84b059774b5720cb63b109dbf15af1be1`. Commits and final tree are recorded in the PR after the review-only force-push.
+- Files changed: one product contract, one release delta, one Tax Free component, four capability/rule/provider data modules, one product-lab route, three shared-workspace context files, the existing Italy CTA, focused Stage 2/Stage 3 browser regressions, this handoff and the error register. `public/demos/hermes-connect/ai-front-door.js` is unchanged.
+- Behavior delivered: one `/demos/hermes-connect/i-am-shopping/` prototype with deterministic journey composition, six sourced merchant candidates, device-memory shortlist by default, explicit allowlisted-ID persistence, local Tax Free guidance, explicit capability/provider states, and a controlled I am workspace context. No checkout, booking, affiliate tracking, customer account, live Tax Free decision, lead submission or new receiver exists.
+- Privacy and safety boundary: I am is absent from Direct Lead Intake and the AI front-door classifier. Load, corrupt stored input, add/remove/clear, composer and Tax Free interactions perform zero `setItem`/`removeItem`/`clear` calls before opt-in; post-opt-in storage contains vetted merchant IDs only. Main content has no mailto or PII fields; the standard footer contact remains.
+- Search boundary: the sole new route is self-canonical `noindex,follow`, has no sitemap owner and is absent from sitemap-driven IndexNow. Existing Stage 2 Catalog/concept owners and the one indexed editorial owner are unchanged.
+- Verification: failing-first Stage 2 baseline produced 8/8 expected focused failures. Rebuilt focused suites pass 9/9 desktop and 9/9 mobile; build completed with zero errors and 404 pages. Full final-head `npm run build`, `npm test`, `npm run test:e2e` and exact-head GitHub CI are the release gates and are recorded on the PR.
+- Screenshots: ignored local evidence captured at desktop 1440×1000 and mobile 390×844 under `.superpowers/sdd/.codex-task-plan/evidence/`; both were visually reviewed with no horizontal overflow.
+- Ecosystem compounding: search visibility = protected existing owner/no new indexed URL; conversion = one truthful interactive demo CTA; expertise = official-source rules and status labels; internal linking = Stage 2 Italy → Stage 3 lab; durable knowledge = product contract plus error lesson; reusable architecture = typed capability/rule/provider modules and existing Hermes workspace reuse; privacy-safe measurement = no new telemetry or interaction network; automation/cross-business value = reusable consent and evidence gates without a second CRM.
+- Risks and assumptions: provider facts remain dated research, not partnership evidence; local storage is device-only; external merchant links require connectivity; no production behavior is claimed before a separately authorized merge/deploy and exact-SHA readback.
+- Incomplete / next owner: independent diff review and exact-head CI decide READY/HOLD. Human release owner separately decides merge/deploy; after any authorized release, verify the exact SHA, live canonical/robots and product interactions without submitting forms or triggering IndexNow.

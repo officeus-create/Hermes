@@ -49,3 +49,19 @@ test('Catalog keeps the reusable marketing growth strategy example public but ou
   assert.match(genericCase,/trackEvent\("case_study_cta"/);
   assert.match(genericCase,/robots="noindex,follow"/);
 });
+
+const navigationSources = [
+  'src/data/catalog-business-concepts.ts',
+  'src/pages/businesses/concepts/kons-na-bis/index.astro',
+  'src/pages/services/hermes-connect/academy/index.astro',
+  'public/demos/hermes-connect/academy.html',
+];
+test('KNB public navigation uses the extensionless deployed URL while its physical demo stays noindex',async()=>{
+  for (const path of navigationSources) {
+    const source=await readFile(new URL('../'+path,import.meta.url),'utf8');
+    assert.doesNotMatch(source,/academy-knb\.html/,path);
+    assert.match(source,/academy-knb["']/ ,path);
+  }
+  assert.match(html,/<meta name="robots" content="noindex,nofollow">/);
+  assert.match(html,/data-language-route/);
+});

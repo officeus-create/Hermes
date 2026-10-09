@@ -49,7 +49,7 @@
     scheduled = false;
     document.querySelectorAll('.business-card .business-card__actions a[href]').forEach((anchor) => {
       const url = new URL(anchor.href, location.origin);
-      if (url.origin === location.origin && /^\/businesses\/[a-z0-9/-]+\/$/.test(url.pathname) && url.pathname !== '/businesses/request/') add(url.pathname, anchor);
+      if (url.origin === location.origin && /^\/businesses\/[a-z0-9-]+\/[a-z0-9-]+\/[a-z0-9-]+\/$/.test(url.pathname)) add(url.pathname, anchor);
     });
     if (document.querySelector('script[data-catalog-business-id]')) {
       const heading = document.querySelector('main h1');

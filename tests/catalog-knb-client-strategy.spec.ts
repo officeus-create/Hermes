@@ -58,3 +58,20 @@ test("KNB canonical Catalog profile exposes the complete reusable client strateg
   await expect(page.locator('textarea[name="message"]')).toHaveValue(/primary business goal/i);
   await expect(page.getByRole("heading", { name: /marketing audit \/ media plan/i })).toBeVisible();
 });
+
+// Navigation-only QA; no registration, CRM submission or external provider call.
+test("KNB demo navigation keeps the deployed extensionless path and language context", async ({ page }) => {
+  for (const language of ['uk', 'en']) {
+    await page.goto('/businesses/concepts/kons-na-bis/', { waitUntil: 'domcontentloaded' });
+    await page.locator(`button[data-lang="${language}"]`).click();
+    await expect(page.locator('html')).toHaveAttribute('lang', language);
+    const demo = page.locator('a[data-i18n="openDemo"]');
+    await expect(demo).toHaveAttribute('href', `/demos/hermes-connect/academy-knb?lang=${language}`);
+    await demo.click();
+    await expect(page).toHaveURL(new RegExp(`/demos/hermes-connect/academy-knb\\?lang=${language}$`));
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow');
+    await expect(page.locator('html')).toHaveAttribute('lang', language);
+    await expect(page.locator('#crm')).toBeVisible();
+    await expect(page.locator('a[data-language-route]')).toHaveAttribute('href', new RegExp(`lang=${language}`));
+  }
+});

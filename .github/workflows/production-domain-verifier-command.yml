@@ -1,12 +1,10 @@
 name: Verify production domain on command
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: production-domain-command
@@ -14,15 +12,8 @@ concurrency:
 
 jobs:
   verify:
-    if: >-
-      github.event.issue.number == 220 &&
-      github.event.comment.body == '/verify-production-domain' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      GH_TOKEN: ${{ github.token }}
-
     steps:
       - name: Check out approved main
         uses: actions/checkout@v6
@@ -58,8 +49,7 @@ jobs:
             echo
             echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
             echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
-          } > /tmp/production-domain-comment.md
-          gh issue comment 220 --repo "${{ github.repository }}" --body-file /tmp/production-domain-comment.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload sanitized report
         if: always()

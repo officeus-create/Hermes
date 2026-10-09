@@ -92,6 +92,10 @@
     const resetPreparedState = (event: Event) => {
       if (!event.isTrusted) return;
       activeLead = null;
+      result.hidden = true;
+      email.hidden = true;
+      email.removeAttribute("href");
+      sendButton.hidden = true;
       previewRecorded = false;
       handoffRecorded = false;
       recordStart(event);
@@ -113,6 +117,16 @@
         ? field.value.trim()
         : "";
     };
+
+    const brokerWeightFields = form.querySelector<HTMLFieldSetElement>("[data-broker-weight]");
+    const syncBrokerWeight = () => {
+      if (!brokerWeightFields) return;
+      const broker = value("submitter_type") === "broker";
+      brokerWeightFields.hidden = !broker;
+      brokerWeightFields.disabled = !broker;
+    };
+    syncBrokerWeight();
+    form.addEventListener("change", syncBrokerWeight);
 
     form.addEventListener("focusin", recordStart);
     form.addEventListener("input", resetPreparedState);
@@ -142,7 +156,17 @@
       ].filter(Boolean).join(" | ");
       formData.set("notes", requestContext);
 
-      const payload = buildLoadBoardPayload(formData);
+      let payload;
+      try { payload = buildLoadBoardPayload(formData); }
+      catch (error) {
+        activeLead = null;
+        email.hidden = true;
+        sendButton.hidden = true;
+        result.hidden = true;
+        alert.textContent = error instanceof Error ? error.message : "Invalid broker weight.";
+        alert.hidden = false;
+        return;
+      }
       const review = reviewLoadBoardPayload(payload);
       const deliverable = review.decision === "approved" || review.decision === "quarantine";
       if (!deliverable) {

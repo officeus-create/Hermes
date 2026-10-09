@@ -14,7 +14,8 @@ function fixture(
   mode = "preview",
   overrides: Record<string, string> = {},
   missingNote = false,
-  deliveryResults: Array<"ok" | "error"> = ["ok"],
+  deliveryResults: Array<"ok" | "error" | "bare" | "empty" | "mismatch" | "claimed-delivery" | "duplicate"> = ["ok"],
+  consent = "denied",
 ) {
   const compile = (source: string) => ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
@@ -22,6 +23,10 @@ function fixture(
   const qualification = { exports: {} };
   runInNewContext(compile(readFileSync(resolve("src/lib/carrier-qualification.ts"), "utf8")), {
     exports: qualification.exports, module: qualification,
+  });
+  const receiptModule = { exports: {} };
+  runInNewContext(compile(readFileSync(resolve("src/lib/logistics-submission-receipt.ts"), "utf8")), {
+    exports: receiptModule.exports, module: receiptModule,
   });
   const future = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
   const values: Record<string, string> = {
@@ -50,20 +55,29 @@ function fixture(
   const location = new URL("/logistics/start-car-hauling-dispatch/", origin);
   const root = { querySelector: (selector: string) => missingNote && selector === ".dispatch-mode-note" ? null : nodes[selector] || null };
   const source = readFileSync(resolve("src/components/CarrierDispatchIntakeEnhancer.astro"), "utf8");
+  const analyticsWindow = { location, dataLayer: [] as Record<string, string>[],
+    localStorage: { getItem: () => consent }, setTimeout, clearTimeout,
+    gtag: (...args: unknown[]) => analyticsCalls.push(args) };
+  const analyticsCalls: unknown[][] = [];
   runInNewContext(compile(source.match(/<script>([\s\S]*?)<\/script>/)![1]), {
-    exports: {}, require: () => qualification.exports, URL, AbortController,
+    exports: {}, require: (path: string) => path.includes("logistics-submission-receipt") ? receiptModule.exports : qualification.exports, URL, AbortController,
     crypto: { randomUUID: () => `synthetic-fixture-request-${++requestSequence}` },
-    window: { location, localStorage: { getItem: () => "denied" }, setTimeout, clearTimeout },
+    window: analyticsWindow,
     document: { querySelector: () => root, createElement: element },
     FormData: class { get(name: string) { return values[name] ?? null; } },
     fetch: async (url: URL, options: any) => {
       requests.push({ url: url.href, options });
-      if (deliveryResults.shift() === "error") throw new Error("synthetic_network_failure");
-      return { ok: true };
+      const outcome = deliveryResults.shift() || "ok";
+      if (outcome === "error") throw new Error("synthetic_network_failure");
+      const requestId = JSON.parse(options.body).request_id;
+      const body = outcome === "bare" ? {} : { success: true, request_id: outcome === "mismatch" ? "wrong-request" : requestId,
+        ...(outcome === "duplicate" ? { duplicate: true } : {}),
+        ...(outcome === "claimed-delivery" ? { delivery_status: "delivered", delivery_confirmed: true, human_receipt: true } : {}) };
+      return { ok: true, json: async () => { if (outcome === "empty") throw new SyntaxError("empty mock response"); return body; } };
     },
   });
   return {
-    form, nodes, requests, note: nodes[".dispatch-mode-note"],
+    form, nodes, requests, events: analyticsWindow.dataLayer, analyticsCalls, note: nodes[".dispatch-mode-note"],
     review: () => form.handlers.submit({ preventDefault() {} }),
     send: (isTrusted = true) => nodes["[data-send-vehicle-lead]"].handlers.click({ isTrusted }),
   };
@@ -145,4 +159,42 @@ test("an absent optional mode note leaves review functional", () => {
   view.review();
   expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
   expect(view.requests).toHaveLength(0);
+});
+
+for (const outcome of ["bare", "empty", "mismatch", "ok", "duplicate", "claimed-delivery"] as const) {
+  test(`carrier HTTP 2xx ${outcome} cannot create a delivered lead`, async () => {
+    const view = fixture("https://hermeslogisticsus.com", "live", {}, false, [outcome]);
+    view.review();
+    await view.send();
+    const status = view.nodes["[data-vehicle-delivery-status]"];
+    const accepted = !["bare", "empty", "mismatch"].includes(outcome);
+    expect(status.dataset.submissionState).toBe(accepted ? "submitted" : "unconfirmed");
+    expect(status.dataset.deliveryState).toBe("unconfirmed");
+    expect(status.dataset.humanReceiptState).toBe("unconfirmed");
+    expect(view.events.filter(event => event.event === "carrier_submitted")).toHaveLength(accepted ? 1 : 0);
+    expect(view.events.filter(event => event.event === "carrier_delivery_confirmed")).toHaveLength(0);
+    expect(view.analyticsCalls).toHaveLength(0);
+    if (accepted) {
+      expect(status.textContent).toContain("request service accepted");
+      expect(status.textContent).toContain("human receipt are not yet available");
+      // A repeat action after acceptance cannot create a second handoff/event.
+      await view.send();
+      expect(view.requests).toHaveLength(1);
+    } else {
+      expect(status.textContent).toContain("Submission was not confirmed");
+      expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
+    }
+  });
+}
+
+test("carrier acceptance preserves consent and controlled attribution without request data", async () => {
+  const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["ok"], "granted");
+  view.review();
+  await view.send();
+  const submitted = view.events.find(event => event.event === "carrier_submitted");
+  expect(submitted).toEqual({ event: "carrier_submitted", audience_type: "carrier",
+    page_group: "commercial_dispatch_intake", service_group: "car_hauling_dispatch",
+    page_path: "/logistics/start-car-hauling-dispatch/", preview_status: view.nodes["[data-vehicle-result]"].dataset.decision });
+  expect(view.analyticsCalls.filter(call => call[1] === "carrier_submitted")).toHaveLength(1);
+  expect(JSON.stringify(submitted)).not.toMatch(/request_id|Synthetic|MC123456|driver@|15555550123/);
 });

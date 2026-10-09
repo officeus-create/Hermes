@@ -8,6 +8,7 @@ const auditPath = join(root, "data/marketing/seo-revenue-commercial-url-audit-20
 const audit = JSON.parse(await readFile(auditPath, "utf8"));
 
 assert.equal(audit.reviewed_at, "2026-08-06");
+assert.match(audit.source, /Historical August 2026 routing\/readiness snapshot/);
 assert.ok(Array.isArray(audit.allowed_statuses));
 assert.ok(Array.isArray(audit.records));
 assert.equal(audit.records.length, 14, "commercial audit must retain the 14 approved priority records");
@@ -43,7 +44,7 @@ for (const record of audit.records) {
   seenRoutes.add(record.route);
   assert.equal(record.canonical_owner, true, `${record.route}: audited priority URL must own its declared route`);
   assert.ok(allowedStatuses.has(record.status), `${record.route}: unsupported status ${record.status}`);
-  assert.equal(record.status, "READY_TO_MEASURE", `${record.route}: current completion audit should be ready to measure`);
+  assert.equal(record.status, "READY_TO_MEASURE", `${record.route}: historical routing-readiness snapshot should retain its approved status`);
 
   const html = await readFile(htmlPathForRoute(record.route), "utf8");
   const canonical = `https://hermeslogisticsus.com${record.route}`;
@@ -65,13 +66,28 @@ const directTransportRoutes = [
 for (const route of directTransportRoutes) {
   const record = routeMap.get(route);
   assert.equal(record.primary_destination, "/logistics/request-vehicle-transport/", `${route}: must use direct transport intake`);
+  // This dated transport taxonomy is historical; current runtime semantics are owned by the event registry and its intake tests.
   assert.match(record.event_family, /vehicle_transport_intake_start.*vehicle_transport_preview_ready.*vehicle_transport_handoff_ready.*vehicle_transport_delivery_confirmed/);
   assert.doesNotMatch(record.handoff, /Load Board/i, `${route}: audit must not describe the demo as the handoff`);
 }
 
 const dispatchRecord = routeMap.get("/logistics/car-hauling-dispatch/");
 assert.equal(dispatchRecord.primary_destination, "/logistics/start-car-hauling-dispatch/");
-assert.match(dispatchRecord.event_family, /carrier_intake_start.*carrier_intake_preview_ready.*carrier_handoff_ready.*carrier_delivery_confirmed/);
+assert.match(dispatchRecord.event_family, /carrier_intake_start.*carrier_intake_preview_ready.*carrier_handoff_ready.*carrier_submitted$/);
+assert.doesNotMatch(dispatchRecord.event_family, /carrier_delivery_confirmed/);
+assert.match(dispatchRecord.event_family_at_2026_08_06, /carrier_delivery_confirmed$/, "preserve the dated observation separately");
+assert.equal(dispatchRecord.event_contract_reconciled_at, "2026-10-08");
+assert.equal(dispatchRecord.delivery_state, "UNKNOWN");
+assert.equal(dispatchRecord.human_receipt_state, "UNKNOWN");
+const carrierEnhancer = await readFile(join(root, "src/components/CarrierDispatchIntakeEnhancer.astro"), "utf8");
+assert.match(carrierEnhancer, /event: "carrier_submitted"/);
+assert.doesNotMatch(carrierEnhancer, /event: "carrier_delivery_confirmed"/);
+assert.match(carrierEnhancer, /requireSubmittedReceipt\(response, requestId\)/);
+const eventRegistry = await readFile(join(root, "docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md"), "utf8");
+assert.match(eventRegistry, /\| `carrier_submitted` \|/);
+const backlog = await readFile(join(root, "docs/SEO_REVENUE_PRIORITY_BACKLOG.md"), "utf8");
+assert.match(backlog, /Current measurement\/event authority: `docs\/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md`/);
+assert.doesNotMatch(backlog, /Current implementation authority is `docs\/SEO_REVENUE_COMMERCIAL_URL_AUDIT_2026-08.md`/);
 assert.doesNotMatch(dispatchRecord.handoff, /Load Board/i);
 
 assert.match(routeMap.get("/services/website-development/").event_family, /website_project_intake_start.*website_project_preview_ready.*website_handoff_ready/);
@@ -88,4 +104,4 @@ assert.doesNotMatch(serialized, /@[a-z0-9.-]+\.[a-z]{2,}/i, "audit data must not
 assert.doesNotMatch(serialized, /\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i, "audit data must not contain carrier identifiers");
 assert.doesNotMatch(serialized, /\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/, "audit data must not contain phone numbers");
 
-console.log(`SEO revenue commercial URL audit passed: ${audit.records.length} current-main priority routes use current direct-intake contracts.`);
+console.log(`SEO revenue commercial URL audit passed: ${audit.records.length} priority routes retain canonical CTA contracts; dated event families stay historical and active carrier acceptance matches current source.`);

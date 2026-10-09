@@ -56,6 +56,36 @@ for (const retired of ["issue_comment:", "issues: write", "github.event.issue.nu
   assert.equal(jobWorkflow.includes(retired), false, `closed #381 routing must stay retired: ${retired}`);
 }
 
+const retiredProductionRouters = [
+  ["../.github/workflows/main-production-verifier-command.yml", "220", "/verify-main-production"],
+  ["../.github/workflows/production-domain-verifier-command.yml", "220", "/verify-production-domain"],
+  ["../.github/workflows/home-connect-hotfix-production-verifier-command.yml", "220", "/verify-home-connect-hotfix"],
+  ["../.github/workflows/hermes-connect-russian-production-verifier-command.yml", "220", "/verify-connect-ru"],
+  ["../.github/workflows/connect-production-verifier-command.yml", "232", "/verify-connect-production"],
+];
+for (const [path, issue, command] of retiredProductionRouters) {
+  const retiredWorkflow = await readFile(new URL(path, import.meta.url), "utf8");
+  assert.ok(retiredWorkflow.includes("workflow_dispatch:"), `${path} must remain manually dispatchable`);
+  assert.ok(retiredWorkflow.includes("GITHUB_STEP_SUMMARY"), `${path} must preserve sanitized Actions evidence`);
+  const workflowLines = retiredWorkflow.split(/\r?\n/);
+  for (const [index, line] of workflowLines.entries()) {
+    const envMatch = line.match(/^    env:[ \t]*(.*)$/);
+    if (!envMatch) continue;
+    const inlineEnv = envMatch[1].trim();
+    assert.notEqual(inlineEnv, "{}", `${path} must not contain an empty inline job env mapping`);
+    if (!inlineEnv) {
+      const firstEnvEntry = workflowLines.slice(index + 1).find((candidate) => {
+        const trimmed = candidate.trim();
+        return trimmed && !trimmed.startsWith("#");
+      });
+      assert.match(firstEnvEntry ?? "", /^      [A-Za-z_][A-Za-z0-9_]*:/, `${path} must not contain a null job env mapping`);
+    }
+  }
+  for (const retired of ["issue_comment:", "issues: write", `github.event.issue.number == ${issue}`, `github.event.comment.body == '${command}'`, `gh issue comment ${issue}`]) {
+    assert.equal(retiredWorkflow.includes(retired), false, `${path} must not restore closed issue routing: ${retired}`);
+  }
+}
+
 const source = await readFile(new URL("./summarize-production-lighthouse.mjs", import.meta.url), "utf8");
 for (const required of [
   "median",

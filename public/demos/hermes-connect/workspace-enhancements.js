@@ -3,6 +3,16 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const data = {
+    iam: {
+      name: 'I am Travel Lab', label: 'Cross-border travel & services · prototype', revenue: 'UNKNOWN', leads: 'DEMO', bookings: 'DEMO', actions: 'Prototype',
+      summary: 'Prototype: source-backed travel modules, explicit consent and authorized partner handoffs. No live booking, Tax Free refund, company filing or affiliate payout.',
+      primary: ['IA','I am prototype','Intent · Italy shopping + Tax Free','I am traveling to Italy and want to plan shopping and understand Tax Free.','Demo response: I can prepare a source-backed journey with shopping, Tax Free guidance and clear provider handoffs. No booking, payment or government submission is sent.','Review sample journey'],
+      conversations: [['IA','I am prototype','Italy journey composition','Prototype'],['TF','Tax Free module','Official-source guidance only','Prototype'],['SH','Shopping shortlist','Public merchant links','Prototype'],['TR','Travel mobility','Provider research state','Research']],
+      customers: [['IA','Prototype traveller','Demo only','No live source','UNKNOWN','Review journey modules']],
+      week: [['MON','—',[['—','No live calendar data','mint']]],['TUE','—',[['—','Prototype only','blue']]]],
+      kanban: {'Research':[['Italy shopping','UNKNOWN','N/A']], 'Prototype':[['Intent router','UNKNOWN','N/A']], 'Blocked':[['Affiliate payout','UNKNOWN','N/A']], 'Future':[['Cross-device workspace','UNKNOWN','N/A']]},
+      ops: [['✦','Intent routing demo','Compose only predefined capability IDs'],['◎','Source freshness','Keep country/provider evidence dated'],['!','Permission gate','Block unverified provider actions'],['⌁','Workspace plan','Reuse Hermes identity instead of second CRM']]
+    },
     beauty: {
       name: 'Aurelia Studio', label: 'Beauty & wellness', revenue: '$2,840', leads: '18', bookings: '24', actions: '43',
       summary: 'Demo: Hermes identifies booking gaps, warm leads, retention opportunities and owner approvals across a beauty studio.',
@@ -80,7 +90,8 @@
   };
 
   const verticalModuleEntries = {
-    beauty: { href: './beauty-salon.html', label: 'Beauty Salon OS' }
+    beauty: { href: './beauty-salon.html', label: 'Beauty Salon OS' },
+    iam: { href: '/demos/hermes-connect/i-am-shopping/', label: 'I am Travel Lab' }
   };
 
   const syncVerticalModuleEntry = id => {
@@ -227,6 +238,8 @@
     fitness: 'fitness',
     real_estate: 'realestate',
     professional_services: 'agency',
+    i_am: 'iam',
+    travel_platform: 'iam',
     other: 'logistics'
   };
   const storedTypeLaunch = localStorage.getItem('hermes_business_type');

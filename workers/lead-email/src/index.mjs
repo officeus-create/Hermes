@@ -1,3 +1,7 @@
+import { createColdFairCanonicalAdapter } from "./cold-fair-canonical-adapter.mjs";
+import { createColdFairCanonicalSource } from "./cold-fair-canonical-source.mjs";
+import { coldFairCapScopeKey, createColdFairActionLedgerClient } from "./cold-fair-action-ledger.mjs";
+
 const MAX_LEAD_BODY_BYTES = 16_000;
 const MAX_CONTRACT_BODY_BYTES = 4_500_000;
 const MAX_MESSAGE_TEXT = 20_000;
@@ -38,6 +42,10 @@ const clean = (value, max) =>
     : "";
 
 const cleanHeader = (value, max) => clean(value, max).replace(/[\r\n]+/g, " ");
+const cleanMessageReference = (value) => {
+  const candidate = typeof value === "string" ? value.replace(/[\r\n]+/g, "").trim() : "";
+  return /^<[^<>\s@]+@[^<>\s@]+>$/.test(candidate) ? candidate : "";
+};
 const isRequestId = (value) => /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,79}$/.test(value);
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const isAllowedSubject = (value) =>
@@ -272,7 +280,7 @@ const parseCarHaulingRecipients = (env) => {
     .slice(0, 8);
 };
 
-const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId, deliveryKey = "delivery" }) => {
+const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId, deliveryKey = "delivery", inReplyTo, references }) => {
   const boundary = `hermes_${requestId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 48)}`;
   const deliverySuffix = String(deliveryKey).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "delivery";
   const headers = [
@@ -280,6 +288,8 @@ const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId
     `To: ${to}`,
     `Subject: ${subject}`,
     ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
+    ...(cleanMessageReference(inReplyTo) ? [`In-Reply-To: ${cleanMessageReference(inReplyTo)}`] : []),
+    ...(cleanMessageReference(references) ? [`References: ${cleanMessageReference(references)}`] : []),
     `Date: ${new Date().toUTCString()}`,
     `Message-ID: <${requestId}.${deliverySuffix}@hermeslogisticsus.com>`,
     "MIME-Version: 1.0",
@@ -316,10 +326,11 @@ const gmailConfig = (env) => ({
   refreshToken: String(env.GMAIL_OAUTH_REFRESH_TOKEN || "").trim(),
 });
 
-const providerError = (message, status, code) => {
+const providerError = (message, status, code, metadata = {}) => {
   const error = new Error(message);
   error.status = status;
   error.code = code;
+  Object.assign(error, metadata);
   return error;
 };
 
@@ -380,6 +391,144 @@ const sendGmailApiMessage = async (env, message) => {
   }
 
   return { messageId: cleanHeader(sendPayload.id, 160) || null };
+};
+
+const sendColdFairGmailMessage = async (env, delivery) => {
+  const { clientId, clientSecret, refreshToken } = gmailConfig(env);
+  const sender = cleanHeader(env.COLD_FAIR_SENDER || env.SALES_SENDER, 320).toLowerCase();
+  const recipient = cleanHeader(delivery.recipient, 320).toLowerCase();
+  const subject = cleanHeader(delivery.message?.subject, 200);
+  const text = clean(delivery.message?.body, MAX_MESSAGE_TEXT);
+  const classification = clean(delivery.message?.classification, 40).toUpperCase();
+  if (!clientId || !clientSecret || !refreshToken || !isEmail(sender) || !isEmail(recipient) || !subject || !text) {
+    throw providerError("cold fair gmail configuration missing", 503, "E_PROVIDER_PERMISSION", {
+      definitiveNonAcceptance: true,
+      providerCalled: false,
+    });
+  }
+
+  let tokenResponse;
+  try {
+    tokenResponse = await fetchWithTimeout(GMAIL_TOKEN_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }).toString(),
+    });
+  } catch (error) {
+    error.definitiveNonAcceptance = true;
+    error.providerCalled = false;
+    throw error;
+  }
+  const tokenPayload = await tokenResponse.json().catch(() => ({}));
+  const accessToken = typeof tokenPayload?.access_token === "string" ? tokenPayload.access_token.trim() : "";
+  if (!tokenResponse.ok || !accessToken) {
+    throw providerError("gmail oauth permission rejected", tokenResponse.status || 503, "E_PROVIDER_PERMISSION", {
+      definitiveNonAcceptance: true,
+      providerCalled: false,
+    });
+  }
+
+  const replyToMessageId = classification === "REPLY" ? cleanMessageReference(delivery.message.replyToMessageId) : "";
+  const threadId = classification === "REPLY" ? cleanHeader(delivery.message.providerThreadId, 160) : "";
+  if (classification === "REPLY" && (!replyToMessageId || !threadId)) {
+    throw providerError("canonical reply identity missing", 503, "E_PROVIDER_CONFIGURATION", {
+      definitiveNonAcceptance: true,
+      providerCalled: false,
+    });
+  }
+  const raw = base64UrlEncode(buildRawMime({
+    from: sender,
+    to: recipient,
+    subject,
+    text,
+    replyTo: "",
+    attachments: [],
+    requestId: delivery.plannedActionId,
+    deliveryKey: "cold-fair",
+    inReplyTo: replyToMessageId,
+    references: replyToMessageId,
+  }));
+  const sendResponse = await fetchWithTimeout(GMAIL_SEND_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ raw, ...(threadId ? { threadId } : {}) }),
+  });
+  const sendPayload = await sendResponse.json().catch(() => ({}));
+  const providerMessageId = cleanHeader(sendPayload?.id, 160);
+  const providerThreadId = cleanHeader(sendPayload?.threadId, 160);
+  if (!sendResponse.ok || !providerMessageId || !providerThreadId) {
+    throw providerError("gmail send outcome uncertain", sendResponse.status || 503, "E_PROVIDER_UNAVAILABLE");
+  }
+  return { state: "ACCEPTED", providerMessageId, providerThreadId };
+};
+
+const isColdFairIdentity = (value) => /^[a-zA-Z0-9][a-zA-Z0-9._:-]{2,119}$/.test(value);
+const coldFairRuntimeMode = (env) => clean(env.COLD_FAIR_RUNTIME_MODE, 32).toLowerCase() === "enabled" ? "enabled" : "blocked";
+const coldFairPromotionalGate = (env) => clean(env.COLD_FAIR_PROMOTIONAL_SEND_GATE, 32).toUpperCase() === "ALLOW" ? "ALLOW" : "BLOCKED";
+
+const coldFairCapability = (env) => {
+  const gmail = gmailConfig(env);
+  return {
+    contract: "v1",
+    runtime_mode: coldFairRuntimeMode(env),
+    promotional_send_gate: coldFairPromotionalGate(env),
+    canonical_source_configured: typeof env.COLD_FAIR_CANONICAL_SOURCE?.fetch === "function",
+    durable_ledger_configured: typeof env.COLD_FAIR_ACTION_LEDGER?.getByName === "function",
+    provider_configured: Boolean(gmail.clientId && gmail.clientSecret && gmail.refreshToken
+      && isEmail(cleanHeader(env.COLD_FAIR_SENDER || env.SALES_SENDER, 320))),
+  };
+};
+
+const handleColdFairSend = async (input, env) => {
+  const contactId = clean(input?.contact_id, 120);
+  const plannedActionId = clean(input?.planned_action_id, 120);
+  if (!isColdFairIdentity(contactId) || !isColdFairIdentity(plannedActionId)) {
+    return json(400, { ok: false, decision: "BLOCK", reason: "invalid_planned_action_identity", provider_called: false });
+  }
+  if (!env.COLD_FAIR_CANONICAL_SOURCE || typeof env.COLD_FAIR_CANONICAL_SOURCE.fetch !== "function"
+    || !env.COLD_FAIR_ACTION_LEDGER || typeof env.COLD_FAIR_ACTION_LEDGER.getByName !== "function") {
+    return json(503, { ok: false, decision: "BLOCK", reason: "cold_fair_runtime_not_configured", provider_called: false });
+  }
+
+  const ledger = createColdFairActionLedgerClient(env.COLD_FAIR_ACTION_LEDGER.getByName(plannedActionId));
+  const boundCanonicalSource = createColdFairCanonicalSource({
+    binding: env.COLD_FAIR_CANONICAL_SOURCE,
+    ledger,
+    capLedgerFor: (scope) => {
+      const scopeKey = coldFairCapScopeKey(scope);
+      if (!scopeKey) throw new Error("canonical_campaign_cap_scope_invalid");
+      return createColdFairActionLedgerClient(env.COLD_FAIR_ACTION_LEDGER.getByName(scopeKey));
+    },
+    identity: { contactId, plannedActionId },
+  });
+  const canonicalSource = coldFairPromotionalGate(env) === "ALLOW" ? boundCanonicalSource : Object.freeze({
+    ...boundCanonicalSource,
+    readPromotionalSendGate: async (input) => ({
+      ...(await boundCanonicalSource.readPromotionalSendGate(input)),
+      value: "BLOCKED",
+    }),
+  });
+  const adapter = createColdFairCanonicalAdapter({ canonicalSource });
+  const result = await adapter.send({ contactId, plannedActionId }, (delivery) => sendColdFairGmailMessage(env, delivery));
+  const status = result.decision === "ALLOW" && result.delivery_state === "ACCEPTED"
+    ? 202
+    : result.decision === "RECONCILE" || result.reason === "already_delivered" ? 409 : 403;
+  return json(status, {
+    ok: status === 202,
+    decision: result.decision,
+    reason: result.reason,
+    provider_called: result.provider_called === true,
+    ...(result.delivery_state ? { delivery_state: result.delivery_state } : {}),
+    ...(typeof result.receipt_persisted === "boolean" ? { receipt_persisted: result.receipt_persisted } : {}),
+  });
 };
 
 const sendMessage = async (env, message) => {
@@ -907,7 +1056,8 @@ const worker = {
   async fetch(request, env) {
     const url = new URL(request.url);
     const isCapabilitiesPath = url.pathname === "/v1/capabilities";
-    if (!["/v1/send", "/v1/send-contract", "/v1/send-account", "/v1/capabilities"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
+    const isColdFairSendPath = url.pathname === "/v1/cold-fair/send";
+    if (!["/v1/send", "/v1/send-contract", "/v1/send-account", "/v1/capabilities", "/v1/cold-fair/send"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
     if ((isCapabilitiesPath && request.method !== "GET") || (!isCapabilitiesPath && request.method !== "POST")) {
       return json(405, { ok: false, error: "method_not_allowed" });
     }
@@ -919,7 +1069,19 @@ const worker = {
     const authorization = request.headers.get("Authorization") || "";
     const authorized = await constantTimeEqual(authorization, `Bearer ${env.LEAD_SERVICE_TOKEN}`);
     if (!authorized) return json(401, { ok: false, error: "unauthorized" });
-    if (isCapabilitiesPath) return json(200, { ok: true, catalog_delivery_receipt_contract: "v1" });
+    if (isCapabilitiesPath) return json(200, {
+      ok: true,
+      catalog_delivery_receipt_contract: "v1",
+      cold_fair: coldFairCapability(env),
+    });
+    if (isColdFairSendPath && coldFairRuntimeMode(env) !== "enabled") {
+      return json(423, {
+        ok: false,
+        decision: "BLOCK",
+        reason: "cold_fair_runtime_blocked",
+        provider_called: false,
+      });
+    }
 
     const isAccountPath = url.pathname === "/v1/send-account";
     const accountTransportMode = clean(env.ACCOUNT_EMAIL_TRANSPORT, 40).toLowerCase() || "cloudflare";
@@ -943,6 +1105,12 @@ const worker = {
       input = JSON.parse(raw);
     } catch {
       return json(400, { ok: false, error: "invalid_json" });
+    }
+
+    if (isColdFairSendPath) return handleColdFairSend(input, env);
+    if (["planned_action_id", "contact_id", "classification", "provider_thread_id", "reply_to_message_id"]
+      .some((field) => Object.hasOwn(input ?? {}, field))) {
+      return json(400, { ok: false, error: "cold_fair_route_required" });
     }
 
     const requestId = clean(input?.request_id, 80);

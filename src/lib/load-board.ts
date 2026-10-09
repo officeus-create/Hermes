@@ -1,9 +1,12 @@
+import { brokerWeightFromForm, brokerWeightSummary, type BrokerWeight } from "./broker-weight.ts";
+
 export type LoadSubmitterType = "private_party" | "dealer" | "shipper" | "broker" | "other_business";
 export type LoadCommodityType = "passenger_vehicle" | "motorcycle" | "pickup_suv" | "light_truck" | "tractor" | "other";
 export type LoadCondition = "operable" | "inoperable_rolls" | "inoperable_non_rolling";
 export type LoadDecision = "approved" | "needs_more_information" | "quarantine" | "rejected";
 
 export type LoadBoardPayload = {
+  broker_weight?: BrokerWeight;
   submitter_type: LoadSubmitterType | "";
   contact_name: string;
   company_name: string;
@@ -64,6 +67,7 @@ export type VehicleAvailabilityPayload = {
 };
 
 export type LogisticsSalesLead = {
+  broker_weight?: BrokerWeight;
   lead_type: "load_board_access" | "posted_load";
   department: "Logistics Sales";
   sales_tag: string;
@@ -110,8 +114,10 @@ const enumValue = <T extends string>(value: FormDataEntryValue | null, allowed: 
 };
 
 export function buildLoadBoardPayload(formData: FormData): LoadBoardPayload {
+  const brokerWeight = brokerWeightFromForm(formData);
   const quantityValue = Number.parseInt(clean(formData.get("quantity"), 3), 10);
   return {
+    ...(brokerWeight ? { broker_weight: brokerWeight } : {}),
     submitter_type: enumValue(formData.get("submitter_type"), allowedSubmitters),
     contact_name: clean(formData.get("contact_name"), 100),
     company_name: clean(formData.get("company_name"), 160),
@@ -409,6 +415,7 @@ export function buildLoadBoardPreview(payload: LoadBoardPayload, review: LoadRev
     `Commodity: ${labels[payload.commodity_type] ?? payload.commodity_type}`,
     `Vehicle/equipment: ${payload.year_make_model}`,
     `Quantity: ${payload.quantity}`,
+    payload.broker_weight ? brokerWeightSummary(payload.broker_weight) : "",
     `Condition: ${labels[payload.condition] ?? payload.condition}`,
     payload.offered_price ? `Offered price: ${payload.offered_price}` : "Price: collecting carrier offers",
     `Reasons: ${review.reasons.join(" | ")}`,
@@ -439,6 +446,7 @@ export function buildPostedLoadSalesLead(payload: LoadBoardPayload, review: Load
       ? payload.submitter_type.replaceAll("_", " ").toUpperCase()
       : "CUSTOMER";
   return {
+    ...(payload.broker_weight ? { broker_weight: payload.broker_weight } : {}),
     lead_type: "posted_load",
     department: "Logistics Sales",
     sales_tag: `POSTED LOAD / ${submitter}`,

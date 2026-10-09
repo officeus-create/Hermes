@@ -465,6 +465,8 @@ for (const [pageName, pageHtml] of generatedPages) {
     } catch {}
 
     if (fileExists) continue;
+    // Pages serves a matching standalone HTML asset at its extensionless URL.
+    if (htmlTargets.has(`${target.pathname}.html`)) continue;
 
     const targetPath = target.pathname.endsWith("/")
       ? target.pathname

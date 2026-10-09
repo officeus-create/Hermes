@@ -4,6 +4,7 @@ const repairShop = {
   id: "catalog-single-renderer-fixture",
   companyName: "Single Renderer Fixture Garage",
   companyType: "repair_shop",
+  countryCode: "US",
   city: "Test City",
   state: "AR",
   profileUrl: "/businesses/connect/repair-shop/catalog-single-renderer-fixture/",

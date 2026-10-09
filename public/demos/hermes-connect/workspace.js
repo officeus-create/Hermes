@@ -190,6 +190,16 @@
   }
 
   const verticals = {
+    iam: {
+      name: 'I am Travel Lab', label: 'Cross-border travel & services · prototype', revenue: 'UNKNOWN', leads: 'DEMO', bookings: 'DEMO', actions: 'Prototype',
+      summary: 'Prototype only: Hermes Connect composes a traveller journey from sourced modules, explicit consent and authorized handoffs. No live bookings, refunds, registrations or commissions.',
+      activity: [
+        ['✦','Composed a sample Italy journey','Intent router · deterministic demo','Prototype'],
+        ['◎','Reviewed merchant source states','Shopping · public official links','Prototype'],
+        ['▣','Separated arrival vs departure','Travel · airport handoff rules','Prototype'],
+        ['!','Blocked unverified affiliate action','Commerce · approval required','Prototype']
+      ]
+    },
     beauty: {
       name: 'Aurelia Studio', label: 'Beauty & wellness', revenue: '$2,840', leads: '18', bookings: '24', actions: '43',
       summary: 'Hermes handled 43 actions, recovered 4 opportunities and found 3 decisions that need your approval.',
@@ -318,6 +328,8 @@
     fitness: 'fitness',
     real_estate: 'realestate',
     professional_services: 'agency',
+    i_am: 'iam',
+    travel_platform: 'iam',
     other: 'logistics'
   };
   const startupStoredType = localStorage.getItem('hermes_business_type');
@@ -1907,6 +1919,8 @@
           fitness: 'fitness',
           real_estate: 'realestate',
           professional_services: 'agency',
+          i_am: 'iam',
+          travel_platform: 'iam',
           other: 'logistics'
         };
         
@@ -2243,4 +2257,3 @@
   setView(currentView);
   handleDeepLinkState();
 })();
-

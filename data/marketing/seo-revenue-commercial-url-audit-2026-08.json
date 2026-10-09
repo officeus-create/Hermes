@@ -1,6 +1,6 @@
 {
   "reviewed_at": "2026-08-06",
-  "source": "current main repository contracts through the direct-intake and carrier-journey releases; production/Search Console/GA4 metrics remain external",
+  "source": "Historical August 2026 routing/readiness snapshot; carrier receipt semantics reconciled on 2026-10-08 against current repository contracts. Other dated event families are historical, not current runtime or delivery evidence; production/Search Console/GA4 metrics remain external.",
   "allowed_statuses": [
     "READY_TO_MEASURE",
     "INDEXATION_BLOCKED",
@@ -65,12 +65,16 @@
       "canonical_owner": true,
       "sitemap_owner": "sitemap-services.xml",
       "primary_destination": "/logistics/start-car-hauling-dispatch/",
-      "handoff": "direct carrier qualification, local review, email fallback and controlled receiver confirmation",
-      "event_family": "commercial_cta_click → carrier_intake_start → carrier_intake_preview_ready → carrier_handoff_ready → carrier_delivery_confirmed",
+      "handoff": "direct carrier qualification, local review, email fallback and matching request-service acceptance; final delivery and human receipt UNKNOWN",
+      "event_family": "commercial_cta_click → carrier_intake_start → carrier_intake_preview_ready → carrier_handoff_ready → carrier_submitted",
       "proof_state": "authority, insurance, fleet, dispatch, equipment, availability and direct carrier qualification present",
       "cannibalization_risk": "low; carrier path pages are supporting audiences",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; permissioned carrier proof tracked in SEO 11 master issue #346"
+      "external_blocker": "production event verification tracked in issue #206; permissioned carrier proof tracked in SEO 11 master issue #346",
+      "event_family_at_2026_08_06": "commercial_cta_click → carrier_intake_start → carrier_intake_preview_ready → carrier_handoff_ready → carrier_delivery_confirmed",
+      "event_contract_reconciled_at": "2026-10-08",
+      "delivery_state": "UNKNOWN",
+      "human_receipt_state": "UNKNOWN"
     },
     {
       "route": "/logistics/auction-vehicle-pickup/",

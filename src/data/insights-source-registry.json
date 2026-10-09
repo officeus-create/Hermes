@@ -15,7 +15,10 @@
       "to": "2025-01-31",
       "complete": false
     },
-    "directions": ["logistics", "academy"],
+    "directions": [
+      "logistics",
+      "academy"
+    ],
     "topics": [
       "car hauling",
       "carrier sales",
@@ -56,7 +59,11 @@
       "HL Carrier agreement",
       "HL Shippers"
     ],
-    "directions": ["logistics", "academy", "marketing"],
+    "directions": [
+      "logistics",
+      "academy",
+      "marketing"
+    ],
     "topics": [
       "car hauling",
       "carrier operations",
@@ -86,7 +93,12 @@
       "to": null,
       "complete": false
     },
-    "directions": ["logistics", "marketing", "academy", "technology"],
+    "directions": [
+      "logistics",
+      "marketing",
+      "academy",
+      "technology"
+    ],
     "topics": [
       "industry partnerships",
       "search visibility",
@@ -113,7 +125,9 @@
       "to": null,
       "complete": false
     },
-    "directions": ["logistics"],
+    "directions": [
+      "logistics"
+    ],
     "topics": [
       "shipper demand",
       "broker communication",
@@ -138,12 +152,55 @@
       "to": null,
       "complete": false
     },
-    "directions": ["logistics", "marketing", "academy", "technology"],
-    "topics": ["current market", "regulation", "platform changes", "technology", "search", "social media"],
+    "directions": [
+      "logistics",
+      "marketing",
+      "academy",
+      "technology"
+    ],
+    "topics": [
+      "current market",
+      "regulation",
+      "platform changes",
+      "technology",
+      "search",
+      "social media"
+    ],
     "privacyClass": "public",
     "currentTruth": true,
     "publicUse": "dated_cited_claims",
     "status": "active",
     "notes": "Prefer primary regulators, platform documentation, company announcements, and other authoritative dated sources."
+  },
+  {
+    "id": "HERMES-IAM-20261008",
+    "label": "Hermes Technology founder-approved I am startup development record · 8 October 2026",
+    "sourceType": "first_party_public_development_record",
+    "location": {
+      "provider": "github",
+      "publicUrl": "https://github.com/officeus-create/Hermes/issues/1776",
+      "repository": "officeus-create/Hermes"
+    },
+    "coverage": {
+      "from": "2026-10-08",
+      "to": "2026-10-08",
+      "complete": false
+    },
+    "directions": [
+      "technology"
+    ],
+    "topics": [
+      "I am",
+      "travel technology",
+      "retail discovery",
+      "Italy Tax Free guidance",
+      "voice-first UX",
+      "startup development"
+    ],
+    "privacyClass": "public",
+    "currentTruth": true,
+    "publicUse": "truthful_approved_first_party_announcement",
+    "status": "active_with_release_verification_required",
+    "notes": "Verified public founder direction and related in-progress PRs; external legal entity, financing, merchant affiliation, government approval and real revenue remain unverified. Do not infer merged/live state from code or source narrative."
   }
 ]

@@ -116,7 +116,8 @@ for (const url of clusterUrls) {
   const isWebApplication = schemaTypes.has("WebApplication");
   const isService = schemaTypes.has("Service");
   const isCourse = schemaTypes.has("Course");
-  const isArticle = schemaTypes.has("Article");
+  const articleSchemaType = ["Article", "NewsArticle", "BlogPosting"].find(type => schemaTypes.has(type));
+  const isArticle = Boolean(articleSchemaType);
   const isCollection = schemaTypes.has("CollectionPage");
   const isFaqPage = schemaTypes.has("FAQPage") && !isService;
   const isWebPage = schemaTypes.has("WebPage");
@@ -131,7 +132,7 @@ for (const url of clusterUrls) {
     const isAcademyUtility = ["/gb/london/academy/how-training-works/", "/gb/london/academy/apply/", "/gb/london/academy/faq/"].includes(route);
     if (isService) requiredTypes = ["Service", "BreadcrumbList", "FAQPage"];
     else if (isCourse) requiredTypes = ["Course", "BreadcrumbList"];
-    else if (isArticle || isLondonGuide) requiredTypes = isArticle ? ["Article"] : [];
+    else if (isArticle || isLondonGuide) requiredTypes = isArticle ? [articleSchemaType] : [];
     else if (isCollection) requiredTypes = ["CollectionPage"];
     else if (isFaqPage) requiredTypes = ["FAQPage"];
     else if (isWebPage) requiredTypes = ["WebPage"];
@@ -140,7 +141,7 @@ for (const url of clusterUrls) {
   } else if (isWebApplication) requiredTypes = ["WebApplication", "BreadcrumbList"];
   else if (isService) requiredTypes = ["Service", "BreadcrumbList", "FAQPage"];
   else if (isCourse) requiredTypes = ["Course", "BreadcrumbList"];
-  else if (isArticle) requiredTypes = ["Article", "BreadcrumbList"];
+  else if (isArticle) requiredTypes = [articleSchemaType, "BreadcrumbList"];
   else if (isCollection) requiredTypes = ["CollectionPage", "BreadcrumbList"];
   else if (isFaqPage) requiredTypes = ["FAQPage", "BreadcrumbList"];
   else if (isWebPage) requiredTypes = ["WebPage", "BreadcrumbList"];

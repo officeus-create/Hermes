@@ -104,6 +104,9 @@ function classifyTarget(href, sourceRoute, visited = new Set()) {
   if (redirects.has(target.pathname)) return classifyTarget(redirects.get(target.pathname), sourceRoute, visited);
   const route = normalizeInternalRoute(target.href, sourceRoute);
   if (route && pages.has(route)) return {kind: "page", route};
+  // Preserve the build-file node while resolving the Pages extensionless alias.
+  const htmlAssetRoute = `${target.pathname}.html`;
+  if (pages.has(htmlAssetRoute)) return {kind: "page", route: htmlAssetRoute};
   try { if (statSync(join(dist, decodeURIComponent(target.pathname))).isFile()) return {kind: "asset"}; }
   catch (error) { if (error.code !== "ENOENT" && error.code !== "ENOTDIR" && !(error instanceof URIError)) throw error; }
   if (dynamicRoutes.some(pattern => pattern.test(target.pathname))) return {kind: "dynamic"};

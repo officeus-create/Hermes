@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
@@ -154,3 +155,4 @@ assert.doesNotMatch(
 await import("./repair-shop-private-design-contract.test.mjs");
 
 console.log("Repair Shop customer-focused booking actions, free-setup account/profile gates, revenue, Catalog discovery offer, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
+execFileSync(process.execPath, ["--experimental-strip-types", new URL("./repair-attribution.test.mjs", import.meta.url).pathname], { stdio: "inherit" });

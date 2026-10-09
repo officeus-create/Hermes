@@ -61,3 +61,38 @@ test("Ukraine collection and business FAQ translate beyond names and services", 
   await expect(page.locator("main .faq")).toContainText("Чи може компанія підключити Hermes Connect?");
   await expect(page.locator('html')).toHaveAttribute("lang", "uk");
 });
+
+test("Chayka FAQ English SSR, JSON-LD and Ukrainian switch stay aligned", async ({ page }) => {
+  const route = "/businesses/ukraine/chaiky/chayka-store/";
+  await page.goto(route, { waitUntil: "domcontentloaded" });
+  const faq = page.locator(".catalog-concept .faq");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(faq).toContainText("Can I ask about phone repairs through this page?");
+  await expect(faq).toContainText("Is this the official Chayka Store website?");
+  await expect(faq).not.toContainText("Чи можна уточнити ремонт телефону");
+  const schema = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
+  expect(schema).toContain("Can I ask about phone repairs through this page?");
+  expect(schema).not.toContain("Чи можна уточнити ремонт телефону");
+  const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+  await page.goto(route + "?lang=uk", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("html")).toHaveAttribute("lang", "uk");
+  await expect(faq).toContainText("Чи можна уточнити ремонт телефону через цю сторінку?");
+  await expect(faq).toContainText("Це офіційний сайт Чайка Store?");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical!);
+});
+
+test("All Ukrainian Catalog profiles stay English-only by default", async ({ page }) => {
+  const routes = [
+    "/businesses/ukraine/chaiky/chayka-store/",
+    "/businesses/ukraine/chaiky/mangal-i-kazan/",
+    "/businesses/ukraine/chaiky/trimmo-ii/",
+    "/businesses/ukraine/irpin/cvit-vyshni/",
+    "/businesses/ukraine/bila-tserkva/kons-na-bis/",
+  ];
+  for (const route of routes) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    const visible = await page.locator("main").innerText();
+    expect(visible, route).not.toMatch(/[А-Яа-яІіЇїЄє]/);
+  }
+});

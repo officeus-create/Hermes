@@ -4,7 +4,7 @@ import { getInsightPath, insightDirectionMeta, insights, type InsightPost } from
 
 export function getStaticPaths() {
   return insights
-    .filter((post) => post.contentTier === "standalone")
+    .filter((post) => post.contentTier === "standalone" && post.routeOwner !== "explicit_static")
     .map((post) => ({ params: { direction: post.direction, slug: post.slug }, props: { post } }));
 }
 
@@ -40,4 +40,7 @@ const meta = insightDirectionMeta[post.direction];
   hubUrl="/insights/"
   showServiceSchema={false}
   feedUrl="/insights/rss.xml"
+  evidenceSources={(post.evidence ?? [])
+    .filter((item) => item.kind === "public_external" && Boolean(item.url))
+    .map((item) => ({ label: item.label, url: item.url as string, note: item.notes }))}
 />

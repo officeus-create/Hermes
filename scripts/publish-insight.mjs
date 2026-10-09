@@ -31,7 +31,15 @@ if (post.contentTier !== "standalone" && analysisLength < 120) errors.push("brie
 if (!Array.isArray(post.takeaways) || post.takeaways.length < (post.contentTier === "standalone" ? 3 : 1)) errors.push("takeaways are insufficient for the selected content tier");
 if (!Array.isArray(post.faq) || (post.contentTier === "standalone" && post.faq.length < 3)) errors.push("standalone insight requires at least 3 FAQ items");
 if (!Array.isArray(post.related) || post.related.length < (post.contentTier === "standalone" ? 2 : 1) || post.related.some((item) => !String(item.href ?? "").startsWith("/"))) errors.push("internal related links are insufficient for the selected content tier");
-for (const key of ["primaryAction","secondaryAction"]) if (!post[key] || !String(post[key].href ?? "").startsWith("/")) errors.push(`${key} must use an internal href`);
+const primaryActionHref = String(post.primaryAction?.href ?? "");
+const primaryActionIsInternal = primaryActionHref.startsWith("/");
+const primaryActionIsVerifiedSource = primaryActionHref === post.sourceUrl;
+if (!post.primaryAction || (!primaryActionIsInternal && !primaryActionIsVerifiedSource)) {
+  errors.push("primaryAction must use an internal href or exactly match sourceUrl");
+}
+if (!post.secondaryAction || !String(post.secondaryAction.href ?? "").startsWith("/")) {
+  errors.push("secondaryAction must use an internal href");
+}
 if (!Array.isArray(post.keywords) || post.keywords.length < (post.contentTier === "standalone" ? 3 : 2)) errors.push("keywords are insufficient for the selected content tier");
 if (post.currentMarketClaim && !post.sourcePublishedAt) errors.push("current-market claims require a dated source");
 if (post.contentTier === "standalone" && (post.conciseAnswer.length < 140 || post.description.length < 90)) errors.push("standalone insight is too thin");

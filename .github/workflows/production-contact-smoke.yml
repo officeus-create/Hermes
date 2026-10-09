@@ -1,17 +1,10 @@
 name: Production contact smoke
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/production-contact-smoke.yml
-      - src/components/HomeRecoveryFinish.astro
-      - src/components/SiteFooter.astro
   workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: production-contact-smoke
@@ -141,7 +134,6 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           HTML_OUTCOME: ${{ steps.production_html.outcome }}
           SEND_OUTCOME: ${{ steps.first_send.outcome }}
           DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
@@ -169,7 +161,7 @@ jobs:
           No customer data, Cloudflare secret, account ID, KV ID, or provider diagnostic is included in this report.
           EOF
 
-          gh issue comment 167 --repo "$GITHUB_REPOSITORY" --body-file /tmp/production-smoke.md
+          cat /tmp/production-smoke.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce production verification
         if: always()

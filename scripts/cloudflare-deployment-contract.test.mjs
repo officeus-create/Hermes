@@ -60,6 +60,7 @@ assert.equal("routes" in emailWorkerProduction, false, "The private email Worker
 
 const emailWorkerEntry = read("workers/lead-email/src/entry.mjs");
 assert.match(emailWorkerEntry, /import leadEmailWorker, \{ CarHaulingDeliveryCoordinatorCore \} from "\.\/index\.mjs"/);
+assert.match(emailWorkerEntry, /import \{ ColdFairActionLedgerCore \} from "\.\/cold-fair-action-ledger\.mjs"/);
 assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\.\/load-board-inbound\.mjs"/);
 assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
 assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
@@ -67,15 +68,32 @@ assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outboun
 assert.match(emailWorkerEntry, /import \{ DurableObject \} from "cloudflare:workers"/);
 assert.match(emailWorkerEntry, /export class CarHaulingDeliveryCoordinator extends DurableObject/);
 assert.match(emailWorkerEntry, /return this\.coordinator\.alarm\(\)/);
+assert.match(emailWorkerEntry, /export class ColdFairActionLedger extends DurableObject/);
+assert.match(emailWorkerEntry, /return this\.ledger\.fetch\(request\)/);
 for (const config of [emailWorkerExample, emailWorkerProduction]) {
-  assert.deepEqual(config.durable_objects?.bindings, [{
-    name: "CAR_HAULING_DELIVERY_COORDINATOR",
-    class_name: "CarHaulingDeliveryCoordinator",
-  }]);
+  assert.deepEqual(config.durable_objects?.bindings, [
+    {
+      name: "CAR_HAULING_DELIVERY_COORDINATOR",
+      class_name: "CarHaulingDeliveryCoordinator",
+    },
+    {
+      name: "COLD_FAIR_ACTION_LEDGER",
+      class_name: "ColdFairActionLedger",
+    },
+  ]);
   assert.deepEqual(config.exports?.CarHaulingDeliveryCoordinator, {
     type: "durable-object",
     storage: "sqlite",
   });
+  assert.deepEqual(config.exports?.ColdFairActionLedger, {
+    type: "durable-object",
+    storage: "sqlite",
+  });
+  assert.equal("migrations" in config, false,
+    "The repository uses Wrangler exports lifecycle; legacy migrations cannot be mixed into this Worker config");
+  assert.equal(config.vars?.COLD_FAIR_RUNTIME_MODE, "blocked");
+  assert.equal(config.vars?.COLD_FAIR_PROMOTIONAL_SEND_GATE, "BLOCKED");
+  assert.equal("services" in config, false, "Do not invent a parallel canonical source Worker; missing binding must fail closed.");
 }
 assert.equal(
   emailWorkerProduction.vars?.CAR_HAULING_DURABLE_OUTBOX_REQUIRED,
@@ -341,14 +359,11 @@ assert.match(
 
 const paidIntentSmokeWorkflow = read(".github/workflows/repair-paid-intent-production-smoke.yml");
 const paidIntentScopeSource = read("scripts/paid-intent-smoke-scope.mjs");
-assert.match(paidIntentSmokeWorkflow, /schedule:\s*\n\s*- cron:/, "Paid-intent E2E needs a bounded recurring proof even without receiver code changes.");
-assert.match(paidIntentSmokeWorkflow, /Decide whether full receiver smoke is required/, "Every deploy should classify whether a real synthetic email is justified.");
-assert.match(paidIntentSmokeWorkflow, /steps\.scope\.outputs\.full == 'true'/, "Real receiver sends must be gated to relevant changes or the scheduled/manual proof.");
-assert.match(paidIntentScopeSource, /fail_safe_large_or_missing_commit_file_list/, "Ambiguous large commits must fail safe to the full receiver proof instead of silently skipping it.");
-assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "A lightweight production readback must remain on every successful deployment.");
-assert.match(paidIntentSmokeWorkflow, /Check out exact deployed revision[\s\S]*ref: \$\{\{ env\.TESTED_SHA \}\}/, "Paid-intent scope classification must use the exact deployed revision.");
-assert.match(paidIntentSmokeWorkflow, /jq -c[\s\S]*node scripts\/paid-intent-smoke-scope\.mjs/, "Commit metadata must be reduced to filenames and streamed over stdin.");
-assert.doesNotMatch(paidIntentSmokeWorkflow, /COMMIT_JSON|commit_json/, "Full commit JSON must never be copied into process environment or argv.");
+await import("./repair-paid-intent-read-only.test.mjs");
+assert.match(paidIntentSmokeWorkflow, /Verify current paid-plan production truth/, "Public page availability remains useful independently of receiver evidence.");
+assert.match(paidIntentSmokeWorkflow, /Check out exact deployed revision[\s\S]*ref: \$\{\{ env\.TESTED_SHA \}\}/, "Read-only smoke retains exact deployed revision provenance.");
+// Historical scope classifier is retained for compatibility, but cannot authorize writes.
+assert.match(paidIntentScopeSource, /fail_safe_large_or_missing_commit_file_list/);
 
 const paidIntentScopeScript = path.join(root, "scripts", "paid-intent-smoke-scope.mjs");
 const classifyPaidIntentScope = (input) => {
@@ -373,6 +388,14 @@ assert.deepEqual(classifyPaidIntentScope("not-json"), {
   matched: ["fail_safe_invalid_commit_file_list"],
 });
 
+const productionContactSmokeWorkflow = read(".github/workflows/production-contact-smoke.yml");
+assert.match(productionContactSmokeWorkflow, /GITHUB_STEP_SUMMARY/, "Production contact smoke must retain sanitized Actions evidence.");
+assert.doesNotMatch(productionContactSmokeWorkflow, /gh issue comment 167|issues:\s*write/, "Closed #167 must not remain a production-smoke reporting sink.");
+
+const routeScreenshotWorkflow = read(".github/workflows/route-screenshot-evidence.yml");
+assert.match(routeScreenshotWorkflow, /workflow_dispatch:/, "Route screenshot evidence must remain manually runnable.");
+assert.match(routeScreenshotWorkflow, /GITHUB_STEP_SUMMARY/, "Route screenshot evidence must retain sanitized Actions evidence.");
+assert.doesNotMatch(routeScreenshotWorkflow, /issue_comment:|github\.event\.issue\.number == 264|gh issue comment 264|issues:\s*write/, "Closed #264 must not remain a screenshot command/report sink.");
 const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
 assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
 for (const surface of [
@@ -384,7 +407,8 @@ for (const surface of [
 ]) {
   assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
 }
-assert.match(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349/, "Synthetic failures must report to the sole canonical Cloudflare tracker.");
+assert.match(fiveSurfaceSyntheticWorkflow, /GITHUB_STEP_SUMMARY/, "Synthetic failures must remain visible in the Actions summary.");
+assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349|issues:\s*write/, "Closed #1349 must not remain a reporting sink or permission justification.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
