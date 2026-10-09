@@ -99,47 +99,43 @@ jobs:
           OWNER_CONSENT="$(jq -r '.catalog_owner_consent_claimed // true' "${TMP}/provision.json")"
           OWNER_AUTH="$(jq -r '.owner_authentication_claimed // true' "${TMP}/provision.json")"
 
-          [ "${PROFILE_PATH}" = "/businesses/connect/company/mzm-junk-removal/" ] \
-            || fail "public_profile_path_invalid" "Production operator returned an unexpected Catalog path."
+          [ -z "${PROFILE_PATH}" ] \
+            || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
           [ "${CRM_PATH}" = "/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal" ] \
             || fail "crm_workspace_path_invalid" "Production operator returned an unexpected managed CRM path."
           [ "${MODE}" = "hermes_managed" ] \
             || fail "management_mode_mismatch" "Managed-client mode did not read back."
-          [ "${BASIS}" = "client_relationship_public_evidence" ] \
-            || fail "publication_basis_mismatch" "Catalog publication basis did not read back."
+          [ "${BASIS}" = "owner_consent_pending" ] \
+            || fail "publication_basis_mismatch" "Catalog publication must remain pending owner consent."
           [ "${OWNER_CONSENT}" = false ] && [ "${OWNER_AUTH}" = false ] \
             || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
 
+          PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
-            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PROFILE_PATH}?verify=$(date +%s)")"
-          [ "${PROFILE_HTTP}" = 200 ] \
-            && grep -Fq "MZM Junk Removal" "${TMP}/profile.html" \
-            && grep -Fq "Hermes-managed client profile" "${TMP}/profile.html" \
-            && grep -Fq "Official website" "${TMP}/profile.html" \
-            || fail "public_catalog_readback_failed" "Managed D1 record exists, but the public MZM Catalog page did not read back correctly."
+            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PRIVATE_PROFILE}?verify=$(date +%s)")"
+          [ "${PROFILE_HTTP}" = 404 ] \
+            || fail "catalog_fail_closed_failed" "MZM became publicly reachable before explicit Catalog consent."
 
           SITEMAP_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/sitemap.xml" -w '%{http_code}' "${BASE_URL}/sitemap-connect-catalog.xml?verify=$(date +%s)")"
-          [ "${SITEMAP_HTTP}" = 200 ] && grep -Fq "${PROFILE_PATH}" "${TMP}/sitemap.xml" \
-            || fail "catalog_sitemap_readback_failed" "MZM profile is live, but the dynamic Catalog sitemap does not contain it."
+          [ "${SITEMAP_HTTP}" = 200 ] && ! grep -Fq "${PRIVATE_PROFILE}" "${TMP}/sitemap.xml" \
+            || fail "catalog_sitemap_fail_closed_failed" "MZM appeared in the Catalog sitemap before explicit owner consent."
 
           CATALOG_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/catalog.json" -w '%{http_code}' "${BASE_URL}/api/catalog/companies?verify=$(date +%s)")"
           [ "${CATALOG_HTTP}" = 200 ] \
-            && jq -e '.companies[] | select(.slug=="mzm-junk-removal" and .managementMode=="hermes_managed" and .publicationBasis=="client_relationship_public_evidence")' "${TMP}/catalog.json" >/dev/null \
-            || fail "catalog_api_readback_failed" "Public Catalog API did not expose the verified Hermes-managed MZM projection."
+            && ! jq -e '.companies[] | select(.slug=="mzm-junk-removal")' "${TMP}/catalog.json" >/dev/null \
+            || fail "catalog_api_fail_closed_failed" "Public Catalog API exposed MZM before explicit owner consent."
 
           echo "classification=pass" >> "${GITHUB_OUTPUT}"
           cat > "${RESULT}" <<EOF
           ## MZM Hermes-managed client — PASS
 
-          - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes operations.
-          - ✅ Public Catalog profile is live from verified public client facts with publication basis \`${BASIS}\`.
-          - ✅ Dynamic Catalog sitemap and Catalog API read back the MZM profile from production.
+          - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes internal operations.
           - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
-          - ✅ Owner consent/authentication are **not** claimed; owner-managed Home Services onboarding remains fail-closed.
+          - ✅ Public Catalog remains fail-closed: publication basis is `${BASIS}`, profile returns 404, and Catalog API/sitemap do not expose MZM.
+          - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
-          - Public profile: ${BASE_URL}${PROFILE_PATH}
           - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
 
           Business outcomes remain UNKNOWN until real evidence-bearing CRM records exist.
