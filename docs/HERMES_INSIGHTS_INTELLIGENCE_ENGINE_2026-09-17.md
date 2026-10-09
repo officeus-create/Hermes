@@ -184,3 +184,28 @@ Use secondary metadata for product/topic/geography rather than creating many com
 ## Operational rule
 
 Volume is never the goal. The system may collect hundreds of signals and publish zero items if none add verified value. Historical first-party evidence is valuable because it can create original context, but private content is an input to analysis, never raw public copy.
+
+## Reusable learning receipt — publication approval boundary
+
+```text
+PROBLEM
+The generated-content workflow could create a publication-ready PR and queue auto-merge after machine checks without a human approval receipt.
+
+ROOT_CAUSE
+Content validation and publication authorization were treated as the same gate. Passing build, scope and SEO checks proves the artifact is mechanically valid; it does not prove that a human approved publishing the exact head.
+
+FAILED_APPROACH
+Relying on protected auto-merge when available, with a fallback that left the PR open, did not establish a mandatory or inspectable human decision in the workflow contract.
+
+WORKING_APPROACH
+Automation opens draft PRs only. On every generated head update it first loads the approval helper from trusted `main`, disables any inherited queued auto-merge, returns an existing ready PR to draft, and verifies the exact head before scope checks, dependency installation, build or content validation can fail or be cancelled. After validation it verifies the blocked state again and never invokes a merge path other than `--disable-auto`. An authorized human must then review the new exact PR head, mark the draft ready and merge through GitHub; those later human actions are the retained approval receipt.
+
+EVIDENCE
+`scripts/insights-human-approval-contract.test.mjs` simulates a ready PR with queued auto-merge surviving a head replacement, requires both reset actions before every validation gate, proves a later failure/cancellation leaves the PR blocked, rejects a head race, verifies the final blocked state and binds the next receipt requirement to the replacement SHA.
+
+LESSON
+Machine validation establishes readiness for review, not permission to publish.
+
+REUSE_RULE
+For every content plugin or generated publication lane, separate `validated` from `approved_for_publication`; clear inherited approval and auto-merge state after every revision, keep the artifact draft-only until an authorized human acts on that exact reviewed revision, and regression-test the existing-ready-plus-new-head path.
+```
