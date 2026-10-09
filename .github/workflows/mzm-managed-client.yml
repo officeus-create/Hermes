@@ -1,0 +1,165 @@
+name: Provision MZM Hermes-managed client
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+concurrency:
+  group: mzm-managed-client
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    if: >-
+      github.event.issue.number == 1799 &&
+      github.event.comment.body == '/provision-mzm-managed' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BASE_URL: https://hermeslogisticsus.com
+      OIDC_AUDIENCE: hermes-connect-mzm-managed-client
+
+    steps:
+      - name: Request short-lived GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="${RUNNER_TEMP}/oidc-response.json"
+          separator='?'
+          if [[ "${ACTIONS_ID_TOKEN_REQUEST_URL}" == *'?'* ]]; then separator='&'; fi
+          curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}${separator}audience=${OIDC_AUDIENCE}" \
+            -o "${response_file}"
+          token="$(jq -r '.value // empty' "${response_file}")"
+          [ -n "${token}" ] || { echo "GitHub OIDC token request failed."; exit 1; }
+          echo "::add-mask::${token}"
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
+
+      - name: Provision and verify MZM through bounded production API
+        id: provision
+        shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+        run: |
+          set -euo pipefail
+          TMP="${RUNNER_TEMP}/mzm-managed"
+          RESULT="${TMP}/result.md"
+          mkdir -p "${TMP}"
+          chmod 700 "${TMP}"
+
+          fail() {
+            local class="$1"
+            local message="$2"
+            echo "classification=${class}" >> "${GITHUB_OUTPUT}"
+            cat > "${RESULT}" <<EOF
+          ## MZM Hermes-managed client — STOPPED SAFELY
+
+          - Classification: \`${class}\`
+          - ${message}
+          - No owner identity, owner authentication or owner consent was fabricated.
+          - No synthetic lead, job, revenue or review was created.
+          EOF
+            exit 1
+          }
+
+          HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/provision.json" -w '%{http_code}' \
+            -X POST "${BASE_URL}/api/internal/mzm-managed-client" \
+            -H "Authorization: Bearer ${OIDC_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data-binary '{"operation":"provision_mzm_hermes_managed_2026_10_09"}' || printf 000)"
+
+          if [ "${HTTP}" = 401 ] || [ "${HTTP}" = 403 ]; then
+            fail "operator_not_authorized" "Workflow-bound short-lived OIDC identity was rejected by production."
+          fi
+          if [ "${HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/provision.json" 2>/dev/null)" != true ]; then
+            ERROR_CODE="$(jq -r '.error // "managed_client_api_failed"' "${TMP}/provision.json" 2>/dev/null || printf managed_client_api_failed)"
+            case "${ERROR_CODE}" in
+              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_client_readback_mismatch) ;;
+              *) ERROR_CODE="managed_client_api_failed" ;;
+            esac
+            fail "${ERROR_CODE}" "Bounded MZM production API returned HTTP ${HTTP}."
+          fi
+
+          PROFILE_PATH="$(jq -r '.public_profile_path // empty' "${TMP}/provision.json")"
+          CRM_PATH="$(jq -r '.crm_workspace_path // empty' "${TMP}/provision.json")"
+          MODE="$(jq -r '.management_mode // empty' "${TMP}/provision.json")"
+          BASIS="$(jq -r '.publication_basis // empty' "${TMP}/provision.json")"
+          LEADS="$(jq -r '.real_leads_tracked // 0' "${TMP}/provision.json")"
+          OWNER_CONSENT="$(jq -r '.catalog_owner_consent_claimed // true' "${TMP}/provision.json")"
+          OWNER_AUTH="$(jq -r '.owner_authentication_claimed // true' "${TMP}/provision.json")"
+          INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
+
+          [ -z "${PROFILE_PATH}" ] \
+            || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
+          [ "${CRM_PATH}" = "/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal" ] \
+            || fail "crm_workspace_path_invalid" "Production operator returned an unexpected managed CRM path."
+          [ "${MODE}" = "hermes_managed" ] \
+            || fail "management_mode_mismatch" "Managed-client mode did not read back."
+          [ "${BASIS}" = "owner_consent_pending" ] \
+            || fail "publication_basis_mismatch" "Catalog publication must remain pending owner consent."
+          [ "${OWNER_CONSENT}" = false ] && [ "${OWNER_AUTH}" = false ] \
+            || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
+          [ "${INTERNAL_UI}" = "REQUIRED_SEPARATELY" ] \
+            || fail "internal_owner_receipt_boundary_failed" "Managed provisioning must not pretend an authenticated internal-owner UI session was verified."
+
+          PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
+          PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PRIVATE_PROFILE}?verify=$(date +%s)")"
+          [ "${PROFILE_HTTP}" = 404 ] \
+            || fail "catalog_fail_closed_failed" "MZM became publicly reachable before explicit Catalog consent."
+
+          SITEMAP_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/sitemap.xml" -w '%{http_code}' "${BASE_URL}/sitemap-connect-catalog.xml?verify=$(date +%s)")"
+          [ "${SITEMAP_HTTP}" = 200 ] && ! grep -Fq "${PRIVATE_PROFILE}" "${TMP}/sitemap.xml" \
+            || fail "catalog_sitemap_fail_closed_failed" "MZM appeared in the Catalog sitemap before explicit owner consent."
+
+          CATALOG_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/catalog.json" -w '%{http_code}' "${BASE_URL}/api/catalog/companies?verify=$(date +%s)")"
+          [ "${CATALOG_HTTP}" = 200 ] \
+            && ! jq -e '.companies[] | select(.slug=="mzm-junk-removal")' "${TMP}/catalog.json" >/dev/null \
+            || fail "catalog_api_fail_closed_failed" "Public Catalog API exposed MZM before explicit owner consent."
+
+          echo "classification=pass" >> "${GITHUB_OUTPUT}"
+          cat > "${RESULT}" <<EOF
+          ## MZM Hermes-managed client — PASS
+
+          - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes internal operations.
+          - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
+          - ✅ Public Catalog remains fail-closed: publication basis is `${BASIS}`, profile returns 404, and Catalog API/sitemap do not expose MZM.
+          - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
+          - ⚠️ Actual private workspace traversal remains a separate authenticated `HERMES_INTERNAL_OWNER` readback; provisioning does not fabricate that receipt.
+          - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
+          - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
+
+          Business outcomes remain UNKNOWN until real evidence-bearing CRM records exist.
+          EOF
+
+      - name: Publish sanitized MZM receipt
+        if: always()
+        shell: bash
+        run: |
+          RESULT="${RUNNER_TEMP}/mzm-managed/result.md"
+          if [ -f "${RESULT}" ]; then
+            gh issue comment 1799 --repo "${GITHUB_REPOSITORY}" --body-file "${RESULT}"
+          else
+            gh issue comment 1799 --repo "${GITHUB_REPOSITORY}" --body $'## MZM Hermes-managed client — FAILED\n\nThe bounded production operator stopped before a verified sanitized receipt was created. No completion claim is made.'
+          fi
+
+      - name: Enforce verified completion
+        if: always()
+        shell: bash
+        env:
+          CLASSIFICATION: ${{ steps.provision.outputs.classification }}
+        run: |
+          [ "${CLASSIFICATION:-}" = pass ]

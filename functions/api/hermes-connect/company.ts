@@ -28,6 +28,8 @@ function safeCompany(row: any) {
     catalogOptIn: Boolean(row.catalog_opt_in),
     catalogStatus: row.catalog_status,
     loadBoardAccess: Boolean(row.load_board_access),
+    managementMode: row.management_mode || "owner_managed",
+    publicationBasis: row.catalog_publication_basis || "owner_opt_in",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -100,6 +102,29 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const existing = await env.DB.prepare(
     "SELECT id, slug, company_type, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first() as { id?: string; slug?: string; company_type?: string; created_at?: string } | null;
+
+  // A Hermes-managed client must be adopted through a verified attachment workflow.
+  // Never create a second owner-managed Home Services Company from matching public identity input.
+  if (!existing && companyType === "home_service") {
+    const managedCandidate = await env.DB.prepare(`
+      SELECT id,slug
+      FROM hermes_company_profiles
+      WHERE management_mode='hermes_managed' AND company_type='home_service'
+        AND (
+          (? <> '' AND website IS NOT NULL AND lower(rtrim(website,'/')) = lower(rtrim(?,'/')))
+          OR (lower(company_name)=lower(?) AND lower(city)=lower(?) AND state=?)
+        )
+      LIMIT 1
+    `).bind(website, website, companyName, city, state).first();
+    if (managedCandidate) {
+      return jsonResponse(409, {
+        success: false,
+        error: "managed_company_claim_required",
+        next_url: "/contacts/",
+      }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
+    }
+  }
+
   // Business-type migrations need a separate verified workflow; a Home Services signup must never overwrite
   // an existing carrier/repair/other company, even when the endpoint is called outside the UI.
   if (existing?.company_type && existing.company_type !== companyType &&

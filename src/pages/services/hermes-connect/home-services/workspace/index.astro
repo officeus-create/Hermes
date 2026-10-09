@@ -135,8 +135,15 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       : new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(cents)/100);
   const percent = (value: number) => `${Math.round((Number(value)||0)*100)}%`;
   const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c] || c));
+  const managedClient = new URL(window.location.href).searchParams.get("managed")?.trim() || "";
+  const managedApiUrl = (url: string) => {
+    if (!managedClient) return url;
+    const next = new URL(url, window.location.origin);
+    next.searchParams.set("managed", managedClient);
+    return `${next.pathname}${next.search}`;
+  };
   const api = async (url: string, options: RequestInit = {}) => {
-    const response = await fetch(url,{credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json",...(options.headers||{})},...options});
+    const response = await fetch(managedApiUrl(url),{credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json",...(options.headers||{})},...options});
     const data = await response.json().catch(()=>({}));
     if (response.status === 401) { location.assign("/services/hermes-connect/access/?lang=en"); throw new Error("authentication_required"); }
     if (!response.ok || data?.success === false) throw new Error(data?.error || "request_failed");

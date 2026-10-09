@@ -19,7 +19,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 
   const row = await env.DB.prepare(`
     SELECT c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,c.phone,c.address_line1,c.postal_code,
-           c.catalog_status,c.updated_at,h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
+           c.catalog_status,c.management_mode,c.catalog_publication_basis,c.updated_at,h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
     FROM hermes_company_profiles c
     JOIN hermes_home_service_profiles h ON h.company_id=c.id
     WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1
@@ -35,7 +35,12 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const phone = String(row.phone || "").trim();
   const phoneDial = phone.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
   const summary = String(row.public_summary || `${row.company_name} provides local home and property services in ${row.city}, ${row.state} and nearby communities.`);
-  const verification = row.catalog_status === "verified_public" ? "Verified public profile" : "Client profile · public facts pending independent verification";
+  const managedByHermes = String(row.management_mode || "") === "hermes_managed";
+  const verification = managedByHermes
+    ? "Hermes-managed client profile · public facts verified"
+    : row.catalog_status === "verified_public"
+      ? "Verified public profile"
+      : "Client profile · public facts pending independent verification";
   const schema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -60,8 +65,12 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   };
   const serviceList = services.map((service) => `<li>${esc(service)}</li>`).join("");
   const areaList = serviceAreas.map((area) => `<li>${esc(area)}</li>`).join("");
-  const websiteAction = website ? `<a class="btn" href="${esc(website)}" target="_blank" rel="nofollow noopener">Official website ↗</a>` : "";
+  const websiteAction = website ? `<a class="btn${managedByHermes ? " primary" : ""}" href="${esc(website)}" target="_blank" rel="nofollow noopener">Official website ↗</a>` : "";
+  const ownerAction = managedByHermes ? "" : `<a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>`;
   const phoneAction = phoneDial ? `<a class="btn" href="tel:${esc(phoneDial)}">Call ${esc(phone)}</a>` : "";
+  const profileNote = managedByHermes
+    ? "This Hermes client profile is maintained by Hermes from verified public business facts. It does not publish private CRM records or claim unverified business outcomes."
+    : "This public Catalog page contains business-level facts only. Customer names, phone numbers, addresses, job photos, quotes, costs, payments and private CRM records are not published here.";
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(row.company_name)} | ${esc(row.city)}, ${esc(row.state)} | Hermes Catalog</title>
 <meta name="description" content="${esc(summary)}"><link rel="canonical" href="${canonical}"><meta name="robots" content="index,follow">
@@ -71,10 +80,10 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 <main class="shell main"><nav class="crumb"><a href="/businesses/">Catalog</a> / ${esc(row.company_name)}</nav>
 <section class="hero"><p class="eyebrow">${esc(String(row.service_subtype || "home service").replaceAll("_"," "))} · ${esc(row.city)}, ${esc(row.state)}</p>
 <span class="status">${esc(verification)}</span><h1>${esc(row.company_name)}</h1><p class="lead">${esc(summary)}</p>
-<div class="actions"><a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>${websiteAction}${phoneAction}</div></section>
+<div class="actions">${ownerAction}${websiteAction}${phoneAction}</div></section>
 <section class="grid"><article class="card"><p class="eyebrow">Services</p><h2>What the business handles</h2><ul>${serviceList}</ul></article>
 <article class="card"><p class="eyebrow">Service area</p><h2>Where the team operates</h2><ul>${areaList}</ul></article></section>
-<p class="note">This public Catalog page contains business-level facts only. Customer names, phone numbers, addresses, job photos, quotes, costs, payments and private CRM records are not published here.</p>
+<p class="note">${esc(profileNote)}</p>
 </main><script src="/catalog-business-telemetry.js" data-catalog-business-id="company-crm:${esc(String(row.id))}" defer></script><script src="/catalog-traffic-stats.js" data-catalog-traffic-loader defer></script></body></html>`;
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, s-maxage=300" } });
 }
