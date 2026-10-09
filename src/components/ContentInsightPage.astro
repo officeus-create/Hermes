@@ -114,6 +114,7 @@ const articleSchema = {
   articleSection: articleSection || directionName,
   keywords: keywords.length ? keywords.join(", ") : undefined,
   isBasedOn: sourceUrl && !sourceIsSynthetic ? sourceUrl : undefined,
+  citation: evidenceSources.length ? evidenceSources.map((source) => source.url) : undefined,
 };
 const serviceSchema = {
   "@context": "https://schema.org",
