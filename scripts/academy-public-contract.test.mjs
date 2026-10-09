@@ -9,7 +9,15 @@ const applicationHtml = await readFile(join(root, "dist", "academy", "apply", "i
 const logisticsProgramHtml = await readFile(join(root, "dist", "academy", "us-logistics-operations", "index.html"), "utf8");
 const marketingProgramHtml = await readFile(join(root, "dist", "academy", "marketing", "index.html"), "utf8");
 const ukrainianLogisticsProgramHtml = await readFile(join(root, "dist", "ua", "academy", "us-logistics-operations", "index.html"), "utf8");
+const academyProductionWorkflow = await readFile(join(root, ".github", "workflows", "academy-production-smoke.yml"), "utf8");
 
+assert.ok(academyProductionWorkflow.includes("workflow_dispatch:"), "Academy production smoke must remain manually runnable.");
+assert.ok(academyProductionWorkflow.includes("push:"), "Academy production smoke must retain automatic current-main coverage.");
+assert.ok(academyProductionWorkflow.includes("GITHUB_STEP_SUMMARY"), "Academy production smoke must retain sanitized Actions evidence.");
+assert.ok(!academyProductionWorkflow.includes("issue_comment:"), "Closed #644 must not remain an Academy command router.");
+assert.ok(!academyProductionWorkflow.includes("github.event.issue.number == 644"), "Closed #644 gate must stay retired.");
+assert.ok(!academyProductionWorkflow.includes("gh issue comment 644"), "Closed #644 must not remain an Academy reporting sink.");
+assert.ok(!academyProductionWorkflow.includes("issues: write"), "Closed #644 must not justify issues write permission.");
 const visibleHtml = (html) => html
   .replace(/<!--[\s\S]*?-->/g, "")
   .replace(/<template\b[^>]*>[\s\S]*?<\/template>/gi, "")

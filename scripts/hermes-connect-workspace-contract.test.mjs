@@ -25,7 +25,17 @@ const privateWorkspaceCss = await readFile(join(root, "src", "styles", "hermes-c
 const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-app.css"), "utf8");
 const ownerCurrentJs = await readFile(join(root, "public", "hermes-connect-repair-owner-p0-current.js"), "utf8");
 const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
+const cabinetAuditWorkflow = await readFile(join(root, ".github", "workflows", "hc-cabinet-audit.yml"), "utf8");
 
+for (const [label, workflow] of [["CEO QA refresh", ceoRefreshWorkflow], ["cabinet audit", cabinetAuditWorkflow]]) {
+  assert(workflow.includes("workflow_dispatch:"), `${label}: workflow must remain explicitly runnable.`);
+  assert(!workflow.includes("issue_comment:"), `${label}: closed #671 must not remain a command router.`);
+  assert(!workflow.includes("github.event.issue.number == 671"), `${label}: closed #671 gate must stay retired.`);
+  assert(!workflow.includes("gh issue comment 671"), `${label}: closed #671 must not remain a reporting sink.`);
+  assert(!workflow.includes("issues: write"), `${label}: closed #671 must not justify issues write permission.`);
+  assert(workflow.includes("GITHUB_STEP_SUMMARY"), `${label}: sanitized evidence must remain in Actions.`);
+}
+assert(ceoRefreshWorkflow.includes("actions: read"), "CEO QA refresh must preserve GitHub Actions read access used for credential artifact recovery.");
 const repairServiceApi = await readFile(join(root, "functions", "api", "services", "index.ts"), "utf8");
 const durationLimit = Number(repairServiceApi.match(/durationMinutes\s*>\s*(\d+)/)?.[1]);
 assert(Number.isInteger(durationLimit) && durationLimit >= 5, "Repair service API must expose a bounded duration maximum.");

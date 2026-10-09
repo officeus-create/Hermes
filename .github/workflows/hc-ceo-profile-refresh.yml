@@ -1,20 +1,14 @@
 name: Refresh Hermes Connect CEO QA profile
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   actions: read
   contents: read
-  issues: write
 
 jobs:
   refresh:
-    if: >-
-      github.event.issue.number == 671 &&
-      github.event.comment.body == '/refresh-hc-ceo-profile' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -208,7 +202,7 @@ jobs:
       - name: Publish sanitized refresh result
         if: success()
         shell: bash
-        run: gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/hc-ceo-profile-refresh/result.md"
+        run: cat "${RUNNER_TEMP}/hc-ceo-profile-refresh/result.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish sanitized failure
         if: failure()
@@ -216,7 +210,7 @@ jobs:
         run: |
           RESULT="${RUNNER_TEMP}/hc-ceo-profile-refresh/result.md"
           if [ -f "$RESULT" ]; then
-            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+            cat "$RESULT" >> "$GITHUB_STEP_SUMMARY"
           else
-            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body $'## Hermes Connect CEO QA profile refresh — FAILED\n\nRefresh stopped before a verified production readback. The existing v3 account was not replaced or duplicated, and no credential is published.'
+            printf '%s\n' '## Hermes Connect CEO QA profile refresh — FAILED' '' 'Refresh stopped before a verified production readback. The existing v3 account was not replaced or duplicated, and no credential is published.' >> "$GITHUB_STEP_SUMMARY"
           fi
