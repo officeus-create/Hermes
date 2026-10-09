@@ -2,6 +2,7 @@ import { mzmJunkRemovalClient } from "../../../src/data/catalog-client-mzm-junk-
 import { bearerToken, verifyGitHubMzmManagedClientOidcToken } from "../_lib/github-oidc.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHomeServiceCrmSchema } from "../_lib/home-service-crm.mjs";
+import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
 
@@ -45,6 +46,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(400, { success: false, error: "unsupported_operation" }, privateHeaders);
   }
 
+  await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureHomeServiceCrmSchema(env.DB);
   await ensureReceiptSchema(env.DB);
 
