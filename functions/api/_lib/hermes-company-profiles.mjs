@@ -72,6 +72,8 @@ export async function ensureHermesCompanyProfilesSchema(db) {
     country_code: "TEXT NOT NULL DEFAULT 'US'",
     timezone: "TEXT",
     public_source_ref: "TEXT",
+    management_mode: "TEXT NOT NULL DEFAULT 'owner_managed'",
+    catalog_publication_basis: "TEXT NOT NULL DEFAULT 'owner_opt_in'",
   });
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_company_catalog ON hermes_company_profiles(catalog_opt_in, catalog_status, state, city)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_company_loadboard ON hermes_company_profiles(owner_specialist_id, load_board_access)").run();
