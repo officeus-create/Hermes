@@ -312,6 +312,8 @@ assert.match(workspace, /managedApiUrl/);
 assert.match(publicProfile, /Hermes-managed client profile · public facts verified/);
 assert.match(catalogApi, /catalog_publication_basis/);
 assert.match(managedEndpoint, /mzmJunkRemovalClient/);
+assert.match(managedEndpoint, /ensureHermesCompanyProfilesSchema/);
+assert.match(managedEndpoint, /await ensureHermesCompanyProfilesSchema\(env\.DB\)/);
 assert.match(managedEndpoint, /hermes-managed:mzm-junk-removal/);
 assert.match(managedEndpoint, /owner_consent_pending/);
 assert.match(managedEndpoint, /catalog_publication_eligible: false/);
