@@ -96,8 +96,8 @@ jobs:
           MODE="$(jq -r '.management_mode // empty' "${TMP}/provision.json")"
           BASIS="$(jq -r '.publication_basis // empty' "${TMP}/provision.json")"
           LEADS="$(jq -r '.real_leads_tracked // 0' "${TMP}/provision.json")"
-          OWNER_CONSENT="$(jq -r '.catalog_owner_consent_claimed // true' "${TMP}/provision.json")"
-          OWNER_AUTH="$(jq -r '.owner_authentication_claimed // true' "${TMP}/provision.json")"
+          OWNER_CONSENT="$(jq -r 'if (.catalog_owner_consent_claimed | type) == "boolean" then .catalog_owner_consent_claimed else "__invalid__" end' "${TMP}/provision.json")"
+          OWNER_AUTH="$(jq -r 'if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end' "${TMP}/provision.json")"
           INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
 
           [ -z "${PROFILE_PATH}" ] \
