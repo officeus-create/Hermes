@@ -11,7 +11,7 @@ const PROFILE_ID = "home-service-managed-profile:mzm-junk-removal";
 const DATA_OWNER_ID = "hermes-managed:mzm-junk-removal";
 const SLUG = "mzm-junk-removal";
 const MANAGEMENT_MODE = "hermes_managed";
-const PUBLICATION_BASIS = "client_relationship_public_evidence";
+const PUBLICATION_BASIS = "owner_consent_pending";
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 async function ensureReceiptSchema(db: any) {
@@ -104,8 +104,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     mzmJunkRemovalClient.base.state,
     mzmJunkRemovalClient.website,
     null,
-    1,
-    "verified_public",
+    0,
+    "managed_private",
     0,
     createdAt,
     now,
@@ -165,8 +165,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.owner_specialist_id || "") === DATA_OWNER_ID &&
     String(company?.slug || "") === SLUG &&
     String(company?.company_type || "") === "home_service" &&
-    Number(company?.catalog_opt_in || 0) === 1 &&
-    String(company?.catalog_status || "") === "verified_public" &&
+    Number(company?.catalog_opt_in || 0) === 0 &&
+    String(company?.catalog_status || "") === "managed_private" &&
     Number(company?.load_board_access || 0) === 0 &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
@@ -195,11 +195,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     operation: OPERATION_ID,
     business_name: mzmJunkRemovalClient.companyName,
-    public_profile_path: `/businesses/connect/company/${SLUG}/`,
+    public_profile_path: null,
     crm_workspace_path: `/services/hermes-connect/home-services/workspace/?managed=${SLUG}`,
     management_mode: MANAGEMENT_MODE,
     publication_basis: PUBLICATION_BASIS,
-    catalog_status: "verified_public",
+    catalog_status: "managed_private",
+    catalog_publication_eligible: false,
     catalog_owner_consent_claimed: false,
     owner_authentication_claimed: false,
     real_leads_tracked: Number(leadCount?.count || 0),
