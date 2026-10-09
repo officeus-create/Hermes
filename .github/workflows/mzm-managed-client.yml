@@ -136,9 +136,9 @@ jobs:
 
           - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes internal operations.
           - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
-          - ✅ Public Catalog remains fail-closed: publication basis is `${BASIS}`, profile returns 404, and Catalog API/sitemap do not expose MZM.
+          - ✅ Public Catalog remains fail-closed: publication basis is \`${BASIS}\`, profile returns 404, and Catalog API/sitemap do not expose MZM.
           - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
-          - ⚠️ Actual private workspace traversal remains a separate authenticated `HERMES_INTERNAL_OWNER` readback; provisioning does not fabricate that receipt.
+          - ⚠️ Actual private workspace traversal remains a separate authenticated \`HERMES_INTERNAL_OWNER\` readback; provisioning does not fabricate that receipt.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
           - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
 
