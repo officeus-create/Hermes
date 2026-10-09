@@ -203,6 +203,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     catalog_publication_eligible: false,
     catalog_owner_consent_claimed: false,
     owner_authentication_claimed: false,
+    internal_operator_capability: "HERMES_INTERNAL_OWNER",
+    internal_operator_ui_readback: "REQUIRED_SEPARATELY",
     real_leads_tracked: Number(leadCount?.count || 0),
     business_outcomes: "UNKNOWN_UNLESS_RECORDED_WITH_EVIDENCE",
   }, privateHeaders);
