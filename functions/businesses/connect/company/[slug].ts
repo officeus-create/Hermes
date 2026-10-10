@@ -1,4 +1,5 @@
 import { ensureHomeServiceCrmSchema } from "../../../api/_lib/home-service-crm.mjs";
+import { homeServiceCatalogPublication } from "../../../api/_lib/home-service-catalog-publication.mjs";
 
 type Env = { DB?: any };
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -19,14 +20,17 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 
   const row = await env.DB.prepare(`
     SELECT c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,c.phone,c.address_line1,c.postal_code,
-           c.catalog_status,c.management_mode,c.catalog_publication_basis,c.updated_at,h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
+           c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis,c.updated_at,
+           h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
     FROM hermes_company_profiles c
     JOIN hermes_home_service_profiles h ON h.company_id=c.id
-    WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1
+    WHERE c.slug=? AND c.company_type='home_service'
       AND c.catalog_status IN ('self_submitted','verified_public')
+      AND (c.catalog_opt_in=1 OR c.management_mode='hermes_managed')
     LIMIT 1
   `).bind(slug).first();
-  if (!row) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
+  const publication = homeServiceCatalogPublication(row);
+  if (!row || !publication.eligible) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
 
   const canonical = `https://hermeslogisticsus.com/businesses/connect/company/${encodeURIComponent(String(row.slug))}/`;
   const services = readArray(row.services_json);
@@ -65,7 +69,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   };
   const serviceList = services.map((service) => `<li>${esc(service)}</li>`).join("");
   const areaList = serviceAreas.map((area) => `<li>${esc(area)}</li>`).join("");
-  const websiteAction = website ? `<a class="btn${managedByHermes ? " primary" : ""}" href="${esc(website)}" target="_blank" rel="nofollow noopener">Official website ↗</a>` : "";
+  const websiteAction = website ? `<a class="btn${managedByHermes ? " primary" : ""}" href="${esc(website)}" target="_blank" rel="${managedByHermes ? "noopener" : "nofollow noopener"}">Official website ↗</a>` : "";
   const ownerAction = managedByHermes ? "" : `<a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>`;
   const phoneAction = phoneDial ? `<a class="btn" href="tel:${esc(phoneDial)}">Call ${esc(phone)}</a>` : "";
   const profileNote = managedByHermes
