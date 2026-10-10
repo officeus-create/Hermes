@@ -343,7 +343,7 @@ assert.match(managedEndpoint, /await ensureHermesCompanyProfilesSchema\(env\.DB\
 assert.match(managedEndpoint, /hermes-managed:mzm-junk-removal/);
 assert.match(managedEndpoint, /MANAGED_HOME_SERVICE_PUBLICATION_BASIS/);
 assert.match(managedEndpoint, /catalog_publication_eligible: true/);
-assert.match(managedEndpoint, /public_profile_path: `\\/businesses\\/connect\\/company\\/\$\{SLUG\}\\/`/);
+assert.ok(managedEndpoint.includes('public_profile_path: `/businesses/connect/company/${SLUG}/`'));
 assert.match(managedEndpoint, /"verified_public"/);
 assert.match(managedEndpoint, /persistedZero\(company\?\.catalog_opt_in\)/);
 assert.match(managedEndpoint, /persistedZero\(company\?\.load_board_access\)/);
