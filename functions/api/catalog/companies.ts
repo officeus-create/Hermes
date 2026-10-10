@@ -51,8 +51,15 @@ export async function onRequestGet({ env }: { env: Env }) {
       FROM hermes_company_profiles c
       LEFT JOIN hermes_academy_business_profiles a ON a.company_id=c.id
       LEFT JOIN hermes_home_service_profiles h ON h.company_id=c.id
-      WHERE c.catalog_opt_in = 1
-        AND c.catalog_status IN ('self_submitted', 'verified_public')
+      WHERE c.catalog_status IN ('self_submitted', 'verified_public')
+        AND (
+          c.catalog_opt_in = 1
+          OR (
+            c.management_mode = 'hermes_managed'
+            AND c.catalog_publication_basis = 'hermes_client_publication_approved'
+            AND c.catalog_status = 'verified_public'
+          )
+        )
       ORDER BY CASE WHEN c.catalog_status = 'verified_public' THEN 0 ELSE 1 END, c.updated_at DESC
       LIMIT 500
     `).all(),
