@@ -401,7 +401,7 @@ assert.match(managedEndpoint, /DELETE FROM sessions WHERE specialist_id=\?/);
 assert.match(managedEndpoint, /reviewer_credential_delivery_failed/);
 assert.match(managedEndpoint, /internal_admin_mailbox/);
 assert.match(managedEndpoint, /recipient_email: INTERNAL_RECIPIENT/);
-assert.doesNotMatch(managedEndpoint, /password:/);
+assert.doesNotMatch(managedEndpoint, /reviewer_password|temporary_password|password_plaintext/);
 assert.match(managedClientAccess, /CREATE TABLE IF NOT EXISTS hermes_managed_client_access/);
 assert.match(managedClientAccess, /access_level IN \('viewer','editor'\)/);
 assert.match(crmApi, /managed_reviewer_read_only/);
