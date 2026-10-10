@@ -78,6 +78,11 @@ export const mzmJunkRemovalClient = {
       url: "https://mzm-junk-removal.com/",
       observedAt: "2026-10-10",
       evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
+      googleMapsPublicFingerprint: {
+        url: "https://www.google.com/maps?cid=14309271527164244470",
+        cid: "14309271527164244470",
+        purpose: "identity_match_only_not_management_authorization",
+      },
       confirmsExistingManifest: [
         "MZM Junk Removal identity",
         "public phone (279) 239-1800",
