@@ -57,7 +57,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (ctx.error) return errorResponse(ctx.error);
   const url = new URL(request.url);
   const module = url.searchParams.get("module") || "dashboard";
-  const ownerId = String(ctx.dataOwnerId || ctx.specialist.id);
+  const ownerId = String(ctx.dataOwnerId || "");
+  if (!ownerId) return errorResponse({ status: 409, code: "home_service_data_owner_missing" });
 
   if (module === "profile") {
     const profile = await readProfile(env.DB, ownerId);
@@ -120,7 +121,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
   const action = String(body.action || "");
-  const ownerId = String(ctx.specialist.id);
+  const ownerId = String(ctx.dataOwnerId || "");
+  if (!ownerId) return errorResponse({ status: 409, code: "home_service_data_owner_missing" });
   const companyId = String(ctx.company.id);
   const now = new Date().toISOString();
 
