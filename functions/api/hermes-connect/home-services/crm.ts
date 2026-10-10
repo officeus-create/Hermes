@@ -120,7 +120,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
   const action = String(body.action || "");
-  const ownerId = String(ctx.specialist.id);
+  const ownerId = String(ctx.dataOwnerId || ctx.specialist.id);
   const companyId = String(ctx.company.id);
   const now = new Date().toISOString();
 
