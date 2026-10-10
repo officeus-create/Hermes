@@ -151,7 +151,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const [company, profile, leadCount] = await Promise.all([
     env.DB.prepare(`
-      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,country_code,timezone,
+      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
              catalog_opt_in,catalog_status,load_board_access,public_source_ref,management_mode,catalog_publication_basis
       FROM hermes_company_profiles WHERE id=? LIMIT 1
     `).bind(COMPANY_ID).first(),
@@ -174,6 +174,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.state || "") === mzmJunkRemovalClient.base.state &&
     String(company?.website || "") === mzmJunkRemovalClient.website &&
     String(company?.phone || "") === mzmJunkRemovalClient.phone &&
+    String(company?.address_line1 || "") === "" &&
+    String(company?.postal_code || "") === "" &&
     String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
     String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
@@ -183,6 +185,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
   const validProfile =
+    String(profile?.id || "") === PROFILE_ID &&
     String(profile?.owner_specialist_id || "") === DATA_OWNER_ID &&
     String(profile?.company_id || "") === COMPANY_ID &&
     String(profile?.service_subtype || "") === mzmJunkRemovalClient.serviceSubtype &&
