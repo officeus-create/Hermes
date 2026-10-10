@@ -19,6 +19,10 @@ export const mzmJunkRemovalClient = {
     "Construction debris removal",
     "Yard debris removal",
     "Commercial junk removal",
+    "Mattress removal",
+    "E-waste removal",
+    "Hot tub removal",
+    "Shed removal",
   ],
   serviceAreas: [
     "Roseville",
@@ -37,6 +41,7 @@ export const mzmJunkRemovalClient = {
     "Penryn",
     "Newcastle",
     "Rancho Cordova",
+    "North Highlands",
   ],
   crm: {
     pipeline: ["new", "contacted", "quoted", "follow_up", "booked", "in_progress", "completed", "lost", "cancelled"],
@@ -71,22 +76,20 @@ export const mzmJunkRemovalClient = {
   publicEvidence: {
     officialWebsite: {
       url: "https://mzm-junk-removal.com/",
-      observedAt: "2026-10-08",
+      observedAt: "2026-10-10",
       evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
       confirmsExistingManifest: [
         "MZM Junk Removal identity",
         "public phone (279) 239-1800",
         "Roseville and Greater Sacramento market",
-        "junk removal / cleanout / furniture / appliance / construction debris / yard debris service scope",
+        "junk removal / cleanout / furniture / appliance / mattress / e-waste / construction debris / yard debris / hot tub / shed service scope",
+        "North Highlands service area",
       ],
       ownerReviewCandidates: {
-        serviceAreas: ["North Highlands"],
         services: [
-          "Mattress removal",
           "Eviction cleanouts",
           "Office cleanouts",
           "Storage unit cleanouts",
-          "Shed removal",
         ],
       },
     },
