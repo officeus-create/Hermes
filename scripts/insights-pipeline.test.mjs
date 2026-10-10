@@ -2,6 +2,7 @@ import "./insights-sitemap-maintenance.test.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
 import "./insights-source-registry.test.mjs";
 
 const registry = JSON.parse(await readFile(new URL("../src/data/insights.generated.json", import.meta.url), "utf8"));
@@ -12,6 +13,35 @@ const evidenceUses = new Set(["primary", "context_only", "private_signal"]);
 const publicationRecommendations = new Set(["hold", "telegram", "digest", "standalone", "standalone_historical"]);
 
 assert.ok(registry.length >= 1, "insights registry must contain at least one approved record");
+assert.equal(isVerifiedSourceCta("https://example.com/", "https://example.com/"), true);
+assert.equal(
+  isVerifiedSourceCta(
+    "https://example.com/?utm_source=hermeslogisticsus.com&utm_medium=referral&utm_campaign=mzm_evidence_insight&utm_content=primary_cta",
+    "https://example.com/",
+  ),
+  true,
+);
+assert.equal(
+  isVerifiedSourceCta(
+    "https://example.com/?utm_source=other.example&utm_medium=referral&utm_campaign=mzm_evidence_insight",
+    "https://example.com/",
+  ),
+  false,
+);
+assert.equal(
+  isVerifiedSourceCta(
+    "https://example.com/other?utm_source=hermeslogisticsus.com&utm_medium=referral&utm_campaign=mzm_evidence_insight",
+    "https://example.com/",
+  ),
+  false,
+);
+assert.equal(
+  isVerifiedSourceCta(
+    "https://example.com/?utm_source=hermeslogisticsus.com&utm_medium=referral&utm_campaign=mzm_evidence_insight&redirect=https%3A%2F%2Fevil.example",
+    "https://example.com/",
+  ),
+  false,
+);
 const routeKeys = new Set();
 const sourceUrls = new Set();
 for (const post of registry) {
@@ -24,7 +54,7 @@ for (const post of registry) {
   assert.ok(post.contentTier !== "standalone" || post.faq.length >= 3, `${post.id}: standalone FAQ missing`);
   assert.ok(post.related.length >= (post.contentTier === "standalone" ? 2 : 1) && post.related.every((item) => item.href.startsWith("/")), `${post.id}: internal related links required`);
   const primaryActionIsInternal = post.primaryAction.href.startsWith("/");
-  const primaryActionIsVerifiedSource = post.primaryAction.href === post.sourceUrl;
+  const primaryActionIsVerifiedSource = isVerifiedSourceCta(post.primaryAction.href, post.sourceUrl);
   assert.ok(primaryActionIsInternal || primaryActionIsVerifiedSource, `${post.id}: primary CTA must stay internal or equal the verified source URL`);
   assert.ok(post.secondaryAction.href.startsWith("/"), `${post.id}: secondary CTA must remain internal`);
   if (post.routeOwner !== undefined) {
@@ -90,8 +120,8 @@ for (const post of registry.filter((item) => item.contentTier === "standalone"))
 const rss = await readFile(new URL("../src/pages/insights/rss.xml.ts", import.meta.url), "utf8");
 assert.ok(rss.includes("application/rss+xml"), "RSS route must emit RSS content type");
 const publisher = await readFile(new URL("./publish-insight.mjs", import.meta.url), "utf8");
-assert.match(publisher, /primaryActionIsVerifiedSource = primaryActionHref === post\.sourceUrl/);
-assert.match(publisher, /primaryAction must use an internal href or exactly match sourceUrl/);
+assert.match(publisher, /primaryActionIsVerifiedSource = isVerifiedSourceCta\(primaryActionHref, post\.sourceUrl\)/);
+assert.match(publisher, /primaryAction must use an internal href, exactly match sourceUrl, or add only approved Hermes UTM attribution/);
 assert.match(publisher, /secondaryAction must use an internal href/);
 const insightComponent = await readFile(new URL("../src/components/ContentInsightPage.astro", import.meta.url), "utf8");
 assert.match(insightComponent, /data-insight-source-cta/);
