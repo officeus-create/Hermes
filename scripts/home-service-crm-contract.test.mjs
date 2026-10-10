@@ -324,7 +324,11 @@ assert.match(clientConfig, /"Storage unit cleanouts"/);
 assert.match(clientConfig, /noSyntheticBusinessOutcomes: true/);
 assert.match(companyTypes, /management_mode: "TEXT NOT NULL DEFAULT 'owner_managed'"/);
 assert.match(companyTypes, /catalog_publication_basis: "TEXT NOT NULL DEFAULT 'owner_opt_in'"/);
-assert.match(crmHelper, /hermes_internal_owner_required/);
+assert.match(crmHelper, /managed_client_access_required/);
+assert.match(crmHelper, /CREATE TABLE IF NOT EXISTS hermes_managed_client_access/);
+assert.match(crmHelper, /PRIMARY KEY \(specialist_id, company_id\)/);
+assert.match(crmHelper, /hermes_managed_reviewer/);
+assert.match(crmHelper, /readOnly: !internalAccess && accessRole !== "editor"/);
 assert.match(crmHelper, /management_mode='hermes_managed'/);
 assert.equal((crmApi.match(/const ownerId = String\(ctx\.dataOwnerId \|\| ""\);/g) || []).length, 2,
   "Both GET and POST must resolve the canonical dataOwnerId");
@@ -332,6 +336,12 @@ assert.equal((crmApi.match(/home_service_data_owner_missing/g) || []).length, 2,
   "Both reads and writes must fail closed when the CRM data owner is absent");
 assert.doesNotMatch(crmApi, /const ownerId = String\(ctx\.specialist\.id\)/);
 assert.match(workspace, /metrics\[key\] == null \? "UNKNOWN" : percent\(metrics\[key\]\)/);
+assert.match(crmApi, /managed_client_read_only/);
+assert.match(crmApi, /readOnly: Boolean\(ctx\.readOnly\)/);
+assert.match(workspace, /CLIENT PREVIEW · SAMPLE DATA/);
+assert.match(workspace, /excluded from every real KPI above/);
+assert.match(workspace, /allLeads\.length===0/);
+
 
 assert.match(workspace, /searchParams\.get\("managed"\)/);
 assert.match(workspace, /managedApiUrl/);
