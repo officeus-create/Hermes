@@ -8,4 +8,4 @@
 
 For the Car Hauling commercial lead route, keep Telegram credentials server-side only. Configure `CAR_HAULING_TELEGRAM_BOT_TOKEN` and `CAR_HAULING_TELEGRAM_SALES_CHAT_ID` as Worker secrets/bindings; never commit their values to this repository.
 
-After redeploy, verify both paths: a known synthetic carrier smoke must arrive only as `[HERMES TEST]` in the primary Sales inbox, while a real Car Hauling carrier must reach primary Sales, Dispatch Truck 107, Volkogon, and the approved Sales Telegram group. Replaying the same request ID must not create duplicate notifications.
+After redeploy, verify both paths: a known synthetic carrier smoke must arrive only as `[HERMES TEST]` in the primary Sales inbox, while a real Car Hauling carrier may reach only the approved Sales/owner notification routes. **Dispatch Truck 107 and dispatcher inboxes are explicitly excluded from Car Hauling email notifications.** Replaying the same request ID must not create duplicate notifications.
