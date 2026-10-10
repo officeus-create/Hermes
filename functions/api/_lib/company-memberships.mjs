@@ -3,6 +3,7 @@ import { parseBusinessRef } from "./business-identity.mjs";
 const MEMBERSHIP_ROLES = new Set(["admin", "member", "read_only"]);
 const CLEAN_RE = /[<>\u0000-\u001f\u007f]/g;
 const GRANT_SOURCE_RE = /^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,239}$/;
+const WORKSPACE_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:/#-]{0,219}$/;
 const clean = (value, max = 240) => String(value ?? "").replace(CLEAN_RE, "").trim().slice(0, max);
 
 export async function ensureCompanyMembershipSchema(db) {
@@ -42,6 +43,7 @@ export function membershipRowAsPermission(row) {
   const grantSource = clean(row.grant_source, 240);
   const grantedBy = clean(row.granted_by, 180);
   if (!parsed || parsed.namespace !== "company") return null;
+  if (workspaceRef && !WORKSPACE_REF_RE.test(workspaceRef)) return null;
   if (!MEMBERSHIP_ROLES.has(role)) return null;
   if (!specialistId || !GRANT_SOURCE_RE.test(grantSource) || !grantedBy || grantedBy === specialistId) return null;
   if (Number(row.active) !== 1 || row.revoked_at) return null;
