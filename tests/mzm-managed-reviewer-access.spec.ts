@@ -116,6 +116,7 @@ test("managed reviewer backend scope is company-specific and fail-closed for wri
   const helper = readFileSync("functions/api/_lib/home-service-crm.mjs", "utf8");
   const api = readFileSync("functions/api/hermes-connect/home-services/crm.ts", "utf8");
   const grant = readFileSync("functions/api/internal/mzm-reviewer-access.ts", "utf8");
+  const workflow = readFileSync(".github/workflows/mzm-reviewer-access.yml", "utf8");
 
   expect(helper).toContain("CREATE TABLE IF NOT EXISTS hermes_managed_client_access");
   expect(helper).toContain("PRIMARY KEY (specialist_id, company_id)");
@@ -128,4 +129,11 @@ test("managed reviewer backend scope is company-specific and fail-closed for wri
   expect(grant).toContain("home-service-managed:mzm-junk-removal");
   expect(grant).toContain("access_role: \"viewer\"");
   expect(grant).toContain("owner_authentication_claimed: false");
+  expect(workflow).toContain("github.event.comment.user.login == 'officeus-create'");
+  expect(workflow).toContain("startsWith(github.event.comment.body, '/create-mzm-reviewer ')");
+  expect(workflow).toContain("RECIPIENT_KEY_COMMENT");
+  expect(workflow).toContain("Reviewer recipient key must be RSA-4096.");
+  expect(workflow).toContain("openssl pkeyutl -encrypt -pubin");
+  expect(workflow).not.toContain("-----BEGIN PUBLIC KEY-----");
+  expect(workflow).not.toContain("Temporary password");
 });
