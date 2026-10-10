@@ -114,6 +114,8 @@ test('Public home-service counters enforce publication gates and never write on 
         expect(sql).toContain("JOIN hermes_home_service_profiles");
         expect(sql).toContain("c.company_type='home_service'");
         expect(sql).toContain("c.catalog_opt_in=1");
+        expect(sql).toContain("hermes_client_publication_approved");
+        expect(sql).toContain("c.management_mode='hermes_managed'");
         expect(sql).toContain("'self_submitted','verified_public'");
         return published ? {id:'company-123',slug:'public-company'} : null;
       },
