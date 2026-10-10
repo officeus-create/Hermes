@@ -101,14 +101,14 @@ jobs:
           INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
           FACT_SNAPSHOT="$(jq -r 'if (.managed_fact_snapshot_verified | type) == "boolean" then .managed_fact_snapshot_verified else "__invalid__" end' "${TMP}/provision.json")"
 
-          [ -z "${PROFILE_PATH}" ] \
-            || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
+          [ "${PROFILE_PATH}" = "/businesses/connect/company/mzm-junk-removal/" ] \
+            || fail "public_profile_path_invalid" "Verified Hermes-managed client projection did not return the canonical MZM Catalog path."
           [ "${CRM_PATH}" = "/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal" ] \
             || fail "crm_workspace_path_invalid" "Production operator returned an unexpected managed CRM path."
           [ "${MODE}" = "hermes_managed" ] \
             || fail "management_mode_mismatch" "Managed-client mode did not read back."
-          [ "${BASIS}" = "owner_consent_pending" ] \
-            || fail "publication_basis_mismatch" "Catalog publication must remain pending owner consent."
+          [ "${BASIS}" = "hermes_managed_client_public_facts" ] \
+            || fail "publication_basis_mismatch" "Catalog publication must use the verified Hermes-managed client public-facts basis."
           [ "${OWNER_CONSENT}" = false ] && [ "${OWNER_AUTH}" = false ] \
             || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
           [ "${INTERNAL_UI}" = "REQUIRED_SEPARATELY" ] \
@@ -118,22 +118,28 @@ jobs:
           [[ "${LEADS}" =~ ^[0-9]+$ ]] \
             || fail "lead_count_receipt_invalid" "Real lead count was missing or invalid; missing evidence must not be rendered as zero."
 
-          PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
+          PUBLIC_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
-            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PRIVATE_PROFILE}?verify=$(date +%s)")"
-          [ "${PROFILE_HTTP}" = 404 ] \
-            || fail "catalog_fail_closed_failed" "MZM became publicly reachable before explicit Catalog consent."
+            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PUBLIC_PROFILE}?verify=$(date +%s)")"
+          [ "${PROFILE_HTTP}" = 200 ] \
+            || fail "catalog_profile_not_public" "Verified MZM Catalog profile did not return HTTP 200."
+          grep -Fq '<meta name="robots" content="index,follow">' "${TMP}/profile.html" \
+            || fail "catalog_profile_not_indexable" "MZM Catalog profile is not index,follow."
+          grep -Fq '<link rel="canonical" href="https://hermeslogisticsus.com/businesses/connect/company/mzm-junk-removal/">' "${TMP}/profile.html" \
+            || fail "catalog_profile_canonical_mismatch" "MZM Catalog canonical is missing or incorrect."
+          grep -Fq 'Hermes-managed client profile · public facts verified' "${TMP}/profile.html" \
+            || fail "catalog_profile_verification_label_missing" "MZM Catalog profile does not expose the managed-client verification boundary."
 
           SITEMAP_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/sitemap.xml" -w '%{http_code}' "${BASE_URL}/sitemap-connect-catalog.xml?verify=$(date +%s)")"
-          [ "${SITEMAP_HTTP}" = 200 ] && ! grep -Fq "${PRIVATE_PROFILE}" "${TMP}/sitemap.xml" \
-            || fail "catalog_sitemap_fail_closed_failed" "MZM appeared in the Catalog sitemap before explicit owner consent."
+          [ "${SITEMAP_HTTP}" = 200 ] && grep -Fq "${PUBLIC_PROFILE}" "${TMP}/sitemap.xml" \
+            || fail "catalog_sitemap_publication_failed" "MZM is missing from the Catalog sitemap after verified managed publication."
 
           CATALOG_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/catalog.json" -w '%{http_code}' "${BASE_URL}/api/catalog/companies?verify=$(date +%s)")"
           [ "${CATALOG_HTTP}" = 200 ] \
-            && ! jq -e '.companies[] | select(.slug=="mzm-junk-removal")' "${TMP}/catalog.json" >/dev/null \
-            || fail "catalog_api_fail_closed_failed" "Public Catalog API exposed MZM before explicit owner consent."
+            && jq -e '.companies[] | select(.slug=="mzm-junk-removal" and .managementMode=="hermes_managed" and .publicationBasis=="hermes_managed_client_public_facts")' "${TMP}/catalog.json" >/dev/null \
+            || fail "catalog_api_publication_failed" "Public Catalog API does not expose the verified MZM managed-client projection."
 
           echo "classification=pass" >> "${GITHUB_OUTPUT}"
           cat > "${RESULT}" <<EOF
@@ -142,8 +148,8 @@ jobs:
           - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes internal operations.
           - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
           - ✅ Managed Company/Profile facts, services and service areas read back exactly from the current canonical MZM config.
-          - ✅ Public Catalog remains fail-closed: publication basis is \`${BASIS}\`, profile returns 404, and Catalog API/sitemap do not expose MZM.
-          - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
+          - ✅ Public MZM Catalog profile is live from verified public business facts under publication basis \`${BASIS}\`; profile, Catalog API and sitemap agree on one canonical Company.
+          - ✅ Owner consent/authentication are **not** claimed; this Hermes-managed client projection is distinct from a future owner claim/adoption and does not create a duplicate Company.
           - ⚠️ Actual private workspace traversal remains a separate authenticated \`HERMES_INTERNAL_OWNER\` readback; provisioning does not fabricate that receipt.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
           - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
