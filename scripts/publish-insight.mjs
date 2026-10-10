@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { resolve } from "node:path";\nimport { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
 
 const root = new URL("../", import.meta.url);
 const registryUrl = new URL("../src/data/insights.generated.json", import.meta.url);
@@ -33,9 +33,9 @@ if (!Array.isArray(post.faq) || (post.contentTier === "standalone" && post.faq.l
 if (!Array.isArray(post.related) || post.related.length < (post.contentTier === "standalone" ? 2 : 1) || post.related.some((item) => !String(item.href ?? "").startsWith("/"))) errors.push("internal related links are insufficient for the selected content tier");
 const primaryActionHref = String(post.primaryAction?.href ?? "");
 const primaryActionIsInternal = primaryActionHref.startsWith("/");
-const primaryActionIsVerifiedSource = primaryActionHref === post.sourceUrl;
+const primaryActionIsVerifiedSource = isVerifiedSourceCta(primaryActionHref, post.sourceUrl);
 if (!post.primaryAction || (!primaryActionIsInternal && !primaryActionIsVerifiedSource)) {
-  errors.push("primaryAction must use an internal href or exactly match sourceUrl");
+  errors.push("primaryAction must use an internal href, exactly match sourceUrl, or add only approved Hermes UTM attribution to that verified source");
 }
 if (!post.secondaryAction || !String(post.secondaryAction.href ?? "").startsWith("/")) {
   errors.push("secondaryAction must use an internal href");
