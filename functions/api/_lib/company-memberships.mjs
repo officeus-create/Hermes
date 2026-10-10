@@ -1,6 +1,6 @@
 import { parseBusinessRef } from "./business-identity.mjs";
 
-const MEMBERSHIP_ROLES = new Set(["owner", "admin", "member", "read_only"]);
+const MEMBERSHIP_ROLES = new Set(["admin", "member", "read_only"]);
 const CLEAN_RE = /[<>\u0000-\u001f\u007f]/g;
 const clean = (value, max = 240) => String(value ?? "").replace(CLEAN_RE, "").trim().slice(0, max);
 
@@ -11,7 +11,7 @@ export async function ensureCompanyMembershipSchema(db) {
       business_ref TEXT NOT NULL,
       workspace_ref TEXT,
       specialist_id TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('owner','admin','member','read_only')),
+      role TEXT NOT NULL CHECK (role IN ('admin','member','read_only')),
       active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),
       grant_source TEXT NOT NULL,
       granted_by TEXT NOT NULL,
