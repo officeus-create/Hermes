@@ -101,6 +101,14 @@ test.describe('Logistics career → private HR intake', () => {
     expect(JSON.stringify(evidence.body.events[0].payload)).not.toContain('synthetic.candidate@example.com');
   });
 
+  test('international digital-sales interest uses the existing private HR intake without claiming an open vacancy', async ({ page }) => {
+    await page.goto('/logistics/apply/?for=career&role=international-digital-sales&source=hermes_careers');
+    await expect(page.locator('select[name="application_type"]')).toHaveValue('career');
+    await expect(page.locator('input[name="interest"]')).toHaveValue('International Digital Solutions Sales — Websites, CRM, SEO & AI');
+    await expect(page.locator('[data-application-context]')).toContainText('International Digital Solutions Sales');
+    await expect(page.locator('[data-application-context]')).toContainText('hermes_careers');
+  });
+
   test('agency inquiry remains local preview and does not enter HR', async ({ page }) => {
     let apiCalls = 0;
     await page.route('**/api/hr/candidate', async (route) => {
