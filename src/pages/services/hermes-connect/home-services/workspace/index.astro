@@ -221,12 +221,16 @@ import { mzmHomeServiceCrmSampleLeads } from "../../../../../data/mzm-home-servi
       const name=$<HTMLElement>("[data-company-name]");if(name)name.textContent=dashboard?.company?.name||"Home Services";
       const catalog=$<HTMLAnchorElement>("[data-catalog-link]");
       const privateNotice=$<HTMLElement>("[data-catalog-private]");
-      // Dynamic public Home Services profiles only exist when owner opts in AND saves a public-facing profile.
-      const isPublished=Boolean(dashboard?.company?.slug && dashboard?.company?.catalogOptIn &&
-        ["self_submitted","verified_public"].includes(dashboard?.company?.catalogStatus) && dashboard?.profile?.id);
+      const ownerPublished=Boolean(dashboard?.company?.catalogOptIn &&
+        ["self_submitted","verified_public"].includes(dashboard?.company?.catalogStatus));
+      const managedPublished=Boolean(dashboard?.company?.managementMode==="hermes_managed" &&
+        dashboard?.company?.catalogStatus==="verified_public" &&
+        dashboard?.company?.publicationBasis==="hermes_managed_client_public_facts");
+      const isPublished=Boolean(dashboard?.company?.slug && dashboard?.profile?.id && (ownerPublished||managedPublished));
       if(catalog){catalog.hidden=!isPublished;if(isPublished)catalog.href="/businesses/connect/company/"+encodeURIComponent(dashboard.company.slug)+"/";}
-      if(privateNotice){privateNotice.hidden=isPublished;privateNotice.textContent=dashboard?.company?.catalogOptIn
-        ? "Catalog pending public business profile" : "Catalog private · owner opt-in required";}
+      if(privateNotice){privateNotice.hidden=isPublished;privateNotice.textContent=dashboard?.company?.managementMode==="hermes_managed"
+        ? "Hermes-managed Catalog profile pending publication" : dashboard?.company?.catalogOptIn
+          ? "Catalog pending public business profile" : "Catalog private · owner opt-in required";}
       const metrics=dashboard.metrics||{};const total=$<HTMLElement>('[data-kpi="totalLeads"]');if(total)total.textContent=String(metrics.totalLeads||0);
       for(const key of ["revenueCents","grossAfterTrackedCostsCents","averageTicketCents"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=money(metrics[key]);}
       const evidence=metrics.moneyEvidence||{};
