@@ -24,6 +24,8 @@ const sanitizer = read("scripts/ai/hermes-internal-ai-sanitize.py");
 const bootstrap = read("functions/api/internal-ai/bootstrap-owner.ts");
 const internalNav = read("src/components/HermesConnectInternalAiNav.astro");
 const agentPolicy = read("AGENTS.md");
+assert.doesNotMatch(agentPolicy, /policy\\\\n8\\. \`docs\\/DESIGN_INTEGRATION_CONTRACT\\.md\`/, "AGENTS first-read list must not contain a literal escaped newline");
+assert.match(agentPolicy, /7\. \`docs\\/GOOGLE_ACCESS_GOVERNOR\\.md\`[\s\S]*8\. \`docs\\/DESIGN_INTEGRATION_CONTRACT\\.md\`[\s\S]*9\. \`docs\\/PUBLIC_INFORMATION_POLICY\\.md\`/, "AGENTS first-read governance order must remain line-delimited and sequential");
 assert.match(page, /robots="noindex,nofollow"/, "internal AI page must stay noindex");
 assert.match(page, /<HermesConnectExperience\s*\/>/, "internal AI page must reuse canonical Hermes Connect experience");
 assert.match(page, /AI Assistant/, "embedded slice must identify itself as AI Assistant");
