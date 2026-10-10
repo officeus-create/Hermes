@@ -64,6 +64,20 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(409, { success: false, error: "managed_slug_collision" }, privateHeaders);
   }
 
+  const [preflightMismatchedLeadCount, preflightMismatchedProfileCount] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
+    env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_profiles WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
+  ]);
+  const preflightManagedOwnerMismatchRecords =
+    Number(preflightMismatchedLeadCount?.count || 0) + Number(preflightMismatchedProfileCount?.count || 0);
+  if (preflightManagedOwnerMismatchRecords > 0) {
+    return jsonResponse(409, {
+      success: false,
+      error: "managed_data_owner_mismatch_records",
+      managed_owner_mismatch_records: preflightManagedOwnerMismatchRecords,
+    }, privateHeaders);
+  }
+
   const now = new Date().toISOString();
   const existingCompany = await env.DB.prepare(
     "SELECT created_at FROM hermes_company_profiles WHERE id=? LIMIT 1"
