@@ -29,18 +29,19 @@ for (const [id, role] of [['c', 'Dealer Staff'], ['d', 'Dealer Staff'], ['e', 'D
   sqlite.prepare('INSERT INTO specialists VALUES (?,?,?,?,?,?)').run(id, `${id}@example.invalid`, 'Synthetic delegated specialist', role, '', '');
   sqlite.prepare('INSERT INTO sessions VALUES (?,?,?)').run(`synthetic-${id}`, id, new Date(Date.now() + 3600000).toISOString());
 }
-const insertMembership = (id, businessRef, specialistId, role, active = 1, revokedAt = null) =>
+const insertMembership = (id, businessRef, specialistId, role, active = 1, revokedAt = null, grantedBy = 'a') =>
   sqlite.prepare(`INSERT INTO hermes_company_memberships
     (id,business_ref,workspace_ref,specialist_id,role,active,grant_source,granted_by,created_at,updated_at,revoked_at,revoked_by)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(
-      id, businessRef, null, specialistId, role, active, 'synthetic_owner_grant', 'a',
-      '2026-10-10T20:00:00Z', '2026-10-10T20:00:00Z', revokedAt, revokedAt ? 'a' : null,
+      id, businessRef, null, specialistId, role, active, 'synthetic_owner_grant', grantedBy,
+      '2026-10-10T20:00:00Z', '2026-10-10T20:00:00Z', revokedAt, revokedAt ? grantedBy : null,
     );
 insertMembership('mem-readonly-a', 'company:a', 'c', 'read_only');
 insertMembership('mem-member-a', 'company:a', 'd', 'member');
 insertMembership('mem-revoked-a', 'company:a', 'e', 'read_only', 0, '2026-10-10T20:30:00Z');
 insertMembership('mem-admin-a', 'company:a', 'f', 'admin');
-assert.throws(() => insertMembership('mem-self', 'company:a', 'roletext', 'admin'), /CHECK constraint failed/i, 'delegated storage must reject self-promotion when grantor equals subject');
+assert.throws(() => insertMembership('mem-self', 'company:a', 'roletext', 'admin', 1, null, 'roletext'), /CHECK constraint failed/i, 'delegated storage must reject self-promotion when grantor equals subject');
+assert.throws(() => insertMembership('mem-delegated-owner', 'company:a', 'roletext', 'owner'), /CHECK constraint failed/i, 'owner role must remain an authoritative owner relation, not a delegated membership');
 
 const request = (owner = 'a', module = 'intelligence', method = 'GET', body, headers = {}, businessRef = '') => {
   const url = new URL('https://example.invalid/api/hermes-connect/dealer/crm');
