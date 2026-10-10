@@ -151,8 +151,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const [company, profile, leadCount] = await Promise.all([
     env.DB.prepare(`
-      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,catalog_opt_in,catalog_status,
-             load_board_access,public_source_ref,management_mode,catalog_publication_basis
+      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
+             catalog_opt_in,catalog_status,load_board_access,public_source_ref,management_mode,catalog_publication_basis
       FROM hermes_company_profiles WHERE id=? LIMIT 1
     `).bind(COMPANY_ID).first(),
     env.DB.prepare(`
@@ -162,23 +162,43 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE owner_specialist_id=?").bind(DATA_OWNER_ID).first(),
   ]);
 
+  const expectedServicesJson = JSON.stringify(mzmJunkRemovalClient.services);
+  const expectedServiceAreasJson = JSON.stringify(mzmJunkRemovalClient.serviceAreas);
+  const persistedZero = (value: unknown) => value === 0 || value === "0";
+  const realLeadsTracked = leadCount?.count;
+  const validLeadCount = typeof realLeadsTracked === "number" && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
   const validCompany =
     String(company?.id || "") === COMPANY_ID &&
     String(company?.owner_specialist_id || "") === DATA_OWNER_ID &&
+    String(company?.company_name || "") === mzmJunkRemovalClient.companyName &&
     String(company?.slug || "") === SLUG &&
     String(company?.company_type || "") === "home_service" &&
-    Number(company?.catalog_opt_in || 0) === 0 &&
+    String(company?.city || "") === mzmJunkRemovalClient.base.city &&
+    String(company?.state || "") === mzmJunkRemovalClient.base.state &&
+    String(company?.website || "") === mzmJunkRemovalClient.website &&
+    String(company?.phone || "") === mzmJunkRemovalClient.phone &&
+    String(company?.address_line1 || "") === "" &&
+    String(company?.postal_code || "") === "" &&
+    String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
+    String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
+    String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
+    persistedZero(company?.catalog_opt_in) &&
     String(company?.catalog_status || "") === "managed_private" &&
-    Number(company?.load_board_access || 0) === 0 &&
+    persistedZero(company?.load_board_access) &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
   const validProfile =
+    String(profile?.id || "") === PROFILE_ID &&
     String(profile?.owner_specialist_id || "") === DATA_OWNER_ID &&
     String(profile?.company_id || "") === COMPANY_ID &&
     String(profile?.service_subtype || "") === mzmJunkRemovalClient.serviceSubtype &&
-    String(profile?.semantic_core_ref || "") === mzmJunkRemovalClient.semanticCore.sourceRef;
+    String(profile?.services_json || "") === expectedServicesJson &&
+    String(profile?.service_areas_json || "") === expectedServiceAreasJson &&
+    String(profile?.public_summary || "") === mzmJunkRemovalClient.publicSummary &&
+    String(profile?.semantic_core_ref || "") === mzmJunkRemovalClient.semanticCore.sourceRef &&
+    String(profile?.content_status || "") === "active_content_planning";
 
-  if (!validCompany || !validProfile) {
+  if (!validCompany || !validProfile || !validLeadCount) {
     return jsonResponse(409, { success: false, error: "managed_client_readback_mismatch" }, privateHeaders);
   }
 
@@ -207,7 +227,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     owner_authentication_claimed: false,
     internal_operator_capability: "HERMES_INTERNAL_OWNER",
     internal_operator_ui_readback: "REQUIRED_SEPARATELY",
-    real_leads_tracked: Number(leadCount?.count || 0),
+    managed_fact_snapshot_verified: true,
+    real_leads_tracked: realLeadsTracked,
     business_outcomes: "UNKNOWN_UNLESS_RECORDED_WITH_EVIDENCE",
   }, privateHeaders);
 }
