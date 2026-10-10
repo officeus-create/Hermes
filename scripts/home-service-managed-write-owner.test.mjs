@@ -25,6 +25,9 @@ const managedWorkflow = readFileSync(new URL("../.github/workflows/mzm-managed-c
 
 assert.match(managedEndpoint, /company_id=\? AND owner_specialist_id<>\?/);
 assert.match(managedEndpoint, /managed_data_owner_mismatch_records/);
+assert.match(managedEndpoint, /managed_identity_preflight_mismatch/);
+assert.match(managedEndpoint, /existingCompanyIdentity/);
+assert.match(managedEndpoint, /existingProfileIdentity/);
 assert.match(managedEndpoint, /preflightManagedOwnerMismatchRecords/);
 assert.match(managedEndpoint, /managed_owner_mismatch_records: preflightManagedOwnerMismatchRecords/);
 assert.match(managedEndpoint, /managed_owner_mismatch_records: managedOwnerMismatchRecords/);
@@ -33,6 +36,7 @@ assert.ok(
   "managed owner mismatch must fail closed before provisioning writes",
 );
 assert.match(managedWorkflow, /OWNER_MISMATCH/);
+assert.match(managedWorkflow, /managed_identity_preflight_mismatch/);
 assert.match(managedWorkflow, /managed_data_owner_mismatch_records/);
 assert.match(managedWorkflow, /zero mismatched profile\/lead records/);
 
