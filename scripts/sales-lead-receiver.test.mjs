@@ -54,6 +54,7 @@ const workerEnv = {
   SALES_SENDER: "website@hermeslogisticsus.com",
   CAR_HAULING_TELEGRAM_BOT_TOKEN: "test-sales-bot-token",
   CAR_HAULING_TELEGRAM_SALES_CHAT_ID: "-1001296000000",
+  CAR_HAULING_INTERNAL_RECIPIENTS: "dispatchtruck107@gmail.com,dispatchtruck998@gmail.com,volkogon.v@gmail.com",
   EMAIL: {
     async send(message) {
       emailMessages.push(message);
@@ -559,7 +560,8 @@ const directCarrierPayload = {
   submitted_at: "2026-09-15T01:30:00.000Z",
 };
 const carrierLimits = new MemoryKv();
-const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(workerEnv) };
+const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com" };
+const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(carrierWorkerEnv) };
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
 const telegramBeforeCarrier = telegramMessages.length;
@@ -583,18 +585,17 @@ try {
 assert.equal(realCarrier.status, 200);
 assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES SALES] [CAR HAULING] [CARRIER]");
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [LOGISTICS]");
+assert.match(serviceCalls.at(-1).payload.text, /Sales\/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes/);
 const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
 assert.deepEqual(
   carrierEmails.map((message) => message.to).sort(),
-  ["dispatchtruck107@gmail.com", "officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
+  ["officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
 );
-assert.ok(carrierEmails.every((message) => message.subject === "[HERMES SALES] [CAR HAULING] [CARRIER]"));
-assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
-assert.equal(telegramMessages.at(-1).chat_id, "-1001296000000");
-assert.match(telegramMessages.at(-1).text, /Real Carrier LLC/);
-assert.match(telegramMessages.at(-1).text, /Request ID: carrier_real_1296_12345/);
-assert.match(telegramMessages.at(-1).text, /Page: \/logistics\/start-car-hauling-dispatch\//);
+assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
+assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
+assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! LOGISTICS/);
+assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
 
 const duplicateCarrier = await onRequest({
   request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
@@ -602,9 +603,9 @@ const duplicateCarrier = await onRequest({
 });
 assert.equal(duplicateCarrier.status, 200);
 assert.equal((await duplicateCarrier.json()).duplicate, true);
-assert.equal(emailMessages.length, emailsBeforeCarrier + 3);
+assert.equal(emailMessages.length, emailsBeforeCarrier + 2);
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
+assert.equal(telegramMessages.length, telegramBeforeCarrier);
 
 const syntheticCarrierPayload = {
   ...directCarrierPayload,
@@ -679,14 +680,14 @@ try {
     durableAcceptedBody.delivery_ledger.destinations.find((destination) => destination.channel === "telegram").error,
     "outside_working_hours",
   );
-  assert.equal(durableEmailMessages.length, 3);
+  assert.equal(durableEmailMessages.length, 2);
   assert.equal(telegramMessages.length, telegramBeforeDurable);
   assert.ok(durableStorage.alarmTime > new NativeDate("2026-09-15T22:46:00.000Z").valueOf(), "Quiet-hours Telegram delivery must schedule a Durable Object alarm.");
 
   const durableDuplicate = await durableCoordinator.fetch(durableRequest());
   assert.equal(durableDuplicate.status, 202);
   assert.equal((await durableDuplicate.json()).deduplicated, true);
-  assert.equal(durableEmailMessages.length, 3, "A duplicate request ID must not resend delivered email destinations.");
+  assert.equal(durableEmailMessages.length, 2, "A duplicate request ID must not resend delivered email destinations.");
 
   const durableConflict = await durableCoordinator.fetch(durableRequest({
     ...durablePayload,
@@ -700,7 +701,7 @@ try {
 } finally {
   globalThis.Date = NativeDate;
 }
-assert.equal(durableEmailMessages.length, 3, "Alarm retry must skip already delivered email destinations.");
+assert.equal(durableEmailMessages.length, 2, "Alarm retry must skip already delivered email destinations.");
 assert.equal(telegramMessages.length, telegramBeforeDurable + 1, "Alarm retry must deliver the pending Telegram destination.");
 const durableRecord = await durableStorage.get("delivery");
 assert.ok(durableRecord.completedAt, "The durable delivery must be marked complete after every destination is delivered.");
@@ -729,7 +730,7 @@ try {
     request_id: "carrier_expiry_1296_12345",
   }));
   assert.equal(first.status, 202);
-  assert.equal(expiryEmails.length, 3);
+  assert.equal(expiryEmails.length, 2);
   let pendingRecord = await expiryStorage.get("delivery");
   assert.equal(
     pendingRecord.destinations.find((destination) => destination.channel === "telegram").status,
@@ -762,7 +763,7 @@ try {
   const duplicateAfterExpiryBody = await duplicateAfterExpiry.json();
   assert.equal(duplicateAfterExpiryBody.deduplicated, true);
   assert.equal(duplicateAfterExpiryBody.terminal, true);
-  assert.equal(expiryEmails.length, 3, "Expired tombstone must prevent replayed email sends.");
+  assert.equal(expiryEmails.length, 2, "Expired tombstone must prevent replayed email sends.");
 } finally {
   globalThis.Date = NativeDate;
 }
