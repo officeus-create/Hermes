@@ -1,4 +1,6 @@
 import { ensureHomeServiceCrmSchema } from "../../../api/_lib/home-service-crm.mjs";
+import { homeServiceCatalogPublication } from "../../../api/_lib/home-service-catalog-publication.mjs";
+import { mzmJunkRemovalClient } from "../../../../src/data/catalog-client-mzm-junk-removal.ts";
 
 type Env = { DB?: any };
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
@@ -19,14 +21,17 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
 
   const row = await env.DB.prepare(`
     SELECT c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,c.phone,c.address_line1,c.postal_code,
-           c.catalog_status,c.management_mode,c.catalog_publication_basis,c.updated_at,h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
+           c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis,c.updated_at,
+           h.service_subtype,h.services_json,h.service_areas_json,h.public_summary
     FROM hermes_company_profiles c
     JOIN hermes_home_service_profiles h ON h.company_id=c.id
-    WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1
+    WHERE c.slug=? AND c.company_type='home_service'
       AND c.catalog_status IN ('self_submitted','verified_public')
+      AND (c.catalog_opt_in=1 OR c.management_mode='hermes_managed')
     LIMIT 1
   `).bind(slug).first();
-  if (!row) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
+  const publication = homeServiceCatalogPublication(row);
+  if (!row || !publication.eligible) return new Response("Not found", { status: 404, headers: { "X-Robots-Tag": "noindex, follow" } });
 
   const canonical = `https://hermeslogisticsus.com/businesses/connect/company/${encodeURIComponent(String(row.slug))}/`;
   const services = readArray(row.services_json);
@@ -36,6 +41,7 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   const phoneDial = phone.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
   const summary = String(row.public_summary || `${row.company_name} provides local home and property services in ${row.city}, ${row.state} and nearby communities.`);
   const managedByHermes = String(row.management_mode || "") === "hermes_managed";
+  const mzmExperience = String(row.slug || "") === mzmJunkRemovalClient.clientId ? mzmJunkRemovalClient.clientExperience : null;
   const verification = managedByHermes
     ? "Hermes-managed client profile · public facts verified"
     : row.catalog_status === "verified_public"
@@ -62,27 +68,40 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
       name: `${row.company_name} services`,
       itemListElement: services.map((name) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name } })),
     },
+    ...(mzmExperience?.socialProfiles?.length ? { sameAs: mzmExperience.socialProfiles } : {}),
   };
   const serviceList = services.map((service) => `<li>${esc(service)}</li>`).join("");
   const areaList = serviceAreas.map((area) => `<li>${esc(area)}</li>`).join("");
-  const websiteAction = website ? `<a class="btn${managedByHermes ? " primary" : ""}" href="${esc(website)}" target="_blank" rel="nofollow noopener">Official website ↗</a>` : "";
+  const attributedWebsite = mzmExperience && website
+    ? website.replace(/\/$/, "") + "/?utm_source=hermeslogisticsus.com&utm_medium=referral&utm_campaign=mzm_catalog_profile&utm_content=primary_cta"
+    : website;
+  const websiteAction = website ? `<a class="btn${managedByHermes ? " primary" : ""}" href="${esc(attributedWebsite)}" target="_blank" rel="${managedByHermes ? "noopener" : "nofollow noopener"}">Official website ↗</a>` : "";
   const ownerAction = managedByHermes ? "" : `<a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>`;
   const phoneAction = phoneDial ? `<a class="btn" href="tel:${esc(phoneDial)}">Call ${esc(phone)}</a>` : "";
+  const insightAction = mzmExperience?.insight?.url
+    ? `<a class="btn" href="${esc(mzmExperience.insight.url)}">Read the MZM Insight ↗</a>`
+    : "";
   const profileNote = managedByHermes
-    ? "This Hermes client profile is maintained by Hermes from verified public business facts. It does not publish private CRM records or claim unverified business outcomes."
+    ? "This Hermes client profile is maintained by Hermes from verified public business facts. It does not publish private CRM records or claim unverified business outcomes. Hermes-managed publication is separate from owner authentication or owner self-submission."
     : "This public Catalog page contains business-level facts only. Customer names, phone numbers, addresses, job photos, quotes, costs, payments and private CRM records are not published here.";
+  const teamHtml = mzmExperience?.team?.length
+    ? `<article class="card"><p class="eyebrow">Family business</p><h2>${esc(mzmExperience.familyBusinessLabel)}</h2><ul>${mzmExperience.team.map((person) => `<li><strong>${esc(person.name)}</strong> · ${esc(person.role)}</li>`).join("")}</ul><p class="small-note">${esc(mzmExperience.firstPartyHours.label)} · first-party observation ${esc(mzmExperience.firstPartyHours.observedAt)}</p></article>`
+    : "";
+  const evidenceHtml = mzmExperience?.publicJobEvidence?.length
+    ? `<article class="card evidence"><p class="eyebrow">Public job evidence</p><h2>Recent work published by MZM</h2>${mzmExperience.publicJobEvidence.map((job) => `<div class="evidence-row"><strong>${esc(job.city)} · ${esc(job.postalCode)} · ${esc(job.jobType)}</strong><p>${esc(job.detail)}</p><a href="${esc(job.sourceUrl)}" target="_blank" rel="noopener">Source ↗</a></div>`).join("")}<p class="small-note">Public source evidence only — not a Hermes CRM job, booking or revenue record.</p></article>`
+    : "";
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(row.company_name)} | ${esc(row.city)}, ${esc(row.state)} | Hermes Catalog</title>
 <meta name="description" content="${esc(summary)}"><link rel="canonical" href="${canonical}"><meta name="robots" content="index,follow">
 <script type="application/ld+json">${jsonLd(schema)}</script>
-<style>:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:#172033;background:#f5f7fa}*{box-sizing:border-box}body{margin:0}a{color:inherit}.shell{width:min(1120px,calc(100% - 32px));margin:auto}.top{background:#fff;border-bottom:1px solid #e0e7ef}.top .shell{min-height:68px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:900;text-decoration:none}.main{padding:42px 0 74px}.crumb{color:#64748b;font-size:13px;margin-bottom:20px}.hero{padding:clamp(26px,6vw,60px);border:1px solid #dce5ee;border-radius:28px;background:radial-gradient(circle at 88% 10%,rgba(44,133,183,.13),transparent 28rem),#fff;box-shadow:0 20px 58px rgba(27,45,70,.07)}.eyebrow{margin:0;color:#226d99;font-size:11px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.status{display:inline-flex;margin-top:15px;padding:7px 10px;border-radius:999px;background:#eef5fb;color:#315f7f;font-size:11px;font-weight:850}h1{margin:15px 0 10px;font-size:clamp(42px,7vw,78px);line-height:.98;letter-spacing:-.05em}.lead{max-width:820px;color:#5d6c7d;font-size:18px;line-height:1.65}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}.btn{min-height:44px;display:inline-flex;align-items:center;padding:9px 14px;border:1px solid #cdd9e4;border-radius:10px;background:#fff;text-decoration:none;font-weight:800}.btn.primary{background:#172033;color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.card{padding:23px;border:1px solid #dfe6ee;border-radius:19px;background:#fff}.card h2{margin:7px 0 12px}.card ul{columns:2;padding-left:19px}.card li{margin:0 0 7px;color:#607087}.note{margin-top:16px;padding:15px 17px;border-radius:14px;background:#fff8e8;color:#74581d;font-size:12px;line-height:1.6}@media(max-width:760px){.grid{grid-template-columns:1fr}.card ul{columns:1}.hero{padding:28px 22px}}</style></head><body>
+<style>:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;color:#172033;background:#f5f7fa}*{box-sizing:border-box}body{margin:0}a{color:inherit}.shell{width:min(1120px,calc(100% - 32px));margin:auto}.top{background:#fff;border-bottom:1px solid #e0e7ef}.top .shell{min-height:68px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:900;text-decoration:none}.main{padding:42px 0 74px}.crumb{color:#64748b;font-size:13px;margin-bottom:20px}.hero{padding:clamp(26px,6vw,60px);border:1px solid #dce5ee;border-radius:28px;background:radial-gradient(circle at 88% 10%,rgba(44,133,183,.13),transparent 28rem),#fff;box-shadow:0 20px 58px rgba(27,45,70,.07)}.eyebrow{margin:0;color:#226d99;font-size:11px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}.status{display:inline-flex;margin-top:15px;padding:7px 10px;border-radius:999px;background:#eef5fb;color:#315f7f;font-size:11px;font-weight:850}h1{margin:15px 0 10px;font-size:clamp(42px,7vw,78px);line-height:.98;letter-spacing:-.05em}.lead{max-width:820px;color:#5d6c7d;font-size:18px;line-height:1.65}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}.btn{min-height:44px;display:inline-flex;align-items:center;padding:9px 14px;border:1px solid #cdd9e4;border-radius:10px;background:#fff;text-decoration:none;font-weight:800}.btn.primary{background:#172033;color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.card{padding:23px;border:1px solid #dfe6ee;border-radius:19px;background:#fff}.card h2{margin:7px 0 12px}.card ul{columns:2;padding-left:19px}.card li{margin:0 0 7px;color:#607087}.small-note{color:#788697;font-size:12px;line-height:1.55}.evidence{grid-column:1/-1}.evidence-row{padding:12px 0;border-top:1px solid #edf1f5}.evidence-row p{margin:5px 0;color:#667689;line-height:1.55}.evidence-row a{font-size:12px;font-weight:800;color:#226d99}.note{margin-top:16px;padding:15px 17px;border-radius:14px;background:#fff8e8;color:#74581d;font-size:12px;line-height:1.6}@media(max-width:760px){.grid{grid-template-columns:1fr}.card ul{columns:1}.hero{padding:28px 22px}}</style></head><body>
 <header class="top"><div class="shell"><a class="brand" href="/businesses/">Hermes Catalog</a><a href="/services/hermes-connect/">Hermes Connect</a></div></header>
 <main class="shell main"><nav class="crumb"><a href="/businesses/">Catalog</a> / ${esc(row.company_name)}</nav>
 <section class="hero"><p class="eyebrow">${esc(String(row.service_subtype || "home service").replaceAll("_"," "))} · ${esc(row.city)}, ${esc(row.state)}</p>
 <span class="status">${esc(verification)}</span><h1>${esc(row.company_name)}</h1><p class="lead">${esc(summary)}</p>
-<div class="actions">${ownerAction}${websiteAction}${phoneAction}</div></section>
+<div class="actions">${ownerAction}${websiteAction}${phoneAction}${insightAction}</div></section>
 <section class="grid"><article class="card"><p class="eyebrow">Services</p><h2>What the business handles</h2><ul>${serviceList}</ul></article>
-<article class="card"><p class="eyebrow">Service area</p><h2>Where the team operates</h2><ul>${areaList}</ul></article></section>
+<article class="card"><p class="eyebrow">Service area</p><h2>Where the team operates</h2><ul>${areaList}</ul></article>${teamHtml}${evidenceHtml}</section>
 <p class="note">${esc(profileNote)}</p>
 </main><script src="/catalog-business-telemetry.js" data-catalog-business-id="company-crm:${esc(String(row.id))}" defer></script><script src="/catalog-traffic-stats.js" data-catalog-traffic-loader defer></script></body></html>`;
   return new Response(html, { status: 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=60, s-maxage=300" } });

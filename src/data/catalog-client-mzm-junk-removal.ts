@@ -171,6 +171,65 @@ export const mzmJunkRemovalClient = {
       },
     ],
   },
+  clientExperience: {
+    familyBusiness: true,
+    familyBusinessLabel: "Local family-owned crew · father and sons",
+    team: [
+      { name: "Slava", role: "Owner" },
+      { name: "Zakhar", role: "Crew" },
+      { name: "Isaac", role: "Dispatch" },
+    ],
+    firstPartyHours: {
+      label: "Open every day · 3 AM–7 PM",
+      observedAt: "2026-10-11",
+      sourceUrl: "https://mzm-junk-removal.com/",
+      evidenceState: "FIRST_PARTY_OBSERVED",
+    },
+    socialProfiles: [
+      "https://www.instagram.com/mzmjunkremoval/",
+      "https://www.facebook.com/profile.php?id=61589972927453",
+    ],
+    insight: {
+      title: "What MZM Junk Removal’s public job evidence shows about evidence-driven local SEO",
+      url: "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+      state: "LIVE_VERIFIED",
+    },
+    publicJobEvidence: [
+      {
+        city: "Roseville",
+        postalCode: "95678",
+        jobType: "Garage Cleanout",
+        detail: "Old cabinets, scrap lumber and boxes cleared from a garage, leaving the floor clear.",
+        sourceUrl: "https://mzm-junk-removal.com/",
+        observedAt: "2026-10-11",
+      },
+      {
+        city: "Roseville",
+        postalCode: "95678",
+        jobType: "Side Yard Debris Haul",
+        detail: "A two-person crew hauled about half a trailer of yard and construction debris.",
+        sourceUrl: "https://mzm-junk-removal.com/",
+        observedAt: "2026-10-11",
+      },
+      {
+        city: "Orangevale",
+        postalCode: "95662",
+        jobType: "Shed Cleanout",
+        detail: "A shed was cleared to the bare floor during a visit that also covered outdoor and household items.",
+        sourceUrl: "https://mzm-junk-removal.com/junk-removal-orangevale",
+        observedAt: "2026-10-11",
+      },
+      {
+        city: "Rancho Cordova",
+        postalCode: "95742",
+        jobType: "Garage Cleanout",
+        detail: "Bagged household trash and flattened moving boxes were hauled from a garage corner, leaving the space clear.",
+        sourceUrl: "https://mzm-junk-removal.com/junk-removal-rancho-cordova",
+        observedAt: "2026-10-11",
+      },
+    ],
+  },
+
   boundaries: {
     catalogPublic: ["companyName", "website", "phone", "base", "publicSummary", "services", "serviceAreas"],
     crmPrivate: [

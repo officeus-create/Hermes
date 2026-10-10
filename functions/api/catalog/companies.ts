@@ -4,6 +4,7 @@ import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profil
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureAcademyBusinessProfilesSchema } from "../_lib/academy-business-profiles.mjs";
 import { ensureHomeServiceCrmSchema } from "../_lib/home-service-crm.mjs";
+import { homeServiceCatalogPublication } from "../_lib/home-service-catalog-publication.mjs";
 import { catalogProjectionPath } from "../_lib/catalog-public-projection.mjs";
 import { ensureServiceContextSchema, listServicesForContext } from "../_lib/service-context.mjs";
 
@@ -46,13 +47,13 @@ export async function onRequestGet({ env }: { env: Env }) {
     env.DB.prepare(`
       SELECT
         c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,
-        c.catalog_status,c.management_mode,c.catalog_publication_basis,c.created_at,c.updated_at,
+        c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis,c.created_at,c.updated_at,
         a.academy_type,h.service_subtype,h.services_json
       FROM hermes_company_profiles c
       LEFT JOIN hermes_academy_business_profiles a ON a.company_id=c.id
       LEFT JOIN hermes_home_service_profiles h ON h.company_id=c.id
-      WHERE c.catalog_opt_in = 1
-        AND c.catalog_status IN ('self_submitted', 'verified_public')
+      WHERE c.catalog_status IN ('self_submitted', 'verified_public')
+        AND (c.catalog_opt_in = 1 OR c.management_mode = 'hermes_managed')
       ORDER BY CASE WHEN c.catalog_status = 'verified_public' THEN 0 ELSE 1 END, c.updated_at DESC
       LIMIT 500
     `).all(),
@@ -66,7 +67,10 @@ export async function onRequestGet({ env }: { env: Env }) {
     `).all(),
   ]);
 
-  const companies = (companyResult?.results || []).map((row: any) => {
+  const companies = (companyResult?.results || []).filter((row: any) => {
+    if (String(row.company_type || "") === "home_service") return homeServiceCatalogPublication(row).eligible;
+    return Number(row.catalog_opt_in || 0) === 1;
+  }).map((row: any) => {
     const academySubtype = String(row.academy_type || "");
     const isAcademy = Boolean(academySubtype);
     const isHomeService = !isAcademy && String(row.company_type || "") === "home_service";
