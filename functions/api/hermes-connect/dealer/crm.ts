@@ -16,6 +16,7 @@ import {
 import { ensureDealerTransportRequestSchema } from "../../_lib/dealer-transport-requests.mjs";
 import { ensureCompanyConnectionsSchema } from "../../_lib/company-connections.mjs";
 import { normalizeDealerActivityEvent } from "../../_lib/business-events.mjs";
+import { decideHermesPermission, type HermesPermissionAction } from "../../../../src/lib/hermes-connect-permissions.ts";
 
 type Env = { DB?: any };
 type Context = { request: Request; env: Env };
@@ -28,6 +29,30 @@ const privateHeaders = {
 const sameOriginMutation = (request: Request) =>
   request.headers.get("Sec-Fetch-Site") !== "cross-site" &&
   (!request.headers.get("Origin") || request.headers.get("Origin") === new URL(request.url).origin);
+
+function dealerPermissionError(auth: any, action: HermesPermissionAction) {
+  const decision = decideHermesPermission(auth.membership, {
+    specialistId: String(auth.specialist.id),
+    companyId: String(auth.businessRef),
+    ...(auth.membership?.workspaceId ? { workspaceId: String(auth.membership.workspaceId) } : {}),
+    action,
+  });
+  if (decision.allowed) return null;
+  return jsonResponse(403, {
+    success: false,
+    error: "permission_denied",
+    permission_reason: decision.reason,
+  }, privateHeaders);
+}
+
+function dealerAccessPayload(auth: any) {
+  return {
+    role: String(auth.membership?.role || ""),
+    source: String(auth.accessSource || ""),
+    business_ref: String(auth.businessRef || ""),
+    grant_source: String(auth.grantSource || ""),
+  };
+}
 
 const MODULES = new Set(["customers", "vehicles", "leads", "appointments", "team", "activity", "intelligence", "dashboard"]);
 const MUTABLE_MODULES = new Set(["customers", "vehicles", "leads", "appointments", "team"]);
@@ -260,8 +285,11 @@ export async function onRequestGet({ request, env }: Context) {
   if (auth.error) return jsonResponse(auth.error.status, { success: false, error: auth.error.code }, privateHeaders);
   const module = cleanDealerCrmText(new URL(request.url).searchParams.get("module"), 32).toLowerCase() || "dashboard";
   if (!MODULES.has(module)) return jsonResponse(400, { success: false, error: "unsupported_module" }, privateHeaders);
+  const denied = dealerPermissionError(auth, module === "team" ? "team.read" : "crm.read");
+  if (denied) return denied;
   return jsonResponse(200, {
     success: true,
+    access: dealerAccessPayload(auth),
     company: {
       id: auth.company.id,
       company_name: auth.company.company_name,
@@ -280,6 +308,13 @@ export async function onRequestPost({ request, env }: Context) {
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
   const action = cleanDealerCrmText(body.action, 32).toLowerCase() || "create";
+  const requestedModule = cleanDealerCrmText(body.module, 32).toLowerCase();
+  const permissionAction: HermesPermissionAction =
+    action === "bootstrap" ? "company.settings.write"
+      : action === "set_team_schedule" || requestedModule === "team" ? "team.write"
+      : "crm.write";
+  const denied = dealerPermissionError(auth, permissionAction);
+  if (denied) return denied;
   if (action === "bootstrap") {
     const result = await bootstrapLegacyToyotaDealerCrm(env.DB, {
       company: auth.company,
@@ -324,7 +359,7 @@ export async function onRequestPost({ request, env }: Context) {
     return jsonResponse(200, { success: true, team_member_id: teamMemberId, team: await listTeam(env.DB, companyId) }, privateHeaders);
   }
 
-  const module = cleanDealerCrmText(body.module, 32).toLowerCase();
+  const module = requestedModule;
   if (!MUTABLE_MODULES.has(module)) return jsonResponse(400, { success: false, error: "unsupported_module" }, privateHeaders);
   const companyId = String(auth.company.id);
   const now = new Date().toISOString();
@@ -344,7 +379,7 @@ export async function onRequestPost({ request, env }: Context) {
       INSERT INTO hermes_dealer_customers
         (id,company_id,owner_specialist_id,name,email,phone,source,notes,created_at,updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?)
-    `).bind(id, companyId, auth.specialist.id, name, email || null, normalizeDealerPhone(body.phone) || null, cleanDealerCrmText(body.source, 48) || "manual", cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
+    `).bind(id, companyId, auth.dataOwnerId, name, email || null, normalizeDealerPhone(body.phone) || null, cleanDealerCrmText(body.source, 48) || "manual", cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
   }
 
   if (module === "vehicles") {
@@ -363,7 +398,7 @@ export async function onRequestPost({ request, env }: Context) {
         INSERT INTO hermes_dealer_vehicles
           (id,company_id,owner_specialist_id,customer_id,vin,vehicle_year,vehicle_make,vehicle_model,stock_number,status,source,notes,created_at,updated_at)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-      `).bind(id, companyId, auth.specialist.id, customerId || null, vin || null, year, make || null, model || null, cleanDealerCrmText(body.stock_number, 80) || null, normalizeVehicleStatus(body.status), cleanDealerCrmText(body.source, 48) || "manual", cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
+      `).bind(id, companyId, auth.dataOwnerId, customerId || null, vin || null, year, make || null, model || null, cleanDealerCrmText(body.stock_number, 80) || null, normalizeVehicleStatus(body.status), cleanDealerCrmText(body.source, 48) || "manual", cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
     } catch (error: any) {
       if (/unique/i.test(String(error?.message || error))) return jsonResponse(409, { success: false, error: "vehicle_vin_exists" }, privateHeaders);
       throw error;
@@ -383,7 +418,7 @@ export async function onRequestPost({ request, env }: Context) {
       INSERT INTO hermes_dealer_leads
         (id,company_id,owner_specialist_id,customer_id,channel,stage,subject,message,next_action,follow_up_at,created_at,updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    `).bind(id, companyId, auth.specialist.id, customerId || null, cleanDealerCrmText(body.channel, 48) || "manual", normalizeLeadStage(body.stage), subject || null, message || null, cleanDealerCrmText(body.next_action, 500) || null, followUp || null, now, now).run();
+    `).bind(id, companyId, auth.dataOwnerId, customerId || null, cleanDealerCrmText(body.channel, 48) || "manual", normalizeLeadStage(body.stage), subject || null, message || null, cleanDealerCrmText(body.next_action, 500) || null, followUp || null, now, now).run();
   }
 
   if (module === "appointments") {
@@ -402,7 +437,7 @@ export async function onRequestPost({ request, env }: Context) {
       INSERT INTO hermes_dealer_appointments
         (id,company_id,owner_specialist_id,customer_id,vehicle_id,assigned_team_member_id,appointment_type,starts_at,status,notes,created_at,updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    `).bind(id, companyId, auth.specialist.id, customerId || null, vehicleId || null, teamId || null, appointmentType, startsAt, normalizeAppointmentStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
+    `).bind(id, companyId, auth.dataOwnerId, customerId || null, vehicleId || null, teamId || null, appointmentType, startsAt, normalizeAppointmentStatus(body.status), cleanDealerCrmText(body.notes, 1200) || null, now, now).run();
   }
 
   if (module === "team") {
@@ -415,7 +450,7 @@ export async function onRequestPost({ request, env }: Context) {
       INSERT INTO hermes_dealer_team_members
         (id,company_id,owner_specialist_id,name,role,department,email,phone,active,created_at,updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?)
-    `).bind(id, companyId, auth.specialist.id, name, cleanDealerCrmText(body.role, 100) || null, normalizeTeamDepartment(body.department), email || null, normalizeDealerPhone(body.phone) || null, body.active === false ? 0 : 1, now, now).run();
+    `).bind(id, companyId, auth.dataOwnerId, name, cleanDealerCrmText(body.role, 100) || null, normalizeTeamDepartment(body.department), email || null, normalizeDealerPhone(body.phone) || null, body.active === false ? 0 : 1, now, now).run();
   }
 
   await recordDealerActivity(env.DB, {
@@ -438,6 +473,8 @@ export async function onRequestPatch({ request, env }: Context) {
   const module = cleanDealerCrmText(body.module, 32).toLowerCase();
   const id = cleanDealerCrmText(body.id, 120);
   if (!MUTABLE_MODULES.has(module) || !id) return jsonResponse(400, { success: false, error: "module_and_id_required" }, privateHeaders);
+  const denied = dealerPermissionError(auth, module === "team" ? "team.write" : "crm.write");
+  if (denied) return denied;
   const companyId = String(auth.company.id);
   const now = new Date().toISOString();
 
@@ -525,6 +562,9 @@ export async function onRequestDelete({ request, env }: Context) {
   const module = cleanDealerCrmText(url.searchParams.get("module"), 32).toLowerCase();
   const id = cleanDealerCrmText(url.searchParams.get("id"), 120);
   if (!MUTABLE_MODULES.has(module) || !id) return jsonResponse(400, { success: false, error: "module_and_id_required" }, privateHeaders);
+  if (auth.accessSource !== "owner_relation") {
+    return jsonResponse(403, { success: false, error: "owner_relation_required_for_delete" }, privateHeaders);
+  }
   const table = module === "customers" ? "hermes_dealer_customers"
     : module === "vehicles" ? "hermes_dealer_vehicles"
     : module === "leads" ? "hermes_dealer_leads"
