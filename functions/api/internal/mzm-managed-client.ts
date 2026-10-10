@@ -126,6 +126,7 @@ async function provisionReviewerAccess(env: Env, now: string) {
   const created = !existing;
   const oldHash = String(existing?.password_hash || "");
   const oldSalt = String(existing?.password_salt || "");
+  if (existing && (!oldHash || !oldSalt)) throw new Error("reviewer_password_state_incomplete");
   const priorAccess = existing
     ? await env.DB.prepare("SELECT specialist_id FROM hermes_managed_client_access WHERE specialist_id=? AND company_id=? LIMIT 1")
         .bind(specialistId, COMPANY_ID).first()
@@ -226,9 +227,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const now = new Date().toISOString();
   const existingCompany = await env.DB.prepare(
-    "SELECT created_at FROM hermes_company_profiles WHERE id=? LIMIT 1"
+    "SELECT created_at,catalog_status,catalog_publication_basis FROM hermes_company_profiles WHERE id=? LIMIT 1"
   ).bind(COMPANY_ID).first();
   const createdAt = String(existingCompany?.created_at || now);
+  const initialCatalogStatus =
+    String(existingCompany?.catalog_status || "") === "verified_public" &&
+    String(existingCompany?.catalog_publication_basis || "") === PUBLICATION_BASIS
+      ? "verified_public"
+      : "managed_private";
 
   await env.DB.prepare(`
     INSERT INTO hermes_company_profiles (
@@ -267,7 +273,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     mzmJunkRemovalClient.website,
     null,
     0,
-    "managed_private",
+    initialCatalogStatus,
     0,
     createdAt,
     now,
@@ -343,7 +349,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
     persistedZero(company?.catalog_opt_in) &&
-    String(company?.catalog_status || "") === "managed_private" &&
+    String(company?.catalog_status || "") === initialCatalogStatus &&
     persistedZero(company?.load_board_access) &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
@@ -369,6 +375,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const code = error instanceof Error ? error.message : "reviewer_provisioning_failed";
     const allowed = new Set([
       "reviewer_identity_conflict",
+      "reviewer_password_state_incomplete",
       "reviewer_credential_update_conflict",
       "reviewer_credential_hash_readback_failed",
       "reviewer_credential_delivery_failed",
