@@ -85,7 +85,7 @@ jobs:
           if [ "${HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/provision.json" 2>/dev/null)" != true ]; then
             ERROR_CODE="$(jq -r '.error // "managed_client_api_failed"' "${TMP}/provision.json" 2>/dev/null || printf managed_client_api_failed)"
             case "${ERROR_CODE}" in
-              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_client_readback_mismatch) ;;
+              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_client_readback_mismatch|managed_data_owner_mismatch_records) ;;
               *) ERROR_CODE="managed_client_api_failed" ;;
             esac
             fail "${ERROR_CODE}" "Bounded MZM production API returned HTTP ${HTTP}."
@@ -99,6 +99,7 @@ jobs:
           OWNER_CONSENT="$(jq -r 'if (.catalog_owner_consent_claimed | type) == "boolean" then .catalog_owner_consent_claimed else "__invalid__" end' "${TMP}/provision.json")"
           OWNER_AUTH="$(jq -r 'if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end' "${TMP}/provision.json")"
           INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
+          OWNER_MISMATCH="$(jq -r '.managed_owner_mismatch_records // "__invalid__"' "${TMP}/provision.json")"
 
           [ -z "${PROFILE_PATH}" ] \
             || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
@@ -112,6 +113,8 @@ jobs:
             || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
           [ "${INTERNAL_UI}" = "REQUIRED_SEPARATELY" ] \
             || fail "internal_owner_receipt_boundary_failed" "Managed provisioning must not pretend an authenticated internal-owner UI session was verified."
+          [ "${OWNER_MISMATCH}" = "0" ] \
+            || fail "managed_data_owner_mismatch_records" "Managed CRM contains records whose owner does not match the canonical MZM data owner."
 
           PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
@@ -139,6 +142,7 @@ jobs:
           - ✅ Public Catalog remains fail-closed: publication basis is \`${BASIS}\`, profile returns 404, and Catalog API/sitemap do not expose MZM.
           - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
           - ⚠️ Actual private workspace traversal remains a separate authenticated \`HERMES_INTERNAL_OWNER\` readback; provisioning does not fabricate that receipt.
+          - ✅ Managed data-owner integrity readback reports zero mismatched profile/lead records.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
           - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
 
