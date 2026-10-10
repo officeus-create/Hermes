@@ -33,10 +33,10 @@ Source-of-truth access status lives in `Hermes_Mailbox_Load_Source_Access_Regist
 - `officeus@hermeslogisticsus.com` — connected corporate identity; central intake target, not yet a proven high-volume freight feed.
 - `volkogon.v@gmail.com` — connected personal legacy mailbox; do not ingest by default.
 - `Mollyuniversaltruck@gmail.com` — legacy freight/agency mailbox; access/routing pending.
-- `dispatchtruck998@gmail.com` — legacy dispatch mailbox; access/routing pending.
-- `dispatchtruck3447@gmail.com` — historically important legacy dispatch mailbox; access/routing pending.
-- `dmitriy.k.truckload@gmail.com` — Car Hauling source; ingestion allowed, broker outreach HOLD; access/routing pending.
-- `dispatchtruck107@gmail.com` — legacy dispatch mailbox; access/routing pending.
+- `dispatchtruck998@gmail.com` — legacy dispatch mailbox/source only; **never a Car Hauling notification recipient**.
+- `dispatchtruck3447@gmail.com` — legacy dispatch mailbox/source only; **never a Car Hauling notification recipient**.
+- `dmitriy.k.truckload@gmail.com` — Car Hauling source; ingestion allowed, broker outreach HOLD; source use does not authorize AI/Worker notifications.
+- `dispatchtruck107@gmail.com` — legacy dispatch mailbox/source only; **explicitly retired from Car Hauling notifications and AI-generated dispatcher requests**.
 
 ## Non-negotiable safety split
 
