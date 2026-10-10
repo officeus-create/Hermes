@@ -76,5 +76,24 @@ assert.equal((await update(incompleteIds[0], {}, 'b')).status, 404);
 assert.equal((await onRequestGet({ request: request(null), env: { DB: db } })).status, 401);
 assert.equal((await onRequestGet({ request: request('nondealer'), env: { DB: db } })).status, 403);
 assert.equal((await onRequestPost({ request: request('a', 'leads', 'POST', { module: 'leads', subject: 'SYNTHETIC' }, { 'Sec-Fetch-Site': 'cross-site' }), env: { DB: db } })).status, 403);
+// A dependency-selected regression must reach the shared business-event adapter.
+// Exercise the activity consumer, not only the intelligence/follow-up branch.
+const getActivity = async owner => {
+  const response = await onRequestGet({ request: request(owner, 'activity'), env: { DB: db } });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('Cache-Control'), /private, no-store/);
+  assert.equal(response.headers.get('X-Robots-Tag'), 'noindex, nofollow');
+  const body = await response.json();
+  assert(body.activity.length > 0, 'fixture must contain dealer activity');
+  assert.equal(body.events.length, body.activity.length, 'valid activity rows must retain normalized business events');
+  assert.deepEqual(body.events.map(event => event.event_id).sort(), body.activity.map(row => row.id).sort());
+  assert(body.events.every(event => event.company_id === owner && event.visibility === 'company' && event.source === 'dealer_crm'));
+  return body;
+};
+const activityA = await getActivity('a');
+const activityB = await getActivity('b');
+const activityIdsA = new Set(activityA.events.map(event => event.event_id));
+assert(activityB.events.every(event => !activityIdsA.has(event.event_id)), 'company activity must remain isolated');
+
 sqlite.close();
 console.log('dealer-crm-followup: real handler/SQLite missing action/date, terminal exceptions, tenant isolation, repair/reload and existing overdue warning PASS');
