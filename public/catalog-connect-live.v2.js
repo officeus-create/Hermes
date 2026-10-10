@@ -132,7 +132,10 @@
       const link = document.createElement('a');
       link.href = profileHref;
       link.textContent = 'View profile';
-      meta.textContent = isAcademyLike ? 'Hermes Connect Academy profile · owner-submitted' : 'Hermes Connect profile · owner-submitted';
+      const managedClient = company?.managementMode === 'hermes_managed';
+      meta.textContent = managedClient
+        ? 'Hermes-managed client · verified public facts'
+        : isAcademyLike ? 'Hermes Connect Academy profile · owner-submitted' : 'Hermes Connect profile · owner-submitted';
       actions.append(link, meta);
     } else {
       meta.textContent = isAcademyLike
@@ -173,8 +176,11 @@
           continue;
         }
         if (company?.companyType === 'home_service' && repairGrid && companyHref && !repairExistingIds.has(id)) {
-          repairGrid.append(makeCard(company, companyHref).article);
+          const rendered = makeCard(company, companyHref);
+          repairGrid.append(rendered.article);
           repairExistingIds.add(id);
+          reconcileCategoryCount(rendered.typeLabel);
+          reconcileStateCount(company?.state);
           continue;
         }
         if (company?.companyType === 'academy_business' && academyGrid && academyHref && !academyExistingIds.has(id)) {
