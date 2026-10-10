@@ -85,7 +85,7 @@ jobs:
           if [ "${HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/provision.json" 2>/dev/null)" != true ]; then
             ERROR_CODE="$(jq -r '.error // "managed_client_api_failed"' "${TMP}/provision.json" 2>/dev/null || printf managed_client_api_failed)"
             case "${ERROR_CODE}" in
-              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_client_readback_mismatch|managed_data_owner_mismatch_records) ;;
+              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_identity_preflight_mismatch|managed_client_readback_mismatch|managed_data_owner_mismatch_records) ;;
               *) ERROR_CODE="managed_client_api_failed" ;;
             esac
             fail "${ERROR_CODE}" "Bounded MZM production API returned HTTP ${HTTP}."
