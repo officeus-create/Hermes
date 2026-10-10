@@ -53,6 +53,7 @@ const LEGACY_CONTACT_SUBJECT = "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]";
 const DIRECT_CAR_HAULING_PATH = "/logistics/start-car-hauling-dispatch/";
 const CARRIER_SALES_TAG = "LOAD BOARD ACCESS / CARRIER";
 const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
+const CAR_HAULING_SALES_ONLY_SUBJECT = "[HERMES INQUIRY] [LOGISTICS]";
 const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
 const MAX_BODY_BYTES = 16_000;
 const MAX_EMAIL_BODY = 8_000;
@@ -101,7 +102,11 @@ const isKnownCarHaulingQa = (emailBody: string) => {
 
 const leadSubject = (leadType: string, salesTag: string, pagePath: string, emailBody: string) => {
   if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG && pagePath === DIRECT_CAR_HAULING_PATH) {
-    return isKnownCarHaulingQa(emailBody) ? CAR_HAULING_TEST_SUBJECT : CAR_HAULING_SALES_SUBJECT;
+    // CEO routing override 2026-10-10: until the private Worker is redeployed with the
+    // no-dispatcher recipient guard, real Car Hauling leads use the existing Sales-only
+    // Logistics inquiry path. The currently deployed older Worker cannot fan this subject
+    // out to Dispatch Truck 107 / dispatcher inboxes.
+    return isKnownCarHaulingQa(emailBody) ? CAR_HAULING_TEST_SUBJECT : CAR_HAULING_SALES_ONLY_SUBJECT;
   }
   if (leadType === "load_board_access" && salesTag === CARRIER_SALES_TAG) {
     return "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]";
@@ -327,8 +332,13 @@ export async function onRequestPost({ request, env }: Context) {
     /^Delivery:\s*preview only.*$/im,
     "Delivery: securely received by the Hermes website endpoint.",
   );
+  const directCarHaulingSalesOnly = leadType === "load_board_access"
+    && salesTag === CARRIER_SALES_TAG
+    && pagePath === DIRECT_CAR_HAULING_PATH
+    && subject === CAR_HAULING_SALES_ONLY_SUBJECT;
   const messageText = [
     ...(subject === CAR_HAULING_TEST_SUBJECT ? ["Lead classification: TEST/QA — exclude from Sales/CRM KPI.", ""] : []),
+    ...(directCarHaulingSalesOnly ? ["Routing policy: Sales/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes.", ""] : []),
     deliveredBody,
     "",
     ...(brokerWeight ? [brokerWeightSummary(brokerWeight), `Broker weight record: ${JSON.stringify(brokerWeight)}`, ""] : []),
