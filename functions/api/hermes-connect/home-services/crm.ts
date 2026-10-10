@@ -1,4 +1,5 @@
 import { jsonResponse } from "../../_lib/session.mjs";
+import { mzmJunkRemovalClient } from "../../../../src/data/catalog-client-mzm-junk-removal.ts";
 import {
   aggregateHomeServiceLeads,
   getHomeServiceContext,
@@ -101,8 +102,12 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         managementMode: String(ctx.company.management_mode || "owner_managed"),
         publicationBasis: String(ctx.company.catalog_publication_basis || "owner_opt_in"),
         accessMode: String(ctx.accessMode || "owner_managed"),
+        readOnly: String(ctx.accessMode || "") === "managed_reviewer",
       },
       profile: safeProfile(profile),
+      clientExperience: String(ctx.company.slug || "") === mzmJunkRemovalClient.clientId
+        ? mzmJunkRemovalClient.clientExperience
+        : null,
       metrics: aggregateHomeServiceLeads(rows),
       recentLeads: rows.slice(0, 12).map(safeHomeServiceLead),
     }, privateHeaders);
@@ -117,6 +122,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
   const ctx = await getHomeServiceContext(request, env);
   if (ctx.error) return errorResponse(ctx.error);
+  if (String(ctx.accessMode || "") === "managed_reviewer") {
+    return jsonResponse(403, { success: false, error: "managed_reviewer_read_only" }, privateHeaders);
+  }
   const body = await parseBody(request);
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
