@@ -1,21 +1,15 @@
 name: Repair Shop concurrent booking production proof
 
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
   checks: read
-  issues: write
 
 jobs:
   concurrency-proof:
-    if: >-
-      github.event.issue.number == 939 &&
-      github.event.comment.body == '/verify-repair-booking-concurrency' &&
-      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     name: Verify production D1 booking concurrency
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -35,7 +29,6 @@ jobs:
         if: always()
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           JOB_STATUS: ${{ job.status }}
         run: |
           CHECKED_SHA="$(git rev-parse HEAD)"
@@ -56,4 +49,4 @@ jobs:
             echo
             echo "> Synthetic smoke identities only. No real customer/shop data, credentials, tokens, or private identifiers are published."
           } > "${RUNNER_TEMP}/repair-concurrency-proof-comment.md"
-          gh issue comment 939 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/repair-concurrency-proof-comment.md"
+          cat "${RUNNER_TEMP}/repair-concurrency-proof-comment.md" >> "$GITHUB_STEP_SUMMARY"

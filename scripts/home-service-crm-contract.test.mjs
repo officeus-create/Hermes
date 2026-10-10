@@ -107,6 +107,7 @@ assert.equal(metrics.disposalCostCents, 9000);
 assert.equal(metrics.grossAfterTrackedCostsCents, 30500);
 assert.equal(metrics.averageTicketCents, 45000);
 assert.equal(metrics.reviewRate, 1);
+assert.equal(metrics.bookedRate, 0.5);
 assert.equal(metrics.byCity.find((row) => row.key === "Roseville")?.revenueCents, 45000);
 assert.equal(metrics.moneyEvidence.revenue.verifiedCount, 1);
 assert.equal(metrics.moneyEvidence.revenue.requiredCount, 1);
@@ -167,6 +168,13 @@ const noData = aggregateHomeServiceLeads([]);
 assert.equal(noData.revenueCents, null);
 assert.equal(noData.grossAfterTrackedCostsCents, null);
 assert.equal(noData.averageTicketCents, null);
+assert.equal(noData.bookedRate, null, "No leads must not be reported as 0% booked");
+assert.equal(noData.reviewRate, null, "No completed jobs must not be reported as 0% reviewed");
+
+const realZeroBooked = aggregateHomeServiceLeads([{ status: "new", city: "Roseville", source: "Direct" }]);
+assert.equal(realZeroBooked.bookedRate, 0, "One unbooked lead is a real 0% booked rate");
+assert.equal(realZeroBooked.reviewRate, null, "No completed jobs still means UNKNOWN review rate");
+
 
 const safeUnknown = safeHomeServiceLead({
   id: "lead-unknown",
@@ -215,6 +223,9 @@ assert.match(companyApi, /companyType === "home_service" \? body\.catalogOptIn =
 assert.match(companyApi, /SELECT id, slug, company_type, created_at FROM hermes_company_profiles/);
 assert.match(companyApi, /WHERE hermes_company_profiles\.company_type = excluded\.company_type/);
 assert.match(companyApi, /row\?\.company_type !== companyType/);
+assert.match(companyApi, /managed_company_claim_required/);
+assert.match(companyApi, /management_mode='hermes_managed'/);
+assert.match(companyApi, /next_url: "\/contacts\//);
 const accountApi = read("functions/api/hermes-connect/account.ts");
 const catalogApi = read("functions/api/catalog/companies.ts");
 const catalogRuntime = read("public/catalog-connect-live.v2.js");
@@ -226,6 +237,8 @@ const publicProfile = read("functions/businesses/connect/company/[slug].ts");
 const clientConfig = read("src/data/catalog-client-mzm-junk-removal.ts");
 const homeServicesAccess = read("src/pages/services/hermes-connect/home-services/access/index.astro");
 const sharedAccess = read("src/pages/services/hermes-connect/access/index.astro");
+const managedEndpoint = read("functions/api/internal/mzm-managed-client.ts");
+const managedWorkflow = read(".github/workflows/mzm-managed-client.yml");
 
 assert.match(companyTypes, /"home_service"/);
 assert.match(companyApi, /companyType === "home_service" \? 0 : 1/);
@@ -269,10 +282,19 @@ assert.match(publicProfile, /"@type": "LocalBusiness"/);
 assert.match(publicProfile, /home-services\/access\/\?mode=login/);
 assert.match(publicProfile, /private CRM records are not published here/);
 assert.match(clientConfig, /uniqueKeywords: 8155/);
-assert.match(clientConfig, /observedAt: "2026-10-08"/);
+assert.match(clientConfig, /observedAt: "2026-10-10"/);
 assert.match(clientConfig, /evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE"/);
-assert.match(clientConfig, /serviceAreas: \["North Highlands"\]/);
+assert.match(clientConfig, /14309271527164244470/);
+assert.match(clientConfig, /identity_match_only_not_management_authorization/);
+assert.match(clientConfig, /https:\/\/mzm-junk-removal\.com\/eviction-cleanout/);
+assert.match(clientConfig, /https:\/\/mzm-junk-removal\.com\/office-cleanout/);
+assert.match(clientConfig, /https:\/\/mzm-junk-removal\.com\/storage-unit-cleanout/);
+assert.doesNotMatch(clientConfig, /ownerReviewCandidates/);
+assert.doesNotMatch(clientConfig, /serviceAreas: \["North Highlands"\]/);
+assert.match(clientConfig, /"North Highlands"/);
 assert.match(clientConfig, /"Mattress removal"/);
+assert.match(clientConfig, /"E-waste removal"/);
+assert.match(clientConfig, /"Hot tub removal"/);
 assert.match(clientConfig, /"Shed removal"/);
 assert.match(clientConfig, /do not become canonical CRM outcomes/);
 assert.ok(clientConfig.includes('primaryCommercialOwner: "https://mzm-junk-removal.com/"'));
@@ -296,6 +318,50 @@ assert.match(sharedAccess, /href="\/services\/hermes-connect\/home-services\/acc
 assert.match(workspace, /\["self_submitted","verified_public"\]\.includes/);
 assert.match(workspace, /dashboard\?\.profile\?\.id/);
 assert.match(workspace, /data-catalog-private/);
+assert.match(clientConfig, /"Eviction cleanouts"/);
+assert.match(clientConfig, /"Office cleanouts"/);
+assert.match(clientConfig, /"Storage unit cleanouts"/);
 assert.match(clientConfig, /noSyntheticBusinessOutcomes: true/);
+assert.match(companyTypes, /management_mode: "TEXT NOT NULL DEFAULT 'owner_managed'"/);
+assert.match(companyTypes, /catalog_publication_basis: "TEXT NOT NULL DEFAULT 'owner_opt_in'"/);
+assert.match(crmHelper, /hermes_internal_owner_required/);
+assert.match(crmHelper, /management_mode='hermes_managed'/);
+assert.equal((crmApi.match(/const ownerId = String\(ctx\.dataOwnerId \|\| ""\);/g) || []).length, 2,
+  "Both GET and POST must resolve the canonical dataOwnerId");
+assert.equal((crmApi.match(/home_service_data_owner_missing/g) || []).length, 2,
+  "Both reads and writes must fail closed when the CRM data owner is absent");
+assert.doesNotMatch(crmApi, /const ownerId = String\(ctx\.specialist\.id\)/);
+assert.match(workspace, /metrics\[key\] == null \? "UNKNOWN" : percent\(metrics\[key\]\)/);
+
+assert.match(workspace, /searchParams\.get\("managed"\)/);
+assert.match(workspace, /managedApiUrl/);
+assert.match(publicProfile, /Hermes-managed client profile · public facts verified/);
+assert.match(catalogApi, /catalog_publication_basis/);
+assert.match(managedEndpoint, /mzmJunkRemovalClient/);
+assert.match(managedEndpoint, /ensureHermesCompanyProfilesSchema/);
+assert.match(managedEndpoint, /await ensureHermesCompanyProfilesSchema\(env\.DB\)/);
+assert.match(managedEndpoint, /hermes-managed:mzm-junk-removal/);
+assert.match(managedEndpoint, /owner_consent_pending/);
+assert.match(managedEndpoint, /catalog_publication_eligible: false/);
+assert.match(managedEndpoint, /public_profile_path: null/);
+assert.match(managedEndpoint, /"managed_private"/);
+assert.match(managedEndpoint, /Number\(company\?\.catalog_opt_in \|\| 0\) === 0/);
+assert.match(managedEndpoint, /catalog_owner_consent_claimed: false/);
+assert.match(managedEndpoint, /owner_authentication_claimed: false/);
+assert.match(managedEndpoint, /internal_operator_capability: "HERMES_INTERNAL_OWNER"/);
+assert.match(managedEndpoint, /internal_operator_ui_readback: "REQUIRED_SEPARATELY"/);
+assert.match(managedWorkflow, /internal_owner_receipt_boundary_failed/);
+assert.doesNotMatch(managedEndpoint, /INSERT INTO specialists/);
+assert.doesNotMatch(managedEndpoint, /INSERT INTO sessions/);
+assert.match(managedWorkflow, /github\.event\.issue\.number == 1799/);
+assert.match(managedWorkflow, /github\.event\.comment\.body == '\/provision-mzm-managed'/);
+assert.match(managedWorkflow, /id-token: write/);
+assert.doesNotMatch(managedWorkflow, /CLOUDFLARE_D1_API_TOKEN/);
+assert.doesNotMatch(managedWorkflow, /\/api\/auth\/login/);
+assert.match(managedWorkflow, /owner_consent_pending/);
+assert.match(managedWorkflow, /catalog_fail_closed_failed/);
+assert.match(managedWorkflow, /PROFILE_HTTP.*404/s);
+assert.match(managedWorkflow, /! grep -Fq.*sitemap/s);
+assert.match(managedWorkflow, /! jq -e.*mzm-junk-removal/s);
 
 console.log("home-service-crm-contract: ok");

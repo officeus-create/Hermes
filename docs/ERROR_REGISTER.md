@@ -656,3 +656,16 @@ EVIDENCE: Failing-first browser tests began with 8/8 expected failures on the cl
 LESSON: Consent is an operation boundary, not only a saved-state boundary. A no-consent path must avoid every storage mutation, including cleanup.
 
 REUSE_RULE: When a stale product PR depends on an accepted predecessor, rebuild only its unique bounded delta on the exact merged base; instrument browser storage methods and preserve PII-capable shared intake as a separate explicitly authorized scope.
+
+
+## 2026-10-10 — README receiver-receipt wording
+
+- ID: `ERR-DOC-RECEIPT-TRUTH-20261010`
+- Status: `ACTIVE` until this documentation-only branch passes required checks and is accepted.
+- PROBLEM: Two current README statements described browser success as receiver-confirmed delivery.
+- ROOT_CAUSE: Supporting prose retained an older delivery interpretation after the current receiver/analytics contracts separated request acceptance from final delivery and human receipt.
+- FAILED_APPROACH: Treating HTTP success or an accepted service handoff as a delivered or human-read lead.
+- WORKING_APPROACH: Align the two current README statements with the matching request-ID receipt contract; preserve the explicitly dated 2026-08-04 historical verification.
+- EVIDENCE: `src/lib/logistics-submission-receipt.ts`, `src/components/ContactCTA.astro`, and the 2026-10-08 corrections in `docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md` on base `7c7d055838ec2e0dd1a50de0d0dc4403b5dd7c91`. Runtime behavior is unchanged.
+- LESSON: A supporting README must not promote an evidence stage beyond its authoritative implementation and event contract.
+- REUSE_RULE: When a receiver/event meaning changes, reconcile current summaries while retaining dated historical receipts. CI, delivery, human receipt, qualification, booking, and payment each need their own evidence.

@@ -46,7 +46,7 @@ export async function onRequestGet({ env }: { env: Env }) {
     env.DB.prepare(`
       SELECT
         c.id,c.company_name,c.slug,c.company_type,c.city,c.state,c.country_code,c.website,
-        c.catalog_status,c.created_at,c.updated_at,
+        c.catalog_status,c.management_mode,c.catalog_publication_basis,c.created_at,c.updated_at,
         a.academy_type,h.service_subtype,h.services_json
       FROM hermes_company_profiles c
       LEFT JOIN hermes_academy_business_profiles a ON a.company_id=c.id
@@ -100,7 +100,11 @@ export async function onRequestGet({ env }: { env: Env }) {
       source: isAcademy ? "academy_business_crm" : isHomeService ? "home_service_crm" : "hermes_connect_company",
       profileUrl: isAcademy ? catalogProjectionPath({ vertical:"academy_business", website:row.website, slug:String(row.slug || "") }) : isHomeService ? `/businesses/connect/company/${encodeURIComponent(String(row.slug || ""))}/` : null,
       services: isAcademy ? ["Programs", "Courses", "Learning", "Business education"] : isHomeService ? homeServices : [],
-      verificationLabel: row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
+      managementMode: String(row.management_mode || "owner_managed"),
+      publicationBasis: String(row.catalog_publication_basis || "owner_opt_in"),
+      verificationLabel: row.management_mode === "hermes_managed"
+        ? "Hermes-managed client · public facts verified"
+        : row.catalog_status === "verified_public" ? "Verified" : "Self-submitted · verification pending",
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };

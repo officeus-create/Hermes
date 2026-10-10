@@ -25,7 +25,7 @@ The private owner-test Plugin ID is not the public directory identity.
 3. Cloudflare production deployment reaches the merged SHA.
 4. Support, Privacy, Terms and Product URLs return the expected production content.
 5. MCP production endpoint initializes and lists exactly the intended six public tools.
-6. All five tools return schema-valid, privacy-bounded results on representative and invalid inputs.
+6. All six tools return schema-valid, privacy-bounded results on representative and invalid inputs.
 7. Portal issues domain challenge token.
 8. Store that exact token only in the production runtime binding OPENAI_APPS_CHALLENGE_TOKEN.
 9. Verify the challenge URL returns only the exact token as plain text.

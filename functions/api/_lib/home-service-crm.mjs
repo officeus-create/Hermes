@@ -1,5 +1,6 @@
 import { getAuthenticatedSpecialist } from "./session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
+import { ensureInternalAiSchema } from "./internal-ai.mjs";
 
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 export const HOME_SERVICE_SUBTYPES = new Set(["junk_removal", "cleaning", "landscaping", "moving", "handyman", "other"]);
@@ -131,8 +132,39 @@ export async function getHomeServiceContext(request, env) {
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return { error: { status: 401, code: "authentication_required" } };
   await ensureHomeServiceCrmSchema(env.DB);
+
+  const managedSlug = cleanHomeServiceText(new URL(request.url).searchParams.get("managed"), 120)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "");
+  if (managedSlug) {
+    await ensureInternalAiSchema(env.DB);
+    const access = await env.DB.prepare(`
+      SELECT specialist_id
+      FROM hermes_internal_owner_access
+      WHERE specialist_id=? AND active=1 AND capability='HERMES_INTERNAL_OWNER'
+      LIMIT 1
+    `).bind(specialist.id).first();
+    if (!access) return { error: { status: 403, code: "hermes_internal_owner_required" } };
+
+    const company = await env.DB.prepare(`
+      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
+             catalog_opt_in,catalog_status,management_mode,catalog_publication_basis
+      FROM hermes_company_profiles
+      WHERE slug=? AND company_type='home_service' AND management_mode='hermes_managed'
+      LIMIT 1
+    `).bind(managedSlug).first();
+    if (!company) return { error: { status: 404, code: "managed_home_service_not_found" } };
+    return {
+      specialist,
+      company,
+      dataOwnerId: String(company.owner_specialist_id || ""),
+      accessMode: "hermes_managed",
+    };
+  }
+
   const company = await env.DB.prepare(`
-    SELECT id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,catalog_opt_in,catalog_status
+    SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
+           catalog_opt_in,catalog_status,management_mode,catalog_publication_basis
     FROM hermes_company_profiles
     WHERE owner_specialist_id=?
     LIMIT 1
@@ -140,7 +172,12 @@ export async function getHomeServiceContext(request, env) {
   if (!company || String(company.company_type) !== "home_service") {
     return { error: { status: 403, code: "home_service_company_required" } };
   }
-  return { specialist, company };
+  return {
+    specialist,
+    company,
+    dataOwnerId: String(specialist.id),
+    accessMode: "owner_managed",
+  };
 }
 
 export function normalizeHomeServiceProfile(body, existing = {}) {
@@ -371,7 +408,7 @@ export function aggregateHomeServiceLeads(rows = []) {
         booked: item.booked,
         completed: item.completed,
         ...money,
-        bookedRate: item.leads ? item.booked / item.leads : 0,
+        bookedRate: item.leads ? item.booked / item.leads : null,
       };
     }).sort((a,b) =>
       Number(b.revenueCents ?? b.verifiedRevenueCents ?? 0) - Number(a.revenueCents ?? a.verifiedRevenueCents ?? 0)
@@ -384,8 +421,8 @@ export function aggregateHomeServiceLeads(rows = []) {
     booked,
     completed,
     ...overallMoney,
-    bookedRate: totalLeads ? booked / totalLeads : 0,
-    reviewRate: completed ? reviewed / completed : 0,
+    bookedRate: totalLeads ? booked / totalLeads : null,
+    reviewRate: completed ? reviewed / completed : null,
     byCity: byDimension("city"),
     bySource: byDimension("source"),
     byJobType: byDimension("job_type"),

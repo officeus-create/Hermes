@@ -28,11 +28,11 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 
       <section class="kpis" aria-label="Business metrics">
         <article><span>Leads</span><strong data-kpi="totalLeads">0</strong><small>all tracked</small></article>
-        <article><span>Booked rate</span><strong data-kpi="bookedRate">0%</strong><small>booked + active + completed</small></article>
+        <article><span>Booked rate</span><strong data-kpi="bookedRate">UNKNOWN</strong><small>booked + active + completed</small></article>
         <article><span>Revenue</span><strong data-kpi="revenueCents">UNKNOWN</strong><small data-money-evidence="revenue">source-verified final amounts</small></article>
         <article><span>Tracked gross</span><strong data-kpi="grossAfterTrackedCostsCents">UNKNOWN</strong><small data-money-evidence="gross">verified revenue − lead cost − disposal</small></article>
         <article><span>Avg ticket</span><strong data-kpi="averageTicketCents">UNKNOWN</strong><small data-money-evidence="averageTicket">verified completed jobs</small></article>
-        <article><span>Review rate</span><strong data-kpi="reviewRate">0%</strong><small>received / completed</small></article>
+        <article><span>Review rate</span><strong data-kpi="reviewRate">UNKNOWN</strong><small>received / completed</small></article>
       </section>
 
       <section class="grid">
@@ -135,8 +135,15 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       : new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(cents)/100);
   const percent = (value: number) => `${Math.round((Number(value)||0)*100)}%`;
   const escapeHtml = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c] || c));
+  const managedClient = new URL(window.location.href).searchParams.get("managed")?.trim() || "";
+  const managedApiUrl = (url: string) => {
+    if (!managedClient) return url;
+    const next = new URL(url, window.location.origin);
+    next.searchParams.set("managed", managedClient);
+    return `${next.pathname}${next.search}`;
+  };
   const api = async (url: string, options: RequestInit = {}) => {
-    const response = await fetch(url,{credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json",...(options.headers||{})},...options});
+    const response = await fetch(managedApiUrl(url),{credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json",...(options.headers||{})},...options});
     const data = await response.json().catch(()=>({}));
     if (response.status === 401) { location.assign("/services/hermes-connect/access/?lang=en"); throw new Error("authentication_required"); }
     if (!response.ok || data?.success === false) throw new Error(data?.error || "request_failed");
@@ -148,7 +155,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
     const node = $<HTMLElement>(`[data-breakdown="${key}"]`); if(!node) return;
     const rows = dashboard?.metrics?.[key] || [];
     node.innerHTML = rows.length ? rows.slice(0,12).map((row:any)=>`
-      <div class="break-row"><div><strong>${escapeHtml(row.key)}</strong><small>${row.leads} leads · ${percent(row.bookedRate)} booked</small></div>
+      <div class="break-row"><div><strong>${escapeHtml(row.key)}</strong><small>${row.leads} leads · ${row.bookedRate == null ? "UNKNOWN" : percent(row.bookedRate)} booked</small></div>
       <div><b>${money(row.revenueCents)}</b><small>${money(row.grossAfterTrackedCostsCents)} tracked gross · ${row.moneyEvidence?.revenue?.verifiedCount??0}/${row.moneyEvidence?.revenue?.requiredCount??0} revenue evidence</small></div></div>`).join("") : '<p class="empty">No tracked data yet.</p>';
   }
 
@@ -214,7 +221,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       if(grossEvidence)grossEvidence.textContent=`revenue ${evidence.revenue?.verifiedCount??0}/${evidence.revenue?.requiredCount??0} · lead cost ${evidence.leadCost?.verifiedCount??0}/${evidence.leadCost?.requiredCount??0} · disposal ${evidence.disposalCost?.verifiedCount??0}/${evidence.disposalCost?.requiredCount??0}`;
       const averageEvidence=$<HTMLElement>('[data-money-evidence="averageTicket"]');
       if(averageEvidence)averageEvidence.textContent=`${evidence.revenue?.verifiedCount??0}/${evidence.revenue?.requiredCount??0} completed jobs source-verified`;
-      for(const key of ["bookedRate","reviewRate"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=percent(metrics[key]||0);}
+      for(const key of ["bookedRate","reviewRate"]){const n=$<HTMLElement>(`[data-kpi="${key}"]`);if(n)n.textContent=metrics[key] == null ? "UNKNOWN" : percent(metrics[key]);}
       populateProfile(dashboard.profile);renderLeads($<HTMLInputElement>("[data-search]")?.value||"");
       ["byCity","bySource","byJobType","bySearchQuery"].forEach(renderBreakdown);
     }catch(error:any){if(error?.message!=="authentication_required")showAlert(`Unable to load workspace: ${error?.message||"unknown error"}`);}
