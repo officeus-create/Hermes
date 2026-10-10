@@ -251,7 +251,8 @@ assert.match(catalogRuntime, /companyType === 'home_service'/);
 assert.match(catalogRuntime, /const companyHref =/);
 assert.match(catalogRuntime, /companyType === 'home_service' && repairGrid && companyHref/);
 assert.match(sitemap, /homeServiceUrls/);
-assert.match(sitemap, /businesses\/connect\/company/);
+assert.match(sitemap, /homeServiceCatalogPublication\(row\)\.eligible/);
+assert.match(sitemap, /publication\.path/);
 
 for (const required of [
   "searchQuery",
