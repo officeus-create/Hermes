@@ -19,6 +19,13 @@ export const mzmJunkRemovalClient = {
     "Construction debris removal",
     "Yard debris removal",
     "Commercial junk removal",
+    "Mattress removal",
+    "E-waste removal",
+    "Hot tub removal",
+    "Shed removal",
+    "Eviction cleanouts",
+    "Office cleanouts",
+    "Storage unit cleanouts",
   ],
   serviceAreas: [
     "Roseville",
@@ -37,6 +44,7 @@ export const mzmJunkRemovalClient = {
     "Penryn",
     "Newcastle",
     "Rancho Cordova",
+    "North Highlands",
   ],
   crm: {
     pipeline: ["new", "contacted", "quoted", "follow_up", "booked", "in_progress", "completed", "lost", "cancelled"],
@@ -71,24 +79,26 @@ export const mzmJunkRemovalClient = {
   publicEvidence: {
     officialWebsite: {
       url: "https://mzm-junk-removal.com/",
-      observedAt: "2026-10-08",
+      observedAt: "2026-10-10",
       evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
+      googleMapsPublicFingerprint: {
+        url: "https://www.google.com/maps?cid=14309271527164244470",
+        cid: "14309271527164244470",
+        purpose: "identity_match_only_not_management_authorization",
+      },
       confirmsExistingManifest: [
         "MZM Junk Removal identity",
         "public phone (279) 239-1800",
         "Roseville and Greater Sacramento market",
-        "junk removal / cleanout / furniture / appliance / construction debris / yard debris service scope",
+        "junk removal / cleanout / furniture / appliance / mattress / e-waste / construction debris / yard debris / hot tub / shed service scope",
+        "North Highlands service area",
+        "eviction / office / storage unit cleanout service scope",
       ],
-      ownerReviewCandidates: {
-        serviceAreas: ["North Highlands"],
-        services: [
-          "Mattress removal",
-          "Eviction cleanouts",
-          "Office cleanouts",
-          "Storage unit cleanouts",
-          "Shed removal",
-        ],
-      },
+      confirmedServiceUrls: [
+        "https://mzm-junk-removal.com/eviction-cleanout",
+        "https://mzm-junk-removal.com/office-cleanout",
+        "https://mzm-junk-removal.com/storage-unit-cleanout",
+      ],
     },
     volatilePublicClaimsPolicy:
       "Public review totals, completed-job counters, same-day availability and similar changing website claims are observation-time facts only. They do not become canonical CRM outcomes, Hermes-attributed results or permanent Catalog claims without dated evidence and the applicable owner/CRM readback.",
