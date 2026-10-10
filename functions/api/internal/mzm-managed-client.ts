@@ -164,9 +164,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const expectedServicesJson = JSON.stringify(mzmJunkRemovalClient.services);
   const expectedServiceAreasJson = JSON.stringify(mzmJunkRemovalClient.serviceAreas);
-  const persistedZero = (value: unknown) => value !== null && value !== undefined && Number(value) === 0;
-  const realLeadsTracked = Number(leadCount?.count);
-  const validLeadCount = Number.isFinite(realLeadsTracked) && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
+  const persistedZero = (value: unknown) => value === 0 || value === "0";
+  const realLeadsTracked = leadCount?.count;
+  const validLeadCount = typeof realLeadsTracked === "number" && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
   const validCompany =
     String(company?.id || "") === COMPANY_ID &&
     String(company?.owner_specialist_id || "") === DATA_OWNER_ID &&
