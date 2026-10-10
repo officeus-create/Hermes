@@ -124,7 +124,7 @@ test("managed reviewer backend scope is company-specific and fail-closed for wri
   expect(helper).toContain("readOnly: !internalAccess && accessRole !== \"editor\"");
   expect(api).toContain("managed_client_read_only");
   expect(api).toContain("readOnly: Boolean(ctx.readOnly)");
-  expect(grant).toContain("verifyGitHubMzmManagedClientOidcToken");
+  expect(grant).toContain("verifyGitHubMzmReviewerAccessOidcToken");
   expect(grant).toContain("home-service-managed:mzm-junk-removal");
   expect(grant).toContain("access_role: \"viewer\"");
   expect(grant).toContain("owner_authentication_claimed: false");
