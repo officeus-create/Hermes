@@ -8,9 +8,10 @@ const MAX_MESSAGE_TEXT = 20_000;
 const MAX_ATTACHMENT_BYTES = 2_200_000;
 const MAX_TOTAL_ATTACHMENT_BYTES = 3_500_000;
 const MAX_SEND_ATTEMPTS = 3;
-const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com"]);
+const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com", "dispatchtruck107@gmail.com"]);
 const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
-const DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS = ["dispatchtruck107@gmail.com", "volkogon.v@gmail.com"];
+const DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS = ["volkogon.v@gmail.com"];
+const isDispatcherNotificationRecipient = (value) => /^dispatchtruck\d+@gmail\.com$/i.test(String(value || "").trim());
 const CAR_HAULING_SALES_SUBJECT = "[HERMES SALES] [CAR HAULING] [CARRIER]";
 const CAR_HAULING_TEST_SUBJECT = "[HERMES TEST] [CAR HAULING] [CARRIER]";
 const COMMERCIAL_INQUIRY_SUBJECT = /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|IT DEVELOPMENT|CATALOG|GENERAL)\]$/;
@@ -276,7 +277,11 @@ const parseCarHaulingRecipients = (env) => {
     ...DEFAULT_CAR_HAULING_INTERNAL_RECIPIENTS,
     ...configuredRecipients,
   ])]
-    .filter((item) => isEmail(item) && !RETIRED_INTERNAL_RECIPIENTS.has(item))
+    .filter((item) =>
+      isEmail(item)
+      && !RETIRED_INTERNAL_RECIPIENTS.has(item)
+      && !isDispatcherNotificationRecipient(item)
+    )
     .slice(0, 8);
 };
 
