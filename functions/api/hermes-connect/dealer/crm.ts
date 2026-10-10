@@ -34,7 +34,7 @@ function dealerPermissionError(auth: any, action: HermesPermissionAction) {
   const decision = decideHermesPermission(auth.membership, {
     specialistId: String(auth.specialist.id),
     companyId: String(auth.businessRef),
-    ...(auth.membership?.workspaceId ? { workspaceId: String(auth.membership.workspaceId) } : {}),
+    workspaceId: `dealer_crm:${String(auth.businessRef)}`,
     action,
   });
   if (decision.allowed) return null;
