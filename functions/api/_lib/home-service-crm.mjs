@@ -1,6 +1,7 @@
 import { getAuthenticatedSpecialist } from "./session.mjs";
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
 import { ensureInternalAiSchema } from "./internal-ai.mjs";
+import { getManagedClientAccess } from "./managed-client-access.mjs";
 
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
 export const HOME_SERVICE_SUBTYPES = new Set(["junk_removal", "cleaning", "landscaping", "moving", "handyman", "other"]);
@@ -137,15 +138,6 @@ export async function getHomeServiceContext(request, env) {
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "");
   if (managedSlug) {
-    await ensureInternalAiSchema(env.DB);
-    const access = await env.DB.prepare(`
-      SELECT specialist_id
-      FROM hermes_internal_owner_access
-      WHERE specialist_id=? AND active=1 AND capability='HERMES_INTERNAL_OWNER'
-      LIMIT 1
-    `).bind(specialist.id).first();
-    if (!access) return { error: { status: 403, code: "hermes_internal_owner_required" } };
-
     const company = await env.DB.prepare(`
       SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
              catalog_opt_in,catalog_status,management_mode,catalog_publication_basis
@@ -154,11 +146,24 @@ export async function getHomeServiceContext(request, env) {
       LIMIT 1
     `).bind(managedSlug).first();
     if (!company) return { error: { status: 404, code: "managed_home_service_not_found" } };
+
+    await ensureInternalAiSchema(env.DB);
+    const internalOwner = await env.DB.prepare(`
+      SELECT specialist_id
+      FROM hermes_internal_owner_access
+      WHERE specialist_id=? AND active=1 AND capability='HERMES_INTERNAL_OWNER'
+      LIMIT 1
+    `).bind(specialist.id).first();
+    const reviewer = await getManagedClientAccess(env.DB, specialist.id, String(company.id || ""));
+    if (!internalOwner && !reviewer) {
+      return { error: { status: 403, code: "managed_home_service_access_required" } };
+    }
     return {
       specialist,
       company,
       dataOwnerId: String(company.owner_specialist_id || ""),
-      accessMode: "hermes_managed",
+      accessMode: internalOwner ? "hermes_managed_owner" : "managed_reviewer",
+      managedAccessLevel: internalOwner ? "owner" : String(reviewer?.access_level || "viewer"),
     };
   }
 
