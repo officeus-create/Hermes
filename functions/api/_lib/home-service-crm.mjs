@@ -40,6 +40,21 @@ const safeJsonArray = (value, maxItems = 50, maxLength = 240) => {
   return [...new Set(raw.map((item) => cleanHomeServiceText(item, maxLength)).filter(Boolean))].slice(0, maxItems);
 };
 
+export async function ensureManagedClientAccessSchema(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_managed_client_access (
+      specialist_id TEXT NOT NULL,
+      company_id TEXT NOT NULL,
+      access_role TEXT NOT NULL DEFAULT 'viewer' CHECK (access_role IN ('viewer','editor')),
+      active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (specialist_id, company_id)
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_managed_client_access_company ON hermes_managed_client_access(company_id,active)").run();
+}
+
 export async function ensureHomeServiceCrmSchema(db) {
   await ensureHermesCompanyProfilesSchema(db);
   await db.prepare(`
@@ -137,15 +152,6 @@ export async function getHomeServiceContext(request, env) {
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "");
   if (managedSlug) {
-    await ensureInternalAiSchema(env.DB);
-    const access = await env.DB.prepare(`
-      SELECT specialist_id
-      FROM hermes_internal_owner_access
-      WHERE specialist_id=? AND active=1 AND capability='HERMES_INTERNAL_OWNER'
-      LIMIT 1
-    `).bind(specialist.id).first();
-    if (!access) return { error: { status: 403, code: "hermes_internal_owner_required" } };
-
     const company = await env.DB.prepare(`
       SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
              catalog_opt_in,catalog_status,management_mode,catalog_publication_basis
@@ -154,11 +160,34 @@ export async function getHomeServiceContext(request, env) {
       LIMIT 1
     `).bind(managedSlug).first();
     if (!company) return { error: { status: 404, code: "managed_home_service_not_found" } };
+
+    await ensureManagedClientAccessSchema(env.DB);
+    await ensureInternalAiSchema(env.DB);
+    const [internalAccess, clientAccess] = await Promise.all([
+      env.DB.prepare(`
+        SELECT specialist_id
+        FROM hermes_internal_owner_access
+        WHERE specialist_id=? AND active=1 AND capability='HERMES_INTERNAL_OWNER'
+        LIMIT 1
+      `).bind(specialist.id).first(),
+      env.DB.prepare(`
+        SELECT specialist_id,access_role
+        FROM hermes_managed_client_access
+        WHERE specialist_id=? AND company_id=? AND active=1
+        LIMIT 1
+      `).bind(specialist.id, company.id).first(),
+    ]);
+    if (!internalAccess && !clientAccess) {
+      return { error: { status: 403, code: "managed_client_access_required" } };
+    }
+    const accessRole = internalAccess ? "internal_owner" : String(clientAccess?.access_role || "viewer");
     return {
       specialist,
       company,
       dataOwnerId: String(company.owner_specialist_id || ""),
-      accessMode: "hermes_managed",
+      accessMode: internalAccess ? "hermes_managed" : "hermes_managed_reviewer",
+      accessRole,
+      readOnly: !internalAccess && accessRole !== "editor",
     };
   }
 
@@ -177,6 +206,8 @@ export async function getHomeServiceContext(request, env) {
     company,
     dataOwnerId: String(specialist.id),
     accessMode: "owner_managed",
+    accessRole: "owner",
+    readOnly: false,
   };
 }
 
