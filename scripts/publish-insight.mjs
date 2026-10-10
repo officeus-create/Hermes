@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";\nimport { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
+import { resolve } from "node:path";
+import { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
 
 const root = new URL("../", import.meta.url);
 const registryUrl = new URL("../src/data/insights.generated.json", import.meta.url);
