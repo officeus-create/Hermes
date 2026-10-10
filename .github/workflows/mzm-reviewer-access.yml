@@ -1,0 +1,139 @@
+name: Create MZM reviewer access
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+concurrency:
+  group: mzm-reviewer-access
+  cancel-in-progress: false
+
+jobs:
+  create-reviewer:
+    if: >-
+      github.event.issue.number == 1799 &&
+      github.event.comment.body == '/create-mzm-reviewer' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BASE_URL: https://hermeslogisticsus.com
+      OIDC_AUDIENCE: hermes-connect-mzm-reviewer-access
+
+    steps:
+      - name: Request short-lived GitHub OIDC token
+        id: oidc
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="${RUNNER_TEMP}/oidc-response.json"
+          separator='?'
+          if [[ "${ACTIONS_ID_TOKEN_REQUEST_URL}" == *'?'* ]]; then separator='&'; fi
+          curl -sS --retry 2 --retry-all-errors --connect-timeout 10 --max-time 30 \
+            -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}${separator}audience=${OIDC_AUDIENCE}" \
+            -o "${response_file}"
+          token="$(jq -r '.value // empty' "${response_file}")"
+          [ -n "${token}" ] || { echo "GitHub OIDC token request failed."; exit 1; }
+          echo "::add-mask::${token}"
+          echo "token=${token}" >> "${GITHUB_OUTPUT}"
+
+      - name: Create or rotate scoped MZM reviewer account
+        id: provision
+        shell: bash
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+        run: |
+          set -euo pipefail
+          TMP="${RUNNER_TEMP}/mzm-reviewer"
+          mkdir -p "${TMP}"
+          chmod 700 "${TMP}"
+
+          HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/response.json" -w '%{http_code}' \
+            -X POST "${BASE_URL}/api/internal/mzm-reviewer-access" \
+            -H "Authorization: Bearer ${OIDC_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data-binary '{"operation":"create_mzm_reviewer_account_2026_10_11","email":"mzm.review@hermeslogisticsus.com"}' || printf 000)"
+
+          [ "${HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/response.json" 2>/dev/null)" = true ] \
+            || { echo "MZM reviewer provisioning failed safely with HTTP ${HTTP}."; exit 1; }
+
+          PASSWORD="$(jq -r '.temporary_password // empty' "${TMP}/response.json")"
+          EMAIL="$(jq -r '.email // empty' "${TMP}/response.json")"
+          LOGIN_PATH="$(jq -r '.login_path // empty' "${TMP}/response.json")"
+          WORKSPACE_PATH="$(jq -r '.workspace_path // empty' "${TMP}/response.json")"
+          ACCESS_ROLE="$(jq -r '.access_role // empty' "${TMP}/response.json")"
+          OWNER_AUTH="$(jq -r 'if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end' "${TMP}/response.json")"
+
+          [ -n "${PASSWORD}" ] && [ "${EMAIL}" = "mzm.review@hermeslogisticsus.com" ] \
+            || { echo "Reviewer credential receipt is incomplete."; exit 1; }
+          [ "${ACCESS_ROLE}" = "viewer" ] && [ "${OWNER_AUTH}" = false ] \
+            || { echo "Reviewer access boundary failed."; exit 1; }
+          echo "::add-mask::${PASSWORD}"
+
+          jq -n \
+            --arg email "${EMAIL}" \
+            --arg password "${PASSWORD}" \
+            --arg login_url "${BASE_URL}${LOGIN_PATH}" \
+            --arg workspace_url "${BASE_URL}${WORKSPACE_PATH}" \
+            '{email:$email,password:$password,login_url:$login_url,workspace_url:$workspace_url,access_role:"viewer",owner_authentication_claimed:false}' \
+            > "${TMP}/credentials.json"
+
+          cat > "${TMP}/public.pem" <<'PUBKEY'
+-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA6fbhLu7j9DPgZ7VjG9/d
+SbYHAYUWGnGugsnEBH7M3sLLdtOvFuuuZsLI/07GX0oTQ3AHhFaEwPCCPijEND40
+TCODT6H7vXwKOKzqA3qjw1J6JVvIIdBFv1PUMNd5Tyy6YUMF+cE7dkxbrhbP793W
+VkeTGebcoRY3zYGuo6Oazvxqz9Xj0Ou3F3A2echPPscTloQouu9FCcxYii+AJiD5
+XxKR4VKvzUUBjaEi88wL1Zxd/n6BNkgKBapx6QZRbx6gPBeAtpxXmvL3OTdpWD7m
+Ys0qN5yvcjso4wTAEihF+S8X4mnJ8a4kChNTky+n2gSVbeY6UXjmpxVgZSomjDwT
+14AllQwA1oKRVdLRHz7mK4QLpbGlOQl2lncCHaBq3NW1IDRo4i1Q3rcap4SNHv/g
+OlDa2XCPcj07mCCI45SOIVKbwVC1M6oe/a3Cgqu4NRvfhVGArwnUtFqFjnzabg27
+4YRAglQb/L+ewPDa+4ywRi11b7Ho45GUdE6qI0zYms6YJdrzTJoc2C9YtLV95HRd
+mzF2JpxH9rwf+l2o4eXsTYRYHN/ejDab6REy/oFWxP5Owk3AgubfBYX0xBFksrHh
+rK0CafAQwgOlLMATwYhfE05hedrCozBOR81mchzXTIX8lZO6FVyrAzRmWV/6aGe0
+0SmMyQrzVYAnDLCFsY730UUCAwEAAQ==
+-----END PUBLIC KEY-----
+PUBKEY
+
+          openssl pkeyutl -encrypt -pubin -inkey "${TMP}/public.pem" \
+            -pkeyopt rsa_padding_mode:oaep \
+            -pkeyopt rsa_oaep_md:sha256 \
+            -pkeyopt rsa_mgf1_md:sha256 \
+            -in "${TMP}/credentials.json" \
+            -out "${TMP}/mzm-reviewer-credentials.enc"
+
+          rm -f "${TMP}/credentials.json" "${TMP}/response.json" "${TMP}/public.pem"
+          echo "credential_file=${TMP}/mzm-reviewer-credentials.enc" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload encrypted one-time credential receipt
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: mzm-reviewer-credentials
+          path: ${{ steps.provision.outputs.credential_file }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Publish sanitized receipt
+        shell: bash
+        env:
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+        run: |
+          set -euo pipefail
+          gh issue comment 1799 --repo "${GITHUB_REPOSITORY}" --body "## MZM reviewer access — CREATED
+
+          - ✅ Scoped read-only reviewer account created or credential rotated for the existing MZM managed Company.
+          - ✅ No MZM owner authentication is claimed.
+          - ✅ Credential receipt is RSA-encrypted and stored in Actions artifact \`${ARTIFACT_ID}\` for 1 day.
+          - ✅ No plaintext password is written to this issue, repository, or workflow log.
+          - Login target: https://hermeslogisticsus.com/services/hermes-connect/home-services/access/?mode=login&managed=mzm-junk-removal"
