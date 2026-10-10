@@ -31,7 +31,7 @@ test("Home Services owner gets private-company setup and explicit Catalog opt-in
         ? { success: true, leads: [] }
         : { success: true, company: { name: "Synthetic QA Removal", slug: "synthetic-qa",
             catalogOptIn: false, catalogStatus: "self_submitted" }, profile: null,
-          metrics: { totalLeads: 0, bookedRate: 0, reviewRate: 0, byCity: [], bySource: [], byJobType: [], bySearchQuery: [] } }) });
+          metrics: { totalLeads: 0, bookedRate: null, reviewRate: null, byCity: [], bySource: [], byJobType: [], bySearchQuery: [] } }) });
   });
   await page.route("**/api/auth/login", (route) => route.fulfill({
     status: 200, contentType: "application/json", body: JSON.stringify({ success: true }),
@@ -65,6 +65,8 @@ test("Home Services owner gets private-company setup and explicit Catalog opt-in
   await expect(page).toHaveURL(/\/services\/hermes-connect\/home-services\/workspace\/$/);
   await expect(page.locator("[data-catalog-link]")).toBeHidden();
   await expect(page.locator("[data-catalog-private]")).toContainText("Catalog private");
+  await expect(page.locator('[data-kpi="bookedRate"]')).toHaveText("UNKNOWN");
+  await expect(page.locator('[data-kpi="reviewRate"]')).toHaveText("UNKNOWN");
 });
 
 test("Home Services owner setup refuses to overwrite a different existing company type", async ({ page }) => {

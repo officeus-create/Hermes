@@ -101,6 +101,67 @@ test.describe('Logistics career → private HR intake', () => {
     expect(JSON.stringify(evidence.body.events[0].payload)).not.toContain('synthetic.candidate@example.com');
   });
 
+  test('international digital-sales interest uses the existing private HR intake without claiming an open vacancy', async ({ page }) => {
+    await page.goto('/logistics/apply/?for=career&role=international-digital-sales&source=hermes_careers');
+    await expect(page.locator('select[name="application_type"]')).toHaveValue('career');
+    await expect(page.locator('input[name="interest"]')).toHaveValue('International Digital Solutions Sales — Websites, CRM, SEO & AI');
+    await expect(page.locator('[data-application-context]')).toContainText('International Digital Solutions Sales');
+    await expect(page.locator('[data-application-context]')).toContainText('hermes_careers');
+  });
+
+  test('international digital-sales submission persists to the sales track', async ({ page }) => {
+    const calls: Array<{ method: string; body: any }> = [];
+
+    await page.route('**/api/hr/candidate', async (route) => {
+      const request = route.request();
+      const body = request.postDataJSON();
+      calls.push({ method: request.method(), body });
+      if (request.method() === 'POST') {
+        await route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            duplicate: false,
+            candidate_id: body.candidate_id,
+            session_id: 'hr-session-sales-test',
+            status: 'interviewing',
+          }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          candidate_id: body.candidate_id,
+          accepted_answers: 3,
+          accepted_events: 1,
+          completed: true,
+          status: 'completed',
+        }),
+      });
+    });
+
+    await page.goto('/logistics/apply/?for=career&role=international-digital-sales&source=hermes_careers');
+    await page.locator('[name="name"]').fill('Synthetic Digital Sales Candidate');
+    await page.locator('[name="email"]').fill('synthetic.digital.sales@example.com');
+    await page.locator('[name="location"]').fill('Kyiv, Ukraine');
+    await page.locator('[name="languages"]').fill('EN, UA');
+    await page.locator('[name="experience"]').fill('Sold digital services in a documented synthetic regression scenario with measurable pipeline notes.');
+    await page.locator('[name="availability"]').fill('Monday through Friday during agreed U.S. business hours.');
+    await page.locator('[name="consent"]').check();
+    await page.locator('[data-application-submit]').click();
+
+    await expect(page.locator('[data-application-result-title]')).toHaveText('Application received for human review');
+    await expect(page.locator('[data-application-preview]')).toContainText('Track: Sales');
+    expect(calls[0].method).toBe('POST');
+    expect(calls[0].body.track).toBe('sales');
+    expect(calls[0].body.attribution.vacancy).toBe('international-digital-sales');
+    expect(calls[1].body.events[0].payload.vacancy).toBe('international-digital-sales');
+  });
+
   test('agency inquiry remains local preview and does not enter HR', async ({ page }) => {
     let apiCalls = 0;
     await page.route('**/api/hr/candidate', async (route) => {

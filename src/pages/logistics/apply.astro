@@ -103,10 +103,12 @@ import "../../styles/features/load.css";
   const requestedType = params.get("for");
   const roleMap: Record<string, string> = {
     "car-hauling-dispatcher": "Car Hauling Dispatcher — Remote / U.S. Market",
+    "international-digital-sales": "International Digital Solutions Sales — Websites, CRM, SEO & AI",
   };
   const allowedSources = new Set(["hermes_careers", "workua", "staffam", "linkedin", "indeed", "google", "referral"]);
   const requestedRole = params.get("role") ?? "";
   const source = allowedSources.has(params.get("source") ?? "") ? params.get("source")! : "direct";
+  const candidateTrack = requestedRole === "international-digital-sales" ? "sales" : "logistics";
   const uiLanguage = document.documentElement.lang.toLowerCase().startsWith("ru")
     ? "ru"
     : document.documentElement.lang.toLowerCase().startsWith("uk") ? "uk" : "en";
@@ -250,7 +252,7 @@ import "../../styles/features/load.css";
           country: location,
           language: uiLanguage,
           source,
-          track: "logistics",
+          track: candidateTrack,
           attribution: buildAttribution(),
           consent: data.get("consent") === "on",
           submitted_at: submittedAt,
@@ -312,7 +314,7 @@ import "../../styles/features/load.css";
         [
           "Hermes HR application receipt",
           `Candidate ID: ${candidateId}`,
-          "Track: Logistics",
+          `Track: ${candidateTrack === "sales" ? "Sales" : "Logistics"}`,
           `Vacancy: ${vacancy}`,
           `Source: ${source}`,
           "Status: completed intake · human review required",

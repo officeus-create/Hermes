@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-10-international-digital-sales-role-preview",
+  "generated_at": "2026-10-10T11:45:00Z",
+  "status": "DRAFT_PREPUBLICATION_HOLD",
+  "additions": [
+    {
+      "route": "/careers/international-digital-sales/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/careers/international-digital-sales/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/careers/international-digital-sales/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Informational role preview only; not a verified active vacancy. No public JobPosting, indexation or hiring CTA until employment/contracting entity, country eligibility, terms, and human application receiver have evidence and owner release approval.",
+      "response_status": null,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
