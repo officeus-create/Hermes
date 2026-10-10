@@ -1,5 +1,4 @@
 import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../api/_lib/repair-catalog-publication.mjs";
-import { ensureHomeServiceCrmSchema } from "../api/_lib/home-service-crm.mjs";
 import { homeServiceCatalogPublication } from "../api/_lib/home-service-catalog-publication.mjs";
 
 // Bounded discovery release: the existing Kittle owner only; no new search owners.
@@ -58,7 +57,6 @@ export async function onRequestGet({ env, next }: { env: { DB?: any }; next: () 
   let homeServiceRows: any[] = [];
   if (env.DB) {
     try {
-      await ensureHomeServiceCrmSchema(env.DB);
       const [repairResult, homeServiceResult] = await Promise.all([
         env.DB.prepare(`
           SELECT id,name,slug,city,state,region,catalog_opt_in
