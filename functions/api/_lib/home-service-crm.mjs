@@ -408,7 +408,7 @@ export function aggregateHomeServiceLeads(rows = []) {
         booked: item.booked,
         completed: item.completed,
         ...money,
-        bookedRate: item.leads ? item.booked / item.leads : 0,
+        bookedRate: item.leads ? item.booked / item.leads : null,
       };
     }).sort((a,b) =>
       Number(b.revenueCents ?? b.verifiedRevenueCents ?? 0) - Number(a.revenueCents ?? a.verifiedRevenueCents ?? 0)
@@ -421,8 +421,8 @@ export function aggregateHomeServiceLeads(rows = []) {
     booked,
     completed,
     ...overallMoney,
-    bookedRate: totalLeads ? booked / totalLeads : 0,
-    reviewRate: completed ? reviewed / completed : 0,
+    bookedRate: totalLeads ? booked / totalLeads : null,
+    reviewRate: completed ? reviewed / completed : null,
     byCity: byDimension("city"),
     bySource: byDimension("source"),
     byJobType: byDimension("job_type"),
