@@ -1867,3 +1867,15 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 - Ecosystem compounding: search visibility = protected existing owner/no new indexed URL; conversion = one truthful interactive demo CTA; expertise = official-source rules and status labels; internal linking = Stage 2 Italy → Stage 3 lab; durable knowledge = product contract plus error lesson; reusable architecture = typed capability/rule/provider modules and existing Hermes workspace reuse; privacy-safe measurement = no new telemetry or interaction network; automation/cross-business value = reusable consent and evidence gates without a second CRM.
 - Risks and assumptions: provider facts remain dated research, not partnership evidence; local storage is device-only; external merchant links require connectivity; no production behavior is claimed before a separately authorized merge/deploy and exact-SHA readback.
 - Incomplete / next owner: independent diff review and exact-head CI decide READY/HOLD. Human release owner separately decides merge/deploy; after any authorized release, verify the exact SHA, live canonical/robots and product interactions without submitting forms or triggering IndexNow.
+
+
+## 2026-10-10 — Vittoria Pro — README receipt truth alignment
+
+- Owner: Vittoria Pro, direct connected-tool execution; no Codex task.
+- Branch: `docs/receipt-truth-readme-20261010` from `7c7d055838ec2e0dd1a50de0d0dc4403b5dd7c91`.
+- Scope: Two current README delivery claims now say matching request-ID acceptance; final delivery, human receipt, qualification, and booking require separate proof. The dated 2026-08-04 receipt remains unchanged.
+- Files changed: `README.md`, `docs/ERROR_REGISTER.md`, `docs/AI_HANDOFF.md`.
+- Verification: Focused local string assertions check both replacements, historical-text preservation, append-only logs, and no runtime-file delta. Required `npm run build`, `npm test`, `npm run test:e2e` are not run locally; exact-head CI must be checked before approval.
+- Ecosystem compounding: More accurate reusable knowledge and lead-stage interpretation across departments; no new search route, CTA, analytics event, customer data, dependency, or backend.
+- Remaining: Draft review and exact-head required checks. No merge, deploy, production form submission, or runtime success claim is authorized by this documentation change.
+- Next: Existing release owner reviews the bounded documentation delta; keep real delivery and human-use gates separate.
