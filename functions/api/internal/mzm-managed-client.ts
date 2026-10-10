@@ -64,6 +64,25 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(409, { success: false, error: "managed_slug_collision" }, privateHeaders);
   }
 
+  const [existingCompanyIdentity, existingProfileIdentity] = await Promise.all([
+    env.DB.prepare("SELECT id,owner_specialist_id,slug,company_type,management_mode,created_at FROM hermes_company_profiles WHERE id=? LIMIT 1").bind(COMPANY_ID).first(),
+    env.DB.prepare("SELECT id,owner_specialist_id,company_id FROM hermes_home_service_profiles WHERE id=? LIMIT 1").bind(PROFILE_ID).first(),
+  ]);
+  if (existingCompanyIdentity && (
+    String(existingCompanyIdentity.owner_specialist_id || "") !== DATA_OWNER_ID ||
+    String(existingCompanyIdentity.slug || "") !== SLUG ||
+    String(existingCompanyIdentity.company_type || "") !== "home_service" ||
+    String(existingCompanyIdentity.management_mode || "") !== MANAGEMENT_MODE
+  )) {
+    return jsonResponse(409, { success: false, error: "managed_identity_preflight_mismatch" }, privateHeaders);
+  }
+  if (existingProfileIdentity && (
+    String(existingProfileIdentity.owner_specialist_id || "") !== DATA_OWNER_ID ||
+    String(existingProfileIdentity.company_id || "") !== COMPANY_ID
+  )) {
+    return jsonResponse(409, { success: false, error: "managed_identity_preflight_mismatch" }, privateHeaders);
+  }
+
   const [preflightMismatchedLeadCount, preflightMismatchedProfileCount] = await Promise.all([
     env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
     env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_profiles WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
@@ -79,10 +98,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const now = new Date().toISOString();
-  const existingCompany = await env.DB.prepare(
-    "SELECT created_at FROM hermes_company_profiles WHERE id=? LIMIT 1"
-  ).bind(COMPANY_ID).first();
-  const createdAt = String(existingCompany?.created_at || now);
+  const createdAt = String(existingCompanyIdentity?.created_at || now);
 
   await env.DB.prepare(`
     INSERT INTO hermes_company_profiles (
