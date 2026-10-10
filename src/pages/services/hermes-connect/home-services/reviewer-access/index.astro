@@ -1,0 +1,76 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+---
+<BaseLayout
+  title="MZM CRM reviewer access | Hermes Connect"
+  description="Private read-only reviewer access to the Hermes-managed MZM Junk Removal Home Services CRM."
+  robots="noindex,nofollow"
+>
+  <SiteHeader theme="light" activePath="/services/hermes-connect/" />
+  <main class="reviewer-page" id="main-content">
+    <section class="card">
+      <p class="eyebrow">Hermes Connect · Managed client review</p>
+      <h1>MZM Junk Removal CRM</h1>
+      <p class="lead">Sign in with the internal reviewer credential issued by Hermes. This account can review MZM company setup, services, service areas, public evidence and real CRM records without changing client data.</p>
+      <p class="boundary">Reviewer access is not the MZM owner identity. Public Catalog publication, owner authentication and private CRM outcomes remain separate evidence states.</p>
+      <form data-login-form>
+        <label>Email<input type="email" name="email" autocomplete="username" required /></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" minlength="8" required /></label>
+        <button type="submit">Open MZM CRM</button>
+      </form>
+      <p data-message class="message" role="status" aria-live="polite" hidden></p>
+      <a class="catalog" href="/businesses/connect/company/mzm-junk-removal/">Open public MZM Catalog profile ↗</a>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script is:inline>
+(() => {
+  const form = document.querySelector("[data-login-form]");
+  const message = document.querySelector("[data-message]");
+  const setMessage = (value, bad = false) => {
+    if (!message) return;
+    message.hidden = !value;
+    message.textContent = value || "";
+    message.dataset.error = bad ? "true" : "false";
+  };
+  const openWorkspace = () => {
+    window.location.assign("/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal");
+  };
+  const check = async () => {
+    try {
+      const response = await fetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" });
+      if (response.ok) openWorkspace();
+    } catch {}
+  };
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]');
+    if (button) button.disabled = true;
+    const data = new FormData(form);
+    setMessage("Signing in…");
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ email: data.get("email"), password: data.get("password") }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.success === false) throw new Error(payload.error || "invalid_credentials");
+      openWorkspace();
+    } catch (error) {
+      setMessage("Sign-in failed: " + (error?.message || "invalid_credentials"), true);
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+  void check();
+})();
+</script>
+<style>
+.reviewer-page{min-height:78vh;padding:120px 20px 80px;background:#f4f7fa;color:#172033}.card{width:min(720px,100%);margin:auto;padding:clamp(24px,5vw,48px);border:1px solid #dce5ee;border-radius:26px;background:#fff;box-shadow:0 20px 60px rgba(20,40,70,.07)}.eyebrow{margin:0;color:#256a98;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}h1{margin:10px 0 14px;font-size:clamp(38px,7vw,64px);letter-spacing:-.05em;line-height:1}.lead{color:#5d6c7e;line-height:1.65}.boundary{padding:13px 15px;border-radius:12px;background:#eef5fb;color:#47647b;font-size:13px;line-height:1.55}form{display:grid;gap:14px;margin-top:24px}label{display:grid;gap:6px;font-size:13px;font-weight:800}input{min-height:46px;padding:10px 12px;border:1px solid #cbd8e5;border-radius:10px;font:inherit}button{min-height:46px;border:0;border-radius:10px;background:#172d45;color:#fff;font-weight:850;cursor:pointer}button:disabled{opacity:.6}.message{padding:11px 13px;border-radius:10px;background:#e9f4fa}.message[data-error="true"]{background:#fff0ef;color:#8e2e27}.catalog{display:inline-block;margin-top:18px;color:#246691;font-weight:800;text-decoration:none}
+</style>
