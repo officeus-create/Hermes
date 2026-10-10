@@ -1,7 +1,8 @@
 import "./insights-sitemap-maintenance.test.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";\nimport { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
+import { existsSync } from "node:fs";
+import { isVerifiedSourceCta } from "./lib/verified-source-cta.mjs";
 import "./insights-source-registry.test.mjs";
 
 const registry = JSON.parse(await readFile(new URL("../src/data/insights.generated.json", import.meta.url), "utf8"));
