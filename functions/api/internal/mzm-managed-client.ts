@@ -149,7 +149,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     now,
   ).run();
 
-  const [company, profile, leadCount] = await Promise.all([
+  const [company, profile, leadCount, mismatchedLeadCount, mismatchedProfileCount] = await Promise.all([
     env.DB.prepare(`
       SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,catalog_opt_in,catalog_status,
              load_board_access,public_source_ref,management_mode,catalog_publication_basis
@@ -160,6 +160,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       FROM hermes_home_service_profiles WHERE company_id=? LIMIT 1
     `).bind(COMPANY_ID).first(),
     env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE owner_specialist_id=?").bind(DATA_OWNER_ID).first(),
+    env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
+    env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_profiles WHERE company_id=? AND owner_specialist_id<>?").bind(COMPANY_ID, DATA_OWNER_ID).first(),
   ]);
 
   const validCompany =
@@ -180,6 +182,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   if (!validCompany || !validProfile) {
     return jsonResponse(409, { success: false, error: "managed_client_readback_mismatch" }, privateHeaders);
+  }
+
+  const managedOwnerMismatchRecords =
+    Number(mismatchedLeadCount?.count || 0) + Number(mismatchedProfileCount?.count || 0);
+  if (managedOwnerMismatchRecords > 0) {
+    return jsonResponse(409, {
+      success: false,
+      error: "managed_data_owner_mismatch_records",
+      managed_owner_mismatch_records: managedOwnerMismatchRecords,
+    }, privateHeaders);
   }
 
   await env.DB.prepare(`
@@ -208,6 +220,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     internal_operator_capability: "HERMES_INTERNAL_OWNER",
     internal_operator_ui_readback: "REQUIRED_SEPARATELY",
     real_leads_tracked: Number(leadCount?.count || 0),
+    managed_owner_mismatch_records: managedOwnerMismatchRecords,
     business_outcomes: "UNKNOWN_UNLESS_RECORDED_WITH_EVIDENCE",
   }, privateHeaders);
 }
