@@ -120,7 +120,7 @@ for (const post of registry.filter((item) => item.contentTier === "standalone"))
 const rss = await readFile(new URL("../src/pages/insights/rss.xml.ts", import.meta.url), "utf8");
 assert.ok(rss.includes("application/rss+xml"), "RSS route must emit RSS content type");
 const publisher = await readFile(new URL("./publish-insight.mjs", import.meta.url), "utf8");
-assert.match(publisher, /primaryActionIsVerifiedSource = primaryActionHref === post\.sourceUrl/);
+assert.match(publisher, /primaryActionIsVerifiedSource = isVerifiedSourceCta\(primaryActionHref, post\.sourceUrl\)/);
 assert.match(publisher, /primaryAction must use an internal href, exactly match sourceUrl, or add only approved Hermes UTM attribution/);
 assert.match(publisher, /secondaryAction must use an internal href/);
 const insightComponent = await readFile(new URL("../src/components/ContentInsightPage.astro", import.meta.url), "utf8");
