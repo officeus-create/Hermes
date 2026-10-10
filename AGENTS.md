@@ -10,7 +10,7 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 4. The current issue or bounded mission assigned in the prompt
 5. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`
 6. `docs/SEARCH_GROWTH_GUARDRAIL.md` — owner-approved cross-department Search/Marketing non-regression and indexation gate
-7. `docs/DESIGN_INTEGRATION_CONTRACT.md`
+7. `docs/GOOGLE_ACCESS_GOVERNOR.md` — one Google resource owner, cache/dedupe, quota/backoff and single-write-owner policy\n8. `docs/DESIGN_INTEGRATION_CONTRACT.md`
 8. `docs/PUBLIC_INFORMATION_POLICY.md`
 9. Only the domain runbooks needed for the assigned task
 10. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
@@ -61,6 +61,17 @@ The owner-approved cross-department policy is `docs/SEARCH_GROWTH_GUARDRAIL.md`.
 - **Existing owner first:** strengthen the current canonical owner before creating another URL.
 - **Quick wins are allowed:** Website Development, Hermes Connect/CRM, dealers/shippers/Load Board, or another real product may move ahead when fresh evidence shows a faster credible route to qualified traffic/revenue and the gate passes.
 - **Synthetic traffic is QA, not demand:** keep `HUMAN`, `SEARCH_CRAWLER`, and `HERMES_SYNTHETIC` separate. Synthetic CI/browser/form traffic never proves a customer, lead, or revenue. Do not solve internal QA noise with a WAF/bot change that could block verified Googlebot/Bingbot.
+
+## Google access governor
+
+The canonical policy is `docs/GOOGLE_ACCESS_GOVERNOR.md`.
+
+- Many agents may analyze one Google resource, but one connector owns recurring reads and one connector owns live writes.
+- Reuse fresh evidence/cache before another GSC/GA4/GBP call.
+- A specialized second reader is allowed only for a distinct capability such as URL Inspection, not as a parallel poller or quota bypass.
+- On 429/quota/throttle, back off; do not fan the same call across connectors/accounts/projects.
+- GBP writes require the exact authorized business/location, one write owner, current-state readback, idempotency/duplicate guard and post-write readback.
+- Missing Google access or rows remain ACCESS_GAP/UNKNOWN as appropriate, not zero.
 
 ## Project boundary
 
