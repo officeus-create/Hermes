@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { onRequestGet, onRequestPost, onRequestPatch } from '../functions/api/hermes-connect/dealer/crm.ts';
+import { onRequestGet, onRequestPost, onRequestPatch, onRequestDelete } from '../functions/api/hermes-connect/dealer/crm.ts';
 import { ensureHermesCompanyProfilesSchema } from '../functions/api/_lib/hermes-company-profiles.mjs';
 import { ensureCompanyMembershipSchema } from '../functions/api/_lib/company-memberships.mjs';
 
@@ -25,7 +25,7 @@ for (const id of ['a', 'b', 'nondealer']) {
     VALUES (?,?,?,?,?,?,?,?,?)`).run(id, id, 'Synthetic fixture', id, id === 'nondealer' ? 'other' : 'dealer', 'Fixture', 'AR', '2026-09-30', '2026-09-30');
 }
 // Delegated identities have a normal Hermes session but no owner row of their own.
-for (const [id, role] of [['c', 'Dealer Staff'], ['d', 'Dealer Staff'], ['e', 'Dealer Staff'], ['roletext', 'Dealer Admin']]) {
+for (const [id, role] of [['c', 'Dealer Staff'], ['d', 'Dealer Staff'], ['e', 'Dealer Staff'], ['f', 'Dealer Admin'], ['roletext', 'Dealer Admin']]) {
   sqlite.prepare('INSERT INTO specialists VALUES (?,?,?,?,?,?)').run(id, `${id}@example.invalid`, 'Synthetic delegated specialist', role, '', '');
   sqlite.prepare('INSERT INTO sessions VALUES (?,?,?)').run(`synthetic-${id}`, id, new Date(Date.now() + 3600000).toISOString());
 }
@@ -39,6 +39,7 @@ const insertMembership = (id, businessRef, specialistId, role, active = 1, revok
 insertMembership('mem-readonly-a', 'company:a', 'c', 'read_only');
 insertMembership('mem-member-a', 'company:a', 'd', 'member');
 insertMembership('mem-revoked-a', 'company:a', 'e', 'read_only', 0, '2026-10-10T20:30:00Z');
+insertMembership('mem-admin-a', 'company:a', 'f', 'admin');
 assert.throws(() => insertMembership('mem-self', 'company:a', 'roletext', 'admin'), /CHECK constraint failed/i, 'delegated storage must reject self-promotion when grantor equals subject');
 
 const request = (owner = 'a', module = 'intelligence', method = 'GET', body, headers = {}, businessRef = '') => {
@@ -90,6 +91,18 @@ assert.equal(delegatedRow.owner_specialist_id, 'a', 'delegated writes retain can
 const delegatedActivity = sqlite.prepare("SELECT actor_specialist_id FROM hermes_dealer_activity WHERE entity_id=? AND event_type='leads_created' ORDER BY created_at DESC LIMIT 1").get(delegatedLead);
 assert.equal(delegatedActivity.actor_specialist_id, 'd', 'delegated write audit keeps the real actor');
 assert.equal((await onRequestPost({ request: request('d', 'team', 'POST', { module: 'team', name: 'Denied Team Write', role: 'Sales' }, {}, 'company:a'), env: { DB: db } })).status, 403, 'ordinary member cannot mutate team');
+const adminTeamResponse = await onRequestPost({ request: request('f', 'team', 'POST', { module: 'team', name: 'Synthetic Admin Team Member', role: 'Sales', department: 'sales' }, {}, 'company:a'), env: { DB: db } });
+assert.equal(adminTeamResponse.status, 201, 'delegated admin can perform bounded team.write');
+const adminTeamBody = await adminTeamResponse.json();
+const adminTeamRow = sqlite.prepare('SELECT owner_specialist_id FROM hermes_dealer_team_members WHERE id=?').get(adminTeamBody.id);
+assert.equal(adminTeamRow.owner_specialist_id, 'a', 'admin team write retains canonical data owner');
+const delegatedDeleteUrl = new URL('https://example.invalid/api/hermes-connect/dealer/crm');
+delegatedDeleteUrl.searchParams.set('module', 'leads');
+delegatedDeleteUrl.searchParams.set('id', delegatedLead);
+delegatedDeleteUrl.searchParams.set('business_ref', 'company:a');
+const delegatedDelete = await onRequestDelete({ request: new Request(delegatedDeleteUrl, { method: 'DELETE', headers: { Cookie: 'hermes_session=synthetic-f', Origin: 'https://example.invalid', 'Sec-Fetch-Site': 'same-origin' } }), env: { DB: db } });
+assert.equal(delegatedDelete.status, 403, 'delegated admin cannot use owner-only record.delete');
+assert.equal((await delegatedDelete.json()).error, 'owner_relation_required_for_delete');
 
 assert.equal(hasWarning(ownerPayload), false);
 const future = new Date(Date.now() + 86400000).toISOString();
