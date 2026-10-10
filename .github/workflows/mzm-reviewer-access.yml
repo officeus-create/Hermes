@@ -17,7 +17,8 @@ jobs:
   create-reviewer:
     if: >-
       github.event.issue.number == 1799 &&
-      github.event.comment.body == '/create-mzm-reviewer' &&
+      github.event.comment.user.login == 'officeus-create' &&
+      startsWith(github.event.comment.body, '/create-mzm-reviewer ') &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -50,6 +51,7 @@ jobs:
         shell: bash
         env:
           OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+          RECIPIENT_KEY_COMMENT: ${{ github.event.comment.body }}
         run: |
           set -euo pipefail
           TMP="${RUNNER_TEMP}/mzm-reviewer"
@@ -87,22 +89,15 @@ jobs:
             '{email:$email,password:$password,login_url:$login_url,workspace_url:$workspace_url,access_role:"viewer",owner_authentication_claimed:false}' \
             > "${TMP}/credentials.json"
 
-          cat > "${TMP}/public.pem" <<'PUBKEY'
------BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA6fbhLu7j9DPgZ7VjG9/d
-SbYHAYUWGnGugsnEBH7M3sLLdtOvFuuuZsLI/07GX0oTQ3AHhFaEwPCCPijEND40
-TCODT6H7vXwKOKzqA3qjw1J6JVvIIdBFv1PUMNd5Tyy6YUMF+cE7dkxbrhbP793W
-VkeTGebcoRY3zYGuo6Oazvxqz9Xj0Ou3F3A2echPPscTloQouu9FCcxYii+AJiD5
-XxKR4VKvzUUBjaEi88wL1Zxd/n6BNkgKBapx6QZRbx6gPBeAtpxXmvL3OTdpWD7m
-Ys0qN5yvcjso4wTAEihF+S8X4mnJ8a4kChNTky+n2gSVbeY6UXjmpxVgZSomjDwT
-14AllQwA1oKRVdLRHz7mK4QLpbGlOQl2lncCHaBq3NW1IDRo4i1Q3rcap4SNHv/g
-OlDa2XCPcj07mCCI45SOIVKbwVC1M6oe/a3Cgqu4NRvfhVGArwnUtFqFjnzabg27
-4YRAglQb/L+ewPDa+4ywRi11b7Ho45GUdE6qI0zYms6YJdrzTJoc2C9YtLV95HRd
-mzF2JpxH9rwf+l2o4eXsTYRYHN/ejDab6REy/oFWxP5Owk3AgubfBYX0xBFksrHh
-rK0CafAQwgOlLMATwYhfE05hedrCozBOR81mchzXTIX8lZO6FVyrAzRmWV/6aGe0
-0SmMyQrzVYAnDLCFsY730UUCAwEAAQ==
------END PUBLIC KEY-----
-PUBKEY
+          RECIPIENT_KEY_B64="${RECIPIENT_KEY_COMMENT#'/create-mzm-reviewer '}"
+          [[ "${RECIPIENT_KEY_B64}" =~ ^[A-Za-z0-9+/=]+$ ]] \
+            || { echo "Reviewer recipient public key is missing or malformed."; exit 1; }
+          printf '%s' "${RECIPIENT_KEY_B64}" | base64 -d > "${TMP}/public.pem"
+          openssl pkey -pubin -in "${TMP}/public.pem" -noout >/dev/null 2>&1 \
+            || { echo "Reviewer recipient public key is invalid."; exit 1; }
+          KEY_BITS="$(openssl pkey -pubin -in "${TMP}/public.pem" -text -noout | sed -n 's/^Public-Key: (\([0-9][0-9]*\) bit)$/\1/p' | head -1)"
+          [ "${KEY_BITS}" = "4096" ] \
+            || { echo "Reviewer recipient key must be RSA-4096."; exit 1; }
 
           openssl pkeyutl -encrypt -pubin -inkey "${TMP}/public.pem" \
             -pkeyopt rsa_padding_mode:oaep \
@@ -134,6 +129,6 @@ PUBKEY
 
           - ✅ Scoped read-only reviewer account created or credential rotated for the existing MZM managed Company.
           - ✅ No MZM owner authentication is claimed.
-          - ✅ Credential receipt is RSA-encrypted and stored in Actions artifact \`${ARTIFACT_ID}\` for 1 day.
-          - ✅ No plaintext password is written to this issue, repository, or workflow log.
+          - ✅ Credential receipt is RSA-encrypted to the one-time public key supplied by the authorized \`officeus-create\` trigger and stored in Actions artifact \`${ARTIFACT_ID}\` for 1 day.
+          - ✅ No plaintext password or private key is written to this issue, repository, or workflow log.
           - Login target: https://hermeslogisticsus.com/services/hermes-connect/home-services/access/?mode=login&managed=mzm-junk-removal"
