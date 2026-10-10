@@ -151,8 +151,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const [company, profile, leadCount] = await Promise.all([
     env.DB.prepare(`
-      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,catalog_opt_in,catalog_status,
-             load_board_access,public_source_ref,management_mode,catalog_publication_basis
+      SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,country_code,timezone,
+             catalog_opt_in,catalog_status,load_board_access,public_source_ref,management_mode,catalog_publication_basis
       FROM hermes_company_profiles WHERE id=? LIMIT 1
     `).bind(COMPANY_ID).first(),
     env.DB.prepare(`
@@ -174,6 +174,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.state || "") === mzmJunkRemovalClient.base.state &&
     String(company?.website || "") === mzmJunkRemovalClient.website &&
     String(company?.phone || "") === mzmJunkRemovalClient.phone &&
+    String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
+    String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
     Number(company?.catalog_opt_in || 0) === 0 &&
     String(company?.catalog_status || "") === "managed_private" &&
