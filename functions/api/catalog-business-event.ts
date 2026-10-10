@@ -43,7 +43,7 @@ async function validCatalogBusinessId(db: any, value: string) {
   if (academyCompanyId.test(value)) return Boolean(await publicAcademyOwner(db, value));
   const company = value.match(/^company-crm:([a-zA-Z0-9_-]{6,160})$/);
   if (company) {
-    const row = await db.prepare("SELECT c.id FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
+    const row = await db.prepare("SELECT c.id FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_status IN ('self_submitted','verified_public') AND (c.catalog_opt_in=1 OR (c.management_mode='hermes_managed' AND c.catalog_publication_basis='hermes_client_publication_approved' AND c.catalog_status='verified_public')) LIMIT 1").bind(company[1]).first();
     return Boolean(row?.id);
   }
   const match = value.match(/^repair-shop-crm:([a-zA-Z0-9_-]{6,160})$/);
@@ -117,7 +117,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       }
       const company = path.match(/^\/businesses\/connect\/company\/([a-z0-9-]+)\/$/);
       if (!id && company) {
-        const row = await env.DB.prepare("SELECT c.id,c.slug FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
+        const row = await env.DB.prepare("SELECT c.id,c.slug FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_status IN ('self_submitted','verified_public') AND (c.catalog_opt_in=1 OR (c.management_mode='hermes_managed' AND c.catalog_publication_basis='hermes_client_publication_approved' AND c.catalog_status='verified_public')) LIMIT 1").bind(company[1]).first();
         if (row?.id && row.slug === company[1]) id = `company-crm:${row.id}`;
       }
       const academy = path.match(/^\/businesses\/connect\/academy\/([a-z0-9-]+)\/$/);
