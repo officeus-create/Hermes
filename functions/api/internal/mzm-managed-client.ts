@@ -164,6 +164,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const expectedServicesJson = JSON.stringify(mzmJunkRemovalClient.services);
   const expectedServiceAreasJson = JSON.stringify(mzmJunkRemovalClient.serviceAreas);
+  const persistedZero = (value: unknown) => value !== null && value !== undefined && Number(value) === 0;
+  const realLeadsTracked = Number(leadCount?.count);
+  const validLeadCount = Number.isFinite(realLeadsTracked) && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
   const validCompany =
     String(company?.id || "") === COMPANY_ID &&
     String(company?.owner_specialist_id || "") === DATA_OWNER_ID &&
@@ -179,9 +182,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
     String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
-    Number(company?.catalog_opt_in || 0) === 0 &&
+    persistedZero(company?.catalog_opt_in) &&
     String(company?.catalog_status || "") === "managed_private" &&
-    Number(company?.load_board_access || 0) === 0 &&
+    persistedZero(company?.load_board_access) &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
   const validProfile =
@@ -195,7 +198,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(profile?.semantic_core_ref || "") === mzmJunkRemovalClient.semanticCore.sourceRef &&
     String(profile?.content_status || "") === "active_content_planning";
 
-  if (!validCompany || !validProfile) {
+  if (!validCompany || !validProfile || !validLeadCount) {
     return jsonResponse(409, { success: false, error: "managed_client_readback_mismatch" }, privateHeaders);
   }
 
@@ -225,7 +228,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     internal_operator_capability: "HERMES_INTERNAL_OWNER",
     internal_operator_ui_readback: "REQUIRED_SEPARATELY",
     managed_fact_snapshot_verified: true,
-    real_leads_tracked: Number(leadCount?.count || 0),
+    real_leads_tracked: realLeadsTracked,
     business_outcomes: "UNKNOWN_UNLESS_RECORDED_WITH_EVIDENCE",
   }, privateHeaders);
 }
