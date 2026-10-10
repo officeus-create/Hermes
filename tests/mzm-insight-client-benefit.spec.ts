@@ -22,7 +22,7 @@ test("MZM Insight keeps client ownership, visible evidence, and bounded referral
   );
 
   const primary = page.getByRole("link", { name: /Visit MZM Junk Removal/i }).first();
-  await expect(primary).toHaveAttribute("href", "https://mzm-junk-removal.com/");
+  await expect(primary).toHaveAttribute(\n    "href",\n    "https://mzm-junk-removal.com/?utm_source=hermeslogisticsus.com&utm_medium=referral&utm_campaign=mzm_evidence_insight&utm_content=primary_cta",\n  );
   await expect(primary).toHaveAttribute("data-insight-source-cta", "true");
 
   const evidence = page.locator(".insight-evidence-sources");
