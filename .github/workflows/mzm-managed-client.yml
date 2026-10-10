@@ -95,7 +95,7 @@ jobs:
           CRM_PATH="$(jq -r '.crm_workspace_path // empty' "${TMP}/provision.json")"
           MODE="$(jq -r '.management_mode // empty' "${TMP}/provision.json")"
           BASIS="$(jq -r '.publication_basis // empty' "${TMP}/provision.json")"
-          LEADS="$(jq -r '.real_leads_tracked // 0' "${TMP}/provision.json")"
+          LEADS="$(jq -r 'if (.real_leads_tracked | type) == "number" then .real_leads_tracked else "__invalid__" end' "${TMP}/provision.json")"
           OWNER_CONSENT="$(jq -r 'if (.catalog_owner_consent_claimed | type) == "boolean" then .catalog_owner_consent_claimed else "__invalid__" end' "${TMP}/provision.json")"
           OWNER_AUTH="$(jq -r 'if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end' "${TMP}/provision.json")"
           INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
@@ -115,6 +115,8 @@ jobs:
             || fail "internal_owner_receipt_boundary_failed" "Managed provisioning must not pretend an authenticated internal-owner UI session was verified."
           [ "${FACT_SNAPSHOT}" = true ] \
             || fail "managed_fact_snapshot_failed" "Managed Company/Profile facts did not read back exactly from the current canonical MZM config."
+          [[ "${LEADS}" =~ ^[0-9]+$ ]] \
+            || fail "lead_count_receipt_invalid" "Real lead count was missing or invalid; missing evidence must not be rendered as zero."
 
           PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
