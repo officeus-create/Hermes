@@ -10,10 +10,11 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 4. The current issue or bounded mission assigned in the prompt
 5. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`
 6. `docs/SEARCH_GROWTH_GUARDRAIL.md` — owner-approved cross-department Search/Marketing non-regression and indexation gate
-7. `docs/GOOGLE_ACCESS_GOVERNOR.md` — one Google resource owner, cache/dedupe, quota/backoff and single-write-owner policy\n8. `docs/DESIGN_INTEGRATION_CONTRACT.md`
-8. `docs/PUBLIC_INFORMATION_POLICY.md`
-9. Only the domain runbooks needed for the assigned task
-10. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
+7. `docs/GOOGLE_ACCESS_GOVERNOR.md` — one Google resource owner, cache/dedupe, quota/backoff and single-write-owner policy
+8. `docs/DESIGN_INTEGRATION_CONTRACT.md`
+9. `docs/PUBLIC_INFORMATION_POLICY.md`
+10. Only the domain runbooks needed for the assigned task
+11. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
 
 `README.md`, `CLAUDE.md`, `docs/AI_ROLES.md`, `docs/CODEX_WEBSITE_HANDOFF.md`, and numbered `docs/CURSOR_*_MISSION_*.md` are supporting or agent-specific documents. They do not override the current owner instruction, code/tests on `main`, the current project state, or an accepted bounded issue.
 
