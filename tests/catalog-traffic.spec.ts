@@ -143,7 +143,7 @@ test('Home-service collection rejects missing consent and unpublished companies'
   const DB = { prepare(sql:string) { return {
     async run() {},
     bind() { return {
-      async first() { reads++; return published ? {id:'company-123'} : null; },
+      async first() { reads++; return published ? {id:'company-123',slug:'public-company',catalog_opt_in:1,catalog_status:'self_submitted',management_mode:'owner_managed',catalog_publication_basis:'owner_opt_in'} : null; },
       async run() { writes.push(sql); }
     }; }
   }; } };
