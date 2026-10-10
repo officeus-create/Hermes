@@ -594,7 +594,7 @@ assert.deepEqual(
 );
 assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
 assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
-assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! Logistics/);
+assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! LOGISTICS/);
 assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
 
 const duplicateCarrier = await onRequest({
