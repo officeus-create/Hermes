@@ -560,7 +560,8 @@ const directCarrierPayload = {
   submitted_at: "2026-09-15T01:30:00.000Z",
 };
 const carrierLimits = new MemoryKv();
-const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(workerEnv) };
+const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com" };
+const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(carrierWorkerEnv) };
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
 const telegramBeforeCarrier = telegramMessages.length;
@@ -584,19 +585,17 @@ try {
 assert.equal(realCarrier.status, 200);
 assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES SALES] [CAR HAULING] [CARRIER]");
+assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [LOGISTICS]");
+assert.match(serviceCalls.at(-1).payload.text, /Sales\/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes/);
 const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
 assert.deepEqual(
   carrierEmails.map((message) => message.to).sort(),
   ["officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
 );
-assert.ok(carrierEmails.every((message) => message.subject === "[HERMES SALES] [CAR HAULING] [CARRIER]"));
 assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
-assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
-assert.equal(telegramMessages.at(-1).chat_id, "-1001296000000");
-assert.match(telegramMessages.at(-1).text, /Real Carrier LLC/);
-assert.match(telegramMessages.at(-1).text, /Request ID: carrier_real_1296_12345/);
-assert.match(telegramMessages.at(-1).text, /Page: \/logistics\/start-car-hauling-dispatch\//);
+assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
+assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! Logistics/);
+assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
 
 const duplicateCarrier = await onRequest({
   request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
@@ -606,7 +605,7 @@ assert.equal(duplicateCarrier.status, 200);
 assert.equal((await duplicateCarrier.json()).duplicate, true);
 assert.equal(emailMessages.length, emailsBeforeCarrier + 2);
 assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(telegramMessages.length, telegramBeforeCarrier + 1);
+assert.equal(telegramMessages.length, telegramBeforeCarrier);
 
 const syntheticCarrierPayload = {
   ...directCarrierPayload,
