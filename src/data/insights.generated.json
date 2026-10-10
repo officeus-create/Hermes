@@ -139,7 +139,7 @@
       "The useful pattern is not page count. MZM’s public site connects a real service-area structure with concrete operating examples. Roseville pages show recent garage and side-yard work, while Sacramento, Rancho Cordova, Citrus Heights, Orangevale and Rocklin pages publish city-specific recent-job examples. Those examples include details such as ZIP code, job type, approximate crew size, load or time when the business has chosen to publish them. This gives a visitor a reason to trust that the page represents actual local work rather than a template with a city name replaced.",
       "That matters for SEO/GEO because local search pages need distinct human value and truthful geography. A service-area page should answer whether the company really works there, what kinds of jobs occur there, what the process looks like and what action a visitor can take next. MZM’s public structure supplies several of those signals through recent-job modules, before-and-after proof, service lists, local coverage and a quote/call path. The evidence is useful because it is attached to the company’s own website and can be rechecked later.",
       "The evidence boundary is equally important. Public review totals, completed-job counters and same-day availability can change. They should be treated as observation-time facts, not frozen permanently into structured data, CRM revenue or a marketing case study. Likewise, the existence of a city page or a public recent-job block does not prove Google indexation, ranking gains, lead volume or revenue. Those outcomes require authenticated Search Console, analytics and CRM evidence.",
-      "For Hermes, the correct ownership model is therefore client-site first. MZM’s own website remains the primary commercial owner for branded, city and junk-removal service intent. A Hermes Insight can analyze the reusable method and link back to the public source, while Hermes Catalog—if the owner explicitly opts in—should remain a secondary entity-discovery and attribution surface rather than cloning the client’s service/city landing-page family.",
+      "For Hermes, the correct ownership model is therefore client-site first. MZM’s own website remains the primary commercial owner for branded, city and junk-removal service intent. A Hermes Insight can analyze the reusable method and link back to the public source, while Hermes Catalog—when a documented public-projection basis exists and public facts are verified—should remain a secondary entity-discovery and attribution surface rather than cloning the client’s service/city landing-page family.",
       "The next measurement step is straightforward: preserve one canonical owner per intent, connect site actions to source/query attribution in CRM, then compare impressions, clicks, qualified inquiries, booked jobs, completed jobs and verified revenue over comparable windows. Until MZM Search Console and authenticated owner data are available, those search and business outcomes remain ACCESS_GAP or UNKNOWN rather than zero."
     ],
     "takeaways": [
@@ -156,7 +156,7 @@
       },
       {
         "question": "Should Hermes create matching MZM city and service pages in Catalog?",
-        "answer": "No. The client website already owns the commercial city/service intent. Hermes Catalog should only become a secondary entity surface after explicit owner consent and should not clone the client’s landing-page family."
+        "answer": "No. The client website already owns the commercial city/service intent. Hermes Catalog may serve as a secondary entity-discovery surface under an approved public-projection basis, but it should not clone the client’s landing-page family."
       },
       {
         "question": "Can public job examples be copied into CRM as verified revenue or customer outcomes?",
@@ -180,7 +180,7 @@
       },
       {
         "title": "Hermes Business Catalog",
-        "body": "Catalog remains a separate consented entity-discovery surface rather than a replacement for the client website.",
+        "body": "Catalog remains a separate verified entity-discovery surface rather than a replacement for the client website.",
         "href": "/businesses/"
       }
     ],
@@ -196,7 +196,7 @@
     "sourceUrl": "https://mzm-junk-removal.com/",
     "sourcePublishedAt": "2026-10-08",
     "datePublished": "2026-10-08",
-    "dateModified": "2026-10-10",
+    "dateModified": "2026-10-11",
     "authorName": "Hermes Editorial Team",
     "keywords": [
       "MZM Junk Removal",
