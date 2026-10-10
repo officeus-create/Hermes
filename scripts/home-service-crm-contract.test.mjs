@@ -107,6 +107,7 @@ assert.equal(metrics.disposalCostCents, 9000);
 assert.equal(metrics.grossAfterTrackedCostsCents, 30500);
 assert.equal(metrics.averageTicketCents, 45000);
 assert.equal(metrics.reviewRate, 1);
+assert.equal(metrics.bookedRate, 0.5);
 assert.equal(metrics.byCity.find((row) => row.key === "Roseville")?.revenueCents, 45000);
 assert.equal(metrics.moneyEvidence.revenue.verifiedCount, 1);
 assert.equal(metrics.moneyEvidence.revenue.requiredCount, 1);
@@ -167,6 +168,13 @@ const noData = aggregateHomeServiceLeads([]);
 assert.equal(noData.revenueCents, null);
 assert.equal(noData.grossAfterTrackedCostsCents, null);
 assert.equal(noData.averageTicketCents, null);
+assert.equal(noData.bookedRate, null, "No leads must not be reported as 0% booked");
+assert.equal(noData.reviewRate, null, "No completed jobs must not be reported as 0% reviewed");
+
+const realZeroBooked = aggregateHomeServiceLeads([{ status: "new", city: "Roseville", source: "Direct" }]);
+assert.equal(realZeroBooked.bookedRate, 0, "One unbooked lead is a real 0% booked rate");
+assert.equal(realZeroBooked.reviewRate, null, "No completed jobs still means UNKNOWN review rate");
+
 
 const safeUnknown = safeHomeServiceLead({
   id: "lead-unknown",
@@ -318,7 +326,13 @@ assert.match(companyTypes, /management_mode: "TEXT NOT NULL DEFAULT 'owner_manag
 assert.match(companyTypes, /catalog_publication_basis: "TEXT NOT NULL DEFAULT 'owner_opt_in'"/);
 assert.match(crmHelper, /hermes_internal_owner_required/);
 assert.match(crmHelper, /management_mode='hermes_managed'/);
-assert.match(crmApi, /ctx\.dataOwnerId \|\| ctx\.specialist\.id/);
+assert.equal((crmApi.match(/const ownerId = String\(ctx\.dataOwnerId \|\| ""\);/g) || []).length, 2,
+  "Both GET and POST must resolve the canonical dataOwnerId");
+assert.equal((crmApi.match(/home_service_data_owner_missing/g) || []).length, 2,
+  "Both reads and writes must fail closed when the CRM data owner is absent");
+assert.doesNotMatch(crmApi, /const ownerId = String\(ctx\.specialist\.id\)/);
+assert.match(workspace, /metrics\[key\] == null \? "UNKNOWN" : percent\(metrics\[key\]\)/);
+
 assert.match(workspace, /searchParams\.get\("managed"\)/);
 assert.match(workspace, /managedApiUrl/);
 assert.match(publicProfile, /Hermes-managed client profile · public facts verified/);
