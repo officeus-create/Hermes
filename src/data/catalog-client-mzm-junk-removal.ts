@@ -23,6 +23,9 @@ export const mzmJunkRemovalClient = {
     "E-waste removal",
     "Hot tub removal",
     "Shed removal",
+    "Eviction cleanouts",
+    "Office cleanouts",
+    "Storage unit cleanouts",
   ],
   serviceAreas: [
     "Roseville",
@@ -89,14 +92,13 @@ export const mzmJunkRemovalClient = {
         "Roseville and Greater Sacramento market",
         "junk removal / cleanout / furniture / appliance / mattress / e-waste / construction debris / yard debris / hot tub / shed service scope",
         "North Highlands service area",
+        "eviction / office / storage unit cleanout service scope",
       ],
-      ownerReviewCandidates: {
-        services: [
-          "Eviction cleanouts",
-          "Office cleanouts",
-          "Storage unit cleanouts",
-        ],
-      },
+      confirmedServiceUrls: [
+        "https://mzm-junk-removal.com/eviction-cleanout",
+        "https://mzm-junk-removal.com/office-cleanout",
+        "https://mzm-junk-removal.com/storage-unit-cleanout",
+      ],
     },
     volatilePublicClaimsPolicy:
       "Public review totals, completed-job counters, same-day availability and similar changing website claims are observation-time facts only. They do not become canonical CRM outcomes, Hermes-attributed results or permanent Catalog claims without dated evidence and the applicable owner/CRM readback.",
