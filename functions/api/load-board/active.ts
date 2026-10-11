@@ -106,7 +106,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     ratePerMile: row.rate_per_mile == null ? null : Number(row.rate_per_mile),
     score: row.source_quality_score == null ? null : Number(row.source_quality_score),
     duplicateCount: carrierCandidate ? Math.max(1, Number(row.duplicate_count || 1)) : 1,
-    reviewFlags: carrierCandidate ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
+    reviewFlags: carrierCandidate && row.visibility !== 'carrier_only' ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
     providerUrl: row.visibility === 'carrier_only' ? null : (row.provider_url || null),
     observedAt: row.observed_at,
     expiresAt: row.expires_at,
