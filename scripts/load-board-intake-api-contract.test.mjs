@@ -150,7 +150,7 @@ assert.match(active, /cluster_rank = 1/);
 assert.match(active, /duplicateCount/);
 assert.match(active, /reviewFlags/);
 assert.match(summary, /COUNT\(DISTINCT CASE/);
-assert.match(summary, /record_type \|\| '\|' \|\| dedupe_key/);
+assert.match(summary, /r\\.record_type \\|\\| '\\|' \\|\\| r\\.dedupe_key/);
 assert.match(intake, /send_enabled = 0/);
 assert.match(intake, /car_hauling_ingest_allowed = 1/);
 assert.match(intake, /car_hauling_outreach_hold = 1/);
