@@ -85,10 +85,22 @@ export async function onRequestPost(context:Context){
     return reply(409,{success:false,error:"invalid_request_transition"});
   const note=safeWorkspaceText(data.note,280);
   const now=new Date().toISOString();
-  await db.prepare(`
+  const result=await db.prepare(`
     UPDATE hermes_carrier_dispatch_interests
     SET status=?,status_note=?,updated_by_specialist_id=?,updated_at=?
     WHERE id=? AND dispatcher_specialist_id=? AND status=?
-  `).bind(status,note||null,auth.user.id,now,id,auth.user.id,request.status).run();
+      AND EXISTS (
+        SELECT 1 FROM hermes_carrier_dispatch_assignments a
+        JOIN hermes_carrier_board_entitlements e
+          ON e.company_id=a.carrier_company_id AND e.status='active'
+        JOIN hermes_company_profiles c
+          ON c.id=a.carrier_company_id AND c.load_board_access=1
+        WHERE a.carrier_company_id=hermes_carrier_dispatch_interests.carrier_company_id
+          AND a.dispatcher_specialist_id=? AND a.status='active'
+      )
+  `).bind(status,note||null,auth.user.id,now,id,auth.user.id,request.status,auth.user.id).run();
+  if(Number(result?.meta?.changes||0)!==1) {
+    return reply(409,{success:false,error:"request_changed_or_access_revoked",sourceContacted:false,bookingCreated:false});
+  }
   return reply(200,{success:true,request:{id,status},sourceContacted:false,bookingCreated:false});
 }
