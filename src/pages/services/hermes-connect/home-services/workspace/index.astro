@@ -154,7 +154,13 @@ import { mzmHomeServiceCrmSampleLeads } from "../../../../../data/mzm-home-servi
   const api = async (url: string, options: RequestInit = {}) => {
     const response = await fetch(managedApiUrl(url),{credentials:"same-origin",headers:{"Accept":"application/json","Content-Type":"application/json",...(options.headers||{})},...options});
     const data = await response.json().catch(()=>({}));
-    if (response.status === 401) { location.assign("/services/hermes-connect/access/?lang=en"); throw new Error("authentication_required"); }
+    if (response.status === 401) {
+      const loginPath = managedClient
+        ? `/services/hermes-connect/home-services/access/?mode=login&managed=${encodeURIComponent(managedClient)}`
+        : "/services/hermes-connect/home-services/access/?mode=login";
+      location.assign(loginPath);
+      throw new Error("authentication_required");
+    }
     if (!response.ok || data?.success === false) throw new Error(data?.error || "request_failed");
     return data;
   };
