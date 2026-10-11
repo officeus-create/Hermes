@@ -18,8 +18,8 @@ export async function onRequestGet({ env }: { env: Env }) {
     FROM hermes_load_records r
     JOIN hermes_load_sources s ON s.id = r.source_id
     WHERE r.status = 'active' AND r.expires_at > ?
-      AND r.visibility IN ('public','carrier_only')
-      AND r.record_type IN ('load','capacity')
+      AND r.visibility IN ('public', 'carrier_only')
+      AND r.record_type IN ('load', 'capacity')
       AND s.status = 'active' AND s.read_enabled = 1
       AND ((r.visibility='public' AND s.redistribution_permission='public')
         OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only')))
