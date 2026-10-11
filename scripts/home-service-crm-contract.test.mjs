@@ -350,7 +350,7 @@ assert.match(managedEndpoint, /catalog_publication_eligible: true/);
 assert.match(managedEndpoint, /reviewer_login: REVIEWER_EMAIL/);
 assert.match(managedEndpoint, /reviewer_access_provisioned: true/);
 assert.match(managedEndpoint, /mzm-review@hermeslogisticsus\.com/);
-assert.match(managedEndpoint, /public_profile_path: null/);
+assert.match(managedEndpoint, /public_profile_path: \`\/businesses\/connect\/company\/\$\{SLUG\}\/\`/);
 assert.match(managedEndpoint, /"verified_public"/);
 assert.match(managedEndpoint, /persistedOne\(company\?\.catalog_opt_in\)/);
 assert.match(managedEndpoint, /persistedZero\(company\?\.load_board_access\)/);
