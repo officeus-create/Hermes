@@ -87,7 +87,7 @@ export async function specialistHasLoadBoardAccess(db, specialist) {
   if (!specialist) return false;
   await ensureHermesCompanyProfilesSchema(db);
   const company = await db.prepare(
-    "SELECT load_board_access FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
+    "SELECT load_board_access, company_type FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
-  return Number(company?.load_board_access) === 1;
+  return Number(company?.load_board_access) === 1 && new Set(['carrier', 'owner_operator', 'fleet', 'dispatcher']).has(String(company?.company_type || ''));
 }
