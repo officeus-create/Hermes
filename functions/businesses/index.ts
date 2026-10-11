@@ -2,6 +2,19 @@ import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../api/_
 
 // Bounded discovery release: the existing Kittle owner only; no new search owners.
 const DISCOVERY_PATH = "/businesses/connect/repair-shop/kittle-s-garage-a146544/";
+const MZM_DISCOVERY_PATH = "/businesses/connect/company/mzm-junk-removal/";
+
+export function mzmCatalogPublication(row: any) {
+  const eligible = Boolean(
+    row &&
+    Number(row.catalog_opt_in || 0) === 1 &&
+    String(row.slug || "") === "mzm-junk-removal" &&
+    String(row.catalog_status || "") === "verified_public" &&
+    String(row.management_mode || "") === "hermes_managed" &&
+    String(row.catalog_publication_basis || "") === "hermes_managed_public_facts"
+  );
+  return { eligible, path: eligible ? MZM_DISCOVERY_PATH : null };
+}
 
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -25,6 +38,21 @@ export function addRepairCatalogLinks(html: string, rows: any[]) {
   return html.replace(/<div\b[^>]*\bdata-catalog-grid(?=[\s=>])[^>]*>/, (grid) => navigation + grid);
 }
 
+export function addHomeServiceCatalogLinks(html: string, rows: any[]) {
+  if (html.includes("data-runtime-home-service-links")) return html;
+  const seen = new Set<string>();
+  const links = rows.flatMap((row) => {
+    const publication = mzmCatalogPublication(row);
+    if (!publication.eligible || !publication.path || seen.has(publication.path)) return [];
+    seen.add(publication.path);
+    const location = [row.city, row.state].filter(Boolean).join(", ");
+    return [`<li><a href="${esc(publication.path)}">${esc(row.company_name)}${location ? ` — ${esc(location)}` : ""}</a></li>`];
+  });
+  if (!links.length) return html;
+  const navigation = `<nav data-runtime-home-service-links aria-label="Published Home Services client profiles"><p>Home Services client profiles</p><ul>${links.join("")}</ul></nav>`;
+  return html.replace(/<div\b[^>]*\bdata-catalog-grid(?=[\s=>])[^>]*>/, (grid) => navigation + grid);
+}
+
 export async function onRequestGet({ env, next }: { env: { DB?: any }; next: () => Promise<Response> }) {
   const response = await next();
   if (response.status !== 200 || !response.headers.get("Content-Type")?.includes("text/html")) return response;
@@ -33,7 +61,8 @@ export async function onRequestGet({ env, next }: { env: { DB?: any }; next: () 
   headers.delete("ETag");
   headers.delete("Last-Modified");
   headers.delete("Content-Length");
-  let rows: any[] = [];
+  let repairRows: any[] = [];
+  let homeServiceRows: any[] = [];
   if (env.DB) {
     try {
       const result = await env.DB.prepare(`
@@ -41,13 +70,29 @@ export async function onRequestGet({ env, next }: { env: { DB?: any }; next: () 
         FROM repair_shops WHERE catalog_opt_in=1
         ORDER BY updated_at DESC LIMIT 100
       `).all();
-      rows = result?.results || [];
+      repairRows = result?.results || [];
     } catch {
-      // Fail closed for runtime links; the existing static catalog remains available.
-      console.warn("Catalog runtime discovery unavailable");
+      // Keep the static catalog available when repair discovery is unavailable.
+      console.warn("Catalog repair runtime discovery unavailable");
+    }
+    try {
+      const result = await env.DB.prepare(`
+        SELECT c.company_name,c.slug,c.city,c.state,c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis
+        FROM hermes_company_profiles c
+        JOIN hermes_home_service_profiles h ON h.company_id=c.id
+        WHERE c.slug='mzm-junk-removal' AND c.company_type='home_service'
+        LIMIT 1
+      `).all();
+      homeServiceRows = result?.results || [];
+    } catch {
+      // Fail closed for the bounded MZM link without removing existing repair discovery.
+      console.warn("Catalog Home Services runtime discovery unavailable");
     }
   }
-  return new Response(addRepairCatalogLinks(await response.text(), rows), {
+  const html = await response.text();
+  const withRepair = addRepairCatalogLinks(html, repairRows);
+  const withHomeServices = addHomeServiceCatalogLinks(withRepair, homeServiceRows);
+  return new Response(withHomeServices, {
     status: response.status, statusText: response.statusText, headers,
   });
 }
