@@ -134,6 +134,11 @@ test("managed reviewer backend scope is company-specific and fail-closed for wri
   expect(workflow).toContain("RECIPIENT_KEY_COMMENT");
   expect(workflow).toContain("Reviewer recipient key must be RSA-4096.");
   expect(workflow).toContain("openssl pkeyutl -encrypt -pubin");
+  expect(workflow).toContain("/api/auth/login");
+  expect(workflow).toContain("/api/hermes-connect/home-services/crm?managed=mzm-junk-removal");
+  expect(workflow).toContain(".company.accessMode // empty");
+  expect(workflow).toContain("hermes_managed_reviewer");
+  expect(workflow).toContain(".company.readOnly | type");
   expect(workflow).not.toContain("-----BEGIN PUBLIC KEY-----");
   expect(workflow).not.toContain("Temporary password");
 });
