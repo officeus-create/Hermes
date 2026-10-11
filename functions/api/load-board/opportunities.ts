@@ -54,7 +54,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')))"];
   const bindings: any[] = [new Date().toISOString()];
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
-  else conditions.push("r.visibility = 'public'");
+  // LOAD details are carrier-only even if an upstream source permits public reuse.
+  // Keep public discovery on the static /load-board/ and explicit preview examples.
+  else conditions.push("1=0 /* no freight inventory for guest or broker */");
   if (equipment) { conditions.push("r.equipment = ?"); bindings.push(equipment); }
   if (originState) { conditions.push("r.origin_state = ?"); bindings.push(originState); }
   if (destinationState) { conditions.push("r.destination_state = ?"); bindings.push(destinationState); }
