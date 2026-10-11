@@ -1,6 +1,6 @@
 import { repairCatalogPublication, REPAIR_CATALOG_CACHE_CONTROL } from "../api/_lib/repair-catalog-publication.mjs";
 
-// Bounded discovery release: the existing Kittle owner only; no new search owners.
+// Bounded discovery release: existing Kittle repair owner + verified MZM Home Services entity owner only.
 const DISCOVERY_PATH = "/businesses/connect/repair-shop/kittle-s-garage-a146544/";
 const MZM_DISCOVERY_PATH = "/businesses/connect/company/mzm-junk-removal/";
 
