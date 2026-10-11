@@ -1,5 +1,5 @@
 import { getAuthenticatedSpecialist } from "./session.mjs";
-import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
+import { ensureHermesCompanyProfilesSchema, ensureHermesManagedCompanyAccessSchema } from "./hermes-company-profiles.mjs";
 import { ensureInternalAiSchema } from "./internal-ai.mjs";
 
 const CONTROL_CHARS = new RegExp("[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]", "g");
@@ -42,6 +42,7 @@ const safeJsonArray = (value, maxItems = 50, maxLength = 240) => {
 
 export async function ensureHomeServiceCrmSchema(db) {
   await ensureHermesCompanyProfilesSchema(db);
+  await ensureHermesManagedCompanyAccessSchema(db);
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_home_service_profiles (
       id TEXT PRIMARY KEY,
@@ -162,21 +163,39 @@ export async function getHomeServiceContext(request, env) {
     };
   }
 
-  const company = await env.DB.prepare(`
+  let company = await env.DB.prepare(`
     SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
            catalog_opt_in,catalog_status,management_mode,catalog_publication_basis
     FROM hermes_company_profiles
     WHERE owner_specialist_id=?
     LIMIT 1
   `).bind(specialist.id).first();
-  if (!company || String(company.company_type) !== "home_service") {
+  if (company && String(company.company_type) === "home_service") {
+    return {
+      specialist,
+      company,
+      dataOwnerId: String(specialist.id),
+      accessMode: "owner_managed",
+    };
+  }
+
+  company = await env.DB.prepare(`
+    SELECT c.id,c.owner_specialist_id,c.company_name,c.slug,c.company_type,c.city,c.state,c.website,c.phone,c.address_line1,c.postal_code,c.country_code,c.timezone,
+           c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis,a.access_role
+    FROM hermes_managed_company_access a
+    JOIN hermes_company_profiles c ON c.id=a.company_id
+    WHERE a.specialist_id=? AND a.active=1 AND c.company_type='home_service' AND c.management_mode='hermes_managed'
+    ORDER BY a.updated_at DESC
+    LIMIT 1
+  `).bind(specialist.id).first();
+  if (!company) {
     return { error: { status: 403, code: "home_service_company_required" } };
   }
   return {
     specialist,
     company,
-    dataOwnerId: String(specialist.id),
-    accessMode: "owner_managed",
+    dataOwnerId: String(company.owner_specialist_id || ""),
+    accessMode: String(company.access_role || "reviewer"),
   };
 }
 
