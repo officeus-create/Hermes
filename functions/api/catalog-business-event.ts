@@ -1,6 +1,7 @@
 import { catalogTrafficPeriod, publicCatalogTrafficSummary, catalogCountryCode } from "./_lib/catalog-traffic-summary.mjs";
 import { resolveCuratedCatalogProjection } from "./_lib/catalog-public-projection.mjs";
 import { repairCatalogPublication } from "./_lib/repair-catalog-publication.mjs";
+import { homeServiceCatalogPublication } from "./_lib/home-service-catalog-publication.mjs";
 import { repairShopDirectory } from "../../src/data/repair-shop-directory.ts";
 import { catalogBusinessConcepts } from "../../src/data/catalog-business-concepts.ts";
 import { CATALOG_EVENT_TYPES, recordCatalogBusinessEvent } from "./_lib/catalog-business-events.mjs";
@@ -43,8 +44,8 @@ async function validCatalogBusinessId(db: any, value: string) {
   if (academyCompanyId.test(value)) return Boolean(await publicAcademyOwner(db, value));
   const company = value.match(/^company-crm:([a-zA-Z0-9_-]{6,160})$/);
   if (company) {
-    const row = await db.prepare("SELECT c.id FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
-    return Boolean(row?.id);
+    const row = await db.prepare("SELECT c.id,c.slug,c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.id=? AND c.company_type='home_service' AND c.catalog_status IN ('self_submitted','verified_public') AND (c.catalog_opt_in=1 OR c.management_mode='hermes_managed') LIMIT 1").bind(company[1]).first();
+    return Boolean(row?.id && homeServiceCatalogPublication(row).eligible);
   }
   const match = value.match(/^repair-shop-crm:([a-zA-Z0-9_-]{6,160})$/);
   if (!match) return false;
@@ -117,8 +118,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       }
       const company = path.match(/^\/businesses\/connect\/company\/([a-z0-9-]+)\/$/);
       if (!id && company) {
-        const row = await env.DB.prepare("SELECT c.id,c.slug FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_opt_in=1 AND c.catalog_status IN ('self_submitted','verified_public') LIMIT 1").bind(company[1]).first();
-        if (row?.id && row.slug === company[1]) id = `company-crm:${row.id}`;
+        const row = await env.DB.prepare("SELECT c.id,c.slug,c.catalog_opt_in,c.catalog_status,c.management_mode,c.catalog_publication_basis FROM hermes_company_profiles c JOIN hermes_home_service_profiles h ON h.company_id=c.id WHERE c.slug=? AND c.company_type='home_service' AND c.catalog_status IN ('self_submitted','verified_public') AND (c.catalog_opt_in=1 OR c.management_mode='hermes_managed') LIMIT 1").bind(company[1]).first();
+        const publication = homeServiceCatalogPublication(row);
+        if (row?.id && row.slug === company[1] && publication.eligible && publication.path === path) id = `company-crm:${row.id}`;
       }
       const academy = path.match(/^\/businesses\/connect\/academy\/([a-z0-9-]+)\/$/);
       if (!id && academy) {
