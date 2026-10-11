@@ -34,7 +34,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const bindings: any[] = [new Date().toISOString()];
 
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
-  else conditions.push("r.visibility = 'public'");
+  // Public visitors and broker accounts receive no LOAD inventory. Public CAPACITY
+  // remains independently subject to its source permission and visibility policy.
+  else conditions.push("r.record_type = 'capacity' AND r.visibility = 'public'");
 
   if (recordType && ALLOWED_TYPES.has(recordType)) {
     conditions.push("r.record_type = ?");
