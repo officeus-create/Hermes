@@ -318,7 +318,7 @@ assert.match(sharedAccess, /href="\/services\/hermes-connect\/home-services\/acc
 assert.match(workspace, /\["self_submitted","verified_public"\]\.includes/);
 assert.match(workspace, /dashboard\?\.profile\?\.id/);
 assert.match(workspace, /data-catalog-private/);
-assert.match(clientConfig, /"Eviction cleanouts"/);
+assert.match(workspace, /hermes_managed_public_facts/);\nassert.doesNotMatch(workspace, /hermes_managed_client_public_facts/);\nassert.match(clientConfig, /"Eviction cleanouts"/);
 assert.match(clientConfig, /"Office cleanouts"/);
 assert.match(clientConfig, /"Storage unit cleanouts"/);
 assert.match(clientConfig, /noSyntheticBusinessOutcomes: true/);
