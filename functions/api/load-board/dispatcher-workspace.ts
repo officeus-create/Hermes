@@ -33,7 +33,10 @@ export async function onRequestGet(context:Context){
     JOIN hermes_carrier_dispatch_assignments a
       ON a.carrier_company_id=i.carrier_company_id
       AND a.dispatcher_specialist_id=? AND a.status='active'
-    JOIN hermes_company_profiles c ON c.id=i.carrier_company_id
+    JOIN hermes_carrier_board_entitlements e
+      ON e.company_id=i.carrier_company_id AND e.status='active'
+    JOIN hermes_company_profiles c
+      ON c.id=i.carrier_company_id AND c.load_board_access=1
     LEFT JOIN hermes_load_records r ON r.id=i.load_record_id
     WHERE i.dispatcher_specialist_id=?
     ORDER BY CASE WHEN i.status IN ('requested','seen','reviewing') THEN 0 ELSE 1 END,
