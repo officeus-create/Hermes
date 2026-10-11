@@ -103,6 +103,63 @@ export const mzmJunkRemovalClient = {
     volatilePublicClaimsPolicy:
       "Public review totals, completed-job counters, same-day availability and similar changing website claims are observation-time facts only. They do not become canonical CRM outcomes, Hermes-attributed results or permanent Catalog claims without dated evidence and the applicable owner/CRM readback.",
   },
+  clientExperience: {
+    evidenceClass: "FIRST_PARTY_PUBLIC_SOURCE",
+    observedAt: "2026-10-11",
+    familyBusinessLabel: "Local family-owned crew · father and sons",
+    team: [
+      { name: "Slava", role: "Owner" },
+      { name: "Zakhar", role: "Crew" },
+      { name: "Isaac", role: "Dispatch" },
+    ],
+    firstPartyHours: {
+      label: "Open every day · 3 AM–7 PM",
+      sourceUrl: "https://mzm-junk-removal.com/",
+      evidenceState: "FIRST_PARTY_OBSERVED_NOT_NAP_CANONICAL",
+    },
+    socialProfiles: [
+      "https://www.google.com/maps?cid=14309271527164244470",
+      "https://www.instagram.com/mzmjunkremoval/",
+      "https://www.facebook.com/profile.php?id=61589972927453",
+    ],
+    insight: {
+      title: "What MZM Junk Removal’s public job evidence shows about evidence-driven local SEO",
+      url: "https://hermeslogisticsus.com/insights/marketing/mzm-junk-removal-real-job-evidence-local-seo/",
+      state: "LIVE_VERIFIED",
+    },
+    publicJobEvidence: [
+      {
+        city: "Roseville",
+        postalCode: "95678",
+        jobType: "Garage Cleanout",
+        detail: "Old cabinets, scrap lumber and boxes were cleared from a garage, leaving the floor clear.",
+        sourceUrl: "https://mzm-junk-removal.com/",
+      },
+      {
+        city: "Roseville",
+        postalCode: "95678",
+        jobType: "Side Yard Debris Haul",
+        detail: "A two-person crew hauled about half a trailer of yard and construction debris.",
+        sourceUrl: "https://mzm-junk-removal.com/",
+      },
+      {
+        city: "Orangevale",
+        postalCode: "95662",
+        jobType: "Shed Cleanout",
+        detail: "A shed was cleared to the bare floor during a visit that also covered outdoor and household items.",
+        sourceUrl: "https://mzm-junk-removal.com/junk-removal-orangevale",
+      },
+      {
+        city: "Rancho Cordova",
+        postalCode: "95742",
+        jobType: "Garage Cleanout",
+        detail: "Bagged household trash and flattened moving boxes were hauled from a garage corner, leaving the space clear.",
+        sourceUrl: "https://mzm-junk-removal.com/junk-removal-rancho-cordova",
+      },
+    ],
+    boundary:
+      "These are dated first-party public examples and identity facts. They are not Hermes CRM leads, completed jobs, revenue, reviews, rankings or attributed outcomes.",
+  },
   semanticCore: {
     sourceRef: "client-provided:MZM_Junk_Removal_Semantic_Core.xlsx",
     uniqueKeywords: 8155,
@@ -172,7 +229,7 @@ export const mzmJunkRemovalClient = {
     ],
   },
   boundaries: {
-    catalogPublic: ["companyName", "website", "phone", "base", "publicSummary", "services", "serviceAreas"],
+    catalogPublic: ["companyName", "website", "phone", "base", "publicSummary", "services", "serviceAreas", "clientExperience"],
     crmPrivate: [
       "customerName",
       "customerPhone",
