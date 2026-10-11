@@ -81,7 +81,7 @@ assert.match(companyApi, /ON CONFLICT\(owner_specialist_id\)/);
 assert.match(companyApi, /const loadBoardAccess = companyType === "home_service" \? 0 : 1/);
 assert.match(companyApi, /load_board_access: Boolean\(loadBoardAccess\)/);
 assert.match(companyApi, /catalog_status/);
-assert.match(companyApi, /load-board\\/partners/);
+assert.ok(companyApi.includes('/services/hermes-connect/load-board/partners/'));
 
 assert.match(accountApi, /key: "load_board"/);
 assert.match(accountApi, /kind: "company_workspace"/);
