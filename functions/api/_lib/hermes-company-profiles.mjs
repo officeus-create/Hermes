@@ -46,6 +46,22 @@ export function companySlug(value, ownerId = "") {
   return suffix ? `${base}-${suffix}` : base;
 }
 
+export async function ensureHermesManagedCompanyAccessSchema(db) {
+  await ensureHermesCompanyProfilesSchema(db);
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_managed_company_access (
+      specialist_id TEXT NOT NULL,
+      company_id TEXT NOT NULL,
+      access_role TEXT NOT NULL DEFAULT 'reviewer',
+      active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (specialist_id, company_id)
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_managed_company_access_company ON hermes_managed_company_access(company_id, active)").run();
+}
+
 export async function ensureHermesCompanyProfilesSchema(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS hermes_company_profiles (
