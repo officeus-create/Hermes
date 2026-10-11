@@ -3,6 +3,7 @@ import {
   cleanCompanyText,
   companySlug,
   ensureHermesCompanyProfilesSchema,
+  ensureHermesManagedCompanyAccessSchema,
   normalizeCompanyType,
   normalizeState,
 } from "../_lib/hermes-company-profiles.mjs";
@@ -49,11 +50,25 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "authentication_required" });
-  await ensureHermesCompanyProfilesSchema(env.DB);
-  const row = await env.DB.prepare(
-    "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
+  await ensureHermesManagedCompanyAccessSchema(env.DB);
+  let row = await env.DB.prepare(
+    "SELECT *, 'owner' AS access_mode FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
-  return jsonResponse(200, { success: true, company: safeCompany(row) }, { "Cache-Control": "private, no-store" });
+  if (!row) {
+    row = await env.DB.prepare(`
+      SELECT c.*, a.access_role AS access_mode
+      FROM hermes_managed_company_access a
+      JOIN hermes_company_profiles c ON c.id=a.company_id
+      WHERE a.specialist_id=? AND a.active=1 AND c.management_mode='hermes_managed'
+      ORDER BY a.updated_at DESC
+      LIMIT 1
+    `).bind(specialist.id).first();
+  }
+  return jsonResponse(200, {
+    success: true,
+    company: safeCompany(row),
+    accessMode: row?.access_mode || null,
+  }, { "Cache-Control": "private, no-store" });
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
