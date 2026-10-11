@@ -11,16 +11,19 @@ export async function onRequestGet({ env }: { env: Env }) {
     SELECT
       record_type,
       COUNT(DISTINCT CASE
-        WHEN dedupe_key IS NOT NULL AND dedupe_key <> '' THEN record_type || '|' || dedupe_key
-        ELSE record_type || '|' || id
+        WHEN r.dedupe_key IS NOT NULL AND r.dedupe_key <> '' THEN r.record_type || '|' || r.dedupe_key
+        ELSE r.record_type || '|' || r.id
       END) AS record_count,
-      MAX(observed_at) AS latest_observed_at
-    FROM hermes_load_records
-    WHERE status = 'active'
-      AND expires_at > ?
-      AND visibility IN ('public', 'carrier_only')
-      AND record_type IN ('load', 'capacity')
-    GROUP BY record_type
+      MAX(r.observed_at) AS latest_observed_at
+    FROM hermes_load_records r
+    JOIN hermes_load_sources s ON s.id = r.source_id
+    WHERE r.status = 'active' AND r.expires_at > ?
+      AND r.visibility IN ('public','carrier_only')
+      AND r.record_type IN ('load','capacity')
+      AND s.status = 'active' AND s.read_enabled = 1
+      AND ((r.visibility='public' AND s.redistribution_permission='public')
+        OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only')))
+    GROUP BY r.record_type
   `).bind(now).all();
   const summary = { load: 0, capacity: 0, latestObservedAt: null as string | null };
   for (const row of (result?.results || []) as any[]) {
