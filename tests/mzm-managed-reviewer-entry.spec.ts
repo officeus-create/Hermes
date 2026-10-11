@@ -48,3 +48,36 @@ test("expired managed CRM session returns to the same company reviewer login", a
   await expect(page.locator("[data-managed-reviewer-note]")).toBeVisible();
   await expect(page.locator("[data-login-form]")).toBeVisible();
 });
+
+test("managed MZM reviewer locale links retain canonical company and login mode on desktop and mobile", async ({ page }) => {
+  await page.goto(managedLogin, { waitUntil: "domcontentloaded" });
+  for (const selector of [".language-menu a[lang='ru']", ".mobile-language-switcher a[lang='uk']"]) {
+    await expect.poll(() => page.locator(selector).getAttribute("href")).toContain("managed=mzm-junk-removal");
+    const href = await page.locator(selector).getAttribute("href");
+    const target = new URL(String(href), "http://127.0.0.1");
+    expect(target.pathname).toBe("/services/hermes-connect/home-services/access/");
+    expect(target.searchParams.get("managed")).toBe("mzm-junk-removal");
+    expect(target.searchParams.get("mode")).toBe("login");
+    expect(target.searchParams.get("lang")).toBe(selector.includes("'ru'") ? "ru" : "uk");
+  }
+  await page.goto("/services/hermes-connect/home-services/access/?lang=ru&managed=mzm-junk-removal&mode=login", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-managed-reviewer-note]")).toBeVisible();
+  await expect(page.locator("[data-login-form]")).toBeVisible();
+  await expect(page.locator("[data-register-form]")).toBeHidden();
+});
+
+test("managed MZM workspace language switching preserves its existing company scope", async ({ page }) => {
+  await page.route("**/api/hermes-connect/home-services/crm?**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ success: true, company: { name: "MZM Junk Removal", slug: "mzm-junk-removal", readOnly: true, accessRole: "viewer" }, metrics: { totalLeads: 0 }, recentLeads: [], leads: [] }),
+  }));
+  await page.goto("/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal", { waitUntil: "domcontentloaded" });
+  for (const selector of [".language-menu a[lang='es']", ".mobile-language-switcher a[lang='ru']"]) {
+    await expect.poll(() => page.locator(selector).getAttribute("href")).toContain("managed=mzm-junk-removal");
+    const target = new URL(String(await page.locator(selector).getAttribute("href")), "http://127.0.0.1");
+    expect(target.pathname).toBe("/services/hermes-connect/home-services/workspace/");
+    expect(target.searchParams.get("managed")).toBe("mzm-junk-removal");
+    expect(target.searchParams.has("mode")).toBe(false);
+  }
+});
