@@ -5,6 +5,7 @@ import {
   ensureHermesCompanyProfilesSchema,
   normalizeCompanyType,
   normalizeState,
+  specialistHasLoadBoardAccess,
 } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
@@ -202,6 +203,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     company: safeCompany(row),
     load_board_access: Boolean(loadBoardAccess),
+    verified_carrier_access: await specialistHasLoadBoardAccess(env.DB,specialist),
     catalog: catalogOptIn
       ? { listed: true, status: row?.catalog_status || "self_submitted", note: "Self-submitted company facts remain verification-pending until reviewed." }
       : { listed: false, status: "opted_out" },
