@@ -60,7 +60,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       WHERE ${conditions.join(" AND ")}
     )
     SELECT
-      id, record_type, source_name, provider, equipment, origin, origin_city, origin_state, origin_zip,
+      id, record_type, visibility, source_name, provider, equipment, origin, origin_city, origin_state, origin_zip,
       destination, destination_city, destination_state, destination_zip, pickup_window, delivery_window,
       availability_text, team, rate_amount, rate_currency, distance_miles, deadhead_miles, weight_lbs,
       length_feet, vehicle_count, operable, enclosed, payment_terms, rate_per_mile, source_quality_score,
@@ -75,17 +75,17 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const records = (result?.results || []).map((row: any) => ({
     id: row.id,
     type: row.record_type,
-    source: row.source_name,
-    provider: row.provider || null,
+    source: row.visibility === 'carrier_only' ? null : row.source_name,
+    provider: row.visibility === 'carrier_only' ? null : (row.provider || null),
     equipment: row.equipment,
     origin: row.origin,
     originCity: row.origin_city || null,
     originState: row.origin_state || null,
-    originZip: row.origin_zip || null,
+    originZip: row.visibility === 'carrier_only' ? null : (row.origin_zip || null),
     destination: row.destination || null,
     destinationCity: row.destination_city || null,
     destinationState: row.destination_state || null,
-    destinationZip: row.destination_zip || null,
+    destinationZip: row.visibility === 'carrier_only' ? null : (row.destination_zip || null),
     pickupWindow: row.pickup_window || null,
     deliveryWindow: row.delivery_window || null,
     availability: row.availability_text || null,
@@ -105,7 +105,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     score: row.source_quality_score == null ? null : Number(row.source_quality_score),
     duplicateCount: carrierCandidate ? Math.max(1, Number(row.duplicate_count || 1)) : 1,
     reviewFlags: carrierCandidate ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
-    providerUrl: row.provider_url || null,
+    providerUrl: row.visibility === 'carrier_only' ? null : (row.provider_url || null),
     observedAt: row.observed_at,
     expiresAt: row.expires_at,
   }));
