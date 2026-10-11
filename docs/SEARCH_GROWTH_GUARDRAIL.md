@@ -65,6 +65,28 @@ Before creating a URL:
 
 Search recovery and growth should prefer pages already earning real impressions, rankings, qualified traffic, or commercial actions.
 
+## Question / Topic Mapping rule
+
+Use topic mapping as an **existing-owner strengthening method**, not as permission to create a large new article/page wave.
+
+Preferred question sources, in order:
+
+1. settled GSC/Bing query history already on record;
+2. real Sales / Carrier / Dealer / Shipper objections and questions;
+3. CRM, Catalog, support and product-navigation questions;
+4. Search Console / Bing exact-query evidence from a bounded current decision window when needed;
+5. external question tools only when the existing evidence cannot answer a specific gap.
+
+Process:
+
+`QUESTION -> INTENT -> EXISTING CANONICAL OWNER -> ANSWER/FAQ/SECTION/TOOL -> INTERNAL LINK -> CTA -> MEASURE`
+
+Create a new indexable URL only when the question represents a distinct, durable intent that passes the full Search Release Gate. Otherwise answer the question inside the existing owner.
+
+Do not publish one page per question, one client × platform page, or one city/equipment/service permutation merely because a keyword/question exists. Topic coverage is measured by useful intent ownership and qualified outcomes, not article count.
+
+For AI visibility / LLMO, prefer concise source-bounded answers, clear entity/context relationships, structured headings, truthful FAQ where appropriate, and direct links to the canonical product/service/entity owner. Do not invent expertise signals, customer outcomes, ratings, or unsupported claims.
+
 ## Synthetic traffic
 
 Hermes synthetic traffic includes CI, GitHub Actions, Playwright, release verifiers, headless browsers, Codex/Claude/ChatGPT production checks, uptime probes, API smoke tests, and other machine-generated Hermes QA traffic.
