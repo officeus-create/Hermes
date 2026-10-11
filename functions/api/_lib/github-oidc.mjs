@@ -27,6 +27,12 @@ const MZM_MANAGED_CLIENT_IDENTITY = {
   allowedEvents: new Set(["issue_comment"]),
 };
 
+const MZM_REVIEWER_ACCESS_IDENTITY = {
+  audience: "hermes-connect-mzm-reviewer-access",
+  workflowRef: "officeus-create/Hermes/.github/workflows/mzm-reviewer-access.yml@refs/heads/main",
+  allowedEvents: new Set(["issue_comment"]),
+};
+
 function decodeBase64Url(value) {
   const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -72,6 +78,10 @@ export function validateGitHubFirst5ActivationOidcClaims(claims, now = new Date(
 
 export function validateGitHubMzmManagedClientOidcClaims(claims, now = new Date()) {
   return validateClaimsForIdentity(claims, MZM_MANAGED_CLIENT_IDENTITY, now);
+}
+
+export function validateGitHubMzmReviewerAccessOidcClaims(claims, now = new Date()) {
+  return validateClaimsForIdentity(claims, MZM_REVIEWER_ACCESS_IDENTITY, now);
 }
 
 async function fetchSigningKey(kid) {
@@ -126,6 +136,10 @@ export async function verifyGitHubFirst5ActivationOidcToken(token, now = new Dat
 
 export async function verifyGitHubMzmManagedClientOidcToken(token, now = new Date()) {
   return verifyGitHubOidcToken(token, validateGitHubMzmManagedClientOidcClaims, now);
+}
+
+export async function verifyGitHubMzmReviewerAccessOidcToken(token, now = new Date()) {
+  return verifyGitHubOidcToken(token, validateGitHubMzmReviewerAccessOidcClaims, now);
 }
 
 export function bearerToken(request) {

@@ -101,6 +101,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         managementMode: String(ctx.company.management_mode || "owner_managed"),
         publicationBasis: String(ctx.company.catalog_publication_basis || "owner_opt_in"),
         accessMode: String(ctx.accessMode || "owner_managed"),
+        accessRole: String(ctx.accessRole || "owner"),
+        readOnly: Boolean(ctx.readOnly),
       },
       profile: safeProfile(profile),
       metrics: aggregateHomeServiceLeads(rows),
@@ -117,6 +119,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
   const ctx = await getHomeServiceContext(request, env);
   if (ctx.error) return errorResponse(ctx.error);
+  if (ctx.readOnly) {
+    return jsonResponse(403, { success: false, error: "managed_client_read_only" }, privateHeaders);
+  }
   const body = await parseBody(request);
   if (!body) return jsonResponse(400, { success: false, error: "invalid_json" }, privateHeaders);
 
