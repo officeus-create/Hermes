@@ -4,8 +4,8 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 ---
 <BaseLayout
-  title="Home Services CRM owner setup | Hermes Connect"
-  description="Owner-controlled Hermes Connect Home Services CRM access for junk removal and other local service businesses. One Hermes identity, private job records and separately approved Catalog publication."
+  title="Home Services CRM access | Hermes Connect"
+  description="Private Hermes Connect CRM access for authorized Home Services owners and Hermes-managed reviewers, with company-scoped sessions and separately governed Catalog publication."
   robots="noindex,nofollow"
   htmlLang="en"
   locale="en"
@@ -15,10 +15,11 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     <div class="shell">
       <a class="back" href="/services/hermes-connect/access/">← Hermes Connect account options</a>
       <div class="intro">
-        <p class="eyebrow">Hermes Connect · Home Services · Owner setup</p>
+        <p class="eyebrow">Hermes Connect · Home Services · Private CRM access</p>
         <h1>One account. Your Home Services CRM.</h1>
         <p>For junk removal, cleanouts and other local service businesses. Record real leads, quotes, booked jobs, completed work, tracked costs, payments and reviews in a private workspace.</p>
-        <p class="pilot">Pilot access: creating an account does not prove client activation, publish your company, or populate revenue. Business information must be saved by an authorized owner.</p>
+        <p class="pilot" data-owner-setup-note>Pilot access: creating an account does not prove client activation, publish your company, or populate revenue. Business information must be saved by an authorized owner.</p>
+        <p class="pilot" data-managed-reviewer-note hidden>Hermes-managed reviewer access: sign in with your existing assigned Hermes identity to inspect only the authorized company. Do not register a new owner account. Reviewer access is not client-owner activation and cannot invent leads, jobs, or revenue.</p>
       </div>
       <div class="steps">
         <section class="panel" data-auth-panel aria-labelledby="auth-title">
@@ -61,7 +62,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
           </form>
         </section>
       </div>
-      <p class="privacy">Private by design: customer contacts, addresses, job photos, quotes, disposal costs, payment details and CRM history never become public from account registration. A published Catalog profile requires an explicit company opt-in and a separately saved public business profile.</p>
+      <p class="privacy">Private by design: customer contacts, addresses, job photos, quotes, disposal costs, payment details and CRM history never become public from account registration. Owner-submitted Catalog publication requires explicit opt-in and a saved public profile; Hermes-managed public-facts publication has separate documented authority and does not claim owner consent.</p>
     </div>
   </main>
   <SiteFooter />
@@ -94,16 +95,26 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     return payload;
   };
   const mode = (action) => {
-    if (registerForm) registerForm.hidden = action !== "register";
-    if (loginForm) loginForm.hidden = action !== "login";
+    const selected = managedTarget ? "login" : action;
+    if (registerForm) registerForm.hidden = selected !== "register";
+    if (loginForm) loginForm.hidden = selected !== "login";
     document.querySelectorAll("[data-auth-mode]").forEach((button) => {
-      button.setAttribute("aria-pressed", String(button.getAttribute("data-auth-mode") === action));
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-auth-mode") === selected));
     });
     formMessage(authMessage, "", false);
   };
   document.querySelectorAll("[data-auth-mode]").forEach((button) => {
     button.addEventListener("click", () => mode(button.getAttribute("data-auth-mode")));
   });
+  if (managedTarget) {
+    const registerButton = document.querySelector('[data-auth-mode="register"]');
+    if (registerButton) registerButton.hidden = true;
+    const ownerNote = $("[data-owner-setup-note]");
+    if (ownerNote) ownerNote.hidden = true;
+    const reviewerNote = $("[data-managed-reviewer-note]");
+    if (reviewerNote) reviewerNote.hidden = false;
+    mode("login");
+  }
   const showCompany = async () => {
     const state = await api("/api/hermes-connect/company");
     if (authPanel) authPanel.hidden = true;

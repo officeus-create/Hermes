@@ -144,6 +144,15 @@ const { loadBoardContext = false } = Astro.props;
       },
     };
 
+    const homeServicesLabels = {
+      en: { status: "HOME SERVICES · MANAGED CRM PILOT", product: "Private managed-client CRM · owner activation is separate" },
+      uk: { status: "ДОМАШНІ ПОСЛУГИ · КЕРОВАНИЙ ПІЛОТ CRM", product: "Приватна CRM клієнта Hermes · активація власника окремо" },
+      ru: { status: "БЫТОВЫЕ УСЛУГИ · УПРАВЛЯЕМЫЙ ПИЛОТ CRM", product: "Приватная CRM клиента Hermes · активация владельца отдельно" },
+      es: { status: "SERVICIOS LOCALES · CRM PILOTO GESTIONADO", product: "CRM privada gestionada por Hermes · activación del propietario por separado" },
+      it: { status: "SERVIZI LOCALI · CRM PILOTA GESTITO", product: "CRM privata gestita da Hermes · attivazione del titolare separata" },
+      fr: { status: "SERVICES LOCAUX · PILOTE CRM GÉRÉ", product: "CRM privée gérée par Hermes · activation du propriétaire séparée" },
+    };
+
     const moduleLabels = {
       en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "AI Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
       uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "Центр керування ШІ", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
@@ -211,12 +220,15 @@ const { loadBoardContext = false } = Astro.props;
     const isHub = path === "/services/hermes-connect/" || path === "/services/hermes-connect";
     const isAccess = path.replace(/\/+$/, "/") === "/services/hermes-connect/access/";
     const isRepair = path.startsWith("/services/hermes-connect/repair-shops");
+    const isHomeServices = path.startsWith("/services/hermes-connect/home-services/");
     const isLoadBoard = path === "/load-board/" || path.startsWith("/load-board/");
     const isBeauty = path === "/services/hermes-connect/beauty/workspace" || path.startsWith("/services/hermes-connect/beauty/workspace/");
     const status = (isHub || isAccess)
       ? chrome[locale].hub
       : isRepair
         ? chrome[locale].live
+        : isHomeServices
+          ? homeServicesLabels[locale].status
         : isLoadBoard
           ? chrome[locale].loadBoard
           : isBeauty
@@ -224,7 +236,7 @@ const { loadBoardContext = false } = Astro.props;
           : chrome[locale].reference;
 
     const context = document.createElement("section");
-    context.className = `hc-product-context ${isRepair ? "is-live" : (isHub || isAccess) ? "is-hub" : isLoadBoard ? "is-load-board" : isBeauty ? "is-private" : "is-reference"}`;
+    context.className = `hc-product-context ${isRepair ? "is-live" : (isHub || isAccess) ? "is-hub" : isLoadBoard ? "is-load-board" : (isBeauty || isHomeServices) ? "is-private" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
     context.setAttribute("aria-label", chrome[locale].familyNavigation);
 
@@ -241,7 +253,7 @@ const { loadBoardContext = false } = Astro.props;
     const product = document.createElement("span");
     product.textContent = isAccess
       ? (locale === "uk" ? "СТО — поточний живий пілот; реєстрація не означає активацію бізнесу." : "Repair Shop is the current live pilot; account registration does not activate a shop.")
-      : isLoadBoard ? chrome[locale].loadBoardProduct : isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
+      : isHomeServices ? homeServicesLabels[locale].product : isLoadBoard ? chrome[locale].loadBoardProduct : isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
     const contentLanguage = document.createElement("span");
     contentLanguage.className = "hc-content-language";
     contentLanguage.textContent = isBeauty && locale === "ru" ? "Язык контента: русский" : chrome[locale].content;
