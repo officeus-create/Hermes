@@ -2,7 +2,7 @@ import { mzmJunkRemovalClient } from "../../../src/data/catalog-client-mzm-junk-
 import { bearerToken, verifyGitHubMzmManagedClientOidcToken } from "../_lib/github-oidc.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureHomeServiceCrmSchema } from "../_lib/home-service-crm.mjs";
-import { ensureHermesCompanyProfilesSchema } from "../_lib/hermes-company-profiles.mjs";
+import { ensureHermesCompanyProfilesSchema, ensureHermesManagedCompanyAccessSchema } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
 
@@ -12,7 +12,11 @@ const PROFILE_ID = "home-service-managed-profile:mzm-junk-removal";
 const DATA_OWNER_ID = "hermes-managed:mzm-junk-removal";
 const SLUG = "mzm-junk-removal";
 const MANAGEMENT_MODE = "hermes_managed";
-const PUBLICATION_BASIS = "owner_consent_pending";
+const PUBLICATION_BASIS = "hermes_managed_public_facts";
+const REVIEWER_ID = "specialist-mzm-reviewer";
+const REVIEWER_EMAIL = "mzm-review@hermeslogisticsus.com";
+const REVIEWER_HASH = "eb1f091506b69c58a421f53a087ed523e5c71426b86a93ef241434c3f0ebc9f8";
+const REVIEWER_SALT = "a0aa666f1408d7c5e691857a30885c51";
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 async function ensureReceiptSchema(db: any) {
@@ -47,6 +51,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   await ensureHermesCompanyProfilesSchema(env.DB);
+  await ensureHermesManagedCompanyAccessSchema(env.DB);
   await ensureHomeServiceCrmSchema(env.DB);
   await ensureReceiptSchema(env.DB);
 
@@ -65,6 +70,34 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const now = new Date().toISOString();
+
+  const reviewerByEmail = await env.DB.prepare(
+    "SELECT id,email,password_hash,password_salt FROM specialists WHERE lower(email)=lower(?) LIMIT 1"
+  ).bind(REVIEWER_EMAIL).first();
+  if (reviewerByEmail && String(reviewerByEmail.id || "") !== REVIEWER_ID) {
+    return jsonResponse(409, { success: false, error: "managed_reviewer_email_collision" }, privateHeaders);
+  }
+  if (!reviewerByEmail) {
+    await env.DB.prepare(
+      "INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at) VALUES (?,?,?,?,?,?,?,?,?)"
+    ).bind(
+      REVIEWER_ID,
+      REVIEWER_EMAIL,
+      REVIEWER_HASH,
+      REVIEWER_SALT,
+      "MZM Reviewer",
+      "Home Services Reviewer",
+      "Roseville, CA",
+      "Hermes-managed reviewer access for the canonical MZM Junk Removal workspace.",
+      now,
+    ).run();
+  } else if (
+    String(reviewerByEmail.password_hash || "") !== REVIEWER_HASH ||
+    String(reviewerByEmail.password_salt || "") !== REVIEWER_SALT
+  ) {
+    return jsonResponse(409, { success: false, error: "managed_reviewer_credentials_changed" }, privateHeaders);
+  }
+
   const existingCompany = await env.DB.prepare(
     "SELECT created_at FROM hermes_company_profiles WHERE id=? LIMIT 1"
   ).bind(COMPANY_ID).first();
@@ -106,8 +139,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     mzmJunkRemovalClient.base.state,
     mzmJunkRemovalClient.website,
     null,
-    0,
-    "managed_private",
+    1,
+    "verified_public",
     0,
     createdAt,
     now,
@@ -120,6 +153,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     MANAGEMENT_MODE,
     PUBLICATION_BASIS,
   ).run();
+
+  await env.DB.prepare(`
+    INSERT INTO hermes_managed_company_access (
+      specialist_id,company_id,access_role,active,created_at,updated_at
+    ) VALUES (?,?,'reviewer',1,?,?)
+    ON CONFLICT(specialist_id,company_id) DO UPDATE SET
+      access_role='reviewer',
+      active=1,
+      updated_at=excluded.updated_at
+  `).bind(REVIEWER_ID, COMPANY_ID, now, now).run();
 
   await env.DB.prepare(`
     INSERT INTO hermes_home_service_profiles (
@@ -149,7 +192,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     now,
   ).run();
 
-  const [company, profile, leadCount] = await Promise.all([
+  const [company, profile, leadCount, reviewer, reviewerAccess] = await Promise.all([
     env.DB.prepare(`
       SELECT id,owner_specialist_id,company_name,slug,company_type,city,state,website,phone,address_line1,postal_code,country_code,timezone,
              catalog_opt_in,catalog_status,load_board_access,public_source_ref,management_mode,catalog_publication_basis
@@ -160,11 +203,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       FROM hermes_home_service_profiles WHERE company_id=? LIMIT 1
     `).bind(COMPANY_ID).first(),
     env.DB.prepare("SELECT COUNT(*) AS count FROM hermes_home_service_leads WHERE owner_specialist_id=?").bind(DATA_OWNER_ID).first(),
+    env.DB.prepare("SELECT id,email,password_hash,password_salt FROM specialists WHERE id=? LIMIT 1").bind(REVIEWER_ID).first(),
+    env.DB.prepare("SELECT specialist_id,company_id,access_role,active FROM hermes_managed_company_access WHERE specialist_id=? AND company_id=? LIMIT 1").bind(REVIEWER_ID, COMPANY_ID).first(),
   ]);
 
   const expectedServicesJson = JSON.stringify(mzmJunkRemovalClient.services);
   const expectedServiceAreasJson = JSON.stringify(mzmJunkRemovalClient.serviceAreas);
   const persistedZero = (value: unknown) => value === 0 || value === "0";
+  const persistedOne = (value: unknown) => value === 1 || value === "1";
   const realLeadsTracked = leadCount?.count;
   const validLeadCount = typeof realLeadsTracked === "number" && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
   const validCompany =
@@ -182,8 +228,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
     String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
-    persistedZero(company?.catalog_opt_in) &&
-    String(company?.catalog_status || "") === "managed_private" &&
+    persistedOne(company?.catalog_opt_in) &&
+    String(company?.catalog_status || "") === "verified_public" &&
     persistedZero(company?.load_board_access) &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
@@ -198,7 +244,17 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(profile?.semantic_core_ref || "") === mzmJunkRemovalClient.semanticCore.sourceRef &&
     String(profile?.content_status || "") === "active_content_planning";
 
-  if (!validCompany || !validProfile || !validLeadCount) {
+  const validReviewer =
+    String(reviewer?.id || "") === REVIEWER_ID &&
+    String(reviewer?.email || "") === REVIEWER_EMAIL &&
+    String(reviewer?.password_hash || "") === REVIEWER_HASH &&
+    String(reviewer?.password_salt || "") === REVIEWER_SALT &&
+    String(reviewerAccess?.specialist_id || "") === REVIEWER_ID &&
+    String(reviewerAccess?.company_id || "") === COMPANY_ID &&
+    String(reviewerAccess?.access_role || "") === "reviewer" &&
+    persistedOne(reviewerAccess?.active);
+
+  if (!validCompany || !validProfile || !validLeadCount || !validReviewer) {
     return jsonResponse(409, { success: false, error: "managed_client_readback_mismatch" }, privateHeaders);
   }
 
@@ -217,12 +273,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     operation: OPERATION_ID,
     business_name: mzmJunkRemovalClient.companyName,
-    public_profile_path: null,
-    crm_workspace_path: `/services/hermes-connect/home-services/workspace/?managed=${SLUG}`,
+    public_profile_path: `/businesses/connect/company/${SLUG}/`,
+    crm_workspace_path: "/services/hermes-connect/home-services/workspace/",
+    reviewer_login: REVIEWER_EMAIL,
+    reviewer_access_provisioned: true,
     management_mode: MANAGEMENT_MODE,
     publication_basis: PUBLICATION_BASIS,
-    catalog_status: "managed_private",
-    catalog_publication_eligible: false,
+    catalog_status: "verified_public",
+    catalog_publication_eligible: true,
     catalog_owner_consent_claimed: false,
     owner_authentication_claimed: false,
     internal_operator_capability: "HERMES_INTERNAL_OWNER",
