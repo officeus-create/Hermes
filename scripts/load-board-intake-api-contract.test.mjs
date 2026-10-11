@@ -190,7 +190,7 @@ assert.match(active, /getAuthenticatedSpecialist/);
 assert.match(active, /specialistHasLoadBoardAccess/);
 assert.match(active, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(active, /visibility = 'public'/);
-assert.match(active, /company_registration_unlocks_access: true/);
+assert.match(active, /company_registration_unlocks_access: false/);
 for (const equipment of ["dry_van", "reefer", "flatbed", "step_deck", "power_only", "hotshot", "box_truck", "sprinter_van", "car_hauler"]) {
   assert.match(active, new RegExp(`"${equipment}"`));
 }
@@ -209,7 +209,7 @@ assert.doesNotMatch(active, /hermes_load_quarantine/);
 assert.match(opportunities, /specialistHasLoadBoardAccess/);
 assert.match(opportunities, /deduplicated: true/);
 assert.match(opportunities, /score_version: "hermes_opportunity_v1"/);
-assert.match(opportunities, /company_registration_unlocks_access: true/);
+assert.match(opportunities, /company_registration_unlocks_access: false/);
 assert.match(opportunities, /min_rpm/);
 assert.match(opportunities, /max_deadhead/);
 assert.match(opportunities, /origin_state/);
@@ -225,7 +225,7 @@ assert.match(dispatchPlan, /specialistHasLoadBoardAccess/);
 assert.match(dispatchPlan, /planner_version: "hermes_chain_v1"/);
 assert.match(dispatchPlan, /planning_only: true/);
 assert.match(dispatchPlan, /booking_performed: false/);
-assert.match(dispatchPlan, /company_registration_unlocks_access: true/);
+assert.match(dispatchPlan, /company_registration_unlocks_access: false/);
 assert.match(dispatchPlan, /max_legs/);
 assert.match(dispatchPlan, /projectedLoadedRpm/);
 assert.match(dispatchPlan, /dispatcher_or_carrier_role_required/);
