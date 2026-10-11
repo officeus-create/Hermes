@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { repairCatalogPublication } from "../functions/api/_lib/repair-catalog-publication.mjs";
-import { addRepairCatalogLinks, onRequestGet as index } from "../functions/businesses/index.ts";
+import { homeServiceCatalogPublication } from "../functions/api/_lib/home-service-catalog-publication.mjs";
+import { addRepairCatalogLinks, addHomeServiceCatalogLinks, onRequestGet as index } from "../functions/businesses/index.ts";
 import { onRequestGet as profile } from "../functions/businesses/connect/repair-shop/[slug].ts";
 import { onRequestGet as sitemap } from "../functions/sitemap-connect-catalog.xml.ts";
 import { onRequestGet as companies } from "../functions/api/catalog/companies.ts";
@@ -57,6 +58,24 @@ for (const candidate of [row, { ...row, catalog_opt_in: 0 }, { ...row, slug: "ba
     assert.doesNotMatch(detailHtml, /private-owner|owner_specialist_id/);
   } else assert.match(detail.headers.get("X-Robots-Tag"), /noindex/);
 }
+const mzmRow = {
+  company_name: "MZM Junk Removal",
+  slug: "mzm-junk-removal",
+  city: "Roseville",
+  state: "CA",
+  catalog_opt_in: 0,
+  catalog_status: "verified_public",
+  management_mode: "hermes_managed",
+  catalog_publication_basis: "hermes_managed_client_public_facts",
+};
+assert.equal(homeServiceCatalogPublication(mzmRow).eligible, true);
+const withMzm = addHomeServiceCatalogLinks(html, [mzmRow]);
+assert.match(withMzm, /data-runtime-home-service-links/);
+assert.match(withMzm, /href="\/businesses\/connect\/company\/mzm-junk-removal\/"/);
+assert.match(withMzm, /MZM Junk Removal — Roseville, CA/);
+assert.equal(addHomeServiceCatalogLinks(withMzm, [mzmRow, mzmRow]), withMzm);
+assert.equal(addHomeServiceCatalogLinks(html, [{ ...mzmRow, catalog_status: "managed_private", catalog_publication_basis: "owner_consent_pending" }]), html);
+
 assert.equal(addRepairCatalogLinks(html, [{ ...row, slug: "other-opted-in" }]), html);
 assert.equal(repairCatalogPublication({ ...row, slug: "other-opted-in" }).eligible, true);
 const escaped = addRepairCatalogLinks(html, [{ ...row, name: '</a><script>alert("x")</script>' }, row]);
