@@ -47,7 +47,19 @@ const scripted={
 };
 assert.match(scripted.carrier,/authorizedCarrier/);
 assert.match(scripted.carrier,/verifiedAssignment/);
+assert.match(scripted.carrier,/meta\?\.changes/);
+assert.match(scripted.carrier,/queueState:"newly_queued"/);
+assert.match(scripted.carrier,/queueState:"existing_pending"/);
+assert.match(scripted.carrier,/existing_request_terminal/);
+assert.match(scripted.carrier,/existing_request_dispatcher_changed/);
+assert.match(scripted.carrier,/queuedForDispatcher:false/);
 assert.match(scripted.dispatcher,/dispatcher_specialist_id/);
+for(const key of ["active","opportunities","plan"]){
+ assert.match(scripted[key],/r\.visibility='public' AND s\.redistribution_permission='public'/,
+   key+" must require public/public for any broader visibility path");
+ assert.match(scripted[key],/r\.visibility='carrier_only' AND s\.redistribution_permission IN/,
+   key+" must pair restricted record visibility with source redistribution permission");
+}
 assert.match(scripted.admin,/specialistHasInternalOwnerCapability/);
 assert.match(scripted.admin,/identityVerified/);
 assert.match(scripted.access,/entitlement==='active'/);
