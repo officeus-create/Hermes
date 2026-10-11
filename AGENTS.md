@@ -42,6 +42,8 @@ Prioritize in this order: production/security or broken revenue flow; activation
 
 If an external dependency needs credentials, another department, legal or owner action, or unavailable specialist work, record a bounded handoff with owner, source, evidence, requested action, and done condition, then continue the next independent ready task.
 
+If a website, profile, repository, hosting project, DNS zone, CMS, form, or analytics property is **client-owned** and Hermes has no explicit implementation/management scope for that surface, public observations are evidence only. Do not convert them into a repair backlog, hunt for hosting/source credentials, create a replacement/proxy/bridge, or mutate the external surface merely to complete an internal Hermes workflow. Build the useful projection inside the correct Hermes-owned Catalog/CRM/Insight surface instead.
+
 Use `INDEX -> CURRENT STATE -> TARGETED SOURCE -> EXECUTION`. Do not reread entire history or recreate large backlogs when current evidence is sufficient.
 
 A technical change is not `DONE_VERIFIED` merely because code, a PR, a page, a test, or a document exists. Use the evidence chain appropriate to the work:
