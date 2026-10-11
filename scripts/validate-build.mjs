@@ -476,8 +476,7 @@ async function collectGetFunctionRoutes(directory, relative = "") {
     const pattern = segments.map((segment) => {
       if (/^\[\[.*\]\]$/.test(segment)) return ".*";
       if (/^\[.*\]$/.test(segment)) return "[^/]+";
-      return segment.replace(/[.*+?^$()|[\]\\{}]/g, "\\const htmlTargets = new Set(allHtmlFiles.map(routeFromHtmlPath));
-const brokenInternalLinks = [];");
+      return segment.replace(/[.*+?^$()|[\\]\\\\{}]/g, (value) => "\\\\" + value);
     }).join("/");
     dynamicInternalRoutes.push(new RegExp("^/" + pattern + "/?$"));
   }
