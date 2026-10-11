@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import "../../../../../styles/features/carrier-dispatch-workspaces.css";
+---
+<BaseLayout title="Carrier Workspace | Hermes Load Board" description="Private load planning workspace for approved Hermes carriers." robots="noindex,nofollow">
+<SiteHeader theme="light" activePath="/load-board/" />
+<main class="wsp-shell" id="main-content">
+<header class="wsp-hero"><p class="wsp-label">Hermes Logistics / Carrier workspace</p><h1>Your loads. Your dispatcher.</h1><p>Plan loads anytime. Save opportunities and request them through your assigned dispatcher. Requests do not book freight.</p></header>
+<nav class="wsp-nav"><a aria-current="page" href="/services/hermes-connect/load-board/carrier/">Carrier</a><a href="/services/hermes-connect/load-board/dispatcher/">Dispatcher</a><a href="/services/hermes-connect/load-board/partners/">Dealer / Shipper</a><a href="/load-board/">Public board</a></nav>
+<p class="wsp-status" id="carrier-state" role="status" aria-live="polite">Checking approved carrier account…</p>
+<div class="wsp-grid"><section class="wsp-panel"><h2>Current opportunities</h2>
+<div class="wsp-fieldrow">
+<label class="wsp-field">Search route<input id="carrier-location" placeholder="Chicago or Texas" /></label>
+<label class="wsp-field">Equipment<select id="carrier-equipment"><option value="">Any</option><option value="car_hauler">Car Hauler</option><option value="hotshot">Hotshot</option><option value="flatbed">Flatbed</option></select></label>
+</div>
+<div class="wsp-tabs"><button data-carrier-tab="all" aria-selected="true">Available</button><button data-carrier-tab="saved" aria-selected="false">Saved</button><button data-carrier-tab="requests" aria-selected="false">My requests</button></div>
+<div class="wsp-list" id="carrier-loads"><p class="wsp-loader">Checking permitted inventory…</p></div>
+</section>
+<aside><section class="wsp-panel"><h2>My dispatcher</h2><div id="carrier-dispatcher" class="wsp-muted">Awaiting verified assignment.</div></section>
+<section class="wsp-panel"><h2>Private dispatch service</h2><p class="wsp-notice">No shipper contacts or self-booking. The dispatcher checks all load availability and terms.</p><a href="/services/hermes-connect/load-board/access/">Account access and carrier review</a></section></aside></div>
+</main>
+<script is:inline src="/scripts/workspaces/carrier-workspace.js" defer></script>
+</BaseLayout>

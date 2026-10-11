@@ -35,6 +35,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const conditions = [
     "r.record_type = 'load'", "r.status = 'active'", "r.expires_at > ?", "r.visibility IN ('public', 'carrier_only')", "r.equipment = ?",
+    "s.status='active'", "s.read_enabled=1",
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('public','carrier_only')))",
   ];
   const bindings: any[] = [new Date().toISOString(), equipment];
   if (minRpm !== null) { conditions.push("r.rate_per_mile >= ?"); bindings.push(minRpm); }
@@ -42,14 +44,14 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const result = await env.DB.prepare(`
     SELECT
-      r.id, r.source_name, s.provider, r.provider_record_id, r.provider_url,
+      r.id, r.visibility, r.source_name, s.provider, r.provider_record_id, r.provider_url,
       r.equipment, r.origin, r.origin_city, r.origin_state, r.destination,
       r.destination_city, r.destination_state, r.pickup_window, r.availability_text,
       r.rate_amount, r.rate_currency, r.distance_miles, r.deadhead_miles,
       r.vehicle_count, r.operable, r.enclosed, r.payment_terms, r.rate_per_mile,
       r.source_quality_score, r.dedupe_key, r.observed_at, r.expires_at
     FROM hermes_load_records r
-    LEFT JOIN hermes_load_sources s ON s.id = r.source_id
+    JOIN hermes_load_sources s ON s.id = r.source_id
     WHERE ${conditions.join(" AND ")}
     ORDER BY COALESCE(r.source_quality_score, 0) DESC, r.observed_at DESC
     LIMIT 500
@@ -58,14 +60,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const candidates = (result?.results || []).map((row: any) => {
     const scored = scoreOpportunity(row, { equipment, originState: originState || undefined, destinationState: preferredDestinationState || undefined });
     return {
-      id: row.id, provider: row.provider || null, source: row.source_name, providerRecordId: row.provider_record_id || null,
-      providerUrl: row.provider_url || null, equipment: row.equipment, origin: row.origin, originCity: row.origin_city || null,
-      originState: row.origin_state || null, destination: row.destination || null, destinationCity: row.destination_city || null,
-      destinationState: row.destination_state || null, pickupWindow: row.pickup_window || null, availability: row.availability_text || null,
+      id: row.id,
+      provider: row.visibility === 'carrier_only' ? null : (row.provider || null),
+      source: row.visibility === 'carrier_only' ? null : row.source_name,
+      providerRecordId: row.visibility === 'carrier_only' ? null : (row.provider_record_id || null),
+      providerUrl: row.visibility === 'carrier_only' ? null : (row.provider_url || null), equipment: row.equipment,
+      origin: row.visibility === 'carrier_only' ? ([row.origin_city,row.origin_state].filter(Boolean).join(', ') || 'Location under review') : row.origin,
+      originCity: row.origin_city || null,
+      originState: row.origin_state || null, destination: row.visibility === 'carrier_only' ? ([row.destination_city,row.destination_state].filter(Boolean).join(', ') || 'Location under review') : (row.destination || null), destinationCity: row.destination_city || null,
+      destinationState: row.destination_state || null, pickupWindow: row.pickup_window || null, availability: row.visibility === 'carrier_only' ? null : (row.availability_text || null),
       rateAmount: row.rate_amount == null ? null : Number(row.rate_amount), rateCurrency: row.rate_currency || "USD",
       distanceMiles: row.distance_miles == null ? null : Number(row.distance_miles), deadheadMiles: row.deadhead_miles == null ? null : Number(row.deadhead_miles),
       vehicleCount: row.vehicle_count == null ? null : Number(row.vehicle_count), operable: row.operable == null ? null : Boolean(row.operable),
-      enclosed: row.enclosed == null ? null : Boolean(row.enclosed), paymentTerms: row.payment_terms || null,
+      enclosed: row.enclosed == null ? null : Boolean(row.enclosed), paymentTerms: row.visibility === 'carrier_only' ? null : (row.payment_terms || null),
       ratePerMile: scored.ratePerMile, score: scored.score, scoreReasons: scored.reasons, observedAt: row.observed_at, expiresAt: row.expires_at,
       dedupeKey: row.dedupe_key || row.id,
     };
@@ -114,7 +121,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     planner_version: "hermes_chain_v1",
     planning_only: true,
     booking_performed: false,
-    company_registration_unlocks_access: true,
+    company_registration_unlocks_access: false,
+    verified_carrier_approval_required: true,
     equipment,
     requested_origin_state: originState || null,
     preferred_destination_state: preferredDestinationState || null,

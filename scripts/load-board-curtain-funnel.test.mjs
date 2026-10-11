@@ -25,7 +25,7 @@ assert.match(enhancer, /\/api\/load-board\/summary/);
 assert.match(enhancer, /Interface preview rows are not inventory/);
 assert.match(enhancer, /hlb-live-row--locked/);
 assert.match(enhancer, /\/services\/hermes-connect\/load-board\/access\//);
-assert.match(enhancer, /Register company &amp; unlock Load Board/);
+assert.match(enhancer, /Register company &amp; request Load Board approval/);
 assert.match(enhancer, /\/api\/catalog\/companies/);
 assert.match(enhancer, /company\?\.companyType === 'repair_shop'/);
 assert.match(enhancer, /company\?\.profileUrl/);
@@ -61,14 +61,14 @@ for (const path of [
 ]) assert.ok(enhancer.includes(path), `Missing Load Board discovery link: ${path}`);
 
 assert.match(accessPage, /robots="noindex,nofollow"/);
-assert.match(accessPage, /One Hermes account\. One company profile\. Load Board unlocked\./);
+assert.match(accessPage, /Access matched to your role/);
 assert.match(accessPage, /\/api\/auth\/register/);
 assert.match(accessPage, /\/api\/auth\/login/);
 assert.match(accessPage, /\/api\/auth\/me/);
 assert.match(accessPage, /\/api\/hermes-connect\/company/);
 assert.match(accessPage, /catalogOptIn/);
 assert.match(accessPage, /Self-submitted · verification pending/);
-assert.match(accessPage, /\/load-board\/\?access=unlocked#live-marketplace/);
+assert.match(accessPage, /carrier/);
 
 assert.match(companyHelper, /CREATE TABLE IF NOT EXISTS hermes_company_profiles/);
 assert.match(companyHelper, /owner_specialist_id TEXT NOT NULL UNIQUE/);
@@ -81,7 +81,7 @@ assert.match(companyApi, /ON CONFLICT\(owner_specialist_id\)/);
 assert.match(companyApi, /const loadBoardAccess = companyType === "home_service" \? 0 : 1/);
 assert.match(companyApi, /load_board_access: Boolean\(loadBoardAccess\)/);
 assert.match(companyApi, /catalog_status/);
-assert.match(companyApi, /next_url: companyType === "home_service" \? "\/services\/hermes-connect\/home-services\/workspace\/" : "\/load-board\/\?access=unlocked#live-marketplace"/);
+assert.ok(companyApi.includes('/services/hermes-connect/load-board/partners/'));
 
 assert.match(accountApi, /key: "load_board"/);
 assert.match(accountApi, /kind: "company_workspace"/);
@@ -116,9 +116,9 @@ for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
   assert.match(api, /specialistHasLoadBoardAccess/);
   assert.match(api, /carrier_only/);
 }
-assert.match(activeApi, /company_registration_unlocks_access: true/);
-assert.match(opportunitiesApi, /company_registration_unlocks_access: true/);
-assert.match(dispatchPlanApi, /company_registration_unlocks_access: true/);
+assert.match(activeApi, /company_registration_unlocks_access: false/);
+assert.match(opportunitiesApi, /company_registration_unlocks_access: false/);
+assert.match(dispatchPlanApi, /company_registration_unlocks_access: false/);
 
 assert.equal(releaseDelta.additions?.[0]?.route, "/services/hermes-connect/load-board/access/");
 assert.equal(releaseDelta.additions?.[0]?.indexability, "noindex");

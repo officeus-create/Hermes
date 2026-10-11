@@ -220,7 +220,7 @@ const companyApi = read("functions/api/hermes-connect/company.ts");
 // The backend must enforce the cross-vertical company safety boundary, not only the onboarding UI.
 assert.match(companyApi, /existing_company_type_locked/);
 assert.match(companyApi, /companyType === "home_service" \? body\.catalogOptIn === true : body\.catalogOptIn !== false/);
-assert.match(companyApi, /SELECT id, slug, company_type, created_at FROM hermes_company_profiles/);
+assert.match(companyApi, /SELECT id, slug, company_name, city, state, authority_number, company_type, created_at FROM hermes_company_profiles/);
 assert.match(companyApi, /WHERE hermes_company_profiles\.company_type = excluded\.company_type/);
 assert.match(companyApi, /row\?\.company_type !== companyType/);
 assert.match(companyApi, /managed_company_claim_required/);

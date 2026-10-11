@@ -28,11 +28,15 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const recordType = String(url.searchParams.get("type") || "").trim();
   const equipment = String(url.searchParams.get("equipment") || "").trim();
 
-  const conditions = ["r.status = 'active'", "r.expires_at > ?"];
+  const conditions = ["r.status = 'active'", "r.expires_at > ?",
+    "s.status = 'active'", "s.read_enabled = 1",
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')))"];
   const bindings: any[] = [new Date().toISOString()];
 
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
-  else conditions.push("r.visibility = 'public'");
+  // Public visitors and broker accounts receive no LOAD inventory. Public CAPACITY
+  // remains independently subject to its source permission and visibility policy.
+  else conditions.push("r.record_type = 'capacity' AND r.visibility = 'public'");
 
   if (recordType && ALLOWED_TYPES.has(recordType)) {
     conditions.push("r.record_type = ?");
@@ -104,7 +108,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     ratePerMile: row.rate_per_mile == null ? null : Number(row.rate_per_mile),
     score: row.source_quality_score == null ? null : Number(row.source_quality_score),
     duplicateCount: carrierCandidate ? Math.max(1, Number(row.duplicate_count || 1)) : 1,
-    reviewFlags: carrierCandidate ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
+    reviewFlags: carrierCandidate && row.visibility !== 'carrier_only' ? (() => { try { const value = JSON.parse(String(row.risk_flags || "[]")); return Array.isArray(value) ? value.map(String).slice(0, 8) : []; } catch { return []; } })() : [],
     providerUrl: row.visibility === 'carrier_only' ? null : (row.provider_url || null),
     observedAt: row.observed_at,
     expiresAt: row.expires_at,
@@ -114,7 +118,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success: true,
     audience: carrierCandidate ? "carrier_candidate" : "public",
     load_board_access: carrierCandidate,
-    company_registration_unlocks_access: true,
+    company_registration_unlocks_access: false,
+    verified_carrier_approval_required: true,
     carrier_verification_required_for_contact: true,
     contact_details_exposed: false,
     count: records.length,

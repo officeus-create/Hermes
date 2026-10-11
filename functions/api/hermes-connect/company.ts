@@ -5,6 +5,7 @@ import {
   ensureHermesCompanyProfilesSchema,
   normalizeCompanyType,
   normalizeState,
+  specialistHasLoadBoardAccess,
 } from "../_lib/hermes-company-profiles.mjs";
 
 type Env = { DB?: any };
@@ -100,8 +101,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (errors.length) return jsonResponse(400, { success: false, errors });
 
   const existing = await env.DB.prepare(
-    "SELECT id, slug, company_type, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
-  ).bind(specialist.id).first() as { id?: string; slug?: string; company_type?: string; created_at?: string } | null;
+    "SELECT id, slug, company_name, city, state, authority_number, company_type, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
+  ).bind(specialist.id).first() as { id?: string; slug?: string; company_name?: string; city?: string; state?: string; authority_number?: string; company_type?: string; created_at?: string } | null;
 
   // A Hermes-managed client must be adopted through a verified attachment workflow.
   // Never create a second owner-managed Home Services Company from matching public identity input.
@@ -168,6 +169,27 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     authorityNumber || null, catalogOptIn ? 1 : 0, loadBoardAccess, createdAt, now,
   ).run();
 
+  // Any material carrier identity change invalidates previously reviewed access.
+  // Ordinary self-registration or role edits must never inherit a past carrier approval.
+  if (existing && (
+    existing.company_type !== companyType ||
+    String(existing.company_name || "") !== companyName ||
+    String(existing.authority_number || "") !== authorityNumber ||
+    String(existing.city || "") !== city ||
+    String(existing.state || "") !== state
+  )) {
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS hermes_carrier_board_entitlements (
+        company_id TEXT PRIMARY KEY,
+        status TEXT NOT NULL CHECK(status IN ('active','revoked')),
+        reviewed_by_specialist_id TEXT NOT NULL,
+        reviewed_at TEXT NOT NULL,
+        note TEXT
+      )
+    `).run();
+    await env.DB.prepare("UPDATE hermes_carrier_board_entitlements SET status='revoked',reviewed_at=? WHERE company_id=?")
+      .bind(now,id).run();
+  }
   const row = await env.DB.prepare(
     "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
@@ -181,9 +203,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     company: safeCompany(row),
     load_board_access: Boolean(loadBoardAccess),
+    verified_carrier_access: await specialistHasLoadBoardAccess(env.DB,specialist),
     catalog: catalogOptIn
       ? { listed: true, status: row?.catalog_status || "self_submitted", note: "Self-submitted company facts remain verification-pending until reviewed." }
       : { listed: false, status: "opted_out" },
-    next_url: companyType === "home_service" ? "/services/hermes-connect/home-services/workspace/" : "/load-board/?access=unlocked#live-marketplace",
+    next_url: companyType === "home_service"
+      ? "/services/hermes-connect/home-services/workspace/"
+      : ["carrier","owner_operator","fleet"].includes(companyType)
+        ? "/services/hermes-connect/load-board/carrier/"
+        : ["dealer","shipper"].includes(companyType)
+          ? "/services/hermes-connect/load-board/partners/"
+          : "/load-board/",
   }, { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" });
 }

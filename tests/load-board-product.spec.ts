@@ -198,7 +198,7 @@ test("Load Board access flow is private to search and explains account company C
   await page.route("**/api/auth/me", async (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "authentication_required" }) }));
   await page.goto("/services/hermes-connect/load-board/access/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
-  await expect(page.getByRole("heading", { name: "One Hermes account. One company profile. Load Board unlocked." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One Hermes account. One company. Access matched to your role." })).toBeVisible();
   await expect(page.getByText("Hermes Catalog", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: "Create Hermes account" })).toBeVisible();
 });
