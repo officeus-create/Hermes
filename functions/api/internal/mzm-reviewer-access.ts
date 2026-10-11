@@ -50,32 +50,31 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(409, { success: false, error: "reviewer_email_role_conflict" }, privateHeaders);
   }
 
+  // One-time creation is not a credential rotation. A replay or parallel agent
+  // must not replace a delivered password or revoke the reviewer's sessions.
+  if (existing) {
+    return jsonResponse(409, {
+      success: false,
+      error: "reviewer_already_exists_rotation_requires_separate_authorization",
+      account_exists: true,
+      credentials_rotated: false,
+      company_id: COMPANY_ID,
+    }, privateHeaders);
+  }
+
   const random = new Uint8Array(18);
   crypto.getRandomValues(random);
   const temporaryPassword = "Mzm-" + Array.from(random, (value) => value.toString(16).padStart(2, "0")).join("") + "!";
   const { hash, salt } = await hashPassword(temporaryPassword);
   const now = new Date().toISOString();
   const specialistId = String(existing?.id || `specialist-${crypto.randomUUID()}`);
-  if (existing) {
-    await env.DB.prepare(`
-      UPDATE specialists
-      SET password_hash=?,password_salt=?,name=?,role=?,location=?,bio=?
-      WHERE id=?
-    `).bind(
-      hash, salt, "MZM CRM Review", REVIEWER_ROLE, "Roseville, CA",
-      "Authorized Hermes reviewer account for the MZM Junk Removal managed CRM workspace.",
-      specialistId,
-    ).run();
-    await env.DB.prepare("DELETE FROM sessions WHERE specialist_id=?").bind(specialistId).run();
-  } else {
-    await env.DB.prepare(`
-      INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at)
-      VALUES (?,?,?,?,?,?,?,?,?)
-    `).bind(
-      specialistId,email,hash,salt,"MZM CRM Review",REVIEWER_ROLE,"Roseville, CA",
-      "Authorized Hermes reviewer account for the MZM Junk Removal managed CRM workspace.",now,
-    ).run();
-  }
+  await env.DB.prepare(`
+    INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at)
+    VALUES (?,?,?,?,?,?,?,?,?)
+  `).bind(
+    specialistId,email,hash,salt,"MZM CRM Review",REVIEWER_ROLE,"Roseville, CA",
+    "Authorized Hermes reviewer account for the MZM Junk Removal managed CRM workspace.",now,
+  ).run();
   await env.DB.prepare(`
     INSERT INTO hermes_managed_client_access
       (specialist_id,company_id,access_role,active,created_at,updated_at)
@@ -98,8 +97,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     email,
     temporary_password: temporaryPassword,
-    account_created: !existing,
-    credentials_rotated: Boolean(existing),
+    account_created: true,
+    credentials_rotated: false,
     specialist_id: specialistId,
     company_id: COMPANY_ID,
     access_role: "viewer",
