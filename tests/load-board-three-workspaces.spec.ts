@@ -27,5 +27,7 @@ test("Dealer and Shipper form requires explicit posting rights",async({page})=>{
  await page.goto(base+"partners/");
  const form=page.locator("#partner-post");
  await expect(form.locator('input[name="rights_attested"]')).toHaveAttribute("required","");
- await expect(form.getByRole("button",{name:/Submit permitted transport request/})).toHaveCount(1);
+ const submit=form.locator('button[type="submit"]');
+ await expect(submit).toHaveCount(1);
+ await expect(submit).toHaveText("Submit permitted transport request");
 });
