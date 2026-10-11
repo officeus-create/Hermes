@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import "../../../../../styles/features/carrier-dispatch-workspaces.css";
+---
+<BaseLayout title="Dispatcher Workspace | Hermes Load Board" description="Private Hermes dispatch workflow for assigned carriers and load interest requests." robots="noindex,nofollow">
+<SiteHeader theme="light" activePath="/load-board/" />
+<main class="wsp-shell" id="main-content">
+<header class="wsp-hero"><p class="wsp-label">Hermes Logistics / Dispatcher workspace</p><h1>Carrier requests, one work queue.</h1>
+<p>Review interest from your assigned carriers, verify freight terms and coordinate the next step. Internal status updates do not book or contact freight sources.</p></header>
+<nav class="wsp-nav"><a href="/services/hermes-connect/load-board/carrier/">Carrier</a><a aria-current="page" href="/services/hermes-connect/load-board/dispatcher/">Dispatcher</a><a href="/services/hermes-connect/load-board/partners/">Dealer / Shipper</a></nav>
+<p id="dispatcher-state" role="status" aria-live="polite" class="wsp-status">Verifying dispatcher assignment and session…</p>
+<div class="wsp-grid"><section class="wsp-panel"><h2>Incoming carrier requests</h2>
+<p class="wsp-muted">A queued request means only that Hermes stored it. Human receipt appears when the dispatcher actually marks it seen.</p>
+<div class="wsp-tabs"><button data-status-filter="open" aria-selected="true">Open requests</button><button data-status-filter="all" aria-selected="false">All requests</button></div>
+<div id="dispatcher-queue" class="wsp-list"><p class="wsp-loader">No verified queue loaded.</p></div>
+</section><aside><section class="wsp-panel"><h2>My assigned carriers</h2><div id="dispatcher-carriers" class="wsp-list"><p class="wsp-muted">No assignment list loaded.</p></div></section>
+<section class="wsp-panel"><h2>Operating safeguard</h2><p class="wsp-notice">Any shipment acceptance, source communication, price change or dispatch confirmation requires human validation and proper authority.</p></section></aside></div>
+</main>
+<script src="/scripts/workspaces/dispatcher-workspace.js" defer></script>
+</BaseLayout>
