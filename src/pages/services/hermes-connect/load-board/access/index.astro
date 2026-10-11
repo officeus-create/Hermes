@@ -5,7 +5,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
 
 <BaseLayout
   title="Hermes Connect Load Board Access"
-  description="Create or sign in to your Hermes account, register your company, and unlock the Hermes Load Board. Catalog publication remains clearly labeled until business facts are verified."
+  description="Create or sign in to your Hermes account, register your company, then complete role-appropriate access review for the Hermes Load Board. Catalog publication remains clearly labeled until business facts are verified."
   robots="noindex,nofollow"
 >
   <SiteHeader theme="light" activePath="/paths/logistics/" />
@@ -14,13 +14,13 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
       <div class="lb-access-shell">
         <a class="lb-back" href="/load-board/">← Back to Load Board preview</a>
         <p class="lb-kicker">Hermes Connect · Load Board access</p>
-        <h1>One Hermes account. One company profile. Load Board unlocked.</h1>
-        <p class="lb-lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and return to the board with carrier-access records enabled.</p>
+        <h1>One Hermes account. One company. Access matched to your role.</h1>
+        <p class="lb-lead">The public Load Board is the curtain view. Create or sign in to your Hermes account, add the company you operate with, and follow the correct workspace. Carrier-only freight access requires separate Hermes approval.</p>
         <div class="lb-flow" aria-label="Load Board access steps">
           <div><strong>1</strong><span>Hermes account</span><small>Create one or sign in</small></div>
           <div><strong>2</strong><span>Company</span><small>Add operating company facts</small></div>
           <div><strong>3</strong><span>Hermes Catalog</span><small>Optional self-submitted listing</small></div>
-          <div><strong>4</strong><span>Load Board</span><small>Carrier-access layer opens</small></div>
+          <div><strong>4</strong><span>Load Board</span><small>Approved carrier access</small></div>
         </div>
       </div>
     </section>
@@ -75,7 +75,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           <div class="lb-card-head">
             <p class="lb-kicker">Step 2</p>
             <h2>Register the company you operate with</h2>
-            <p>This company profile is what unlocks Load Board access. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.</p>
+            <p>Company registration does not by itself unlock restricted carrier freight. If you opt in to Hermes Catalog, only the safe public facts below are listed before verification.</p>
           </div>
           <form class="lb-form" data-company-form>
             <label>Company name<input name="companyName" required minlength="2" /></label>
@@ -98,7 +98,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             <label>Website <span>optional</span><input name="website" inputmode="url" placeholder="yourcompany.com" /></label>
             <label>MC / USDOT <span>optional · private</span><input name="authorityNumber" autocomplete="off" /></label>
             <label class="lb-check"><input name="catalogOptIn" type="checkbox" checked /><span><strong>Add my company to Hermes Catalog.</strong> Company name, category, city and state can appear immediately as “Self-submitted · verification pending.” Private authority/account data is not published. A dedicated SEO/GEO company page is not created until verification.</span></label>
-            <button class="lb-primary" type="submit">Save company & unlock Load Board</button>
+            <button class="lb-primary" type="submit">Save company & continue</button>
           </form>
           <p class="lb-message" data-company-message role="status"></p>
         </div>
@@ -111,7 +111,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             <li><strong>Register.</strong> The same Hermes identity is used across Hermes Connect.</li>
             <li><strong>Company.</strong> Your operating company becomes the access owner for the Load Board.</li>
             <li><strong>Catalog.</strong> If you opt in, a safe self-submitted company card can appear in Hermes Catalog while verification is pending.</li>
-            <li><strong>Operate.</strong> Return to the Load Board, search carrier-access opportunities, compare economics and use dispatcher planning tools.</li>
+            <li><strong>Operate.</strong> Dealers and shippers may manage their own requests. Carriers need Hermes approval and an assigned dispatcher before requesting loads.</li>
           </ol>
           <a href="/businesses/">See Hermes Catalog →</a>
         </aside>
@@ -239,7 +239,7 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
             name: data.get('name'), email: data.get('email'), password: data.get('password'), role: data.get('role'), location: data.get('location'),
             bio: 'Hermes Connect Load Board access account for carrier operations and company registration.',
           }) });
-          message(authMessage, 'Account created. Add your company to unlock the board.');
+          message(authMessage, 'Account created. Add your company for role-specific review.');
           await showCompany(payload.specialist);
         } catch (error) {
           const text = error?.payload?.error === 'email_already_registered' ? 'This email already has a Hermes account. Use Sign in.' : `Could not create account: ${error.message}`;
@@ -269,19 +269,21 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         const data = new FormData(companyForm);
         const button = companyForm.querySelector('button[type="submit"]');
         if (button instanceof HTMLButtonElement) button.disabled = true;
-        message(companyMessage, 'Saving company and opening Load Board access…');
+        message(companyMessage, 'Saving company and checking your workspace route…');
         try {
           const payload = await json('/api/hermes-connect/company', { method: 'POST', body: JSON.stringify({
             companyName: data.get('companyName'), companyType: data.get('companyType'), city: data.get('city'), state: data.get('state'),
             website: data.get('website'), authorityNumber: data.get('authorityNumber'), catalogOptIn: data.get('catalogOptIn') === 'on',
           }) });
-          message(companyMessage, payload.catalog?.listed ? 'Company saved and added to Hermes Catalog as verification-pending. Opening the Load Board…' : 'Company saved. Opening the Load Board…');
+          message(companyMessage, payload.catalog?.listed ? 'Company saved in Hermes Catalog as verification-pending. Opening the correct workspace…' : 'Company saved. Opening your workspace…');
+          const companyType = String(data.get('companyType') || '');
           const sourceIntent = new URLSearchParams(window.location.search).get('source');
-          const nextUrl = sourceIntent === 'post-load'
-            ? '/load-board/?access=unlocked&post=load#live-marketplace'
-            : sourceIntent === 'post-truck'
-              ? '/load-board/?access=unlocked&post=capacity#live-marketplace'
-              : (payload.next_url || '/load-board/?access=unlocked#live-marketplace');
+          const nextUrl = ['dealer','shipper'].includes(companyType)
+            ? '/services/hermes-connect/load-board/partners/'
+            : ['carrier','owner_operator','fleet'].includes(companyType)
+              ? '/services/hermes-connect/load-board/carrier/'
+              : (sourceIntent === 'post-load' ? '/load-board/?post=load#live-marketplace' : '/load-board/');
+          message(companyMessage, 'Company saved. Carrier-only freight remains restricted until verified Hermes approval.');
           window.location.assign(nextUrl);
         } catch (error) { message(companyMessage, `Could not save company: ${error.message}`, true); }
         finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
