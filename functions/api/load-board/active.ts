@@ -28,7 +28,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const recordType = String(url.searchParams.get("type") || "").trim();
   const equipment = String(url.searchParams.get("equipment") || "").trim();
 
-  const conditions = ["r.status = 'active'", "r.expires_at > ?"];
+  const conditions = ["r.status = 'active'", "r.expires_at > ?",
+    "s.status = 'active'", "s.read_enabled = 1",
+    "((r.visibility='public' AND s.redistribution_permission='public') OR (r.visibility='carrier_only' AND s.redistribution_permission IN ('carrier_only','public')))"];
   const bindings: any[] = [new Date().toISOString()];
 
   if (carrierCandidate) conditions.push("r.visibility IN ('public', 'carrier_only')");
@@ -114,7 +116,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success: true,
     audience: carrierCandidate ? "carrier_candidate" : "public",
     load_board_access: carrierCandidate,
-    company_registration_unlocks_access: true,
+    company_registration_unlocks_access: false,
+    verified_carrier_approval_required: true,
     carrier_verification_required_for_contact: true,
     contact_details_exposed: false,
     count: records.length,
