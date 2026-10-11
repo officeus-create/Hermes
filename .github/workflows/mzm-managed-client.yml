@@ -85,7 +85,7 @@ jobs:
           if [ "${HTTP}" != 200 ] || [ "$(jq -r '.success // false' "${TMP}/provision.json" 2>/dev/null)" != true ]; then
             ERROR_CODE="$(jq -r '.error // "managed_client_api_failed"' "${TMP}/provision.json" 2>/dev/null || printf managed_client_api_failed)"
             case "${ERROR_CODE}" in
-              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_client_readback_mismatch) ;;
+              database_not_configured|operator_not_authorized|invalid_json|unsupported_operation|managed_slug_collision|managed_reviewer_email_collision|managed_reviewer_credentials_changed|managed_client_readback_mismatch) ;;
               *) ERROR_CODE="managed_client_api_failed" ;;
             esac
             fail "${ERROR_CODE}" "Bounded MZM production API returned HTTP ${HTTP}."
@@ -100,17 +100,24 @@ jobs:
           OWNER_AUTH="$(jq -r 'if (.owner_authentication_claimed | type) == "boolean" then .owner_authentication_claimed else "__invalid__" end' "${TMP}/provision.json")"
           INTERNAL_UI="$(jq -r '.internal_operator_ui_readback // empty' "${TMP}/provision.json")"
           FACT_SNAPSHOT="$(jq -r 'if (.managed_fact_snapshot_verified | type) == "boolean" then .managed_fact_snapshot_verified else "__invalid__" end' "${TMP}/provision.json")"
+          REVIEWER_LOGIN="$(jq -r '.reviewer_login // empty' "${TMP}/provision.json")"
+          REVIEWER_ACCESS="$(jq -r 'if (.reviewer_access_provisioned | type) == "boolean" then .reviewer_access_provisioned else "__invalid__" end' "${TMP}/provision.json")"
+          CATALOG_ELIGIBLE="$(jq -r 'if (.catalog_publication_eligible | type) == "boolean" then .catalog_publication_eligible else "__invalid__" end' "${TMP}/provision.json")"
 
-          [ -z "${PROFILE_PATH}" ] \
-            || fail "public_profile_path_invalid" "Managed CRM provisioning must not expose a public Catalog path before owner consent."
-          [ "${CRM_PATH}" = "/services/hermes-connect/home-services/workspace/?managed=mzm-junk-removal" ] \
-            || fail "crm_workspace_path_invalid" "Production operator returned an unexpected managed CRM path."
+          [ "${PROFILE_PATH}" = "/businesses/connect/company/mzm-junk-removal/" ] \
+            || fail "public_profile_path_invalid" "Managed MZM publication did not return the canonical Catalog profile path."
+          [ "${CRM_PATH}" = "/services/hermes-connect/home-services/workspace/" ] \
+            || fail "crm_workspace_path_invalid" "Reviewer CRM path did not resolve to the normal Home Services workspace."
           [ "${MODE}" = "hermes_managed" ] \
             || fail "management_mode_mismatch" "Managed-client mode did not read back."
-          [ "${BASIS}" = "owner_consent_pending" ] \
-            || fail "publication_basis_mismatch" "Catalog publication must remain pending owner consent."
+          [ "${BASIS}" = "hermes_managed_public_facts" ] \
+            || fail "publication_basis_mismatch" "Managed public-facts publication basis did not read back."
           [ "${OWNER_CONSENT}" = false ] && [ "${OWNER_AUTH}" = false ] \
             || fail "owner_claim_boundary_failed" "Production response attempted to claim owner consent/authentication."
+          [ "${REVIEWER_LOGIN}" = "mzm-review@hermeslogisticsus.com" ] && [ "${REVIEWER_ACCESS}" = true ] \
+            || fail "reviewer_access_failed" "Dedicated MZM reviewer identity/access was not provisioned."
+          [ "${CATALOG_ELIGIBLE}" = true ] \
+            || fail "catalog_publication_failed" "MZM Catalog publication did not become eligible."
           [ "${INTERNAL_UI}" = "REQUIRED_SEPARATELY" ] \
             || fail "internal_owner_receipt_boundary_failed" "Managed provisioning must not pretend an authenticated internal-owner UI session was verified."
           [ "${FACT_SNAPSHOT}" = true ] \
@@ -118,22 +125,22 @@ jobs:
           [[ "${LEADS}" =~ ^[0-9]+$ ]] \
             || fail "lead_count_receipt_invalid" "Real lead count was missing or invalid; missing evidence must not be rendered as zero."
 
-          PRIVATE_PROFILE="/businesses/connect/company/mzm-junk-removal/"
+          PUBLIC_PROFILE="/businesses/connect/company/mzm-junk-removal/"
           PROFILE_HTTP="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
-            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PRIVATE_PROFILE}?verify=$(date +%s)")"
-          [ "${PROFILE_HTTP}" = 404 ] \
-            || fail "catalog_fail_closed_failed" "MZM became publicly reachable before explicit Catalog consent."
+            -o "${TMP}/profile.html" -w '%{http_code}' "${BASE_URL}${PUBLIC_PROFILE}?verify=$(date +%s)")"
+          [ "${PROFILE_HTTP}" = 200 ] && grep -Fq "MZM Junk Removal" "${TMP}/profile.html" \
+            || fail "catalog_profile_publication_failed" "Canonical MZM Catalog profile was not publicly readable after provisioning."
 
           SITEMAP_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/sitemap.xml" -w '%{http_code}' "${BASE_URL}/sitemap-connect-catalog.xml?verify=$(date +%s)")"
-          [ "${SITEMAP_HTTP}" = 200 ] && ! grep -Fq "${PRIVATE_PROFILE}" "${TMP}/sitemap.xml" \
-            || fail "catalog_sitemap_fail_closed_failed" "MZM appeared in the Catalog sitemap before explicit owner consent."
+          [ "${SITEMAP_HTTP}" = 200 ] && grep -Fq "${PUBLIC_PROFILE}" "${TMP}/sitemap.xml" \
+            || fail "catalog_sitemap_publication_failed" "MZM canonical profile is missing from the Catalog sitemap."
 
           CATALOG_HTTP="$(curl -sS --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 \
             -o "${TMP}/catalog.json" -w '%{http_code}' "${BASE_URL}/api/catalog/companies?verify=$(date +%s)")"
           [ "${CATALOG_HTTP}" = 200 ] \
-            && ! jq -e '.companies[] | select(.slug=="mzm-junk-removal")' "${TMP}/catalog.json" >/dev/null \
-            || fail "catalog_api_fail_closed_failed" "Public Catalog API exposed MZM before explicit owner consent."
+            && jq -e '.companies[] | select(.slug=="mzm-junk-removal" and .status=="verified_public" and .managementMode=="hermes_managed")' "${TMP}/catalog.json" >/dev/null \
+            || fail "catalog_api_publication_failed" "Public Catalog API is missing the verified Hermes-managed MZM profile."
 
           echo "classification=pass" >> "${GITHUB_OUTPUT}"
           cat > "${RESULT}" <<EOF
@@ -142,11 +149,12 @@ jobs:
           - ✅ MZM is provisioned as a Hermes-managed Home Services client; no MZM owner login is required for Hermes internal operations.
           - ✅ Private Home Services CRM uses the existing Hermes CRM model under an internal Hermes-managed data key.
           - ✅ Managed Company/Profile facts, services and service areas read back exactly from the current canonical MZM config.
-          - ✅ Public Catalog remains fail-closed: publication basis is \`${BASIS}\`, profile returns 404, and Catalog API/sitemap do not expose MZM.
-          - ✅ Owner consent/authentication are **not** claimed; later owner adoption must attach to this same Company instead of creating a duplicate.
-          - ⚠️ Actual private workspace traversal remains a separate authenticated \`HERMES_INTERNAL_OWNER\` readback; provisioning does not fabricate that receipt.
+          - ✅ Public Catalog is live from verified public facts: publication basis is \`${BASIS}\`; canonical profile, Catalog API and Catalog sitemap all read back.
+          - ✅ Dedicated reviewer login is attached to the same canonical MZM Company: \`${REVIEWER_LOGIN}\`.
+          - ✅ Owner consent/authentication are **not** claimed; reviewer access does not create a duplicate Company or impersonate the MZM owner.
+          - ⚠️ Actual browser login remains a separate authenticated readback; provisioning verifies the stored reviewer credential hash/access link without exposing the password.
           - ✅ No synthetic lead/job/revenue/review was created. Real CRM leads currently tracked: ${LEADS}.
-          - Hermes internal CRM: ${BASE_URL}${CRM_PATH}
+          - Hermes reviewer CRM: ${BASE_URL}${CRM_PATH}
 
           Business outcomes remain UNKNOWN until real evidence-bearing CRM records exist.
           EOF
