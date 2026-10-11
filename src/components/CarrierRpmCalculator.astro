@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Calculator, Truck } from "@lucide/astro";
+import { ArrowRight, Calculator, Share2, Truck } from "@lucide/astro";
 
 interface Props {
   sectionId?: string;
@@ -78,6 +78,16 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
       </dl>
 
       <div class="rpm-sensitivity" data-output="sensitivity">Enter your assumptions and calculate the trip.</div>
+
+      <div class="rpm-share-panel">
+        <h3>Help another carrier compare trip economics.</h3>
+        <p>Share this free public calculator. Your entered rates, routes, costs, and results are not included in the link.</p>
+        <button type="button" class="button rpm-share-button" data-rpm-share-button>
+          <Share2 size={18} aria-hidden="true" /> Share free calculator
+        </button>
+        <p class="rpm-share-status" role="status" data-rpm-share-status aria-live="polite"></p>
+        <a class="rpm-share-direct" href="/logistics/resources/rpm-calculator/">Public calculator link</a>
+      </div>
       <p class="rpm-disclaimer">
         Estimate only. This tool is not accounting, tax, financial, legal, safety, insurance, regulatory, or investment advice and does not predict market rates, load availability, payment, utilization, profit, or revenue.
       </p>
@@ -95,6 +105,10 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
     const context = section?.dataset.rpmContext || "resource";
     const form = root.querySelector<HTMLFormElement>("[data-rpm-form]");
     const error = root.querySelector<HTMLElement>("[data-rpm-error]");
+    const shareButton = root.querySelector<HTMLButtonElement>("[data-rpm-share-button]");
+    const shareStatus = root.querySelector<HTMLElement>("[data-rpm-share-status]");
+    // The public owner is fixed; form entries and calculated amounts never enter the shared URL.
+    const publicShareUrl = "https://hermeslogisticsus.com/logistics/resources/rpm-calculator/?utm_source=website_share&utm_medium=referral&utm_campaign=carrier_rpm_tool";
     let started = false;
 
     const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
@@ -184,6 +198,30 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
       event.preventDefault();
       calculate(true);
     });
+    shareButton?.addEventListener("click", async () => {
+      if (!shareStatus) return;
+      try {
+        if (typeof navigator.share === "function") {
+          await navigator.share({
+            title: "Free Carrier RPM & Load Profitability Calculator",
+            text: "Compare loaded RPM, all-mile RPM, deadhead, and trip costs with your own assumptions.",
+            url: publicShareUrl,
+          });
+          shareStatus.textContent = "Public calculator link shared. Your trip assumptions were not included.";
+          trackEvent("rpm_calculator_share_action", { tool: "rpm_calculator", method: "native" });
+        } else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(publicShareUrl);
+          shareStatus.textContent = "Public calculator link copied. Your trip assumptions were not included.";
+          trackEvent("rpm_calculator_share_action", { tool: "rpm_calculator", method: "copy" });
+        } else {
+          shareStatus.textContent = "Copy the public calculator link shown below; your inputs stay on this page.";
+        }
+      } catch (error) {
+        shareStatus.textContent = error instanceof DOMException && error.name === "AbortError"
+          ? "Share cancelled. No calculator data was sent."
+          : "Sharing is unavailable. Use the public calculator link below.";
+      }
+    });
     calculate(false);
   });
 </script>
@@ -200,6 +238,11 @@ const { sectionId = "calculator", context = "resource" } = Astro.props;
   .rpm-field-grid input:focus,.rpm-field-grid input:focus-visible{border-color:var(--hermes-violet,#7c5cff);outline:3px solid color-mix(in srgb,var(--hermes-violet,#7c5cff) 18%,transparent);outline-offset:1px}
   .rpm-form-note,.rpm-disclaimer{color:var(--hermes-muted,#5f6674);font-size:.88rem;line-height:1.55}.rpm-form-note{margin:1rem 0}.rpm-calculate{width:100%;justify-content:center;border-radius:var(--hermes-radius-control,12px)}
   .rpm-error{margin:.8rem 0 0;color:var(--hermes-danger,#a4322e);font-weight:700}
+  .rpm-share-panel{margin-top:1rem;padding:1rem;border:1px solid var(--hermes-line-light,rgba(17,19,36,.12));border-radius:var(--hermes-radius-control,12px);background:var(--hermes-pearl,#f7f6f3)}
+  .rpm-share-panel h3{margin:0 0 .35rem;font-size:1rem}.rpm-share-panel p{margin:.35rem 0 .75rem;color:var(--hermes-muted,#5f6674);font-size:.88rem;line-height:1.55}
+  .rpm-share-button{display:inline-flex;align-items:center;gap:.55rem;min-height:44px}
+  .rpm-share-panel .rpm-share-status{min-height:1.25rem;margin:.5rem 0 .25rem;font-weight:650}
+  .rpm-share-direct{display:inline-block;font-size:.88rem;text-decoration:underline;text-underline-offset:3px}
   .rpm-primary-results{display:grid;gap:.75rem;margin-bottom:1rem}.rpm-primary-results>div{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;padding:.9rem 1rem;border:1px solid var(--hermes-line-light-soft,rgba(17,19,36,.08));border-radius:var(--hermes-radius-control,12px);background:color-mix(in srgb,var(--hermes-violet,#7c5cff) 6%,var(--hermes-pearl,#f7f6f3))}
   .rpm-primary-results span{color:var(--hermes-muted,#5f6674);font-size:.88rem;font-weight:700}.rpm-primary-results strong{color:var(--hermes-ink,#111324);font-size:clamp(1.05rem,2vw,1.35rem);text-align:right}
   .rpm-result-list{display:grid;margin:0}.rpm-result-list>div{display:flex;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--hermes-line-light-soft,rgba(17,19,36,.08))}.rpm-result-list dt{color:var(--hermes-muted,#5f6674)}.rpm-result-list dd{margin:0;color:var(--hermes-ink,#111324);font-weight:800;text-align:right}
