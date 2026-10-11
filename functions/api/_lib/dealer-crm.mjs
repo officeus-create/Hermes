@@ -1,4 +1,6 @@
 import { ensureHermesCompanyProfilesSchema } from "./hermes-company-profiles.mjs";
+import { businessRefForRecord, parseBusinessRef } from "./business-identity.mjs";
+import { getActiveCompanyMembership } from "./company-memberships.mjs";
 
 const CONTROL_CHARS = /[<>\u0000-\u001f\u007f]/g;
 const LEAD_STAGES = new Set(["new", "contacted", "qualified", "appointment", "won", "lost"]);
@@ -204,12 +206,67 @@ export async function requireDealerCompany(request, env) {
   if (!specialist) return { error: { status: 401, code: "authentication_required" } };
   await ensureHermesCompanyProfilesSchema(env.DB);
   await ensureDealerCrmSchema(env.DB);
-  const company = await env.DB.prepare(
-    "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
+
+  const url = new URL(request.url);
+  const requestedRaw = String(url.searchParams.get("business_ref") || "").trim();
+  const requestedRef = requestedRaw ? parseBusinessRef(requestedRaw) : null;
+  if (requestedRaw && (!requestedRef || requestedRef.namespace !== "company")) {
+    return { error: { status: 400, code: "invalid_business_ref" } };
+  }
+
+  const ownedCompany = await env.DB.prepare(
+    "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? AND company_type = 'dealer' LIMIT 1",
   ).bind(specialist.id).first();
-  if (!company) return { error: { status: 409, code: "dealer_company_required" } };
-  if (String(company.company_type) !== "dealer") return { error: { status: 403, code: "dealer_company_required" } };
-  return { specialist, company };
+  const ownedBusinessRef = ownedCompany ? businessRefForRecord("company", ownedCompany) : null;
+
+  if (ownedCompany && (!requestedRef || requestedRef.ref === ownedBusinessRef)) {
+    return {
+      specialist,
+      company: ownedCompany,
+      businessRef: ownedBusinessRef,
+      dataOwnerId: String(ownedCompany.owner_specialist_id),
+      membership: {
+        specialistId: String(specialist.id),
+        companyId: String(ownedBusinessRef),
+        role: "owner",
+        active: true,
+      },
+      accessSource: "owner_relation",
+      grantSource: "hermes_company_profiles.owner_specialist_id",
+    };
+  }
+
+  if (!requestedRef) {
+    return { error: { status: 403, code: "dealer_business_scope_required" } };
+  }
+
+  const membership = await getActiveCompanyMembership(env.DB, {
+    specialistId: specialist.id,
+    businessRef: requestedRef.ref,
+  });
+  if (!membership) return { error: { status: 403, code: "dealer_membership_required" } };
+
+  const company = await env.DB.prepare(
+    "SELECT * FROM hermes_company_profiles WHERE id = ? AND company_type = 'dealer' LIMIT 1",
+  ).bind(requestedRef.native_id).first();
+  if (!company) return { error: { status: 404, code: "dealer_company_not_found" } };
+
+  return {
+    specialist,
+    company,
+    businessRef: requestedRef.ref,
+    dataOwnerId: String(company.owner_specialist_id),
+    membership: {
+      specialistId: membership.specialistId,
+      companyId: membership.companyId,
+      ...(membership.workspaceId ? { workspaceId: membership.workspaceId } : {}),
+      role: membership.role,
+      active: membership.active,
+    },
+    accessSource: "delegated_membership",
+    grantSource: membership.grantSource,
+    membershipId: membership.membershipId,
+  };
 }
 
 /**
