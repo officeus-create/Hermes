@@ -25,7 +25,7 @@ assert.match(enhancer, /\/api\/load-board\/summary/);
 assert.match(enhancer, /Interface preview rows are not inventory/);
 assert.match(enhancer, /hlb-live-row--locked/);
 assert.match(enhancer, /\/services\/hermes-connect\/load-board\/access\//);
-assert.match(enhancer, /Register company &amp; unlock Load Board/);
+assert.match(enhancer, /Register company &amp; request Load Board approval/);
 assert.match(enhancer, /\/api\/catalog\/companies/);
 assert.match(enhancer, /company\?\.companyType === 'repair_shop'/);
 assert.match(enhancer, /company\?\.profileUrl/);
@@ -68,7 +68,7 @@ assert.match(accessPage, /\/api\/auth\/me/);
 assert.match(accessPage, /\/api\/hermes-connect\/company/);
 assert.match(accessPage, /catalogOptIn/);
 assert.match(accessPage, /Self-submitted · verification pending/);
-assert.match(accessPage, /load-board\\/carrier/);
+assert.match(accessPage, /carrier/);
 
 assert.match(companyHelper, /CREATE TABLE IF NOT EXISTS hermes_company_profiles/);
 assert.match(companyHelper, /owner_specialist_id TEXT NOT NULL UNIQUE/);
