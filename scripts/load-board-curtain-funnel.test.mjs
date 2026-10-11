@@ -61,14 +61,14 @@ for (const path of [
 ]) assert.ok(enhancer.includes(path), `Missing Load Board discovery link: ${path}`);
 
 assert.match(accessPage, /robots="noindex,nofollow"/);
-assert.match(accessPage, /One Hermes account\. One company profile\. Load Board unlocked\./);
+assert.match(accessPage, /Access matched to your role/);
 assert.match(accessPage, /\/api\/auth\/register/);
 assert.match(accessPage, /\/api\/auth\/login/);
 assert.match(accessPage, /\/api\/auth\/me/);
 assert.match(accessPage, /\/api\/hermes-connect\/company/);
 assert.match(accessPage, /catalogOptIn/);
 assert.match(accessPage, /Self-submitted · verification pending/);
-assert.match(accessPage, /\/load-board\/\?access=unlocked#live-marketplace/);
+assert.match(accessPage, /load-board\\/carrier/);
 
 assert.match(companyHelper, /CREATE TABLE IF NOT EXISTS hermes_company_profiles/);
 assert.match(companyHelper, /owner_specialist_id TEXT NOT NULL UNIQUE/);
@@ -116,9 +116,9 @@ for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
   assert.match(api, /specialistHasLoadBoardAccess/);
   assert.match(api, /carrier_only/);
 }
-assert.match(activeApi, /company_registration_unlocks_access: true/);
-assert.match(opportunitiesApi, /company_registration_unlocks_access: true/);
-assert.match(dispatchPlanApi, /company_registration_unlocks_access: true/);
+assert.match(activeApi, /company_registration_unlocks_access: false/);
+assert.match(opportunitiesApi, /company_registration_unlocks_access: false/);
+assert.match(dispatchPlanApi, /company_registration_unlocks_access: false/);
 
 assert.equal(releaseDelta.additions?.[0]?.route, "/services/hermes-connect/load-board/access/");
 assert.equal(releaseDelta.additions?.[0]?.indexability, "noindex");
