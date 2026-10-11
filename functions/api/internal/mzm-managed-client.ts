@@ -12,7 +12,7 @@ const PROFILE_ID = "home-service-managed-profile:mzm-junk-removal";
 const DATA_OWNER_ID = "hermes-managed:mzm-junk-removal";
 const SLUG = "mzm-junk-removal";
 const MANAGEMENT_MODE = "hermes_managed";
-const PUBLICATION_BASIS = "owner_consent_pending";
+const PUBLICATION_BASIS = "hermes_managed_public_facts";
 const privateHeaders = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" };
 
 async function ensureReceiptSchema(db: any) {
@@ -106,8 +106,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     mzmJunkRemovalClient.base.state,
     mzmJunkRemovalClient.website,
     null,
-    0,
-    "managed_private",
+    1,
+    "verified_public",
     0,
     createdAt,
     now,
@@ -165,6 +165,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const expectedServicesJson = JSON.stringify(mzmJunkRemovalClient.services);
   const expectedServiceAreasJson = JSON.stringify(mzmJunkRemovalClient.serviceAreas);
   const persistedZero = (value: unknown) => value === 0 || value === "0";
+  const persistedOne = (value: unknown) => value === 1 || value === "1";
   const realLeadsTracked = leadCount?.count;
   const validLeadCount = typeof realLeadsTracked === "number" && Number.isInteger(realLeadsTracked) && realLeadsTracked >= 0;
   const validCompany =
@@ -182,8 +183,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     String(company?.country_code || "") === mzmJunkRemovalClient.base.countryCode &&
     String(company?.timezone || "") === mzmJunkRemovalClient.base.timezone &&
     String(company?.public_source_ref || "") === mzmJunkRemovalClient.publicEvidence.officialWebsite.url &&
-    persistedZero(company?.catalog_opt_in) &&
-    String(company?.catalog_status || "") === "managed_private" &&
+    persistedOne(company?.catalog_opt_in) &&
+    String(company?.catalog_status || "") === "verified_public" &&
     persistedZero(company?.load_board_access) &&
     String(company?.management_mode || "") === MANAGEMENT_MODE &&
     String(company?.catalog_publication_basis || "") === PUBLICATION_BASIS;
@@ -217,12 +218,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     operation: OPERATION_ID,
     business_name: mzmJunkRemovalClient.companyName,
-    public_profile_path: null,
+    public_profile_path: `/businesses/connect/company/${SLUG}/`,
     crm_workspace_path: `/services/hermes-connect/home-services/workspace/?managed=${SLUG}`,
     management_mode: MANAGEMENT_MODE,
     publication_basis: PUBLICATION_BASIS,
-    catalog_status: "managed_private",
-    catalog_publication_eligible: false,
+    catalog_status: "verified_public",
+    catalog_publication_eligible: true,
     catalog_owner_consent_claimed: false,
     owner_authentication_claimed: false,
     internal_operator_capability: "HERMES_INTERNAL_OWNER",
