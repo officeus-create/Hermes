@@ -70,8 +70,16 @@ export async function onRequestGet({ env, params }: { env: Env; params: { slug?:
   };
   const serviceList = services.map((service) => `<li>${esc(service)}</li>`).join("");
   const areaList = serviceAreas.map((area) => `<li>${esc(area)}</li>`).join("");
-  const websiteAction = website
-    ? `<a class="btn${managedByHermes ? " primary" : ""}"${mzmExperience ? ' data-catalog-event="website_click"' : ""} href="${esc(website)}" target="_blank" rel="${mzmExperience ? "noopener" : "nofollow noopener"}">Official website ↗</a>`
+  const websiteActionHref = website && mzmExperience ? (() => {
+    const url = new URL(website);
+    url.searchParams.set("utm_source", "hermeslogisticsus.com");
+    url.searchParams.set("utm_medium", "referral");
+    url.searchParams.set("utm_campaign", "mzm_catalog_profile");
+    url.searchParams.set("utm_content", "official_website");
+    return url.toString();
+  })() : website;
+  const websiteAction = websiteActionHref
+    ? `<a class="btn${managedByHermes ? " primary" : ""}"${mzmExperience ? ' data-catalog-event="website_click"' : ""} href="${esc(websiteActionHref)}" target="_blank" rel="${mzmExperience ? "noopener" : "nofollow noopener"}">Official website ↗</a>`
     : "";
   const ownerAction = managedByHermes ? "" : `<a class="btn primary" href="/services/hermes-connect/home-services/access/?mode=login">Owner Home Services CRM login</a>`;
   const phoneAction = phoneDial ? `<a class="btn"${mzmExperience ? ' data-catalog-event="call_click"' : ""} href="tel:${esc(phoneDial)}">Call ${esc(phone)}</a>` : "";
