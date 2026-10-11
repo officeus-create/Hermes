@@ -87,6 +87,18 @@ Do not publish one page per question, one client × platform page, or one city/e
 
 For AI visibility / LLMO, prefer concise source-bounded answers, clear entity/context relationships, structured headings, truthful FAQ where appropriate, and direct links to the canonical product/service/entity owner. Do not invent expertise signals, customer outcomes, ratings, or unsupported claims.
 
+## Growth learning and evidence-to-client loop (12 October 2026)
+
+Every historical insight and external-marketer practice must resolve to an existing owner and a decision, not a new audit or content factory. Classify it as `VERIFIED_SUCCESS | VERIFIED_FAILURE | REUSABLE_LESSON | OPEN_DEFECT | SUPERSEDED | EXPERIMENT | ACCESS_GAP`. Include source, date/window, affected canonical page or business lane, evidence, current issue/PR, commercial hypothesis and next action. Never reopen a superseded issue based solely on old chat text.
+
+Prioritization is two-dimensional: **urgency × business impact**, then estimate fix effort. Fix a small bounded defect immediately only when current ownership, exact production impact and regression scope are clear; route larger fixes to the existing owner/backlog. A critical major incident is not deferred merely because it is large. Do not write to concurrent active owner branches.
+
+Preserve audience attribution: U.S. paying carriers/dealers/businesses and international Academy/recruiting candidates are separate cohorts. Historic country/language social-post views establish a content hypothesis, not U.S. commercial demand, ranking lift or customer proof. For each content experiment track account, market, intent, canonical destination, publish verification, UTM, real site sessions, CTA, receiver confirmation, human qualification, opportunity and business result. `VIEWS != SESSIONS != LEADS != REVENUE`; synthetic, QA and internal traffic are separate. Provider acceptance is not proof of published visibility.
+
+Daily loop: `READ CANONICAL STATE -> PICK ONE COMMERCIAL BOTTLENECK -> SAFE ACTION -> EXACT OWNER/PRODUCTION PROOF -> LEARN -> NEXT`. Evaluate daily operational failures, but use comparable settled 7/28-day windows for search response. Independent experts' advice is a candidate experiment unless independently verified for Hermes.
+
+Training the installed SEO Director plugin requires reading its **current release and touched files**, applying the smallest rule/evaluation delta, guarded update, and post-release readback. A GitHub note or PR **does not** prove the plugin release was updated. Preserve existing safety boundaries, current One Brain router, no automated outbound email, and no dispatcher outreach.
+
 ## Synthetic traffic
 
 Hermes synthetic traffic includes CI, GitHub Actions, Playwright, release verifiers, headless browsers, Codex/Claude/ChatGPT production checks, uptime probes, API smoke tests, and other machine-generated Hermes QA traffic.
