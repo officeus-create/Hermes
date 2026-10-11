@@ -51,27 +51,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "authentication_required" });
   await ensureHermesCompanyProfilesSchema(env.DB);
-  // Any material carrier identity change invalidates previously reviewed access.
-  // Ordinary self-registration or role edits must never inherit a past carrier approval.
-  if (existing && (
-    existing.company_type !== companyType ||
-    String(existing.company_name || "") !== companyName ||
-    String(existing.authority_number || "") !== authorityNumber ||
-    String(existing.city || "") !== city ||
-    String(existing.state || "") !== state
-  )) {
-    await env.DB.prepare(`
-      CREATE TABLE IF NOT EXISTS hermes_carrier_board_entitlements (
-        company_id TEXT PRIMARY KEY,
-        status TEXT NOT NULL CHECK(status IN ('active','revoked')),
-        reviewed_by_specialist_id TEXT NOT NULL,
-        reviewed_at TEXT NOT NULL,
-        note TEXT
-      )
-    `).run();
-    await env.DB.prepare("UPDATE hermes_carrier_board_entitlements SET status='revoked',reviewed_at=? WHERE company_id=?")
-      .bind(now,id).run();
-  }
   const row = await env.DB.prepare(
     "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
@@ -190,6 +169,27 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     authorityNumber || null, catalogOptIn ? 1 : 0, loadBoardAccess, createdAt, now,
   ).run();
 
+  // Any material carrier identity change invalidates previously reviewed access.
+  // Ordinary self-registration or role edits must never inherit a past carrier approval.
+  if (existing && (
+    existing.company_type !== companyType ||
+    String(existing.company_name || "") !== companyName ||
+    String(existing.authority_number || "") !== authorityNumber ||
+    String(existing.city || "") !== city ||
+    String(existing.state || "") !== state
+  )) {
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS hermes_carrier_board_entitlements (
+        company_id TEXT PRIMARY KEY,
+        status TEXT NOT NULL CHECK(status IN ('active','revoked')),
+        reviewed_by_specialist_id TEXT NOT NULL,
+        reviewed_at TEXT NOT NULL,
+        note TEXT
+      )
+    `).run();
+    await env.DB.prepare("UPDATE hermes_carrier_board_entitlements SET status='revoked',reviewed_at=? WHERE company_id=?")
+      .bind(now,id).run();
+  }
   const row = await env.DB.prepare(
     "SELECT * FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
   ).bind(specialist.id).first();
