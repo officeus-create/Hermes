@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { repairCatalogPublication } from "../functions/api/_lib/repair-catalog-publication.mjs";
-import { addRepairCatalogLinks, onRequestGet as index } from "../functions/businesses/index.ts";
+import { addRepairCatalogLinks, addHomeServiceCatalogLinks, mzmCatalogPublication, onRequestGet as index } from "../functions/businesses/index.ts";
 import { onRequestGet as profile } from "../functions/businesses/connect/repair-shop/[slug].ts";
 import { onRequestGet as sitemap } from "../functions/sitemap-connect-catalog.xml.ts";
 import { onRequestGet as companies } from "../functions/api/catalog/companies.ts";
@@ -57,6 +57,48 @@ for (const candidate of [row, { ...row, catalog_opt_in: 0 }, { ...row, slug: "ba
     assert.doesNotMatch(detailHtml, /private-owner|owner_specialist_id/);
   } else assert.match(detail.headers.get("X-Robots-Tag"), /noindex/);
 }
+const mzmRow = {
+  company_name: "MZM Junk Removal",
+  slug: "mzm-junk-removal",
+  city: "Roseville",
+  state: "CA",
+  catalog_opt_in: 1,
+  catalog_status: "verified_public",
+  management_mode: "hermes_managed",
+  catalog_publication_basis: "hermes_managed_public_facts",
+};
+assert.equal(mzmCatalogPublication(mzmRow).eligible, true);
+assert.equal(mzmCatalogPublication(mzmRow).path, "/businesses/connect/company/mzm-junk-removal/");
+for (const ineligible of [
+  { ...mzmRow, catalog_opt_in: 0 },
+  { ...mzmRow, catalog_status: "managed_private" },
+  { ...mzmRow, management_mode: "owner_managed" },
+  { ...mzmRow, catalog_publication_basis: "owner_consent_pending" },
+  { ...mzmRow, catalog_publication_basis: "hermes_managed_client_public_facts" },
+  { ...mzmRow, slug: "other-home-service" },
+]) assert.equal(mzmCatalogPublication(ineligible).eligible, false);
+
+const mzmHtml = addHomeServiceCatalogLinks(html, [mzmRow, mzmRow]);
+assert.equal(mzmHtml.match(/data-runtime-home-service-links/g)?.length, 1);
+assert.equal(mzmHtml.match(/href="\/businesses\/connect\/company\/mzm-junk-removal\/"/g)?.length, 1);
+assert.match(mzmHtml, /MZM Junk Removal — Roseville, CA/);
+assert.equal(mzmHtml.match(/data-catalog-card/g)?.length, html.match(/data-catalog-card/g)?.length);
+assert.equal(addHomeServiceCatalogLinks(mzmHtml, [mzmRow]), mzmHtml);
+assert.equal(addHomeServiceCatalogLinks(html, [{ ...mzmRow, catalog_opt_in: 0 }]), html);
+
+const mzmEnv = { DB: { prepare(sql) { return {
+  async all() {
+    if (sql.includes("FROM repair_shops")) return { results: [] };
+    if (sql.includes("FROM hermes_company_profiles")) return { results: [mzmRow] };
+    return { results: [] };
+  },
+}; } } };
+const mzmRoot = await index({ env: mzmEnv, next: staticResponse });
+const mzmRootHtml = await mzmRoot.text();
+assert.match(mzmRootHtml, /data-runtime-home-service-links/);
+assert.match(mzmRootHtml, /href="\/businesses\/connect\/company\/mzm-junk-removal\/"/);
+assert.doesNotMatch(mzmRootHtml, /owner_specialist_id|customerPhone|finalAmountCents/);
+
 assert.equal(addRepairCatalogLinks(html, [{ ...row, slug: "other-opted-in" }]), html);
 assert.equal(repairCatalogPublication({ ...row, slug: "other-opted-in" }).eligible, true);
 const escaped = addRepairCatalogLinks(html, [{ ...row, name: '</a><script>alert("x")</script>' }, row]);
