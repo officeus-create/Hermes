@@ -448,6 +448,41 @@ const routeFromHtmlPath = (path) => {
   return `/${path}`;
 };
 const htmlTargets = new Set(allHtmlFiles.map(routeFromHtmlPath));
+
+// Static output can legitimately link to Cloudflare Pages Functions that do not
+// emit dist HTML. Accept only source-backed GET routes discovered from functions/;
+// unknown paths must still fail the broken-link gate.
+const dynamicInternalRoutes = [];
+async function collectGetFunctionRoutes(directory, relative = "") {
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === "ENOENT") return;
+    throw error;
+  }
+  for (const entry of entries) {
+    if (entry.name.startsWith("_")) continue;
+    const sourceRelative = join(relative, entry.name);
+    if (entry.isDirectory()) {
+      await collectGetFunctionRoutes(join(directory, entry.name), sourceRelative);
+      continue;
+    }
+    if (!/\.(?:js|ts)$/.test(sourceRelative)) continue;
+    const source = await readFile(join(directory, entry.name), "utf8");
+    if (!/export\s+(?:(?:const|let|var)\s+onRequestGet\b|(?:async\s+)?function\s+onRequestGet\b)/.test(source)) continue;
+    const segments = sourceRelative.replace(/\.(?:js|ts)$/, "").split("/");
+    if (segments.at(-1) === "index") segments.pop();
+    const pattern = segments.map((segment) => {
+      if (/^\[\[.*\]\]$/.test(segment)) return ".*";
+      if (/^\[.*\]$/.test(segment)) return "[^/]+";
+      return segment.replace(/[.*+?^$()|[\\]\\\\{}]/g, (value) => "\\\\" + value);
+    }).join("/");
+    dynamicInternalRoutes.push(new RegExp("^/" + pattern + "/?$"));
+  }
+}
+await collectGetFunctionRoutes(join(root, "functions"));
+
 const brokenInternalLinks = [];
 for (const [pageName, pageHtml] of generatedPages) {
   const pageUrl = new URL(routeFromHtmlPath(pageName), "https://hermeslogisticsus.com");
@@ -473,7 +508,9 @@ for (const [pageName, pageHtml] of generatedPages) {
       : target.pathname.endsWith(".html")
         ? target.pathname
         : `${target.pathname}/`;
-    if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);
+    if (htmlTargets.has(targetPath)) continue;
+    if (dynamicInternalRoutes.some((pattern) => pattern.test(target.pathname))) continue;
+    brokenInternalLinks.push(`${pageName} -> ${href}`);
   }
 }
 if (brokenInternalLinks.length) {
