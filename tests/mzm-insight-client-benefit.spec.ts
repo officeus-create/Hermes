@@ -68,6 +68,12 @@ test("MZM Insight keeps client ownership, visible evidence, and bounded referral
   }
 
   await expect(page.locator("main")).toContainText("Ranking, leads and revenue stay UNKNOWN");
+  await expect(page.locator("main")).toContainText("That publication authority does not mean MZM owner consent");
+  await expect(page.locator("main")).not.toContainText("after explicit owner consent");
+  await expect(page.getByRole("link", { name: /MZM Junk Removal in Hermes Business Catalog/i })).toHaveAttribute(
+    "href",
+    "/businesses/connect/company/mzm-junk-removal/",
+  );
   await expect(page.locator("main")).toContainText("A verified source supplies facts or proof points.");
   await expect(page.locator("main")).not.toContainText("A social post supplies an idea or proof point.");
 
