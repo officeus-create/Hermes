@@ -225,7 +225,7 @@ import { mzmHomeServiceCrmSampleLeads } from "../../../../../data/mzm-home-servi
         ["self_submitted","verified_public"].includes(dashboard?.company?.catalogStatus));
       const managedPublished=Boolean(dashboard?.company?.managementMode==="hermes_managed" &&
         dashboard?.company?.catalogStatus==="verified_public" &&
-        dashboard?.company?.publicationBasis==="hermes_managed_client_public_facts");
+        dashboard?.company?.publicationBasis==="hermes_managed_public_facts");
       const isPublished=Boolean(dashboard?.company?.slug && dashboard?.profile?.id && (ownerPublished||managedPublished));
       if(catalog){catalog.hidden=!isPublished;if(isPublished)catalog.href="/businesses/connect/company/"+encodeURIComponent(dashboard.company.slug)+"/";}
       if(privateNotice){privateNotice.hidden=isPublished;privateNotice.textContent=dashboard?.company?.managementMode==="hermes_managed"
