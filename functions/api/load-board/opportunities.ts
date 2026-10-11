@@ -58,7 +58,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (equipment) { conditions.push("r.equipment = ?"); bindings.push(equipment); }
   if (originState) { conditions.push("r.origin_state = ?"); bindings.push(originState); }
   if (destinationState) { conditions.push("r.destination_state = ?"); bindings.push(destinationState); }
-  if (provider) { conditions.push("s.provider = ?"); bindings.push(provider); }
+  if (provider) { conditions.push("r.visibility = 'public' AND s.provider = ?"); bindings.push(provider); }
   if (minRate !== null) { conditions.push("r.rate_amount >= ?"); bindings.push(minRate); }
   if (minRpm !== null) { conditions.push("r.rate_per_mile >= ?"); bindings.push(minRpm); }
   if (maxDeadhead !== null) { conditions.push("(r.deadhead_miles IS NULL OR r.deadhead_miles <= ?)"); bindings.push(maxDeadhead); }
