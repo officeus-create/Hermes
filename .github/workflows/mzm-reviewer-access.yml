@@ -81,6 +81,26 @@ jobs:
             || { echo "Reviewer access boundary failed."; exit 1; }
           echo "::add-mask::${PASSWORD}"
 
+          COOKIE_JAR="${TMP}/reviewer.cookies"
+          LOGIN_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/login.json" -w '%{http_code}' -c "${COOKIE_JAR}" \
+            -X POST "${BASE_URL}/api/auth/login" \
+            -H 'Content-Type: application/json' \
+            --data-binary "$(jq -cn --arg email "${EMAIL}" --arg password "${PASSWORD}" '{email:$email,password:$password}')" || printf 000)"
+          [ "${LOGIN_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/login.json" 2>/dev/null)" = true ] \
+            || { echo "Reviewer production login readback failed safely with HTTP ${LOGIN_HTTP}."; exit 1; }
+
+          CRM_HTTP="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "${TMP}/crm.json" -w '%{http_code}' -b "${COOKIE_JAR}" \
+            "${BASE_URL}/api/hermes-connect/home-services/crm?managed=mzm-junk-removal" || printf 000)"
+          [ "${CRM_HTTP}" = 200 ] && [ "$(jq -r '.success // false' "${TMP}/crm.json" 2>/dev/null)" = true ] \
+            || { echo "Reviewer CRM readback failed safely with HTTP ${CRM_HTTP}."; exit 1; }
+          [ "$(jq -r '.company.slug // empty' "${TMP}/crm.json")" = "mzm-junk-removal" ] \
+            && [ "$(jq -r '.company.accessMode // empty' "${TMP}/crm.json")" = "hermes_managed_reviewer" ] \
+            && [ "$(jq -r '.company.accessRole // empty' "${TMP}/crm.json")" = "viewer" ] \
+            && [ "$(jq -r 'if (.company.readOnly | type) == "boolean" then .company.readOnly else "__invalid__" end' "${TMP}/crm.json")" = true ] \
+            || { echo "Reviewer CRM scope/read-only boundary failed."; exit 1; }
+
           jq -n \
             --arg email "${EMAIL}" \
             --arg password "${PASSWORD}" \
@@ -106,7 +126,7 @@ jobs:
             -in "${TMP}/credentials.json" \
             -out "${TMP}/mzm-reviewer-credentials.enc"
 
-          rm -f "${TMP}/credentials.json" "${TMP}/response.json" "${TMP}/public.pem"
+          rm -f "${TMP}/credentials.json" "${TMP}/response.json" "${TMP}/login.json" "${TMP}/crm.json" "${TMP}/reviewer.cookies" "${TMP}/public.pem"
           echo "credential_file=${TMP}/mzm-reviewer-credentials.enc" >> "${GITHUB_OUTPUT}"
 
       - name: Upload encrypted one-time credential receipt
@@ -128,6 +148,7 @@ jobs:
           gh issue comment 1799 --repo "${GITHUB_REPOSITORY}" --body "## MZM reviewer access — CREATED
 
           - ✅ Scoped read-only reviewer account created or credential rotated for the existing MZM managed Company.
+          - ✅ Production login/session + MZM CRM readback passed for the scoped reviewer; CRM reports `hermes_managed_reviewer` / `viewer` / `readOnly=true`.
           - ✅ No MZM owner authentication is claimed.
           - ✅ Credential receipt is RSA-encrypted to the one-time public key supplied by the authorized \`officeus-create\` trigger and stored in Actions artifact \`${ARTIFACT_ID}\` for 1 day.
           - ✅ No plaintext password or private key is written to this issue, repository, or workflow log.
