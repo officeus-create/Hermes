@@ -56,6 +56,10 @@ for(const key of ["active","opportunities","plan"]){
  assert.match(scripted[key],/redistribution_permission/);
  assert.match(scripted[key],/carrier_only/);
 }
+assert.match(scripted.active,/r\\.record_type = 'capacity' AND r\\.visibility = 'public'/,
+  "Guests and brokers cannot read any live LOAD record through the active feed.");
+assert.match(scripted.opportunities,/no freight inventory for guest or broker/,
+  "Guests and brokers cannot read real LOAD records through opportunities.");
 assert.match(scripted.interest,/carrierPost/);
 assert.match(scripted.dealers,/rights_attested/);
 
