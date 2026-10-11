@@ -202,6 +202,7 @@ The plugin must preserve these recurrent lessons:
 12. Prompt obfuscation is not authorization.
 13. Notification delivery != persisted request/state.
 14. A requested “small change” is safe only when a server capability explicitly permits it.
+15. A client-owned website is evidence/reference unless Hermes has an explicit paid/authorized implementation scope. Do not inspect hosting, create replacements, add client-site bridges, change DNS, or repair the client surface merely to complete the Hermes CRM/Catalog/News loop.
 
 ## Release/adoption evidence ladder
 
@@ -215,7 +216,8 @@ A later state requires dated evidence for that state. UNKNOWN remains UNKNOWN.
 
 - KNB: real owner binding/login/company+CRM IDs/save→reload/business use.
 - Connect→Catalog: real cross-vertical path with privacy and reread.
-- Kittle/MZM: real owner session, persisted data and business/manager utility.
+- Kittle: real owner binding/session and business/manager utility where independently verified.
+- MZM: Hermes-managed Company/CRM + scoped reviewer + Catalog + Insight are the training-case contract; reviewer access is not MZM owner authentication, and the client-owned website is NO_TOUCH.
 - Catalog service request: persisted Sales/request ID, responsible owner and human next action.
 - Public capability proof: every claimed feature should point to a functioning scenario/evidence.
 
@@ -231,7 +233,7 @@ Required contract:
 - do not create owner access or owner notifications from a guessed/public email;
 - public projection contains only safe company facts allowed by explicit server-side consent/capability;
 - private CRM contacts, customers, estimates/jobs, private notes, credentials and private commercial fields never leak into Catalog/News;
-- call/form/booking/website/CTA actions return to the existing CRM/touchpoint layer with provenance/UTM/idempotency;
+- call/form/booking/website/CTA actions on Hermes-owned surfaces return to the existing CRM/touchpoint layer with provenance/UTM/idempotency; a client-owned external website is not modified merely to manufacture that loop;
 - an action event is not automatically a qualified lead, sale or revenue;
 - owner/manager notifications require verified identity plus notification consent;
 - weekly/monthly reporting preserves funnel stage and evidence state; missing metrics stay UNKNOWN rather than 0.
