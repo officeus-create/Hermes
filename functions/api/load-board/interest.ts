@@ -23,12 +23,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await ensureLoadBoardSchema(env.DB);
 
   const company = await env.DB.prepare(`
-    SELECT id, load_board_access
+    SELECT id, load_board_access, company_type
     FROM hermes_company_profiles
     WHERE owner_specialist_id = ?
     LIMIT 1
   `).bind(specialist.id).first();
-  if (!company || Number(company.load_board_access) !== 1) {
+  if (!company || Number(company.load_board_access) !== 1 || !new Set(['carrier', 'owner_operator', 'fleet', 'dispatcher']).has(String(company.company_type || ''))) {
     return jsonResponse(403, { success: false, error: "company_load_board_access_required" });
   }
 
