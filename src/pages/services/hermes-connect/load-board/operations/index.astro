@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import "../../../../../styles/features/carrier-dispatch-workspaces.css";
+---
+<BaseLayout title="Hermes Dispatch Access Administration" description="Internal Hermes operations approval and assigned-dispatcher roster." robots="noindex,nofollow">
+<SiteHeader theme="light" activePath="/load-board/"/>
+<main class="wsp-shell" id="main-content">
+<header class="wsp-hero"><p class="wsp-label">Hermes Logistics / Internal operations</p><h1>Carrier access and dispatcher assignments</h1><p>Only a verified internal owner may approve carrier accounts or assign a dispatcher. This action does not contact carriers or send emails.</p></header>
+<p id="ops-state" role="status" aria-live="polite" class="wsp-status">Verifying internal owner capability…</p>
+<div class="wsp-grid"><section class="wsp-panel"><h2>Carrier companies</h2><div id="ops-companies" class="wsp-list"><p class="wsp-loader">Loading approval queue…</p></div></section>
+<aside><section class="wsp-panel"><h2>Assign verified dispatcher</h2><form id="ops-assignment" class="wsp-form">
+<label class="wsp-field">Carrier company ID<input name="companyId" required placeholder="Choose company from list"/></label>
+<label class="wsp-field">Dispatcher specialist ID<input name="dispatcherId" required placeholder="Existing verified Hermes identity"/></label>
+<label class="wsp-field">Verified business phone<input name="businessPhone" type="tel" required placeholder="+1 ..."/></label>
+<label class="wsp-field"><span><input type="checkbox" name="identityVerified" required/> I verified this dispatcher's employment/identity and permission to handle this carrier.</span></label>
+<label class="wsp-field"><span><input type="checkbox" name="businessPhoneVerified" required/> I independently verified the business phone number.</span></label>
+<button type="submit" class="wsp-btn">Assign dispatcher</button></form></section>
+<section class="wsp-panel"><p class="wsp-notice">An account registration does not grant access. Legal and operational approvals still apply to actual freight assignments.</p></section></aside></div>
+</main><script src="/scripts/workspaces/dispatch-admin.js" defer></script>
+</BaseLayout>
