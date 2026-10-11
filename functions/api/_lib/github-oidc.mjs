@@ -6,7 +6,7 @@ const EXPECTED_REF = "refs/heads/main";
 const REMINDER_IDENTITY = {
   audience: "hermes-connect-weekly-inactivity-reminders",
   workflowRef: "officeus-create/Hermes/.github/workflows/hermes-connect-weekly-inactivity-reminders.yml@refs/heads/main",
-  allowedEvents: new Set(["schedule", "workflow_dispatch"]),
+  allowedEvents: new Set(["workflow_dispatch"]),
 };
 
 const CABINET_AUDIT_IDENTITY = {

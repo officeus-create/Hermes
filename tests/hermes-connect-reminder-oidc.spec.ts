@@ -10,7 +10,7 @@ const baseClaims = {
   repository: "officeus-create/Hermes",
   ref: "refs/heads/main",
   workflow_ref: "officeus-create/Hermes/.github/workflows/hermes-connect-weekly-inactivity-reminders.yml@refs/heads/main",
-  event_name: "schedule",
+  event_name: "workflow_dispatch",
   iat: Math.floor(now.getTime() / 1000) - 30,
   nbf: Math.floor(now.getTime() / 1000) - 30,
   exp: Math.floor(now.getTime() / 1000) + 300,
@@ -37,9 +37,9 @@ const mzmManagedClientClaims = {
   event_name: "issue_comment",
 };
 
-test("weekly reminder scheduler accepts only the expected GitHub Actions identity", async () => {
+test("weekly reminder runner accepts only the explicit manual GitHub Actions identity", async () => {
   expect(oidc.validateGitHubOidcClaims(baseClaims, now)).toBe(true);
-  expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "workflow_dispatch" }, now)).toBe(true);
+  expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "schedule" }, now)).toBe(false);
 });
 
 test("weekly reminder scheduler rejects wrong audience, repository, ref, workflow, or event", async () => {
@@ -48,6 +48,15 @@ test("weekly reminder scheduler rejects wrong audience, repository, ref, workflo
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, ref: "refs/heads/feature" }, now)).toBe(false);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, workflow_ref: "officeus-create/Hermes/.github/workflows/other.yml@refs/heads/main" }, now)).toBe(false);
   expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "pull_request" }, now)).toBe(false);
+  expect(oidc.validateGitHubOidcClaims({ ...baseClaims, event_name: "schedule" }, now)).toBe(false);
+});
+
+test("outbound reminder workflow is manual-only and requires explicit approval", async () => {
+  const workflow = await readFile(".github/workflows/hermes-connect-weekly-inactivity-reminders.yml", "utf8");
+  expect(workflow).toContain("workflow_dispatch:");
+  expect(workflow).toContain("confirm_outbound:");
+  expect(workflow).toContain("if: ${{ inputs.confirm_outbound == true }}");
+  expect(workflow).not.toMatch(/\n\s+schedule:/);
 });
 
 test("weekly reminder scheduler rejects expired or implausibly old/future tokens", async () => {
