@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import "../../../../../styles/features/carrier-dispatch-workspaces.css";
+---
+<BaseLayout title="Dealer & Shipper Workspace | Hermes Logistics" description="Private dealer and shipper transport request management. Submit vehicle loads for Hermes dispatch review." robots="noindex,nofollow">
+<SiteHeader theme="light" activePath="/load-board/"/>
+<main class="wsp-shell" id="main-content">
+<header class="wsp-hero"><p class="wsp-label">Hermes Logistics / Dealer & Shipper</p><h1>Transport requests, in one place.</h1>
+<p>Submit a shipment opportunity with your permission to share it inside the restricted Hermes carrier network. Submission never books a carrier or exposes your contacts to carriers or brokers.</p></header>
+<nav class="wsp-nav"><a href="/services/hermes-connect/load-board/carrier/">Carrier</a><a href="/services/hermes-connect/load-board/dispatcher/">Dispatcher</a><a aria-current="page" href="/services/hermes-connect/load-board/partners/">Dealer / Shipper</a></nav>
+<p id="partner-state" role="status" aria-live="polite" class="wsp-status">Checking your company profile…</p>
+<div class="wsp-grid">
+<section>
+  <div class="wsp-panel">
+    <h2>Post a vehicle transport opportunity</h2>
+    <form class="wsp-form" id="partner-post">
+      <div class="wsp-fieldrow">
+        <label class="wsp-field">Origin (city, state) *<input name="origin" required maxlength="180" placeholder="Chicago, IL"/></label>
+        <label class="wsp-field">Destination (city, state) *<input name="destination" required maxlength="180" placeholder="Dallas, TX"/></label>
+      </div>
+      <div class="wsp-fieldrow">
+        <label class="wsp-field">Pickup window<input name="pickup_window" maxlength="160" placeholder="e.g. Next Tuesday"/></label>
+        <label class="wsp-field">Number of vehicles<input name="vehicle_count" type="number" min="1" max="100" value="1" required/></label>
+      </div>
+      <div class="wsp-fieldrow">
+        <label class="wsp-field">Equipment
+          <select name="equipment"><option value="car_hauler">Car Hauler</option><option value="hotshot">Hotshot</option><option value="flatbed">Flatbed</option></select>
+        </label>
+        <label class="wsp-field">Indicative transportation budget (USD)<input name="rate_amount" type="number" step="0.01" min="0" max="1000000" placeholder="Optional"/></label>
+      </div>
+      <label class="wsp-field">Transport requirements (no personal contacts or VIN)<textarea name="notes" maxlength="360" rows="3" placeholder="Vehicle condition, loading needs, operating hours"></textarea></label>
+      <label class="wsp-field"><span><input type="checkbox" name="rights_attested" required/> I am authorized to submit this transportation opportunity for carrier-only Hermes dispatch review, without exposing private contacts.</span></label>
+      <button class="wsp-btn" type="submit">Submit permitted transport request</button>
+    </form>
+  </div>
+  <div class="wsp-panel"><h2>My company submissions</h2><div id="partner-posts" class="wsp-list"><p class="wsp-loader">Loading your company's records…</p></div></div>
+</section>
+<aside><section class="wsp-panel"><h2>Private company account</h2><p id="partner-company" class="wsp-muted">Identity not yet verified.</p><a href="/services/hermes-connect/load-board/access/">Sign in / register company</a></section>
+<section class="wsp-panel"><h2>How Hermes uses your request</h2><p class="wsp-notice">Only approved carrier users and assigned Hermes staff can review eligible internal offers. No third-party broker resale or self-booking.</p>
+<p class="wsp-muted">For a vehicle-specific dealer CRM (including VIN and private notes), use the <a href="/services/hermes-connect/dealers/workspace/">existing Dealer Workspace</a>.</p></section></aside>
+</div></main>
+<script src="/scripts/workspaces/partner-workspace.js" defer></script>
+</BaseLayout>
