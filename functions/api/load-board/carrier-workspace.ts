@@ -81,7 +81,7 @@ export async function onRequestPost(context:Context) {
   if(!dispatcher)return respond(409,{success:false,error:"assigned_dispatcher_required"});
   const message=safeWorkspaceText(body.message,300);
   const requestId=`cdri_${crypto.randomUUID()}`;
-  await db.prepare(`
+  const inserted=await db.prepare(`
     INSERT OR IGNORE INTO hermes_carrier_dispatch_interests
     (id,carrier_company_id,load_record_id,requested_by_specialist_id,
     dispatcher_specialist_id,carrier_message,status,created_at,updated_at)
@@ -92,8 +92,33 @@ export async function onRequestPost(context:Context) {
     FROM hermes_carrier_dispatch_interests
     WHERE carrier_company_id=? AND load_record_id=? LIMIT 1
   `).bind(company.id,id).first();
+  if(!saved)return respond(409,{success:false,error:"interest_write_not_confirmed",queuedForDispatcher:false,externalPartyContacted:false});
+  const newlyQueued=Number(inserted?.meta?.changes||0)===1;
+  if(!newlyQueued){
+    if(String(saved.dispatcher_specialist_id)!==String(dispatcher.dispatcherId)){
+      return respond(409,{
+        success:false,error:"existing_request_dispatcher_changed",
+        request:{id:saved.id,loadId:id,status:saved.status,createdAt:saved.created_at,updatedAt:saved.updated_at},
+        queuedForDispatcher:false,humanSeen:false,bookingCreated:false,externalPartyContacted:false,
+      });
+    }
+    if(["unavailable","declined"].includes(String(saved.status))){
+      return respond(409,{
+        success:false,error:"existing_request_terminal",
+        request:{id:saved.id,loadId:id,status:saved.status,createdAt:saved.created_at,updatedAt:saved.updated_at},
+        queuedForDispatcher:false,humanSeen:true,bookingCreated:false,externalPartyContacted:false,
+      });
+    }
+    return respond(200,{
+      success:true,queueState:"existing_pending",
+      request:{id:saved.id,loadId:id,status:saved.status,createdAt:saved.created_at,updatedAt:saved.updated_at},
+      queuedForDispatcher:false,humanSeen:String(saved.status)!=="requested",bookingCreated:false,externalPartyContacted:false,
+      note:"An existing request is already in this dispatcher's queue. No duplicate was created.",
+    });
+  }
   return respond(202,{
-    success:true,request:{id:saved.id,loadId:id,status:saved.status,createdAt:saved.created_at,updatedAt:saved.updated_at},
+    success:true,queueState:"newly_queued",
+    request:{id:saved.id,loadId:id,status:saved.status,createdAt:saved.created_at,updatedAt:saved.updated_at},
     queuedForDispatcher:true,humanSeen:false,bookingCreated:false,externalPartyContacted:false,
     note:"The request is in the assigned dispatcher's internal queue. This is not a booking.",
   });
