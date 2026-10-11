@@ -43,7 +43,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
           <p>See the board before you create an account. Rates, RPM, weight, trip miles, deadhead, pickup and delivery timing are visible in the market preview. LIVE counts remain real and never include preview or historical email data.</p>
         </div>
         <div class="hlb-live-actions">
-          <a class="hlb-live-primary" href={accessPath}>Create account &amp; unlock</a>
+          <a class="hlb-live-primary" href={accessPath}>Create account &amp; request access</a>
           <a href={`${accessPath}?mode=login`}>Sign in</a>
           <a href="/carrier/">Agreement &amp; onboarding</a>
           <button type="button" data-live-refresh aria-label="Refresh Load Board inventory">Refresh now</button>
@@ -53,7 +53,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
       <div class="hlb-access-strip" data-hlb-access-strip>
         <span class="hlb-access-dot"></span>
         <strong data-hlb-access-label>Public curtain view</strong>
-        <span data-hlb-access-copy>LIVE count is real. Rows labeled PREVIEW · NOT LIVE are market examples; company registration unlocks live source records and actions.</span>
+        <span data-hlb-access-copy>LIVE count is real. Rows labeled PREVIEW · NOT LIVE are market examples; approved carriers can review permissioned freight only after Hermes verifies access.</span>
       </div>
 
       <div class="hlb-live-stats" aria-label="Live Load Board status">
@@ -106,7 +106,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
             <li><b>4</b><span><strong>Return to this board.</strong><small>Carrier-access opportunities and dispatcher tools open.</small></span></li>
           </ol>
           <div class="hlb-unlock-features"><span>LIVE source records</span><span>Saved search on device</span><span>Alerts · preview</span><span>Post load / truck</span><span>Request details</span><span>Backhaul swap</span></div>
-          <a class="hlb-curtain-cta" href={accessPath}>Register company &amp; unlock Load Board →</a>
+          <a class="hlb-curtain-cta" href={accessPath}>Register company &amp; request Load Board approval →</a>
           <a class="hlb-curtain-catalog" href="/businesses/">See Hermes Catalog</a>
         </aside>
       </div>
@@ -405,7 +405,7 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         if (status) status.textContent = truthfulCount === null ? "Live count temporarily unavailable" : truthfulCount ? `${truthfulCount} active record${truthfulCount === 1 ? "" : "s"} · refreshed automatically` : "No approved active freight right now";
         if (badge) badge.textContent = accessGranted ? "ACCESS OPEN" : "CURTAIN VIEW";
         if (accessLabel) accessLabel.textContent = accessGranted ? "Hermes company access active" : "Public curtain view";
-        if (accessCopy) accessCopy.textContent = accessGranted ? "Your company profile has unlocked carrier-access Load Board records." : "LIVE count is real. Rows labeled PREVIEW · NOT LIVE are market examples; company registration unlocks live source records and actions.";
+        if (accessCopy) accessCopy.textContent = accessGranted ? "Your company profile has unlocked carrier-access Load Board records." : "LIVE count is real. Rows labeled PREVIEW · NOT LIVE are market examples; approved carriers can review permissioned freight only after Hermes verifies access.";
         if (previewNote instanceof HTMLElement) previewNote.hidden = accessGranted;
         if (curtain instanceof HTMLElement) curtain.hidden = accessGranted;
 
