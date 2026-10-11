@@ -122,7 +122,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const existing = await env.DB.prepare(
     "SELECT id, slug, company_name, city, state, authority_number, company_type, created_at FROM hermes_company_profiles WHERE owner_specialist_id = ? LIMIT 1",
-  ).bind(specialist.id).first() as { id?: string; slug?: string; company_type?: string; created_at?: string } | null;
+  ).bind(specialist.id).first() as { id?: string; slug?: string; company_name?: string; city?: string; state?: string; authority_number?: string; company_type?: string; created_at?: string } | null;
 
   // A Hermes-managed client must be adopted through a verified attachment workflow.
   // Never create a second owner-managed Home Services Company from matching public identity input.
