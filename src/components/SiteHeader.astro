@@ -241,7 +241,7 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
   const header = document.querySelector<HTMLElement>("[data-header]");
   // Keep an existing Home Services managed reviewer on the same Company when switching language.
   // The header is statically rendered; its locale hrefs cannot see runtime query parameters.
-  if (/^\\/services\\/hermes-connect\\/home-services\\/(?:access|workspace)\\/$/.test(location.pathname)) {
+  if (["/services/hermes-connect/home-services/access/", "/services/hermes-connect/home-services/workspace/"].includes(location.pathname)) {
     const managed = new URLSearchParams(location.search).get("managed")?.trim().toLowerCase().replace(/[^a-z0-9-]/g, "") || "";
     if (managed) {
       document.querySelectorAll<HTMLAnchorElement>(".language-menu a[lang], .mobile-language-switcher a[lang]").forEach((anchor) => {
