@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-10-11-private-load-board-three-workspaces",
+  "generated_at": "2026-10-11T13:49:00Z",
+  "status": "CURRENT_HEAD_PENDING_PRODUCTION",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/load-board/carrier/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/load-board/carrier/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/load-board/carrier/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/load-board/dispatcher/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/load-board/dispatcher/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/load-board/dispatcher/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/load-board/partners/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/load-board/partners/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/load-board/partners/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/load-board/operations/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/load-board/operations/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/load-board/operations/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 4,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
