@@ -103,6 +103,9 @@ jobs:
       - name: Validate Carrier Dispatcher and Partner Workspaces
         run: node scripts/load-board-workspaces-contract.test.mjs
 
+      - name: Validate Owner Load Board role previews
+        run: node scripts/load-board-owner-role-preview.test.mjs
+
       - name: Validate Load Board curtain and Hermes Connect funnel
         run: node scripts/load-board-curtain-funnel.test.mjs
 
