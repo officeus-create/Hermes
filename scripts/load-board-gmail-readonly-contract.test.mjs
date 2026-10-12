@@ -161,6 +161,6 @@ assert.equal(staleResult.ingested,0);
 assert.equal(staleResult.quarantined,1);
 assert.equal(stalePayload.records.length,0);
 assert.equal(stalePayload.quarantine[0].reason,"stale_email");
-assert.equal(calls.some((call)=>/messages\\/send|\\/v1\\/send/.test(call.url)),false);
+assert.equal(calls.some((call)=>call.url.includes("/messages/send") || call.url.includes("/v1/send")),false);
 
 console.log("load-board-gmail-readonly-contract PASS: disabled mode, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
