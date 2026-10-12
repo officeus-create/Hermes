@@ -130,7 +130,7 @@ let wrongMailboxListCalls=0;
 const wrongMailboxFetch = async (url, init={}) => {
   if (String(url) === "https://gmail.googleapis.com/gmail/v1/users/me/profile")
     return new Response(JSON.stringify({emailAddress:"another-mailbox@example.com"}),{status:200});
-  if (/gmail\\/v1\\/users\\/me\\/messages|api\\/load-board\\/intake/.test(String(url)))
+  if (String(url).includes("/gmail/v1/users/me/messages") || String(url).includes("/api/load-board/intake"))
     wrongMailboxListCalls++;
   return fetchMock(url,init);
 };
