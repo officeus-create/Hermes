@@ -47,6 +47,9 @@ const fetchMock = async (url, init = {}) => {
   }
   if (value.startsWith("https://gmail.googleapis.com/gmail/v1/users/me/messages?")) {
     assert.match(value, /q=/);
+    const boundedQuery = new URL(value).searchParams.get("q") || "";
+    const expectedAfter = Math.floor(Date.parse("2026-10-12T12:00:00Z") / 1000) - 86400;
+    assert.ok(boundedQuery.includes(`after:${expectedAfter}`), "Gmail query must always include a 24h time bound");
     assert.equal(init.headers.Authorization, "Bearer readonly-token");
     return new Response(JSON.stringify({ messages: [{ id: "gmail-001" }] }), { status: 200 });
   }
@@ -125,6 +128,14 @@ assert.ok(intakePayload.records.every((record) => record.visibility === "carrier
 assert.doesNotMatch(JSON.stringify(intakePayload), /client-secret|refresh-token|readonly-token/);
 assert.equal(calls.some((call) => /messages\/send|\/v1\/send/.test(call.url)), false);
 
+// Even an operator's intentionally broad query stays bounded at runtime.
+const broadQueryResult = await syncLoadBoardGmailInbox({
+  ...enabledConfig, LOADBOARD_GMAIL_QUERY: "from:capacity@example.com",
+}, null, { fetch: fetchMock, now: () => Date.parse("2026-10-12T12:00:00Z") });
+assert.equal(broadQueryResult.scanned, 1);
+assert.ok(calls.some(({ url }) => url.includes("/messages?")
+  && (new URL(url).searchParams.get("q") || "").includes("(from:capacity@example.com) after:")));
+
 // A wrong OAuth account must be rejected before messages.list or intake.
 let wrongMailboxListCalls=0;
 const wrongMailboxFetch = async (url, init={}) => {
@@ -163,4 +174,4 @@ assert.equal(stalePayload.records.length,0);
 assert.equal(stalePayload.quarantine[0].reason,"stale_email");
 assert.equal(calls.some((call)=>call.url.includes("/messages/send") || call.url.includes("/v1/send")),false);
 
-console.log("load-board-gmail-readonly-contract PASS: disabled mode, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
+console.log("load-board-gmail-readonly-contract PASS: disabled mode, bounded broad queries, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
