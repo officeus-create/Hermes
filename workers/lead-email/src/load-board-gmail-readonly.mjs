@@ -182,12 +182,23 @@ const processRawGmailMessage = async ({ gmailId, raw, internalDate, mailbox, sou
     records,
     quarantine,
   }, fetchImpl);
+  // An HTTP 202 acknowledges the intake request, not acceptance of every
+  // parsed freight/capacity record. Count only the API's D1 write receipt.
+  const receipt = await response.json().catch(() => null);
+  const acceptedRecords = receipt?.accepted;
+  const quarantinedRecords = receipt?.quarantined;
+  const totalSubmitted = records.length + quarantine.length;
+  if (receipt?.success !== true || !Number.isInteger(acceptedRecords)
+    || !Number.isInteger(quarantinedRecords) || acceptedRecords < 0
+    || quarantinedRecords < 0 || acceptedRecords + quarantinedRecords > totalSubmitted) {
+    throw new Error("loadboard_intake_receipt_invalid");
+  }
 
   return {
-    outcome: records.length ? "ingested" : "quarantined",
+    outcome: acceptedRecords ? "ingested" : quarantinedRecords ? "quarantined" : "skipped_rejected",
     gmailId,
-    acceptedRecords: records.length,
-    quarantinedRecords: quarantine.length,
+    acceptedRecords,
+    quarantinedRecords,
     intakeStatus: response.status,
   };
 };
@@ -250,9 +261,9 @@ const syncLoadBoardGmailInbox = async (env, _ctx, deps = {}) => {
       observedAt,
       fetchImpl,
     });
-    if (result.outcome === "ingested") summary.ingested += result.acceptedRecords;
-    else if (result.outcome === "quarantined") summary.quarantined += result.quarantinedRecords;
-    else summary.skipped += 1;
+    summary.ingested += result.acceptedRecords || 0;
+    summary.quarantined += result.quarantinedRecords || 0;
+    if (!result.acceptedRecords && !result.quarantinedRecords) summary.skipped += 1;
   }
 
   console.log(JSON.stringify({
