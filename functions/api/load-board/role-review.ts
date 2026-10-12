@@ -22,6 +22,7 @@ export async function onRequestGet(context:Context){
   const url=new URL(context.request.url);
   const role=String(url.searchParams.get("role")||"carrier");
   if(!REVIEW_ROLES.has(role))return reply(400,{success:false,error:"invalid_review_role"});
+  if(role==="sources"&&!identity.access.owner)return reply(403,{success:false,error:"owner_only_source_review"});
   const rows=await context.env.DB.prepare(`
     SELECT f.id,f.view_role,f.kind,f.author_label,f.review_note,f.created_at,
       s.email AS account_email
@@ -51,6 +52,7 @@ export async function onRequestPost(context:Context){
   const authorLabel=safeReviewNote(body.authorLabel,75);
   if(!REVIEW_ROLES.has(role)||!REVIEW_KINDS.has(kind))
     return reply(400,{success:false,error:"invalid_role_or_kind"});
+  if(role==="sources"&&!identity.access.owner)return reply(403,{success:false,error:"owner_only_source_review"});
   if(note.length<12||authorLabel.length<2)
     return reply(400,{success:false,error:"note_and_reviewer_name_required"});
   const id=`hlbr_${crypto.randomUUID()}`;
