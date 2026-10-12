@@ -198,7 +198,14 @@ const spoofFetch = async (url, init = {}) => {
   }
   return fetchMock(url,init);
 };
-const spoofedResult=await syncLoadBoardGmailInbox(enabledConfig,null,{
+// A source-config override must not silently bypass Gmail authentication.
+const bypassRequestedConfig = {...enabledConfig,
+  LOADBOARD_EMAIL_SOURCE_CONFIG: JSON.stringify({
+    "capacity@example.com": {...JSON.parse(enabledConfig.LOADBOARD_EMAIL_SOURCE_CONFIG)["capacity@example.com"],
+      require_authentication: false}
+  })
+};
+const spoofedResult=await syncLoadBoardGmailInbox(bypassRequestedConfig,null,{
   fetch:spoofFetch,now:()=>Date.parse("2026-10-12T12:00:00Z")
 });
 assert.equal(spoofedResult.ingested,0);
