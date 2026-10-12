@@ -4,6 +4,7 @@ import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
 import HomeMasterScene from "../components/HomeMasterScene.astro";
 import HomePerformanceLayer from "../components/HomePerformanceLayer.astro";
 import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
+import PublicTrafficCounter from "../components/PublicTrafficCounter.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { languageAlternates } from "../data/locales";
@@ -89,6 +90,12 @@ const websiteSchema = {
   <SiteHeader contactHref="#contact" theme="light" />
   <main id="main-content" class="hermes-home-recovery">
     <HomeMasterScene />
+    <section class="home-traffic-inline-section" aria-label="Hermes public site activity">
+      <div class="home-traffic-inline-inner">
+        <PublicTrafficCounter />
+        <p class="home-traffic-disclosure">Only consented first-party browser activity is counted. Sessions are not unique visitors or customers.</p>
+      </div>
+    </section>
   </main>
   <div id="contact" class="home-contact-shell">
     <HomeRecoveryFinish />
@@ -96,3 +103,14 @@ const websiteSchema = {
   </div>
   <HomePerformanceLayer />
 </BaseLayout>
+
+<style>
+  .home-traffic-inline-section { padding: clamp(20px, 3vw, 40px) 0; background: #f7f6f3; }
+  .home-traffic-inline-inner { width: min(1080px, calc(100% - 40px)); margin-inline: auto; }
+  .home-traffic-inline-section .home-traffic-inline-inner :global([data-public-traffic-counter]) {
+    position: static; inset: auto; z-index: auto; width: 100%; max-width: none;
+    background: #fff; border-color: #dfe2e7; box-shadow: 0 12px 32px rgba(17, 19, 24, .06);
+    backdrop-filter: none;
+  }
+  .home-traffic-disclosure { margin: 10px 6px 0; font-size: .76rem; line-height: 1.5; color: #667181; }
+</style>
