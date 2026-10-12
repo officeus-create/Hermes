@@ -4,6 +4,7 @@ const hubPath = "/logistics/resources/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
 const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 const coreGuides = [
+  "/logistics/resources/car-hauler-jobs-owner-operator-guide/",
   "/logistics/resources/rpm-calculator/",
   "/logistics/resources/factoring-vs-direct-payment-calculator/",
   "/logistics/resources/dispatch-service-vs-self-dispatch/",
@@ -22,7 +23,8 @@ test("carrier knowledge hub organizes reviewed tools, guides, and controlled nex
 
   await expect(page).toHaveTitle(/Carrier Knowledge Hub for Car Haulers/);
   await expect(page.getByRole("heading", { level: 1, name: "Carrier Knowledge Hub for Car Haulers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Five practical resources to review first." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Six practical resources to review first." })).toBeVisible();
+  await expect(page.getByText("Car Hauler Jobs vs Owner-Operator Paths", { exact: true })).toBeVisible();
   await expect(page.getByText("RPM & Load Profitability Calculator", { exact: true })).toBeVisible();
   await expect(page.getByText("Factoring vs Direct Payment Calculator", { exact: true })).toBeVisible();
   await expect(page.getByText("Dispatch Service vs Self-Dispatch", { exact: true })).toBeVisible();
