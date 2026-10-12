@@ -10,6 +10,9 @@
     "enabled": true,
     "head_sampling_rate": 0.1
   },
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
   "vars": {
     "SALES_DESTINATION": "officeus@hermeslogisticsus.com",
     "SALES_SENDER": "website@hermeslogisticsus.com",
@@ -19,7 +22,9 @@
     "CARRIER_CONTRACT_INTERNAL_RECIPIENTS": "officeus@hermeslogisticsus.com",
     "CAR_HAULING_DURABLE_OUTBOX_REQUIRED": "true",
     "LOADBOARD_EMAIL_RECIPIENT": "loads@loadboard.hermeslogisticsus.com",
-    "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake"
+    "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake",
+    "LOADBOARD_GMAIL_INTAKE_ENABLED": "false",
+    "LOADBOARD_GMAIL_MAX_MESSAGES": "20"
   },
   "durable_objects": {
     "bindings": [
