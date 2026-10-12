@@ -116,7 +116,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 </section>
 <script>
   import { initializeHomePortalMotion } from "../lib/home-portal-motion";
-  import { trackCtaClicked, trackTrackSelected } from "../lib/analytics.ts";
+  import { trackCtaClicked, trackEvent, trackTrackSelected } from "../lib/analytics.ts";
 
   initializeHomePortalMotion();
 
@@ -205,6 +205,9 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       if (!id) return;
       trackTrackSelected(id);
       trackCtaClicked(`home_direction_${id}`);
+      if (["logistics", "marketing", "technology", "academy"].includes(id)) {
+        trackEvent(`home_direction_${id}_selected`, { page_group: "home" });
+      }
     });
   });
 </script>
