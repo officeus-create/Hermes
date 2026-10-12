@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   businessSocialProviderConfigured,
+  classifyBusinessSocialPublicationReplay,
   businessSocialScopes,
   decryptBusinessSocialPayload,
   encryptBusinessSocialPayload,
@@ -60,6 +61,27 @@ assert.equal("token_ciphertext" in publicConnection, false);
 assert.ok(validBusinessSocialIdempotencyKey("hc-social-20260930-0001"));
 assert.equal(validBusinessSocialIdempotencyKey("short"), null);
 
+const replayOwner = { business:{ business_key:"repair_shop:alpha" }, provider:"instagram", ownerId:"owner-1", fingerprint:"sha256:asset-A" };
+const replayBase = {
+  business_key:"repair_shop:alpha", provider:"instagram",
+  requested_by:"owner-1", payload_fingerprint:"sha256:asset-A",
+  status:"published_verified",
+};
+assert.equal(classifyBusinessSocialPublicationReplay(null, replayOwner), "conflict");
+assert.equal(classifyBusinessSocialPublicationReplay(replayBase, replayOwner), "published");
+assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, status:"published_readback_pending" }, replayOwner), "published");
+for (const status of ["reserved", "publishing"]) {
+  assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, status }, replayOwner), "pending");
+}
+for (const status of ["unknown_outcome", "provider_rejected", "blocked_authorization"]) {
+  assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, status }, replayOwner), "terminal");
+}
+assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, business_key:"repair_shop:other" }, replayOwner), "conflict");
+assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, provider:"threads" }, replayOwner), "conflict");
+assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, requested_by:"owner-2" }, replayOwner), "conflict");
+assert.equal(classifyBusinessSocialPublicationReplay({ ...replayBase, payload_fingerprint:"sha256:asset-B" }, replayOwner), "conflict");
+assert.equal(classifyBusinessSocialPublicationReplay(replayBase, { ...replayOwner, fingerprint:"" }), "conflict");
+
 const core = await readFile(new URL("../functions/api/_lib/business-social.mjs", import.meta.url), "utf8");
 const connections = await readFile(new URL("../functions/api/hermes-connect/social/connections.ts", import.meta.url), "utf8");
 const start = await readFile(new URL("../functions/api/hermes-connect/social/oauth/start.ts", import.meta.url), "utf8");
@@ -113,6 +135,10 @@ assert.match(select, /sameOriginMutation/);
 assert.match(disconnect, /sameOriginMutation/);
 assert.match(publish, /sameOriginMutation/);
 assert.match(publish, /idempotency_key/);
+assert.match(publish, /classifyBusinessSocialPublicationReplay/);
+assert.match(publish, /idempotency_key_conflict/);
+assert.match(publish, /retry_allowed: false/);
+assert.match(publish, /pending: true/);
 assert.match(publish, /provider_outcome_unknown/);
 assert.match(publish, /social_surface_invalid/);
 assert.match(publish, /publishInstagramStoryImage/);
