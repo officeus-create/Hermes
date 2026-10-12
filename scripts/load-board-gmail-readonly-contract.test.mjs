@@ -136,6 +136,35 @@ assert.equal(broadQueryResult.scanned, 1);
 assert.ok(calls.some(({ url }) => url.includes("/messages?")
   && (new URL(url).searchParams.get("q") || "").includes("(from:capacity@example.com) after:")));
 
+// HTTP 202 can contain partial or zero acceptance. Never turn it into 2 active
+// trucks simply because the parser submitted 2 records.
+let partialReceiptCalled = false;
+const partialReceiptFetch = async (url, init = {}) => {
+  if (String(url) === "https://hermeslogisticsus.com/api/load-board/intake") {
+    partialReceiptCalled = true;
+    return new Response(JSON.stringify({ success: true, accepted: 0, quarantined: 1,
+      rejected: [{ kind: "record", index: 1, reason: "not_publishable" }] }), { status: 202 });
+  }
+  return fetchMock(url, init);
+};
+const partialReceiptResult = await syncLoadBoardGmailInbox(enabledConfig, null, {
+  fetch: partialReceiptFetch, now: () => Date.parse("2026-10-12T12:00:00Z"),
+});
+assert.equal(partialReceiptCalled, true);
+assert.equal(partialReceiptResult.scanned, 1);
+assert.equal(partialReceiptResult.ingested, 0);
+assert.equal(partialReceiptResult.quarantined, 1);
+
+// A success-shaped HTTP response without canonical acceptance counts fails closed.
+const invalidReceiptFetch = async (url, init = {}) => {
+  if (String(url) === "https://hermeslogisticsus.com/api/load-board/intake")
+    return new Response(JSON.stringify({ success: true }), { status: 202 });
+  return fetchMock(url, init);
+};
+await assert.rejects(syncLoadBoardGmailInbox(enabledConfig, null, {
+  fetch: invalidReceiptFetch, now: () => Date.parse("2026-10-12T12:00:00Z"),
+}), /loadboard_intake_receipt_invalid/);
+
 // A wrong OAuth account must be rejected before messages.list or intake.
 let wrongMailboxListCalls=0;
 const wrongMailboxFetch = async (url, init={}) => {
@@ -174,4 +203,4 @@ assert.equal(stalePayload.records.length,0);
 assert.equal(stalePayload.quarantine[0].reason,"stale_email");
 assert.equal(calls.some((call)=>call.url.includes("/messages/send") || call.url.includes("/v1/send")),false);
 
-console.log("load-board-gmail-readonly-contract PASS: disabled mode, bounded broad queries, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
+console.log("load-board-gmail-readonly-contract PASS: disabled mode, bounded broad queries, D1 receipt counts, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
