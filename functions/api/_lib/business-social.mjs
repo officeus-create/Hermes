@@ -727,6 +727,26 @@ export async function reserveBusinessSocialPublication(db, options) {
   return { inserted: Boolean(insert?.meta?.changes), row };
 }
 
+// A replay key is global in D1: do not return a prior tenant's receipt, or
+// mistake a different payload for a successful duplicate provider publish.
+export function classifyBusinessSocialPublicationReplay(row, options) {
+  const businessKey = String(options?.business?.business_key || "");
+  const ownerId = String(options?.ownerId || "");
+  const fingerprint = String(options?.fingerprint || "");
+  if (!row || !businessKey || !ownerId || !fingerprint ||
+      String(row.business_key || "") !== businessKey ||
+      String(row.provider || "") !== String(options?.provider || "") ||
+      String(row.requested_by || "") !== ownerId ||
+      String(row.payload_fingerprint || "") !== fingerprint) {
+    return "conflict";
+  }
+  const status = String(row.status || "");
+  if (status === "published_verified" || status === "published_readback_pending") return "published";
+  if (status === "reserved" || status === "publishing") return "pending";
+  // Unknown outcome and provider rejection must never be retried blindly.
+  return "terminal";
+}
+
 export async function completeBusinessSocialPublication(db, id, patch = {}) {
   const now = new Date().toISOString();
   await db.prepare(`
