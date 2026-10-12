@@ -185,6 +185,8 @@ assert.match(component, /Threads/);
 assert.match(component, /Live channel overview/);
 assert.match(component, /Unified composer/);
 assert.match(component, /Publish selected/);
+assert.match(component, /response\.pending/);
+assert.match(component, /previous publication pending — not republished/);
 assert.match(component, /Smart mirror/);
 assert.match(component, /Instagram Feed → Instagram Story \+ Threads Feed \+ Facebook Page/);
 assert.match(component, /data-mirror-instagram/);
