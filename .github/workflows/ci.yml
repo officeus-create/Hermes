@@ -100,6 +100,9 @@ jobs:
       - name: Validate Load Board mailbox intake contract
         run: node scripts/load-board-intake-api-contract.test.mjs
 
+      - name: Validate Load Board summary privacy
+        run: node scripts/load-board-summary-privacy-contract.test.mjs
+
       - name: Validate Carrier Dispatcher and Partner Workspaces
         run: node scripts/load-board-workspaces-contract.test.mjs
 
