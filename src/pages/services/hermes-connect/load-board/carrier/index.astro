@@ -17,8 +17,22 @@ import "../../../../../styles/features/carrier-dispatch-workspaces.css";
 <div class="wsp-tabs"><button data-carrier-tab="all" aria-selected="true">Available</button><button data-carrier-tab="saved" aria-selected="false">Saved</button><button data-carrier-tab="requests" aria-selected="false">My requests</button></div>
 <div class="wsp-list" id="carrier-loads"><p class="wsp-loader">Checking permitted inventory…</p></div>
 </section>
-<aside><section class="wsp-panel"><h2>My dispatcher</h2><div id="carrier-dispatcher" class="wsp-muted">Awaiting verified assignment.</div></section>
+<aside><section class="wsp-panel"><h2>Route & trailer preferences</h2>
+<p class="wsp-muted">Save the lanes you prefer. Matching suggestions reorder your allowed loads; they do not verify prices, truck location, cargo fit or book freight.</p>
+<form id="carrier-lane-preferences" class="wsp-form">
+<div class="wsp-fieldrow">
+<label class="wsp-field">Pickup state<input name="originState" maxlength="2" pattern="[A-Za-z]{2}" placeholder="IL" autocomplete="off"/></label>
+<label class="wsp-field">Delivery state<input name="destinationState" maxlength="2" pattern="[A-Za-z]{2}" placeholder="TX" autocomplete="off"/></label>
+</div>
+<label class="wsp-field">Preferred equipment<select name="equipment">
+<option value="">Any</option><option value="car_hauler">Car Hauler</option><option value="hotshot">Hotshot</option><option value="flatbed">Flatbed</option><option value="enclosed">Enclosed</option><option value="wedge">Wedge</option>
+</select></label>
+<label class="wsp-field">Available trailer slots (optional)<input name="availableSlots" type="number" min="1" max="16" step="1" placeholder="e.g. 7"/></label>
+<button type="submit" class="wsp-btn secondary">Save route preferences</button>
+</form>
+<p id="carrier-lane-feedback" class="wsp-muted" role="status" aria-live="polite"></p>
+</section><section class="wsp-panel"><h2>My dispatcher</h2><div id="carrier-dispatcher" class="wsp-muted">Awaiting verified assignment.</div></section>
 <section class="wsp-panel"><h2>Private dispatch service</h2><p class="wsp-notice">No shipper contacts or self-booking. The dispatcher checks all load availability and terms.</p><a href="/services/hermes-connect/load-board/access/">Account access and carrier review</a></section></aside></div>
 </main>
-<script is:inline src="/scripts/workspaces/carrier-workspace.js" defer></script>
+<script is:inline type="module" src="/scripts/workspaces/carrier-workspace.js"></script>
 </BaseLayout>

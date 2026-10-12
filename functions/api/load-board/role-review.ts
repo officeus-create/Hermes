@@ -34,7 +34,11 @@ export async function onRequestGet(context:Context){
     success:true,role,canReview:true,owner:identity.access.owner,
     feedback:(rows.results||[]).map((r:any)=>({
       id:r.id,role:r.view_role,kind:r.kind,authorLabel:r.author_label,
-      note:r.review_note,createdAt:r.created_at,accountEmail:r.account_email,
+      note:r.review_note,createdAt:r.created_at,
+      // Reviewer notes are visible to other approved reviewers, but staff mailbox
+      // addresses are only shared with the owner or the note's own author.
+      accountEmail:identity.access.owner || r.account_email===identity.specialist.email
+        ? r.account_email : null,
     })),
     disclosure:"Author label on a shared login is self-reported; account email is the audited identity.",
   });
