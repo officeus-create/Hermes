@@ -97,7 +97,7 @@ const sourcePayload = (source, mailbox) => ({
   ingest_enabled: true,
 });
 
-const processRawGmailMessage = async ({ gmailId, raw, mailbox, sources, env, observedAt, fetchImpl }) => {
+const processRawGmailMessage = async ({ gmailId, raw, internalDate, mailbox, sources, env, observedAt, fetchImpl }) => {
   const headers = parseRawHeaders(raw);
   const sender = mailboxFromHeader(header(headers, "from"));
   const source = sources.find((candidate) => candidate.matchFrom === sender);
@@ -105,14 +105,37 @@ const processRawGmailMessage = async ({ gmailId, raw, mailbox, sources, env, obs
 
   const subject = clean(header(headers, "subject"), 200);
   const sourceMessageId = clean(header(headers, "message-id").replace(/[<>]/g, ""), 220) || `gmail:${gmailId}`;
-  const receivedAt = safeIso(header(headers, "date"), new Date(observedAt));
+  // Sender Date is untrusted, while Gmail internalDate is the mailbox receipt
+  // time. Require both before considering a record fresh; use the older value
+  // so a re-delivered historical message never becomes fresh inventory.
+  const sourceTime = Date.parse(header(headers, "date"));
+  const mailboxTime = Number(internalDate);
+  const observedTime = Date.parse(observedAt);
+  const datesVerified = Number.isFinite(sourceTime) && Number.isFinite(mailboxTime)
+    && mailboxTime > Date.parse("2000-01-01T00:00:00Z")
+    && sourceTime <= observedTime + 300_000 && mailboxTime <= observedTime + 300_000;
+  const earliestTime = datesVerified ? Math.min(sourceTime, mailboxTime) : NaN;
+  const receivedAt = Number.isFinite(earliestTime)
+    ? new Date(earliestTime).toISOString() : null;
   const extracted = extractMimeText(raw);
   const body = clean(extracted.plain || extracted.html, 120_000);
   const rawEvidenceRef = `gmail:${source.id}:${gmailId}`;
 
   let records = [];
   let quarantine = [];
-  if (source.requireAuthentication && !sourceAuthenticationPassed(headers)) {
+  if (!datesVerified || !receivedAt) {
+    quarantine = [{
+      source_message_id: sourceMessageId, fingerprint: `gmail-time:${gmailId}`,
+      reason: "gmail_message_timestamps_unverified", subject,
+      received_at: observedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef,
+    }];
+  } else if (earliestTime + source.ttlHours * 60 * 60 * 1000 <= observedTime) {
+    quarantine = [{
+      source_message_id: sourceMessageId, fingerprint: `gmail-stale:${gmailId}`,
+      reason: "stale_email", subject,
+      received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef,
+    }];
+  } else if (source.requireAuthentication && !sourceAuthenticationPassed(headers)) {
     quarantine = [{
       source_message_id: sourceMessageId,
       fingerprint: `gmail-auth:${gmailId}`,
@@ -186,6 +209,15 @@ const syncLoadBoardGmailInbox = async (env, _ctx, deps = {}) => {
   const fetchImpl = deps.fetch || fetch;
   const accessToken = await oauthAccessToken(config, fetchImpl);
   const authHeaders = { Authorization: `Bearer ${accessToken}` };
+  // Never attribute a different OAuth mailbox's messages to the configured
+  // Hermes source mailbox. A mismatched token fails before listing any mail.
+  const profileResponse = await fetchImpl(`${GMAIL_BASE}/profile`, { headers: authHeaders });
+  if (!profileResponse.ok) throw new Error(`gmail_ingest_profile_http_${profileResponse.status}`);
+  const profile = await profileResponse.json();
+  const actualMailbox = normalizeEmail(profile?.emailAddress);
+  if (!actualMailbox || actualMailbox !== config.mailbox) {
+    throw new Error("gmail_ingest_mailbox_mismatch");
+  }
   const listUrl = `${GMAIL_BASE}/messages?maxResults=${config.maxMessages}&q=${encodeURIComponent(config.query)}`;
   const listResponse = await fetchImpl(listUrl, { headers: authHeaders });
   if (!listResponse.ok) throw new Error(`gmail_ingest_list_http_${listResponse.status}`);
@@ -206,6 +238,7 @@ const syncLoadBoardGmailInbox = async (env, _ctx, deps = {}) => {
     const result = await processRawGmailMessage({
       gmailId,
       raw,
+      internalDate: payload?.internalDate,
       mailbox: config.mailbox,
       sources,
       env,
