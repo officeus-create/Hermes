@@ -4,6 +4,7 @@ export type LoadBoardProviderId =
   | "truckstop"
   | "dat"
   | "ship_cars"
+  | "runbuggy"
   | "direct_freight"
   | "loadboard_123"
   | "sanitized_csv";
@@ -132,6 +133,19 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
     requiresDataRightsReview: true,
     documentationUrl: "https://shipcars.readme.io/",
     notes: "Official OAuth2 documentation and Loadboard v3 postings endpoint are public, including pickup/delivery, route, vehicle count, operability, trailer, payment, pay and price-per-mile filters. Hermes still needs account credentials and explicit internal display/retention rights before production sync.",
+  }),
+  runbuggy: Object.freeze({
+    id: "runbuggy",
+    label: "RunBuggy",
+    transports: transportList("rest_api", "webhook", "partner_integration"),
+    capabilities: capabilityList("offers", "tracking", "webhooks"),
+    readiness: "owner_approval_required",
+    providerConnectionEnabled: false,
+    requiresOwnerApproval: true,
+    requiresCommercialReview: true,
+    requiresDataRightsReview: true,
+    documentationUrl: "https://docs.runbuggy.com/",
+    notes: "Official Shipping API documentation describes finding vehicle transfer orders, order statuses, and webhooks. A real Quo inbound transport offer and historical Hermes account traffic are discovery evidence only, not API entitlement or data-use permission. Authentication details, internal storage/retention and redistribution rights must be verified through an owner-controlled account before any read-only sync; no automatic order acceptance or booking.",
   }),
   direct_freight: Object.freeze({
     id: "direct_freight",
