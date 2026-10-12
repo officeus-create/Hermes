@@ -109,7 +109,9 @@ assert.doesNotMatch(catalogApi, /(?:credential|password|phone|email)\s*:/i);
 assert.match(summaryApi, /visibility IN \('public', 'carrier_only'\)/);
 assert.match(summaryApi, /record_type IN \('load', 'capacity'\)/);
 assert.match(summaryApi, /available_loads/);
-assert.match(summaryApi, /Preview rows and internal-only records are excluded/);
+assert.match(summaryApi, /Private carrier freight and all LOAD counts are excluded/);
+assert.match(summaryApi, /const audiencePredicate = carrierAccess/);
+assert.match(summaryApi, /"Cache-Control": "private, no-store"/);
 assert.doesNotMatch(summaryApi, /SELECT \*/);
 
 for (const api of [activeApi, opportunitiesApi, dispatchPlanApi]) {
