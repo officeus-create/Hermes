@@ -30,6 +30,8 @@ const knownUpdates = [
   ["sitemap.xml", "careers/car-hauling-dispatcher/", "2026-10-12", "url"],
   ["sitemap.xml", "logistics/careers/", "2026-10-12", "url"],
   ["sitemap-services.xml", "logistics/car-hauling-dispatch/", "2026-10-12", "url"],
+  ["sitemap-services.xml", "logistics/owner-operator-dispatch-support/", "2026-10-12", "url"],
+  ["sitemap-services.xml", "logistics/new-authority-car-hauler-support/", "2026-10-12", "url"],
   ["sitemap-services.xml", "logistics/resources/", "2026-10-12", "url"],
   ["sitemap-digital-services.xml", "services/hermes-connect/repair-shops/", "2026-09-12", "url"],
   ["sitemap-digital-services.xml", "services/seo-for-auto-repair-shops/", "2026-09-13", "url"],

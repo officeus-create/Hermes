@@ -74,3 +74,20 @@ test("main Logistics hub exposes the canonical Carrier Knowledge Hub", async ({ 
   await expect(page.locator('a[href="/logistics/resources/"]')).toHaveCount(1);
   await expect(page.getByText("Carrier Knowledge Hub", { exact: true })).toBeVisible();
 });
+
+test("commercial carrier support pages hand off economics to one established RPM owner", async ({ page }) => {
+  for (const path of [
+    "/logistics/owner-operator-dispatch-support/",
+    "/logistics/new-authority-car-hauler-support/",
+  ]) {
+    const response = await page.goto(path);
+    expect(response?.ok()).toBeTruthy();
+    await expect(page.getByRole("navigation", { name: "Related logistics services" })
+      .getByRole("link", { name: "Free Carrier RPM and Load Profit Calculator" }))
+      .toHaveAttribute("href", "/logistics/resources/rpm-calculator/");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href", `https://hermeslogisticsus.com${path}`,
+    );
+    await expect(page.locator('a[href="/logistics/start-car-hauling-dispatch/"]').first()).toBeVisible();
+  }
+});
