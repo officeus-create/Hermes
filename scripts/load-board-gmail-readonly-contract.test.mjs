@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { syncLoadBoardGmailInbox } from "../workers/lead-email/src/load-board-gmail-readonly.mjs";
+import { gmailSourceAuthenticationPassed, syncLoadBoardGmailInbox } from "../workers/lead-email/src/load-board-gmail-readonly.mjs";
 
 const disabledCalls = [];
 const disabled = await syncLoadBoardGmailInbox({
@@ -27,6 +27,25 @@ const raw = [
   "Delaware, OH to Houston, TX - 12:00 PM READY",
   "THANK YOU.",
 ].join("\r\n");
+
+
+assert.equal(gmailSourceAuthenticationPassed(raw,"capacity@example.com"),true,
+  "aligned Gmail DMARC pass should authenticate an approved source");
+const spoofedAuthRaw=raw.replace(
+  "Authentication-Results: mx.google.com; dkim=pass header.d=example.com; spf=pass smtp.mailfrom=example.com; dmarc=pass header.from=example.com",
+  [
+    "Authentication-Results: mx.google.com; dkim=fail header.d=example.com; spf=fail smtp.mailfrom=example.com; dmarc=fail header.from=example.com",
+    "Authentication-Results: attacker.invalid; dkim=pass header.d=example.com; dmarc=pass header.from=example.com"
+  ].join("\r\n")
+);
+assert.equal(gmailSourceAuthenticationPassed(spoofedAuthRaw,"capacity@example.com"),false,
+  "a later forged Authentication-Results pass cannot override Google's fail");
+assert.equal(gmailSourceAuthenticationPassed(raw.replace("mx.google.com;","attacker.invalid;"),"capacity@example.com"),false,
+  "sender-injected authserv-id is not Gmail authentication");
+assert.equal(gmailSourceAuthenticationPassed(raw.replace("header.from=example.com","header.from=other.example"),"capacity@example.com"),false,
+  "DMARC pass of another From domain is not source authentication");
+assert.equal(gmailSourceAuthenticationPassed(raw.replace(/^Authentication-Results:.*\r\n/m,""),"capacity@example.com"),false,
+  "missing Gmail authentication must quarantine");
 
 const rawEncoded = Buffer.from(raw, "utf8").toString("base64url");
 const calls = [];
@@ -165,6 +184,28 @@ await assert.rejects(syncLoadBoardGmailInbox(enabledConfig, null, {
   fetch: invalidReceiptFetch, now: () => Date.parse("2026-10-12T12:00:00Z"),
 }), /loadboard_intake_receipt_invalid/);
 
+// Spoofed authentication is quarantined; a forged pass in a later raw header
+// does not create current public or carrier-only inventory.
+let spoofedIntake = null;
+const spoofFetch = async (url, init = {}) => {
+  if (String(url).endsWith("/messages/gmail-001?format=raw"))
+    return new Response(JSON.stringify({ id:"gmail-001",
+      raw:Buffer.from(spoofedAuthRaw,"utf8").toString("base64url"),
+      internalDate:String(Date.parse("2026-10-12T11:00:00Z")) }),{status:200});
+  if (String(url) === "https://hermeslogisticsus.com/api/load-board/intake") {
+    spoofedIntake=JSON.parse(init.body);
+    return new Response(JSON.stringify({success:true,accepted:0,quarantined:1}),{status:202});
+  }
+  return fetchMock(url,init);
+};
+const spoofedResult=await syncLoadBoardGmailInbox(enabledConfig,null,{
+  fetch:spoofFetch,now:()=>Date.parse("2026-10-12T12:00:00Z")
+});
+assert.equal(spoofedResult.ingested,0);
+assert.equal(spoofedResult.quarantined,1);
+assert.equal(spoofedIntake.records.length,0);
+assert.equal(spoofedIntake.quarantine[0].reason,"source_authentication_unverified");
+
 // A wrong OAuth account must be rejected before messages.list or intake.
 let wrongMailboxListCalls=0;
 const wrongMailboxFetch = async (url, init={}) => {
@@ -203,4 +244,4 @@ assert.equal(stalePayload.records.length,0);
 assert.equal(stalePayload.quarantine[0].reason,"stale_email");
 assert.equal(calls.some((call)=>call.url.includes("/messages/send") || call.url.includes("/v1/send")),false);
 
-console.log("load-board-gmail-readonly-contract PASS: disabled mode, bounded broad queries, D1 receipt counts, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
+console.log("load-board-gmail-readonly-contract PASS: disabled mode, bounded broad queries, D1 receipt counts, aligned trusted Gmail DMARC, verified OAuth mailbox, fresh timestamp, source auth, stale quarantine, zero outbound");
