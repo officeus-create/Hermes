@@ -1,6 +1,10 @@
 (() => {
 const $=id=>document.getElementById(id);
 const state=$("dispatcher-state"),queue=$("dispatcher-queue"),companies=$("dispatcher-carriers");
+const metrics={
+ carriers:$("dispatcher-metric-carriers"),requested:$("dispatcher-metric-requested"),
+ reviewing:$("dispatcher-metric-reviewing"),active:$("dispatcher-metric-active"),stale:$("dispatcher-metric-stale")
+};
 let data=null,filter="open";
 const el=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);if(cls)x.className=cls;return x};
 function info(msg,error=false){state.textContent=msg;state.classList.toggle("wsp-error",error)}
@@ -32,8 +36,16 @@ function requestCard(r){
  }
  card.append(actions);return card;
 }
+function renderSummary(){
+ const s=data?.summary||{};
+ if(metrics.carriers)metrics.carriers.textContent=String(s.assignedCarriers??0);
+ if(metrics.requested)metrics.requested.textContent=String(s.requested??0);
+ if(metrics.reviewing)metrics.reviewing.textContent=String((s.seen??0)+(s.reviewing??0));
+ if(metrics.active)metrics.active.textContent=String(s.activeOpen??0);
+ if(metrics.stale)metrics.stale.textContent=String(s.staleOpen??0);
+}
 function render(){
- queue.replaceChildren();companies.replaceChildren();if(!data)return;
+ queue.replaceChildren();companies.replaceChildren();if(!data)return;renderSummary();
  if(!data.assignments.length)companies.append(el("p","No active carrier assignments.","wsp-muted"));
  for(const a of data.assignments){const box=el("div",undefined,"wsp-assignment");box.append(el("strong",a.name));
    box.append(el("p",a.location||"Location pending","wsp-muted"));companies.append(box)}
@@ -45,7 +57,7 @@ async function refresh(){
  const r=await fetch("/api/load-board/dispatcher-workspace",{credentials:"same-origin",cache:"no-store"});
  const p=await r.json().catch(()=>({}));
  if(!r.ok){data=null;queue.replaceChildren(el("p","Dispatcher access is restricted to verified Hermes staff assignments.","wsp-muted"));info(p.error||"No dispatcher access",true);return}
- data=p;info(data.requests.filter(r=>r.status==="requested").length+" waiting carrier request(s) · "+data.assignments.length+" assigned carrier(s)");
+ data=p;info((data.summary?.requested??0)+" waiting carrier request(s) · "+(data.summary?.assignedCarriers??data.assignments.length)+" assigned carrier(s)");
  render();
 }
 for(const b of document.querySelectorAll("[data-status-filter]"))b.addEventListener("click",()=>{
