@@ -103,8 +103,14 @@ jobs:
       - name: Validate Gmail read-only Load Board intake
         run: node scripts/load-board-gmail-readonly-contract.test.mjs
 
+      - name: Validate Load Board summary privacy
+        run: node scripts/load-board-summary-privacy-contract.test.mjs
+
       - name: Validate Carrier Dispatcher and Partner Workspaces
         run: node scripts/load-board-workspaces-contract.test.mjs
+
+      - name: Validate Carrier lane preference recommendations
+        run: node scripts/load-board-carrier-lane-preferences.test.mjs
 
       - name: Validate Owner Load Board role previews
         run: node scripts/load-board-owner-role-preview.test.mjs

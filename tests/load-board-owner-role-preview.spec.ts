@@ -58,7 +58,7 @@ test("Approved shared reviewer can comment, but cannot inspect owner-only source
     status:200,contentType:"application/json",body:JSON.stringify({
       success:true,feedback:created.map((item,i)=>({
         id:String(i),kind:item.kind,authorLabel:item.authorLabel,note:item.note,
-        accountEmail:"shared-qa@example.invalid",createdAt:"2026-10-12T10:00:00Z",
+        accountEmail:null,createdAt:"2026-10-12T10:00:00Z",
       }))
     })
   }));
@@ -75,6 +75,8 @@ test("Approved shared reviewer can comment, but cannot inspect owner-only source
   await page.locator("#role-review-form textarea[name='note']").fill("Carrier route filter does not include preferred metro areas");
   await page.getByRole("button",{name:"Save internal feedback"}).click();
   await expect(page.getByText("Carrier route filter does not include preferred metro areas")).toBeVisible();
+  await expect(page.getByText("Staff Reviewer", { exact: true })).toBeVisible();
+  await expect(page.getByText("Staff Reviewer · null")).toHaveCount(0);
   expect(created).toHaveLength(1);
   expect(created[0].role).toBe("carrier");
   await page.getByRole("button",{name:"Dispatcher",exact:true}).click();

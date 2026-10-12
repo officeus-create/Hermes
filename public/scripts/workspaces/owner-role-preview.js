@@ -36,7 +36,7 @@
       for(const item of result.feedback){
         const entry=document.createElement("article");entry.className="wsp-load";
         append(entry,"span",item.kind.toUpperCase()+" · "+new Date(item.createdAt).toLocaleString(),"wsp-chip");
-        append(entry,"h3",item.authorLabel+" · "+item.accountEmail);
+        append(entry,"h3",item.accountEmail ? item.authorLabel+" · "+item.accountEmail : item.authorLabel);
         append(entry,"p",item.note,"wsp-muted");
         feedbackList.append(entry);
       }
