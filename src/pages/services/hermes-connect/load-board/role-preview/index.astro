@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import "../../../../../styles/features/carrier-dispatch-workspaces.css";
+---
+<BaseLayout title="Owner Role Preview | Hermes Load Board" description="Restricted read-only Hermes Load Board role preview for an authenticated internal owner." robots="noindex,nofollow">
+  <SiteHeader theme="light" activePath="/load-board/" />
+  <main class="wsp-shell" id="main-content">
+    <header class="wsp-hero">
+      <p class="wsp-label">Hermes Logistics / Internal owner review</p>
+      <h1>One login. Four role views. One Load Board.</h1>
+      <p>Review the Carrier, Dispatcher, Dealer/Shipper and proposed Broker experience without changing real users or making freight requests.</p>
+    </header>
+    <p class="wsp-status" id="owner-role-status" role="status" aria-live="polite">Verifying private Hermes owner session…</p>
+    <section id="owner-role-gate" class="wsp-panel" hidden>
+      <h2>Owner authentication required</h2>
+      <p class="wsp-muted">This review is available only to a Hermes account with the server-side HERMES_INTERNAL_OWNER capability. Signing up does not grant administrative access.</p>
+      <a href="/services/hermes-connect/load-board/access/?mode=login">Sign in to Hermes Connect</a>
+    </section>
+    <div id="owner-role-content" hidden>
+      <p class="wsp-notice"><strong>READ-ONLY PREVIEW:</strong> Illustrative interface only. No live inventory, real customers or private source contact information appear in the role examples. Opening a real workspace uses its own server-side permissions.</p>
+      <nav class="wsp-nav" aria-label="Choose preview role" id="owner-role-nav">
+        <button type="button" class="wsp-btn" aria-pressed="true" data-preview-role="carrier">Carrier</button>
+        <button type="button" class="wsp-btn secondary" aria-pressed="false" data-preview-role="dispatcher">Dispatcher</button>
+        <button type="button" class="wsp-btn secondary" aria-pressed="false" data-preview-role="dealer">Dealer / Shipper</button>
+        <button type="button" class="wsp-btn secondary" aria-pressed="false" data-preview-role="broker">Broker</button>
+        <button type="button" class="wsp-btn secondary" aria-pressed="false" data-preview-role="sources">External sources</button>
+      </nav>
+      <div class="wsp-grid">
+        <section class="wsp-panel" aria-live="polite">
+          <div id="owner-preview-panel"></div>
+          <div class="wsp-actions" style="margin-top:20px">
+            <a id="owner-preview-real-link" class="wsp-btn secondary" href="/load-board/">Open actual role page</a>
+            <a class="wsp-btn secondary" href="/services/hermes-connect/load-board/operations/">Owner approval / assignments</a>
+          </div>
+        </section>
+        <aside class="wsp-panel">
+          <h2>What changes when switching?</h2>
+          <p class="wsp-muted">Only this local preview. Your real Hermes identity, password, business membership and permission grants remain unchanged.</p>
+          <div id="owner-role-meta" class="wsp-status">Waiting for owner verification.</div>
+          <p class="wsp-muted">Actual workspaces enforce verified company access, dispatcher assignment and approved sharing rights. No shared role passwords.</p>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <script is:inline src="/scripts/workspaces/owner-role-preview.js" defer></script>
+</BaseLayout>
