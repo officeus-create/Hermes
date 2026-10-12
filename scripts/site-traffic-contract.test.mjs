@@ -23,6 +23,7 @@ const collector = readFileSync(new URL("../src/components/SiteTrafficCollector.a
 const publicCounter = readFileSync(new URL("../src/components/PublicTrafficCounter.astro", import.meta.url), "utf8");
 const dashboard = readFileSync(new URL("../src/pages/internal/site-traffic.astro", import.meta.url), "utf8");
 const layout = readFileSync(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8");
+const homepage = readFileSync(new URL("../src/pages/index.astro", import.meta.url), "utf8");
 
 assert.match(api, /requireInternalOwner\(request, env\)/);
 assert.match(api, /analytics_consent !== true/);
@@ -66,5 +67,10 @@ assert.doesNotMatch(publicCounter, />Live site traffic</i);
 assert.match(layout, /<SiteTrafficCollector \/>/);
 assert.doesNotMatch(layout, /<PublicTrafficCounter\s*\/>/, "Shared layout must not display site-wide totals as a public overlay");
 assert.doesNotMatch(layout, /showPublicTrafficCounter/);
+assert.match(homepage, /import PublicTrafficCounter from "\.\.\/components\/PublicTrafficCounter\.astro"/);
+assert.match(homepage, /<PublicTrafficCounter \/>/);
+assert.match(homepage, /home-traffic-inline-section/);
+assert.match(homepage, /Sessions are not unique visitors or customers/);
+assert.doesNotMatch(homepage, /\bunique users today\b/i);
 
 console.log("Owner site traffic counter contract OK");
