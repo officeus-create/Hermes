@@ -3,18 +3,18 @@ import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../components/SiteHeader.astro";
 import "../../../../../styles/features/carrier-dispatch-workspaces.css";
 ---
-<BaseLayout title="Owner Role Preview | Hermes Load Board" description="Restricted read-only Hermes Load Board role preview for an authenticated internal owner." robots="noindex,nofollow">
+<BaseLayout title="Owner Role Preview | Hermes Load Board" description="Private Hermes Load Board role previews and feedback for approved staff reviewers." robots="noindex,nofollow">
   <SiteHeader theme="light" activePath="/load-board/" />
   <main class="wsp-shell" id="main-content">
     <header class="wsp-hero">
-      <p class="wsp-label">Hermes Logistics / Internal owner review</p>
+      <p class="wsp-label">Hermes Logistics / Approved role review</p>
       <h1>One login. Four role views. One Load Board.</h1>
       <p>Review the Carrier, Dispatcher, Dealer/Shipper and proposed Broker experience without changing real users or making freight requests.</p>
     </header>
     <p class="wsp-status" id="owner-role-status" role="status" aria-live="polite">Verifying private Hermes owner session…</p>
     <section id="owner-role-gate" class="wsp-panel" hidden>
-      <h2>Owner authentication required</h2>
-      <p class="wsp-muted">This review is available only to a Hermes account with the server-side HERMES_INTERNAL_OWNER capability. Signing up does not grant administrative access.</p>
+      <h2>Approved reviewer login required</h2>
+      <p class="wsp-muted">This preview requires explicit owner-granted reviewer permission or HERMES_INTERNAL_OWNER. Creating an account does not grant access.</p>
       <a href="/services/hermes-connect/load-board/access/?mode=login">Sign in to Hermes Connect</a>
     </section>
     <div id="owner-role-content" hidden>
@@ -38,10 +38,46 @@ import "../../../../../styles/features/carrier-dispatch-workspaces.css";
           <h2>What changes when switching?</h2>
           <p class="wsp-muted">Only this local preview. Your real Hermes identity, password, business membership and permission grants remain unchanged.</p>
           <div id="owner-role-meta" class="wsp-status">Waiting for owner verification.</div>
-          <p class="wsp-muted">Actual workspaces enforce verified company access, dispatcher assignment and approved sharing rights. No shared role passwords.</p>
+          <p class="wsp-muted">Actual workspaces enforce verified company access, dispatcher assignment and approved sharing rights. Shared mailbox access cannot prove which individual wrote a comment; identify yourself in each note or use your own account.</p>
         </aside>
       </div>
-    </div>
+          <section class="wsp-panel" aria-labelledby="role-feedback-heading">
+        <h2 id="role-feedback-heading">Reviewer notes &amp; requests</h2>
+        <p class="wsp-muted">Document an issue for the selected role. No freight is booked, no email is sent, and a comment is not a dispatcher instruction.</p>
+        <form id="role-review-form" class="wsp-form">
+          <div class="wsp-fieldrow">
+            <label class="wsp-field">Your name (especially for a shared mailbox)
+              <input id="role-review-author" name="authorLabel" required minlength="2" maxlength="75" autocomplete="name" />
+            </label>
+            <label class="wsp-field">Category
+              <select name="kind"><option value="bug">Bug</option><option value="ux">Usability</option><option value="idea">Improvement</option><option value="question">Question</option></select>
+            </label>
+          </div>
+          <label class="wsp-field">Comment for <strong id="role-review-selection">Carrier</strong>
+            <textarea name="note" required minlength="12" maxlength="1300" rows="4" placeholder="Describe what is missing, what you expected and how this would help dispatch operations."></textarea>
+          </label>
+          <button type="submit" class="wsp-btn">Save internal feedback</button>
+        </form>
+        <p id="role-review-message" role="status" aria-live="polite" class="wsp-status">Notes load after role verification.</p>
+        <div id="role-review-list" class="wsp-list"></div>
+      </section>
+      <section id="role-reviewer-admin" class="wsp-panel" hidden>
+        <h2>Reviewer access administration</h2>
+        <p class="wsp-muted">An internal owner can approve a registered, mailbox-verified Hermes account for preview and comments only. This never grants freight, dispatcher, carrier or administrative permissions.</p>
+        <form id="role-reviewer-access-form" class="wsp-form">
+          <label class="wsp-field">Existing Hermes account email
+            <input name="email" type="email" required autocomplete="off" placeholder="dispatchtruck107@gmail.com" />
+          </label>
+          <label class="wsp-field"><span><input type="checkbox" name="mailboxOwnershipVerified" required />
+            I have independently confirmed control of this mailbox by the intended reviewer. This does not send an email.</span>
+          </label>
+          <div class="wsp-actions"><button class="wsp-btn" type="submit">Grant reviewer access</button>
+            <button class="wsp-btn secondary" type="button" id="role-reviewer-revoke">Revoke reviewer access</button></div>
+        </form>
+        <p id="role-reviewer-access-message" class="wsp-status" role="status"></p>
+        <div id="role-reviewer-roster" class="wsp-list"></div>
+      </section>
+</div>
   </main>
   <script is:inline src="/scripts/workspaces/owner-role-preview.js" defer></script>
 </BaseLayout>
