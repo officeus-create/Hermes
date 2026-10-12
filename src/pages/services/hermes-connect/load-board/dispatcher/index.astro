@@ -10,6 +10,17 @@ import "../../../../../styles/features/carrier-dispatch-workspaces.css";
 <p>Review interest from your assigned carriers, verify freight terms and coordinate the next step. Internal status updates do not book or contact freight sources.</p></header>
 <nav class="wsp-nav"><a href="/services/hermes-connect/load-board/carrier/">Carrier</a><a aria-current="page" href="/services/hermes-connect/load-board/dispatcher/">Dispatcher</a><a href="/services/hermes-connect/load-board/partners/">Dealer / Shipper</a></nav>
 <p id="dispatcher-state" role="status" aria-live="polite" class="wsp-status">Verifying dispatcher assignment and session…</p>
+<section class="wsp-panel" aria-labelledby="dispatcher-control-title">
+<h2 id="dispatcher-control-title">Control tower</h2>
+<p class="wsp-muted">Read-only operating summary from your assigned-carrier queue. Expired or withdrawn load records stay visible as review warnings and never become booking authority.</p>
+<div class="wsp-metrics" id="dispatcher-control-summary">
+<div class="wsp-metric"><span>Assigned carriers</span><strong id="dispatcher-metric-carriers">—</strong></div>
+<div class="wsp-metric"><span>Waiting</span><strong id="dispatcher-metric-requested">—</strong></div>
+<div class="wsp-metric"><span>In review</span><strong id="dispatcher-metric-reviewing">—</strong></div>
+<div class="wsp-metric"><span>Active open</span><strong id="dispatcher-metric-active">—</strong></div>
+<div class="wsp-metric"><span>Stale open</span><strong id="dispatcher-metric-stale">—</strong></div>
+</div>
+</section>
 <div class="wsp-grid"><section class="wsp-panel"><h2>Incoming carrier requests</h2>
 <p class="wsp-muted">A queued request means only that Hermes stored it. Human receipt appears when the dispatcher actually marks it seen.</p>
 <div class="wsp-tabs"><button data-status-filter="open" aria-selected="true">Open requests</button><button data-status-filter="all" aria-selected="false">All requests</button></div>
