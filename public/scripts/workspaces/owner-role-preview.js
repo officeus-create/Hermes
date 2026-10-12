@@ -7,6 +7,55 @@
   const link=document.getElementById("owner-preview-real-link");
   const buttons=[...document.querySelectorAll("[data-preview-role]")];
   let snapshot=null;
+  let selectedRole="carrier";
+  const feedbackForm=document.getElementById("role-review-form");
+  const feedbackStatus=document.getElementById("role-review-message");
+  const feedbackList=document.getElementById("role-review-list");
+  const reviewerAdmin=document.getElementById("role-reviewer-admin");
+  const reviewerForm=document.getElementById("role-reviewer-access-form");
+  const reviewerAccessStatus=document.getElementById("role-reviewer-access-message");
+  const reviewerRoster=document.getElementById("role-reviewer-roster");
+  const send=async(url,body)=>{
+    const response=await fetch(url,{method:"POST",credentials:"same-origin",cache:"no-store",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(result.error||"Request failed");
+    return result;
+  };
+  async function loadFeedback(role){
+    feedbackStatus.textContent="Loading feedback for "+role+"…";
+    feedbackList.replaceChildren();
+    try{
+      const response=await fetch("/api/load-board/role-review?role="+encodeURIComponent(role),
+        {credentials:"same-origin",cache:"no-store"});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw Error(result.error||"Feedback unavailable");
+      if(selectedRole!==role)return;
+      feedbackStatus.textContent=result.feedback.length+" feedback note(s) for "+role+" · Saved internally only";
+      if(!result.feedback.length){append(feedbackList,"p","No feedback for this view yet.","wsp-muted");return;}
+      for(const item of result.feedback){
+        const entry=document.createElement("article");entry.className="wsp-load";
+        append(entry,"span",item.kind.toUpperCase()+" · "+new Date(item.createdAt).toLocaleString(),"wsp-chip");
+        append(entry,"h3",item.authorLabel+" · "+item.accountEmail);
+        append(entry,"p",item.note,"wsp-muted");
+        feedbackList.append(entry);
+      }
+    }catch(error){feedbackStatus.textContent=error instanceof Error?error.message:"Feedback unavailable";}
+  }
+  async function loadReviewers(){
+    const response=await fetch("/api/load-board/reviewer-access",
+      {credentials:"same-origin",cache:"no-store"});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(result.error||"Reviewer roster unavailable");
+    reviewerRoster.replaceChildren();
+    if(!result.reviewers.length)append(reviewerRoster,"p","No additional reviewer accounts approved.","wsp-muted");
+    for(const reviewer of result.reviewers){
+      const card=document.createElement("article");card.className="wsp-load";
+      append(card,"strong",reviewer.name+" · "+reviewer.email);
+      append(card,"span",reviewer.status+" · "+(reviewer.mailboxOwnershipVerified?"mailbox checked":"unverified"),"wsp-chip");
+      reviewerRoster.append(card);
+    }
+  }
   const text=(tag,value,cls)=>{
     const node=document.createElement(tag);
     node.textContent=String(value??"");
@@ -73,6 +122,9 @@
   };
   function choose(role){
     if(!snapshot)return;
+    selectedRole=role;
+    document.getElementById("role-review-selection").textContent=role;
+    void loadFeedback(role);
     panel.replaceChildren();
     for(const button of buttons){
       const active=button.dataset.previewRole===role;
@@ -113,6 +165,43 @@
     link.textContent=role==="broker"?"Open public freight discovery":"Open real "+view.heading;
   }
   buttons.forEach(button=>button.addEventListener("click",()=>choose(button.dataset.previewRole)));
+  feedbackForm.addEventListener("submit",async(event)=>{
+    event.preventDefault();const button=feedbackForm.querySelector('button[type="submit"]');
+    button.disabled=true;
+    const form=new FormData(feedbackForm);
+    const role=selectedRole;
+    try{
+      await send("/api/load-board/role-review",{
+        role,kind:form.get("kind"),authorLabel:form.get("authorLabel"),note:form.get("note")
+      });
+      feedbackForm.querySelector('textarea[name="note"]').value="";
+      await loadFeedback(role);
+      feedbackStatus.textContent="Saved to the internal review log. No external message sent.";
+    }catch(error){feedbackStatus.textContent=error instanceof Error?error.message:"Could not save feedback";}
+    finally{button.disabled=false;}
+  });
+  reviewerForm.addEventListener("submit",async(event)=>{
+    event.preventDefault();const button=reviewerForm.querySelector('button[type="submit"]');
+    button.disabled=true;
+    const form=new FormData(reviewerForm);
+    try{
+      await send("/api/load-board/reviewer-access",{
+        action:"grant",email:form.get("email"),
+        mailboxOwnershipVerified:form.has("mailboxOwnershipVerified")
+      });
+      reviewerAccessStatus.textContent="Reviewer approved. Access is limited to role previews and feedback.";
+      await loadReviewers();
+    }catch(error){reviewerAccessStatus.textContent=error instanceof Error?error.message:"Reviewer grant failed";}
+    finally{button.disabled=false;}
+  });
+  document.getElementById("role-reviewer-revoke").addEventListener("click",async()=>{
+    const email=reviewerForm.querySelector('[name="email"]').value;
+    if(!email)return reviewerAccessStatus.textContent="Enter the reviewer email first.";
+    try{
+      await send("/api/load-board/reviewer-access",{action:"revoke",email});
+      reviewerAccessStatus.textContent="Reviewer access revoked.";await loadReviewers();
+    }catch(error){reviewerAccessStatus.textContent=error instanceof Error?error.message:"Revocation failed";}
+  });
   (async()=>{
     try{
       const response=await fetch("/api/load-board/owner-role-preview",{
@@ -127,12 +216,20 @@
         gate.hidden=false;
         return;
       }
-      if(data.mode!=="OWNER_READ_ONLY_ROLE_PREVIEW"||data.roleSwitchGrantsPermissions!==false){
+      if(!["OWNER_READ_ONLY_ROLE_PREVIEW","REVIEWER_READ_ONLY_ROLE_PREVIEW"].includes(data.mode)||data.roleSwitchGrantsPermissions!==false){
         throw Error("Unexpected role-preview authorization response");
       }
       snapshot=data;
-      status.textContent="Read-only owner preview authorized · "+(data.actor?.email||"Hermes account")+" · No messages or bookings";
+      status.textContent=(data.ownerAccess?"Owner":"Reviewer")+" preview authorized · "+
+        (data.actor?.email||"Hermes account")+" · No external messages or bookings";
       root.hidden=false;
+      document.getElementById("role-review-author").value=data.actor?.name||"";
+      const sourceButton=buttons.find(button=>button.dataset.previewRole==="sources");
+      if(sourceButton)sourceButton.hidden=!data.ownerAccess;
+      const approvalLink=document.querySelector('a[href="/services/hermes-connect/load-board/operations/"]');
+      if(approvalLink)approvalLink.hidden=!data.ownerAccess;
+      reviewerAdmin.hidden=!data.ownerAccess;
+      if(data.ownerAccess)void loadReviewers().catch(error=>{reviewerAccessStatus.textContent=error.message;});
       choose("carrier");
     }catch(error){
       status.classList.add("wsp-error");
