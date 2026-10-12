@@ -7,11 +7,12 @@ import {
 type Context = {request: Request; env: {DB?: any}};
 const reply = (status: number, data: Record<string, unknown>) => jsonResponse(status, data, privateWorkspaceHeaders);
 const ALLOWED_EQUIPMENT = new Set(["", "car_hauler", "hotshot", "flatbed", "enclosed", "wedge"]);
+const US_STATES = new Set("AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC".split(" "));
 function parseState(input: unknown): string | null | undefined {
   if(input === null || input === undefined || input === "") return null;
   if(typeof input !== "string") return undefined;
   const value = input.trim().toUpperCase();
-  return /^[A-Z]{2}$/.test(value) ? value : undefined;
+  return US_STATES.has(value) ? value : undefined;
 }
 function parseEquipment(input: unknown): string | null | undefined {
   if(input === null || input === undefined || input === "") return null;
