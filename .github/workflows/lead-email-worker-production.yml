@@ -46,6 +46,9 @@ jobs:
       - name: Validate Load Board inbound email bridge
         run: node scripts/load-board-intake-api-contract.test.mjs
 
+      - name: Validate Load Board Gmail read-only intake
+        run: node scripts/load-board-gmail-readonly-contract.test.mjs
+
       - name: Validate Cold Fair fail-closed delivery contract
         run: npm run test:cold-fair-outbound-guard
 
@@ -82,5 +85,6 @@ jobs:
             echo "- Cold Fair activation requires an approved canonical-source service binding whose immutable snapshot supplies campaignOwnerId and an explicit windowKey for atomic cap scope; this release does not configure one."
             echo "- Car Hauling delivery: SQLite Durable Object outbox with per-destination receipts and alarms"
             echo "- Inbound Load Board target: \`loads@loadboard.hermeslogisticsus.com\`"
-            echo "- Inbound activation still requires the approved Cloudflare Email Routing rule and runtime source/token configuration."
+            echo "- Gmail read-only Load Board poller is deployed fail-closed and remains disabled unless \`LOADBOARD_GMAIL_INTAKE_ENABLED=true\` plus dedicated read-only OAuth/query/source configuration are supplied."
+            echo "- Gmail intake code has no send endpoint; company-wide no-email-send policy remains unchanged."
           } >> "$GITHUB_STEP_SUMMARY"
