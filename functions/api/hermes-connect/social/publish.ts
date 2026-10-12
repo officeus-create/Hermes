@@ -2,6 +2,7 @@ import { getAuthenticatedSpecialist, jsonResponse } from "../../_lib/session.mjs
 import { sameOriginMutation } from "../../_lib/load-board-market-posts.mjs";
 import {
   businessSocialPayloadFingerprint,
+  classifyBusinessSocialPublicationReplay,
   completeBusinessSocialPublication,
   getBusinessSocialCredential,
   normalizeBusinessSocialProvider,
@@ -71,7 +72,25 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ownerId: specialist.id,
   });
   if (!reservation.inserted) {
-    return jsonResponse(200, { success: true, duplicate: true, publication: publicBusinessSocialPublication(reservation.row) }, headers);
+    // Never expose another tenant's receipt or confirm a different payload.
+    const replay = classifyBusinessSocialPublicationReplay(reservation.row, {
+      business, provider, ownerId: specialist.id, fingerprint,
+    });
+    if (replay === "conflict") {
+      return jsonResponse(409, { success: false, error: "idempotency_key_conflict", retry_allowed: false }, headers);
+    }
+    const publication = publicBusinessSocialPublication(reservation.row);
+    if (replay === "published") {
+      return jsonResponse(200, { success: true, duplicate: true, publication }, headers);
+    }
+    if (replay === "pending") {
+      return jsonResponse(202, { success: false, duplicate: true, pending: true, publication }, headers);
+    }
+    // A recorded failed/unknown provider outcome is not a successful post.
+    return jsonResponse(409, {
+      success: false, duplicate: true, error: "idempotency_key_already_used",
+      retry_allowed: false, publication,
+    }, headers);
   }
 
   const credential = await getBusinessSocialCredential(env.DB, env, business, provider, specialist.id);
