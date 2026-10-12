@@ -39,6 +39,7 @@ test.describe("Academy and careers governance", () => {
   test("Careers lists only the current verified vacancy and its live external source", async ({ page }) => {
     const response = await page.goto("/logistics/careers/");
     expect(response?.ok()).toBeTruthy();
+    await expect(page.locator('a[href="/logistics/resources/car-hauler-jobs-owner-operator-guide/"]')).toBeVisible();
     if (!wisconsinIsCurrent) {
       await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
       await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
