@@ -18,11 +18,18 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 
 const title = "Carrier Knowledge Hub for Car Haulers | Hermes Logistics";
 const description =
-  "Use the Hermes carrier knowledge hub to review RPM and trip economics, factoring vs direct payment, dispatch models, new-authority readiness, broker setup packets, carrier control, and practical next steps.";
+  "Use the Hermes carrier knowledge hub to review car-hauler job vs owner-operator paths, RPM and trip economics, factoring vs direct payment, dispatch models, new-authority readiness, broker setup packets, carrier control, and practical next steps.";
 const canonicalUrl = new URL("/logistics/resources/", Astro.site).toString();
 const carrierIntake = "/logistics/start-car-hauling-dispatch/";
 
 const coreGuides = [
+  {
+    icon: Users,
+    label: "Career vs carrier",
+    title: "Car Hauler Jobs vs Owner-Operator Paths",
+    body: "Separate employee-driver searches from owner-operator, own-authority, and operating-carrier paths before comparing pay, equipment, dispatch, or next steps.",
+    href: "/logistics/resources/car-hauler-jobs-owner-operator-guide/",
+  },
   {
     icon: Calculator,
     label: "Trip economics",
@@ -98,7 +105,7 @@ const reviewOrder = [
 const faq = [
   {
     question: "What is included in the Carrier Knowledge Hub?",
-    answer: "The hub organizes Hermes resources for trip economics, payment-timing comparison, dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
+    answer: "The hub organizes Hermes resources for career-vs-carrier path selection, trip economics, payment-timing comparison, dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
   },
   {
     question: "Does reading a guide or using a calculator qualify a carrier or create dispatch service?",
@@ -130,6 +137,7 @@ const schema = [
       { "@type": "Thing", name: "Car hauling dispatch" },
       { "@type": "Thing", name: "Motor carrier operations" },
       { "@type": "Thing", name: "Carrier onboarding" },
+      { "@type": "Thing", name: "Car hauler jobs and owner-operator paths" },
       { "@type": "Thing", name: "Rate per mile calculation" },
       { "@type": "Thing", name: "Carrier payment timing" },
     ],
@@ -251,7 +259,7 @@ const schema = [
           <div class="section-heading split-heading">
             <div>
               <p class="eyebrow">Core carrier tools and guides</p>
-              <h2 id="carrier-guides-title">Five practical resources to review first.</h2>
+              <h2 id="carrier-guides-title">Six practical resources to review first.</h2>
             </div>
             <p>Each resource has a distinct purpose, visible carrier-control boundary, direct next step, and no guarantee language.</p>
           </div>
