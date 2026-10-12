@@ -100,3 +100,14 @@ test("marketing page keeps visible ProgressoPro positioning without premature sa
     ),
   ).toBeFalsy();
 });
+
+test("homepage visibly identifies the Wisconsin logistics business and routes qualified prospects to existing owners", async ({ page }) => {
+  await page.goto("/");
+  const panel = page.getByRole("region", { name: "Hermes Logistics LLC" });
+  await expect(panel.getByRole("heading", { name: "Hermes Logistics LLC" })).toBeVisible();
+  await expect(panel).toContainText("DFI entity H062724");
+  await expect(panel).toContainText("freight, acceptance, rates and revenue are not guaranteed");
+  await expect(panel.getByRole("link", { name: "Car-hauling dispatch" })).toHaveAttribute("href", "/logistics/car-hauling-dispatch/");
+  await expect(panel.getByRole("link", { name: "Free carrier RPM calculator" })).toHaveAttribute("href", "/logistics/resources/rpm-calculator/");
+  await expect(panel.getByRole("link", { name: "Verify company identity" })).toHaveAttribute("href", "/company-information/");
+});
