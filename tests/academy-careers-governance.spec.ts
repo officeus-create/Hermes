@@ -65,6 +65,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.locator("h1")).toHaveText("Car Hauling Dispatcher — Remote / U.S. Market");
     await expect(page.getByText("Remote worldwide", { exact: true })).toBeVisible();
     await expect(page.getByText("U.S. Central Time schedule", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Compare job and owner-operator paths" })).toHaveAttribute("href", "/logistics/resources/car-hauler-jobs-owner-operator-guide/");
     await expect(page.getByText(/Publication review due/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "This vacancy is awaiting a fresh recruiting review." })).toBeVisible();
 
