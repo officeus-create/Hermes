@@ -26,7 +26,8 @@ test("load board truth boundary keeps live feed, structural preview, preview fre
   expect(liveEnhancer).toContain("Only the real count above represents active, unexpired records.");
   expect(liveEnhancer).toContain("No approved active freight right now");
   expect(liveEnhancer).toContain("A truck is capacity, not freight.");
-  expect(liveEnhancer).toContain("visual preview rows are excluded.");
+  expect(liveEnhancer).toContain("Counts reflect only the permissions of the current session.");
+  expect(liveEnhancer).toContain("Internal-only and visual preview records are excluded.");
   expect(liveEnhancer).toContain('const accessPath = "/services/hermes-connect/load-board/access/"');
   expect(source).toContain("submission itself is not a booking");
   expect(source).not.toContain("No load shown on this page is live or bookable.");
