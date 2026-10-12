@@ -307,6 +307,11 @@ const { vertical, backHref, backLabel } = Astro.props;
       else payload.text=String(composer.elements.namedItem("facebook_text")?.value||composer.elements.namedItem("caption")?.value||"");
       try{
         const response=await request("/api/hermes-connect/social/publish",{method:"POST",body:JSON.stringify(payload)});
+        if(response.pending){
+          row.textContent=`${target.replaceAll("_"," ")} · previous publication pending — not republished`;
+          row.setAttribute("data-pending","true");
+          continue;
+        }
         row.textContent=`${target.replaceAll("_"," ")} · ${response.publication?.status||"accepted"}`;
         if(response.publication?.permalink){const link=document.createElement("a");link.href=response.publication.permalink;link.target="_blank";link.rel="noopener noreferrer";link.textContent=" Open";row.append(link);}
       }catch(error){row.textContent=`${target.replaceAll("_"," ")} · ${error?.payload?.publication?.status||error.message||"failed"}`;row.setAttribute("data-error","true");}
