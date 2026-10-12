@@ -218,13 +218,18 @@ const syncLoadBoardGmailInbox = async (env, _ctx, deps = {}) => {
   if (!actualMailbox || actualMailbox !== config.mailbox) {
     throw new Error("gmail_ingest_mailbox_mismatch");
   }
-  const listUrl = `${GMAIL_BASE}/messages?maxResults=${config.maxMessages}&q=${encodeURIComponent(config.query)}`;
+  // Enforce a fresh 24-hour Gmail search boundary even if an operator enters
+  // a broad query. Each source's stricter TTL is still checked below before
+  // calling intake, so old messages cannot become active freight/capacity.
+  const observedAt = new Date(deps.now?.() || Date.now()).toISOString();
+  const afterEpoch = Math.floor(Date.parse(observedAt) / 1000) - 24 * 60 * 60;
+  const boundedQuery = `(${config.query}) after:${afterEpoch}`;
+  const listUrl = `${GMAIL_BASE}/messages?maxResults=${config.maxMessages}&q=${encodeURIComponent(boundedQuery)}`;
   const listResponse = await fetchImpl(listUrl, { headers: authHeaders });
   if (!listResponse.ok) throw new Error(`gmail_ingest_list_http_${listResponse.status}`);
   const listPayload = await listResponse.json();
   const messages = Array.isArray(listPayload?.messages) ? listPayload.messages.slice(0, config.maxMessages) : [];
 
-  const observedAt = new Date(deps.now?.() || Date.now()).toISOString();
   const summary = { enabled: true, scanned: 0, ingested: 0, quarantined: 0, skipped: 0 };
 
   for (const item of messages) {
