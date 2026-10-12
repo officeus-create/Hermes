@@ -60,6 +60,10 @@ const screening = [
         </div>
       )}
       <a class="button" href="/logistics/apply/?for=career">Prepare a general careers inquiry</a>
+      <div class="career-owner-operator-handoff">
+        <p><strong>I already operate a truck or carrier business.</strong> Employment and carrier operations are different paths.</p>
+        <a href="/logistics/resources/car-hauler-jobs-owner-operator-guide/">Compare job and owner-operator paths <ArrowRight size={16} aria-hidden="true" /></a>
+      </div>
     </div>
     <ul>
       {careerPublicBoundaries.map((item) => <li><ShieldCheck size={18} aria-hidden="true" />{item}</li>)}
@@ -111,6 +115,9 @@ const screening = [
   .career-vacancy-list article h3 { margin: .25rem 0 .4rem; color: #122b72; }
   .career-vacancy-list article p { margin: 0 0 .8rem; color: #526181; }
   .career-vacancy-actions { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; }
+  .career-owner-operator-handoff { margin-top: 1rem; padding: 1rem 1.1rem; border: 1px solid rgba(28,62,141,.14); border-radius: 14px; background: rgba(255,255,255,.72); }
+  .career-owner-operator-handoff p { margin: 0 0 .5rem; color: #344567; line-height: 1.55; }
+  .career-owner-operator-handoff a { display: inline-flex; align-items: center; gap: .45rem; color: #173b91; font-weight: 800; text-underline-offset: 3px; }
   .career-status-layout ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
   .career-status-layout li { display: flex; gap: .75rem; align-items: flex-start; padding: 1rem; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); line-height: 1.55; color: #344567; }
   .career-status-layout li svg { flex: none; margin-top: .15rem; color: #315fd7; }
