@@ -4,7 +4,6 @@ import {
   parseCapacityListEmail,
   parseFreightEmailRecords,
   parseSourceConfig,
-  sourceAuthenticationPassed,
   submitIntake,
 } from "./load-board-inbound.mjs";
 
@@ -44,6 +43,25 @@ const parseRawHeaders = (raw) => {
 };
 
 const header = (headers, name) => clean(headers?.[String(name).toLowerCase()] || "", 4_000);
+
+/**
+ * Do not trust an arbitrary Authentication-Results/Received-SPF header in the
+ * sender-supplied raw MIME. Gmail injects the leading mx.google.com result.
+ * Only that leading result can authorize a From-domain-aligned DMARC pass.
+ * A later forged pass must never override an earlier fail.
+ */
+const gmailSourceAuthenticationPassed = (raw, sender) => {
+  const domain = normalizeEmail(sender).split("@")[1];
+  if (!domain) return false;
+  const unfolded = String(raw || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n")
+    .split("\n\n", 1)[0].replace(/\n[ \t]+/g, " ");
+  const firstResult = unfolded.split("\n")
+    .find((line) => /^authentication-results\s*:/i.test(line));
+  if (!firstResult || !/^authentication-results\s*:\s*mx\.google\.com\s*;/i.test(firstResult))
+    return false;
+  const alignedDmarc = firstResult.match(/\bdmarc=pass\b[^\n]*?\bheader\.from=([a-z0-9.-]+)\b/i);
+  return Boolean(alignedDmarc && alignedDmarc[1].toLowerCase() === domain);
+};
 
 const safeIso = (value, fallback) => {
   const date = value ? new Date(String(value)) : fallback;
@@ -135,7 +153,7 @@ const processRawGmailMessage = async ({ gmailId, raw, internalDate, mailbox, sou
       reason: "stale_email", subject,
       received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef,
     }];
-  } else if (source.requireAuthentication && !sourceAuthenticationPassed(headers)) {
+  } else if (source.requireAuthentication && !gmailSourceAuthenticationPassed(raw, sender)) {
     quarantine = [{
       source_message_id: sourceMessageId,
       fingerprint: `gmail-auth:${gmailId}`,
@@ -281,6 +299,7 @@ export {
   decodeBase64Url,
   gmailReadConfig,
   parseRawHeaders,
+  gmailSourceAuthenticationPassed,
   processRawGmailMessage,
   syncLoadBoardGmailInbox,
 };
