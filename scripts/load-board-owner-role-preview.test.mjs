@@ -32,5 +32,8 @@ assert(!helper.includes("dispatchtruck107@gmail.com"), "No hard-coded shared rev
 assert(!accessApi.includes("HL 40 Branch"), "Never store plaintext shared credentials.");
 assert(script.includes("role-review-form"));
 assert(script.includes("loadFeedback(role)"));
+assert(reviewerApi.includes("identity.access.owner || r.account_email===identity.specialist.email"));
+assert(script.includes('item.accountEmail ? item.authorLabel'));
+assert(page.includes('role-review-form'));
 execFileSync(process.execPath, ["--check", new URL("../public/scripts/workspaces/owner-role-preview.js",import.meta.url).pathname]);
 console.log("Hermes owner role preview: contract passed");
