@@ -1,0 +1,67 @@
+import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { specialistHasInternalOwnerCapability } from "../_lib/load-board-market-posts.mjs";
+import {
+  ensureLoadBoardReviewerSchema, REVIEW_HEADERS, sameOriginRoleReview,
+} from "../_lib/load-board-role-review.mjs";
+import {isValidEmail} from "../../../src/legacy-prototype/auth.mjs";
+
+type Context={request:Request;env:{DB?:any}};
+const reply=(status:number,data:Record<string,unknown>)=>jsonResponse(status,data,REVIEW_HEADERS);
+async function owner(context:Context){
+  if(!context.env.DB)return {error:reply(503,{success:false,error:"database_not_configured"})};
+  const specialist=await getAuthenticatedSpecialist(context.request,context.env.DB);
+  if(!specialist)return {error:reply(401,{success:false,error:"authentication_required"})};
+  if(!await specialistHasInternalOwnerCapability(context.env.DB,specialist.id))
+    return {error:reply(403,{success:false,error:"internal_owner_access_required"})};
+  await ensureLoadBoardReviewerSchema(context.env.DB);
+  return {specialist};
+}
+export async function onRequestGet(context:Context){
+  const auth=await owner(context);if(auth.error)return auth.error;
+  const rows=await context.env.DB.prepare(`
+    SELECT r.specialist_id,s.email,s.name,r.status,r.mailbox_ownership_verified,
+      r.reviewed_at
+    FROM hermes_load_board_reviewers r JOIN specialists s ON s.id=r.specialist_id
+    ORDER BY r.reviewed_at DESC LIMIT 100
+  `).all();
+  return reply(200,{success:true,reviewers:(rows.results||[]).map((r:any)=>({
+    specialistId:r.specialist_id,email:r.email,name:r.name,status:r.status,
+    mailboxOwnershipVerified:Number(r.mailbox_ownership_verified)===1,
+    reviewedAt:r.reviewed_at,
+  }))});
+}
+export async function onRequestPost(context:Context){
+  if(!sameOriginRoleReview(context.request))return reply(403,{success:false,error:"same_origin_required"});
+  const auth=await owner(context);if(auth.error)return auth.error;
+  let body:Record<string,unknown>;
+  try{body=await context.request.json() as Record<string,unknown>;}
+  catch{return reply(400,{success:false,error:"invalid_json"});}
+  const email=String(body.email||"").trim().toLowerCase().slice(0,160);
+  const action=String(body.action||"");
+  if(!isValidEmail(email)||!["grant","revoke"].includes(action))
+    return reply(400,{success:false,error:"email_or_action_invalid"});
+  if(action==="grant"&&body.mailboxOwnershipVerified!==true)
+    return reply(409,{success:false,error:"mailbox_owner_verification_required"});
+  const reviewer=await context.env.DB.prepare(
+    "SELECT id,email FROM specialists WHERE email=? LIMIT 1"
+  ).bind(email).first() as {id:string,email:string}|null;
+  if(!reviewer)return reply(404,{success:false,error:"account_not_registered"});
+  if(reviewer.id===auth.specialist.id)return reply(409,{success:false,error:"owner_does_not_need_reviewer_entitlement"});
+  const status=action==="grant"?"active":"revoked";
+  const now=new Date().toISOString();
+  await context.env.DB.prepare(`
+    INSERT INTO hermes_load_board_reviewers
+      (specialist_id,status,mailbox_ownership_verified,granted_by_specialist_id,reviewed_at)
+    VALUES (?,?,?,?,?)
+    ON CONFLICT(specialist_id) DO UPDATE SET
+      status=excluded.status,
+      mailbox_ownership_verified=excluded.mailbox_ownership_verified,
+      granted_by_specialist_id=excluded.granted_by_specialist_id,
+      reviewed_at=excluded.reviewed_at
+  `).bind(reviewer.id,status,action==="grant"?1:0,auth.specialist.id,now).run();
+  return reply(200,{
+    success:true,email,status,permission:"LOAD_BOARD_ROLE_PREVIEW_REVIEWER",
+    internalOwnerGranted:false,carrierAccessGranted:false,
+    emailsSent:false,dispatcherNotificationsSent:false,
+  });
+}
