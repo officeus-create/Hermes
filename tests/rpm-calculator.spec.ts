@@ -82,3 +82,56 @@ test("RPM calculator analytics emit behavior only, never entered trip values", a
     expect(event.tool).toBe("rpm_calculator");
   }
 });
+
+test("sharing RPM calculator never exposes entered financial values or changes canonical ownership", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__copiedRpmLink = null;
+    Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: async (url: string) => { (window as any).__copiedRpmLink = url; } },
+    });
+  });
+  await page.goto(calculatorPath);
+  await page.evaluate(() => {
+    (window as any).__rpmShareEvents = [];
+    window.addEventListener("hermes:analytics", (event) => {
+      if ((event as CustomEvent).detail.name === "rpm_calculator_share_action") {
+        (window as any).__rpmShareEvents.push((event as CustomEvent).detail);
+      }
+    });
+  });
+
+  await page.locator('input[name="grossPay"]').fill("1777.33");
+  await page.locator('input[name="deadheadMiles"]').fill("94");
+  await page.getByRole("button", { name: "Share free calculator" }).click();
+  const copied = await page.evaluate(() => (window as any).__copiedRpmLink);
+  expect(copied).toBe("https://hermeslogisticsus.com/logistics/resources/rpm-calculator/?utm_source=website_share&utm_medium=referral&utm_campaign=carrier_rpm_tool");
+  expect(copied).not.toContain("1777.33");
+  expect(copied).not.toContain("94");
+  await expect(page.locator("[data-rpm-share-status]")).toContainText("link copied");
+
+  const events = await page.evaluate(() => (window as any).__rpmShareEvents);
+  expect(events).toHaveLength(1);
+  expect(Object.keys(events[0]).sort()).toEqual(["method", "name", "tool", "ts"]);
+  expect(events[0].method).toBe("copy");
+  expect(events[0].tool).toBe("rpm_calculator");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/logistics/resources/rpm-calculator/");
+});
+
+test("native RPM sharing sends only a public URL, never user-entered values", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as any).__rpmSharePayload = null;
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: async (payload: any) => { (window as any).__rpmSharePayload = payload; },
+    });
+  });
+  await page.goto(calculatorPath);
+  await page.locator('input[name="grossPay"]').fill("3212.43");
+  await page.getByRole("button", { name: "Share free calculator" }).click();
+  const payload = await page.evaluate(() => (window as any).__rpmSharePayload);
+  expect(payload.url).toContain("/logistics/resources/rpm-calculator/?utm_source=website_share");
+  expect(JSON.stringify(payload)).not.toContain("3212.43");
+  await expect(page.locator("[data-rpm-share-status]")).toContainText("link shared");
+});
