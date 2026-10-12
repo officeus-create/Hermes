@@ -210,10 +210,14 @@
       const data=await response.json().catch(()=>({}));
       if(!response.ok){
         status.textContent=response.status===401?"Sign in required to view owner role previews.":
-          response.status===403?"This account does not have the required internal owner authorization.":
+          response.status===403?"Account signed in, but owner approval for Load Board review is still pending.":
           "Role preview is temporarily unavailable ("+response.status+").";
         status.classList.add("wsp-error");
         gate.hidden=false;
+        if(response.status===403) {
+          const loginLink=gate.querySelector('a[href*="mode=login"]');
+          if(loginLink)loginLink.hidden=true;
+        }
         return;
       }
       if(!["OWNER_READ_ONLY_ROLE_PREVIEW","REVIEWER_READ_ONLY_ROLE_PREVIEW"].includes(data.mode)||data.roleSwitchGrantsPermissions!==false){
