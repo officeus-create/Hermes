@@ -42,21 +42,31 @@ export async function onRequestGet(context:Context){
     ORDER BY CASE WHEN i.status IN ('requested','seen','reviewing') THEN 0 ELSE 1 END,
       i.updated_at DESC LIMIT 200
   `).bind(auth.user.id,auth.user.id).all();
-  return reply(200,{success:true,
-    assignments:(assignments.results||[]).map((a:any)=>({
-      carrierCompanyId:a.carrier_company_id,name:a.company_name,location:[a.city,a.state].filter(Boolean).join(", "),
-    })),
-    requests:(requests.results||[]).map((r:any)=>({
-      id:r.id,loadId:r.load_record_id,carrierCompanyId:r.carrier_company_id,
-      carrierName:r.company_name,status:r.status,
-      message:r.carrier_message||null,statusNote:r.status_note||null,
-      origin:[r.origin_city,r.origin_state].filter(Boolean).join(", ")||"Under review",
-      destination:[r.destination_city,r.destination_state].filter(Boolean).join(", ")||"Under review",
-      equipment:r.equipment||null,vehicleCount:r.vehicle_count??null,
-      pickupWindow:r.pickup_window||null,offeredRate:r.rate_amount??null,
-      loadStillActive:r.load_status==="active"&&r.expires_at>new Date().toISOString(),
-      createdAt:r.created_at,updatedAt:r.updated_at,
-    })),
+  const now=new Date().toISOString();
+  const assignmentRows=(assignments.results||[]).map((a:any)=>({
+    carrierCompanyId:a.carrier_company_id,name:a.company_name,location:[a.city,a.state].filter(Boolean).join(", "),
+  }));
+  const requestRows=(requests.results||[]).map((r:any)=>({
+    id:r.id,loadId:r.load_record_id,carrierCompanyId:r.carrier_company_id,
+    carrierName:r.company_name,status:r.status,
+    message:r.carrier_message||null,statusNote:r.status_note||null,
+    origin:[r.origin_city,r.origin_state].filter(Boolean).join(", ")||"Under review",
+    destination:[r.destination_city,r.destination_state].filter(Boolean).join(", ")||"Under review",
+    equipment:r.equipment||null,vehicleCount:r.vehicle_count??null,
+    pickupWindow:r.pickup_window||null,offeredRate:r.rate_amount??null,
+    loadStillActive:r.load_status==="active"&&r.expires_at>now,
+    createdAt:r.created_at,updatedAt:r.updated_at,
+  }));
+  const count=(status:string)=>requestRows.filter((r:any)=>r.status===status).length;
+  const open=requestRows.filter((r:any)=>["requested","seen","reviewing"].includes(r.status));
+  const summary={
+    assignedCarriers:assignmentRows.length,totalRequests:requestRows.length,openRequests:open.length,
+    requested:count("requested"),seen:count("seen"),reviewing:count("reviewing"),
+    unavailable:count("unavailable"),declined:count("declined"),
+    staleOpen:open.filter((r:any)=>!r.loadStillActive).length,
+    activeOpen:open.filter((r:any)=>r.loadStillActive).length,
+  };
+  return reply(200,{success:true,assignments:assignmentRows,requests:requestRows,summary,
     automaticallyContactedSource:false,bookingCreated:false,
   });
 }
