@@ -16,6 +16,18 @@ import "../../../../../styles/features/carrier-dispatch-workspaces.css";
 <div id="dispatcher-queue" class="wsp-list"><p class="wsp-loader">No verified queue loaded.</p></div>
 </section><aside><section class="wsp-panel"><h2>My assigned carriers</h2><div id="dispatcher-carriers" class="wsp-list"><p class="wsp-muted">No assignment list loaded.</p></div></section>
 <section class="wsp-panel"><h2>Operating safeguard</h2><p class="wsp-notice">Any shipment acceptance, source communication, price change or dispatch confirmation requires human validation and proper authority.</p></section></aside></div>
+<section class="wsp-panel" aria-labelledby="feedback-title">
+<h2 id="feedback-title">Dispatcher feedback</h2>
+<p class="wsp-muted">Leave internal product feedback for Hermes. This does not contact carriers, brokers or shippers. Do not enter passwords or private customer contacts.</p>
+<form class="wsp-form" id="load-board-staff-feedback-form">
+<label class="wsp-field">Workspace area<select name="area" required><option value="dispatcher">Dispatcher</option><option value="carrier">Carrier</option><option value="dealer_shipper">Dealer / Shipper</option><option value="broker">Broker access</option><option value="source">Sources</option></select></label>
+<label class="wsp-field">Observation or improvement idea<textarea name="note" required minlength="10" maxlength="1200" rows="4" placeholder="Describe an issue or suggestion without confidential identifiers"></textarea></label>
+<button type="submit" class="wsp-btn">Save internal feedback</button>
+</form>
+<p id="load-board-staff-feedback-status" role="status" aria-live="polite" class="wsp-muted"></p>
+<div id="load-board-staff-feedback-list" class="wsp-list"></div>
+</section>
+<script is:inline src="/scripts/workspaces/dispatch-feedback.js" defer></script>
 </main>
 <script is:inline src="/scripts/workspaces/dispatcher-workspace.js" defer></script>
 </BaseLayout>
