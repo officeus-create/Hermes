@@ -11,6 +11,7 @@ The existing `hermes-lead-email` Worker now has a scheduled, fail-closed Gmail *
 4. fetches messages only with Gmail `messages.list` + `messages.get?format=raw`;
 5. reuses the existing Load Board source configuration, authentication gate, parser, TTL, quarantine, normalized fingerprints and D1 intake;
 6. never calls Gmail send and exposes no send method;
+   Source authentication is **mandatory** for direct Gmail intake: the leading `mx.google.com` Authentication-Results must contain a DMARC pass aligned with the approved From domain. A later/forged pass or a `require_authentication=false` source override cannot enable intake. Authentication failures are quarantined.
 7. records provider provenance as `gmail_api` and keeps raw bodies out of the normalized Load Board projection.
 
 ## Production safety
