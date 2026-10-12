@@ -153,7 +153,7 @@ const processRawGmailMessage = async ({ gmailId, raw, internalDate, mailbox, sou
       reason: "stale_email", subject,
       received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef,
     }];
-  } else if (source.requireAuthentication && !gmailSourceAuthenticationPassed(raw, sender)) {
+  } else if (!gmailSourceAuthenticationPassed(raw, sender)) {
     quarantine = [{
       source_message_id: sourceMessageId,
       fingerprint: `gmail-auth:${gmailId}`,
