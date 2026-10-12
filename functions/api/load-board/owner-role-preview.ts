@@ -1,6 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { specialistHasInternalOwnerCapability } from "../_lib/load-board-market-posts.mjs";
-import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 
 type Env = { DB?: any };
 const headers = { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow", "Vary": "Cookie" };
@@ -14,7 +13,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!await specialistHasInternalOwnerCapability(env.DB, specialist.id)) {
     return jsonResponse(403, { success: false, error: "internal_owner_access_required" }, headers);
   }
-  await ensureLoadBoardSchema(env.DB);
   const sourceRows = await env.DB.prepare(`
     SELECT id, provider, source_name, source_type, read_enabled, ingest_enabled,
       redistribution_permission, contact_reveal_permission, status, last_successful_sync
