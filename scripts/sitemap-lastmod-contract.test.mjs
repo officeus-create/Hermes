@@ -27,11 +27,14 @@ function entryLastmod(entry, label) {
 // Dated release evidence, never the build clock.
 const knownUpdates = [
   ["sitemap.xml", "company-information/", "2026-09-22", "url"],
+  ["sitemap.xml", "careers/car-hauling-dispatcher/", "2026-10-12", "url"],
+  ["sitemap-services.xml", "logistics/car-hauling-dispatch/", "2026-10-12", "url"],
+  ["sitemap-services.xml", "logistics/resources/", "2026-10-12", "url"],
   ["sitemap-digital-services.xml", "services/hermes-connect/repair-shops/", "2026-09-12", "url"],
   ["sitemap-digital-services.xml", "services/seo-for-auto-repair-shops/", "2026-09-13", "url"],
   ["sitemap-digital-services.xml", "services/auto-repair-website-design/", "2026-09-13", "url"],
-  ["sitemapindex.xml", "sitemap.xml", "2026-09-22", "sitemap"],
-  ["sitemapindex.xml", "sitemap-services.xml", "2026-09-15", "sitemap"],
+  ["sitemapindex.xml", "sitemap.xml", "2026-10-12", "sitemap"],
+  ["sitemapindex.xml", "sitemap-services.xml", "2026-10-12", "sitemap"],
   ["sitemapindex.xml", "sitemap-digital-services.xml", "2026-09-13", "sitemap"],
   ["sitemapindex.xml", "sitemap-academy.xml", "2026-09-16", "sitemap"],
   ["sitemap-insights.xml", "insights/logistics/dry-van-spot-rates-september-2026/", "2026-09-14", "url"],
