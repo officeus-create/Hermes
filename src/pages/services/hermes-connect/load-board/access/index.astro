@@ -146,6 +146,11 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
         return payload;
       };
       const showCompany = async (specialist) => {
+        // The read-only staff review path never creates a company record or grants privileges.
+        if (new URLSearchParams(location.search).get("source")==="role-review") {
+          window.location.assign("/services/hermes-connect/load-board/role-preview/");
+          return;
+        }
         if (authState) authState.textContent = `Signed in as ${specialist?.name || specialist?.email || 'Hermes user'}.`;
         if (authCard instanceof HTMLElement) authCard.classList.add('is-complete');
         if (authTabs instanceof HTMLElement) authTabs.hidden = true;
