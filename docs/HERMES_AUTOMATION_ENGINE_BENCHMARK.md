@@ -275,6 +275,23 @@ Restate provides durable execution and reliable/exactly-once communication seman
 
 Windmill is useful as a workflow/UI reference, but its AGPL/community/commercial embedding terms and self-hosting footprint make it a poor default substrate for embedding HAE into proprietary Hermes Connect. Learn the operator UX/patterns only.
 
+## Additional open-source disposition — 2026-10-13
+
+These projects are useful inputs, but none should become a second Hermes control plane before the HAE core pilot is live:
+
+- **Temporal — LEARN.** MIT-licensed and a strong reference for durable workflow histories/retries, but self-hosting adds a separate service/data plane that Hermes does not need for the current Cloudflare+D1 pilot.
+- **Hatchet — LEARN.** Strong background-task/durable-workflow/observability model, but self-hosting is another orchestration platform. Reuse concepts such as concurrency controls, retries and run visibility, not the runtime.
+- **Trigger.dev — LEARN.** Self-hosting is supported, but the operator owns infrastructure, updates, security, scaling and reliability. HAE should copy no code merely to gain a UI/runtime that Cloudflare primitives already cover.
+- **Inngest — LEARN / NO EMBED SERVER.** SDKs are Apache-2.0, while the server/CLI use SSPL plus delayed Apache publication. Its event/function ergonomics are useful reference material; do not make its server the Hermes canonical engine.
+- **Mixpost Lite — LEARN PROVIDER UX.** MIT-licensed and social-first; useful for understanding account/provider abstractions and scheduling UX. Do not install it as a second Hermes scheduler.
+- **Postiz — LEARN ONLY.** AGPL-3.0 and a larger Postgres/queue stack. No code copy into proprietary Hermes and no second publisher.
+- **RSSHub — LEARN / DO NOT COPY.** AGPL-3.0. Prefer official RSS/Atom feeds and small Hermes-owned normalizers. If a separate RSSHub deployment is ever considered, perform a license/deployment review first.
+- **changedetection.io — LEARN CHANGE-DETECTION PATTERNS.** Its API exposes a mature watch model, but the repository also has active licensing/commercial-use clarification. HAE's initial Source Radar should prefer cheap conditional HTTP (ETag/Last-Modified), content hashing and D1 snapshots rather than embedding another service.
+
+Implementation consequence: Source Radar V1 should be a Hermes-owned module on Workers + D1:
+`conditional fetch → canonicalize → hash → compare → relevance gate → event`.
+Only sources with a real change create downstream work.
+
 ## Selection rule
 
 Do not select by feature count.
