@@ -150,6 +150,37 @@ Reject an engine regardless of score if it requires:
 - public customer/candidate PII in workflow logs;
 - license use incompatible with Hermes deployment.
 
+## Cloudflare free-tier budget for the first pilot
+
+Official Cloudflare limits reviewed on 2026-10-13:
+
+- Workers Free: 100,000 requests/day; 5 Cron Triggers/account.
+- Queues Free: 10,000 standard operations/day; Free retention is 24 hours.
+- D1 Free: 5,000,000 rows read/day; 100,000 rows written/day; 5 GB total storage.
+- Queue `delaySeconds` supports up to 24 hours.
+
+Current HAE carrier pilot has 20 eligible publish slots/day.
+
+Worst-case planned queue envelope per slot:
+- one content-plan message: write + read + delete ≈ 3 operations;
+- up to four readback attempts: 4 × (write + read + delete) ≈ 12 operations.
+
+That is roughly **300 queue operations/day** at the maximum V1 readback plan before recovery/admin traffic, around 3% of the current Queues Free daily allowance.
+
+D1 writes are also expected to remain orders of magnitude below 100,000/day. This is an engineering estimate, not billing proof. The 7-day benchmark must record actual Worker, Queue and D1 metrics.
+
+Free-first acceptance:
+- normal pilot stays below 25% of each current free daily limit;
+- warning at 25%;
+- automatic nonessential-work shedding at 50%;
+- no automatic upgrade or paid-resource activation.
+
+References:
+- https://developers.cloudflare.com/workers/platform/limits/
+- https://developers.cloudflare.com/queues/platform/pricing/
+- https://developers.cloudflare.com/queues/platform/limits/
+- https://developers.cloudflare.com/d1/platform/pricing/
+
 ## Test sequence
 
 ### Test 1 — dry-run
