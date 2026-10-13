@@ -127,6 +127,9 @@ assert.match(worker, /queueName: batch\?\.queue/, "Queue retry receipts must pre
 assert.match(worker, /queueMessageId: item\?\.id/, "Queue retry receipts must correlate attempts to the same message id");
 assert.match(worker, /messageSentAt: item\?\.timestamp/, "Queue retry receipts must preserve the original queue message timestamp");
 assert.match(worker, /generic_job_events_by_type/, "Private health must expose generic retry/stale-recovery event counts");
+assert.match(worker, /initialDispatchLeaseUntil = addSecondsIso\(now, 15 \* 60\)/, "New generic jobs must reserve a recovery lease before Queue send");
+assert.match(worker, /priority,\n    initialDispatchLeaseUntil,\n    maxAttempts/, "Generic job creation must persist the dispatch lease atomically with the job row");
+assert.doesNotMatch(worker, /UPDATE hermes_automation_jobs SET available_at=\?,last_error_class=NULL,updated_at=\? WHERE job_id=\? AND state='QUEUED'/, "Generic dispatch must not depend on a post-send lease write that can fail after Queue acceptance");
 assert.doesNotMatch(worker, /ready_content: Number\(ready\?\.count \|\| 0\)/, "Missing D1 health count rows must not be coerced to zero");
 assert.match(worker, /ready_content: metricNumberOrNull\(ready\?\.count\)/, "D1 health counts must preserve UNKNOWN/null while retaining real zero");
 assert.match(worker, /safeRuntimeErrorClass/, "Runtime error receipts must use a sanitizer rather than persist arbitrary exception text");
