@@ -99,6 +99,21 @@ Risk:
 - not the canonical Hermes task engine;
 - must not become a second uncontrolled scheduler.
 
+## Fresh open-source benchmark evidence — 2026-10-13
+
+GitHub repository readback on the review date:
+
+| Candidate | Repository | Stars (snapshot) | License finding | Hermes implication |
+|---|---|---:|---|---|
+| Postiz | `gitroomhq/postiz-app` | 37,106 | AGPL-3.0 | Strong social-product reference, but copying/modifying it inside a network service carries AGPL obligations. Keep as architecture/provider reference or separately compliant service, not a casual code source. |
+| Activepieces | `activepieces/activepieces` | 25,026 | Core outside listed enterprise paths is MIT; enterprise directories have separate terms | Good reference for workflow/piece abstractions. Reuse only clearly MIT-covered core patterns/code and keep Hermes state canonical. |
+| n8n | `n8n-io/n8n` | 207,167 | Sustainable Use License for non-EE code; EE code separately licensed | Suitable internal benchmark/prototyping candidate, but not a permissive source to absorb wholesale into Hermes. |
+| Mixpost | `inovector/mixpost` | 3,806 | MIT | Best permissive social-specific code/reference candidate among this set. |
+
+All four repositories were public and non-archived in the 2026-10-13 readback. Star counts are a dated adoption signal only, not a quality score.
+
+**Benchmark decision so far:** none of these replaces the HAE control plane. Their best value is selective pattern/provider research. Native Hermes/Cloudflare remains the leading runtime hypothesis because it reuses the canonical D1, existing deployment/security model and CRM ownership without introducing another source of truth. Mixpost and MIT-covered Activepieces core are the safest code-level references; Postiz/n8n require stricter license boundaries.
+
 ## Common benchmark workload
 
 Every candidate must execute the **same** carrier-only Threads pilot:
