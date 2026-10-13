@@ -156,6 +156,35 @@ assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMAT
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
 
+assert.match(worker, /READ_ONLY_GENERIC_JOB_TYPES/, "Generic executor must expose a bounded read-only capability registry");
+assert.match(worker, /"system\.health\.snapshot"/, "Generic executor must support a safe system health snapshot job");
+assert.match(worker, /"history\.coverage\.audit"/, "Generic executor must support a read-only historical coverage audit job");
+assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
+assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
+assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");
+assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");
+assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
+assert.match(worker, /idempotency_key_required/, "Generic job creation must require an explicit idempotency key");
+assert.match(worker, /idempotency_key_conflict/, "A reused idempotency key with a changed logical request must fail closed");
+assert.match(worker, /genericJobReplayMatches/, "Idempotent replay must compare the persisted logical request, not only the key");
+assert.match(worker, /Math\.trunc\(rawPriority\)/, "Generic job priority must persist as a bounded integer");
+assert.match(worker, /Math\.trunc\(rawMaxAttempts\)/, "Generic job retry count must persist as a bounded integer");
+assert.match(worker, /transitionGenericJobWithEvent/, "Generic state transitions must persist the state and immutable event in one D1 batch");
+assert.match(worker, /db\.batch\(\[[\s\S]*conditionalGenericJobEventStatement/, "Generic transition helper must use atomic D1 batch semantics");
+assert.match(worker, /state='RUNNING'[\s\S]*state='QUEUED'[\s\S]*state='RETRY_SCHEDULED'/, "Generic execution must atomically claim queued or due retry work");
+assert.match(worker, /job\.stale_running_recovered/, "Stale RUNNING recovery must append an immutable transition event");
+assert.match(worker, /job\.stale_running_failed/, "Exhausted stale RUNNING jobs must append a terminal transition event");
+assert.match(worker, /eventType: "job\.stale_running_recovered"[\s\S]{0,320}expectedAttemptCount: attempts/, "Stale RUNNING recovery must use the atomic state/event transition helper");
+assert.match(worker, /eventType: "job\.stale_running_failed"[\s\S]{0,320}expectedAttemptCount: attempts/, "Stale RUNNING terminal failure must use the atomic state/event transition helper");
+assert.match(worker, /job\.retry_scheduled/, "Generic failures must persist a retry transition");
+assert.match(worker, /Duplicate recovery messages[\s\S]*D1 state transition is the execution lock/, "Generic recovery must rely on the atomic D1 claim rather than a future available_at lease");
+assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
+assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
+assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
+assert.match(worker, /Number\.isFinite\(rawPriority\)/, "Generic job numeric inputs must fail to safe defaults instead of persisting NaN");
+assert.match(worker, /Number\.isFinite\(rawMaxAttempts\)/, "Generic job retry bounds must reject non-finite input");
+assert.match(worker, /decodeURIComponent[\s\S]*job_id_invalid/, "Malformed encoded job IDs must fail closed as a 400-class input error");
+
 const originalFetch = globalThis.fetch;
 try {
   let actionBody = null;
