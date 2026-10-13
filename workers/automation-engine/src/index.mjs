@@ -590,6 +590,12 @@ async function processGenericJob(env, message) {
         step: "execute",
         errorClass,
       });
+      try {
+        await enqueueGenericJobMessage(env, jobId, genericJobBackoffSeconds(currentAttempt));
+      } catch {
+        // Durable RETRY_SCHEDULED state remains authoritative. Scheduled recovery
+        // will enqueue it later; never lose the job because Queue.send failed.
+      }
       return { status: "RETRY_SCHEDULED", job_id: jobId, retry_at: retryAt, error_class: errorClass };
     }
     await env.DB.prepare(
@@ -611,6 +617,29 @@ async function recoverPendingGenericJobs(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const now = new Date().toISOString();
+  const staleRunningCutoff = addSecondsIso(now, -15 * 60);
+  await env.DB.prepare(`
+    UPDATE hermes_automation_jobs
+    SET state='RETRY_SCHEDULED',
+        available_at=?,
+        last_error_class='stale_running_recovered',
+        updated_at=?
+    WHERE state='RUNNING'
+      AND updated_at<=?
+      AND attempt_count<max_attempts
+  `).bind(now, now, staleRunningCutoff).run();
+  await env.DB.prepare(`
+    UPDATE hermes_automation_jobs
+    SET state='FAILED',
+        current_step='complete',
+        available_at=NULL,
+        last_error_class='stale_running_attempts_exhausted',
+        updated_at=?,
+        completed_at=?
+    WHERE state='RUNNING'
+      AND updated_at<=?
+      AND attempt_count>=max_attempts
+  `).bind(now, now, staleRunningCutoff).run();
   const rows = await env.DB.prepare(`
     SELECT job_id,state FROM hermes_automation_jobs
     WHERE state IN ('QUEUED','RETRY_SCHEDULED')
@@ -989,6 +1018,10 @@ async function health(env) {
   const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='provider_accepted_readback_pending'").bind(ACCOUNT_KEY, PLATFORM).first();
   const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='readback_unverified'").bind(ACCOUNT_KEY, PLATFORM).first();
   const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status='plan_enqueue_failed'").bind(ACCOUNT_KEY, PLATFORM).first();
+  const genericJobRows = await db.prepare("SELECT state,COUNT(*) AS count FROM hermes_automation_jobs GROUP BY state ORDER BY state").all();
+  const genericJobsByState = Object.fromEntries(
+    (genericJobRows?.results || []).map((row) => [String(row.state || "UNKNOWN"), Number(row.count || 0)])
+  );
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
     FROM hermes_automation_runs
@@ -1004,6 +1037,7 @@ async function health(env) {
     pending_readbacks: Number(pendingReadback?.count || 0),
     unverified_readbacks: Number(unverifiedReadback?.count || 0),
     plan_enqueue_failures: Number(planEnqueueFailed?.count || 0),
+    generic_jobs_by_state: genericJobsByState,
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
     dlq: await queueHealth(env?.AUTOMATION_DLQ),
     last_run: last || null,
