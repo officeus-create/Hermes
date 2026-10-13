@@ -125,6 +125,11 @@ assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Qu
 assert.ok(wrangler.includes('"binding": "AUTOMATION_DLQ"'), "DLQ must be bound read-only in practice for health metrics");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
+assert.match(releaseWorkflow, /queues\/\$\{QUEUE_ID\}\/messages/, "Dry-run proof must inject a canary through the Cloudflare Queue API");
+assert.match(releaseWorkflow, /d1\/database\/\$\{DB_ID\}\/query/, "Dry-run proof must read execution state back from canonical D1");
+assert.match(releaseWorkflow, /dry_run_canary=PASS/, "Release must require Queue→Worker→D1 evidence");
+assert.match(releaseWorkflow, /Provider writes: disabled/, "Dry-run evidence must state provider writes remain disabled");
+assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY/, "Dry-run release workflow must not inject the provider credential");
 for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
   assert.ok(worker.includes(table), `Missing additive canonical-D1 runtime table: ${table}`);
 }
