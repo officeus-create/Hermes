@@ -432,7 +432,7 @@ async function recordCronHeartbeat(db, now, eligible) {
       (heartbeat_id,trigger_type,triggered_at,chicago_slot_key,eligible,created_at)
     VALUES (?,?,?,?,?,?)
   `).bind(
-    `heartbeat:cron:${slotKey}`,
+    `heartbeat:cron:${triggeredAt.slice(0, 13)}Z`,
     "cron",
     triggeredAt,
     slotKey,
@@ -1338,7 +1338,15 @@ export default {
     const now = new Date();
     await ensureSchema(env.DB);
     const eligible = isEligibleChicagoSlot(now);
-    await recordCronHeartbeat(env.DB, now, eligible);
+    try {
+      await recordCronHeartbeat(env.DB, now, eligible);
+    } catch (error) {
+      await recordRuntimeEvent(env, {
+        eventType: "cron.heartbeat_write_failed",
+        slotKey: chicagoSlotKey(now),
+        errorClass: clean(error?.message, 160) || "heartbeat_write_failed",
+      });
+    }
 
     if (eligible) {
       const slotKey = chicagoSlotKey(now);
