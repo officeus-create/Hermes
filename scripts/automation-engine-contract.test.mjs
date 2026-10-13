@@ -69,7 +69,10 @@ const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jso
 const releaseWorkflow = readFileSync(new URL("../.github/workflows/automation-engine-release.yml", import.meta.url), "utf8");
 
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
-assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be terminal/fail-closed");
+assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be fail-closed");
+assert.match(worker, /unknown_outcome_readback_pending/, "Ambiguous provider writes must enter readback-only recovery");
+assert.match(worker, /unknown_outcome_unresolved/, "Ambiguous provider writes must terminate for human review if bounded readback cannot resolve them");
+assert.match(worker, /provider_outcome_unknown[\s\S]*publication\.readback/, "Unknown provider outcomes must schedule readback rather than a second publish call");
 assert.ok(worker.includes("INSERT OR IGNORE"), "Idempotency reservation must be persisted before work");
 assert.match(worker, /claimPublicationForProvider/, "Provider writes must require an atomic publication claim");
 assert.match(worker, /status=\'publishing\'[\s\S]*status=\'reserved\'/, "Only a definitely pre-provider reservation may advance to a provider call");
