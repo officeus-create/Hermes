@@ -165,6 +165,12 @@ assert.match(worker, /processGenericJob/, "Queue consumer must execute generic d
 assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");
 assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
 assert.match(worker, /idempotency_key_required/, "Generic job creation must require an explicit idempotency key");
+assert.match(worker, /idempotency_key_conflict/, "A reused idempotency key with a changed logical request must fail closed");
+assert.match(worker, /genericJobReplayMatches/, "Idempotent replay must compare the persisted logical request, not only the key");
+assert.match(worker, /Math\.trunc\(rawPriority\)/, "Generic job priority must persist as a bounded integer");
+assert.match(worker, /Math\.trunc\(rawMaxAttempts\)/, "Generic job retry count must persist as a bounded integer");
+assert.match(worker, /transitionGenericJobWithEvent/, "Generic state transitions must persist the state and immutable event in one D1 batch");
+assert.match(worker, /db\.batch\(\[[\s\S]*conditionalGenericJobEventStatement/, "Generic transition helper must use atomic D1 batch semantics");
 assert.match(worker, /state='RUNNING'[\s\S]*state='QUEUED'[\s\S]*state='RETRY_SCHEDULED'/, "Generic execution must atomically claim queued or due retry work");
 assert.match(worker, /job\.stale_running_recovered/, "Stale RUNNING recovery must append an immutable transition event");
 assert.match(worker, /job\.stale_running_failed/, "Exhausted stale RUNNING jobs must append a terminal transition event");
