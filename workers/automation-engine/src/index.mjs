@@ -353,6 +353,92 @@ async function ensureSchema(db) {
     )
   `).run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_job_events_job_created ON hermes_automation_job_events(job_id, created_at)").run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_automation_runtime_events (
+      event_id TEXT PRIMARY KEY,
+      event_type TEXT NOT NULL,
+      message_type TEXT,
+      job_id TEXT,
+      content_id TEXT,
+      slot_key TEXT,
+      attempt_count INTEGER,
+      error_class TEXT,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_runtime_events_created ON hermes_automation_runtime_events(created_at)").run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_automation_heartbeats (
+      heartbeat_id TEXT PRIMARY KEY,
+      trigger_type TEXT NOT NULL,
+      triggered_at TEXT NOT NULL,
+      chicago_slot_key TEXT NOT NULL,
+      eligible INTEGER NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_heartbeats_triggered ON hermes_automation_heartbeats(triggered_at)").run();
+}
+
+function runtimeEventId(eventType) {
+  return `runtime:${eventType}:${crypto.randomUUID()}`;
+}
+
+function metricNumberOrNull(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+async function recordRuntimeEvent(env, {
+  eventType,
+  messageType = null,
+  jobId = null,
+  contentId = null,
+  slotKey = null,
+  attemptCount = null,
+  errorClass = null,
+  createdAt = new Date().toISOString(),
+}) {
+  if (!env?.DB) return false;
+  try {
+    await ensureSchema(env.DB);
+    await env.DB.prepare(`
+      INSERT INTO hermes_automation_runtime_events
+        (event_id,event_type,message_type,job_id,content_id,slot_key,attempt_count,error_class,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?)
+    `).bind(
+      runtimeEventId(clean(eventType, 80) || "runtime.event"),
+      clean(eventType, 80) || "runtime.event",
+      clean(messageType, 80) || null,
+      clean(jobId, 160) || null,
+      clean(contentId, 200) || null,
+      clean(slotKey, 32) || null,
+      Number.isFinite(Number(attemptCount)) ? Math.max(0, Math.trunc(Number(attemptCount))) : null,
+      clean(errorClass, 160) || null,
+      createdAt,
+    ).run();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function recordCronHeartbeat(db, now, eligible) {
+  const triggeredAt = now.toISOString();
+  const slotKey = chicagoSlotKey(now);
+  await db.prepare(`
+    INSERT OR IGNORE INTO hermes_automation_heartbeats
+      (heartbeat_id,trigger_type,triggered_at,chicago_slot_key,eligible,created_at)
+    VALUES (?,?,?,?,?,?)
+  `).bind(
+    `heartbeat:cron:${slotKey}`,
+    "cron",
+    triggeredAt,
+    slotKey,
+    eligible ? 1 : 0,
+    triggeredAt,
+  ).run();
 }
 
 function runIdForSlot(slotKey) {
@@ -1169,8 +1255,8 @@ async function queueHealth(queue) {
     const metrics = await queue.metrics();
     return {
       status: "ok",
-      backlog_count: Number(metrics?.backlogCount || 0),
-      backlog_bytes: Number(metrics?.backlogBytes || 0),
+      backlog_count: metricNumberOrNull(metrics?.backlogCount),
+      backlog_bytes: metricNumberOrNull(metrics?.backlogBytes),
       oldest_message_at: metrics?.oldestMessageTimestamp
         ? new Date(metrics.oldestMessageTimestamp).toISOString()
         : null,
@@ -1201,6 +1287,32 @@ async function health(env) {
     ORDER BY updated_at DESC
     LIMIT 1
   `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastSuccess = await db.prepare(`
+    SELECT slot_key,status,updated_at
+    FROM hermes_automation_runs
+    WHERE account_key=? AND platform=? AND status IN ('dry_run_ready','published_verified')
+    ORDER BY updated_at DESC
+    LIMIT 1
+  `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastFailure = await db.prepare(`
+    SELECT slot_key,status,updated_at,last_error_class
+    FROM hermes_automation_runs
+    WHERE account_key=? AND platform=? AND status IN ('plan_enqueue_failed','unknown_outcome_unresolved','readback_unverified')
+    ORDER BY updated_at DESC
+    LIMIT 1
+  `).bind(ACCOUNT_KEY, PLATFORM).first();
+  const lastHeartbeat = await db.prepare(`
+    SELECT trigger_type,triggered_at,chicago_slot_key,eligible
+    FROM hermes_automation_heartbeats
+    ORDER BY triggered_at DESC
+    LIMIT 1
+  `).first();
+  const runtimeEventRows = await db.prepare(
+    "SELECT event_type,COUNT(*) AS count FROM hermes_automation_runtime_events GROUP BY event_type ORDER BY event_type"
+  ).all();
+  const runtimeEventsByType = Object.fromEntries(
+    (runtimeEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), Number(row.count || 0)])
+  );
   return {
     database: "ok",
     ready_content: Number(ready?.count || 0),
@@ -1210,8 +1322,12 @@ async function health(env) {
     unverified_readbacks: Number(unverifiedReadback?.count || 0),
     plan_enqueue_failures: Number(planEnqueueFailed?.count || 0),
     generic_jobs_by_state: genericJobsByState,
+    runtime_events_by_type: runtimeEventsByType,
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
     dlq: await queueHealth(env?.AUTOMATION_DLQ),
+    last_cron_wake: lastHeartbeat || null,
+    last_success: lastSuccess || null,
+    last_failure: lastFailure || null,
     last_run: last || null,
   };
 }
@@ -1220,38 +1336,81 @@ export default {
   async scheduled(_controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
     const now = new Date();
-    await enqueueDueReadbacks(env);
-    await recoverPendingPlanRuns(env);
-    await recoverPendingGenericJobs(env);
-    if (!isEligibleChicagoSlot(now)) return;
-    const slotKey = chicagoSlotKey(now);
     await ensureSchema(env.DB);
-    const inserted = await reserveRun(env.DB, slotKey, "cron");
-    if (!inserted) return;
-    ctx.waitUntil(enqueuePlanRun(env, slotKey));
+    const eligible = isEligibleChicagoSlot(now);
+    await recordCronHeartbeat(env.DB, now, eligible);
+
+    if (eligible) {
+      const slotKey = chicagoSlotKey(now);
+      const inserted = await reserveRun(env.DB, slotKey, "cron");
+      if (inserted) {
+        ctx.waitUntil(enqueuePlanRun(env, slotKey).catch(async (error) => {
+          await recordRuntimeEvent(env, {
+            eventType: "cron.current_slot_enqueue_failed",
+            messageType: "content.plan",
+            slotKey,
+            errorClass: clean(error?.message, 160) || "current_slot_enqueue_failed",
+          });
+        }));
+      }
+    }
+
+    for (const [eventType, maintenance] of [
+      ["cron.recover_readbacks_failed", enqueueDueReadbacks],
+      ["cron.recover_plan_runs_failed", recoverPendingPlanRuns],
+      ["cron.recover_generic_jobs_failed", recoverPendingGenericJobs],
+    ]) {
+      try {
+        await maintenance(env);
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType,
+          errorClass: clean(error?.message, 160) || "scheduled_maintenance_failed",
+        });
+      }
+    }
   },
 
   async queue(batch, env) {
     for (const item of batch.messages) {
       const payload = item.body || {};
+      const messageType = clean(payload?.type, 80) || "UNKNOWN";
       try {
-        if (payload.type === "job.execute") {
+        if (messageType === "job.execute") {
           await processGenericJob(env, payload);
           item.ack();
           continue;
         }
-        if (payload.type === "content.plan") {
+        if (messageType === "content.plan") {
           await processPlanMessage(env, payload);
           item.ack();
           continue;
         }
-        if (payload.type === "publication.readback") {
+        if (messageType === "publication.readback") {
           await processReadbackMessage(env, payload);
           item.ack();
           continue;
         }
-        item.ack();
-      } catch {
+        await recordRuntimeEvent(env, {
+          eventType: "queue.message_unknown",
+          messageType,
+          jobId: payload?.job_id,
+          contentId: payload?.content_id,
+          slotKey: payload?.slot_key,
+          attemptCount: item?.attempts,
+          errorClass: "queue_message_type_unknown",
+        });
+        item.retry();
+      } catch (error) {
+        await recordRuntimeEvent(env, {
+          eventType: "queue.message_retry",
+          messageType,
+          jobId: payload?.job_id,
+          contentId: payload?.content_id,
+          slotKey: payload?.slot_key,
+          attemptCount: item?.attempts,
+          errorClass: clean(error?.message, 160) || "queue_handler_failed",
+        });
         item.retry();
       }
     }
