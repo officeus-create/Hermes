@@ -176,6 +176,18 @@ jobs:
               ],
             },
             {
+              url: "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+              markers: [
+                "source-gated live + demo discovery product",
+                "Start car-hauling dispatch review",
+                "The carrier makes the final operating decision",
+              ],
+              forbiddenMarkers: [
+                "The separate Load Board remains a fictional product preview",
+                "The public Load Board is a fictional product preview",
+              ],
+            },
+            {
               url: "https://hermeslogisticsus.com/",
               markers: ["Hermes Connect", "Open Hermes Connect Product Hub"],
             },
