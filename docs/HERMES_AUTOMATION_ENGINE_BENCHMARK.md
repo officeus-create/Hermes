@@ -239,6 +239,42 @@ Measure:
 - DLQ;
 - incremental cost.
 
+## 2026-10-13 durable-execution research delta
+
+### Cloudflare Workflows — ADAPT selectively, not as the default queue for every job
+
+Current official limits/pricing:
+- available on Workers Free;
+- 3,000 Workflow steps/day on Free;
+- 100,000 invocations/day shared with Workers requests;
+- 1 GB Workflow state storage;
+- completed Workflow state retention is 3 days on Free;
+- durable sleep can run up to one year.
+
+Decision:
+- keep Cron + Queues + D1 as the default high-volume HAE execution substrate;
+- use Cloudflare Workflows later for low-volume, long-lived chains such as approvals, multi-hour waits, or external processes that benefit from durable sleep/waitForEvent;
+- persist canonical business/job history in D1, not in short-retention Workflow state.
+
+### DBOS — LEARN, do not install into HAE now
+
+DBOS is MIT-licensed and has strong workflow/step checkpoint and durable-sleep semantics, but its normal architecture requires Postgres. Hermes is already standardized on Cloudflare/D1 for this engine. Replacing D1/Queues with Postgres only to gain DBOS would violate the smallest-runtime rule.
+
+Pattern to reuse:
+- named steps;
+- checkpointed outcomes;
+- durable sleeps;
+- resume from the last completed step;
+- debounce/coalescing for noisy events.
+
+### Restate — LEARN, do not add another runtime now
+
+Restate provides durable execution and reliable/exactly-once communication semantics, but it requires an additional service/runtime. Its reliability model is valuable as a reference for HAE idempotency, durable state transitions and recovery, not as another control plane for the current pilot.
+
+### Windmill — NO EMBED
+
+Windmill is useful as a workflow/UI reference, but its AGPL/community/commercial embedding terms and self-hosting footprint make it a poor default substrate for embedding HAE into proprietary Hermes Connect. Learn the operator UX/patterns only.
+
 ## Selection rule
 
 Do not select by feature count.
