@@ -125,6 +125,8 @@ assert.match(worker, /\^\[a-z\]\[a-z0-9_\]\{2,79\}\$/, "Runtime error sanitizer 
 assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
 assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
 assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
+assert.doesNotMatch(worker, /UPDATE hermes_automation_runs SET status='duplicate_suppressed'/, "Duplicate Queue delivery must never regress the authoritative run state");
+assert.match(worker, /existing_publication_status/, "Duplicate provider-plan delivery should report the already-existing publication state without mutating the run");
 assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_plan_runs_failed/, "Plan recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_generic_jobs_failed/, "Generic recovery failure must be isolated and observable");
