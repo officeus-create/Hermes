@@ -156,6 +156,22 @@ assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMAT
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
 
+assert.match(worker, /READ_ONLY_GENERIC_JOB_TYPES/, "Generic executor must expose a bounded read-only capability registry");
+assert.match(worker, /"system\.health\.snapshot"/, "Generic executor must support a safe system health snapshot job");
+assert.match(worker, /"history\.coverage\.audit"/, "Generic executor must support a read-only historical coverage audit job");
+assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
+assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
+assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");
+assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept owner-controlled generic jobs");
+assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
+assert.match(worker, /idempotency_key_required/, "Generic job creation must require an explicit idempotency key");
+assert.match(worker, /state='RUNNING'[\s\S]*state='QUEUED'[\s\S]*state='RETRY_SCHEDULED'/, "Generic execution must atomically claim queued or due retry work");
+assert.match(worker, /stale_running_recovered/, "Generic jobs stranded in RUNNING must recover durably");
+assert.match(worker, /job\.retry_scheduled/, "Generic failures must persist a retry transition");
+assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
+assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
+assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
+
 const originalFetch = globalThis.fetch;
 try {
   let actionBody = null;
