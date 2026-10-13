@@ -31,7 +31,7 @@ The long-term carrier Threads transport target is the official Meta Threads API 
 This changes the provider plan, not the engine architecture:
 
 ```
-HAE runtime: Cloudflare + D1 + Queues
+HAE runtime: Cloudflare + canonical Hermes Connect D1 + Queues
 pilot transport: Windsor (existing connected account)
 target transport: Meta Threads API direct
 ```
@@ -41,7 +41,7 @@ Windsor and direct Meta must never publish concurrently for the same Hermes slot
 ## Engines to compare
 
 ### A. Native Hermes / Cloudflare
-Cron + Queues + D1 + Workers + optional Workflows.
+Cron + Queues + the existing canonical Hermes Connect D1 + Workers + optional Workflows.
 
 Expected strengths:
 - already aligned with Hermes infrastructure;
