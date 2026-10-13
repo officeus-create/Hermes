@@ -6,10 +6,10 @@
     <strong>Site traffic</strong>
   </div>
   <div class="public-traffic-counter__metrics">
-    <span><b data-traffic-sessions-today>—</b><small>visitor sessions today</small></span>
+    <span><b data-traffic-sessions-today>—</b><small>sessions today</small></span>
     <span><b data-traffic-views-today>—</b><small>views today</small></span>
-    <span><b data-traffic-sessions-month>—</b><small>visitor sessions this month</small></span>
-    <span><b data-traffic-views-month>—</b><small>views this month</small></span>
+    <span><b data-traffic-sessions-month>—</b><small>sessions month</small></span>
+    <span><b data-traffic-views-month>—</b><small>views month</small></span>
   </div>
   <p data-traffic-note>Consent-based aggregate · UTC</p>
 </aside>
@@ -64,30 +64,105 @@
     right:16px;
     bottom:16px;
     z-index:32;
-    width:min(410px,calc(100vw - 32px));
-    padding:12px 14px;
-    border:1px solid rgba(125,151,181,.34);
-    border-radius:16px;
-    background:rgba(248,251,255,.94);
-    box-shadow:0 14px 38px rgba(20,45,78,.14);
+    width:min(680px,calc(100vw - 32px));
+    min-height:48px;
+    padding:7px 10px;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:8px 12px;
+    border:1px solid rgba(125,151,181,.26);
+    border-radius:999px;
+    background:
+      linear-gradient(110deg,rgba(255,255,255,.97),rgba(248,251,255,.94) 58%,rgba(242,248,255,.96));
+    box-shadow:0 12px 30px rgba(20,45,78,.10),inset 0 1px 0 rgba(255,255,255,.9);
     color:#142033;
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    overflow:hidden;
   }
-  .public-traffic-counter__head{display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.01em}
-  .public-traffic-counter__pulse{width:7px;height:7px;border-radius:999px;background:#2a8b66;box-shadow:0 0 0 4px rgba(42,139,102,.12)}
-  .public-traffic-counter__metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-top:9px}
-  .public-traffic-counter__metrics span{min-width:0}
-  .public-traffic-counter__metrics b{display:block;font-size:19px;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
-  .public-traffic-counter__metrics small{display:block;margin-top:2px;color:#667a91;font-size:9px;line-height:1.2}
-  .public-traffic-counter p{margin:8px 0 0;color:#728399;font-size:9px;line-height:1.25}
-  @media(max-width:680px){
-    .public-traffic-counter{right:10px;bottom:10px;width:min(360px,calc(100vw - 20px));padding:10px 12px;border-radius:14px}
-    .public-traffic-counter__metrics{gap:7px}
-    .public-traffic-counter__metrics b{font-size:17px}
+  .public-traffic-counter::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(100deg,transparent 0 38%,rgba(110,177,255,.10) 46%,rgba(152,112,255,.08) 51%,transparent 60%);
+    translate:-55% 0;
+  }
+  .public-traffic-counter__head{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    white-space:nowrap;
+    font-size:10px;
+    letter-spacing:.055em;
+    text-transform:uppercase;
+  }
+  .public-traffic-counter__pulse{
+    width:6px;height:6px;border-radius:999px;background:#2a8b66;
+    box-shadow:0 0 0 3px rgba(42,139,102,.10);
+  }
+  .public-traffic-counter__metrics{
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:0;
+    margin:0;
+    min-width:0;
+  }
+  .public-traffic-counter__metrics span{
+    min-width:0;
+    padding:0 11px;
+    border-left:1px solid rgba(125,151,181,.20);
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    white-space:nowrap;
+  }
+  .public-traffic-counter__metrics b{
+    display:inline;
+    font-size:15px;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.03em;
+  }
+  .public-traffic-counter__metrics small{
+    display:inline;
+    color:#667a91;
+    font-size:8px;
+    line-height:1.1;
+  }
+  .public-traffic-counter p{
+    grid-column:1/-1;
+    margin:-2px 6px 0;
+    color:#7b8a9b;
+    font-size:7px;
+    line-height:1.15;
+    text-align:right;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  @media(max-width:760px){
+    .public-traffic-counter{
+      right:10px;bottom:10px;width:min(420px,calc(100vw - 20px));
+      min-height:auto;padding:8px 10px;border-radius:18px;
+      grid-template-columns:1fr;gap:6px;
+    }
+    .public-traffic-counter__head{font-size:9px}
+    .public-traffic-counter__metrics{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:6px}
+    .public-traffic-counter__metrics span{padding:0 8px}
+    .public-traffic-counter__metrics span:nth-child(odd){border-left:0}
+    .public-traffic-counter__metrics b{font-size:14px}
+    .public-traffic-counter p{text-align:left;margin:0 2px;font-size:7px}
   }
   @media(prefers-reduced-motion:no-preference){
-    .public-traffic-counter__pulse{animation:traffic-pulse 2.4s ease-out infinite}
-    @keyframes traffic-pulse{0%,100%{box-shadow:0 0 0 4px rgba(42,139,102,.12)}50%{box-shadow:0 0 0 7px rgba(42,139,102,.02)}}
+    .public-traffic-counter__pulse{animation:traffic-pulse 2.8s ease-out infinite}
+    .public-traffic-counter::after{animation:traffic-sheen 8.5s cubic-bezier(.2,.7,.2,1) infinite}
+    @keyframes traffic-pulse{0%,100%{box-shadow:0 0 0 3px rgba(42,139,102,.10)}50%{box-shadow:0 0 0 6px rgba(42,139,102,.015)}}
+    @keyframes traffic-sheen{0%,62%{translate:-55% 0;opacity:0}67%{opacity:1}82%{translate:80% 0;opacity:.8}88%,100%{translate:80% 0;opacity:0}}
   }
 </style>
