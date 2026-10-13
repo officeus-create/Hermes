@@ -525,6 +525,10 @@ async function processPlanMessage(env, message) {
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  // Queue push can be used as a private Cloudflare control-plane canary without
+  // exposing an HTTP route. Ensure the durable run row exists even when the
+  // message did not originate from this Worker's scheduled producer.
+  await reserveRun(env.DB, slotKey, clean(message?.trigger_type, 40) || "queue");
   if (publicationEnabled(env)) {
     const now = new Date();
     const currentSlotKey = chicagoSlotKey(now);
