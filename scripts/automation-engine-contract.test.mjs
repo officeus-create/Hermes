@@ -59,6 +59,7 @@ assert.equal(publicationEnabled({ HERMES_AUTOMATION_MODE: "live", HERMES_AUTOMAT
 const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");
 const windsorAdapter = readFileSync(new URL("../workers/automation-engine/src/windsor-threads.mjs", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
+const releaseWorkflow = readFileSync(new URL("../.github/workflows/automation-engine-release.yml", import.meta.url), "utf8");
 
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be terminal/fail-closed");
@@ -102,6 +103,15 @@ assert.match(worker, /next_readback_at TEXT/, "Provider readback schedule must s
 assert.ok(wrangler.includes('"database_name": "hermes-connect-prototype"'), "HAE must reuse the canonical Hermes Connect production D1");
 assert.ok(wrangler.includes("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"), "Canonical production D1 id must be discovered at release time, not committed");
 assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must never create a second D1 database");
+assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
+assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
+assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
+assert.match(releaseWorkflow, /deployment_configs\.production\.d1_databases\.DB\.id/, "Release must discover the canonical Pages D1 binding");
+assert.doesNotMatch(releaseWorkflow, /d1\s+create/i, "Release must never create a second D1 database");
+assert.match(releaseWorkflow, /queues create/, "Explicit provisioning may create only the two bounded HAE queues");
+assert.match(releaseWorkflow, /HERMES_AUTOMATION_MODE.*dry_run/s, "Deployed config must remain dry-run");
+assert.match(releaseWorkflow, /HERMES_AUTOMATION_PUBLISH.*disabled/s, "Deployed config must keep provider publication disabled");
+assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
 
 const originalFetch = globalThis.fetch;
