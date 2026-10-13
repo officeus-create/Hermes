@@ -90,6 +90,10 @@ assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state 
 assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
 assert.match(worker, /metricNumberOrNull\(metrics\?\.backlogCount\)/, "Missing Queue backlog metrics must remain UNKNOWN/null instead of silently becoming zero");
 assert.match(worker, /metricNumberOrNull\(metrics\?\.backlogBytes\)/, "Missing Queue byte metrics must remain UNKNOWN/null instead of silently becoming zero");
+assert.match(worker, /if \(typeof value === "number"\) return Number\.isFinite\(value\) \? value : null;/, "Metric normalization must accept only finite numeric primitives directly");
+assert.match(worker, /if \(typeof value !== "string"\) return null;/, "Metric normalization must reject booleans, arrays and objects instead of coercing them");
+assert.match(worker, /const normalized = value\.trim\(\);/, "Metric normalization must trim strings before numeric parsing");
+assert.doesNotMatch(worker, /const parsed = Number\(value\);/, "Metric normalization must not use broad Number(value) coercion");
 assert.doesNotMatch(worker, /Number\(metrics\?\.backlogCount \|\| 0\)/, "Queue metrics must never coerce UNKNOWN backlog to zero");
 assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-letter queue separately");
 assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
