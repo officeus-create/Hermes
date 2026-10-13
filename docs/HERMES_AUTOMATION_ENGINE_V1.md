@@ -204,6 +204,7 @@ Post-observation hardening rule:
 - use Cloudflare `ScheduledController.scheduledTime` as the logical cron time rather than wall-clock handler start, so delayed execution does not silently shift the logical slot;
 - unknown Queue message types fail closed toward retry/DLQ instead of being silently acknowledged;
 - telemetry failure must not suppress the current eligible business slot;
+- once Queue.send() resolves, treat the message as durably accepted by Cloudflare; a later D1 status-write failure is an evidence/state-write defect, not a Queue send failure, and must not trigger an immediate blind re-enqueue;
 - runtime error receipts must never persist arbitrary exception text that could contain URLs or credentials.
 
 `POST /v1/tick`
