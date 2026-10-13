@@ -154,17 +154,9 @@ jobs:
           OPERATION: ${{ steps.request.outputs.operation }}
         run: |
           set -euo pipefail
-          list_queues() {
-            npx --yes wrangler@4 queues list --json
-          }
-          QUEUES_JSON="$(list_queues)"
           has_queue() {
             local name="$1"
-            QUEUES_JSON="$QUEUES_JSON" NAME="$name" node --input-type=module - <<'NODE'
-          const body = JSON.parse(process.env.QUEUES_JSON || "[]");
-          const rows = Array.isArray(body) ? body : Array.isArray(body?.result) ? body.result : [];
-          process.exit(rows.some((row) => String(row?.queue_name || row?.name || "") === process.env.NAME) ? 0 : 1);
-          NODE
+            npx --yes wrangler@4 queues info "$name" >/dev/null 2>&1
           }
           ensure_queue() {
             local name="$1"
@@ -177,7 +169,6 @@ jobs:
               exit 1
             fi
             npx --yes wrangler@4 queues create "$name"
-            QUEUES_JSON="$(list_queues)"
             has_queue "$name"
           }
           ensure_queue "hermes-automation"
