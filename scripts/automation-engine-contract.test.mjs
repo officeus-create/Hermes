@@ -47,6 +47,11 @@ for (const slot of [
   assert.ok(!/marketing|academy|repair shop|beauty salon/i.test(candidate.body), "Unrelated business direction leaked into carrier-only account");
 }
 
+for (const slot of ["2026-10-13T06", "2026-10-13T07", "2026-10-14T01", "2026-10-20T12"]) {
+  const variants = new Set(Array.from({ length: 64 }, (_, index) => buildCarrierThreadsPost(slot, index).variant_key));
+  assert.ok(variants.size >= 40, `Variant rotation collapsed unexpectedly for ${slot}: ${variants.size}`);
+}
+
 const tracked = new URL(buildTrackedUrl("/load-board/#carrier-access", "TEST Content"));
 assert.equal(tracked.hostname, "hermeslogisticsus.com");
 assert.equal(tracked.searchParams.get("utm_source"), "threads");
@@ -86,7 +91,7 @@ assert.match(worker, /stale_live_slot_suppressed/, "Stale-slot suppression must 
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
 assert.match(worker, /variant_key TEXT NOT NULL/, "Content state must persist semantic variant identity");
 assert.match(worker, /created_at>=\?/, "Content planner must suppress recent semantic variants");
-assert.match(worker, /variantIndex < 32/, "Planner must search bounded alternatives rather than loop without limit");
+assert.match(worker, /variantIndex < 64/, "Planner must search the bounded 64-combination theme space rather than loop without limit");
 assert.match(worker, /loadOrCreateCarrierCandidate/, "A retried slot must reuse the exact persisted candidate body");
 assert.match(worker, /candidate_persistence_failed/, "Planner must fail closed if the winning D1 candidate cannot be read back");
 assert.match(worker, /recoverPendingPlanRuns/, "Lost content-plan queue writes must be recoverable from durable run state");
