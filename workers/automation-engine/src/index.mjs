@@ -1149,9 +1149,15 @@ async function processPlanMessage(env, message) {
   const candidate = await loadOrCreateCarrierCandidate(env.DB, slotKey);
 
   if (!publicationEnabled(env)) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE id=?")
-      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
-    return { status: "dry_run_ready", candidate };
+    const completedAt = new Date().toISOString();
+    const completed = await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE id=? AND status!='dry_run_ready'"
+    ).bind(completedAt, runIdForSlot(slotKey)).run();
+    return {
+      status: "dry_run_ready",
+      duplicate: Number(completed?.meta?.changes || 0) === 0,
+      candidate,
+    };
   }
 
   const claimed = await claimPublicationForProvider(env.DB, candidate);
