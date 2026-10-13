@@ -191,6 +191,8 @@ assert.ok(wrangler.includes("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"),
 assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must never create a second D1 database");
 assert.match(releaseWorkflow, /INJECT_EXACT_MAIN_SHA_AT_RELEASE/, "Release workflow must inject exact source SHA into generated Worker config");
 assert.match(releaseWorkflow, /TARGET_SHA: \$\{\{ steps\.request\.outputs\.target_sha \}\}/, "Release config render must receive the owner-verified exact target SHA");
+assert.match(releaseWorkflow, /invalid_HAE_release_target_sha/, "Release config render must fail closed on a malformed exact target SHA");
+assert.match(releaseWorkflow, /HAE_release_source_sha_placeholder_not_replaced/, "Release config render must fail closed if exact source SHA metadata was not injected");
 assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
