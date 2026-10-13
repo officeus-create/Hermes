@@ -118,6 +118,9 @@ assert.match(worker, /generic_job_events_by_type/, "Private health must expose g
 assert.doesNotMatch(worker, /ready_content: Number\(ready\?\.count \|\| 0\)/, "Missing D1 health count rows must not be coerced to zero");
 assert.match(worker, /ready_content: metricNumberOrNull\(ready\?\.count\)/, "D1 health counts must preserve UNKNOWN/null while retaining real zero");
 assert.match(worker, /safeRuntimeErrorClass/, "Runtime error receipts must use a sanitizer rather than persist arbitrary exception text");
+assert.doesNotMatch(worker, /const errorClass = clean\(error\?\.message, 160\) \|\| "generic_job_failed"/, "Generic job state must not persist arbitrary exception text");
+assert.match(worker, /const errorClass = safeRuntimeErrorClass\(error, "generic_job_failed"\)/, "Generic job failures must persist only bounded machine-code errors");
+assert.match(worker, /const code = safeRuntimeErrorClass\(error, "job_create_failed"\)/, "Private job-create API errors must be sanitized before response");
 assert.match(worker, /\^\[a-z\]\[a-z0-9_\]\{2,79\}\$/, "Runtime error sanitizer must accept only bounded machine-code error classes");
 assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
 assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
