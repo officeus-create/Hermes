@@ -802,7 +802,7 @@ async function processGenericJob(env, message) {
     if (!succeeded) throw new Error("job_transition_conflict");
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
-    const errorClass = clean(error?.message, 160) || "generic_job_failed";
+    const errorClass = safeRuntimeErrorClass(error, "generic_job_failed");
     const failedAt = new Date().toISOString();
     if (currentAttempt < Number(before.max_attempts || 3)) {
       const retryAt = addSecondsIso(failedAt, genericJobBackoffSeconds(currentAttempt));
@@ -1497,7 +1497,7 @@ export default {
         const created = await createGenericJob(env, body);
         return json(created.created ? 202 : 200, { success: true, ...created });
       } catch (error) {
-        const code = clean(error?.message, 160) || "job_create_failed";
+        const code = safeRuntimeErrorClass(error, "job_create_failed");
         const status = code === "idempotency_key_conflict"
           ? 409
           : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
