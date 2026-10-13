@@ -630,6 +630,7 @@ async function health(env) {
   const failed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='failed'").first();
   const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending'").first();
   const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='readback_unverified'").first();
+  const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE status='plan_enqueue_failed'").first();
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
     FROM hermes_automation_runs
@@ -643,7 +644,9 @@ async function health(env) {
     failed_publications: Number(failed?.count || 0),
     pending_readbacks: Number(pendingReadback?.count || 0),
     unverified_readbacks: Number(unverifiedReadback?.count || 0),
+    plan_enqueue_failures: Number(planEnqueueFailed?.count || 0),
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
+    dlq: await queueHealth(env?.AUTOMATION_DLQ),
     last_run: last || null,
   };
 }
