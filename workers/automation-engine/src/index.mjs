@@ -1220,8 +1220,9 @@ async function processPlanMessage(env, message) {
       try {
         await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
       } catch {
-        await env.DB.prepare("UPDATE hermes_automation_publications SET last_error_class='unknown_outcome_readback_enqueue_failed',updated_at=? WHERE content_id=?")
-          .bind(new Date().toISOString(), candidate.content_id).run();
+        const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+        await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='unknown_outcome_readback_enqueue_failed',updated_at=? WHERE content_id=?")
+          .bind(recoveryAt, new Date().toISOString(), candidate.content_id).run();
       }
       return { status, candidate, error_class: published.error_class };
     }
@@ -1252,9 +1253,10 @@ async function processPlanMessage(env, message) {
     await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
   } catch {
     // Provider write has already happened. Never retry the publish step merely
-    // because queue scheduling failed; the hourly recovery scan will enqueue it.
-    await env.DB.prepare("UPDATE hermes_automation_publications SET last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=?")
-      .bind(new Date().toISOString(), candidate.content_id).run();
+    // because queue scheduling failed; move only the readback recovery deadline forward.
+    const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+    await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=?")
+      .bind(recoveryAt, new Date().toISOString(), candidate.content_id).run();
   }
 
   return { status: "provider_accepted_readback_pending", candidate, provider_result: published.provider_result || null };
@@ -1301,7 +1303,10 @@ async function processReadbackMessage(env, message) {
     try {
       await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: contentId }, { delaySeconds: 3600 });
     } catch {
-      // Recovery cron will pick up next_readback_at; do not touch provider write state.
+      // The provider write is already immutable; only accelerate the readback recovery scan.
+      const recoveryAt = addSecondsIso(new Date().toISOString(), 5 * 60);
+      await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=? AND status=?")
+        .bind(recoveryAt, new Date().toISOString(), contentId, pendingStatus).run();
     }
     return { status: "provider_accepted_readback_pending", readback_attempt: attempt, error_class: errorClass };
   }
