@@ -1,0 +1,26 @@
+name: Hermes Automation Engine Contract
+
+on:
+  pull_request:
+    paths:
+      - "workers/automation-engine/**"
+      - "scripts/automation-engine-contract.test.mjs"
+      - "docs/HERMES_AUTOMATION_ENGINE_*.md"
+      - ".github/workflows/automation-engine-contract.yml"
+      - ".github/workflows/automation-engine-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run automation engine contract
+        run: node scripts/automation-engine-contract.test.mjs

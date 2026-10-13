@@ -1,0 +1,65 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hermes-automation-engine",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-10-13",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["17 * * * *"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hermes-connect-prototype",
+      "database_id": "DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "AUTOMATION_QUEUE",
+        "queue": "hermes-automation"
+      },
+      {
+        "binding": "AUTOMATION_DLQ",
+        "queue": "hermes-automation-dlq"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "hermes-automation",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+        "dead_letter_queue": "hermes-automation-dlq"
+      }
+    ]
+  },
+  "vars": {
+    "HERMES_AUTOMATION_MODE": "dry_run",
+    "HERMES_AUTOMATION_PUBLISH": "disabled",
+    "WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"
+  }
+}
+
+// REVIEWED EXAMPLE ONLY. Do not treat this file as deployed production state.
+// HAE reuses the canonical Hermes Connect production D1 bound as DB on the
+// existing `hermes` Pages project. Never create a second HAE database.
+// Production deployment must discover that binding ID from authenticated
+// Cloudflare Pages project state; the ID is intentionally not versioned here.
+//
+// Required secrets before any live canary:
+//   HERMES_AUTOMATION_TOKEN
+//   WINDSOR_API_KEY
+//
+// Live publication requires BOTH:
+//   HERMES_AUTOMATION_MODE=live
+//   HERMES_AUTOMATION_PUBLISH=enabled
+//
+// Windsor Connectors API is the canonical pilot transport. The API key stays in
+// a Worker secret and is never committed, logged, or returned by health endpoints.
+// Windsor write actions return an acceptance/result string, so the Worker performs
+// delayed readback against the connected Threads account before marking VERIFIED.
+//
+// Do not place provider tokens, account secrets, D1 IDs or queue credentials in Git.
