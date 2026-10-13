@@ -7,6 +7,19 @@ function clean(value, max = 1000) {
     : "";
 }
 
+function normalizePostText(value, max = 500) {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/\r\n?/g, "\n")
+    .replace(/[<>\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, " ")
+    .split("\n")
+    .map((line) => line.replace(/[\t ]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, max);
+}
+
 function validHttps(value) {
   try {
     const url = new URL(String(value || ""));
@@ -34,7 +47,7 @@ function windsorUrl(path, apiKey) {
 export async function publishThreadsTextViaWindsor(env, text) {
   const config = windsorThreadsConfig(env);
   if (!config) return { ok: false, error_class: "windsor_not_configured" };
-  const postText = clean(text, 500);
+  const postText = normalizePostText(text, 500);
   if (!postText || postText.length > 500) return { ok: false, error_class: "threads_text_invalid" };
 
   const url = windsorUrl("threads/actions", config.apiKey);
@@ -84,7 +97,7 @@ function normalizeRows(payload) {
 export async function readbackThreadsTextViaWindsor(env, text) {
   const config = windsorThreadsConfig(env);
   if (!config) return { ok: false, error_class: "windsor_not_configured" };
-  const postText = clean(text, 1000);
+  const postText = normalizePostText(text, 1000);
   if (!postText) return { ok: false, error_class: "threads_text_invalid" };
 
   const url = windsorUrl("threads", config.apiKey);
@@ -104,7 +117,7 @@ export async function readbackThreadsTextViaWindsor(env, text) {
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) return { ok: false, error_class: "windsor_readback_failed" };
 
-  const exact = normalizeRows(payload).find((row) => clean(row?.post_text, 1000) === postText);
+  const exact = normalizeRows(payload).find((row) => normalizePostText(row?.post_text, 1000) === postText);
   if (!exact) return { ok: true, found: false };
   const providerPostId = clean(exact?.post_id, 240);
   const permalink = validHttps(exact?.post_permalink);
