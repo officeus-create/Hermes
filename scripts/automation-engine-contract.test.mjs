@@ -129,6 +129,8 @@ assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Qu
 assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
 assert.doesNotMatch(worker, /UPDATE hermes_automation_runs SET status='duplicate_suppressed'/, "Duplicate Queue delivery must never regress the authoritative run state");
 assert.match(worker, /existing_publication_status/, "Duplicate provider-plan delivery should report the already-existing publication state without mutating the run");
+assert.match(worker, /status!='dry_run_ready'/, "Duplicate dry-run Queue delivery must not rewrite an already completed run timestamp");
+assert.match(worker, /duplicate: Number\(completed\?\.meta\?\.changes \|\| 0\) === 0/, "Dry-run plan processing must surface whether the terminal state was already present");
 assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_plan_runs_failed/, "Plan recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_generic_jobs_failed/, "Generic recovery failure must be isolated and observable");
