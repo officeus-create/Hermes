@@ -3,7 +3,7 @@ const API_BASE = "https://connectors.windsor.ai/";
 
 function clean(value, max = 1000) {
   return typeof value === "string"
-    ? value.replace(/[<>\\u0000-\\u001f\\u007f]/g, " ").replace(/\\s+/g, " ").trim().slice(0, max)
+    ? value.replace(/[<>\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max)
     : "";
 }
 
