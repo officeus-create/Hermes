@@ -205,6 +205,7 @@ Post-observation hardening rule:
 - unknown Queue message types fail closed toward retry/DLQ instead of being silently acknowledged;
 - telemetry failure must not suppress the current eligible business slot;
 - once Queue.send() resolves, treat the message as durably accepted by Cloudflare; a later D1 status-write failure is an evidence/state-write defect, not a Queue send failure, and must not trigger an immediate blind re-enqueue;
+- generic read-only jobs must persist their initial dispatch-recovery lease before Queue.send(), so a successful Queue write never depends on a second D1 write merely to suppress duplicate recovery;
 - runtime error receipts must never persist arbitrary exception text that could contain URLs or credentials.
 
 `POST /v1/tick`
