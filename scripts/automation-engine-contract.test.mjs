@@ -39,6 +39,8 @@ for (const slot of [
   assert.equal(candidate.account_key, "hermes_logistics");
   assert.equal(candidate.platform, "threads");
   assert.ok(candidate.body.length <= 500, `Threads post exceeded 500 chars for ${slot}`);
+  assert.ok(new TextEncoder().encode(candidate.body).byteLength <= 500, `Threads post exceeded 500 UTF-8 bytes for ${slot}`);
+  assert.match(candidate.variant_key, /^[a-z0-9-]+:\d+:\d+:\d+$/, "Candidate must expose a stable semantic variant key");
   assert.match(candidate.body, /https:\/\/hermeslogisticsus\.com\//);
   assert.match(candidate.body, /utm_source=threads/);
   assert.match(candidate.body, /utm_campaign=car_hauler_carrier_growth/);
@@ -78,6 +80,10 @@ assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue bac
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
+assert.match(worker, /variant_key TEXT NOT NULL/, "Content state must persist semantic variant identity");
+assert.match(worker, /created_at>=\?/, "Content planner must suppress recent semantic variants");
+assert.match(worker, /variantIndex < 32/, "Planner must search bounded alternatives rather than loop without limit");
+assert.match(worker, /new TextEncoder\(\)\.encode\(body\)\.byteLength/, "Threads limit must be enforced in UTF-8 bytes");
 assert.match(worker, /delaySeconds: 4200/, "First Windsor readback must be delayed past the one-hour refresh boundary");
 assert.match(windsorAdapter, /connectors\.windsor\.ai/, "Pilot must use the Windsor Connectors API directly");
 assert.match(windsorAdapter, /create_text_post/, "Windsor adapter must use the exact Threads text action");
