@@ -364,7 +364,7 @@ function genericJobEventId(jobId, eventType) {
   return `evt:${jobId}:${eventType}:${crypto.randomUUID()}`;
 }
 
-async function appendGenericJobEvent(db, {
+function genericJobEventStatement(db, {
   jobId,
   eventType,
   fromState = null,
@@ -373,8 +373,9 @@ async function appendGenericJobEvent(db, {
   evidenceRef = null,
   providerRef = null,
   errorClass = null,
+  createdAt = new Date().toISOString(),
 }) {
-  await db.prepare(`
+  return db.prepare(`
     INSERT INTO hermes_automation_job_events
       (event_id, job_id, event_type, from_state, to_state, step, evidence_ref, provider_ref, error_class, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -388,8 +389,84 @@ async function appendGenericJobEvent(db, {
     evidenceRef,
     providerRef,
     errorClass,
-    new Date().toISOString(),
-  ).run();
+    createdAt,
+  );
+}
+
+function conditionalGenericJobEventStatement(db, {
+  jobId,
+  eventType,
+  fromState = null,
+  toState,
+  step = null,
+  errorClass = null,
+  createdAt,
+  expectedAttemptCount = null,
+}) {
+  const attemptPredicate = expectedAttemptCount == null ? "" : " AND attempt_count=?";
+  const statement = db.prepare(`
+    INSERT INTO hermes_automation_job_events
+      (event_id, job_id, event_type, from_state, to_state, step, evidence_ref, provider_ref, error_class, created_at)
+    SELECT ?, job_id, ?, ?, ?, ?, NULL, NULL, ?, ?
+    FROM hermes_automation_jobs
+    WHERE job_id=? AND state=? AND updated_at=?${attemptPredicate}
+  `);
+  const bindings = [
+    genericJobEventId(jobId, eventType),
+    eventType,
+    fromState,
+    toState,
+    step,
+    errorClass,
+    createdAt,
+    jobId,
+    toState,
+    createdAt,
+  ];
+  if (expectedAttemptCount != null) bindings.push(expectedAttemptCount);
+  return statement.bind(...bindings);
+}
+
+async function transitionGenericJobWithEvent(db, {
+  updateStatement,
+  jobId,
+  eventType,
+  fromState,
+  toState,
+  step,
+  errorClass = null,
+  createdAt,
+  expectedAttemptCount = null,
+}) {
+  const [transition] = await db.batch([
+    updateStatement,
+    conditionalGenericJobEventStatement(db, {
+      jobId,
+      eventType,
+      fromState,
+      toState,
+      step,
+      errorClass,
+      createdAt,
+      expectedAttemptCount,
+    }),
+  ]);
+  return Number(transition?.meta?.changes || 0) === 1;
+}
+
+async function appendGenericJobEvent(db, event) {
+  await genericJobEventStatement(db, event).run();
+}
+
+function genericJobReplayMatches(existing, desired) {
+  return String(existing?.job_type || "") === desired.jobType
+    && String(existing?.business_lane || "") === desired.businessLane
+    && String(existing?.account_key || "") === String(desired.accountKey || "")
+    && String(existing?.project_key || "") === String(desired.projectKey || "")
+    && Number(existing?.priority) === desired.priority
+    && Number(existing?.max_attempts) === desired.maxAttempts
+    && String(existing?.policy_version || "") === desired.policyVersion
+    && String(existing?.payload_json || "{}") === desired.payloadJson;
 }
 
 function genericJobBackoffSeconds(attempt) {
@@ -416,8 +493,8 @@ async function createGenericJob(env, input) {
   const policyVersion = clean(input?.policy_version, 120) || "hae-readonly-v1";
   const rawPriority = Number(input?.priority ?? 50);
   const rawMaxAttempts = Number(input?.max_attempts ?? 3);
-  const priority = Number.isFinite(rawPriority) ? Math.max(0, Math.min(100, rawPriority)) : 50;
-  const maxAttempts = Number.isFinite(rawMaxAttempts) ? Math.max(1, Math.min(5, rawMaxAttempts)) : 3;
+  const priority = Number.isFinite(rawPriority) ? Math.max(0, Math.min(100, Math.trunc(rawPriority))) : 50;
+  const maxAttempts = Number.isFinite(rawMaxAttempts) ? Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts))) : 3;
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
@@ -429,15 +506,19 @@ async function createGenericJob(env, input) {
   }
   if (new TextEncoder().encode(payloadJson).byteLength > 32768) throw new Error("payload_too_large");
 
+  const replayShape = { jobType, businessLane, accountKey, projectKey, priority, maxAttempts, policyVersion, payloadJson };
   const existing = await env.DB.prepare(
-    "SELECT job_id,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+    "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
   ).bind(idempotencyKey).first();
-  if (existing) return { created: false, duplicate: true, job: existing };
+  if (existing) {
+    if (!genericJobReplayMatches(existing, replayShape)) throw new Error("idempotency_key_conflict");
+    return { created: false, duplicate: true, job: existing };
+  }
 
   const now = new Date().toISOString();
   const jobId = `job:${crypto.randomUUID()}`;
-  const inserted = await env.DB.prepare(`
-    INSERT OR IGNORE INTO hermes_automation_jobs
+  const insertStatement = env.DB.prepare(`
+    INSERT INTO hermes_automation_jobs
       (job_id, job_type, business_lane, account_key, project_key, priority, state, current_step, available_at,
        attempt_count, max_attempts, idempotency_key, policy_version, payload_json, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, 'QUEUED', 'dispatch', ?, 0, ?, ?, ?, ?, ?, ?)
@@ -455,21 +536,27 @@ async function createGenericJob(env, input) {
     payloadJson,
     now,
     now,
-  ).run();
-  if (Number(inserted?.meta?.changes || 0) !== 1) {
+  );
+  try {
+    await env.DB.batch([
+      insertStatement,
+      genericJobEventStatement(env.DB, {
+        jobId,
+        eventType: "job.created",
+        fromState: null,
+        toState: "QUEUED",
+        step: "dispatch",
+        createdAt: now,
+      }),
+    ]);
+  } catch (error) {
     const raced = await env.DB.prepare(
-      "SELECT job_id,state,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
+      "SELECT job_id,job_type,business_lane,account_key,project_key,priority,state,max_attempts,idempotency_key,policy_version,payload_json,result_json,last_error_class FROM hermes_automation_jobs WHERE idempotency_key=? LIMIT 1"
     ).bind(idempotencyKey).first();
-    return { created: false, duplicate: true, job: raced || null };
+    if (!raced) throw error;
+    if (!genericJobReplayMatches(raced, replayShape)) throw new Error("idempotency_key_conflict");
+    return { created: false, duplicate: true, job: raced };
   }
-
-  await appendGenericJobEvent(env.DB, {
-    jobId,
-    eventType: "job.created",
-    fromState: null,
-    toState: "QUEUED",
-    step: "dispatch",
-  });
 
   try {
     await enqueueGenericJobMessage(env, jobId);
@@ -478,16 +565,18 @@ async function createGenericJob(env, input) {
     ).bind(addSecondsIso(now, 15 * 60), now, jobId).run();
   } catch {
     const retryAt = addSecondsIso(now, 5 * 60);
-    await env.DB.prepare(
-      "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state='QUEUED'"
-    ).bind(retryAt, now, jobId).run();
-    await appendGenericJobEvent(env.DB, {
+    await transitionGenericJobWithEvent(env.DB, {
+      updateStatement: env.DB.prepare(
+        "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state='QUEUED'"
+      ).bind(retryAt, now, jobId),
       jobId,
       eventType: "job.enqueue_failed",
       fromState: "QUEUED",
       toState: "RETRY_SCHEDULED",
       step: "dispatch",
       errorClass: "job_enqueue_failed",
+      createdAt: now,
+      expectedAttemptCount: 0,
     });
   }
 
@@ -543,58 +632,64 @@ async function processGenericJob(env, message) {
   if (!before) return { status: "job_missing" };
   if (String(before.state) === "SUCCEEDED") return { status: "SUCCEEDED", duplicate: true, job_id: jobId };
   const now = new Date().toISOString();
-  const claimed = await env.DB.prepare(`
-    UPDATE hermes_automation_jobs
-    SET state='RUNNING',current_step='execute',attempt_count=attempt_count+1,last_error_class=NULL,updated_at=?
-    WHERE job_id=? AND (
-      state='QUEUED' OR
-      (state='RETRY_SCHEDULED' AND (available_at IS NULL OR available_at<=?))
-    )
-  `).bind(now, jobId, now).run();
-  if (Number(claimed?.meta?.changes || 0) !== 1) {
-    const current = await env.DB.prepare("SELECT state,available_at,last_error_class FROM hermes_automation_jobs WHERE job_id=? LIMIT 1").bind(jobId).first();
-    return { status: String(current?.state || "not_claimed"), duplicate: true, job_id: jobId };
-  }
-
-  await appendGenericJobEvent(env.DB, {
+  const currentAttempt = Number(before.attempt_count || 0) + 1;
+  const claimed = await transitionGenericJobWithEvent(env.DB, {
+    updateStatement: env.DB.prepare(`
+      UPDATE hermes_automation_jobs
+      SET state='RUNNING',current_step='execute',attempt_count=attempt_count+1,last_error_class=NULL,updated_at=?
+      WHERE job_id=? AND (
+        state='QUEUED' OR
+        (state='RETRY_SCHEDULED' AND (available_at IS NULL OR available_at<=?))
+      )
+    `).bind(now, jobId, now),
     jobId,
     eventType: "job.started",
     fromState: String(before.state || "QUEUED"),
     toState: "RUNNING",
     step: "execute",
+    createdAt: now,
+    expectedAttemptCount: currentAttempt,
   });
-
-  const currentAttempt = Number(before.attempt_count || 0) + 1;
+  if (!claimed) {
+    const current = await env.DB.prepare("SELECT state,available_at,last_error_class FROM hermes_automation_jobs WHERE job_id=? LIMIT 1").bind(jobId).first();
+    return { status: String(current?.state || "not_claimed"), duplicate: true, job_id: jobId };
+  }
   try {
     const result = await runReadOnlyGenericCapability(env, before);
     const completedAt = new Date().toISOString();
-    await env.DB.prepare(
-      "UPDATE hermes_automation_jobs SET state='SUCCEEDED',current_step='complete',available_at=NULL,result_json=?,last_error_class=NULL,updated_at=?,completed_at=? WHERE job_id=? AND state='RUNNING'"
-    ).bind(JSON.stringify(result), completedAt, completedAt, jobId).run();
-    await appendGenericJobEvent(env.DB, {
+    const succeeded = await transitionGenericJobWithEvent(env.DB, {
+      updateStatement: env.DB.prepare(
+        "UPDATE hermes_automation_jobs SET state='SUCCEEDED',current_step='complete',available_at=NULL,result_json=?,last_error_class=NULL,updated_at=?,completed_at=? WHERE job_id=? AND state='RUNNING'"
+      ).bind(JSON.stringify(result), completedAt, completedAt, jobId),
       jobId,
       eventType: "job.succeeded",
       fromState: "RUNNING",
       toState: "SUCCEEDED",
       step: "complete",
+      createdAt: completedAt,
+      expectedAttemptCount: currentAttempt,
     });
+    if (!succeeded) throw new Error("job_transition_conflict");
     return { status: "SUCCEEDED", job_id: jobId, result };
   } catch (error) {
     const errorClass = clean(error?.message, 160) || "generic_job_failed";
     const failedAt = new Date().toISOString();
     if (currentAttempt < Number(before.max_attempts || 3)) {
       const retryAt = addSecondsIso(failedAt, genericJobBackoffSeconds(currentAttempt));
-      await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',current_step='execute',available_at=?,last_error_class=?,updated_at=? WHERE job_id=? AND state='RUNNING'"
-      ).bind(retryAt, errorClass, failedAt, jobId).run();
-      await appendGenericJobEvent(env.DB, {
+      const retryScheduled = await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(
+          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',current_step='execute',available_at=?,last_error_class=?,updated_at=? WHERE job_id=? AND state='RUNNING'"
+        ).bind(retryAt, errorClass, failedAt, jobId),
         jobId,
         eventType: "job.retry_scheduled",
         fromState: "RUNNING",
         toState: "RETRY_SCHEDULED",
         step: "execute",
         errorClass,
+        createdAt: failedAt,
+        expectedAttemptCount: currentAttempt,
       });
+      if (!retryScheduled) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
       try {
         await enqueueGenericJobMessage(env, jobId, genericJobBackoffSeconds(currentAttempt));
       } catch {
@@ -603,17 +698,20 @@ async function processGenericJob(env, message) {
       }
       return { status: "RETRY_SCHEDULED", job_id: jobId, retry_at: retryAt, error_class: errorClass };
     }
-    await env.DB.prepare(
-      "UPDATE hermes_automation_jobs SET state='FAILED',current_step='complete',available_at=NULL,last_error_class=?,updated_at=?,completed_at=? WHERE job_id=? AND state='RUNNING'"
-    ).bind(errorClass, failedAt, failedAt, jobId).run();
-    await appendGenericJobEvent(env.DB, {
+    const failed = await transitionGenericJobWithEvent(env.DB, {
+      updateStatement: env.DB.prepare(
+        "UPDATE hermes_automation_jobs SET state='FAILED',current_step='complete',available_at=NULL,last_error_class=?,updated_at=?,completed_at=? WHERE job_id=? AND state='RUNNING'"
+      ).bind(errorClass, failedAt, failedAt, jobId),
       jobId,
       eventType: "job.failed",
       fromState: "RUNNING",
       toState: "FAILED",
       step: "complete",
       errorClass,
+      createdAt: failedAt,
+      expectedAttemptCount: currentAttempt,
     });
+    if (!failed) return { status: "transition_conflict", job_id: jobId, error_class: "job_transition_conflict" };
     return { status: "FAILED", job_id: jobId, error_class: errorClass };
   }
 }
@@ -1168,7 +1266,9 @@ export default {
         return json(created.created ? 202 : 200, { success: true, ...created });
       } catch (error) {
         const code = clean(error?.message, 160) || "job_create_failed";
-        const status = ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+        const status = code === "idempotency_key_conflict"
+          ? 409
+          : ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }
