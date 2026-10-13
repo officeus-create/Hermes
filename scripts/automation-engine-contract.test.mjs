@@ -90,6 +90,10 @@ assert.match(worker, /expired_live_slot/, "Recovered queue backlog must never pu
 assert.match(worker, /stale_live_slot_suppressed/, "Stale-slot suppression must be visible in durable run state");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
 assert.match(worker, /variant_key TEXT NOT NULL/, "Content state must persist semantic variant identity");
+assert.match(worker, /UNIQUE\(account_key, platform, slot_key\)/, "Hourly slot uniqueness must be scoped per account/platform for later multi-brand reuse");
+assert.match(worker, /run:\$\{ACCOUNT_KEY\}:\$\{PLATFORM\}:\$\{slotKey\}/, "Run identity must include account and platform");
+assert.match(worker, /hermes_automation_publications[\s\S]*account_key TEXT NOT NULL[\s\S]*platform TEXT NOT NULL/, "Publication receipts must carry account/platform ownership");
+assert.match(worker, /account_key=\? AND platform=\? AND status=\'provider_accepted_readback_pending\'/, "Readback recovery must not consume another account\'s publication state");
 assert.match(worker, /created_at>=\?/, "Content planner must suppress recent semantic variants");
 assert.match(worker, /variantIndex < 64/, "Planner must search the bounded 64-combination theme space rather than loop without limit");
 assert.match(worker, /loadOrCreateCarrierCandidate/, "A retried slot must reuse the exact persisted candidate body");
