@@ -398,8 +398,11 @@ function genericJobBackoffSeconds(attempt) {
 
 async function enqueueGenericJobMessage(env, jobId, delaySeconds = 0) {
   if (!env.AUTOMATION_QUEUE) throw new Error("automation_queue_not_configured");
-  const options = delaySeconds > 0 ? { delaySeconds } : undefined;
-  await env.AUTOMATION_QUEUE.send({ type: "job.execute", job_id: jobId }, options);
+  if (delaySeconds > 0) {
+    await env.AUTOMATION_QUEUE.send({ type: "job.execute", job_id: jobId }, { delaySeconds });
+    return;
+  }
+  await env.AUTOMATION_QUEUE.send({ type: "job.execute", job_id: jobId });
 }
 
 async function createGenericJob(env, input) {
@@ -411,8 +414,10 @@ async function createGenericJob(env, input) {
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
   const policyVersion = clean(input?.policy_version, 120) || "hae-readonly-v1";
-  const priority = Math.max(0, Math.min(100, Number(input?.priority ?? 50)));
-  const maxAttempts = Math.max(1, Math.min(5, Number(input?.max_attempts ?? 3)));
+  const rawPriority = Number(input?.priority ?? 50);
+  const rawMaxAttempts = Number(input?.max_attempts ?? 3);
+  const priority = Number.isFinite(rawPriority) ? Math.max(0, Math.min(100, rawPriority)) : 50;
+  const maxAttempts = Number.isFinite(rawMaxAttempts) ? Math.max(1, Math.min(5, rawMaxAttempts)) : 3;
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
@@ -1122,7 +1127,12 @@ export default {
     if (request.method === "GET" && url.pathname.startsWith("/v1/jobs/")) {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB) return json(503, { success: false, error: "runtime_not_configured" });
-      const jobId = clean(decodeURIComponent(url.pathname.slice("/v1/jobs/".length)), 160);
+      let jobId = "";
+      try {
+        jobId = clean(decodeURIComponent(url.pathname.slice("/v1/jobs/".length)), 160);
+      } catch {
+        return json(400, { success: false, error: "job_id_invalid" });
+      }
       if (!jobId) return json(400, { success: false, error: "job_id_invalid" });
       const record = await getGenericJob(env, jobId);
       if (!record) return json(404, { success: false, error: "job_not_found" });
