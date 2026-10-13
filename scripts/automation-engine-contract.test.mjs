@@ -89,6 +89,9 @@ assert.match(worker, /addSecondsIso\(now, 4200 \+ 15 \* 60\)/, "Initial provider
 assert.match(worker, /addSecondsIso\(now, 3600 \+ 15 \* 60\)/, "Retry readback recovery deadline must lag the primary delayed Queue delivery");
 assert.match(worker, /delaySeconds: 4200/, "Initial readback must still use the primary delayed Queue path");
 assert.match(worker, /delaySeconds: 3600/, "Retry readback must still use the primary delayed Queue path");
+assert.match(worker, /unknown_outcome_readback_enqueue_failed/, "Unknown provider outcome readback enqueue failure must remain durable");
+assert.match(worker, /const recoveryAt = addSecondsIso\(new Date\(\)\.toISOString\(\), 5 \* 60\)/, "Definite readback Queue scheduling failure must accelerate only the readback recovery deadline");
+assert.match(worker, /next_readback_at=\?,last_error_class='readback_enqueue_failed'/, "Definite readback enqueue failure must persist a near-term recovery checkpoint");
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
 assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
 assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
