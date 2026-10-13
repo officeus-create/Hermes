@@ -192,6 +192,7 @@ Readback recovery is also durable. The next readback time and attempt count live
 - primary queue backlog with missing provider metrics preserved as UNKNOWN/null rather than fabricated zero;
 - dead-letter queue backlog;
 - last cron wake, including quiet-window heartbeat evidence;
+- per-wake source SHA, automation mode, raw publication configuration, and effective publication gate for deployment/config continuity evidence;
 - exact cron expression that invoked the Worker;
 - cron scheduled time versus observed execution time / lag;
 - last successful run and last failed run separately;
