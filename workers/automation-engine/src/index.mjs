@@ -261,11 +261,14 @@ async function ensureSchema(db) {
     CREATE TABLE IF NOT EXISTS hermes_automation_runs (
       id TEXT PRIMARY KEY,
       trigger_type TEXT NOT NULL,
-      slot_key TEXT NOT NULL UNIQUE,
+      account_key TEXT NOT NULL,
+      platform TEXT NOT NULL,
+      slot_key TEXT NOT NULL,
       status TEXT NOT NULL,
       last_error_class TEXT,
       created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL,
+      UNIQUE(account_key, platform, slot_key)
     )
   `).run();
   await db.prepare(`
@@ -273,7 +276,7 @@ async function ensureSchema(db) {
       content_id TEXT PRIMARY KEY,
       account_key TEXT NOT NULL,
       platform TEXT NOT NULL,
-      slot_key TEXT NOT NULL UNIQUE,
+      slot_key TEXT NOT NULL,
       template_id TEXT NOT NULL,
       variant_key TEXT NOT NULL,
       destination_url TEXT NOT NULL,
@@ -283,7 +286,8 @@ async function ensureSchema(db) {
       permalink TEXT,
       last_error_class TEXT,
       created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL,
+      UNIQUE(account_key, platform, slot_key)
     )
   `).run();
   await db.prepare(`
@@ -345,13 +349,17 @@ async function ensureSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_hae_job_events_job_created ON hermes_automation_job_events(job_id, created_at)").run();
 }
 
+function runIdForSlot(slotKey) {
+  return `run:${ACCOUNT_KEY}:${PLATFORM}:${slotKey}`;
+}
+
 async function reserveRun(db, slotKey, triggerType) {
   const now = new Date().toISOString();
   const result = await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_runs
-      (id, trigger_type, slot_key, status, created_at, updated_at)
-    VALUES (?, ?, ?, 'queued', ?, ?)
-  `).bind(`run:${slotKey}`, triggerType, slotKey, now, now).run();
+      (id, trigger_type, account_key, platform, slot_key, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, 'queued', ?, ?)
+  `).bind(runIdForSlot(slotKey), triggerType, ACCOUNT_KEY, PLATFORM, slotKey, now, now).run();
   return Number(result?.meta?.changes || 0) === 1;
 }
 
@@ -428,8 +436,8 @@ async function selectFreshCarrierCandidate(db, slotKey) {
   for (let variantIndex = 0; variantIndex < 64; variantIndex += 1) {
     const candidate = buildCarrierThreadsPost(slotKey, variantIndex);
     const recent = await db.prepare(
-      "SELECT content_id FROM hermes_automation_content WHERE variant_key=? AND created_at>=? LIMIT 1"
-    ).bind(candidate.variant_key, cutoff).first();
+      "SELECT content_id FROM hermes_automation_content WHERE account_key=? AND platform=? AND variant_key=? AND created_at>=? LIMIT 1"
+    ).bind(ACCOUNT_KEY, PLATFORM, candidate.variant_key, cutoff).first();
     if (!recent) return candidate;
   }
   throw new Error("no_fresh_carrier_variant_available");
@@ -437,8 +445,8 @@ async function selectFreshCarrierCandidate(db, slotKey) {
 
 async function getPersistedCandidateBySlot(db, slotKey) {
   const row = await db.prepare(
-    "SELECT content_id,account_key,platform,slot_key,template_id,variant_key,destination_url,body FROM hermes_automation_content WHERE slot_key=? LIMIT 1"
-  ).bind(slotKey).first();
+    "SELECT content_id,account_key,platform,slot_key,template_id,variant_key,destination_url,body FROM hermes_automation_content WHERE account_key=? AND platform=? AND slot_key=? LIMIT 1"
+  ).bind(ACCOUNT_KEY, PLATFORM, slotKey).first();
   if (!row) return null;
   return {
     content_id: String(row.content_id),
@@ -476,13 +484,13 @@ async function enqueuePlanRun(env, slotKey) {
       slot_key: slotKey,
     });
     await env.DB.prepare(
-      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE slot_key=? AND status IN ('queued','plan_enqueue_failed')"
-    ).bind(now, slotKey).run();
+      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, runIdForSlot(slotKey)).run();
     return true;
   } catch {
     await env.DB.prepare(
-      "UPDATE hermes_automation_runs SET status='plan_enqueue_failed',last_error_class='plan_enqueue_failed',updated_at=? WHERE slot_key=? AND status IN ('queued','plan_enqueue_failed')"
-    ).bind(now, slotKey).run();
+      "UPDATE hermes_automation_runs SET status='plan_enqueue_failed',last_error_class='plan_enqueue_failed',updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, runIdForSlot(slotKey)).run();
     return false;
   }
 }
@@ -491,8 +499,8 @@ async function recoverPendingPlanRuns(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const rows = await env.DB.prepare(
-    "SELECT slot_key FROM hermes_automation_runs WHERE status IN ('queued','plan_enqueue_failed') ORDER BY created_at ASC LIMIT ?"
-  ).bind(Math.max(1, Math.min(50, Number(limit) || 20))).all();
+    "SELECT slot_key FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status IN ('queued','plan_enqueue_failed') ORDER BY created_at ASC LIMIT ?"
+  ).bind(ACCOUNT_KEY, PLATFORM, Math.max(1, Math.min(50, Number(limit) || 20))).all();
   let recovered = 0;
   for (const row of rows?.results || []) {
     const slotKey = clean(row?.slot_key, 32);
@@ -512,23 +520,23 @@ async function processPlanMessage(env, message) {
     const currentSlotKey = chicagoSlotKey(now);
     if (!isEligibleChicagoSlot(now) || slotKey !== currentSlotKey) {
       await env.DB.prepare(
-        "UPDATE hermes_automation_runs SET status='expired_live_slot',last_error_class='stale_live_slot_suppressed',updated_at=? WHERE slot_key=?"
-      ).bind(now.toISOString(), slotKey).run();
+        "UPDATE hermes_automation_runs SET status='expired_live_slot',last_error_class='stale_live_slot_suppressed',updated_at=? WHERE id=?"
+      ).bind(now.toISOString(), runIdForSlot(slotKey)).run();
       return { status: "expired_live_slot", slot_key: slotKey };
     }
   }
   const candidate = await loadOrCreateCarrierCandidate(env.DB, slotKey);
 
   if (!publicationEnabled(env)) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE slot_key=?")
-      .bind(new Date().toISOString(), slotKey).run();
+    await env.DB.prepare("UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE id=?")
+      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
     return { status: "dry_run_ready", candidate };
   }
 
   const reserved = await reservePublication(env.DB, candidate);
   if (!reserved) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='duplicate_suppressed',updated_at=? WHERE slot_key=?")
-      .bind(new Date().toISOString(), slotKey).run();
+    await env.DB.prepare("UPDATE hermes_automation_runs SET status='duplicate_suppressed',updated_at=? WHERE id=?")
+      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
     return { status: "duplicate_suppressed", candidate };
   }
 
@@ -544,8 +552,8 @@ async function processPlanMessage(env, message) {
       .bind(status, published.error_class, now, candidate.idempotency_key).run();
     await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
       .bind(status, published.error_class, now, candidate.content_id).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE slot_key=?")
-      .bind(status, published.error_class, now, slotKey).run();
+    await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+      .bind(status, published.error_class, now, runIdForSlot(slotKey)).run();
     return { status, candidate, error_class: published.error_class };
   }
 
@@ -554,8 +562,8 @@ async function processPlanMessage(env, message) {
     .bind(nextReadbackAt, now, candidate.idempotency_key).run();
   await env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
     .bind(now, candidate.content_id).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE slot_key=?")
-    .bind(now, slotKey).run();
+  await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE id=?")
+    .bind(now, runIdForSlot(slotKey)).run();
 
   try {
     await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
@@ -592,8 +600,8 @@ async function processReadbackMessage(env, message) {
       .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
     await env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
       .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE slot_key=?")
-      .bind(now, String(row.slot_key || "")).run();
+    await env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE id=?")
+      .bind(now, runIdForSlot(String(row.slot_key || ""))).run();
     return { status: "published_verified", provider_post_id: readback.provider_post_id, permalink: readback.permalink || null };
   }
 
@@ -615,8 +623,8 @@ async function processReadbackMessage(env, message) {
     .bind(attempt, errorClass, now, contentId).run();
   await env.DB.prepare("UPDATE hermes_automation_content SET state='readback_unverified',last_error_class=?,updated_at=? WHERE content_id=?")
     .bind(errorClass, now, contentId).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status='readback_unverified',last_error_class=?,updated_at=? WHERE slot_key=?")
-    .bind(errorClass, now, String(row.slot_key || "")).run();
+  await env.DB.prepare("UPDATE hermes_automation_runs SET status='readback_unverified',last_error_class=?,updated_at=? WHERE id=?")
+    .bind(errorClass, now, runIdForSlot(String(row.slot_key || ""))).run();
   return { status: "readback_unverified", error_class: errorClass };
 }
 
@@ -646,13 +654,14 @@ async function health(env) {
   const failed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='failed'").first();
   const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending'").first();
   const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='readback_unverified'").first();
-  const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE status='plan_enqueue_failed'").first();
+  const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status='plan_enqueue_failed'").bind(ACCOUNT_KEY, PLATFORM).first();
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
     FROM hermes_automation_runs
+    WHERE account_key=? AND platform=?
     ORDER BY updated_at DESC
     LIMIT 1
-  `).first();
+  `).bind(ACCOUNT_KEY, PLATFORM).first();
   return {
     database: "ok",
     ready_content: Number(ready?.count || 0),
