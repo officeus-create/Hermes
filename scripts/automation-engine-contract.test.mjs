@@ -107,6 +107,9 @@ assert.match(worker, /source_sha/, "Private health must expose the exact deploye
 assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
 assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
+assert.match(worker, /generic_job_events_by_type/, "Private health must expose generic retry/stale-recovery event counts");
+assert.doesNotMatch(worker, /ready_content: Number\(ready\?\.count \|\| 0\)/, "Missing D1 health count rows must not be coerced to zero");
+assert.match(worker, /ready_content: metricNumberOrNull\(ready\?\.count\)/, "D1 health counts must preserve UNKNOWN/null while retaining real zero");
 assert.match(worker, /safeRuntimeErrorClass/, "Runtime error receipts must use a sanitizer rather than persist arbitrary exception text");
 assert.match(worker, /\^\[a-z\]\[a-z0-9_\]\{2,79\}\$/, "Runtime error sanitizer must accept only bounded machine-code error classes");
 assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
