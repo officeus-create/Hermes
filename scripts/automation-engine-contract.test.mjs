@@ -81,6 +81,8 @@ assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-let
 assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
+assert.match(worker, /expired_live_slot/, "Recovered queue backlog must never publish a stale historical slot");
+assert.match(worker, /stale_live_slot_suppressed/, "Stale-slot suppression must be visible in durable run state");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
 assert.match(worker, /variant_key TEXT NOT NULL/, "Content state must persist semantic variant identity");
 assert.match(worker, /created_at>=\?/, "Content planner must suppress recent semantic variants");
