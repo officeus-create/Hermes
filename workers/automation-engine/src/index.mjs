@@ -1352,10 +1352,10 @@ export default {
   async scheduled(controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
     const observedAt = new Date();
-    const rawScheduledTime = Number(controller?.scheduledTime);
-    const scheduledAt = Number.isFinite(rawScheduledTime)
-      ? new Date(rawScheduledTime)
-      : observedAt;
+    const rawScheduledTime = metricNumberOrNull(controller?.scheduledTime);
+    const scheduledAt = rawScheduledTime === null
+      ? observedAt
+      : new Date(rawScheduledTime);
     await ensureSchema(env.DB);
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
