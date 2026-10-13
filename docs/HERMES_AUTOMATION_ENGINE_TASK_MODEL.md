@@ -88,6 +88,9 @@ Examples:
 ```
 social.publish
 social.reply
+history.ingest
+history.coverage.audit
+experiment.evaluate
 news.ingest
 news.publish
 telegram.digest
@@ -117,6 +120,31 @@ news.ingest
 ```
 
 When approval arrives, execution resumes from step 5. It never restarts from zero.
+
+## Historical learning is evidence, not runtime authority
+
+HAE must reuse Hermes' existing historical corpora instead of creating another memory system.
+
+The canonical contract is:
+[`HERMES_AUTOMATION_ENGINE_HISTORICAL_LEARNING.md`](./HERMES_AUTOMATION_ENGINE_HISTORICAL_LEARNING.md).
+
+Historical jobs are allowed to:
+- ingest/index existing evidence;
+- preserve provenance and content hashes;
+- deduplicate without deleting provenance;
+- classify CURRENT/SUPERSEDED/ERROR/RESULT/EXPERIMENT/IDEA/SKILL_SIGNAL;
+- build explicit source/time coverage maps;
+- normalize social observations;
+- propose hypotheses and versioned experiments.
+
+Historical jobs are not allowed to:
+- authorize credentials or provider writes;
+- turn stale/superseded instructions into current policy;
+- self-enable an automation;
+- substitute missing data with zero;
+- optimize only for vanity metrics when qualified downstream evidence exists.
+
+Any adaptive policy change must have a `policy_version`, explicit hypothesis, sample gate, guardrails and rollback target. Historical analysis proposes policy; current gates activate policy.
 
 ## CRM Automation Center
 
@@ -149,6 +177,15 @@ Hermes Connect should eventually expose:
 - exact blocker;
 - next trigger.
 
+### Historical evidence
+- source family and trust tier;
+- coverage start/end and gaps;
+- CURRENT vs SUPERSEDED classification;
+- unresolved conflicts;
+- experiment/policy lineage;
+- downstream outcome evidence;
+- last metrics observation timestamp.
+
 ### Brand/account policy
 - allowed topics;
 - forbidden topics;
@@ -177,6 +214,8 @@ Provider systems are external side effects.
 GitHub is source/release history.
 ChatGPT can design, debug and improve the engine, but is not the scheduler.
 
+Historical evidence is another input to this same engine, not a separate scheduler, database or control plane.
+
 ## First migration sequence
 
 1. Threads carrier-only publishing.
@@ -188,6 +227,8 @@ ChatGPT can design, debug and improve the engine, but is not the scheduler.
 7. X.
 8. Other Hermes business lanes.
 9. Non-marketing operational automations.
+
+Historical Evidence Ingestor may be developed read-only in parallel when runtime progress is blocked, but it must not delay or bypass the acceptance gate for the current Threads pilot.
 
 Each migration must end with:
 `SOURCE → LIVE → READBACK → HEALTH → OWNER-INDEPENDENT RUN`.
