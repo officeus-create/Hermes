@@ -736,51 +736,51 @@ async function recoverPendingGenericJobs(env, limit = 20) {
     const attempts = Number(row?.attempt_count || 0);
     const maxAttempts = Number(row?.max_attempts || 3);
     if (attempts < maxAttempts) {
-      const moved = await env.DB.prepare(`
-        UPDATE hermes_automation_jobs
-        SET state='RETRY_SCHEDULED',
-            available_at=?,
-            last_error_class='stale_running_recovered',
-            updated_at=?
-        WHERE job_id=? AND state='RUNNING' AND updated_at<=?
-      `).bind(now, now, jobId, staleRunningCutoff).run();
-      if (Number(moved?.meta?.changes || 0) === 1) {
-        await appendGenericJobEvent(env.DB, {
-          jobId,
-          eventType: "job.stale_running_recovered",
-          fromState: "RUNNING",
-          toState: "RETRY_SCHEDULED",
-          step: "execute",
-          errorClass: "stale_running_recovered",
-        });
-      }
+      await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(`
+          UPDATE hermes_automation_jobs
+          SET state='RETRY_SCHEDULED',
+              available_at=?,
+              last_error_class='stale_running_recovered',
+              updated_at=?
+          WHERE job_id=? AND state='RUNNING' AND updated_at<=?
+        `).bind(now, now, jobId, staleRunningCutoff),
+        jobId,
+        eventType: "job.stale_running_recovered",
+        fromState: "RUNNING",
+        toState: "RETRY_SCHEDULED",
+        step: "execute",
+        errorClass: "stale_running_recovered",
+        createdAt: now,
+        expectedAttemptCount: attempts,
+      });
       continue;
     }
 
-    const failed = await env.DB.prepare(`
-      UPDATE hermes_automation_jobs
-      SET state='FAILED',
-          current_step='complete',
-          available_at=NULL,
-          last_error_class='stale_running_attempts_exhausted',
-          updated_at=?,
-          completed_at=?
-      WHERE job_id=? AND state='RUNNING' AND updated_at<=?
-    `).bind(now, now, jobId, staleRunningCutoff).run();
-    if (Number(failed?.meta?.changes || 0) === 1) {
-      await appendGenericJobEvent(env.DB, {
-        jobId,
-        eventType: "job.stale_running_failed",
-        fromState: "RUNNING",
-        toState: "FAILED",
-        step: "complete",
-        errorClass: "stale_running_attempts_exhausted",
-      });
-    }
+    await transitionGenericJobWithEvent(env.DB, {
+      updateStatement: env.DB.prepare(`
+        UPDATE hermes_automation_jobs
+        SET state='FAILED',
+            current_step='complete',
+            available_at=NULL,
+            last_error_class='stale_running_attempts_exhausted',
+            updated_at=?,
+            completed_at=?
+        WHERE job_id=? AND state='RUNNING' AND updated_at<=?
+      `).bind(now, now, jobId, staleRunningCutoff),
+      jobId,
+      eventType: "job.stale_running_failed",
+      fromState: "RUNNING",
+      toState: "FAILED",
+      step: "complete",
+      errorClass: "stale_running_attempts_exhausted",
+      createdAt: now,
+      expectedAttemptCount: attempts,
+    });
   }
 
   const rows = await env.DB.prepare(`
-    SELECT job_id,state FROM hermes_automation_jobs
+    SELECT job_id,state,attempt_count FROM hermes_automation_jobs
     WHERE state IN ('QUEUED','RETRY_SCHEDULED')
       AND (available_at IS NULL OR available_at<=?)
     ORDER BY priority DESC, created_at ASC
@@ -802,19 +802,19 @@ async function recoverPendingGenericJobs(env, limit = 20) {
       recovered += 1;
     } catch {
       const retryAt = addSecondsIso(now, 5 * 60);
-      const moved = await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
-      ).bind(retryAt, now, jobId).run();
-      if (Number(moved?.meta?.changes || 0) === 1) {
-        await appendGenericJobEvent(env.DB, {
-          jobId,
-          eventType: "job.enqueue_failed",
-          fromState: fromState || "QUEUED",
-          toState: "RETRY_SCHEDULED",
-          step: "dispatch",
-          errorClass: "job_enqueue_failed",
-        });
-      }
+      await transitionGenericJobWithEvent(env.DB, {
+        updateStatement: env.DB.prepare(
+          "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+        ).bind(retryAt, now, jobId),
+        jobId,
+        eventType: "job.enqueue_failed",
+        fromState: fromState || "QUEUED",
+        toState: "RETRY_SCHEDULED",
+        step: "dispatch",
+        errorClass: "job_enqueue_failed",
+        createdAt: now,
+        expectedAttemptCount: Number(row?.attempt_count || 0),
+      });
     }
   }
   return recovered;
