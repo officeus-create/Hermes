@@ -1,3 +1,10 @@
+import {
+  publishThreadsTextViaWindsor,
+  readbackThreadsTextViaWindsor,
+  windsorThreadsConfig,
+  WINDSOR_THREADS_DEFAULT_ACCOUNT_ID,
+} from "./windsor-threads.mjs";
+
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
 const CHICAGO_TZ = "America/Chicago";
@@ -321,59 +328,11 @@ function publicationEnabled(env) {
     && String(env.HERMES_AUTOMATION_PUBLISH || "disabled") === "enabled";
 }
 
-function validHttps(value) {
-  try {
-    const url = new URL(String(value || ""));
-    return url.protocol === "https:" ? url.toString() : null;
-  } catch {
-    return null;
-  }
-}
-
-async function publishThroughGateway(env, candidate) {
-  const endpoint = validHttps(env.THREADS_PUBLISH_GATEWAY);
-  const token = clean(env.THREADS_PUBLISH_GATEWAY_TOKEN, 4096);
-  if (!endpoint || !token) return { ok: false, error_class: "threads_gateway_not_configured", retryable: false };
-
-  let response;
-  try {
-    response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "authorization": `Bearer ${token}`,
-        "content-type": "application/json",
-        "accept": "application/json",
-      },
-      body: JSON.stringify({
-        account_key: candidate.account_key,
-        platform: candidate.platform,
-        text: candidate.body,
-        idempotency_key: candidate.idempotency_key,
-      }),
-    });
-  } catch {
-    return { ok: false, error_class: "provider_outcome_unknown", retryable: false };
-  }
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    return {
-      ok: false,
-      error_class: clean(payload?.error, 120) || `provider_rejected_${response.status}`,
-      retryable: response.status >= 500,
-    };
-  }
-  const providerPostId = clean(payload?.provider_post_id || payload?.media_id || payload?.id, 240);
-  const permalink = validHttps(payload?.permalink || payload?.url);
-  if (!providerPostId) return { ok: false, error_class: "provider_receipt_missing", retryable: false };
-  return { ok: true, provider_post_id: providerPostId, permalink };
-}
-
 async function processPlanMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  if (!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
   const candidate = buildCarrierThreadsPost(slotKey);
   await insertCandidate(env.DB, candidate);
 
@@ -390,53 +349,91 @@ async function processPlanMessage(env, message) {
     return { status: "duplicate_suppressed", candidate };
   }
 
-  await env.DB.prepare(`
-    UPDATE hermes_automation_publications
-    SET status='publishing',attempt_count=1,updated_at=?
-    WHERE idempotency_key=?
-  `).bind(new Date().toISOString(), candidate.idempotency_key).run();
+  const startedAt = new Date().toISOString();
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='publishing',attempt_count=1,updated_at=? WHERE idempotency_key=?")
+    .bind(startedAt, candidate.idempotency_key).run();
 
-  const published = await publishThroughGateway(env, candidate);
+  const published = await publishThreadsTextViaWindsor(env, candidate.body);
   const now = new Date().toISOString();
   if (!published.ok) {
     const status = published.error_class === "provider_outcome_unknown" ? "unknown_outcome" : "failed";
-    await env.DB.prepare(`
-      UPDATE hermes_automation_publications
-      SET status=?,last_error_class=?,updated_at=?
-      WHERE idempotency_key=?
-    `).bind(status, published.error_class, now, candidate.idempotency_key).run();
-    await env.DB.prepare(`
-      UPDATE hermes_automation_content
-      SET state=?,last_error_class=?,updated_at=?
-      WHERE content_id=?
-    `).bind(status, published.error_class, now, candidate.content_id).run();
+    await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
+      .bind(status, published.error_class, now, candidate.idempotency_key).run();
+    await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+      .bind(status, published.error_class, now, candidate.content_id).run();
     await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE slot_key=?")
       .bind(status, published.error_class, now, slotKey).run();
     return { status, candidate, error_class: published.error_class };
   }
 
-  const verifiedStatus = published.permalink ? "published_verified" : "published_readback_pending";
-  await env.DB.prepare(`
-    UPDATE hermes_automation_publications
-    SET status=?,provider_post_id=?,permalink=?,updated_at=?
-    WHERE idempotency_key=?
-  `).bind(verifiedStatus, published.provider_post_id, published.permalink || null, now, candidate.idempotency_key).run();
-  await env.DB.prepare(`
-    UPDATE hermes_automation_content
-    SET state=?,provider_post_id=?,permalink=?,updated_at=?
-    WHERE content_id=?
-  `).bind(verifiedStatus, published.provider_post_id, published.permalink || null, now, candidate.content_id).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,updated_at=? WHERE slot_key=?")
-    .bind(verifiedStatus, now, slotKey).run();
-  return { status: verifiedStatus, candidate, provider_post_id: published.provider_post_id, permalink: published.permalink || null };
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',updated_at=? WHERE idempotency_key=?")
+    .bind(now, candidate.idempotency_key).run();
+  await env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
+    .bind(now, candidate.content_id).run();
+  await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE slot_key=?")
+    .bind(now, slotKey).run();
+
+  await env.AUTOMATION_QUEUE.send({
+    type: "publication.readback",
+    content_id: candidate.content_id,
+    slot_key: slotKey,
+    readback_attempt: 1,
+  }, { delaySeconds: 4200 });
+
+  return { status: "provider_accepted_readback_pending", candidate, provider_result: published.provider_result || null };
 }
 
+async function processReadbackMessage(env, message) {
+  if (!env.DB) throw new Error("database_not_configured");
+  await ensureSchema(env.DB);
+  const contentId = clean(message?.content_id, 240);
+  const attempt = Math.max(1, Math.min(4, Number(message?.readback_attempt || 1) || 1));
+  if (!contentId) throw new Error("content_id_invalid");
+
+  const row = await env.DB.prepare("SELECT content_id,account_key,platform,slot_key,template_id,destination_url,body,state FROM hermes_automation_content WHERE content_id=? LIMIT 1")
+    .bind(contentId).first();
+  if (!row) return { status: "readback_missing_content" };
+  if (String(row.state) === "published_verified") return { status: "published_verified", duplicate: true };
+
+  const readback = await readbackThreadsTextViaWindsor(env, String(row.body || ""));
+  const now = new Date().toISOString();
+  if (readback.ok && readback.found) {
+    await env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
+    await env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
+    await env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE slot_key=?")
+      .bind(now, String(row.slot_key || "")).run();
+    return { status: "published_verified", provider_post_id: readback.provider_post_id, permalink: readback.permalink || null };
+  }
+
+  if (attempt < 4) {
+    await env.AUTOMATION_QUEUE.send({
+      type: "publication.readback",
+      content_id: contentId,
+      slot_key: String(row.slot_key || ""),
+      readback_attempt: attempt + 1,
+    }, { delaySeconds: 3600 });
+    return { status: "provider_accepted_readback_pending", readback_attempt: attempt, error_class: readback.ok ? "post_not_visible_yet" : readback.error_class };
+  }
+
+  const errorClass = readback.ok ? "provider_readback_not_found" : readback.error_class;
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='readback_unverified',last_error_class=?,updated_at=? WHERE content_id=?")
+    .bind(errorClass, now, contentId).run();
+  await env.DB.prepare("UPDATE hermes_automation_content SET state='readback_unverified',last_error_class=?,updated_at=? WHERE content_id=?")
+    .bind(errorClass, now, contentId).run();
+  await env.DB.prepare("UPDATE hermes_automation_runs SET status='readback_unverified',last_error_class=?,updated_at=? WHERE slot_key=?")
+    .bind(errorClass, now, String(row.slot_key || "")).run();
+  return { status: "readback_unverified", error_class: errorClass };
+}
 async function health(db) {
   if (!db) return { database: "missing" };
   await ensureSchema(db);
   const ready = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_content WHERE state='ready'").first();
   const unknown = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='unknown_outcome'").first();
   const failed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='failed'").first();
+  const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending'").first();
+  const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='readback_unverified'").first();
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
     FROM hermes_automation_runs
@@ -448,6 +445,8 @@ async function health(db) {
     ready_content: Number(ready?.count || 0),
     unknown_outcomes: Number(unknown?.count || 0),
     failed_publications: Number(failed?.count || 0),
+    pending_readbacks: Number(pendingReadback?.count || 0),
+    unverified_readbacks: Number(unverifiedReadback?.count || 0),
     last_run: last || null,
   };
 }
@@ -472,21 +471,23 @@ export default {
   async queue(batch, env) {
     for (const item of batch.messages) {
       const payload = item.body || {};
-      if (payload.type !== "content.plan") {
-        item.ack();
-        continue;
-      }
       try {
-        const result = await processPlanMessage(env, payload);
-        if (result.status === "unknown_outcome") item.ack();
-        else if (result.status === "failed" && result.error_class === "threads_gateway_not_configured") item.ack();
-        else item.ack();
+        if (payload.type === "content.plan") {
+          await processPlanMessage(env, payload);
+          item.ack();
+          continue;
+        }
+        if (payload.type === "publication.readback") {
+          await processReadbackMessage(env, payload);
+          item.ack();
+          continue;
+        }
+        item.ack();
       } catch {
         item.retry();
       }
     }
   },
-
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/v1/capabilities") {
@@ -498,6 +499,9 @@ export default {
         pilot_platform: PLATFORM,
         normal_loop_requires_chatgpt_task: false,
         generation_mode: "deterministic_templates",
+        provider_transport: "windsor_connectors_api",
+        provider_account: clean(env.WINDSOR_THREADS_ACCOUNT_ID || WINDSOR_THREADS_DEFAULT_ACCOUNT_ID, 160),
+        provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
     }
