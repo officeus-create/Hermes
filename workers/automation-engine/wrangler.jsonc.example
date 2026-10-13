@@ -20,6 +20,10 @@
       {
         "binding": "AUTOMATION_QUEUE",
         "queue": "hermes-automation"
+      },
+      {
+        "binding": "AUTOMATION_DLQ",
+        "queue": "hermes-automation-dlq"
       }
     ],
     "consumers": [
