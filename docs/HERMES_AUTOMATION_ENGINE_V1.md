@@ -181,15 +181,28 @@ Readback recovery is also durable. The next readback time and attempt count live
 - explicit confirmation that normal runtime does not require a ChatGPT Scheduled Task.
 
 `GET /v1/health` — **private bearer token required**
+- exact deployed source SHA when release metadata is configured;
+- current automation mode and effective publication gate;
 - ready-content count;
 - unknown provider outcomes;
 - failed publications;
 - pending provider readbacks;
 - unverified readbacks;
 - failed plan enqueues;
-- primary queue backlog;
+- primary queue backlog with missing provider metrics preserved as UNKNOWN/null rather than fabricated zero;
 - dead-letter queue backlog;
+- last cron wake, including quiet-window heartbeat evidence;
+- cron scheduled time versus observed execution time / lag;
+- last successful run and last failed run separately;
+- generic-job transition event counts for retry/stale-recovery evidence;
+- sanitized runtime-event counts for Queue/recovery failures;
 - last run state.
+
+Post-observation hardening rule:
+- use Cloudflare `ScheduledController.scheduledTime` as the logical cron time rather than wall-clock handler start, so delayed execution does not silently shift the logical slot;
+- unknown Queue message types fail closed toward retry/DLQ instead of being silently acknowledged;
+- telemetry failure must not suppress the current eligible business slot;
+- runtime error receipts must never persist arbitrary exception text that could contain URLs or credentials.
 
 `POST /v1/tick`
 - authenticated manual canary;
