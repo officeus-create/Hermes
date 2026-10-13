@@ -189,7 +189,7 @@ Readback recovery is also durable. The next readback time and attempt count live
 - pending provider readbacks;
 - unverified readbacks;
 - failed plan enqueues;
-- primary queue backlog with missing provider metrics preserved as UNKNOWN/null rather than fabricated zero;
+- primary queue backlog with missing provider metrics preserved as UNKNOWN/null and health status partial_unknown rather than fabricated zero/false OK;
 - dead-letter queue backlog;
 - last cron wake, including quiet-window heartbeat evidence;
 - per-wake source SHA, automation mode, raw publication configuration, and effective publication gate for deployment/config continuity evidence;
