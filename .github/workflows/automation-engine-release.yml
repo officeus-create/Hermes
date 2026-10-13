@@ -201,10 +201,17 @@ jobs:
           import fs from "node:fs";
           const path = "workers/automation-engine/wrangler.production.generated.jsonc";
           let config = fs.readFileSync("workers/automation-engine/wrangler.jsonc.example", "utf8");
+          const targetSha = String(process.env.TARGET_SHA || "").trim();
+          if (!/^[0-9a-f]{40}$/.test(targetSha)) {
+            throw new Error("invalid_HAE_release_target_sha");
+          }
           config = config
             .replace("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING", process.env.DB_ID)
             .replace('"database_name": "hermes-connect-prototype"', `"database_name": "${process.env.DB_NAME || "hermes-connect-prototype"}"`)
-            .replace("INJECT_EXACT_MAIN_SHA_AT_RELEASE", process.env.TARGET_SHA);
+            .replace("INJECT_EXACT_MAIN_SHA_AT_RELEASE", targetSha);
+          if (config.includes("INJECT_EXACT_MAIN_SHA_AT_RELEASE")) {
+            throw new Error("HAE_release_source_sha_placeholder_not_replaced");
+          }
           fs.writeFileSync(path, config);
           NODE
 
