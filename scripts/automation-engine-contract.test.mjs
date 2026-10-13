@@ -142,6 +142,11 @@ assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must 
 assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
+assert.match(releaseWorkflow, /CLOUDFLARE_HAE_RELEASE_TOKEN/, "HAE should prefer one dedicated least-privilege Cloudflare release token");
+assert.match(releaseWorkflow, /workers\/lead-email\/wrangler\.production\.jsonc/, "HAE must derive the canonical Cloudflare account id from existing production config");
+assert.doesNotMatch(releaseWorkflow, /CLOUDFLARE_PAGES_API_TOKEN/, "HAE release must not require a second Pages-only token");
+assert.doesNotMatch(releaseWorkflow, /secrets\.CLOUDFLARE_ACCOUNT_ID|secrets\.CF_ACCOUNT_ID/, "HAE release must not require a duplicate account-id secret");
+assert.match(releaseWorkflow, /Authorization: Bearer \$\{CLOUDFLARE_API_TOKEN\}/, "The single release token must cover bounded Cloudflare API reads used by the dry-run proof");
 assert.match(releaseWorkflow, /deployment_configs\.production\.d1_databases\.DB\.id/, "Release must discover the canonical Pages D1 binding");
 assert.doesNotMatch(releaseWorkflow, /d1\s+create/i, "Release must never create a second D1 database");
 assert.match(releaseWorkflow, /queues create/, "Explicit provisioning may create only the two bounded HAE queues");
