@@ -172,7 +172,7 @@ There is one canonical Automation Engine.
 
 Hermes Connect is the control UI and business context layer.
 Cloudflare/runtime is the execution layer.
-D1 is durable execution state.
+The existing canonical Hermes Connect D1 is durable execution state; HAE must not create a parallel database.
 Provider systems are external side effects.
 GitHub is source/release history.
 ChatGPT can design, debug and improve the engine, but is not the scheduler.
