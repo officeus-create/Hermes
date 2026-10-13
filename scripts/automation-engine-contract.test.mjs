@@ -145,6 +145,10 @@ assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failur
 assert.match(worker, /cron\.recover_plan_runs_failed/, "Plan recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_generic_jobs_failed/, "Generic recovery failure must be isolated and observable");
 assert.match(worker, /const enqueued = await enqueuePlanRun\(env, slotKey\)/, "Current eligible slot must finish its first enqueue attempt before recovery scans queued rows");
+assert.match(worker, /plan\.enqueue_state_write_failed/, "A post-send D1 state-write failure must be recorded separately from Queue send failure");
+assert.match(worker, /return true;\n}\n\nasync function recoverPendingPlanRuns/, "A durably accepted Queue message must remain a successful enqueue even if the follow-up D1 status write fails");
+assert.match(worker, /status='plan_enqueue_failed' OR \(status='queued' AND created_at<=\?\)/, "Recovery must not immediately re-enqueue a freshly reserved queued run after a confirmed Queue send");
+assert.match(worker, /queuedStaleCutoff = addSecondsIso\(new Date\(\)\.toISOString\(\), -2 \* 60\)/, "Queued-run recovery must use a bounded stale cutoff");
 assert.doesNotMatch(worker, /ctx\.waitUntil\(enqueuePlanRun\(env, slotKey\)/, "Current-slot enqueue must not race recoverPendingPlanRuns via waitUntil");
 {
   const scheduledStart = worker.indexOf("async scheduled(controller, env, ctx)");
