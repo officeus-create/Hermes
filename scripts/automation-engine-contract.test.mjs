@@ -77,6 +77,8 @@ assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
 assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
 assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
+assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-letter queue separately");
+assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
@@ -103,6 +105,7 @@ assert.ok(wrangler.includes('"WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"')
 assert.ok(wrangler.includes("WINDSOR_API_KEY"), "Windsor secret activation step must be documented");
 assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never be committed as a Wrangler var");
 assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Queue must have a DLQ");
+assert.ok(wrangler.includes('"binding": "AUTOMATION_DLQ"'), "DLQ must be bound read-only in practice for health metrics");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
 for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
