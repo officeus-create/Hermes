@@ -21,14 +21,14 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
-    flow: ["Request", "CRM context", "Automation", "Receipt"],
+    flow: ["Request", "CRM context", "Automation", "Readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "03", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
-    detail: "U.S. logistics · sales · marketing · operations",
-    flow: ["Lesson", "Practice", "Review", "Progression"],
+    detail: "Logistics · marketing · IT/AI · sales · operations",
+    flow: ["Explain", "Practice", "Feedback", "Retry"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "04", crop: 818, goal: "Develop people",
   },
@@ -57,7 +57,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   data-logistics-scene-ready="car-hauler"
                   src="/images/logistics-living/car-hauler-512.webp"
                   srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
-                  sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                  sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                   width="887"
                   height="1590"
                   aria-hidden="true"
@@ -66,10 +66,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   decoding="async"
                   fetchpriority="high"
                 />
-              ) : (
+              ) : path.id === "marketing" ? null : (
                 <picture>
-                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
+                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
                 </picture>
               )}
             </span>
@@ -86,7 +86,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 <span class="home-logistics-weather"></span>
               </span>
             )}
-            {path.id === "marketing" && <span class="home-portal-motion home-moving-leaves" aria-hidden="true" data-home-motion="leaves" data-motion-state="idle"><img src="/images/home-20261001/leaves-160.webp" srcset="/images/home-20261001/leaves-160.webp 160w, /images/home-20261001/leaves-256.webp 256w, /images/home-20261001/leaves.webp 320w" sizes="(max-width:700px) 27vw, 100px" width="320" height="274" aria-hidden="true" alt="Green leaves" loading="lazy" decoding="async" /></span>}
+            
             {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
               <span class="home-live-kicker">Example workflow</span>
@@ -99,9 +99,55 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 </span>
               ))}
             </span>
-            {path.id === "marketing" && <span class="home-scene-detail home-story-board" aria-hidden="true" data-home-pillar-proof="attention"><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i><i class="home-story-frame"><b></b><b></b><b></b></i></span>}
-            {path.id === "technology" && <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems"><i class="home-system-scan"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i><i class="home-system-node"></i></span>}
-            {path.id === "academy" && <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress"><i class="home-book-page"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M13 20 C24 12 30 17 41 10 S61 14 74 7" /></svg></i><span class="home-academy-track"><i>Logistics</i><i>Sales</i><i>Marketing</i><i>Operations</i></span></span>}
+            {path.id === "marketing" && (
+              <span class="home-scene-detail home-marketing-journey" data-home-pillar-proof="attention" data-home-marketing-journey data-journey-motion="paused" aria-hidden="true">
+                <span class="home-marketing-caption">ATTENTION <i></i> DEMAND</span>
+                <svg class="home-marketing-conductor" viewBox="0 0 300 480" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="home-marketing-track" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
+                  <path class="home-marketing-pulse" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
+                </svg>
+                <span class="home-marketing-card home-marketing-content">
+                  <small><i></i> 01 / CONTENT</small>
+                  <span class="home-marketing-media"><b class="home-marketing-play"></b><em></em></span>
+                  <span class="home-marketing-card-lines"><i></i><i></i></span>
+                </span>
+                <span class="home-marketing-card home-marketing-discovery">
+                  <small><i></i> 02 / DISCOVERY</small>
+                  <span class="home-marketing-search"><i></i><b></b></span>
+                  <span class="home-marketing-result"><i></i><b></b><b></b></span>
+                </span>
+                <span class="home-marketing-card home-marketing-site">
+                  <small><i></i> 03 / WEBSITE</small>
+                  <span class="home-marketing-browser"><b></b><i></i><em></em></span>
+                </span>
+                <span class="home-marketing-card home-marketing-inquiry">
+                  <small><i></i> 04 / INQUIRY</small>
+                  <span class="home-marketing-person"><i></i><b></b><em></em></span>
+                  <span class="home-marketing-beacon" aria-hidden="true"><i></i></span>
+                </span>
+              </span>
+            )}
+            {path.id === "technology" && (
+              <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems">
+                <span class="home-system-caption">REQUEST <i></i> VERIFIED READBACK</span>
+                <span class="home-system-card home-system-input"><small>01 / REQUEST</small><b></b><em></em></span>
+                <span class="home-system-wire home-system-wire-a"><i></i></span>
+                <span class="home-system-card home-system-crm"><small>02 / CRM</small><b></b><em></em></span>
+                <span class="home-system-wire home-system-wire-b"><i></i></span>
+                <span class="home-system-card home-system-auto"><small>03 / AUTOMATE</small><b></b><em></em></span>
+                <span class="home-system-card home-system-readback"><small>04 / READBACK</small><strong><i></i> VERIFIED</strong></span>
+              </span>
+            )}
+            {path.id === "academy" && (
+              <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress">
+                <span class="home-academy-caption">CAPABILITY LOOP</span>
+                <span class="home-academy-card home-academy-attempt"><small>ATTEMPT 1</small><b></b><em></em><i></i></span>
+                <span class="home-academy-feedback"><small>HUMAN FEEDBACK</small><strong>Ask one diagnostic question first.</strong></span>
+                <span class="home-academy-arrow"><i></i></span>
+                <span class="home-academy-card home-academy-retry"><small>RETRY</small><b></b><em></em><i></i></span>
+                <span class="home-academy-next"><i></i><span><small>NEXT TARGET</small><b>TRANSFER</b></span></span>
+              </span>
+            )}
             <span class="home-master-route-copy">
               <small><i aria-hidden="true"></i>{meta.goal}</small>
               <strong>Hermes<br />{path.brandLabel.replace("Hermes ", "")}</strong>
@@ -199,6 +245,29 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     update();
   }
 
+  // The Marketing portal is a lightweight, decorative proof replay; no customer data or generated metrics.
+  // CSS/SVG runs only while visible and stops on tab hide, mobile motion preference, or when out of view.
+  const marketingJourney = document.querySelector<HTMLElement>("[data-home-marketing-journey]");
+  if (marketingJourney) {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let inView = false;
+    const updateJourney = () => {
+      marketingJourney.dataset.journeyMotion = preference.matches ? "reduced" : inView && !document.hidden ? "running" : "paused";
+    };
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        inView = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= .2);
+        updateJourney();
+      }, { threshold: .2 });
+      observer.observe(marketingJourney);
+    } else {
+      inView = true;
+    }
+    preference.addEventListener("change", updateJourney);
+    document.addEventListener("visibilitychange", updateJourney);
+    updateJourney();
+  }
+
   document.querySelectorAll<HTMLAnchorElement>("[data-home-route]").forEach((link) => {
     link.addEventListener("click", () => {
       const id = link.dataset.routeId;
@@ -218,7 +287,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
 .home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
 .home-master-display span{color:inherit}
-.home-display-i{display:inline-block;transform-origin:50% 90%;animation:home-letter-hop 1.15s ease-out .7s 2}
+.home-display-i{display:inline-block;transform-origin:50% 90%;animation:home-letter-hop 5.8s ease-in-out 1s infinite}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:60ch;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
@@ -239,7 +308,14 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
 [data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:repeating-linear-gradient(105deg,transparent 0 15px,rgba(214,239,249,.36) 16px 18px,transparent 19px 33px);animation:home-logistics-rain 1.2s linear infinite;opacity:.52}
+[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:
+linear-gradient(168deg,transparent 0 45%,rgba(214,239,249,.28) 46% 48%,transparent 49%) 12% 8%/7px 54px no-repeat,
+linear-gradient(170deg,transparent 0 44%,rgba(225,244,251,.24) 45% 48%,transparent 49%) 31% 19%/5px 42px no-repeat,
+linear-gradient(166deg,transparent 0 46%,rgba(214,239,249,.31) 47% 49%,transparent 50%) 49% 4%/8px 63px no-repeat,
+linear-gradient(169deg,transparent 0 45%,rgba(233,247,252,.22) 46% 48%,transparent 49%) 67% 28%/5px 38px no-repeat,
+linear-gradient(167deg,transparent 0 45%,rgba(214,239,249,.3) 46% 49%,transparent 50%) 84% 12%/7px 57px no-repeat,
+radial-gradient(ellipse at 50% 15%,rgba(205,226,235,.16),transparent 48%);
+animation:home-logistics-rain 3.8s ease-in-out infinite alternate;opacity:.38;filter:blur(.12px)}
 [data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 [data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
 [data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
@@ -247,7 +323,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 [data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
 [data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
 [data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
-.home-moving-leaves{left:47%;top:2.4%;width:27%;transform-origin:50% 100%}
+
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-road-flow{inset:23% 8% auto 26%;height:38%}
 .home-road-flow i{position:absolute;display:block;width:10%;height:2px;border-radius:3px;background:#d0f4ff;box-shadow:0 0 8px 2px #63c7ffb0;opacity:0;transform:rotate(-51deg)}
@@ -285,44 +361,99 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
-.home-story-board{left:7%;top:20%;width:21%;height:12%;perspective:280px}
-.home-story-frame{position:absolute;inset:0;border:1px solid #ffffffaa;border-radius:7px;background:#fafff0e8;box-shadow:0 5px 14px #123a2e42;display:flex;flex-direction:column;justify-content:flex-end;gap:7%;padding:11%;transform:rotate(-7deg)}
-.home-story-frame b{display:block;flex:none;width:100%;height:10%;border-radius:5px;background:#236b55a8}.home-story-frame b:first-of-type{height:46%;background:radial-gradient(circle at 50% 50%,#f7fff2 0 26%,transparent 28%),conic-gradient(#429577,#aee3a1,#dbb480,#429577)}.home-story-frame b:last-child{width:57%;background:#91bb83}
-.home-story-frame:nth-child(2){transform:translate(9%,3%) rotate(3deg);background:#e8faf6}.home-story-frame:nth-child(2) b:first-child{background:linear-gradient(145deg,#7fbfc2,#30637c)}
-.home-story-frame:nth-child(3){transform:translate(17%,6%) rotate(10deg);background:#fff7ed}.home-story-frame:nth-child(3) b:first-child{background:linear-gradient(145deg,#f4c18b,#aa6d57)}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(3){animation:home-story-turn 2.4s ease-in-out 2}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-story-frame:nth-child(2){animation:home-story-turn 2.4s ease-in-out .35s 2}
-.home-system-display{left:26%;top:30%;width:55%;height:24%;border:1px solid #ffdfb885;border-radius:8px;box-shadow:inset 0 0 22px #ffca7752;overflow:hidden}
-.home-system-scan{position:absolute;inset:0 auto 0 -22%;width:20%;background:linear-gradient(90deg,transparent,#ffe6aa70,transparent);opacity:0}
-.home-system-node{position:absolute;top:20%;left:12%;width:8px;height:8px;border:1px solid #fff9dc;border-radius:50%;box-shadow:0 0 12px 3px #ff9f4b;opacity:.58}
-
-.home-system-node:nth-child(3){top:40%;left:34%}.home-system-node:nth-child(4){top:61%;left:57%}.home-system-node:nth-child(5){top:78%;left:77%}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-scan{animation:home-system-pass 2.5s ease-in-out 2}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-node{animation:home-system-breathe 1.5s ease-in-out 3}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(3){animation-delay:.18s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(4){animation-delay:.36s}.home-master-route-technology:is(:hover,:focus-visible) .home-system-node:nth-child(5){animation-delay:.54s}
-.home-learning-detail{inset:0;z-index:0}
-.home-book-page{position:absolute;left:54%;top:63%;width:32%;height:7%;border:1px solid #fffef0;border-radius:2px 8px 2px 2px;background:linear-gradient(105deg,#e7daf9d0,#fffdf1f0);box-shadow:0 5px 12px #3f2c6444;transform:skewY(-8deg) rotate(-8deg);transform-origin:8% 90%;opacity:0}
-.home-book-page svg{width:100%;height:100%;fill:none;stroke:#786391;stroke-width:1.5;stroke-linecap:round;opacity:.8}
-.home-book-page path{stroke-dasharray:90;stroke-dashoffset:90}
-.home-master-route-academy:is(:hover,:focus-visible) .home-book-page{animation:home-page-turn 2.8s ease-in-out 2}
-.home-master-route-academy:is(:hover,:focus-visible) .home-book-page path{animation:home-ink-write 2.8s ease-in-out 2}
-.home-academy-track{position:absolute;right:6%;top:27%;display:grid;gap:5px;justify-items:end}
-.home-academy-track i{display:block;padding:4px 6px;border:1px solid #f2e7ffaa;border-radius:999px;background:#382b50cc;color:#fff;font:700 .44rem/1 var(--font-body);font-style:normal;letter-spacing:.05em;box-shadow:0 5px 12px #3f2c6444;opacity:.62;transform:translateX(6px)}
-.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i{animation:home-skill-progress 1.8s cubic-bezier(.16,1,.3,1) 2}
-.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(2){animation-delay:.18s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(3){animation-delay:.36s}.home-master-route-academy:is(:hover,:focus-visible) .home-academy-track i:nth-child(4){animation-delay:.54s}
+/* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
+.home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
+.home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
+/* Marketing scene is fully CSS/SVG, without hidden downloaded background photography. */
+.home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
+.home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
+.home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
+.home-marketing-conductor{position:absolute;inset:4% 0 0;width:100%;height:95%;overflow:visible}
+.home-marketing-track,.home-marketing-pulse{fill:none;stroke:#168663;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.65}
+.home-marketing-track{opacity:.2}
+.home-marketing-pulse{opacity:.8;stroke:#2bbf83;stroke-width:2;stroke-dasharray:2 14;stroke-dashoffset:0;filter:drop-shadow(0 0 4px #74d4a2)}
+.home-marketing-card{position:absolute;display:block;box-sizing:border-box;border:1px solid #ffffffd9;border-radius:13px;background:linear-gradient(150deg,#ffffffed,#ecfaf4ea);box-shadow:0 12px 26px #0a412d2b,0 2px 6px #0a412d18;backdrop-filter:blur(8px);padding:10px;overflow:hidden;color:#204536;transform:translate3d(0,0,0)}
+.home-marketing-card small{display:flex;align-items:center;gap:5px;font:800 clamp(.625rem,.68vw,.74rem)/1.2 var(--font-mono);letter-spacing:.045em;white-space:nowrap}
+.home-marketing-card small i{display:block;height:5px;width:5px;flex:none;border-radius:50%;background:#16a572}
+.home-marketing-content{top:12%;left:4%;width:55%;height:22%}
+.home-marketing-discovery{top:31%;right:3%;width:57%;height:20%}
+.home-marketing-site{top:51%;left:6%;width:61%;height:22%}
+.home-marketing-inquiry{top:72%;right:4%;width:55%;height:19%}
+.home-marketing-media{position:relative;display:block;height:53%;margin:7px 0 5px;border-radius:6px;background:linear-gradient(140deg,#2d725e,#8dcdb2 56%,#e2eedc);overflow:hidden}
+.home-marketing-media::after{content:"";position:absolute;inset:auto -12% -42% 28%;height:90%;background:linear-gradient(30deg,#c6e5d5,#529a7f);border-radius:50% 50% 0 0;transform:rotate(-12deg)}
+.home-marketing-play{position:absolute;z-index:1;top:50%;left:50%;translate:-50% -50%;width:23px;height:23px;border:1px solid #fff9;border-radius:50%;background:#ffffffab}
+.home-marketing-play::after{content:"";position:absolute;top:7px;left:9px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #276b50}
+.home-marketing-card-lines{display:flex;flex-direction:column;gap:4px}
+.home-marketing-card-lines i{height:3px;width:77%;background:#b3cfbf;border-radius:4px}.home-marketing-card-lines i+ i{width:53%;background:#cdded4}
+.home-marketing-search{display:flex;align-items:center;gap:8px;margin-top:10px;padding:6px;background:#fff;border:1px solid #d4e5da;border-radius:6px}
+.home-marketing-search i{width:10px;height:10px;border:2px solid #438869;border-radius:50%;position:relative}
+.home-marketing-search i::after{content:"";position:absolute;width:5px;height:2px;background:#438869;right:-4px;bottom:-2px;rotate:45deg}
+.home-marketing-search b{width:60%;height:4px;border-radius:4px;background:#b6d4c1}
+.home-marketing-result{display:grid;grid-template-columns:22px 1fr;gap:4px;margin-top:7px}
+.home-marketing-result i{grid-row:span 2;height:25px;border-radius:4px;background:linear-gradient(140deg,#6dac8b,#d2e5ce)}
+.home-marketing-result b{height:4px;margin-top:2px;border-radius:4px;background:#8dac9c}.home-marketing-result b:last-child{width:70%;background:#c5d7cc}
+.home-marketing-browser{display:block;margin-top:8px;border:1px solid #d6e7de;border-radius:6px;overflow:hidden;background:#fff;height:60%}
+.home-marketing-browser b{display:block;height:7px;background:linear-gradient(90deg,#c1dacd 0 6%,transparent 6% 9%,#c1dacd 9% 15%,transparent 15% 18%,#c1dacd 18% 24%,transparent 24%) #f0f7f2}
+.home-marketing-browser i{display:block;margin:5px;height:45%;border-radius:4px;background:linear-gradient(130deg,#cadecd,#63a38b)}
+.home-marketing-browser em{display:block;width:43%;height:5px;margin-left:5px;border-radius:4px;background:#39a575}
+.home-marketing-person{display:block;position:relative;margin-top:9px;height:35px;border-radius:6px;background:#fff;border:1px solid #d3e7dc}
+.home-marketing-person i{position:absolute;left:8px;top:7px;width:20px;height:20px;border-radius:50%;background:linear-gradient(130deg,#83bb9d,#2d7c60)}
+.home-marketing-person b,.home-marketing-person em{position:absolute;left:36px;top:10px;height:4px;width:43%;border-radius:3px;background:#91b5a0}.home-marketing-person em{top:19px;width:28%;background:#c9d9ce}
+.home-marketing-beacon{display:block;position:absolute;right:10px;bottom:17px;width:15px;height:15px;border-radius:50%;border:1px solid #2da777;background:#edfff5}
+.home-marketing-beacon i{position:absolute;left:4px;top:4px;display:block;width:5px;height:5px;border-radius:50%;background:#2da777}
+[data-journey-motion="running"] .home-marketing-pulse{animation:home-marketing-current 8s linear infinite}
+[data-journey-motion="running"] .home-marketing-card{animation:home-marketing-hover 8s ease-in-out infinite}
+[data-journey-motion="running"] .home-marketing-discovery{animation-delay:-2s}
+[data-journey-motion="running"] .home-marketing-site{animation-delay:-4s}
+[data-journey-motion="running"] .home-marketing-inquiry{animation-delay:-6s}
+.home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
+@keyframes home-marketing-current{to{stroke-dashoffset:-192}}
+@keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
+@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
+.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
+.home-system-display{inset:8% 7% 39%;z-index:0}
+.home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.72}
+.home-system-caption i{display:inline-block;width:22px;height:1px;margin:0 5px 2px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
+.home-system-card{position:absolute;width:41%;min-height:50px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
+.home-system-card small{display:block;color:#ffd8a5;font:800 .46rem/1 var(--font-body);letter-spacing:.1em}
+.home-system-card b,.home-system-card em{display:block;height:4px;margin-top:7px;border-radius:3px;background:#ffe1ba8f}.home-system-card em{width:58%;margin-top:5px;background:#ffc27488}
+.home-system-input{left:0;top:14%}.home-system-crm{right:0;top:26%}.home-system-auto{left:6%;bottom:4%}.home-system-readback{right:0;bottom:2%;min-height:46px}
+.home-system-readback strong{display:flex;align-items:center;gap:5px;margin-top:9px;color:#fff5e7;font:800 .52rem/1 var(--font-body);letter-spacing:.08em}
+.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
+.home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.5}
+.home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
+.home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:65%;width:33%;transform:rotate(-13deg)}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-wire i{animation:home-system-packet 3.2s ease-in-out infinite}
+.home-master-route-technology:is(:hover,:focus-visible) .home-system-readback strong i{animation:home-system-verified 3.2s ease-in-out infinite}
+.home-learning-detail{inset:7% 7% 39%;z-index:0}
+.home-academy-caption{color:#f0e3ff}
+.home-academy-card{position:absolute;width:42%;min-height:52px;padding:7px 8px;border:1px solid #eee0ff7d;border-radius:10px;background:linear-gradient(145deg,#382b50da,#21172fe8);box-shadow:0 8px 20px #1b102955,inset 0 1px #f9f0ff2e}
+.home-academy-card small,.home-academy-feedback small,.home-academy-next small{display:block;color:#dac4ff;font:800 .46rem/1 var(--font-body);letter-spacing:.1em}
+.home-academy-card b,.home-academy-card em,.home-academy-card i{display:block;height:4px;margin-top:7px;border-radius:3px;background:#eadcff94}.home-academy-card em{width:67%;margin-top:5px}.home-academy-card i{width:38%;margin-top:5px;background:#b890ff9c}
+.home-academy-attempt{left:0;top:14%}.home-academy-retry{right:0;bottom:1%}
+.home-academy-feedback{position:absolute;right:0;top:11%;width:48%;padding:7px 8px;border:1px solid #e8d7ff91;border-radius:10px;background:#f8f2ffef;box-shadow:0 8px 20px #1c102c4a}
+.home-academy-feedback small{color:#7855a9}.home-academy-feedback strong{display:block;margin-top:6px;color:#372649;font:750 .49rem/1.18 var(--font-body)}
+.home-academy-arrow{position:absolute;left:39%;top:58%;width:25%;height:1px;background:linear-gradient(90deg,#b28af9,#f1e4ff,#b28af9);transform:rotate(18deg);opacity:.7}
+.home-academy-arrow i{position:absolute;right:0;top:-3px;width:7px;height:7px;border-right:1px solid #eadcff;border-top:1px solid #eadcff;transform:rotate(45deg)}
+.home-academy-next{position:absolute;left:0;bottom:1%;display:flex;align-items:center;gap:6px;width:45%;padding:7px 8px;border:1px solid #caaaff66;border-radius:10px;background:#302143d9}
+.home-academy-next>i{width:9px;height:9px;border-radius:50%;background:#ae7cff;box-shadow:0 0 11px #a979ff}.home-academy-next b{display:block;margin-top:4px;color:#fff;font:800 .5rem/1 var(--font-body);letter-spacing:.08em}
+.home-master-route-academy:is(:hover,:focus-visible) .home-academy-arrow i{animation:home-academy-transfer 3.6s ease-in-out infinite}
+.home-master-route-academy:is(:hover,:focus-visible) .home-academy-next>i{animation:home-academy-ready 3.6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
-@keyframes home-logistics-rain{to{background-position:-28px 45px}}
+@keyframes home-logistics-rain{from{transform:translate3d(-.25%,-1.5%,0);opacity:.32}to{transform:translate3d(.35%,2.4%,0);opacity:.43}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
 @keyframes home-logistics-camera{from{transform:scale(1.015) translate3d(0,0,0)}to{transform:scale(1.055) translate3d(-.7%,-.9%,0)}}
-@keyframes home-letter-hop{0%,70%,100%{transform:translateY(0) rotate(0)}28%{transform:translateY(-.16em) rotate(-8deg)}50%{transform:translateY(.02em) rotate(3deg)}}
+@keyframes home-letter-hop{0%,8%,100%{transform:translateY(0) rotate(0)}2.8%{transform:translateY(-.14em) rotate(-7deg)}5.2%{transform:translateY(.015em) rotate(2deg)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
-@keyframes home-story-turn{0%,100%{opacity:1;translate:0 0;rotate:0deg}40%{opacity:.85;translate:50% -12%;rotate:10deg}70%{opacity:.6;translate:95% -10%;rotate:14deg}}
-@keyframes home-skill-progress{0%,100%{opacity:.55;transform:translateX(6px)}42%,70%{opacity:1;transform:translateX(0)}}
-@keyframes home-system-pass{0%,100%{opacity:0;translate:0 0}20%,74%{opacity:.9}82%{opacity:0;translate:650% 0}}
-@keyframes home-system-breathe{0%,100%{opacity:.55;scale:1}45%{opacity:1;scale:1.75}}
+
+@keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}38%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
+@keyframes home-system-verified{0%,52%,100%{scale:1;opacity:.65}65%,78%{scale:1.35;opacity:1}}
+@keyframes home-academy-transfer{0%,18%{translate:-16px 0;opacity:0}36%,70%{opacity:1}84%,100%{translate:6px 0;opacity:0}}
+@keyframes home-academy-ready{0%,48%,100%{scale:1;opacity:.68}62%,78%{scale:1.4;opacity:1}}
 @keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
 @keyframes home-book-choose{0%,100%{translate:0 0;rotate:0deg;opacity:0}48%{translate:-4px -2px;rotate:-5deg;opacity:.6}}
@@ -339,7 +470,14 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-academy-track{gap:6px;right:4%}.home-academy-track i{padding:5px 7px;font-size:.6rem;line-height:1.1}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card,.home-academy-card{padding:7px;min-height:54px}.home-system-card small,.home-academy-card small,.home-academy-feedback small,.home-academy-next small,.home-system-caption,.home-academy-caption{font-size:.625rem}.home-academy-feedback{padding:7px}.home-academy-feedback strong{font-size:.625rem}.home-academy-next b,.home-system-readback strong{font-size:.625rem}}
+@media(min-width:701px) and (max-width:1000px){
+  /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
+  .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-master-route{aspect-ratio:4/5;padding:clamp(18px,3vw,30px)}
+  .home-master-route-copy strong{font-size:clamp(1.65rem,3.7vw,2.25rem)}
+  .home-marketing-journey{inset:6% 7% 31%}
+}
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>
