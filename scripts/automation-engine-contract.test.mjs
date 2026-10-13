@@ -143,6 +143,10 @@ assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Qu
 assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
 assert.doesNotMatch(worker, /UPDATE hermes_automation_runs SET status='duplicate_suppressed'/, "Duplicate Queue delivery must never regress the authoritative run state");
 assert.match(worker, /existing_publication_status/, "Duplicate provider-plan delivery should report the already-existing publication state without mutating the run");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*unknown_outcome_readback_pending[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Unknown provider outcome state must transition publications/content/runs atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*provider_accepted_readback_pending[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Provider-accepted readback-pending state must transition publications/content/runs atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*published_verified[\s\S]*provider_post_id[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Verified provider readback must commit publication/content/run state atomically");
+assert.match(worker, /env\.DB\.batch\(\[[\s\S]*next_readback_at=NULL[\s\S]*hermes_automation_content[\s\S]*hermes_automation_runs/, "Terminal readback failure must commit publication/content/run state atomically");
 assert.match(worker, /status!='dry_run_ready'/, "Duplicate dry-run Queue delivery must not rewrite an already completed run timestamp");
 assert.match(worker, /duplicate: Number\(completed\?\.meta\?\.changes \|\| 0\) === 0/, "Dry-run plan processing must surface whether the terminal state was already present");
 assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
