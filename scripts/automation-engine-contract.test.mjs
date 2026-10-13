@@ -59,6 +59,7 @@ assert.equal(publicationEnabled({ HERMES_AUTOMATION_MODE: "live", HERMES_AUTOMAT
 const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");
 const windsorAdapter = readFileSync(new URL("../workers/automation-engine/src/windsor-threads.mjs", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
+const migration = readFileSync(new URL("../workers/automation-engine/migrations/0001_init.sql", import.meta.url), "utf8");
 
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be terminal/fail-closed");
@@ -67,6 +68,8 @@ assert.ok(worker.includes("normal_loop_requires_chatgpt_task: false"), "Capabili
 assert.ok(!worker.includes("api.openai.com"), "V1 pilot must not call OpenAI per post");
 assert.ok(!worker.includes("chatgpt.com"), "V1 pilot must not depend on ChatGPT web runtime");
 assert.match(worker, /provider_accepted_readback_pending/, "Accepted Windsor writes must remain unverified until readback");
+assert.match(worker, /url\.pathname === "\/v1\/health"[\s\S]*authorized\(request, env\)/, "Operational health must require the private control token");
+assert.doesNotMatch(worker, /provider_account:/, "Public capabilities must not expose the provider account id");
 assert.match(worker, /publication\.readback/, "Worker must schedule delayed provider readback");
 assert.match(worker, /delaySeconds: 4200/, "First Windsor readback must be delayed past the one-hour refresh boundary");
 assert.match(windsorAdapter, /connectors\.windsor\.ai/, "Pilot must use the Windsor Connectors API directly");
@@ -84,6 +87,10 @@ assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never 
 assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Queue must have a DLQ");
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
+for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
+  assert.ok(migration.includes(table), `Missing durable D1 table: ${table}`);
+}
+assert.match(migration, /FOREIGN KEY\(job_id\)/, "Job events must remain attached to a durable job id");
 
 
 const originalFetch = globalThis.fetch;
