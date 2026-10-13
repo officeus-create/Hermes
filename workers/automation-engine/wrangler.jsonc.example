@@ -34,7 +34,8 @@
   },
   "vars": {
     "HERMES_AUTOMATION_MODE": "dry_run",
-    "HERMES_AUTOMATION_PUBLISH": "disabled"
+    "HERMES_AUTOMATION_PUBLISH": "disabled",
+    "WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"
   }
 }
 
@@ -42,14 +43,15 @@
 //
 // Required secrets before any live canary:
 //   HERMES_AUTOMATION_TOKEN
-//   THREADS_PUBLISH_GATEWAY
-//   THREADS_PUBLISH_GATEWAY_TOKEN
+//   WINDSOR_API_KEY
 //
 // Live publication requires BOTH:
 //   HERMES_AUTOMATION_MODE=live
 //   HERMES_AUTOMATION_PUBLISH=enabled
 //
-// The gateway must implement one provider call + readback semantics and return:
-//   { "provider_post_id": "...", "permalink": "https://..." }
+// Windsor Connectors API is the canonical pilot transport. The API key stays in
+// a Worker secret and is never committed, logged, or returned by health endpoints.
+// Windsor write actions return an acceptance/result string, so the Worker performs
+// delayed readback against the connected Threads account before marking VERIFIED.
 //
 // Do not place provider tokens, account secrets, D1 IDs or queue credentials in Git.
