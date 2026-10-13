@@ -1,0 +1,55 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hermes-automation-engine",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-10-13",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["17 * * * *"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hermes-automation",
+      "database_id": "REPLACE_WITH_REVIEWED_D1_DATABASE_ID"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "AUTOMATION_QUEUE",
+        "queue": "hermes-automation"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "hermes-automation",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 3,
+        "dead_letter_queue": "hermes-automation-dlq"
+      }
+    ]
+  },
+  "vars": {
+    "HERMES_AUTOMATION_MODE": "dry_run",
+    "HERMES_AUTOMATION_PUBLISH": "disabled"
+  }
+}
+
+// REVIEWED EXAMPLE ONLY. Do not treat this file as deployed production state.
+//
+// Required secrets before any live canary:
+//   HERMES_AUTOMATION_TOKEN
+//   THREADS_PUBLISH_GATEWAY
+//   THREADS_PUBLISH_GATEWAY_TOKEN
+//
+// Live publication requires BOTH:
+//   HERMES_AUTOMATION_MODE=live
+//   HERMES_AUTOMATION_PUBLISH=enabled
+//
+// The gateway must implement one provider call + readback semantics and return:
+//   { "provider_post_id": "...", "permalink": "https://..." }
+//
+// Do not place provider tokens, account secrets, D1 IDs or queue credentials in Git.
