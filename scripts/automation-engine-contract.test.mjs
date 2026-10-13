@@ -71,6 +71,9 @@ const releaseWorkflow = readFileSync(new URL("../.github/workflows/automation-en
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be terminal/fail-closed");
 assert.ok(worker.includes("INSERT OR IGNORE"), "Idempotency reservation must be persisted before work");
+assert.match(worker, /claimPublicationForProvider/, "Provider writes must require an atomic publication claim");
+assert.match(worker, /status=\'publishing\'[\s\S]*status=\'reserved\'/, "Only a definitely pre-provider reservation may advance to a provider call");
+assert.match(worker, /attempt_count=attempt_count\+1/, "Actual provider-call claims must increment attempt count atomically");
 assert.ok(worker.includes("normal_loop_requires_chatgpt_task: false"), "Capabilities must state that ChatGPT scheduled tasks are not runtime dependencies");
 assert.ok(!worker.includes("api.openai.com"), "V1 pilot must not call OpenAI per post");
 assert.ok(!worker.includes("chatgpt.com"), "V1 pilot must not depend on ChatGPT web runtime");
