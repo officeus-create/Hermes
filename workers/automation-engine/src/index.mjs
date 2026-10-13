@@ -651,6 +651,7 @@ async function createGenericJob(env, input) {
   }
 
   const now = new Date().toISOString();
+  const initialDispatchLeaseUntil = addSecondsIso(now, 15 * 60);
   const jobId = `job:${crypto.randomUUID()}`;
   const insertStatement = env.DB.prepare(`
     INSERT INTO hermes_automation_jobs
@@ -664,7 +665,7 @@ async function createGenericJob(env, input) {
     accountKey,
     projectKey,
     priority,
-    now,
+    initialDispatchLeaseUntil,
     maxAttempts,
     idempotencyKey,
     policyVersion,
@@ -695,9 +696,6 @@ async function createGenericJob(env, input) {
 
   try {
     await enqueueGenericJobMessage(env, jobId);
-    await env.DB.prepare(
-      "UPDATE hermes_automation_jobs SET available_at=?,last_error_class=NULL,updated_at=? WHERE job_id=? AND state='QUEUED'"
-    ).bind(addSecondsIso(now, 15 * 60), now, jobId).run();
   } catch {
     const retryAt = addSecondsIso(now, 5 * 60);
     await transitionGenericJobWithEvent(env.DB, {
