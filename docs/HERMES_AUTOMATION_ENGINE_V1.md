@@ -145,6 +145,8 @@ HERMES_AUTOMATION_PUBLISH=disabled
 
 Live publication requires both switches plus the private Worker secret `WINDSOR_API_KEY`.
 
+**Transport lifecycle:** Windsor is the current canary/migration adapter only. Authenticated Windsor profile readback on 2026-10-13 reports plan `TRIAL` / `is_paid=false`, so it must not be treated as the permanent $0 provider dependency. The target steady-state transport is the official Meta Threads API behind the same HAE adapter boundary after owner OAuth/app approval. Exactly one transport may be active for a Hermes slot.
+
 Authenticated connector readback on 2026-10-13 confirmed the existing Hermes Logistics Windsor connection:
 - Threads account id `28419597014385166`;
 - account name `Hermes Logistics (hermes.logistics)`;
