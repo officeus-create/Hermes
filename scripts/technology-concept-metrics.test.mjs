@@ -56,6 +56,7 @@ const homeProofSource = readFileSync(
   new URL("../src/components/WebsiteProofBand.astro", import.meta.url),
   "utf8",
 );
+assert.match(homeProofSource, /Product 04[\s\S]{0,220}Source-gated live \+ preview/);
 assert.match(homeProofSource, /Approved active load or capacity records may appear when source, permission, freshness, and visibility gates pass/);
 assert.match(homeProofSource, /Preview examples remain clearly labeled and non-bookable/);
 assert.match(homeProofSource, /External-board sync and scheduled updates are not claimed live/);
