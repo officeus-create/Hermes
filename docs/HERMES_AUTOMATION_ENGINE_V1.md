@@ -93,10 +93,10 @@ Each theme has compatible sets of:
 - questions;
 - one verified Hermes deep-link destination.
 
-A stable hash of the Central Time slot chooses a combination. This creates a large deterministic variation space while preserving factual boundaries.
+A stable hash of the Central Time slot chooses a combination. Before a candidate is persisted, HAE checks the semantic `variant_key` against the previous seven days and tries bounded alternative combinations. If no fresh bounded variant exists, the slot fails closed instead of repeating content.
 
 All Threads candidates:
-- stay under 500 characters;
+- stay under the conservative 500 UTF-8-byte guard;
 - use one Hermes-owned HTTPS destination;
 - add UTM attribution;
 - remain carrier-focused.
@@ -109,6 +109,12 @@ Cloudflare cron may wake hourly. The worker itself enforces the current Chicago 
 - 02:00–05:59 Central Time is quiet.
 
 The exact cron minute is intentionally offset from the hour to reduce synchronized load.
+
+Queue recovery is durable:
+- a run is persisted before the content-plan queue write;
+- failed plan enqueue becomes `plan_enqueue_failed` and is retried from D1 by a later cron;
+- a retried slot always reloads the exact persisted content body instead of regenerating a different variant;
+- when LIVE, a recovered plan is publishable only if it still matches the **current** eligible Central Time slot. Historical backlog becomes `expired_live_slot` rather than flooding Threads after an outage.
 
 ## Idempotency
 
@@ -161,6 +167,8 @@ Readback sequence:
 
 If the provider write has an ambiguous network/5xx outcome, HAE records `unknown_outcome` and never republishes blindly.
 
+Readback recovery is also durable. The next readback time and attempt count live in D1. Lost delayed-queue messages are recovered by the hourly cron. A stale `publishing` state is converted to readback-only recovery, never to a second provider write. After four bounded readback attempts the state becomes `readback_unverified` for operator review.
+
 ## Health
 
 `GET /v1/capabilities`
@@ -176,6 +184,9 @@ If the provider write has an ambiguous network/5xx outcome, HAE records `unknown
 - failed publications;
 - pending provider readbacks;
 - unverified readbacks;
+- failed plan enqueues;
+- primary queue backlog;
+- dead-letter queue backlog;
 - last run state.
 
 `POST /v1/tick`
