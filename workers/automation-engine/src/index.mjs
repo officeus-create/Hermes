@@ -1208,7 +1208,7 @@ async function processPlanMessage(env, message) {
       // Move directly into readback-only recovery so HAE can determine whether
       // the post exists before asking a human to resolve the ambiguity.
       const status = "unknown_outcome_readback_pending";
-      const nextReadbackAt = addSecondsIso(now, 4200);
+      const nextReadbackAt = addSecondsIso(now, 4200 + 15 * 60);
       await env.DB.batch([
         env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=0,next_readback_at=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
           .bind(status, nextReadbackAt, published.error_class, now, candidate.idempotency_key),
@@ -1238,7 +1238,7 @@ async function processPlanMessage(env, message) {
     return { status, candidate, error_class: published.error_class };
   }
 
-  const nextReadbackAt = addSecondsIso(now, 4200);
+  const nextReadbackAt = addSecondsIso(now, 4200 + 15 * 60);
   await env.DB.batch([
     env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
       .bind(nextReadbackAt, now, candidate.idempotency_key),
@@ -1295,7 +1295,7 @@ async function processReadbackMessage(env, message) {
 
   if (attempt < 4) {
     const errorClass = readback.ok ? "post_not_visible_yet" : readback.error_class;
-    const nextReadbackAt = addSecondsIso(now, 3600);
+    const nextReadbackAt = addSecondsIso(now, 3600 + 15 * 60);
     await env.DB.prepare("UPDATE hermes_automation_publications SET readback_attempt=?,next_readback_at=?,last_error_class=?,updated_at=? WHERE content_id=? AND status=?")
       .bind(attempt, nextReadbackAt, errorClass, now, contentId, pendingStatus).run();
     try {
