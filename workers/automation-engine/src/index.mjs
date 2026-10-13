@@ -220,23 +220,32 @@ export function buildTrackedUrl(destination, contentId) {
   return url.toString();
 }
 
-export function buildCarrierThreadsPost(slotKey) {
+export function buildCarrierThreadsPost(slotKey, variantIndex = 0) {
+  const variant = Math.max(0, Math.min(63, Number(variantIndex) || 0));
   const theme = CARRIER_THEMES[fnv1a(slotKey) % CARRIER_THEMES.length];
+  const seed = `${slotKey}:v${variant}`;
   const contentId = `hae-${theme.id}-${slotKey}`;
   const url = buildTrackedUrl(theme.destination, contentId);
-  const hook = pick(theme.hooks, slotKey, "hook");
-  const point = pick(theme.points, slotKey, "point");
-  const question = pick(theme.questions, slotKey, "question");
+  const hookIndex = fnv1a(`${seed}:hook`) % theme.hooks.length;
+  const pointIndex = fnv1a(`${seed}:point`) % theme.points.length;
+  const questionIndex = fnv1a(`${seed}:question`) % theme.questions.length;
+  const hook = theme.hooks[hookIndex];
+  const point = theme.points[pointIndex];
+  const question = theme.questions[questionIndex];
+  const variantKey = `${theme.id}:${hookIndex}:${pointIndex}:${questionIndex}`;
   const body = `${hook}\n\n${point}\n\n${question}\n${url}`;
-  if (body.length > 500) throw new Error("threads_post_too_long");
+  const bytes = new TextEncoder().encode(body).byteLength;
+  if (bytes > 500) throw new Error("threads_post_too_long");
   return {
     content_id: `${ACCOUNT_KEY}:${PLATFORM}:${slotKey}`,
     account_key: ACCOUNT_KEY,
     platform: PLATFORM,
     slot_key: slotKey,
     template_id: theme.id,
+    variant_key: variantKey,
     destination_url: url,
     body,
+    bytes,
     idempotency_key: `hae:${ACCOUNT_KEY}:${PLATFORM}:${slotKey}`,
   };
 }
@@ -260,6 +269,7 @@ async function ensureSchema(db) {
       platform TEXT NOT NULL,
       slot_key TEXT NOT NULL UNIQUE,
       template_id TEXT NOT NULL,
+      variant_key TEXT NOT NULL,
       destination_url TEXT NOT NULL,
       body TEXT NOT NULL,
       state TEXT NOT NULL,
@@ -343,14 +353,15 @@ async function insertCandidate(db, candidate) {
   const now = new Date().toISOString();
   const result = await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_content
-      (content_id, account_key, platform, slot_key, template_id, destination_url, body, state, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)
+      (content_id, account_key, platform, slot_key, template_id, variant_key, destination_url, body, state, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)
   `).bind(
     candidate.content_id,
     candidate.account_key,
     candidate.platform,
     candidate.slot_key,
     candidate.template_id,
+    candidate.variant_key,
     candidate.destination_url,
     candidate.body,
     now,
@@ -406,12 +417,24 @@ async function enqueueDueReadbacks(env, limit = 20) {
   }
   return queued;
 }
+async function selectFreshCarrierCandidate(db, slotKey) {
+  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  for (let variantIndex = 0; variantIndex < 32; variantIndex += 1) {
+    const candidate = buildCarrierThreadsPost(slotKey, variantIndex);
+    const recent = await db.prepare(
+      "SELECT content_id FROM hermes_automation_content WHERE variant_key=? AND created_at>=? LIMIT 1"
+    ).bind(candidate.variant_key, cutoff).first();
+    if (!recent) return candidate;
+  }
+  throw new Error("no_fresh_carrier_variant_available");
+}
+
 async function processPlanMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
-  const candidate = buildCarrierThreadsPost(slotKey);
+  const candidate = await selectFreshCarrierCandidate(env.DB, slotKey);
   await insertCandidate(env.DB, candidate);
 
   if (!publicationEnabled(env)) {
