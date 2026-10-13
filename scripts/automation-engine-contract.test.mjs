@@ -104,6 +104,8 @@ assert.match(worker, /source_sha/, "Private health must expose the exact deploye
 assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
 assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
+assert.match(worker, /safeRuntimeErrorClass/, "Runtime error receipts must use a sanitizer rather than persist arbitrary exception text");
+assert.match(worker, /\^\[a-z\]\[a-z0-9_\]\{2,79\}\$/, "Runtime error sanitizer must accept only bounded machine-code error classes");
 assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
 assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
 assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
