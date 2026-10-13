@@ -380,6 +380,10 @@ async function ensureSchema(db) {
       execution_lag_ms INTEGER NOT NULL,
       chicago_slot_key TEXT NOT NULL,
       eligible INTEGER NOT NULL,
+      source_sha TEXT,
+      automation_mode TEXT,
+      publication_config TEXT,
+      publication_enabled INTEGER NOT NULL,
       created_at TEXT NOT NULL
     )
   `).run();
@@ -445,15 +449,21 @@ async function recordRuntimeEvent(env, {
   }
 }
 
-async function recordCronHeartbeat(db, scheduledAt, observedAt, eligible, cronExpression = null) {
+async function recordCronHeartbeat(env, scheduledAt, observedAt, eligible, cronExpression = null) {
+  const db = env?.DB;
+  if (!db) throw new Error("database_not_configured");
   const scheduledIso = scheduledAt.toISOString();
   const observedIso = observedAt.toISOString();
   const slotKey = chicagoSlotKey(scheduledAt);
   const lagMs = Math.max(0, observedAt.getTime() - scheduledAt.getTime());
+  const sourceShaRaw = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim();
+  const sourceSha = /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null;
+  const automationMode = clean(env?.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN";
+  const publicationConfig = clean(env?.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN";
   await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_heartbeats
-      (heartbeat_id,trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,created_at)
-    VALUES (?,?,?,?,?,?,?,?,?)
+      (heartbeat_id,trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,source_sha,automation_mode,publication_config,publication_enabled,created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).bind(
     `heartbeat:cron:${scheduledIso.slice(0, 13)}Z`,
     "cron",
@@ -463,6 +473,10 @@ async function recordCronHeartbeat(db, scheduledAt, observedAt, eligible, cronEx
     lagMs,
     slotKey,
     eligible ? 1 : 0,
+    sourceSha,
+    automationMode,
+    publicationConfig,
+    publicationEnabled(env) ? 1 : 0,
     observedIso,
   ).run();
 }
@@ -1339,7 +1353,7 @@ async function health(env) {
     LIMIT 1
   `).bind(ACCOUNT_KEY, PLATFORM).first();
   const lastHeartbeat = await db.prepare(`
-    SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible
+    SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,source_sha,automation_mode,publication_config,publication_enabled
     FROM hermes_automation_heartbeats
     ORDER BY scheduled_at DESC
     LIMIT 1
@@ -1392,7 +1406,7 @@ export default {
     await ensureSchema(env.DB);
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
-      await recordCronHeartbeat(env.DB, scheduledAt, observedAt, eligible, controller?.cron);
+      await recordCronHeartbeat(env, scheduledAt, observedAt, eligible, controller?.cron);
     } catch (error) {
       await recordRuntimeEvent(env, {
         eventType: "cron.heartbeat_write_failed",
