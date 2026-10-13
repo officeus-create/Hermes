@@ -390,6 +390,11 @@ function metricNumberOrNull(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function safeRuntimeErrorClass(error, fallback) {
+  const raw = clean(error?.message, 80);
+  return /^[a-z][a-z0-9_]{2,79}$/.test(raw) ? raw : fallback;
+}
+
 async function recordRuntimeEvent(env, {
   eventType,
   messageType = null,
@@ -1349,7 +1354,7 @@ export default {
       await recordRuntimeEvent(env, {
         eventType: "cron.heartbeat_write_failed",
         slotKey: chicagoSlotKey(now),
-        errorClass: clean(error?.message, 160) || "heartbeat_write_failed",
+        errorClass: safeRuntimeErrorClass(error, "heartbeat_write_failed"),
       });
     }
 
@@ -1362,7 +1367,7 @@ export default {
             eventType: "cron.current_slot_enqueue_failed",
             messageType: "content.plan",
             slotKey,
-            errorClass: clean(error?.message, 160) || "current_slot_enqueue_failed",
+            errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
           });
         }));
       }
@@ -1378,7 +1383,7 @@ export default {
       } catch (error) {
         await recordRuntimeEvent(env, {
           eventType,
-          errorClass: clean(error?.message, 160) || "scheduled_maintenance_failed",
+          errorClass: safeRuntimeErrorClass(error, "scheduled_maintenance_failed"),
         });
       }
     }
@@ -1422,7 +1427,7 @@ export default {
           contentId: payload?.content_id,
           slotKey: payload?.slot_key,
           attemptCount: item?.attempts,
-          errorClass: clean(error?.message, 160) || "queue_handler_failed",
+          errorClass: safeRuntimeErrorClass(error, "queue_handler_failed"),
         });
         item.retry();
       }
