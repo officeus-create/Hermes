@@ -401,6 +401,7 @@ async function recordRuntimeEvent(env, {
   createdAt = new Date().toISOString(),
 }) {
   if (!env?.DB) return false;
+  const normalizedAttempt = metricNumberOrNull(attemptCount);
   try {
     await ensureSchema(env.DB);
     await env.DB.prepare(`
@@ -414,7 +415,7 @@ async function recordRuntimeEvent(env, {
       clean(jobId, 160) || null,
       clean(contentId, 200) || null,
       clean(slotKey, 32) || null,
-      Number.isFinite(Number(attemptCount)) ? Math.max(0, Math.trunc(Number(attemptCount))) : null,
+      normalizedAttempt === null ? null : Math.max(0, Math.trunc(normalizedAttempt)),
       clean(errorClass, 160) || null,
       createdAt,
     ).run();
