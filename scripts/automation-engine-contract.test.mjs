@@ -107,6 +107,11 @@ assert.match(worker, /source_sha/, "Private health must expose the exact deploye
 assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
 assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
+assert.match(worker, /queue_message_id TEXT/, "Queue runtime events must preserve the Cloudflare message id for retry correlation");
+assert.match(worker, /message_sent_at TEXT/, "Queue runtime events must preserve original message send time");
+assert.match(worker, /queueName: batch\?\.queue/, "Queue retry receipts must preserve the source queue name");
+assert.match(worker, /queueMessageId: item\?\.id/, "Queue retry receipts must correlate attempts to the same message id");
+assert.match(worker, /messageSentAt: item\?\.timestamp/, "Queue retry receipts must preserve the original queue message timestamp");
 assert.match(worker, /generic_job_events_by_type/, "Private health must expose generic retry/stale-recovery event counts");
 assert.doesNotMatch(worker, /ready_content: Number\(ready\?\.count \|\| 0\)/, "Missing D1 health count rows must not be coerced to zero");
 assert.match(worker, /ready_content: metricNumberOrNull\(ready\?\.count\)/, "D1 health counts must preserve UNKNOWN/null while retaining real zero");
