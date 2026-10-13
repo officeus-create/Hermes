@@ -1390,14 +1390,24 @@ export default {
       const slotKey = chicagoSlotKey(scheduledAt);
       const inserted = await reserveRun(env.DB, slotKey, "cron");
       if (inserted) {
-        ctx.waitUntil(enqueuePlanRun(env, slotKey).catch(async (error) => {
+        try {
+          const enqueued = await enqueuePlanRun(env, slotKey);
+          if (!enqueued) {
+            await recordRuntimeEvent(env, {
+              eventType: "cron.current_slot_enqueue_failed",
+              messageType: "content.plan",
+              slotKey,
+              errorClass: "current_slot_enqueue_failed",
+            });
+          }
+        } catch (error) {
           await recordRuntimeEvent(env, {
             eventType: "cron.current_slot_enqueue_failed",
             messageType: "content.plan",
             slotKey,
             errorClass: safeRuntimeErrorClass(error, "current_slot_enqueue_failed"),
           });
-        }));
+        }
       }
     }
 
