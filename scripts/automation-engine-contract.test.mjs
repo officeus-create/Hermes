@@ -101,6 +101,7 @@ assert.match(worker, /last_cron_wake/, "Private health must distinguish last cro
 assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
 assert.match(worker, /last_failure/, "Private health must expose the last failed HAE run separately");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
+assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
 assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
 assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist a sanitized durable error receipt");
 assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
