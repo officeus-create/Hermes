@@ -109,6 +109,7 @@ assert.match(worker, /status IN \('plan_enqueue_failed','failed','unknown_outcom
 assert.match(worker, /source_sha/, "Private health must expose the exact deployed source SHA when release metadata is configured");
 assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
 assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
+assert.match(worker, /publication_config/, "Private health must expose the raw publication configuration separately from the effective gate");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
 assert.match(worker, /queue_message_id TEXT/, "Queue runtime events must preserve the Cloudflare message id for retry correlation");
 assert.match(worker, /message_sent_at TEXT/, "Queue runtime events must preserve original message send time");
