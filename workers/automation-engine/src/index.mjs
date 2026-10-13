@@ -332,7 +332,7 @@ async function processPlanMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
-  if (!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
   const candidate = buildCarrierThreadsPost(slotKey);
   await insertCandidate(env.DB, candidate);
 
@@ -426,6 +426,7 @@ async function processReadbackMessage(env, message) {
     .bind(errorClass, now, String(row.slot_key || "")).run();
   return { status: "readback_unverified", error_class: errorClass };
 }
+
 async function health(db) {
   if (!db) return { database: "missing" };
   await ensureSchema(db);
