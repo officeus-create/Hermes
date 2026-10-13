@@ -357,6 +357,9 @@ async function ensureSchema(db) {
     CREATE TABLE IF NOT EXISTS hermes_automation_runtime_events (
       event_id TEXT PRIMARY KEY,
       event_type TEXT NOT NULL,
+      queue_name TEXT,
+      queue_message_id TEXT,
+      message_sent_at TEXT,
       message_type TEXT,
       job_id TEXT,
       content_id TEXT,
@@ -399,6 +402,9 @@ function safeRuntimeErrorClass(error, fallback) {
 
 async function recordRuntimeEvent(env, {
   eventType,
+  queueName = null,
+  queueMessageId = null,
+  messageSentAt = null,
   messageType = null,
   jobId = null,
   contentId = null,
@@ -413,11 +419,14 @@ async function recordRuntimeEvent(env, {
     await ensureSchema(env.DB);
     await env.DB.prepare(`
       INSERT INTO hermes_automation_runtime_events
-        (event_id,event_type,message_type,job_id,content_id,slot_key,attempt_count,error_class,created_at)
-      VALUES (?,?,?,?,?,?,?,?,?)
+        (event_id,event_type,queue_name,queue_message_id,message_sent_at,message_type,job_id,content_id,slot_key,attempt_count,error_class,created_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
     `).bind(
       runtimeEventId(clean(eventType, 80) || "runtime.event"),
       clean(eventType, 80) || "runtime.event",
+      clean(queueName, 120) || null,
+      clean(queueMessageId, 160) || null,
+      Number.isFinite(Date.parse(String(messageSentAt || ""))) ? new Date(messageSentAt).toISOString() : null,
       clean(messageType, 80) || null,
       clean(jobId, 160) || null,
       clean(contentId, 200) || null,
@@ -1428,6 +1437,9 @@ export default {
         }
         await recordRuntimeEvent(env, {
           eventType: "queue.message_unknown",
+          queueName: batch?.queue,
+          queueMessageId: item?.id,
+          messageSentAt: item?.timestamp,
           messageType,
           jobId: payload?.job_id,
           contentId: payload?.content_id,
@@ -1439,6 +1451,9 @@ export default {
       } catch (error) {
         await recordRuntimeEvent(env, {
           eventType: "queue.message_retry",
+          queueName: batch?.queue,
+          queueMessageId: item?.id,
+          messageSentAt: item?.timestamp,
           messageType,
           jobId: payload?.job_id,
           contentId: payload?.content_id,
