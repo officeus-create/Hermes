@@ -42,9 +42,7 @@ jobs:
     environment: production
     env:
       GH_TOKEN: ${{ github.token }}
-      CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_READ_TOKEN }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_HAE_RELEASE_TOKEN || secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
     steps:
       - name: Resolve explicit owner request
         id: request
@@ -109,21 +107,38 @@ jobs:
       - name: Validate HAE source contract
         run: node scripts/automation-engine-contract.test.mjs
 
+      - name: Resolve canonical Cloudflare account context
+        id: cloudflare
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACCOUNT_ID="$(node --input-type=module - <<'NODE'
+          import fs from "node:fs";
+          const config = JSON.parse(fs.readFileSync("workers/lead-email/wrangler.production.jsonc", "utf8"));
+          const accountId = String(config.account_id || "").trim();
+          if (!/^[0-9a-f]{32}$/.test(accountId)) {
+            console.error("canonical_cloudflare_account_id_missing");
+            process.exit(1);
+          }
+          process.stdout.write(accountId);
+          NODE
+          )"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACCOUNT_ID" >> "$GITHUB_ENV"
+          echo "account_id=$ACCOUNT_ID" >> "$GITHUB_OUTPUT"
+
       - name: Validate Cloudflare release credentials
         shell: bash
         run: |
           set -euo pipefail
-          missing=0
-          for name in CLOUDFLARE_PAGES_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
-            if [[ -z "${!name:-}" ]]; then
-              echo "missing_$name"
-              missing=1
-            fi
-          done
-          test "$missing" -eq 0
-          echo "::add-mask::$CLOUDFLARE_PAGES_API_TOKEN"
+          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
+            echo "missing_CLOUDFLARE_HAE_RELEASE_TOKEN_OR_SUPPORTED_ALIAS"
+            exit 1
+          fi
+          if [[ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo "canonical_cloudflare_account_id_missing"
+            exit 1
+          fi
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
 
       - name: Discover canonical Hermes Connect production D1
         id: d1
@@ -131,7 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           tmp="${RUNNER_TEMP}/hermes-pages.json"
-          http="$(curl -sS -o "$tmp" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes"             -H "Authorization: Bearer ${CLOUDFLARE_PAGES_API_TOKEN}"             -H 'Content-Type: application/json')"
+          http="$(curl -sS -o "$tmp" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Content-Type: application/json')"
           if [[ "$http" != "200" ]]; then
             echo "blocked_cloudflare_pages_read http=$http"
             exit 1
