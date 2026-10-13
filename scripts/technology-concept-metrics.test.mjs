@@ -41,4 +41,15 @@ assert.match(componentSource, /technologyDashboardMetrics\.map/);
 assert.doesNotMatch(componentSource, /const dashboardMetrics\s*=/);
 assert.doesNotMatch(componentSource, /\["Revenue Pipeline",\s*"\$284K"/);
 
+const partnershipSource = readFileSync(
+  new URL("../src/components/TechnologyPartnershipShowcase.astro", import.meta.url),
+  "utf8",
+);
+assert.match(partnershipSource, /status:\s*"Source-gated live \+ preview"/);
+assert.match(partnershipSource, /approved active records may appear when source, permission, freshness, and visibility gates pass/i);
+assert.match(partnershipSource, /preview examples remain clearly labeled and non-bookable/i);
+assert.match(partnershipSource, /proof:\s*"Open the source-gated Load Board"/);
+assert.doesNotMatch(partnershipSource, /status:\s*"Local preview"/);
+assert.doesNotMatch(partnershipSource, /A Load Board preview with carrier identity/);
+
 console.log("Technology concept metric provenance passed.");
