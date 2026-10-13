@@ -501,6 +501,16 @@ async function processPlanMessage(env, message) {
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
+  if (publicationEnabled(env)) {
+    const now = new Date();
+    const currentSlotKey = chicagoSlotKey(now);
+    if (!isEligibleChicagoSlot(now) || slotKey !== currentSlotKey) {
+      await env.DB.prepare(
+        "UPDATE hermes_automation_runs SET status='expired_live_slot',last_error_class='stale_live_slot_suppressed',updated_at=? WHERE slot_key=?"
+      ).bind(now.toISOString(), slotKey).run();
+      return { status: "expired_live_slot", slot_key: slotKey };
+    }
+  }
   const candidate = await loadOrCreateCarrierCandidate(env.DB, slotKey);
 
   if (!publicationEnabled(env)) {
