@@ -132,7 +132,7 @@ D1 reserves:
 
 Provider call happens once after reservation.
 
-Ambiguous network/provider outcomes become `unknown_outcome` and are **not blindly retried**.
+Ambiguous network/provider outcomes become `unknown_outcome_readback_pending`. HAE never repeats the publish call; it performs bounded readback-only recovery and either proves `published_verified` or ends at `unknown_outcome_unresolved` for human review.
 
 ## Live publication gate
 
@@ -167,7 +167,7 @@ Readback sequence:
 
 `RESERVE → WINDSOR WRITE ONCE → ACCEPTED_PENDING → DELAY → EXACT BODY READBACK → PUBLISHED_VERIFIED`
 
-If the provider write has an ambiguous network/5xx outcome, HAE records `unknown_outcome` and never republishes blindly.
+If the provider write has an ambiguous network/5xx outcome, HAE records `unknown_outcome_readback_pending`, schedules readback without a second publish call, and either recovers the real provider ID/permalink or stops at `unknown_outcome_unresolved` after bounded attempts.
 
 Readback recovery is also durable. The next readback time and attempt count live in D1. Lost delayed-queue messages are recovered by the hourly cron. A stale `publishing` state is converted to readback-only recovery, never to a second provider write. After four bounded readback attempts the state becomes `readback_unverified` for operator review.
 
