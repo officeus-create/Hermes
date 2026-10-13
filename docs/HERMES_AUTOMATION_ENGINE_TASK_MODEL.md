@@ -146,6 +146,35 @@ Historical jobs are not allowed to:
 
 Any adaptive policy change must have a `policy_version`, explicit hypothesis, sample gate, guardrails and rollback target. Historical analysis proposes policy; current gates activate policy.
 
+## Read-only generic executor V1
+
+The first generic executor implementation is intentionally narrower than the final capability list.
+
+It reuses the same canonical Cloudflare Queue and Hermes Connect D1 and currently accepts only:
+
+- `system.health.snapshot`
+- `history.coverage.audit`
+
+Private job submission requires:
+- explicit `job_type`;
+- `business_lane`;
+- explicit `idempotency_key`;
+- optional account/project/policy/payload;
+- existing private HAE bearer authorization.
+
+Runtime behavior:
+1. persist job in `hermes_automation_jobs`;
+2. append immutable job event;
+3. enqueue `job.execute` on the existing HAE Queue;
+4. atomically claim QUEUED or due RETRY_SCHEDULED work;
+5. execute a bounded read-only capability;
+6. persist SUCCEEDED / RETRY_SCHEDULED / FAILED plus result/error;
+7. recover lost queue messages and stale RUNNING leases from durable D1 state.
+
+The historical coverage audit is deliberately fail-closed: until the Historical Evidence Ingestor tables and classified source rows exist, it reports `complete=false` and the missing runtime pieces. It cannot publish, email, DM, mutate provider policy, or self-enable a live action.
+
+This source delta proves the generic task schema is becoming executable without weakening the current Threads provider gate. It does **not** by itself prove deployed runtime.
+
 ## CRM Automation Center
 
 Hermes Connect should eventually expose:
