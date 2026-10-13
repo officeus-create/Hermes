@@ -85,6 +85,10 @@ assert.match(worker, /url\.pathname === "\/v1\/health"[\s\S]*authorized\(request
 assert.doesNotMatch(worker, /provider_account:/, "Public capabilities must not expose the provider account id");
 assert.match(worker, /publication\.readback/, "Worker must schedule delayed provider readback");
 assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted posts whose readback queue message was lost");
+assert.match(worker, /addSecondsIso\(now, 4200 \+ 15 \* 60\)/, "Initial provider readback recovery deadline must lag the primary delayed Queue delivery");
+assert.match(worker, /addSecondsIso\(now, 3600 \+ 15 \* 60\)/, "Retry readback recovery deadline must lag the primary delayed Queue delivery");
+assert.match(worker, /delaySeconds: 4200/, "Initial readback must still use the primary delayed Queue path");
+assert.match(worker, /delaySeconds: 3600/, "Retry readback must still use the primary delayed Queue path");
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
 assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
 assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
