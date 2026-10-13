@@ -16,6 +16,28 @@ Goal: choose one durable automation runtime for Hermes that can operate at **$0 
 
 It does **not** mean infinite free capacity forever.
 
+## Current provider-cost finding
+
+Authenticated Windsor readback on 2026-10-13 reports the Hermes profile as:
+
+- plan_id: `TRIAL`
+- plan_name: `Trial`
+- is_paid: `false`
+
+Therefore Windsor is acceptable as a **migration/canary transport**, but it does **not** satisfy the long-term "$0 durable engine" requirement by itself because trial continuity is not production evidence.
+
+The long-term carrier Threads transport target is the official Meta Threads API behind the same HAE adapter boundary. Meta's official Threads Postman workspace confirms programmatic text publishing and replies through OAuth. HAE must benchmark/directly support that route before the final engine is declared free of third-party scheduler/provider dependency.
+
+This changes the provider plan, not the engine architecture:
+
+```
+HAE runtime: Cloudflare + D1 + Queues
+pilot transport: Windsor (existing connected account)
+target transport: Meta Threads API direct
+```
+
+Windsor and direct Meta must never publish concurrently for the same Hermes slot. Migration is a controlled cutover with one active transport at a time.
+
 ## Engines to compare
 
 ### A. Native Hermes / Cloudflare
