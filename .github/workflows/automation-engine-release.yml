@@ -202,6 +202,89 @@ jobs:
         if: steps.request.outputs.operation == 'provision_dry_run'
         run: npx --yes wrangler@4 deployments list --config workers/automation-engine/wrangler.production.generated.jsonc
 
+      - name: Run private Queue → Worker → D1 dry-run canary
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        id: canary
+        shell: bash
+        env:
+          DB_ID: ${{ steps.d1.outputs.database_id }}
+        run: |
+          set -euo pipefail
+          CANARY_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          CANARY_SLOT="$(TZ=America/Chicago date +%Y-%m-%d)T03"
+          QUEUES_JSON="${RUNNER_TEMP}/hae-queues.json"
+          curl -fsS             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Content-Type: application/json' > "$QUEUES_JSON"
+          QUEUE_ID="$(jq -r '.result[] | select(.queue_name == "hermes-automation") | .queue_id' "$QUEUES_JSON" | head -n1)"
+          rm -f "$QUEUES_JSON"
+          if [[ -z "$QUEUE_ID" || "$QUEUE_ID" == "null" ]]; then
+            echo "hae_queue_id_missing"
+            exit 1
+          fi
+          echo "::add-mask::$QUEUE_ID"
+
+          BODY="$(jq -nc --arg slot "$CANARY_SLOT" '{
+            body: {
+              type: "content.plan",
+              account_key: "hermes_logistics",
+              platform: "threads",
+              slot_key: $slot,
+              trigger_type: "release_dry_run_canary"
+            }
+          }')"
+          HTTP="$(curl -sS -o "${RUNNER_TEMP}/hae-queue-push.json" -w '%{http_code}'             -X POST             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/queues/${QUEUE_ID}/messages"             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Content-Type: application/json'             --data "$BODY")"
+          if [[ "$HTTP" != "200" ]]; then
+            echo "hae_queue_push_failed http=$HTTP"
+            cat "${RUNNER_TEMP}/hae-queue-push.json"
+            exit 1
+          fi
+          rm -f "${RUNNER_TEMP}/hae-queue-push.json"
+
+          SQL='SELECT r.status AS run_status,r.updated_at,c.state AS content_state,c.template_id,c.variant_key,length(c.body) AS body_chars FROM hermes_automation_runs r LEFT JOIN hermes_automation_content c ON c.account_key=r.account_key AND c.platform=r.platform AND c.slot_key=r.slot_key WHERE r.account_key=? AND r.platform=? AND r.slot_key=? AND r.updated_at>=? LIMIT 1'
+          for attempt in $(seq 1 18); do
+            QUERY="$(jq -nc               --arg sql "$SQL"               --arg slot "$CANARY_SLOT"               --arg started "$CANARY_STARTED_AT"               '{sql:$sql,params:["hermes_logistics","threads",$slot,$started]}')"
+            HTTP="$(curl -sS -o "${RUNNER_TEMP}/hae-d1-readback.json" -w '%{http_code}'               -X POST               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query"               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -H 'Content-Type: application/json'               --data "$QUERY")"
+            if [[ "$HTTP" != "200" ]]; then
+              echo "hae_d1_readback_failed http=$HTTP"
+              cat "${RUNNER_TEMP}/hae-d1-readback.json"
+              exit 1
+            fi
+            RUN_STATUS="$(jq -r '.result[0].results[0].run_status // empty' "${RUNNER_TEMP}/hae-d1-readback.json")"
+            CONTENT_STATE="$(jq -r '.result[0].results[0].content_state // empty' "${RUNNER_TEMP}/hae-d1-readback.json")"
+            if [[ "$RUN_STATUS" == "dry_run_ready" && "$CONTENT_STATE" == "ready" ]]; then
+              TEMPLATE_ID="$(jq -r '.result[0].results[0].template_id // empty' "${RUNNER_TEMP}/hae-d1-readback.json")"
+              BODY_CHARS="$(jq -r '.result[0].results[0].body_chars // 0' "${RUNNER_TEMP}/hae-d1-readback.json")"
+              echo "dry_run_canary=PASS slot=$CANARY_SLOT template=$TEMPLATE_ID chars=$BODY_CHARS"
+              echo "slot=$CANARY_SLOT" >> "$GITHUB_OUTPUT"
+              echo "status=$RUN_STATUS" >> "$GITHUB_OUTPUT"
+              rm -f "${RUNNER_TEMP}/hae-d1-readback.json"
+              break
+            fi
+            if [[ "$attempt" -eq 18 ]]; then
+              echo "dry_run_canary_timeout slot=$CANARY_SLOT"
+              cat "${RUNNER_TEMP}/hae-d1-readback.json"
+              exit 1
+            fi
+            sleep 5
+          done
+
+      - name: Publish dry-run evidence summary
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+          CANARY_SLOT: ${{ steps.canary.outputs.slot }}
+          CANARY_STATUS: ${{ steps.canary.outputs.status }}
+        run: |
+          {
+            echo "# Hermes Automation Engine dry-run"
+            echo
+            echo "- Exact main: `$TARGET_SHA`"
+            echo "- Provider writes: disabled"
+            echo "- Queue canary slot: `$CANARY_SLOT`"
+            echo "- D1 readback: `$CANARY_STATUS`"
+            echo "- ChatGPT/OpenAI runtime calls: 0 by contract"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Remove generated config
         if: always()
         run: rm -f workers/automation-engine/wrangler.production.generated.jsonc
