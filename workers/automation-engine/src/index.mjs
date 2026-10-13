@@ -622,10 +622,10 @@ async function createGenericJob(env, input) {
   const accountKey = clean(input?.account_key, 120) || null;
   const projectKey = clean(input?.project_key, 120) || null;
   const policyVersion = clean(input?.policy_version, 120) || "hae-readonly-v1";
-  const rawPriority = Number(input?.priority ?? 50);
-  const rawMaxAttempts = Number(input?.max_attempts ?? 3);
-  const priority = Number.isFinite(rawPriority) ? Math.max(0, Math.min(100, Math.trunc(rawPriority))) : 50;
-  const maxAttempts = Number.isFinite(rawMaxAttempts) ? Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts))) : 3;
+  const rawPriority = metricNumberOrNull(input?.priority);
+  const rawMaxAttempts = metricNumberOrNull(input?.max_attempts);
+  const priority = rawPriority === null ? 50 : Math.max(0, Math.min(100, Math.trunc(rawPriority)));
+  const maxAttempts = rawMaxAttempts === null ? 3 : Math.max(1, Math.min(5, Math.trunc(rawMaxAttempts)));
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
