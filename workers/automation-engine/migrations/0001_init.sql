@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS hermes_automation_publications (
   content_id TEXT NOT NULL UNIQUE,
   status TEXT NOT NULL,
   attempt_count INTEGER NOT NULL DEFAULT 0,
+  readback_attempt INTEGER NOT NULL DEFAULT 0,
+  next_readback_at TEXT,
   provider_post_id TEXT,
   permalink TEXT,
   last_error_class TEXT,
