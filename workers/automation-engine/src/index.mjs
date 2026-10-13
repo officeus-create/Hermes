@@ -276,6 +276,8 @@ async function ensureSchema(db) {
       content_id TEXT NOT NULL UNIQUE,
       status TEXT NOT NULL,
       attempt_count INTEGER NOT NULL DEFAULT 0,
+      readback_attempt INTEGER NOT NULL DEFAULT 0,
+      next_readback_at TEXT,
       provider_post_id TEXT,
       permalink TEXT,
       last_error_class TEXT,
@@ -332,6 +334,35 @@ function publicationEnabled(env) {
     && String(env.HERMES_AUTOMATION_PUBLISH || "disabled") === "enabled";
 }
 
+function addSecondsIso(iso, seconds) {
+  const base = Number.isFinite(Date.parse(String(iso || ""))) ? Date.parse(String(iso)) : Date.now();
+  return new Date(base + seconds * 1000).toISOString();
+}
+
+async function enqueueDueReadbacks(env, limit = 20) {
+  if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
+  await ensureSchema(env.DB);
+  const now = new Date().toISOString();
+  const rows = await env.DB.prepare("SELECT content_id FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending' AND next_readback_at IS NOT NULL AND next_readback_at<=? ORDER BY next_readback_at ASC LIMIT ?")
+    .bind(now, Math.max(1, Math.min(50, Number(limit) || 20))).all();
+  let queued = 0;
+  for (const row of rows?.results || []) {
+    const contentId = clean(row?.content_id, 240);
+    if (!contentId) continue;
+    const leaseUntil = addSecondsIso(now, 15 * 60);
+    const leased = await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,updated_at=? WHERE content_id=? AND status='provider_accepted_readback_pending' AND next_readback_at<=?")
+      .bind(leaseUntil, now, contentId, now).run();
+    if (Number(leased?.meta?.changes || 0) !== 1) continue;
+    try {
+      await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: contentId });
+      queued += 1;
+    } catch {
+      await env.DB.prepare("UPDATE hermes_automation_publications SET next_readback_at=?,last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=? AND status='provider_accepted_readback_pending'")
+        .bind(addSecondsIso(now, 5 * 60), now, contentId).run();
+    }
+  }
+  return queued;
+}
 async function processPlanMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
@@ -370,19 +401,22 @@ async function processPlanMessage(env, message) {
     return { status, candidate, error_class: published.error_class };
   }
 
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',updated_at=? WHERE idempotency_key=?")
-    .bind(now, candidate.idempotency_key).run();
+  const nextReadbackAt = addSecondsIso(now, 4200);
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
+    .bind(nextReadbackAt, now, candidate.idempotency_key).run();
   await env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
     .bind(now, candidate.content_id).run();
   await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE slot_key=?")
     .bind(now, slotKey).run();
 
-  await env.AUTOMATION_QUEUE.send({
-    type: "publication.readback",
-    content_id: candidate.content_id,
-    slot_key: slotKey,
-    readback_attempt: 1,
-  }, { delaySeconds: 4200 });
+  try {
+    await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
+  } catch {
+    // Provider write has already happened. Never retry the publish step merely
+    // because queue scheduling failed; the hourly recovery scan will enqueue it.
+    await env.DB.prepare("UPDATE hermes_automation_publications SET last_error_class='readback_enqueue_failed',updated_at=? WHERE content_id=?")
+      .bind(new Date().toISOString(), candidate.content_id).run();
+  }
 
   return { status: "provider_accepted_readback_pending", candidate, provider_result: published.provider_result || null };
 }
@@ -391,9 +425,13 @@ async function processReadbackMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
   const contentId = clean(message?.content_id, 240);
-  const attempt = Math.max(1, Math.min(4, Number(message?.readback_attempt || 1) || 1));
   if (!contentId) throw new Error("content_id_invalid");
 
+  const publication = await env.DB.prepare("SELECT status,readback_attempt,next_readback_at FROM hermes_automation_publications WHERE content_id=? LIMIT 1").bind(contentId).first();
+  if (!publication) return { status: "readback_missing_publication" };
+  if (String(publication.status) === "published_verified") return { status: "published_verified", duplicate: true };
+  if (String(publication.status) !== "provider_accepted_readback_pending") return { status: String(publication.status || "terminal") };
+  const attempt = Math.max(1, Math.min(4, Number(publication.readback_attempt || 0) + 1));
   const row = await env.DB.prepare("SELECT content_id,account_key,platform,slot_key,template_id,destination_url,body,state FROM hermes_automation_content WHERE content_id=? LIMIT 1")
     .bind(contentId).first();
   if (!row) return { status: "readback_missing_content" };
@@ -412,18 +450,21 @@ async function processReadbackMessage(env, message) {
   }
 
   if (attempt < 4) {
-    await env.AUTOMATION_QUEUE.send({
-      type: "publication.readback",
-      content_id: contentId,
-      slot_key: String(row.slot_key || ""),
-      readback_attempt: attempt + 1,
-    }, { delaySeconds: 3600 });
-    return { status: "provider_accepted_readback_pending", readback_attempt: attempt, error_class: readback.ok ? "post_not_visible_yet" : readback.error_class };
+    const errorClass = readback.ok ? "post_not_visible_yet" : readback.error_class;
+    const nextReadbackAt = addSecondsIso(now, 3600);
+    await env.DB.prepare("UPDATE hermes_automation_publications SET readback_attempt=?,next_readback_at=?,last_error_class=?,updated_at=? WHERE content_id=? AND status='provider_accepted_readback_pending'")
+      .bind(attempt, nextReadbackAt, errorClass, now, contentId).run();
+    try {
+      await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: contentId }, { delaySeconds: 3600 });
+    } catch {
+      // Recovery cron will pick up next_readback_at; do not touch provider write state.
+    }
+    return { status: "provider_accepted_readback_pending", readback_attempt: attempt, error_class: errorClass };
   }
 
   const errorClass = readback.ok ? "provider_readback_not_found" : readback.error_class;
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='readback_unverified',last_error_class=?,updated_at=? WHERE content_id=?")
-    .bind(errorClass, now, contentId).run();
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='readback_unverified',readback_attempt=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
+    .bind(attempt, errorClass, now, contentId).run();
   await env.DB.prepare("UPDATE hermes_automation_content SET state='readback_unverified',last_error_class=?,updated_at=? WHERE content_id=?")
     .bind(errorClass, now, contentId).run();
   await env.DB.prepare("UPDATE hermes_automation_runs SET status='readback_unverified',last_error_class=?,updated_at=? WHERE slot_key=?")
@@ -460,6 +501,7 @@ export default {
   async scheduled(_controller, env, ctx) {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
     const now = new Date();
+    await enqueueDueReadbacks(env);
     if (!isEligibleChicagoSlot(now)) return;
     const slotKey = chicagoSlotKey(now);
     await ensureSchema(env.DB);
