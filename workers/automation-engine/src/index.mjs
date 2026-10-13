@@ -226,9 +226,15 @@ export function buildCarrierThreadsPost(slotKey, variantIndex = 0) {
   const seed = `${slotKey}:v${variant}`;
   const contentId = `hae-${theme.id}-${slotKey}`;
   const url = buildTrackedUrl(theme.destination, contentId);
-  const hookIndex = fnv1a(`${seed}:hook`) % theme.hooks.length;
-  const pointIndex = fnv1a(`${seed}:point`) % theme.points.length;
-  const questionIndex = fnv1a(`${seed}:question`) % theme.questions.length;
+  // Derive all three dimensions from different bit ranges of one ordinal.
+  // Independent FNV hashes modulo 4 share low-bit structure and collapse the
+  // theoretical 64 combinations to only a few recurring triples.
+  const variantOrdinal = fnv1a(seed);
+  const hookIndex = variantOrdinal % theme.hooks.length;
+  const pointIndex = Math.floor(variantOrdinal / theme.hooks.length) % theme.points.length;
+  const questionIndex = Math.floor(
+    variantOrdinal / (theme.hooks.length * theme.points.length)
+  ) % theme.questions.length;
   const hook = theme.hooks[hookIndex];
   const point = theme.points[pointIndex];
   const question = theme.questions[questionIndex];
@@ -419,7 +425,7 @@ async function enqueueDueReadbacks(env, limit = 20) {
 }
 async function selectFreshCarrierCandidate(db, slotKey) {
   const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  for (let variantIndex = 0; variantIndex < 32; variantIndex += 1) {
+  for (let variantIndex = 0; variantIndex < 64; variantIndex += 1) {
     const candidate = buildCarrierThreadsPost(slotKey, variantIndex);
     const recent = await db.prepare(
       "SELECT content_id FROM hermes_automation_content WHERE variant_key=? AND created_at>=? LIMIT 1"
