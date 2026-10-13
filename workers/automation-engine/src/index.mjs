@@ -1290,7 +1290,7 @@ async function health(env) {
   const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status='plan_enqueue_failed'").bind(ACCOUNT_KEY, PLATFORM).first();
   const genericJobRows = await db.prepare("SELECT state,COUNT(*) AS count FROM hermes_automation_jobs GROUP BY state ORDER BY state").all();
   const genericJobsByState = Object.fromEntries(
-    (genericJobRows?.results || []).map((row) => [String(row.state || "UNKNOWN"), Number(row.count || 0)])
+    (genericJobRows?.results || []).map((row) => [String(row.state || "UNKNOWN"), metricNumberOrNull(row.count)])
   );
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
@@ -1323,7 +1323,13 @@ async function health(env) {
     "SELECT event_type,COUNT(*) AS count FROM hermes_automation_runtime_events GROUP BY event_type ORDER BY event_type"
   ).all();
   const runtimeEventsByType = Object.fromEntries(
-    (runtimeEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), Number(row.count || 0)])
+    (runtimeEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), metricNumberOrNull(row.count)])
+  );
+  const genericJobEventRows = await db.prepare(
+    "SELECT event_type,COUNT(*) AS count FROM hermes_automation_job_events GROUP BY event_type ORDER BY event_type"
+  ).all();
+  const genericJobEventsByType = Object.fromEntries(
+    (genericJobEventRows?.results || []).map((row) => [String(row.event_type || "UNKNOWN"), metricNumberOrNull(row.count)])
   );
   const sourceShaRaw = String(env?.HERMES_AUTOMATION_SOURCE_SHA || "").trim();
   return {
@@ -1331,14 +1337,15 @@ async function health(env) {
     source_sha: /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null,
     automation_mode: clean(env?.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN",
     publication_enabled: publicationEnabled(env),
-    ready_content: Number(ready?.count || 0),
-    unknown_outcomes: Number(unknown?.count || 0),
-    failed_publications: Number(failed?.count || 0),
-    pending_readbacks: Number(pendingReadback?.count || 0),
-    unverified_readbacks: Number(unverifiedReadback?.count || 0),
-    plan_enqueue_failures: Number(planEnqueueFailed?.count || 0),
+    ready_content: metricNumberOrNull(ready?.count),
+    unknown_outcomes: metricNumberOrNull(unknown?.count),
+    failed_publications: metricNumberOrNull(failed?.count),
+    pending_readbacks: metricNumberOrNull(pendingReadback?.count),
+    unverified_readbacks: metricNumberOrNull(unverifiedReadback?.count),
+    plan_enqueue_failures: metricNumberOrNull(planEnqueueFailed?.count),
     generic_jobs_by_state: genericJobsByState,
     runtime_events_by_type: runtimeEventsByType,
+    generic_job_events_by_type: genericJobEventsByType,
     queue: await queueHealth(env?.AUTOMATION_QUEUE),
     dlq: await queueHealth(env?.AUTOMATION_DLQ),
     last_cron_wake: lastHeartbeat || null,
