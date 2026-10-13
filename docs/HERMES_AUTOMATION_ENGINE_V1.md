@@ -29,6 +29,12 @@ Issue #1018 also records a reported Oct-12 local scheduler/controller/queue/RSS 
 
 V1 therefore reuses the proven concepts, not the stale branch.
 
+## Canonical data boundary
+
+HAE does **not** create a second database. It adds bounded `hermes_automation_*` tables to the existing Hermes Connect production D1 already bound as `DB` on the canonical `hermes` Pages project.
+
+Production release must discover that exact D1 binding from authenticated Cloudflare project state. The database ID is never committed to GitHub. This follows the existing Hermes runtime convention: additive idempotent `ensure…Schema` helpers, one shared identity/data layer, no parallel migration authority.
+
 ## Runtime model
 
 ```
