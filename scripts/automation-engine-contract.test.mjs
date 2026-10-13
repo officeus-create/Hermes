@@ -97,6 +97,7 @@ assert.match(worker, /hermes_automation_heartbeats/, "Cron wakes must have a dur
 assert.match(worker, /recordCronHeartbeat/, "Scheduled execution must persist a heartbeat before eligibility return");
 assert.match(worker, /heartbeat:cron:\$\{scheduledIso\.slice\(0, 13\)\}Z/, "Cron heartbeat identity must use scheduled UTC hour so DST fallback does not collapse two wakes into one");
 assert.match(worker, /controller\?\.scheduledTime/, "Cron slot identity must derive from Cloudflare ScheduledController scheduledTime rather than wall-clock execution time");
+assert.match(worker, /rawScheduledTime === null[\s\S]*observedAt/, "Missing ScheduledController time must fall back to observed time without coercing null to epoch zero");
 assert.match(worker, /execution_lag_ms/, "Heartbeat evidence must preserve cron execution lag separately from scheduled time");
 assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
