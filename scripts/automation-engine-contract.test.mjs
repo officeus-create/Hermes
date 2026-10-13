@@ -128,6 +128,14 @@ assert.match(worker, /queue\.message_retry/, "Queue handler retries must persist
 assert.match(worker, /cron\.recover_readbacks_failed/, "Readback recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_plan_runs_failed/, "Plan recovery failure must be isolated and observable");
 assert.match(worker, /cron\.recover_generic_jobs_failed/, "Generic recovery failure must be isolated and observable");
+assert.match(worker, /const enqueued = await enqueuePlanRun\(env, slotKey\)/, "Current eligible slot must finish its first enqueue attempt before recovery scans queued rows");
+assert.doesNotMatch(worker, /ctx\.waitUntil\(enqueuePlanRun\(env, slotKey\)/, "Current-slot enqueue must not race recoverPendingPlanRuns via waitUntil");
+{
+  const scheduledStart = worker.indexOf("async scheduled(controller, env, ctx)");
+  const currentEnqueue = worker.indexOf("const enqueued = await enqueuePlanRun(env, slotKey)", scheduledStart);
+  const recoveryLoop = worker.indexOf('["cron.recover_readbacks_failed", enqueueDueReadbacks]', scheduledStart);
+  assert.ok(scheduledStart >= 0 && currentEnqueue > scheduledStart && recoveryLoop > currentEnqueue, "Current-slot enqueue must complete before scheduled recovery maintenance begins");
+}
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /expired_live_slot/, "Recovered queue backlog must never publish a stale historical slot");
