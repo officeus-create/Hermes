@@ -59,7 +59,6 @@ assert.equal(publicationEnabled({ HERMES_AUTOMATION_MODE: "live", HERMES_AUTOMAT
 const worker = readFileSync(new URL("../workers/automation-engine/src/index.mjs", import.meta.url), "utf8");
 const windsorAdapter = readFileSync(new URL("../workers/automation-engine/src/windsor-threads.mjs", import.meta.url), "utf8");
 const wrangler = readFileSync(new URL("../workers/automation-engine/wrangler.jsonc.example", import.meta.url), "utf8");
-const migration = readFileSync(new URL("../workers/automation-engine/migrations/0001_init.sql", import.meta.url), "utf8");
 
 assert.ok(worker.includes("AUTOMATION_QUEUE.send"), "Cron must enqueue work instead of doing a heavy task inline");
 assert.ok(worker.includes("unknown_outcome"), "Ambiguous provider outcome must be terminal/fail-closed");
@@ -95,11 +94,14 @@ assert.ok(wrangler.includes('"dead_letter_queue": "hermes-automation-dlq"'), "Qu
 assert.ok(wrangler.includes('"workers_dev": false'), "Worker must not expose workers.dev by default");
 assert.ok(wrangler.includes('"preview_urls": false'), "Preview URLs must remain disabled by default");
 for (const table of ["hermes_automation_runs", "hermes_automation_content", "hermes_automation_publications", "hermes_automation_jobs", "hermes_automation_job_events"]) {
-  assert.ok(migration.includes(table), `Missing durable D1 table: ${table}`);
+  assert.ok(worker.includes(table), `Missing additive canonical-D1 runtime table: ${table}`);
 }
-assert.match(migration, /FOREIGN KEY\(job_id\)/, "Job events must remain attached to a durable job id");
-assert.match(migration, /readback_attempt INTEGER NOT NULL DEFAULT 0/, "Provider readback attempts must be durable");
-assert.match(migration, /next_readback_at TEXT/, "Provider readback schedule must survive queue loss");
+assert.match(worker, /FOREIGN KEY\(job_id\)/, "Job events must remain attached to a durable job id");
+assert.match(worker, /readback_attempt INTEGER NOT NULL DEFAULT 0/, "Provider readback attempts must be durable");
+assert.match(worker, /next_readback_at TEXT/, "Provider readback schedule must survive queue loss");
+assert.ok(wrangler.includes('"database_name": "hermes-connect-prototype"'), "HAE must reuse the canonical Hermes Connect production D1");
+assert.ok(wrangler.includes("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"), "Canonical production D1 id must be discovered at release time, not committed");
+assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must never create a second D1 database");
 
 
 const originalFetch = globalThis.fetch;
