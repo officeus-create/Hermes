@@ -217,6 +217,25 @@ for (const marker of [
 for (const retiredMarker of ["2 public programs", "Two public programs", "currently presents two public program paths"]) {
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
+
+assert.match(
+  productionWorkflow,
+  /https:\/\/hermeslogisticsus\.com\/logistics\/car-hauling-dispatch\//,
+  "Production parity must read the car-hauling dispatch money page back from the real domain.",
+);
+for (const marker of [
+  "source-gated live + demo discovery product",
+  "Start car-hauling dispatch review",
+  "The carrier makes the final operating decision",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `Car-hauling production truth marker is missing: ${marker}`);
+}
+for (const retiredMarker of [
+  "The separate Load Board remains a fictional product preview",
+  "The public Load Board is a fictional product preview",
+]) {
+  assert.ok(productionWorkflow.includes(retiredMarker), `Retired car-hauling marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
+}
 for (const marker of [
   'new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"])',
   'form.dataset.contactMode = "live"',
