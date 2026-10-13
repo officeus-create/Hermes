@@ -166,8 +166,10 @@ assert.match(worker, /url\.pathname === "\/v1\/jobs"/, "Private API must accept 
 assert.match(worker, /url\.pathname\.startsWith\("\/v1\/jobs\/"\)/, "Private API must expose durable job readback");
 assert.match(worker, /idempotency_key_required/, "Generic job creation must require an explicit idempotency key");
 assert.match(worker, /state='RUNNING'[\s\S]*state='QUEUED'[\s\S]*state='RETRY_SCHEDULED'/, "Generic execution must atomically claim queued or due retry work");
-assert.match(worker, /stale_running_recovered/, "Generic jobs stranded in RUNNING must recover durably");
+assert.match(worker, /job\.stale_running_recovered/, "Stale RUNNING recovery must append an immutable transition event");
+assert.match(worker, /job\.stale_running_failed/, "Exhausted stale RUNNING jobs must append a terminal transition event");
 assert.match(worker, /job\.retry_scheduled/, "Generic failures must persist a retry transition");
+assert.match(worker, /Duplicate recovery messages[\s\S]*D1 state transition is the execution lock/, "Generic recovery must rely on the atomic D1 claim rather than a future available_at lease");
 assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
 assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
 assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
