@@ -104,6 +104,12 @@ assert.match(worker, /controller\?\.scheduledTime/, "Cron slot identity must der
 assert.match(worker, /rawScheduledTime === null[\s\S]*observedAt/, "Missing ScheduledController time must fall back to observed time without coercing null to epoch zero");
 assert.match(worker, /execution_lag_ms/, "Heartbeat evidence must preserve cron execution lag separately from scheduled time");
 assert.match(worker, /cron_expression TEXT/, "Heartbeat evidence must preserve the exact cron expression that invoked the Worker");
+assert.match(worker, /source_sha TEXT/, "Heartbeat evidence must preserve deployed source SHA for per-wake continuity");
+assert.match(worker, /automation_mode TEXT/, "Heartbeat evidence must preserve automation mode for per-wake continuity");
+assert.match(worker, /publication_config TEXT/, "Heartbeat evidence must preserve raw publication config for per-wake continuity");
+assert.match(worker, /publication_enabled INTEGER NOT NULL/, "Heartbeat evidence must preserve effective publication gate for per-wake continuity");
+assert.match(worker, /recordCronHeartbeat\(env, scheduledAt, observedAt, eligible, controller\?\.cron\)/, "Scheduled heartbeat must capture runtime env configuration, not only timing");
+assert.match(worker, /eligible,source_sha,automation_mode,publication_config,publication_enabled/, "Private health heartbeat readback must include per-wake runtime continuity fields");
 assert.match(worker, /controller\?\.cron/, "Scheduled handler must pass Cloudflare controller.cron into durable heartbeat evidence");
 assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
