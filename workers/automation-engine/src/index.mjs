@@ -623,28 +623,64 @@ async function recoverPendingGenericJobs(env, limit = 20) {
   await ensureSchema(env.DB);
   const now = new Date().toISOString();
   const staleRunningCutoff = addSecondsIso(now, -15 * 60);
-  await env.DB.prepare(`
-    UPDATE hermes_automation_jobs
-    SET state='RETRY_SCHEDULED',
-        available_at=?,
-        last_error_class='stale_running_recovered',
-        updated_at=?
-    WHERE state='RUNNING'
-      AND updated_at<=?
-      AND attempt_count<max_attempts
-  `).bind(now, now, staleRunningCutoff).run();
-  await env.DB.prepare(`
-    UPDATE hermes_automation_jobs
-    SET state='FAILED',
-        current_step='complete',
-        available_at=NULL,
-        last_error_class='stale_running_attempts_exhausted',
-        updated_at=?,
-        completed_at=?
-    WHERE state='RUNNING'
-      AND updated_at<=?
-      AND attempt_count>=max_attempts
-  `).bind(now, now, staleRunningCutoff).run();
+
+  const staleRows = await env.DB.prepare(`
+    SELECT job_id,attempt_count,max_attempts
+    FROM hermes_automation_jobs
+    WHERE state='RUNNING' AND updated_at<=?
+    ORDER BY updated_at ASC
+    LIMIT ?
+  `).bind(staleRunningCutoff, Math.max(1, Math.min(50, Number(limit) || 20))).all();
+
+  for (const row of staleRows?.results || []) {
+    const jobId = clean(row?.job_id, 160);
+    if (!jobId) continue;
+    const attempts = Number(row?.attempt_count || 0);
+    const maxAttempts = Number(row?.max_attempts || 3);
+    if (attempts < maxAttempts) {
+      const moved = await env.DB.prepare(`
+        UPDATE hermes_automation_jobs
+        SET state='RETRY_SCHEDULED',
+            available_at=?,
+            last_error_class='stale_running_recovered',
+            updated_at=?
+        WHERE job_id=? AND state='RUNNING' AND updated_at<=?
+      `).bind(now, now, jobId, staleRunningCutoff).run();
+      if (Number(moved?.meta?.changes || 0) === 1) {
+        await appendGenericJobEvent(env.DB, {
+          jobId,
+          eventType: "job.stale_running_recovered",
+          fromState: "RUNNING",
+          toState: "RETRY_SCHEDULED",
+          step: "execute",
+          errorClass: "stale_running_recovered",
+        });
+      }
+      continue;
+    }
+
+    const failed = await env.DB.prepare(`
+      UPDATE hermes_automation_jobs
+      SET state='FAILED',
+          current_step='complete',
+          available_at=NULL,
+          last_error_class='stale_running_attempts_exhausted',
+          updated_at=?,
+          completed_at=?
+      WHERE job_id=? AND state='RUNNING' AND updated_at<=?
+    `).bind(now, now, jobId, staleRunningCutoff).run();
+    if (Number(failed?.meta?.changes || 0) === 1) {
+      await appendGenericJobEvent(env.DB, {
+        jobId,
+        eventType: "job.stale_running_failed",
+        fromState: "RUNNING",
+        toState: "FAILED",
+        step: "complete",
+        errorClass: "stale_running_attempts_exhausted",
+      });
+    }
+  }
+
   const rows = await env.DB.prepare(`
     SELECT job_id,state FROM hermes_automation_jobs
     WHERE state IN ('QUEUED','RETRY_SCHEDULED')
@@ -655,24 +691,36 @@ async function recoverPendingGenericJobs(env, limit = 20) {
   let recovered = 0;
   for (const row of rows?.results || []) {
     const jobId = clean(row?.job_id, 160);
+    const fromState = clean(row?.state, 40);
     if (!jobId) continue;
     try {
+      // Do not push available_at into the future after enqueue: RETRY_SCHEDULED
+      // consumers must remain immediately claimable. Duplicate recovery messages
+      // are harmless because the D1 state transition is the execution lock.
       await enqueueGenericJobMessage(env, jobId);
-      const leaseUntil = addSecondsIso(now, 15 * 60);
       await env.DB.prepare(
-        "UPDATE hermes_automation_jobs SET available_at=?,last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
-      ).bind(leaseUntil, now, jobId).run();
+        "UPDATE hermes_automation_jobs SET last_error_class=NULL,updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
+      ).bind(now, jobId).run();
       recovered += 1;
     } catch {
       const retryAt = addSecondsIso(now, 5 * 60);
-      await env.DB.prepare(
+      const moved = await env.DB.prepare(
         "UPDATE hermes_automation_jobs SET state='RETRY_SCHEDULED',available_at=?,last_error_class='job_enqueue_failed',updated_at=? WHERE job_id=? AND state IN ('QUEUED','RETRY_SCHEDULED')"
       ).bind(retryAt, now, jobId).run();
+      if (Number(moved?.meta?.changes || 0) === 1) {
+        await appendGenericJobEvent(env.DB, {
+          jobId,
+          eventType: "job.enqueue_failed",
+          fromState: fromState || "QUEUED",
+          toState: "RETRY_SCHEDULED",
+          step: "dispatch",
+          errorClass: "job_enqueue_failed",
+        });
+      }
     }
   }
   return recovered;
 }
-
 async function getGenericJob(env, jobId) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
