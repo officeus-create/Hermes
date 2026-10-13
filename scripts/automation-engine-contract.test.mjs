@@ -71,6 +71,9 @@ assert.match(worker, /provider_accepted_readback_pending/, "Accepted Windsor wri
 assert.match(worker, /url\.pathname === "\/v1\/health"[\s\S]*authorized\(request, env\)/, "Operational health must require the private control token");
 assert.doesNotMatch(worker, /provider_account:/, "Public capabilities must not expose the provider account id");
 assert.match(worker, /publication\.readback/, "Worker must schedule delayed provider readback");
+assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted posts whose readback queue message was lost");
+assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
+assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
 assert.match(worker, /delaySeconds: 4200/, "First Windsor readback must be delayed past the one-hour refresh boundary");
 assert.match(windsorAdapter, /connectors\.windsor\.ai/, "Pilot must use the Windsor Connectors API directly");
 assert.match(windsorAdapter, /create_text_post/, "Windsor adapter must use the exact Threads text action");
@@ -91,6 +94,8 @@ for (const table of ["hermes_automation_runs", "hermes_automation_content", "her
   assert.ok(migration.includes(table), `Missing durable D1 table: ${table}`);
 }
 assert.match(migration, /FOREIGN KEY\(job_id\)/, "Job events must remain attached to a durable job id");
+assert.match(migration, /readback_attempt INTEGER NOT NULL DEFAULT 0/, "Provider readback attempts must be durable");
+assert.match(migration, /next_readback_at TEXT/, "Provider readback schedule must survive queue loss");
 
 
 const originalFetch = globalThis.fetch;
