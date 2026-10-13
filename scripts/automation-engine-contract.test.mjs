@@ -95,6 +95,8 @@ assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-let
 assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
 assert.match(worker, /hermes_automation_heartbeats/, "Cron wakes must have a durable heartbeat table including quiet-window wakes");
 assert.match(worker, /recordCronHeartbeat/, "Scheduled execution must persist a heartbeat before eligibility return");
+assert.match(worker, /heartbeat:cron:\$\{triggeredAt\.slice\(0, 13\)\}Z/, "Cron heartbeat identity must use UTC hour so DST fallback does not collapse two wakes into one");
+assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
 assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
 assert.match(worker, /last_failure/, "Private health must expose the last failed HAE run separately");
