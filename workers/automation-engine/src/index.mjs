@@ -1117,24 +1117,37 @@ async function enqueuePlanRun(env, slotKey) {
       platform: PLATFORM,
       slot_key: slotKey,
     });
-    await env.DB.prepare(
-      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
-    ).bind(now, runIdForSlot(slotKey)).run();
-    return true;
   } catch {
     await env.DB.prepare(
       "UPDATE hermes_automation_runs SET status='plan_enqueue_failed',last_error_class='plan_enqueue_failed',updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
     ).bind(now, runIdForSlot(slotKey)).run();
     return false;
   }
+
+  try {
+    await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE id=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, runIdForSlot(slotKey)).run();
+  } catch (error) {
+    // Queue.send() resolving means Cloudflare has durably accepted the message.
+    // A later D1 status-write failure must never be reclassified as a send failure.
+    await recordRuntimeEvent(env, {
+      eventType: "plan.enqueue_state_write_failed",
+      messageType: "content.plan",
+      slotKey,
+      errorClass: safeRuntimeErrorClass(error, "enqueue_state_write_failed"),
+    });
+  }
+  return true;
 }
 
 async function recoverPendingPlanRuns(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
+  const queuedStaleCutoff = addSecondsIso(new Date().toISOString(), -2 * 60);
   const rows = await env.DB.prepare(
-    "SELECT slot_key FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status IN ('queued','plan_enqueue_failed') ORDER BY created_at ASC LIMIT ?"
-  ).bind(ACCOUNT_KEY, PLATFORM, Math.max(1, Math.min(50, Number(limit) || 20))).all();
+    "SELECT slot_key FROM hermes_automation_runs WHERE account_key=? AND platform=? AND (status='plan_enqueue_failed' OR (status='queued' AND created_at<=?)) ORDER BY created_at ASC LIMIT ?"
+  ).bind(ACCOUNT_KEY, PLATFORM, queuedStaleCutoff, Math.max(1, Math.min(50, Number(limit) || 20))).all();
   let recovered = 0;
   for (const row of rows?.results || []) {
     const slotKey = clean(row?.slot_key, 32);
