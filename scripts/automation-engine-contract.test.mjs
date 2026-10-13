@@ -73,7 +73,7 @@ assert.match(worker, /publication\.readback/, "Worker must schedule delayed prov
 assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted posts whose readback queue message was lost");
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
 assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
-assert.match(worker, /AUTOMATION_QUEUE\.metrics/, "Private health must expose queue backlog when Cloudflare metrics are available");
+assert.match(worker, /queue\.metrics\(\)/, "Private health must expose queue backlog when Cloudflare metrics are available");
 assert.match(worker, /live_slot_override_forbidden/, "Live manual ticks must not backfill arbitrary slots");
 assert.match(worker, /live_outside_publish_window/, "Live manual ticks must respect the Central Time publish window");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
