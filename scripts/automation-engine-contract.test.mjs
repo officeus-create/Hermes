@@ -100,6 +100,9 @@ assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failur
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
 assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
 assert.match(worker, /last_failure/, "Private health must expose the last failed HAE run separately");
+assert.match(worker, /source_sha/, "Private health must expose the exact deployed source SHA when release metadata is configured");
+assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
+assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
 assert.match(worker, /hermes_automation_runtime_events/, "Queue/recovery failures must have a durable sanitized runtime event ledger");
 assert.match(worker, /normalizedAttempt === null \? null : Math\.max\(0, Math\.trunc\(normalizedAttempt\)\)/, "Unknown Queue attempt count must remain null instead of becoming zero");
 assert.match(worker, /queue\.message_unknown[\s\S]*item\.retry\(\)/, "Unknown Queue messages must fail closed toward retry/DLQ instead of being silently ACKed");
@@ -135,6 +138,7 @@ assert.equal(windsorThreadsConfig({}), null);
 assert.deepEqual(windsorThreadsConfig({ WINDSOR_API_KEY: "synthetic-key" }), { apiKey: "synthetic-key", accountId: "28419597014385166" });
 assert.ok(wrangler.includes('"HERMES_AUTOMATION_MODE": "dry_run"'), "Example config must default to dry-run");
 assert.ok(wrangler.includes('"HERMES_AUTOMATION_PUBLISH": "disabled"'), "Example config must default publication off");
+assert.ok(wrangler.includes('"HERMES_AUTOMATION_SOURCE_SHA": "INJECT_EXACT_MAIN_SHA_AT_RELEASE"'), "Example config must reserve exact source SHA release metadata");
 assert.ok(wrangler.includes('"WINDSOR_THREADS_ACCOUNT_ID": "28419597014385166"'), "Example must pin the verified Hermes Threads account");
 assert.ok(wrangler.includes("WINDSOR_API_KEY"), "Windsor secret activation step must be documented");
 assert.ok(!wrangler.includes('"WINDSOR_API_KEY":'), "Windsor API key must never be committed as a Wrangler var");
@@ -156,6 +160,8 @@ assert.match(worker, /next_readback_at TEXT/, "Provider readback schedule must s
 assert.ok(wrangler.includes('"database_name": "hermes-connect-prototype"'), "HAE must reuse the canonical Hermes Connect production D1");
 assert.ok(wrangler.includes("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"), "Canonical production D1 id must be discovered at release time, not committed");
 assert.ok(!wrangler.includes('"database_name": "hermes-automation"'), "HAE must never create a second D1 database");
+assert.match(releaseWorkflow, /INJECT_EXACT_MAIN_SHA_AT_RELEASE/, "Release workflow must inject exact source SHA into generated Worker config");
+assert.match(releaseWorkflow, /TARGET_SHA: \$\{\{ steps\.request\.outputs\.target_sha \}\}/, "Release config render must receive the owner-verified exact target SHA");
 assert.match(releaseWorkflow, /github\.event\.issue\.number == 1018/, "Release command must stay attached to canonical Growth Bridge #1018");
 assert.match(releaseWorkflow, /HAE_PROVISION_DRY_RUN/, "Dry-run provisioning must require an explicit owner command");
 assert.match(releaseWorkflow, /environment: production/, "Production Worker release must pass through the production environment");
