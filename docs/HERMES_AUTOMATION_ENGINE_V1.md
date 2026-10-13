@@ -171,6 +171,8 @@ If the provider write has an ambiguous network/5xx outcome, HAE records `unknown
 
 Readback recovery is also durable. The next readback time and attempt count live in D1. Lost delayed-queue messages are recovered by the hourly cron. A stale `publishing` state is converted to readback-only recovery, never to a second provider write. After four bounded readback attempts the state becomes `readback_unverified` for operator review.
 
+Every provider lifecycle transition that changes `hermes_automation_publications`, `hermes_automation_content`, and `hermes_automation_runs` must commit in one D1 batch. A partial write must never leave one table at `published_verified` or terminal failure while the other canonical state tables remain stale.
+
 ## Health
 
 `GET /v1/capabilities`
