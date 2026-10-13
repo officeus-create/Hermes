@@ -3,8 +3,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 const homeFlows = {
  logistics: ["Request", "Route fit", "Human review", "Handoff"],
  marketing: ["Content", "Search + social", "Site action", "Inquiry"],
- technology: ["Request", "CRM context", "Automation", "Receipt"],
- academy: ["Lesson", "Practice", "Review", "Progression"],
+ technology: ["Request", "CRM context", "Automation", "Readback"],
+ academy: ["Explain", "Practice", "Feedback", "Retry"],
 } as const;
 
 // CI Chromium can stop rAF after history restoration while the focused document,
@@ -49,6 +49,12 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
    const image=route.locator('.home-portal-art img');
+   if(await route.getAttribute('data-route-id')==='marketing') {
+    // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+    continue;
+   }
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -97,7 +103,12 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
  for (const [direction, labels] of Object.entries(homeFlows)) {
   const explainer=page.locator(`[data-home-explainer="${direction}"]`);
   for (const label of labels) await expect(explainer).toContainText(label);
-  await expect(explainer).toHaveCSS('opacity','1');
+  if(direction==='marketing') {
+   await expect(page.locator('[data-home-marketing-journey]')).toBeVisible();
+   await expect(explainer).toHaveCSS('display','none'); // original duplicated workflow is superseded
+  } else {
+   await expect(explainer).toHaveCSS('opacity','1');
+  }
  }
  expect(await page.locator('.home-portal-art img').first().evaluate(n=>getComputedStyle(n).transitionDuration)).toBe('0s');
  await page.locator('[data-route-id="marketing"]').click();
@@ -149,7 +160,9 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- expect(artwork.length).toBeGreaterThanOrEqual(5);
+ // Marketing now uses entirely native CSS/SVG artwork, with no hidden downloadable poster.
+ expect(artwork.length).toBeGreaterThanOrEqual(2);
+ expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
@@ -165,9 +178,15 @@ test('all four Home directions explain a causal workflow and remain static on to
    await expect(explainer).toHaveCSS('opacity','0');
    await route.hover();
   }
-  await expect(explainer).toHaveCSS('opacity','1');
-  for(const id of ['event','system','human','outcome']) {
-   await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
+  if(direction==='marketing') {
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
+   await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+  } else {
+   await expect(explainer).toHaveCSS('opacity','1');
+   for(const id of ['event','system','human','outcome']) {
+    await expect(explainer.locator(`[data-live-step="${id}"]`)).toHaveCSS('opacity','1');
+   }
   }
   const accessibleName=(await route.getAttribute('aria-label')||'').toLowerCase();
   expect(accessibleName).toContain('example flow:');
@@ -179,13 +198,24 @@ test('all four Home directions explain a causal workflow and remain static on to
  await mobile.goto('/');
  for (const [direction, labels] of Object.entries(homeFlows)) {
   const mobileExplainer=mobile.locator(`[data-home-explainer="${direction}"]`);
-  await expect(mobileExplainer).toHaveCSS('opacity','1');
+  if(direction==='marketing') {
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   await expect(mobile.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
+  } else if(direction==='technology') {
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   await expect(mobile.locator('[data-home-pillar-proof="systems"]')).toBeVisible();
+  } else if(direction==='academy') {
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   await expect(mobile.locator('[data-home-pillar-proof="progress"]')).toBeVisible();
+  } else {
+   await expect(mobileExplainer).toHaveCSS('opacity','1');
+   const labelSizes=await mobileExplainer.locator('[data-live-step] em').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
+   expect(Math.min(...labelSizes)).toBeGreaterThanOrEqual(10);
+  }
   for (const label of labels) await expect(mobileExplainer).toContainText(label);
-  const labelSizes=await mobileExplainer.locator('[data-live-step] em').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
-  expect(Math.min(...labelSizes)).toBeGreaterThanOrEqual(10);
  }
- const academyTrackSizes=await mobile.locator('[data-home-pillar-proof="progress"] .home-academy-track i').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
- expect(Math.min(...academyTrackSizes)).toBeGreaterThanOrEqual(9.5);
+ const academyProofSizes=await mobile.locator('[data-home-pillar-proof="progress"] small').evaluateAll(nodes=>nodes.map(node=>parseFloat(getComputedStyle(node).fontSize)));
+ expect(Math.min(...academyProofSizes)).toBeGreaterThanOrEqual(9.5);
  expect(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
  await touch.close();
 });
@@ -239,14 +269,22 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content');
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Search + social');
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Inquiry');
- await expect(page.locator('[data-home-pillar-proof="systems"]')).toHaveCount(1);
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Request');
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('CRM context');
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Automation');
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Receipt');
- for(const label of ['Logistics','Sales','Marketing','Operations']) {
-  await expect(page.locator('[data-home-pillar-proof="progress"]')).toContainText(label);
- }
+ const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
+ await expect(technologyProof).toHaveCount(1);
+ await expect(technologyProof).toContainText('REQUEST');
+ await expect(technologyProof).toContainText('CRM');
+ await expect(technologyProof).toContainText('AUTOMATE');
+ await expect(technologyProof).toContainText('VERIFIED');
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Readback');
+ const academyProof=page.locator('[data-home-pillar-proof="progress"]');
+ await expect(academyProof).toContainText('ATTEMPT 1');
+ await expect(academyProof).toContainText('HUMAN FEEDBACK');
+ await expect(academyProof).toContainText('Ask one diagnostic question first.');
+ await expect(academyProof).toContainText('RETRY');
+ await expect(academyProof).toContainText('TRANSFER');
+ await expect(page.locator('.home-book-page')).toHaveCount(0);
+ await expect(page.locator('.home-academy-track')).toHaveCount(0);
+ await expect(page.locator('.home-system-node')).toHaveCount(0);
 
  const mobileContext=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
  const mobile=await mobileContext.newPage();
@@ -260,53 +298,42 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await mobileContext.close();
 });
 
-test('Home subjects use finite cycles, pause offscreen and settle to still artwork',async({page})=>{
+// Superseded finite-leaves motion contract: CEO selected an always-live Marketing journey
+// whose CSS animations run only when visible and honor reduced motion.
+test('Home Marketing journey animates only in view and keeps a static readable fallback',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1200});
  await page.goto('/');
- const layers=page.locator('[data-home-motion]');
- await expect(layers).toHaveCount(1);
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
- const timing=await layers.first().evaluate(node=>node.getAnimations()[0].effect!.getTiming());
- expect(timing.duration).toBe(12000);
- expect(timing.iterations).toBe(3);
+ const scene=page.locator('[data-home-marketing-journey]');
+ const pulse=scene.locator('.home-marketing-pulse');
+ await expect(scene).toHaveCount(1);
+ await expect(scene).toHaveAttribute('aria-hidden','true');
+ await scene.scrollIntoViewIfNeeded();
+ await expect(scene).toHaveAttribute('data-journey-motion','running');
+ await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
+ await expect(pulse).toHaveCSS('animation-iteration-count','infinite');
  await page.locator('footer').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','paused');
- // pause() is asynchronous: the app marker precedes the browser's pending pause task.
- // Wait for actual Web Animations state before taking the unchanged-time baseline.
- await expect.poll(async()=>layers.first().evaluate(node=>{
-  const animation=node.getAnimations()[0];
-  return {playState:animation?.playState,pending:animation?.pending};
- })).toEqual({playState:'paused',pending:false});
- const time=await layers.first().evaluate(node=>node.getAnimations()[0].currentTime);
- await page.waitForTimeout(180);
- expect(await layers.first().evaluate(node=>node.getAnimations()[0].currentTime)).toBe(time);
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await layers.evaluateAll(nodes=>nodes.forEach(node=>node.getAnimations().forEach(animation=>animation.finish())));
- await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await expect(layers.first()).toHaveCSS('opacity','1');
- await page.locator('footer').scrollIntoViewIfNeeded();
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','finished');
- await page.locator('[data-route-id="marketing"]').hover();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
+ await expect(scene).toHaveAttribute('data-journey-motion','paused');
+ await expect(pulse).toHaveCSS('animation-name','none');
+ await scene.scrollIntoViewIfNeeded();
+ await expect(scene).toHaveAttribute('data-journey-motion','running');
+ await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
 });
 
-test('Home motion responds to reduced-motion changes and stays decorative',async({page})=>{
+test('Home Marketing animation respects live reduced-motion preference and remains decorative',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.goto('/');
- const layers=page.locator('[data-home-motion]');
- await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
- for(const layer of await layers.all()) {
-  await expect(layer).toHaveAttribute('aria-hidden','true');
-  await expect(layer).toHaveCSS('display','block');
-  expect(await layer.evaluate(node=>node.getAnimations().length)).toBe(0);
- }
+ const scene=page.locator('[data-home-marketing-journey]');
+ const pulse=scene.locator('.home-marketing-pulse');
+ await expect(scene).toHaveAttribute('aria-hidden','true');
+ await expect(scene.locator('.home-marketing-beacon')).toHaveAttribute('aria-hidden','true');
+ await expect(scene).toHaveAttribute('data-journey-motion','reduced');
+ await expect(pulse).toHaveCSS('animation-name','none');
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.locator('#paths').scrollIntoViewIfNeeded();
- await expect(layers.first()).toHaveAttribute('data-motion-state','running');
+ await scene.scrollIntoViewIfNeeded();
+ await expect(scene).toHaveAttribute('data-journey-motion','running');
+ await expect(pulse).toHaveCSS('animation-name','home-marketing-current');
  await page.emulateMedia({reducedMotion:'reduce'});
- await expect(layers.first()).toHaveAttribute('data-motion-state','reduced');
- expect(await layers.first().evaluate(node=>node.getAnimations().length)).toBe(0);
+ await expect(scene).toHaveAttribute('data-journey-motion','reduced');
+ await expect(pulse).toHaveCSS('animation-name','none');
 });
