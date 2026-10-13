@@ -1315,10 +1315,12 @@ async function queueHealth(queue) {
   if (!queue || typeof queue.metrics !== "function") return { status: "unavailable" };
   try {
     const metrics = await queue.metrics();
+    const backlogCount = metricNumberOrNull(metrics?.backlogCount);
+    const backlogBytes = metricNumberOrNull(metrics?.backlogBytes);
     return {
-      status: "ok",
-      backlog_count: metricNumberOrNull(metrics?.backlogCount),
-      backlog_bytes: metricNumberOrNull(metrics?.backlogBytes),
+      status: backlogCount === null || backlogBytes === null ? "partial_unknown" : "ok",
+      backlog_count: backlogCount,
+      backlog_bytes: backlogBytes,
       oldest_message_at: metrics?.oldestMessageTimestamp
         ? new Date(metrics.oldestMessageTimestamp).toISOString()
         : null,
