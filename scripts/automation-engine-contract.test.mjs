@@ -109,8 +109,9 @@ assert.match(releaseWorkflow, /environment: production/, "Production Worker rele
 assert.match(releaseWorkflow, /deployment_configs\.production\.d1_databases\.DB\.id/, "Release must discover the canonical Pages D1 binding");
 assert.doesNotMatch(releaseWorkflow, /d1\s+create/i, "Release must never create a second D1 database");
 assert.match(releaseWorkflow, /queues create/, "Explicit provisioning may create only the two bounded HAE queues");
-assert.match(releaseWorkflow, /HERMES_AUTOMATION_MODE.*dry_run/s, "Deployed config must remain dry-run");
-assert.match(releaseWorkflow, /HERMES_AUTOMATION_PUBLISH.*disabled/s, "Deployed config must keep provider publication disabled");
+assert.match(wrangler, /"HERMES_AUTOMATION_MODE": "dry_run"/, "Composed release source must remain dry-run");
+assert.match(wrangler, /"HERMES_AUTOMATION_PUBLISH": "disabled"/, "Composed release source must keep provider publication disabled");
+assert.doesNotMatch(releaseWorkflow, /HERMES_AUTOMATION_MODE=live|HERMES_AUTOMATION_PUBLISH=enabled/, "Owner-gated dry-run workflow must never promote live publishing");
 assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "Dry-run release must not require or inject a provider write secret");
 
 
