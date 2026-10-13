@@ -1352,6 +1352,7 @@ async function health(env) {
     database: "ok",
     source_sha: /^[0-9a-f]{40}$/.test(sourceShaRaw) ? sourceShaRaw : null,
     automation_mode: clean(env?.HERMES_AUTOMATION_MODE, 40) || "UNKNOWN",
+    publication_config: clean(env?.HERMES_AUTOMATION_PUBLISH, 40) || "UNKNOWN",
     publication_enabled: publicationEnabled(env),
     ready_content: metricNumberOrNull(ready?.count),
     unknown_outcomes: metricNumberOrNull(unknown?.count),
