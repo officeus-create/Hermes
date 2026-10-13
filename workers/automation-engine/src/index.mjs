@@ -386,14 +386,22 @@ async function insertCandidate(db, candidate) {
   return Number(result?.meta?.changes || 0) === 1;
 }
 
-async function reservePublication(db, candidate) {
+async function claimPublicationForProvider(db, candidate) {
   const now = new Date().toISOString();
-  const result = await db.prepare(`
+  await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_publications
       (idempotency_key, content_id, account_key, platform, status, attempt_count, created_at, updated_at)
     VALUES (?, ?, ?, ?, 'reserved', 0, ?, ?)
   `).bind(candidate.idempotency_key, candidate.content_id, candidate.account_key, candidate.platform, now, now).run();
-  return Number(result?.meta?.changes || 0) === 1;
+
+  // Only a definitely pre-provider reservation may advance to a provider call.
+  // This conditional transition is the concurrency lock: one consumer wins.
+  const claimed = await db.prepare(`
+    UPDATE hermes_automation_publications
+    SET status='publishing',attempt_count=attempt_count+1,updated_at=?
+    WHERE idempotency_key=? AND account_key=? AND platform=? AND status='reserved'
+  `).bind(now, candidate.idempotency_key, candidate.account_key, candidate.platform).run();
+  return Number(claimed?.meta?.changes || 0) === 1;
 }
 
 function publicationEnabled(env) {
@@ -535,16 +543,12 @@ async function processPlanMessage(env, message) {
     return { status: "dry_run_ready", candidate };
   }
 
-  const reserved = await reservePublication(env.DB, candidate);
-  if (!reserved) {
+  const claimed = await claimPublicationForProvider(env.DB, candidate);
+  if (!claimed) {
     await env.DB.prepare("UPDATE hermes_automation_runs SET status='duplicate_suppressed',updated_at=? WHERE id=?")
       .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
     return { status: "duplicate_suppressed", candidate };
   }
-
-  const startedAt = new Date().toISOString();
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='publishing',attempt_count=1,updated_at=? WHERE idempotency_key=?")
-    .bind(startedAt, candidate.idempotency_key).run();
 
   const published = await publishThreadsTextViaWindsor(env, candidate.body);
   const now = new Date().toISOString();
