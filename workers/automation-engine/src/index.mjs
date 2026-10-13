@@ -374,6 +374,7 @@ async function ensureSchema(db) {
     CREATE TABLE IF NOT EXISTS hermes_automation_heartbeats (
       heartbeat_id TEXT PRIMARY KEY,
       trigger_type TEXT NOT NULL,
+      cron_expression TEXT,
       scheduled_at TEXT NOT NULL,
       observed_at TEXT NOT NULL,
       execution_lag_ms INTEGER NOT NULL,
@@ -441,18 +442,19 @@ async function recordRuntimeEvent(env, {
   }
 }
 
-async function recordCronHeartbeat(db, scheduledAt, observedAt, eligible) {
+async function recordCronHeartbeat(db, scheduledAt, observedAt, eligible, cronExpression = null) {
   const scheduledIso = scheduledAt.toISOString();
   const observedIso = observedAt.toISOString();
   const slotKey = chicagoSlotKey(scheduledAt);
   const lagMs = Math.max(0, observedAt.getTime() - scheduledAt.getTime());
   await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_heartbeats
-      (heartbeat_id,trigger_type,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,created_at)
-    VALUES (?,?,?,?,?,?,?,?)
+      (heartbeat_id,trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible,created_at)
+    VALUES (?,?,?,?,?,?,?,?,?)
   `).bind(
     `heartbeat:cron:${scheduledIso.slice(0, 13)}Z`,
     "cron",
+    clean(cronExpression, 80) || null,
     scheduledIso,
     observedIso,
     lagMs,
@@ -1323,7 +1325,7 @@ async function health(env) {
     LIMIT 1
   `).bind(ACCOUNT_KEY, PLATFORM).first();
   const lastHeartbeat = await db.prepare(`
-    SELECT trigger_type,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible
+    SELECT trigger_type,cron_expression,scheduled_at,observed_at,execution_lag_ms,chicago_slot_key,eligible
     FROM hermes_automation_heartbeats
     ORDER BY scheduled_at DESC
     LIMIT 1
@@ -1375,7 +1377,7 @@ export default {
     await ensureSchema(env.DB);
     const eligible = isEligibleChicagoSlot(scheduledAt);
     try {
-      await recordCronHeartbeat(env.DB, scheduledAt, observedAt, eligible);
+      await recordCronHeartbeat(env.DB, scheduledAt, observedAt, eligible, controller?.cron);
     } catch (error) {
       await recordRuntimeEvent(env, {
         eventType: "cron.heartbeat_write_failed",
