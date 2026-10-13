@@ -159,6 +159,11 @@ assert.doesNotMatch(releaseWorkflow, /WINDSOR_API_KEY:\s*\$\{\{\s*secrets\./, "D
 assert.match(worker, /READ_ONLY_GENERIC_JOB_TYPES/, "Generic executor must expose a bounded read-only capability registry");
 assert.match(worker, /"system\.health\.snapshot"/, "Generic executor must support a safe system health snapshot job");
 assert.match(worker, /"history\.coverage\.audit"/, "Generic executor must support a read-only historical coverage audit job");
+assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical primitives must bind into the existing generic job registry");
+assert.match(worker, /runHistoricalLearningPrimitive/, "Historical primitive execution must reuse the existing generic executor");
+assert.match(worker, /\.\.\.HISTORICAL_READ_ONLY_JOB_TYPES/, "Historical jobs must extend the same read-only generic allowlist");
+assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(jobType\)[\s\S]*runHistoricalLearningPrimitive\(jobType, payload\)/, "Historical job payloads must be validated before enqueue");
+assert.match(worker, /HISTORICAL_READ_ONLY_JOB_TYPES\.includes\(job\.job_type\)[\s\S]*runHistoricalLearningPrimitive\(job\.job_type, payload\)/, "Historical jobs must execute inside the same runReadOnlyGenericCapability path");
 assert.doesNotMatch(worker, /READ_ONLY_GENERIC_JOB_TYPES[\s\S]{0,240}"social\.publish"/, "Live social writes must not be allowed through the first generic read-only executor");
 assert.match(worker, /type: "job\.execute"/, "Generic jobs must execute through the existing canonical automation queue");
 assert.match(worker, /processGenericJob/, "Queue consumer must execute generic durable jobs");

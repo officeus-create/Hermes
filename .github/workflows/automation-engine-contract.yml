@@ -5,6 +5,7 @@ on:
     paths:
       - "workers/automation-engine/**"
       - "scripts/automation-engine-contract.test.mjs"
+      - "scripts/automation-engine-historical-learning.test.mjs"
       - "docs/HERMES_AUTOMATION_ENGINE_*.md"
       - ".github/workflows/automation-engine-contract.yml"
       - ".github/workflows/automation-engine-release.yml"
@@ -23,4 +24,6 @@ jobs:
         with:
           node-version: "22"
       - name: Run automation engine contract
-        run: node scripts/automation-engine-contract.test.mjs
+        run: |
+          node scripts/automation-engine-contract.test.mjs
+          node scripts/automation-engine-historical-learning.test.mjs
