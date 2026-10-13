@@ -2,7 +2,6 @@ import {
   publishThreadsTextViaWindsor,
   readbackThreadsTextViaWindsor,
   windsorThreadsConfig,
-  WINDSOR_THREADS_DEFAULT_ACCOUNT_ID,
 } from "./windsor-threads.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
@@ -172,6 +171,11 @@ function timingSafeEqualText(left, right) {
   return mismatch === 0;
 }
 
+function authorized(request, env) {
+  const expected = clean(env.HERMES_AUTOMATION_TOKEN, 4096);
+  const supplied = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  return Boolean(expected && supplied && timingSafeEqualText(supplied, expected));
+}
 function chicagoParts(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: CHICAGO_TZ,
@@ -501,20 +505,16 @@ export default {
         normal_loop_requires_chatgpt_task: false,
         generation_mode: "deterministic_templates",
         provider_transport: "windsor_connectors_api",
-        provider_account: clean(env.WINDSOR_THREADS_ACCOUNT_ID || WINDSOR_THREADS_DEFAULT_ACCOUNT_ID, 160),
         provider_configured: Boolean(windsorThreadsConfig(env)),
         publication_enabled: publicationEnabled(env),
       });
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       return json(200, { success: true, ...(await health(env.DB)) });
     }
     if (request.method === "POST" && url.pathname === "/v1/tick") {
-      const expected = clean(env.HERMES_AUTOMATION_TOKEN, 4096);
-      const supplied = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-      if (!expected || !supplied || !timingSafeEqualText(supplied, expected)) {
-        return json(401, { success: false, error: "unauthorized" });
-      }
+      if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
       const slotKey = clean(body?.slot_key, 32) || chicagoSlotKey(new Date());
