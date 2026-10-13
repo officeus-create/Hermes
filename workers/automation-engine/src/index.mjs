@@ -343,6 +343,9 @@ async function enqueueDueReadbacks(env, limit = 20) {
   if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
   await ensureSchema(env.DB);
   const now = new Date().toISOString();
+  const stalePublishingCutoff = addSecondsIso(now, -10 * 60);
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',next_readback_at=?,last_error_class='stale_publish_requires_readback',updated_at=? WHERE status='publishing' AND updated_at<=?")
+    .bind(now, now, stalePublishingCutoff).run();
   const rows = await env.DB.prepare("SELECT content_id FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending' AND next_readback_at IS NOT NULL AND next_readback_at<=? ORDER BY next_readback_at ASC LIMIT ?")
     .bind(now, Math.max(1, Math.min(50, Number(limit) || 20))).all();
   let queued = 0;
