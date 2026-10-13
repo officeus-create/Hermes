@@ -475,8 +475,26 @@ async function processReadbackMessage(env, message) {
   return { status: "readback_unverified", error_class: errorClass };
 }
 
-async function health(db) {
-  if (!db) return { database: "missing" };
+async function queueHealth(queue) {
+  if (!queue || typeof queue.metrics !== "function") return { status: "unavailable" };
+  try {
+    const metrics = await queue.metrics();
+    return {
+      status: "ok",
+      backlog_count: Number(metrics?.backlogCount || 0),
+      backlog_bytes: Number(metrics?.backlogBytes || 0),
+      oldest_message_at: metrics?.oldestMessageTimestamp
+        ? new Date(metrics.oldestMessageTimestamp).toISOString()
+        : null,
+    };
+  } catch {
+    return { status: "metrics_unavailable" };
+  }
+}
+
+async function health(env) {
+  const db = env?.DB;
+  if (!db) return { database: "missing", queue: { status: "unavailable" } };
   await ensureSchema(db);
   const ready = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_content WHERE state='ready'").first();
   const unknown = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='unknown_outcome'").first();
@@ -496,6 +514,7 @@ async function health(db) {
     failed_publications: Number(failed?.count || 0),
     pending_readbacks: Number(pendingReadback?.count || 0),
     unverified_readbacks: Number(unverifiedReadback?.count || 0),
+    queue: await queueHealth(env?.AUTOMATION_QUEUE),
     last_run: last || null,
   };
 }
@@ -556,14 +575,20 @@ export default {
     }
     if (request.method === "GET" && url.pathname === "/v1/health") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
-      return json(200, { success: true, ...(await health(env.DB)) });
+      return json(200, { success: true, ...(await health(env)) });
     }
     if (request.method === "POST" && url.pathname === "/v1/tick") {
       if (!authorized(request, env)) return json(401, { success: false, error: "unauthorized" });
       if (!env.DB || !env.AUTOMATION_QUEUE) return json(503, { success: false, error: "runtime_not_configured" });
       const body = await request.json().catch(() => ({}));
-      const slotKey = clean(body?.slot_key, 32) || chicagoSlotKey(new Date());
+      const now = new Date();
+      const currentSlotKey = chicagoSlotKey(now);
+      const slotKey = clean(body?.slot_key, 32) || currentSlotKey;
       if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) return json(400, { success: false, error: "slot_key_invalid" });
+      if (publicationEnabled(env)) {
+        if (!isEligibleChicagoSlot(now)) return json(409, { success: false, error: "live_outside_publish_window" });
+        if (slotKey !== currentSlotKey) return json(409, { success: false, error: "live_slot_override_forbidden" });
+      }
       await ensureSchema(env.DB);
       const inserted = await reserveRun(env.DB, slotKey, "manual");
       if (!inserted) return json(200, { success: true, duplicate: true, slot_key: slotKey });
