@@ -1,0 +1,216 @@
+name: Hermes Automation Engine Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Safe HAE operation
+        required: true
+        default: verify
+        type: choice
+        options:
+          - verify
+          - provision_dry_run
+      target_sha:
+        description: Exact current main SHA
+        required: true
+        type: string
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hermes-automation-engine-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.issue.number == 1018 &&
+        github.actor == 'officeus-create' &&
+        (
+          startsWith(github.event.comment.body, 'HAE_VERIFY ') ||
+          startsWith(github.event.comment.body, 'HAE_PROVISION_DRY_RUN ')
+        )
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_READ_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+    steps:
+      - name: Resolve explicit owner request
+        id: request
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_OPERATION: ${{ inputs.operation }}
+          DISPATCH_SHA: ${{ inputs.target_sha }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            case "$DISPATCH_OPERATION" in
+              verify) OPERATION="verify" ;;
+              provision_dry_run) OPERATION="provision_dry_run" ;;
+              *) echo "unsupported_operation"; exit 1 ;;
+            esac
+            TARGET_SHA="$DISPATCH_SHA"
+          else
+            COMMAND="$(awk '{print $1}' <<<"$COMMENT_BODY")"
+            TARGET_SHA="$(awk '{print $2}' <<<"$COMMENT_BODY")"
+            case "$COMMAND" in
+              HAE_VERIFY) OPERATION="verify" ;;
+              HAE_PROVISION_DRY_RUN) OPERATION="provision_dry_run" ;;
+              *) echo "unsupported_comment_command"; exit 1 ;;
+            esac
+          fi
+          if [[ ! "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "invalid_target_sha"
+            exit 1
+          fi
+          echo "operation=$OPERATION" >> "$GITHUB_OUTPUT"
+          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Verify exact current main
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.request.outputs.target_sha }}
+        run: |
+          set -euo pipefail
+          CURRENT_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          if [[ "$CURRENT_MAIN" != "$TARGET_SHA" ]]; then
+            echo "stale_main target=$TARGET_SHA current=$CURRENT_MAIN"
+            exit 1
+          fi
+
+      - name: Check out exact main
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.request.outputs.target_sha }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate HAE source contract
+        run: node scripts/automation-engine-contract.test.mjs
+
+      - name: Validate Cloudflare release credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in CLOUDFLARE_PAGES_API_TOKEN CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "missing_$name"
+              missing=1
+            fi
+          done
+          test "$missing" -eq 0
+          echo "::add-mask::$CLOUDFLARE_PAGES_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Discover canonical Hermes Connect production D1
+        id: d1
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="${RUNNER_TEMP}/hermes-pages.json"
+          http="$(curl -sS -o "$tmp" -w '%{http_code}'             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/hermes"             -H "Authorization: Bearer ${CLOUDFLARE_PAGES_API_TOKEN}"             -H 'Content-Type: application/json')"
+          if [[ "$http" != "200" ]]; then
+            echo "blocked_cloudflare_pages_read http=$http"
+            exit 1
+          fi
+          DB_ID="$(jq -r '.result.deployment_configs.production.d1_databases.DB.id // empty' "$tmp")"
+          DB_NAME="$(jq -r '.result.deployment_configs.production.d1_databases.DB.database_name // .result.deployment_configs.production.d1_databases.DB.name // empty' "$tmp")"
+          rm -f "$tmp"
+          if [[ -z "$DB_ID" || "$DB_ID" == "null" ]]; then
+            echo "production_db_binding_missing"
+            exit 1
+          fi
+          echo "::add-mask::$DB_ID"
+          echo "database_id=$DB_ID" >> "$GITHUB_OUTPUT"
+          echo "database_name=${DB_NAME:-hermes-connect-prototype}" >> "$GITHUB_OUTPUT"
+
+      - name: Inspect or provision canonical HAE queues
+        id: queues
+        shell: bash
+        env:
+          OPERATION: ${{ steps.request.outputs.operation }}
+        run: |
+          set -euo pipefail
+          list_queues() {
+            npx --yes wrangler@4 queues list --json
+          }
+          QUEUES_JSON="$(list_queues)"
+          has_queue() {
+            local name="$1"
+            QUEUES_JSON="$QUEUES_JSON" NAME="$name" node --input-type=module - <<'NODE'
+          const body = JSON.parse(process.env.QUEUES_JSON || "[]");
+          const rows = Array.isArray(body) ? body : Array.isArray(body?.result) ? body.result : [];
+          process.exit(rows.some((row) => String(row?.queue_name || row?.name || "") === process.env.NAME) ? 0 : 1);
+          NODE
+          }
+          ensure_queue() {
+            local name="$1"
+            if has_queue "$name"; then
+              echo "reuse_queue=$name"
+              return
+            fi
+            if [[ "$OPERATION" != "provision_dry_run" ]]; then
+              echo "missing_queue=$name"
+              exit 1
+            fi
+            npx --yes wrangler@4 queues create "$name"
+            QUEUES_JSON="$(list_queues)"
+            has_queue "$name"
+          }
+          ensure_queue "hermes-automation"
+          ensure_queue "hermes-automation-dlq"
+
+      - name: Render non-versioned production config
+        shell: bash
+        env:
+          DB_ID: ${{ steps.d1.outputs.database_id }}
+          DB_NAME: ${{ steps.d1.outputs.database_name }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import fs from "node:fs";
+          const path = "workers/automation-engine/wrangler.production.generated.jsonc";
+          let config = fs.readFileSync("workers/automation-engine/wrangler.jsonc.example", "utf8");
+          config = config
+            .replace("DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING", process.env.DB_ID)
+            .replace('"database_name": "hermes-connect-prototype"', `"database_name": "${process.env.DB_NAME || "hermes-connect-prototype"}"`);
+          fs.writeFileSync(path, config);
+          NODE
+
+      - name: Validate composed Worker package
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/automation-engine/wrangler.production.generated.jsonc --outdir "${RUNNER_TEMP}/hae-dry-run"
+
+      - name: Deploy HAE in fail-closed dry-run mode
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        run: npx --yes wrangler@4 deploy --config workers/automation-engine/wrangler.production.generated.jsonc
+
+      - name: Verify deployed Worker inventory
+        if: steps.request.outputs.operation == 'provision_dry_run'
+        run: npx --yes wrangler@4 deployments list --config workers/automation-engine/wrangler.production.generated.jsonc
+
+      - name: Remove generated config
+        if: always()
+        run: rm -f workers/automation-engine/wrangler.production.generated.jsonc
