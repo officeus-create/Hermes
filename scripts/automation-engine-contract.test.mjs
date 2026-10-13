@@ -95,6 +95,7 @@ assert.match(worker, /if \(typeof value !== "string"\) return null;/, "Metric no
 assert.match(worker, /const normalized = value\.trim\(\);/, "Metric normalization must trim strings before numeric parsing");
 assert.doesNotMatch(worker, /const parsed = Number\(value\);/, "Metric normalization must not use broad Number(value) coercion");
 assert.doesNotMatch(worker, /Number\(metrics\?\.backlogCount \|\| 0\)/, "Queue metrics must never coerce UNKNOWN backlog to zero");
+assert.match(worker, /status: backlogCount === null \|\| backlogBytes === null \? "partial_unknown" : "ok"/, "Queue health must not label incomplete backlog metrics as OK");
 assert.match(worker, /AUTOMATION_DLQ/, "Private health must inspect the dead-letter queue separately");
 assert.match(worker, /plan_enqueue_failures/, "Private health must surface lost-plan recovery pressure");
 assert.match(worker, /hermes_automation_heartbeats/, "Cron wakes must have a durable heartbeat table including quiet-window wakes");
