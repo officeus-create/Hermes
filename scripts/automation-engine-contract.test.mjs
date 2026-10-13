@@ -99,6 +99,8 @@ assert.match(worker, /heartbeat:cron:\$\{scheduledIso\.slice\(0, 13\)\}Z/, "Cron
 assert.match(worker, /controller\?\.scheduledTime/, "Cron slot identity must derive from Cloudflare ScheduledController scheduledTime rather than wall-clock execution time");
 assert.match(worker, /rawScheduledTime === null[\s\S]*observedAt/, "Missing ScheduledController time must fall back to observed time without coercing null to epoch zero");
 assert.match(worker, /execution_lag_ms/, "Heartbeat evidence must preserve cron execution lag separately from scheduled time");
+assert.match(worker, /cron_expression TEXT/, "Heartbeat evidence must preserve the exact cron expression that invoked the Worker");
+assert.match(worker, /controller\?\.cron/, "Scheduled handler must pass Cloudflare controller.cron into durable heartbeat evidence");
 assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failure must be observable without blocking the current slot");
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
 assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
