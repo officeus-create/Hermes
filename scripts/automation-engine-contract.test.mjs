@@ -73,6 +73,7 @@ assert.doesNotMatch(worker, /provider_account:/, "Public capabilities must not e
 assert.match(worker, /publication\.readback/, "Worker must schedule delayed provider readback");
 assert.match(worker, /enqueueDueReadbacks/, "Cron must recover provider-accepted posts whose readback queue message was lost");
 assert.match(worker, /readback_enqueue_failed/, "Queue scheduling failure must be persisted without replaying the provider write");
+assert.match(worker, /stale_publish_requires_readback/, "Stale publishing state must recover by readback instead of a second provider write");
 assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D1");
 assert.match(worker, /delaySeconds: 4200/, "First Windsor readback must be delayed past the one-hour refresh boundary");
 assert.match(windsorAdapter, /connectors\.windsor\.ai/, "Pilot must use the Windsor Connectors API directly");
@@ -129,6 +130,10 @@ try {
   assert.equal(actionBody.account, "28419597014385166");
   assert.equal(actionBody.action, "create_text_post");
   assert.equal(actionBody.params.text, "carrier test body");
+
+  const multiline = await publishThreadsTextViaWindsor({ WINDSOR_API_KEY: "synthetic-key" }, "Hook\n\nUseful point\n\nQuestion?");
+  assert.equal(multiline.ok, true);
+  assert.equal(actionBody.params.text, "Hook\n\nUseful point\n\nQuestion?");
 
   const readback = await readbackThreadsTextViaWindsor({ WINDSOR_API_KEY: "synthetic-key" }, "carrier test body");
   assert.equal(readback.ok, true);
