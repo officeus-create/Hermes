@@ -11,8 +11,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "hermes-automation",
-      "database_id": "REPLACE_WITH_REVIEWED_D1_DATABASE_ID"
+      "database_name": "hermes-connect-prototype",
+      "database_id": "DISCOVER_FROM_HERMES_PAGES_PRODUCTION_DB_BINDING"
     }
   ],
   "queues": {
@@ -40,6 +40,10 @@
 }
 
 // REVIEWED EXAMPLE ONLY. Do not treat this file as deployed production state.
+// HAE reuses the canonical Hermes Connect production D1 bound as DB on the
+// existing `hermes` Pages project. Never create a second HAE database.
+// Production deployment must discover that binding ID from authenticated
+// Cloudflare Pages project state; the ID is intentionally not versioned here.
 //
 // Required secrets before any live canary:
 //   HERMES_AUTOMATION_TOKEN
