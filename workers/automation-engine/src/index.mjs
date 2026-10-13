@@ -1325,7 +1325,7 @@ async function health(env) {
   const lastFailure = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
     FROM hermes_automation_runs
-    WHERE account_key=? AND platform=? AND status IN ('plan_enqueue_failed','unknown_outcome_unresolved','readback_unverified')
+    WHERE account_key=? AND platform=? AND status IN ('plan_enqueue_failed','failed','unknown_outcome_unresolved','readback_unverified')
     ORDER BY updated_at DESC
     LIMIT 1
   `).bind(ACCOUNT_KEY, PLATFORM).first();
