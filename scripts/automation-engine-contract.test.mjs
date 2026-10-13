@@ -272,8 +272,10 @@ assert.match(worker, /Duplicate recovery messages[\s\S]*D1 state transition is t
 assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
 assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
 assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
-assert.match(worker, /Number\.isFinite\(rawPriority\)/, "Generic job numeric inputs must fail to safe defaults instead of persisting NaN");
-assert.match(worker, /Number\.isFinite\(rawMaxAttempts\)/, "Generic job retry bounds must reject non-finite input");
+assert.match(worker, /const rawPriority = metricNumberOrNull\(input\?\.priority\)/, "Generic job priority must use strict number/string normalization");
+assert.match(worker, /const rawMaxAttempts = metricNumberOrNull\(input\?\.max_attempts\)/, "Generic job retry bounds must use strict number/string normalization");
+assert.match(worker, /const priority = rawPriority === null \? 50/, "Invalid generic job priority types must fall back safely instead of coercing booleans");
+assert.match(worker, /const maxAttempts = rawMaxAttempts === null \? 3/, "Invalid generic job retry types must fall back safely instead of coercing booleans");
 assert.match(worker, /decodeURIComponent[\s\S]*job_id_invalid/, "Malformed encoded job IDs must fail closed as a 400-class input error");
 
 const originalFetch = globalThis.fetch;
