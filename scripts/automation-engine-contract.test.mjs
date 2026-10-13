@@ -83,6 +83,11 @@ assert.match(worker, /next_readback_at/, "Readback recovery must be durable in D
 assert.match(worker, /variant_key TEXT NOT NULL/, "Content state must persist semantic variant identity");
 assert.match(worker, /created_at>=\?/, "Content planner must suppress recent semantic variants");
 assert.match(worker, /variantIndex < 32/, "Planner must search bounded alternatives rather than loop without limit");
+assert.match(worker, /loadOrCreateCarrierCandidate/, "A retried slot must reuse the exact persisted candidate body");
+assert.match(worker, /candidate_persistence_failed/, "Planner must fail closed if the winning D1 candidate cannot be read back");
+assert.match(worker, /recoverPendingPlanRuns/, "Lost content-plan queue writes must be recoverable from durable run state");
+assert.match(worker, /plan_enqueue_failed/, "Plan enqueue failure must stay explicit and recoverable");
+assert.match(worker, /status IN \('queued','plan_enqueue_failed'\)/, "Recovery must not replay completed or provider-side-effect states");
 assert.match(worker, /new TextEncoder\(\)\.encode\(body\)\.byteLength/, "Threads limit must be enforced in UTF-8 bytes");
 assert.match(worker, /delaySeconds: 4200/, "First Windsor readback must be delayed past the one-hour refresh boundary");
 assert.match(windsorAdapter, /connectors\.windsor\.ai/, "Pilot must use the Windsor Connectors API directly");
