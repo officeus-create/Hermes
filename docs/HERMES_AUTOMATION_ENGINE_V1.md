@@ -182,7 +182,7 @@ Readback recovery is also durable. The next readback time and attempt count live
 
 `GET /v1/health` — **private bearer token required**
 - exact deployed source SHA when release metadata is configured;
-- current automation mode and effective publication gate;
+- current automation mode, raw publication configuration, and effective publication gate;
 - ready-content count;
 - unknown provider outcomes;
 - failed publications;
