@@ -42,9 +42,9 @@ D1 reservations / content state / publication state
    ↓
 deterministic carrier renderer
    ↓
-optional provider gateway
+Windsor Connectors API (Threads write action)
    ↓
-provider post ID + permalink readback
+delayed Windsor readback → provider post ID + permalink
 ```
 
 Normal loop:
@@ -131,31 +131,29 @@ HERMES_AUTOMATION_MODE=dry_run
 HERMES_AUTOMATION_PUBLISH=disabled
 ```
 
-Live publication requires both switches plus a reviewed provider gateway and secret.
+Live publication requires both switches plus the private Worker secret `WINDSOR_API_KEY`.
 
-The provider gateway contract is intentionally small:
+Authenticated connector readback on 2026-10-13 confirmed the existing Hermes Logistics Windsor connection:
+- Threads account id `28419597014385166`;
+- account name `Hermes Logistics (hermes.logistics)`;
+- write actions `create_text_post`, `create_image_post`, `create_reply`.
 
-Request:
+Windsor's public Connectors API documents direct software execution through:
 
-```json
-{
-  "account_key": "hermes_logistics",
-  "platform": "threads",
-  "text": "...",
-  "idempotency_key": "..."
-}
-```
+`POST https://connectors.windsor.ai/threads/actions`
 
-Successful response:
+with `account`, `action` and `params`. Authentication is currently query-parameter based. Therefore:
+- `WINDSOR_API_KEY` is a Worker secret only;
+- the constructed provider URL must never be logged or persisted;
+- the key never appears in D1, health payloads, GitHub, or browser code.
 
-```json
-{
-  "provider_post_id": "...",
-  "permalink": "https://..."
-}
-```
+The documented write-action response is an acceptance/result string, not a guaranteed post-id receipt. HAE therefore does **not** mark the post verified immediately. It records `provider_accepted_readback_pending`, waits past the documented hourly refresh boundary, then reads `post_id,post_text,post_permalink,post_timestamp` from the same Windsor Threads account and matches the exact slot-unique post body.
 
-The gateway is where the currently authorized Threads transport will be attached. Do not create a duplicate social provider merely to satisfy this interface.
+Readback sequence:
+
+`RESERVE → WINDSOR WRITE ONCE → ACCEPTED_PENDING → DELAY → EXACT BODY READBACK → PUBLISHED_VERIFIED`
+
+If the provider write has an ambiguous network/5xx outcome, HAE records `unknown_outcome` and never republishes blindly.
 
 ## Health
 
@@ -166,10 +164,12 @@ The gateway is where the currently authorized Threads transport will be attached
 - whether publication is enabled;
 - explicit confirmation that normal runtime does not require a ChatGPT Scheduled Task.
 
-`GET /v1/health`
+`GET /v1/health` — **private bearer token required**
 - ready-content count;
 - unknown provider outcomes;
 - failed publications;
+- pending provider readbacks;
+- unverified readbacks;
 - last run state.
 
 `POST /v1/tick`
@@ -193,8 +193,8 @@ The runtime must remain useful when every model endpoint is unavailable.
 ## Next slices
 
 ### V1.1 — provider transport
-Attach the already-authorized Hermes Threads transport behind the provider gateway. Prove:
-`reserve → one provider call → media ID → permalink readback`.
+**SOURCE IMPLEMENTED:** direct Windsor Connectors API transport plus delayed exact-body readback. Remaining proof is runtime configuration + one bounded owner-authorized canary:
+`reserve → Windsor create_text_post once → accepted_pending → delayed readback → media ID + permalink`.
 
 ### V1.2 — inbound/replies
 Add owned-post reply events:
