@@ -105,6 +105,7 @@ assert.match(worker, /cron\.heartbeat_write_failed/, "Heartbeat telemetry failur
 assert.match(worker, /last_cron_wake/, "Private health must distinguish last cron wake from last updated run");
 assert.match(worker, /last_success/, "Private health must expose the last successful HAE run separately");
 assert.match(worker, /last_failure/, "Private health must expose the last failed HAE run separately");
+assert.match(worker, /status IN \('plan_enqueue_failed','failed','unknown_outcome_unresolved','readback_unverified'\)/, "Private health last_failure must include terminal failed provider runs");
 assert.match(worker, /source_sha/, "Private health must expose the exact deployed source SHA when release metadata is configured");
 assert.match(worker, /automation_mode/, "Private health must expose the current automation mode");
 assert.match(worker, /publication_enabled/, "Private health must expose the effective publication gate");
