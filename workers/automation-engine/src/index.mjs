@@ -429,13 +429,79 @@ async function selectFreshCarrierCandidate(db, slotKey) {
   throw new Error("no_fresh_carrier_variant_available");
 }
 
+async function getPersistedCandidateBySlot(db, slotKey) {
+  const row = await db.prepare(
+    "SELECT content_id,account_key,platform,slot_key,template_id,variant_key,destination_url,body FROM hermes_automation_content WHERE slot_key=? LIMIT 1"
+  ).bind(slotKey).first();
+  if (!row) return null;
+  return {
+    content_id: String(row.content_id),
+    account_key: String(row.account_key),
+    platform: String(row.platform),
+    slot_key: String(row.slot_key),
+    template_id: String(row.template_id),
+    variant_key: String(row.variant_key),
+    destination_url: String(row.destination_url),
+    body: String(row.body),
+    bytes: new TextEncoder().encode(String(row.body)).byteLength,
+    idempotency_key: `hae:${row.account_key}:${row.platform}:${row.slot_key}`,
+  };
+}
+
+async function loadOrCreateCarrierCandidate(db, slotKey) {
+  const existing = await getPersistedCandidateBySlot(db, slotKey);
+  if (existing) return existing;
+  const selected = await selectFreshCarrierCandidate(db, slotKey);
+  await insertCandidate(db, selected);
+  // Read back the persisted row. If another consumer raced us, this guarantees
+  // every retry/provider reservation uses the exact body that won the D1 slot.
+  const persisted = await getPersistedCandidateBySlot(db, slotKey);
+  if (!persisted) throw new Error("candidate_persistence_failed");
+  return persisted;
+}
+
+async function enqueuePlanRun(env, slotKey) {
+  const now = new Date().toISOString();
+  try {
+    await env.AUTOMATION_QUEUE.send({
+      type: "content.plan",
+      account_key: ACCOUNT_KEY,
+      platform: PLATFORM,
+      slot_key: slotKey,
+    });
+    await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='plan_enqueued',last_error_class=NULL,updated_at=? WHERE slot_key=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, slotKey).run();
+    return true;
+  } catch {
+    await env.DB.prepare(
+      "UPDATE hermes_automation_runs SET status='plan_enqueue_failed',last_error_class='plan_enqueue_failed',updated_at=? WHERE slot_key=? AND status IN ('queued','plan_enqueue_failed')"
+    ).bind(now, slotKey).run();
+    return false;
+  }
+}
+
+async function recoverPendingPlanRuns(env, limit = 20) {
+  if (!env.DB || !env.AUTOMATION_QUEUE) return 0;
+  await ensureSchema(env.DB);
+  const rows = await env.DB.prepare(
+    "SELECT slot_key FROM hermes_automation_runs WHERE status IN ('queued','plan_enqueue_failed') ORDER BY created_at ASC LIMIT ?"
+  ).bind(Math.max(1, Math.min(50, Number(limit) || 20))).all();
+  let recovered = 0;
+  for (const row of rows?.results || []) {
+    const slotKey = clean(row?.slot_key, 32);
+    if (!slotKey) continue;
+    if (await enqueuePlanRun(env, slotKey)) recovered += 1;
+  }
+  return recovered;
+}
+
 async function processPlanMessage(env, message) {
   if (!env.DB) throw new Error("database_not_configured");
   await ensureSchema(env.DB);
   const slotKey = clean(message?.slot_key, 32);
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}$/.test(slotKey)) throw new Error("slot_key_invalid");
-  const candidate = await selectFreshCarrierCandidate(env.DB, slotKey);
-  await insertCandidate(env.DB, candidate);
+  const candidate = await loadOrCreateCarrierCandidate(env.DB, slotKey);
 
   if (!publicationEnabled(env)) {
     await env.DB.prepare("UPDATE hermes_automation_runs SET status='dry_run_ready',updated_at=? WHERE slot_key=?")
@@ -587,17 +653,13 @@ export default {
     if (!env.DB || !env.AUTOMATION_QUEUE) return;
     const now = new Date();
     await enqueueDueReadbacks(env);
+    await recoverPendingPlanRuns(env);
     if (!isEligibleChicagoSlot(now)) return;
     const slotKey = chicagoSlotKey(now);
     await ensureSchema(env.DB);
     const inserted = await reserveRun(env.DB, slotKey, "cron");
     if (!inserted) return;
-    ctx.waitUntil(env.AUTOMATION_QUEUE.send({
-      type: "content.plan",
-      account_key: ACCOUNT_KEY,
-      platform: PLATFORM,
-      slot_key: slotKey,
-    }));
+    ctx.waitUntil(enqueuePlanRun(env, slotKey));
   },
 
   async queue(batch, env) {
@@ -655,8 +717,14 @@ export default {
       await ensureSchema(env.DB);
       const inserted = await reserveRun(env.DB, slotKey, "manual");
       if (!inserted) return json(200, { success: true, duplicate: true, slot_key: slotKey });
-      await env.AUTOMATION_QUEUE.send({ type: "content.plan", account_key: ACCOUNT_KEY, platform: PLATFORM, slot_key: slotKey });
-      return json(202, { success: true, queued: true, slot_key: slotKey });
+      const queued = await enqueuePlanRun(env, slotKey);
+      return json(queued ? 202 : 503, {
+        success: queued,
+        queued,
+        recoverable: !queued,
+        error: queued ? undefined : "plan_enqueue_failed",
+        slot_key: slotKey,
+      });
     }
     return json(404, { success: false, error: "not_found" });
   },
