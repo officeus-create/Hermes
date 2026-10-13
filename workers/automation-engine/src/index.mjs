@@ -1156,9 +1156,14 @@ async function processPlanMessage(env, message) {
 
   const claimed = await claimPublicationForProvider(env.DB, candidate);
   if (!claimed) {
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='duplicate_suppressed',updated_at=? WHERE id=?")
-      .bind(new Date().toISOString(), runIdForSlot(slotKey)).run();
-    return { status: "duplicate_suppressed", candidate };
+    const existingPublication = await env.DB.prepare(
+      "SELECT status FROM hermes_automation_publications WHERE idempotency_key=? AND account_key=? AND platform=? LIMIT 1"
+    ).bind(candidate.idempotency_key, candidate.account_key, candidate.platform).first();
+    return {
+      status: "duplicate_suppressed",
+      candidate,
+      existing_publication_status: clean(existingPublication?.status, 80) || null,
+    };
   }
 
   const published = await publishThreadsTextViaWindsor(env, candidate.body);
