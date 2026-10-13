@@ -171,6 +171,9 @@ assert.match(worker, /job\.retry_scheduled/, "Generic failures must persist a re
 assert.match(worker, /generic_jobs_by_state/, "Private health must expose generic job backlog by state");
 assert.match(worker, /coverage_runtime_status/, "Historical coverage audit must report runtime coverage status");
 assert.match(worker, /complete: false/, "Coverage audit must fail closed until real ingested coverage proves completeness");
+assert.match(worker, /Number\.isFinite\(rawPriority\)/, "Generic job numeric inputs must fail to safe defaults instead of persisting NaN");
+assert.match(worker, /Number\.isFinite\(rawMaxAttempts\)/, "Generic job retry bounds must reject non-finite input");
+assert.match(worker, /decodeURIComponent[\s\S]*job_id_invalid/, "Malformed encoded job IDs must fail closed as a 400-class input error");
 
 const originalFetch = globalThis.fetch;
 try {
