@@ -3,6 +3,10 @@ import {
   readbackThreadsTextViaWindsor,
   windsorThreadsConfig,
 } from "./windsor-threads.mjs";
+import {
+  HISTORICAL_READ_ONLY_JOB_TYPES,
+  runHistoricalLearningPrimitive,
+} from "./historical-learning.mjs";
 
 const ACCOUNT_KEY = "hermes_logistics";
 const PLATFORM = "threads";
@@ -358,6 +362,7 @@ function runIdForSlot(slotKey) {
 const READ_ONLY_GENERIC_JOB_TYPES = new Set([
   "system.health.snapshot",
   "history.coverage.audit",
+  ...HISTORICAL_READ_ONLY_JOB_TYPES,
 ]);
 
 function genericJobEventId(jobId, eventType) {
@@ -498,9 +503,13 @@ async function createGenericJob(env, input) {
   if (!READ_ONLY_GENERIC_JOB_TYPES.has(jobType)) throw new Error("job_type_not_allowed");
   if (!businessLane) throw new Error("business_lane_required");
   if (!idempotencyKey) throw new Error("idempotency_key_required");
+  const payload = input?.payload ?? {};
+  if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(jobType)) {
+    runHistoricalLearningPrimitive(jobType, payload);
+  }
   let payloadJson = "{}";
   try {
-    payloadJson = JSON.stringify(input?.payload ?? {});
+    payloadJson = JSON.stringify(payload);
   } catch {
     throw new Error("payload_not_serializable");
   }
@@ -587,6 +596,18 @@ async function createGenericJob(env, input) {
 }
 
 async function runReadOnlyGenericCapability(env, job) {
+  if (HISTORICAL_READ_ONLY_JOB_TYPES.includes(job.job_type)) {
+    let payload = {};
+    try {
+      payload = JSON.parse(String(job.payload_json || "{}"));
+    } catch {
+      throw new Error("generic_job_payload_invalid");
+    }
+    return {
+      observed_at: new Date().toISOString(),
+      ...runHistoricalLearningPrimitive(job.job_type, payload),
+    };
+  }
   if (job.job_type === "system.health.snapshot") {
     return {
       capability: job.job_type,
@@ -1268,7 +1289,7 @@ export default {
         const code = clean(error?.message, 160) || "job_create_failed";
         const status = code === "idempotency_key_conflict"
           ? 409
-          : ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
+          : code.startsWith("historical_") || ["job_type_not_allowed", "business_lane_required", "idempotency_key_required", "payload_not_serializable", "payload_too_large"].includes(code) ? 400 : 500;
         return json(status, { success: false, error: code });
       }
     }
