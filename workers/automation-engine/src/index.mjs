@@ -294,6 +294,8 @@ async function ensureSchema(db) {
     CREATE TABLE IF NOT EXISTS hermes_automation_publications (
       idempotency_key TEXT PRIMARY KEY,
       content_id TEXT NOT NULL UNIQUE,
+      account_key TEXT NOT NULL,
+      platform TEXT NOT NULL,
       status TEXT NOT NULL,
       attempt_count INTEGER NOT NULL DEFAULT 0,
       readback_attempt INTEGER NOT NULL DEFAULT 0,
@@ -388,9 +390,9 @@ async function reservePublication(db, candidate) {
   const now = new Date().toISOString();
   const result = await db.prepare(`
     INSERT OR IGNORE INTO hermes_automation_publications
-      (idempotency_key, content_id, status, attempt_count, created_at, updated_at)
-    VALUES (?, ?, 'reserved', 0, ?, ?)
-  `).bind(candidate.idempotency_key, candidate.content_id, now, now).run();
+      (idempotency_key, content_id, account_key, platform, status, attempt_count, created_at, updated_at)
+    VALUES (?, ?, ?, ?, 'reserved', 0, ?, ?)
+  `).bind(candidate.idempotency_key, candidate.content_id, candidate.account_key, candidate.platform, now, now).run();
   return Number(result?.meta?.changes || 0) === 1;
 }
 
@@ -409,10 +411,10 @@ async function enqueueDueReadbacks(env, limit = 20) {
   await ensureSchema(env.DB);
   const now = new Date().toISOString();
   const stalePublishingCutoff = addSecondsIso(now, -10 * 60);
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',next_readback_at=?,last_error_class='stale_publish_requires_readback',updated_at=? WHERE status='publishing' AND updated_at<=?")
-    .bind(now, now, stalePublishingCutoff).run();
-  const rows = await env.DB.prepare("SELECT content_id FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending' AND next_readback_at IS NOT NULL AND next_readback_at<=? ORDER BY next_readback_at ASC LIMIT ?")
-    .bind(now, Math.max(1, Math.min(50, Number(limit) || 20))).all();
+  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',next_readback_at=?,last_error_class='stale_publish_requires_readback',updated_at=? WHERE account_key=? AND platform=? AND status='publishing' AND updated_at<=?")
+    .bind(now, now, ACCOUNT_KEY, PLATFORM, stalePublishingCutoff).run();
+  const rows = await env.DB.prepare("SELECT content_id FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='provider_accepted_readback_pending' AND next_readback_at IS NOT NULL AND next_readback_at<=? ORDER BY next_readback_at ASC LIMIT ?")
+    .bind(ACCOUNT_KEY, PLATFORM, now, Math.max(1, Math.min(50, Number(limit) || 20))).all();
   let queued = 0;
   for (const row of rows?.results || []) {
     const contentId = clean(row?.content_id, 240);
@@ -649,11 +651,11 @@ async function health(env) {
   const db = env?.DB;
   if (!db) return { database: "missing", queue: { status: "unavailable" } };
   await ensureSchema(db);
-  const ready = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_content WHERE state='ready'").first();
-  const unknown = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='unknown_outcome'").first();
-  const failed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='failed'").first();
-  const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='provider_accepted_readback_pending'").first();
-  const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE status='readback_unverified'").first();
+  const ready = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_content WHERE account_key=? AND platform=? AND state='ready'").bind(ACCOUNT_KEY, PLATFORM).first();
+  const unknown = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='unknown_outcome'").bind(ACCOUNT_KEY, PLATFORM).first();
+  const failed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='failed'").bind(ACCOUNT_KEY, PLATFORM).first();
+  const pendingReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='provider_accepted_readback_pending'").bind(ACCOUNT_KEY, PLATFORM).first();
+  const unverifiedReadback = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_publications WHERE account_key=? AND platform=? AND status='readback_unverified'").bind(ACCOUNT_KEY, PLATFORM).first();
   const planEnqueueFailed = await db.prepare("SELECT COUNT(*) AS count FROM hermes_automation_runs WHERE account_key=? AND platform=? AND status='plan_enqueue_failed'").bind(ACCOUNT_KEY, PLATFORM).first();
   const last = await db.prepare(`
     SELECT slot_key,status,updated_at,last_error_class
