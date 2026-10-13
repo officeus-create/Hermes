@@ -1209,12 +1209,14 @@ async function processPlanMessage(env, message) {
       // the post exists before asking a human to resolve the ambiguity.
       const status = "unknown_outcome_readback_pending";
       const nextReadbackAt = addSecondsIso(now, 4200);
-      await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=0,next_readback_at=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
-        .bind(status, nextReadbackAt, published.error_class, now, candidate.idempotency_key).run();
-      await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-        .bind(status, published.error_class, now, candidate.content_id).run();
-      await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-        .bind(status, published.error_class, now, runIdForSlot(slotKey)).run();
+      await env.DB.batch([
+        env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=0,next_readback_at=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
+          .bind(status, nextReadbackAt, published.error_class, now, candidate.idempotency_key),
+        env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+          .bind(status, published.error_class, now, candidate.content_id),
+        env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+          .bind(status, published.error_class, now, runIdForSlot(slotKey)),
+      ]);
       try {
         await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
       } catch {
@@ -1225,22 +1227,26 @@ async function processPlanMessage(env, message) {
     }
 
     const status = "failed";
-    await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
-      .bind(status, published.error_class, now, candidate.idempotency_key).run();
-    await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-      .bind(status, published.error_class, now, candidate.content_id).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-      .bind(status, published.error_class, now, runIdForSlot(slotKey)).run();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status=?,last_error_class=?,updated_at=? WHERE idempotency_key=?")
+        .bind(status, published.error_class, now, candidate.idempotency_key),
+      env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+        .bind(status, published.error_class, now, candidate.content_id),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+        .bind(status, published.error_class, now, runIdForSlot(slotKey)),
+    ]);
     return { status, candidate, error_class: published.error_class };
   }
 
   const nextReadbackAt = addSecondsIso(now, 4200);
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
-    .bind(nextReadbackAt, now, candidate.idempotency_key).run();
-  await env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
-    .bind(now, candidate.content_id).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE id=?")
-    .bind(now, runIdForSlot(slotKey)).run();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE hermes_automation_publications SET status='provider_accepted_readback_pending',readback_attempt=0,next_readback_at=?,updated_at=? WHERE idempotency_key=?")
+      .bind(nextReadbackAt, now, candidate.idempotency_key),
+    env.DB.prepare("UPDATE hermes_automation_content SET state='provider_accepted_readback_pending',updated_at=? WHERE content_id=?")
+      .bind(now, candidate.content_id),
+    env.DB.prepare("UPDATE hermes_automation_runs SET status='provider_accepted_readback_pending',updated_at=? WHERE id=?")
+      .bind(now, runIdForSlot(slotKey)),
+  ]);
 
   try {
     await env.AUTOMATION_QUEUE.send({ type: "publication.readback", content_id: candidate.content_id }, { delaySeconds: 4200 });
@@ -1276,12 +1282,14 @@ async function processReadbackMessage(env, message) {
   const readback = await readbackThreadsTextViaWindsor(env, String(row.body || ""));
   const now = new Date().toISOString();
   if (readback.ok && readback.found) {
-    await env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
-      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
-    await env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
-      .bind(readback.provider_post_id, readback.permalink || null, now, contentId).run();
-    await env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE id=?")
-      .bind(now, runIdForSlot(String(row.slot_key || ""))).run();
+    await env.DB.batch([
+      env.DB.prepare("UPDATE hermes_automation_publications SET status='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+        .bind(readback.provider_post_id, readback.permalink || null, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_content SET state='published_verified',provider_post_id=?,permalink=?,last_error_class=NULL,updated_at=? WHERE content_id=?")
+        .bind(readback.provider_post_id, readback.permalink || null, now, contentId),
+      env.DB.prepare("UPDATE hermes_automation_runs SET status='published_verified',last_error_class=NULL,updated_at=? WHERE id=?")
+        .bind(now, runIdForSlot(String(row.slot_key || ""))),
+    ]);
     return { status: "published_verified", provider_post_id: readback.provider_post_id, permalink: readback.permalink || null };
   }
 
@@ -1302,12 +1310,14 @@ async function processReadbackMessage(env, message) {
   const terminalStatus = pendingStatus === "unknown_outcome_readback_pending"
     ? "unknown_outcome_unresolved"
     : "readback_unverified";
-  await env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
-    .bind(terminalStatus, attempt, errorClass, now, contentId).run();
-  await env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
-    .bind(terminalStatus, errorClass, now, contentId).run();
-  await env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
-    .bind(terminalStatus, errorClass, now, runIdForSlot(String(row.slot_key || ""))).run();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE hermes_automation_publications SET status=?,readback_attempt=?,next_readback_at=NULL,last_error_class=?,updated_at=? WHERE content_id=?")
+      .bind(terminalStatus, attempt, errorClass, now, contentId),
+    env.DB.prepare("UPDATE hermes_automation_content SET state=?,last_error_class=?,updated_at=? WHERE content_id=?")
+      .bind(terminalStatus, errorClass, now, contentId),
+    env.DB.prepare("UPDATE hermes_automation_runs SET status=?,last_error_class=?,updated_at=? WHERE id=?")
+      .bind(terminalStatus, errorClass, now, runIdForSlot(String(row.slot_key || ""))),
+  ]);
   return { status: terminalStatus, error_class: errorClass };
 }
 
