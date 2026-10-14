@@ -383,3 +383,32 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   }, {}, { "MCP-Protocol-Version": "2025-06-18" });
   assert.equal(legacy.response.status, 200, "legacy 2025 mode stays compatible without modern headers");
 }
+
+{
+  // 2026-era clients must receive UnsupportedProtocolVersionError (-32022)
+  // rather than a generic header mismatch, so they can retry an advertised
+  // supported version. Unknown versions must never silently select legacy.
+  for (const version of ['2027-01-01', '2025-11-25', 'not-a-version']) {
+    const { response, json } = await call(
+      { jsonrpc: '2.0', id: 871, method: 'tools/list', params: {
+        _meta: { 'io.modelcontextprotocol/protocolVersion': version },
+      }},
+      {},
+      { 'MCP-Protocol-Version': version, 'Mcp-Method': 'tools/list' },
+    );
+    assert.equal(response.status, 400);
+    assert.equal(json.error.code, -32022);
+    assert.equal(json.error.message, 'Unsupported protocol version');
+    assert.deepEqual(json.error.data.supported, ['2026-07-28', '2025-06-18']);
+    assert.equal(json.error.data.requested, version);
+  }
+  // Header and body are both checked independently, not whichever appears
+  // first or whichever the server prefers.
+  const { json } = await call({
+    jsonrpc:'2.0',id:872,method:'tools/list',params:{
+      _meta:{'io.modelcontextprotocol/protocolVersion':'2027-01-01'}
+    }
+  }, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list'});
+  assert.equal(json.error.code, -32022);
+  assert.equal(json.error.data.requested, '2027-01-01');
+}
