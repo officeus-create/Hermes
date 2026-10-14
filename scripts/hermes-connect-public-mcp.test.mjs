@@ -565,6 +565,29 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(attempted.json.error.code,-32000);
   assert.match(attempted.json.error.message,/Write tool unavailable/);
   assert.equal(dbCalls,0,'direct calls must not reach D1 even if caller asserts consent');
+  // The same rejection must hold for a modern client that declares capabilities
+  // and claims user consent. Merely hiding the tool from tools/list is not a gate.
+  const attemptedModern = await call({
+    jsonrpc:'2.0',id:8931,method:'tools/call',params:{
+      name:'submit_product_feedback',
+      arguments:{
+        business_type:'repair shop',problem_class:'follow up',
+        desired_capability:'one reminder',outcome:'workflow_friction',
+        consent_to_product_learning:true,
+      },
+      _meta:{
+        'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+        'io.modelcontextprotocol/clientCapabilities':{},
+      },
+    }
+  },strict,{
+    'MCP-Protocol-Version':'2026-07-28',
+    'Mcp-Method':'tools/call',
+    'Mcp-Name':'submit_product_feedback',
+  });
+  assert.equal(attemptedModern.response.status,403);
+  assert.equal(attemptedModern.json.error.code,-32000);
+  assert.equal(dbCalls,0,'modern direct writes must not reach D1');
 
   const permitted = await call({
     jsonrpc:'2.0',id:894,method:'tools/call',params:{
