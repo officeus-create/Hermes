@@ -5,6 +5,9 @@ const crypto = read("functions/api/_lib/apple-oidc.mjs");
 const state = read("functions/api/_lib/federated-login.mjs");
 const start = read("functions/api/auth/apple/start.ts");
 const callback = read("functions/api/auth/apple/callback.ts");
+const hub = read("src/pages/services/hermes-connect/access/index.astro");
+const available = read("functions/api/auth/federation.ts");
+
 
 assert.match(crypto, /APPLE_LOGIN_ENABLED === "true"/);
 assert.match(crypto, /APPLE_SERVICES_ID/);
@@ -27,4 +30,13 @@ assert.match(callback, /verifyAppleIdentityToken/);
 assert.match(callback, /completeFederatedLogin/);
 assert.match(state, /used_at IS NULL AND expires_at >/);
 assert.match(state, /existing_account_signin_required/);
+assert.match(available, /githubConfig/);
+assert.match(available, /appleConfig/);
+assert.match(available, /"Cache-Control": "no-store"/);
+assert.match(hub, /data-access-federation hidden/);
+assert.match(hub, /data-federated="github"[^>]+hidden/);
+assert.match(hub, /data-federated="apple"[^>]+hidden/);
+assert.match(hub, /\/api\/auth\/federation/);
+assert.match(hub, /providers\?\.\[provider\]\?\.enabled !== true/);
+assert.match(hub, /if \(enabled\) panel\.hidden = false/);
 console.log("hermes-apple-auth-contract: disabled default, CSRF nonce, one-shot code, OIDC signature/claim verification and shared Hermes identity PASS");
