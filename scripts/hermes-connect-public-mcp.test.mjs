@@ -284,3 +284,35 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     assert.equal(json.error.code,-32020);
   }
 }
+
+{
+  // Do not trust Content-Length for public MCP body limits: enforce bytes.
+  const huge = new Request('https://hermeslogisticsus.com/api/hermes-connect/mcp', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      jsonrpc:'2.0', id:90, method:'tools/list',
+      params:{padding:'x'.repeat(70000)}
+    }),
+  });
+  const response = await onRequest({request:huge,env:{}});
+  assert.equal(response.status,413,'actual untrusted request bytes must be capped');
+}
+{
+  const encoded = new TextEncoder().encode('{"jsonrpc":"2.0","id":91,"method":"tools/list","params":{"padding":"' + 'A'.repeat(70000) + '"}}');
+  const chunked = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoded.subarray(0,32000));
+      controller.enqueue(encoded.subarray(32000));
+      controller.close();
+    }
+  });
+  const hugeChunked = new Request('https://hermeslogisticsus.com/api/hermes-connect/mcp', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:chunked,
+    duplex:'half',
+  });
+  const response = await onRequest({request:hugeChunked,env:{}});
+  assert.equal(response.status,413,'streamed bytes must be capped even with no declared length');
+}
