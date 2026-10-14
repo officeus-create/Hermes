@@ -56,8 +56,14 @@ export async function verifyAppleIdentityToken(token, servicesId, nonce) {
   const claims = jwt.claims;
   const now = Math.floor(Date.now() / 1000);
   const verifiedEmail = claims.email_verified === true || String(claims.email_verified).toLowerCase() === "true";
+  // JWT NumericDate claims are required integers. Number(undefined) is NaN,
+  // and NaN comparisons always return false: checking only exp <= now would
+  // otherwise accept a correctly signed token with no expiration.
+  const exp = claims.exp;
+  const iat = claims.iat;
+  if (!Number.isSafeInteger(exp) || !Number.isSafeInteger(iat) ||
+      exp <= now || iat > now + 60 || iat > exp) return null;
   if (claims.iss !== "https://appleid.apple.com" || claims.aud !== servicesId ||
-      claims.nonce !== nonce || !claims.sub || !claims.email || !verifiedEmail ||
-      Number(claims.exp) <= now || Number(claims.iat) > now + 60) return null;
+      claims.nonce !== nonce || !claims.sub || !claims.email || !verifiedEmail) return null;
   return { sub: String(claims.sub), email: String(claims.email) };
 }
