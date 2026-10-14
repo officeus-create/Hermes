@@ -66,7 +66,11 @@ export async function authorizeMcpTenantRead({ request, env, companyRef, workspa
     proof.exp > now &&
     proof.iat <= now + 60 &&
     proof.iat <= proof.exp &&
-    proof.exp - proof.iat <= 3600;
+    proof.exp - proof.iat <= 3600 &&
+    // Token-not-before must never be accepted early, including after a clock
+    // skew allowance for issued-at. The trusted introspector also checks it.
+    (proof.nbf == null || (Number.isSafeInteger(proof.nbf) &&
+      proof.nbf <= now && proof.nbf <= proof.exp));
   const audience = proof?.aud;
   const hasAudience = audience === HERMES_MCP_RESOURCE ||
     (Array.isArray(audience) && audience.includes(HERMES_MCP_RESOURCE));
@@ -103,6 +107,21 @@ export async function authorizeMcpTenantRead({ request, env, companyRef, workspa
       membership.workspaceId !== workspaceRef ||
       !["admin", "member", "read_only"].includes(membership.role)) {
     return denied(403, "tenant_access_denied");
+  }
+
+  // A membership row can outlive a deleted specialist. Verify the *current*
+  // Hermes identity still exists before permitting any future private read.
+  // This never creates/re-activates an account or trusts user-supplied email.
+  let specialist;
+  try {
+    specialist = await env.DB.prepare(
+      "SELECT id FROM specialists WHERE id = ? LIMIT 1"
+    ).bind(proof.sub).first();
+  } catch {
+    return denied(503, "identity_unavailable");
+  }
+  if (!specialist || specialist.id !== proof.sub) {
+    return denied(403, "identity_not_active");
   }
 
   return {
