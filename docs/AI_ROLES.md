@@ -179,8 +179,8 @@ These are eleven verified plugin identities: ten observed in the authenticated p
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
-| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.0 |
-| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.7 |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.3 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.13 |
 | HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
 | Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
 | Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
@@ -219,6 +219,6 @@ If direct invocation of another plugin is unavailable in the current host, label
 ### Current application
 
 - **Identity / unified auth:** `hermes-technology-developer`, issue #1873, draft integration PR #1881.
-- **Public MCP chat-first funnel:** `hermes-technology-developer`, issue #1883, draft PR #1884.
+- **Public MCP chat-first funnel:** `hermes-technology-developer`, issue #1883, draft PR #1884, followed by stacked routing preview #1887. **Private MCP tenant protection:** same existing technology owner, draft PR #1891 (disabled, not connected, OAuth service still pending).
 - **CRM funnel content review:** `hermes-sales` advises on conversion, `hermes-dispatch-os` on carrier qualification and operational handoff, `hermes-design-hub` on the future MCP Apps UX; Technology Developer remains one implementation owner.
 - **Agent-to-agent orchestration:** use this routing policy and existing governance first. Assign runtime service implementation to Technology Developer with Automation Engineer as strictly bounded HAE/runtime reviewer, not a new generic employee.
