@@ -859,6 +859,14 @@ export async function onRequest({ request, env }: Context) {
         (expectedName == null && gotName !== null)) {
       return responseJson(400, rpcError(message.id, -32020, "HeaderMismatch"));
     }
+    // 2026-07-28 requires per-request clientCapabilities even if empty.
+    // Never infer permissions from a previous request/session or let malformed
+    // metadata silently fall back to a 2025-era call.
+    const clientCapabilities = message.params?._meta?.["io.modelcontextprotocol/clientCapabilities"];
+    if (!clientCapabilities || typeof clientCapabilities !== "object" ||
+        Array.isArray(clientCapabilities)) {
+      return responseJson(400, rpcError(message.id, -32602, "Missing or invalid client capabilities"));
+    }
     if (message.method === "initialize" || message.method === "notifications/initialized") {
       return responseJson(400, rpcError(message.id, -32601, "Legacy handshake is not part of MCP 2026-07-28"));
     }
