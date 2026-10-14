@@ -268,10 +268,20 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 
   // Reuse the existing Hermes Google endpoint and one shared session; never create a parallel auth stack.
   // Do not display a provider button unless /api/auth/providers confirms the real provider is enabled.
+  type GoogleIdentityApi = {
+    initialize: (options: {
+      client_id: string;
+      auto_select: boolean;
+      callback: (result: { credential?: string }) => void | Promise<void>;
+    }) => void;
+    renderButton: (element: HTMLElement, options: Record<string, string | number>) => void;
+  };
+  const googleIdentity = (): GoogleIdentityApi | undefined =>
+    (globalThis as typeof globalThis & { google?: { accounts?: { id?: GoogleIdentityApi } } }).google?.accounts?.id;
   const googleAuthBlock = document.querySelector<HTMLElement>("[data-access-google]");
   const googleButton = document.querySelector<HTMLElement>("[data-google-auth-button]");
   const loadGoogleIdentityScript = () => new Promise<void>((resolve, reject) => {
-    if (globalThis.google?.accounts?.id) return resolve();
+    if (googleIdentity()) return resolve();
     const existing = document.querySelector<HTMLScriptElement>('script[data-hermes-google-identity]');
     if (existing) {
       existing.addEventListener("load", () => resolve(), { once: true });
@@ -299,8 +309,9 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       const providers = await response.json().catch(() => ({}));
       if (!providers?.google?.enabled || !providers.google.client_id) return;
       await loadGoogleIdentityScript();
-      if (!globalThis.google?.accounts?.id) return;
-      globalThis.google.accounts.id.initialize({
+      const googleApi = googleIdentity();
+      if (!googleApi) return;
+      googleApi.initialize({
         client_id: providers.google.client_id,
         auto_select: false,
         callback: async (result: { credential?: string }) => {
@@ -323,7 +334,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
           }
         },
       });
-      globalThis.google.accounts.id.renderButton(googleButton, {
+      googleApi.renderButton(googleButton, {
         type: "standard",
         theme: "outline",
         size: "large",
