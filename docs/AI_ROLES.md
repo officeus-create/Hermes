@@ -179,8 +179,8 @@ These are eleven verified plugin identities: ten observed in the authenticated p
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
-| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.14 |
-| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.24 |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.15 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.25 |
 | HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
 | Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
 | Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
@@ -218,7 +218,7 @@ If direct invocation of another plugin is unavailable in the current host, label
 
 ### Current release and truth boundary (2026-10-14)
 
-- Latest observed private plugin releases: Hermes Technology Developer `0.1.24` (release `pluginrel_6acfe9b9aed481918dea9fcf9260bd2a`) and Hermes Agent Coordinator `0.1.14` (release `pluginrel_6acfe9c9ca0c81918c5714565980b60c`). Creator readback confirmed the versioned skills for opt-in MCP preview-only host mode and the boundaries between public product feedback writes and private CRM permissions. Earlier releases covered scoped whoami; none constitute a deployed private tool.
+- Latest observed private plugin releases: Hermes Technology Developer `0.1.25` (release `pluginrel_6acfea9a67d08191a48451336ba1cfda`) and Hermes Agent Coordinator `0.1.15` (release `pluginrel_6acfeaa699fc81918dd674f36b6d6070`). Creator readback confirmed the versioned skills for opt-in MCP preview-only host mode and the boundaries between public product feedback writes and private CRM permissions. Earlier releases covered scoped whoami; none constitute a deployed private tool.
 - Identity #1873 / #1881, MCP #1883 / #1884, read-only routing #1887, authorization guard #1891 and staged scoped-whoami #1895 are separate review/CI/production gates. **None is proof an AI host can log in or invoke a private customer CRM**.
 - The October 12 Cloudflare MCP Portal documentation warns that an upstream server's direct URL can bypass portal-only ACLs. All future protected Hermes MCP data requires authorization at the upstream resource itself. Do not route users through a generic portal admin credential instead of per-user consent.
 
@@ -238,7 +238,7 @@ If direct invocation of another plugin is unavailable in the current host, label
 
 ### Verified technology and closeout delta (late 2026-10-14)
 
-- **Installed knowledge releases, not autonomously running workers:** Plugin Creator current readback verified Technology Developer `v0.1.24` and Agent Coordinator `v0.1.14` (IDs above). The Technology Developer now includes `skills/workers-oauth-v1/SKILL.md`, which explains Cloudflare's maintained MIT `@cloudflare/workers-oauth-provider` v1 split authorization/resource architecture. It is a candidate, **not** a configured provider.
+- **Installed knowledge releases, not autonomously running workers:** Plugin Creator current readback verified Technology Developer `v0.1.25` and Agent Coordinator `v0.1.15` (IDs above). The Technology Developer now includes `skills/workers-oauth-v1/SKILL.md`, which explains Cloudflare's maintained MIT `@cloudflare/workers-oauth-provider` v1 split authorization/resource architecture. It is a candidate, **not** a configured provider.
 - **Private MCP unresolved adapter contract:** Existing draft #1891 accepts only `MCP_AUTH_INTROSPECTOR.fetch(.../introspect)` returning a validated proof; Cloudflare's official v1 prefers `env.AUTH_SERVER.validateToken(resource, token)` over a first-party Service Binding. Do not call this drop-in or copy a model-supplied `ctx.auth` without verifying the actual API/subject/client/grant and per-company membership. See existing issue #1883 and current #1891 documentation.
 - **Independent client tester:** Official MCP Inspector release `2.11.0` was published Oct 14. It remains a version-pinned future read-only post-deploy test candidate, not installed. **Cloudflare MCP Events** for Worker issues require Notifications Write and Workers Observability Write; HOLD until owner approval. Reuse the already active read-only Ecosystem Watch.
 - **Governance truth / corrected incident:** Draft #1903 briefly **CLOSED WITHOUT MERGE** because the branch was temporarily reset to the exact `main` commit during a two-step replay. That removed its diff and caused GitHub to close the PR. The same existing PR was explicitly **REOPENED** after restoring its sole file change; verified **OPEN, DRAFT, ahead=1, behind=0** as of the latest Oct 14 comparison. Its new exact-head CI remains independent. **Never replay an open PR by temporarily moving its branch ref to the base SHA**; preserve a nonempty diff using an atomic tree/commit + compare-and-swap ref, or use an already validated safe replay mechanism. An accidental closure is not a merge and must be separately corrected/read back. The repository's main `docs/ai-project-state.json` still has general review date `2026-09-04` until an approved merge.
