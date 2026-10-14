@@ -64,3 +64,34 @@ Official dated advisories and release evidence:
 - [Official SDK release](https://github.com/modelcontextprotocol/typescript-sdk/releases), Oct 5 2026: 2.3.1 is available with opt-in audience controls. No SDK package was added in this PR.
 
 Do not infer a library CVE is an exploitable defect in Hermes if the affected package is absent. Protect future dependencies, token routing and per-client session boundaries; rerun these checks when integrating outside MCP providers. Never forward client bearer tokens across untrusted redirects or store them in shared agent prompts/logs.
+
+## Release-candidate technology decision — Cloudflare OAuth Provider v1 and independent MCP client (14 October 2026)
+
+**Scope:** Source-reviewed technology recommendation only; this document is part of still-DRAFT PR #1891. No package was installed, no new Worker deployed, no OAuth account/secret created, no token issued, and `MCP_PRIVATE_READS_ENABLED` remains unchanged.
+
+### Why the technical plan changes
+
+On 2026-10-01 Cloudflare published `@cloudflare/workers-oauth-provider` **v1** documentation with a split `OAuthAuthorizationServer` / `OAuthResourceServer` design. The official example allows a **separate authorization Worker** to validate resource-specific access tokens via `env.AUTH_SERVER.validateToken(resource, token)` using a Cloudflare **Service Binding**. This is an existing maintained OSS solution (MIT license), and a substantially closer fit to Hermes' desired standalone private auth boundary than building a custom JWT signer/introspection HTTP endpoint.
+
+Primary links:
+- Official v1 documentation: https://developers.cloudflare.com/changelog/post/2026-10-01-workers-oauth-provider-1x/
+- Maintainer repo and MIT license: https://github.com/cloudflare/workers-oauth-provider
+- Release/migration: https://github.com/cloudflare/workers-oauth-provider/releases/tag/v1.0.0
+
+**Do not treat this as drop-in code for the current guard.** This PR's `authorizeMcpTenantRead` currently requires `MCP_AUTH_INTROSPECTOR.fetch('https://mcp-introspector.internal/introspect', ...)` and expects an evidence-shaped `active/iss/aud/resource/sub/client_id/consent_granted/scope/iat/exp` object. The official v1 resource interface instead uses `validateToken(resource, token)`. Simply pointing a Service Binding at the new library **will not** satisfy this contract. Do not mint a forged introspection-proof object to conceal the difference.
+
+### Smallest owner-reviewed integration plan
+
+1. **First-party AuthorizationServer Worker (separate future PR)**: choose canonical Hermes issuer URL, storage, consent, revocation, signing keys and user authentication by REUSING existing `specialists` + approved #1881 identity. Explicitly bind user subject, client_id, scopes, chosen audience/resource and consent. Do not use a new unrelated membership store or a global admin service identity.
+2. **Private resource isolation (future PR)**: evaluate whether existing Cloudflare Pages Functions can securely host the resource wrapper or if a *separately approved* minimal Worker route is necessary. Preserve the current public MCP path and its `preview_crm_funnel` behavior. Protected resource metadata must identify exactly one auditable HTTPS resource and canonical authorization server; no spoofable Host-origin fallbacks.
+3. **Align, don't bypass, authorization**: adapt `MCP_AUTH_INTROSPECTOR` only after reviewing actual v1 exported `validateToken` result types. Replace today's illustrative introspection interface with a tested first-party adapter, or refactor the guard to consume a strictly validated `ctx.auth` payload from `OAuthResourceServer`. Whichever path is selected MUST still enforce active client-bound consent, issuer/resource/audience, per-call nonexpired scope, token revocation, and current Company+Workspace membership in D1. The v1 helper does not replace Hermes tenant row checks.
+4. **Host proof**: verify one *explicitly consenting* real Hermes user in a non-production or separately approved pilot, then a real ChatGPT and/or Claude remote MCP host call. Require success on own company and independent 401/403 on wrong client, resource, revoked bearer, deleted specialist and cross-company tenant. Record issuer, client and token data in protected audit logs without logging bearer content.
+5. **Rollout control**: feature is opt-in/disabled until exact-head CI, owner security review and permission to deploy, connect OAuth, alter Cloudflare bindings/secrets and test real customer data. No outgoing mail; no access to dispatchers; no accidental public CRM tool enumeration.
+
+### Tooling and operations decision
+
+- The official MCP Inspector **2.11.0 released 2026-10-14** and includes TypeScript SDK 2.3.1 alignment, remote protocol fallback fixes, and OAuth state handling. Pin a reviewed release for independent **read-only** post-deploy `server/discover`, `tools/list` and consent/OAuth negative cases; validate the exact CLI flags from the current official documentation, do not blindly run `latest` or log client secrets. Source: https://github.com/modelcontextprotocol/inspector/releases/tag/2.11.0 and https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/2026-07-28/tools/inspector/cli.mdx .
+- **Cloudflare Workers Issues → MCP Events (2026-10-13): HOLD.** The new subscription route sends signed issue events to client webhooks, but its documented setup requests **Notifications Write** and **Workers Observability Write** permissions. These are beyond our currently approved read-only Watch and introduce push delivery/permission requirements. Prefer the existing `Hermes Ecosystem Watch` read-only routine; only evaluate Events with owner-approved least-privilege access and a real incident/latency benefit. Source: https://developers.cloudflare.com/changelog/post/2026-10-13-cloudflare-mcp-events/ .
+- **No dependency today.** Cost of incremental Worker/storage and provider operational billing is not proven to be $0; get actual plan/usage approval before enabling anything. OSS license does not make Cloudflare account usage or provider setup cost-free.
+
+**Acceptance:** Technology candidate REVIEWED, dependency NOT_INSTALLED, OAuth server NOT_IMPLEMENTED, `whoami` NOT_LIVE. Existing draft source tests do not become live OAuth proof.
