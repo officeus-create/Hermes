@@ -1,4 +1,4 @@
-type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string };
+type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string; MCP_PUBLIC_PREVIEW_ONLY?: string };
 type Context = { request: Request; env: Env };
 
 type JsonRpcRequest = {
@@ -918,11 +918,17 @@ export async function onRequest({ request, env }: Context) {
   }
 
   if (message.method === "tools/list") {
-    // 2026 list results MUST include both cache hints. Although the current
-    // public tool catalog is fixed, default to no shared/client caching:
-    // future OAuth-protected tool catalogs must never reuse an anonymous list.
+    // The existing public product feedback tool can WRITE consent-flagged
+    // product-learning rows to D1. For an owner-approved external host pilot,
+    // opt into a server-enforced read-only catalog without breaking existing
+    // feedback on environments where the feature flag is not configured.
+    // Client hints/annotations are not authorization.
+    const previewOnly = env.MCP_PUBLIC_PREVIEW_ONLY === "true";
+    const tools = previewOnly
+      ? publicToolDefinitions.filter((tool) => tool.name !== "submit_product_feedback")
+      : publicToolDefinitions;
     return responseJson(200, rpcResult(message.id, {
-      tools: publicToolDefinitions,
+      tools,
       ...(modern ? { ttlMs: 0, cacheScope: "private" } : {}),
     }, modern));
   }
@@ -932,6 +938,12 @@ export async function onRequest({ request, env }: Context) {
     const args = message.params?.arguments;
     if (!name || (args != null && (typeof args !== "object" || Array.isArray(args)))) {
       return responseJson(400, rpcError(message.id, -32602, "Invalid tool call parameters"));
+    }
+    // Enforce preview mode at the executable boundary, not merely tools/list:
+    // a model or direct HTTP caller can request an undisclosed tool by name.
+    // Deny BEFORE touching D1, interpreting consent or invoking the writer.
+    if (env.MCP_PUBLIC_PREVIEW_ONLY === "true" && name === "submit_product_feedback") {
+      return responseJson(403, rpcError(message.id, -32000, "Write tool unavailable in preview-only mode"));
     }
     try {
       const structuredContent = await callTool(env, name, (args || {}) as Record<string, unknown>);
