@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { onRequestPost as emailStart, onRequestGet as emailStatus } from "../functions/api/auth/email/start.ts";
 import { onRequestPost as emailVerify } from "../functions/api/auth/email/verify.ts";
+import { onRequestPost as legacyRegister } from "../functions/api/auth/register.ts";
 import { magicLink } from "../functions/api/_lib/email-identity.mjs";
 
 const read = p => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
@@ -67,4 +68,39 @@ const confirmRequest = new Request("https://hermeslogisticsus.com/api/auth/email
 const denied = await emailVerify({ request: confirmRequest, env });
 assert.equal(denied.status, 503);
 assert.equal(sent, 0);
+// An owner can opt into "verified signup required" without accidentally
+// issuing legacy password sessions; an unconfigured sender blocks safely.
+let registerDbQueries = 0;
+const registerEnv = {
+  DB: { prepare: () => { registerDbQueries++; throw new Error("legacy signup wrote to DB"); } },
+  HERMES_NEW_SIGNUP_EMAIL_VERIFICATION_REQUIRED: "true",
+};
+const registerRequest = () => new Request("https://hermeslogisticsus.com/api/auth/register", {
+  method: "POST", headers: { "Content-Type": "application/json", Origin: "https://hermeslogisticsus.com" },
+  body: JSON.stringify({
+    email: "shop-owner@example.com", password: "Password-Strong-123",
+    name: "Shop Owner", role: "Shop Owner", location: "Arkansas, US",
+    bio: "Real business owner registration.",
+  }),
+});
+const paused = await legacyRegister({ request: registerRequest(), env: registerEnv });
+assert.equal(paused.status, 503);
+assert.equal((await paused.json()).error, "verified_signup_unavailable");
+assert.equal(registerDbQueries, 0, "unready verified signup must never write account/session");
+
+Object.assign(registerEnv, {
+  HERMES_EMAIL_MAGIC_ENABLED: "true",
+  HERMES_AUTH_TRANSACTIONAL_EMAIL_APPROVED: "true",
+  HERMES_AUTH_EMAIL_DELIVERY_READY: "true",
+  HERMES_EMAIL_RATE_SALT: "test-only-long-rate-salt",
+  LEAD_EMAIL_SERVICE: { fetch: async () => { throw new Error("no sends"); } },
+  LEAD_SERVICE_TOKEN: "synthetic-test-token",
+});
+const redirected = await legacyRegister({ request: registerRequest(), env: registerEnv });
+assert.equal(redirected.status, 409);
+const redirectedJson = await redirected.json();
+assert.equal(redirectedJson.error, "email_verification_required");
+assert.equal(redirectedJson.next_url, "/services/hermes-connect/email-access/");
+assert.equal(registerDbQueries, 0);
+
 console.log("hermes-email-magic-contract: no-send-by-default, no-session-before-verified-email, rate limits, token consumption, safe UI PASS");
