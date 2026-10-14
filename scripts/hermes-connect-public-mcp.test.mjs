@@ -204,8 +204,8 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     jsonrpc: '2.0', id: 82, method: 'tools/call',
     params: { name: 'preview_crm_funnel', arguments: {
       business_type: 'auto repair shop', goal: 'reduce missed bookings', entry_channel: 'website'
-    } }
-  }, {}, {'MCP-Protocol-Version':'2026-07-28'});
+    }, _meta: {'io.modelcontextprotocol/protocolVersion':'2026-07-28','io.modelcontextprotocol/clientCapabilities':{}} }
+  }, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/call','Mcp-Name':'preview_crm_funnel'});
   assert.equal(json.result.resultType, 'complete');
   assert.equal(json.result.structuredContent.status, 'PREVIEW_ONLY');
   assert.equal(json.result.structuredContent.stages[3].name, 'Booking');
@@ -223,4 +223,64 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(json.result.isError, true);
   assert.equal(json.result.structuredContent, undefined);
   assert.match(json.result.content[0].text, /could not complete this tool call/);
+}
+
+{
+  const { response, json } = await call(
+    {jsonrpc:'2.0',id:84,method:'tools/list',params:{}}, {},
+    {'Origin':'https://malicious.example'});
+  assert.equal(response.status, 403);
+  assert.match(json.error.message, /Untrusted Origin/);
+}
+{
+  const { response, json } = await call(
+    {jsonrpc:'2.0',id:85,method:'tools/list',params:{}}, {},
+    {'Origin':'https://hermeslogisticsus.com'});
+  assert.equal(response.status, 200);
+  assert.equal(json.result.tools.length, 7);
+}
+{
+  const { response } = await call(
+    {jsonrpc:'2.0',id:86,method:'tools/list',params:{}}, {},
+    {'Origin':'https://trusted.example'});
+  assert.equal(response.status, 403, 'unconfigured cross-origin host cannot access MCP');
+}
+{
+  const { response, json } = await call(
+    {jsonrpc:'2.0',id:87,method:'tools/list',params:{}},
+    {MCP_ALLOWED_ORIGINS:'https://trusted.example'},
+    {'Origin':'https://trusted.example'});
+  assert.equal(response.status, 200);
+  assert.ok(json.result.tools.length > 0);
+}
+{
+  const body = {jsonrpc:'2.0',id:88,method:'tools/call',params:{
+    name:'preview_crm_funnel',
+    arguments:{business_type:'auto repair shop',goal:'confirm bookings'},
+    _meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28'},
+  }};
+  const {response,json} = await call(body,{},{
+    'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/call',
+    'Mcp-Name':'get_product_overview',
+  });
+  assert.equal(response.status,400);
+  assert.equal(json.error.code,-32020);
+  assert.equal(json.error.message,'HeaderMismatch');
+}
+{
+  const body = {jsonrpc:'2.0',id:89,method:'tools/call',params:{
+    name:'preview_crm_funnel',
+    arguments:{business_type:'auto repair shop',goal:'confirm bookings'},
+    _meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28'},
+  }};
+  for (const headers of [
+    {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/call'},
+    {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list','Mcp-Name':'preview_crm_funnel'},
+    {'Mcp-Method':'tools/call','Mcp-Name':'preview_crm_funnel'},
+    {'MCP-Protocol-Version':'2025-06-18','Mcp-Method':'tools/call','Mcp-Name':'preview_crm_funnel'},
+  ]) {
+    const {response,json} = await call(body,{},headers);
+    assert.equal(response.status,400,'reject missing/mismatched modern MCP header');
+    assert.equal(json.error.code,-32020);
+  }
 }
