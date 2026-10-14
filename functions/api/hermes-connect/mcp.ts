@@ -902,10 +902,21 @@ export async function onRequest({ request, env }: Context) {
     );
   }
 
-  if (message.method === "ping") return responseJson(200, rpcResult(message.id, {}, modern));
+  // 2026-07-28 removed core "ping". Keep it only for the supported
+  // legacy 2025 client protocol so new clients do not see false capability.
+  if (message.method === "ping") {
+    if (modern) return responseJson(400, rpcError(message.id, -32601, "Method not found"));
+    return responseJson(200, rpcResult(message.id, {}, false));
+  }
 
   if (message.method === "tools/list") {
-    return responseJson(200, rpcResult(message.id, { tools: publicToolDefinitions }, modern));
+    // 2026 list results MUST include both cache hints. Although the current
+    // public tool catalog is fixed, default to no shared/client caching:
+    // future OAuth-protected tool catalogs must never reuse an anonymous list.
+    return responseJson(200, rpcResult(message.id, {
+      tools: publicToolDefinitions,
+      ...(modern ? { ttlMs: 0, cacheScope: "private" } : {}),
+    }, modern));
   }
 
   if (message.method === "tools/call") {
