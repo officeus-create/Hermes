@@ -109,15 +109,22 @@ export async function completeFederatedLogin({ db, request, provider, subject, e
   if (!specialist) {
     const existing = await db.prepare(`SELECT id,email,name,role,location,bio
       FROM specialists WHERE lower(email)=? LIMIT 1`).bind(verifiedEmail).first();
-    if (existing) {
-      // Apple's form_post is a cross-site navigation: SameSite=Lax Hermes
-      // session cookies are not necessarily sent to callback. A provider link
-      // may instead use ONLY the validated, one-time, session-bound owner proof
-      // established on our same-origin /apple/start endpoint and rechecked
-      // against an active sessions row on callback.
-      const owner = provider === "apple" && verifiedAppleLinkOwnerId
-        ? { id: verifiedAppleLinkOwnerId }
-        : await getAuthenticatedSpecialist(request, db);
+
+    // Explicit Apple linking can involve an Apple private-relay email which
+    // intentionally differs from the owner's current Hermes email. The
+    // server-verified session-bound state is sufficient proof of that owner;
+    // email equality alone never is. Refuse an Apple email that already belongs
+    // to a different Hermes account rather than silently combining identities.
+    if (provider === "apple" && verifiedAppleLinkOwnerId) {
+      const linkedOwner = await db.prepare(
+        "SELECT id,email,name,role,location,bio FROM specialists WHERE id=? LIMIT 1"
+      ).bind(verifiedAppleLinkOwnerId).first();
+      if (!linkedOwner || (existing && existing.id !== linkedOwner.id)) {
+        return { success: false, error: "existing_account_signin_required", status: 409 };
+      }
+      specialist = linkedOwner;
+    } else if (existing) {
+      const owner = await getAuthenticatedSpecialist(request, db);
       if (!owner || owner.id !== existing.id) {
         return { success: false, error: "existing_account_signin_required", status: 409 };
       }
