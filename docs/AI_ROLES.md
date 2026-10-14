@@ -179,8 +179,8 @@ These are eleven verified plugin identities: ten observed in the authenticated p
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
-| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.4 |
-| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.14 |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.6 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.16 |
 | HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
 | Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
 | Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
@@ -215,6 +215,12 @@ If direct invocation of another plugin is unavailable in the current host, label
 - Revisit 3/6/9/12/15-month roadmap in the existing MCP issue #1883. Prefer platform-independent, standards-based methods and real adoption evidence; do not promise future interoperability ahead of host support.
 - No AI-sent email, DMs or dispatcher interruptions under the owner's standing ban. Permission, OAuth consent, provider secret, production deployment, cost, content publishing and privileged changes retain their specific owner approval gates.
 - Skill-only plugins are reusable instructions, not persistent background agents, automatic schedulers or unlimited access tokens. Permanent delegation requires separately authorized tooling, a job runner and revocation controls.
+
+### Current release and truth boundary (2026-10-14)
+
+- Source-verified private plugin releases: Hermes Technology Developer `0.1.16` (release `pluginrel_6acfc04acc1c819196e692c2559092fd`) and Hermes Agent Coordinator `0.1.6` (release `pluginrel_6acfc05c73508191bcf2c07ba353d1f5`). Both contain a **private scoped whoami** candidate lesson; the plugin releases were confirmed by creator readback.
+- Identity #1873 / #1881, MCP #1883 / #1884, read-only routing #1887, authorization guard #1891 and staged scoped-whoami #1895 are separate review/CI/production gates. **None is proof an AI host can log in or invoke a private customer CRM**.
+- The October 12 Cloudflare MCP Portal documentation warns that an upstream server's direct URL can bypass portal-only ACLs. All future protected Hermes MCP data requires authorization at the upstream resource itself. Do not route users through a generic portal admin credential instead of per-user consent.
 
 ### Current application
 
