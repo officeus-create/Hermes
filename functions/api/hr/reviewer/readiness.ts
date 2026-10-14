@@ -65,6 +65,8 @@ function apiError(error: unknown) {
     bounded_scope_required: 400,
     ready_for_team_decision_required: 409,
     handoff_fields_required: 400,
+    handoff_idempotency_conflict: 409,
+    outcome_idempotency_conflict: 409,
     outcome_marker_invalid: 400,
     completed_handoff_required: 409,
     outcome_fields_required: 400,
