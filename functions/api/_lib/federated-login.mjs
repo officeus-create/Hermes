@@ -34,20 +34,24 @@ export async function ensureOAuthStateSchema(db) {
     provider TEXT NOT NULL,
     code_verifier TEXT NOT NULL,
     nonce TEXT,
+    link_specialist_id TEXT,
+    link_session_created_at TEXT,
     created_at TEXT NOT NULL,
     expires_at TEXT NOT NULL,
     used_at TEXT
   )`).run();
 }
-export async function beginOAuthState(db, provider, nonce = "") {
+export async function beginOAuthState(db, provider, nonce = "", verifiedStartSession = null) {
   await ensureOAuthStateSchema(db);
   const state = createSessionToken();
   const verifier = createSessionToken() + createSessionToken();
   const now = new Date();
   await db.prepare(`INSERT INTO hermes_oauth_states
-    (state_hash, provider, code_verifier, nonce, created_at, expires_at, used_at)
-    VALUES (?, ?, ?, ?, ?, ?, NULL)`).bind(
-    await sha256Hex(state), provider, verifier, nonce, now.toISOString(),
+    (state_hash, provider, code_verifier, nonce, link_specialist_id, link_session_created_at, created_at, expires_at, used_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)`).bind(
+    await sha256Hex(state), provider, verifier, nonce,
+    verifiedStartSession?.specialistId || null, verifiedStartSession?.sessionCreatedAt || null,
+    now.toISOString(),
     new Date(now.getTime() + STATE_TTL_MS).toISOString(),
   ).run();
   return { state, verifier };
@@ -57,7 +61,7 @@ export async function consumeOAuthState(db, request, provider, returnedState) {
   if (!constantEqual(cookieState, String(returnedState || ""))) return null;
   await ensureOAuthStateSchema(db);
   const stateHash = await sha256Hex(cookieState);
-  const record = await db.prepare(`SELECT code_verifier, nonce FROM hermes_oauth_states
+  const record = await db.prepare(`SELECT code_verifier, nonce, link_specialist_id, link_session_created_at FROM hermes_oauth_states
      WHERE state_hash=? AND provider=? AND used_at IS NULL AND expires_at > ? LIMIT 1`)
     .bind(stateHash, provider, new Date().toISOString()).first();
   if (!record) return null;
@@ -76,7 +80,7 @@ async function ensureIdentitySchema(db) {
   )`).run();
 }
 
-export async function completeFederatedLogin({ db, request, provider, subject, email, name }) {
+export async function completeFederatedLogin({ db, request, provider, subject, email, name, verifiedAppleLinkOwnerId = null }) {
   const subjectId = text(subject, 180);
   const verifiedEmail = text(email, 160).toLowerCase();
   if (!["github", "apple"].includes(provider) || !subjectId || !isValidEmail(verifiedEmail)) {
@@ -92,7 +96,14 @@ export async function completeFederatedLogin({ db, request, provider, subject, e
     const existing = await db.prepare(`SELECT id,email,name,role,location,bio
       FROM specialists WHERE lower(email)=? LIMIT 1`).bind(verifiedEmail).first();
     if (existing) {
-      const owner = await getAuthenticatedSpecialist(request, db);
+      // Apple's form_post is a cross-site navigation: SameSite=Lax Hermes
+      // session cookies are not necessarily sent to callback. A provider link
+      // may instead use ONLY the validated, one-time, session-bound owner proof
+      // established on our same-origin /apple/start endpoint and rechecked
+      // against an active sessions row on callback.
+      const owner = provider === "apple" && verifiedAppleLinkOwnerId
+        ? { id: verifiedAppleLinkOwnerId }
+        : await getAuthenticatedSpecialist(request, db);
       if (!owner || owner.id !== existing.id) {
         return { success: false, error: "existing_account_signin_required", status: 409 };
       }
