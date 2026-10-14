@@ -127,3 +127,18 @@ test("contact section and proof anchors stay accessible without JavaScript", asy
     await context.close();
   }
 });
+
+test("every linked proof and locale-specific direction resolves to an actual HTML page", async ({ request }) => {
+  const paths = new Set<string>([
+    ...Object.values(evidenceRoutes),
+    ...Object.values(directionRoutes).flat(),
+    "/contacts/",
+  ]);
+  for (const target of paths) {
+    const response = await request.get(target);
+    expect(response.status(), `linked local destination must be HTTP 200: ${target}`).toBe(200);
+    expect(response.headers()["content-type"] ?? "", target).toMatch(/text\/html/);
+    const body = await response.text();
+    expect(body, `${target} must have visible page content`).toMatch(/<main\\b/i);
+  }
+});
