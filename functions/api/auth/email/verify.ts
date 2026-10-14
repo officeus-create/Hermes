@@ -19,6 +19,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
   catch { return jsonResponse(400, { success: false, error: "invalid_request" }, PRIVATE_HEADERS); }
+  // JSON null, arrays and primitives must not raise an unhandled exception or
+  // be interpreted as account/verification requests.
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return jsonResponse(400, { success: false, error: "invalid_request" }, PRIVATE_HEADERS);
+  }
   const token = typeof body.token === "string" ? body.token : "";
   if (!validToken(token)) return jsonResponse(400, { success: false, error: "invalid_token" }, PRIVATE_HEADERS);
   await ensureEmailIdentitySchema(env.DB);
