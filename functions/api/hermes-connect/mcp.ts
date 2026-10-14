@@ -833,6 +833,17 @@ export async function onRequest({ request, env }: Context) {
   // matching. Keep legacy 2025 callers working until explicit migration.
   const headerVersion = request.headers.get("MCP-Protocol-Version");
   const payloadVersion = message.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
+  // Modern clients distinguish unsupported versions (-32022, with supported
+  // versions) from mismatched headers (-32020). Return the modern sentinel
+  // instead of silently attempting legacy or telling clients to re-probe.
+  const supported = [MODERN_PROTOCOL, LEGACY_PROTOCOL];
+  const unknownVersion = [headerVersion, payloadVersion].find((v) =>
+    v != null && !supported.includes(v));
+  if (unknownVersion != null) {
+    return responseJson(400, rpcError(message.id, -32022, "Unsupported protocol version", {
+      supported, requested: unknownVersion,
+    }));
+  }
   // Even if a client omits the modern version in both places, presence of a
   // modern routing header is a modern-protocol attempt, not a legacy escape.
   // Otherwise an attacker could bypass header/body parity by dropping _meta.
