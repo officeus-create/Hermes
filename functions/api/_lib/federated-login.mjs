@@ -109,7 +109,7 @@ export async function completeFederatedLogin({ db, request, provider, subject, e
   const verifiedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
   if (!["github", "apple"].includes(provider) ||
       subjectId.length < 1 || subjectId.length > 180 ||
-      /[<>\\u0000-\\u001f\\u007f\\s]/.test(subjectId) ||
+      /[<>\u0000-\u001f\u007f\s]/.test(subjectId) ||
       verifiedEmail.length < 1 || verifiedEmail.length > 160 ||
       !isValidEmail(verifiedEmail)) {
     return { success: false, error: "provider_identity_invalid", status: 401 };
