@@ -50,8 +50,10 @@ test("primary sitemap contains the two Italian commercial owners", async ({ requ
   expect(xml).toContain("https://hermeslogisticsus.com/it/tecnologia/");
 });
 
-test("Marketing service group uses marketing copy instead of logistics copy", async ({ page }) => {
+test("Marketing uses its causal growth system instead of logistics copy", async ({ page }) => {
   await page.goto("/paths/marketing/");
-  await expect(page.getByRole("heading", { name: "The services behind a measurable growth system." })).toBeVisible();
+  await expect(page.locator(".marketing-service-system")).toBeVisible();
+  await expect(page.locator(".growth-console")).toBeVisible();
+  await expect(page.locator(".marketing-service-rails article")).toHaveCount(4);
   await expect(page.getByText("The operating support behind every load.")).toHaveCount(0);
 });
