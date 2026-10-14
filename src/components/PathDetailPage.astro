@@ -24,6 +24,7 @@ interface Props {
 const { path } = Astro.props;
 const isAcademy = path.id === "academy";
 const isLogistics = path.id === "logistics";
+const isMarketing = path.id === "marketing";
 const primaryCtaHref = path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact";
 const primaryCtaLabel = path.id === "technology"
   ? "Build your project brief"
@@ -74,7 +75,7 @@ const directContactTitle = {
   </section>
 
   {
-    !isAcademy && (
+    !isAcademy && !isMarketing && (
       <section class="section detail-offerings" aria-labelledby="offerings-title">
         <div class="shell">
           <div class="section-heading split-heading" data-reveal>
@@ -111,7 +112,7 @@ const directContactTitle = {
   {path.id === "academy" && <DepartmentTechnologyBridge direction="academy" />}
 
   {
-    !isAcademy && (
+    !isAcademy && !isMarketing && (
       <section class="section detail-process" aria-labelledby="process-title">
         <div class="shell">
           <div class="section-heading" data-reveal>
@@ -160,7 +161,7 @@ const directContactTitle = {
   }
 
   {
-    path.serviceGroups && !isAcademy && (
+    path.serviceGroups && !isAcademy && !isMarketing && (
       <section class="section logistics-services" aria-labelledby="service-groups-title">
         <div class="shell">
           <div class="section-heading" data-reveal>
