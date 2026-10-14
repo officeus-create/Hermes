@@ -59,3 +59,18 @@ Do not claim the host integration is active from GitHub code alone. The user mus
 **Operational loop:** scout public official releases and safe-licensed code → compare to current Hermes code/CI → create a one-page evidence-backed CapabilityCandidate → assign one owner and acceptance test → small PR → exact-head CI → owner-reviewed activation → production readback. Share sanitized lessons with relevant plugin skills, not raw customer conversations.
 
 Canonical follow-ups: Identity [#1873](https://github.com/officeus-create/Hermes/issues/1873), integration [#1881](https://github.com/officeus-create/Hermes/pull/1881), MCP pilot [#1883](https://github.com/officeus-create/Hermes/issues/1883), existing [Customer MCP contract](./HERMES_CONNECT_CUSTOMER_MCP_CONTRACT.md).
+
+
+## Verified protocol/client compatibility and practical connection prerequisites (2026-10-14)
+
+The existing MCP endpoint is a lightweight custom handler, **not** an official SDK instance. Compared against official 2026-07-28 [Streamable HTTP spec](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/basic/transports/streamable-http.mdx):
+- Validate `Origin` on all requests to prevent DNS rebinding; default same-origin, with explicit `MCP_ALLOWED_ORIGINS` for vetted additional HTTPS origins. Normal cloud-to-cloud host connections may omit Origin.
+- In 2026-07-28 mode compare `MCP-Protocol-Version` in HTTP and `params._meta` as well as `Mcp-Method` and `Mcp-Name` against the JSON-RPC body. Reject missing/mismatched modern headers with `-32020 HeaderMismatch`. Preserve old handshaking 2025-06-18 clients.
+- The modern protocol does **not** require GET streams, legacy sessions or `initialize` calls. New write tools are out of scope until proper OAuth and server-side tenancy are implemented.
+
+**Claude host:** official [Connectors documentation](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities) says a user can add a remote URL from Customize > Connectors > Add > Custom > Web, select authentication settings, then enable the connector for a conversation. An actual user/vendor connection must be confirmed; installation cannot be inferred from an issue/PR.
+
+**ChatGPT host:** official [developer-mode / MCP apps documentation](https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt) describes custom full MCP applications and write-capable developer mode for eligible Business, Enterprise and Edu workspaces with developer/admin gating. Do **not** assume all individual plans can add a custom remote MCP endpoint just because ChatGPT supports other plugins or the user owns a private skill plugin. Check actual plan/UI entitlements before asking the owner to connect. If unavailable, test through Claude or a locally authorized MCP client/CI instead of trying to bypass workspace feature rules.
+
+**Current public pilot limitations:** `preview_crm_funnel` is source code under draft PR #1884. No provider app installation, deployed SHA, verified user login, data write or autonomous workflow proof is implied. Owner review/approval is required for an actual release.
+
