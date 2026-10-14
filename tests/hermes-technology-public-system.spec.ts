@@ -10,7 +10,18 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
   await page.goto("/paths/technology/");
 
   await expect(page.locator(".technology-build-pulse")).toBeVisible();
+  await expect(page.locator(".detail-page-technology .detail-offerings")).toHaveCount(0);
+  await expect(page.locator(".detail-page-technology .detail-process")).toHaveCount(0);
+  await expect(page.locator("#project-brief")).toBeVisible();
   await expect(page.locator(".technology-capability-catalog")).toBeVisible();
+
+  const hierarchy = await page.evaluate(() => {
+    const brief = document.querySelector("#project-brief");
+    const catalog = document.querySelector(".technology-capability-catalog");
+    if (!brief || !catalog) return null;
+    return Boolean(brief.compareDocumentPosition(catalog) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(hierarchy).toBe(true);
   await expect(page.locator(".technology-solution-mockups")).toBeVisible();
   await expect(page.locator(".it-flow-screens")).toBeVisible();
   await expect(page.locator(".it-project-brief")).toBeVisible();
