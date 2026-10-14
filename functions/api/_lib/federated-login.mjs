@@ -72,6 +72,20 @@ export async function consumeOAuthState(db, request, provider, returnedState) {
   return record;
 }
 
+// Apple uses cross-site form_post; the original SameSite=Lax Hermes cookie
+// may be absent on callback. One-time OAuth state stores the ID and creation
+// timestamp of a session verified at /apple/start, not its bearer token.
+// Re-check that exact row still exists and has not expired before linking.
+export async function getVerifiedOAuthStartOwner(db, context) {
+  const ownerId = context?.link_specialist_id;
+  const sessionCreated = context?.link_session_created_at;
+  if (!ownerId || !sessionCreated) return null;
+  const active = await db.prepare(
+    "SELECT specialist_id FROM sessions WHERE specialist_id=? AND created_at=? AND expires_at>? LIMIT 1"
+  ).bind(ownerId, sessionCreated, new Date().toISOString()).first();
+  return active?.specialist_id === ownerId ? String(ownerId) : null;
+}
+
 async function ensureIdentitySchema(db) {
   await db.prepare(`CREATE TABLE IF NOT EXISTS hermes_auth_identities (
     provider TEXT NOT NULL, provider_subject TEXT NOT NULL, specialist_id TEXT NOT NULL,
