@@ -168,3 +168,56 @@ The applicable owner-confirmation gate remains for:
 - enabling a standing permission-bypass or unrestricted full-access mode.
 
 These gates protect the business and cannot be silently removed by another agent or future document edit.
+
+## Digital employees: plugins as department owners (CEO directive, 2026-10-14)
+
+**Operating goal:** A conversation is an interface to an existing digital employee, not a new department. Work, lessons, tasks, and release evidence stay in the existing canonical GitHub issue/PR and Google Drive One Brain; employees evolve as versioned plugin skills. Do **not** open a new chat or create a new private plugin to work around a missing handoff.
+
+### Verified owner-private plugin inventory
+
+These are ten plugin identities returned by the authenticated Plugin Creator personal inventory on 2026-10-14. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
+
+| Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
+| --- | --- | --- | --- |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.6 |
+| HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
+| Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
+| Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
+| Hermes Catalog product/claims/public projection | `hermes-catalog` | `plugins_6acf345dede881918978f13ab23f4310` | 0.1.2 |
+| Dispatch processes and bounded operations (no unsolicited dispatcher contact) | `hermes-dispatch-os` | `plugins_6acccd5a49d48191932fc106919bf824` | 0.1.10 |
+| Design system, UX, mobile and visual approval | `hermes-design-hub` | `plugins_6acc9a1fe78c8191b7d149f2689029f8` | 0.2.8 |
+| Existing automation engine runtime/reliability/HAE only | `hermes-automatic-engineer` | `plugins_6ace1c27c458819186989a5aa3ef87b5` | 0.1.2 |
+| Open-source/news/technology research, evidence and radar support | `hermes-news` | `plugins_6acf3466650c8191960248cd2a96d49e` | 0.1.2 |
+| Authorized corporate VPN and private network only | `hermes-private-network` | `plugins_6ace33b7a780819181a6ce85eac06f05` | 0.1.0 |
+
+Other existing owned, workspace, organization, marketplace, or connected plugins **may** exist outside this private personal list. Before classifying a department as missing, search the current plugin directory, accessible connected plugin list, canonical One Brain, and current project work. A previously referenced SEO Director plugin must be verified through the appropriate current installation/access evidence; absence from personal plugins alone is not evidence it does not exist.
+
+**Routing hierarchy:** the owner/CEO is the human decision-maker; ChatGPT/Claude/Codex coordinate through authorized connected tools and One Brain; each domain has exactly one accountable *plugin* and one active implementation writer per task. Reviewers from another plugin can comment but must not concurrently own its files.
+
+### Required procedure for EVERY new request
+
+1. **Resolve** the business direction and objective; read only the current relevant One Brain/GitHub issue and owned plugin skill, not a full archive each time.
+2. **Find existing employee** using the verified inventory above and the current accessible plugin directory/One Brain. If an exact plugin tool is connected and supports the task, invoke it. A plugin link, registry entry, or archived name alone does not establish a live tool call.
+3. **Assign ownership**: exactly one plugin, named specific issue/PR/source, acceptance criteria, KPI, deadline/next review and risk gate. Specialists from other departments may receive bounded linked subtasks.
+4. **Execute** the smallest safe slice with authenticated tools. Write evidence, source SHA, test result and durable handoff in the existing canonical issue/PR and One Brain. Readback confirms actual state; do not claim background work without a real durable job or an enabled automation.
+5. **Learn**: convert a verified recurring error or reusable method into a versioned plugin skill/test, guard update against current release ID, read back installed version and source. Saving a chat note or assigning an issue does not mean an autonomous plugin learned.
+6. **Create a new plugin ONLY for a proven durable capability gap**, not for an individual task or chat. First compare existing plugin scopes, skills and connectors; prove there is no owner; define a single narrow mission, unique inputs/actions and safe read/write scope; create a private plugin with a bounded skill/evaluation/owner; register exact ID and version here + One Brain after plugin-creator readback. Do not create new databases, project folders or general-purpose superadmins.
+7. **Continue** through current-state source tests, PR review, CI, authorized deployment, production readback, actual user value. Route out-of-department work via linked issue to its existing owner; do not silently edit another department's area.
+
+If direct invocation of another plugin is unavailable in the current host, label the handoff **ROUTED_NOT_EXECUTED**. Do not impersonate another plugin or assert that autonomous inter-plugin communication exists. The plugin router uses GitHub/One Brain as a shared, inspectable handoff until a real authenticated MCP orchestrator exists.
+
+### Priority and learning boundaries
+
+- Business priority: (1) findability via SEO/GEO/AEO/LLMO and existing traffic protection, (2) real US car-hauling carriers, (3) US Hermes Connect/Website inbound, then remaining departments. Security, privacy, law, correctness and data integrity remain release gates.
+- Every employee's improvement proposal: **source date → observed gap → candidate technology/skill → license/cost/security check → current-platform compatibility → expected benefit → independent negative test → bounded PR/skill release → verified readback**.
+- Existing six-hour Hermes Ecosystem Watch includes *read-only* technology scouting of official MCP, OAuth, SDKs, ChatGPT/Claude, Cloudflare and licensed OSS. Its outputs are candidates, not self-applied software upgrades or automatic skill releases.
+- Revisit 3/6/9/12/15-month roadmap in the existing MCP issue #1883. Prefer platform-independent, standards-based methods and real adoption evidence; do not promise future interoperability ahead of host support.
+- No AI-sent email, DMs or dispatcher interruptions under the owner's standing ban. Permission, OAuth consent, provider secret, production deployment, cost, content publishing and privileged changes retain their specific owner approval gates.
+- Skill-only plugins are reusable instructions, not persistent background agents, automatic schedulers or unlimited access tokens. Permanent delegation requires separately authorized tooling, a job runner and revocation controls.
+
+### Current application
+
+- **Identity / unified auth:** `hermes-technology-developer`, issue #1873, draft integration PR #1881.
+- **Public MCP chat-first funnel:** `hermes-technology-developer`, issue #1883, draft PR #1884.
+- **CRM funnel content review:** `hermes-sales` advises on conversion, `hermes-dispatch-os` on carrier qualification and operational handoff, `hermes-design-hub` on the future MCP Apps UX; Technology Developer remains one implementation owner.
+- **Agent-to-agent orchestration:** use this routing policy and existing governance first. Assign runtime service implementation to Technology Developer with Automation Engineer as strictly bounded HAE/runtime reviewer, not a new generic employee.
