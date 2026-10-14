@@ -135,6 +135,15 @@ const call = async (body, env = {}, headers = {}) => {
   const { json } = await call({jsonrpc:'2.0',id:8,method:'server/discover',params:{_meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28','io.modelcontextprotocol/clientCapabilities':{}}}}, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover'});
   assert.equal(json.result.resultType, 'complete');
   assert.ok(json.result.supportedVersions.includes('2026-07-28'));
+  // Strict 2026-07-28 DiscoverResult requires ttlMs and cacheScope, even
+  // when the server supports only public preview tools.
+  assert.equal(json.result.ttlMs, 0);
+  assert.equal(json.result.cacheScope, 'private');
+  assert.deepEqual(json.result._meta['io.modelcontextprotocol/serverInfo'], {
+    name: 'hermes-connect', version: '1.0.0',
+  });
+  assert.equal('serverInfo' in json.result, false,
+    'modern discovery must keep server identity in _meta, not legacy result body');
 }
 
 console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
