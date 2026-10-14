@@ -53,6 +53,9 @@ const db = {
             if (sql.startsWith("INSERT INTO hermes_auth_identities")) {
               const [provider, sub, owner, email] = args;
               if (!identityRows.some(x => x.provider === provider && x.sub === sub)) {
+                if (identityRows.some(x => x.provider === provider && x.owner === owner)) {
+                  throw new Error("unique_provider_owner");
+                }
                 identityRows.push({provider,sub,owner,email});
               }
               return { success: true };
@@ -163,7 +166,17 @@ const repeat = await completeFederatedLogin({
 });
 assert.equal(repeat.success, true, "already-linked stable Apple provider subject may sign in");
 assert.equal(sessions.length, 2);
+const secondSubject = await completeFederatedLogin({
+  db, request, provider: "apple", subject: "second-apple-subject",
+  email: "owner@example.com",
+  verifiedAppleLinkOwnerId: await getVerifiedOAuthStartOwner(db, consumed),
+});
+assert.equal(secondSubject.error, "provider_identity_conflict",
+  "one Hermes account must not silently replace an already-linked Apple provider subject");
 
+// Separate test case: after a verified explicit unlink, a private relay identity
+// can be attached to the original owner instead of creating a duplicate user.
+identityRows.length = 0;
 const relay = await completeFederatedLogin({
   db, request, provider: "apple", subject: "apple-private-relay-2",
   email: "unique@privaterelay.appleid.com", name: "Existing Owner",
