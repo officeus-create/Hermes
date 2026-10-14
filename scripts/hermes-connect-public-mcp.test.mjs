@@ -498,3 +498,27 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(legacy.response.status, 200,
     "legacy clients do not require modern per-request capability envelope");
 }
+
+{
+  // Existing MCP has a separate feedback-writing tool. Public funnel preview
+  // must never inherit that tool's DB side effects, regardless of consent
+  // flags or model-supplied text.
+  let dbTouches = 0;
+  const failDb = {
+    prepare() { dbTouches++; throw new Error("read-only preview never accesses or writes D1"); },
+  };
+  const { response, json } = await call({
+    jsonrpc: "2.0", id: 882, method: "tools/call", params: {
+      name: "preview_crm_funnel",
+      arguments: {
+        business_type: "US car hauling fleet",
+        goal: "Map qualification stages without contacting drivers",
+        entry_channel: "website",
+        consent_to_product_learning: true,
+      },
+    },
+  }, { DB: failDb });
+  assert.equal(response.status, 200);
+  assert.equal(json.result.structuredContent.status, "PREVIEW_ONLY");
+  assert.equal(dbTouches, 0);
+}
