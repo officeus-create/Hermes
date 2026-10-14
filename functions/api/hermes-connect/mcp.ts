@@ -772,8 +772,11 @@ export async function onRequest({ request, env }: Context) {
   // be explicitly authorized in configuration. Remote server-to-server MCP
   // clients usually omit Origin and do not need any cross-origin allowance.
   const origin = request.headers.get("Origin");
+  // Do not derive a trusted Origin from request.url or its Host header:
+  // a malicious DNS-rebinding client can control both. The canonical public
+  // domain is fixed, and additional HTTPS origins are operator-allowlisted.
   const allowed = new Set([
-    new URL(request.url).origin,
+    "https://hermeslogisticsus.com",
     ...String(env.MCP_ALLOWED_ORIGINS || "").split(",").map((x) => x.trim()).filter((x) =>
       /^https:\/\/[^\/\s]+$/.test(x) && x !== "https://null"
     ),
