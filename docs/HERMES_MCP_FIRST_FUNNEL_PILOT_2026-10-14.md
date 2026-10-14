@@ -82,3 +82,26 @@ After a separately owner-approved merge and deployment, use `node scripts/hermes
 `MCP_PUBLIC_PREVIEW_LIVE_VERIFIED` means only this public-read-only sample responded. A failure prints `MCP_PUBLIC_PREVIEW_NOT_VERIFIED`; do not label a draft PR as live or treat a 200 from a homepage as passing this test. This script is intentionally **not** an authenticated customer test: it sends no tokens or cookies and cannot perform CRM writes or messaging.
 
 The first complete external-host acceptance needs an additional explicit customer/user-host connection, a screenshot or host-side `tools/call` receipt, and proof the model correctly explains PREVIEW_ONLY. Do not request the owner to install anything until deployed endpoint actually passes independent readback.
+
+
+## 2026-10-14 — full protocol parity and roadmap checkpoint
+
+Verification sources: [MCP 2026-07-28 official changelog](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/changelog.mdx), [official TypeScript migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28) and [maintainers' updated roadmap (2026-08-22)](https://blog.modelcontextprotocol.io/posts/mcp-roadmap/).
+
+Further strict-schema review revealed **two additional legacy vs modern differences**, patched under this same draft PR rather than creating a new MCP service:
+
+- Modern `tools/list` must include `ttlMs` and `cacheScope`, not only `server/discover`. Hermes now emits `ttlMs: 0` (immediately stale) and `cacheScope: "private"` (not reusable between identities). Legacy 2025 responses are unchanged. Unit test and independent remote readback verify both.
+- `ping` is *removed* in the 2026-07-28 protocol. Hermes replies with `-32601 Method not found` to a modern call while preserving the already supported legacy 2025 `ping`. These are distinct protocol-era contracts, not two methods exposed to new clients.
+- Modern headers and body routing remain strict, with supported-version negotiation by `-32022`. This server does not claim support for modern Tasks, subscriptions, MRTR or private OAuth; no such methods were added.
+
+**Technology outlook / dated decisions:** The maintainers' 2026-08-22 roadmap identifies (1) agentic messaging, (2) HTTP transport hardening, (3) agent identity and enterprise security, (4) improved primitives, and (5) SDK developer experience. These are **R&D directions**, not releases that Hermes or a host is already running.
+
+| Horizon from 2026-10-14 | Concrete Hermes decision | Promotion proof |
+| --- | --- | --- |
+| 3 months | Release owner-reviewed public `preview_crm_funnel` behind current public MCP handler, test 2025/2026 wire and supported AI host | Exact-head CI, independently reachable URL, user-host `tools/call` receipt |
+| 6 months | First verified identity and *tenant-scoped* `whoami` with stable issuer, audience, consent and current Company/Workspace read grant | Real OAuth provider, revocation test, cross-tenant negative, approved owner release |
+| 9 months | Durable `ProvisioningJob` proposal with idempotent, user-confirmed steps and cancellation; evaluate Tasks extension only for consenting client hosts | Actual job state, capability negotiation, caller/tenant ownership on `tasks/get/update/cancel`, billing bound |
+| 12 months | MCP Apps *optional UI* for funnel review and employee handoff, with text fallback | Supported host matrix, accessibility, CSP, security test, versioned SDK review |
+| 15 months | Evaluate multi-agent coordination and scoped delegation versus existing plugin skills/Cloudflare Portal | Measured run completion, human approval/audit, per-agent identity, permission revocation, operating cost |
+
+**Release policy:** No commitment to autonomous execution or new background privileges from a technology blog, SDK example or green PR. Keep one MCP gateway, one existing Hermes Identity data model, one versioned plugin owner and a verified One Brain handoff. Work requiring owner approval remains a blocker, never an excuse to guess credentials, send emails or silently deploy.
