@@ -94,3 +94,17 @@ jobs:
           path: artifacts/web-quality/
           if-no-files-found: warn
           retention-days: 30
+
+      # Pa11y runs as evidence collection above. Its existing violations are
+      # not an excuse for silent regression: count per-route against a dated cap.
+      # This does NOT declare the current pages WCAG compliant.
+      - name: Test accessibility debt budget parser
+        if: always()
+        run: node --test scripts/check-pa11y-nonregression.test.mjs
+
+      - name: Enforce accessibility debt non-regression
+        if: always()
+        run: |
+          node scripts/check-pa11y-nonregression.mjs \
+            artifacts/web-quality/pa11y.txt \
+            docs/qa/PA11Y_ACCESSIBILITY_BASELINE_2026-10-14.json
