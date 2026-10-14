@@ -106,11 +106,15 @@ export async function completeFederatedLogin({ db, request, provider, subject, e
   // Likewise, never truncate a verified provider email into a different
   // Hermes mailbox before checking for an existing account.
   const subjectId = typeof subject === "string" ? subject : "";
-  const verifiedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+  // Provider-verified mailbox claims are account identifiers: only the
+  // existing case-normalization is intentional. Do not silently trim or
+  // strip unsafe characters into another person's address.
+  const verifiedEmail = typeof email === "string" ? email.toLowerCase() : "";
   if (!["github", "apple"].includes(provider) ||
       subjectId.length < 1 || subjectId.length > 180 ||
       /[<>\u0000-\u001f\u007f\s]/.test(subjectId) ||
       verifiedEmail.length < 1 || verifiedEmail.length > 160 ||
+      /[<>\u0000-\u001f\u007f]/.test(verifiedEmail) ||
       !isValidEmail(verifiedEmail)) {
     return { success: false, error: "provider_identity_invalid", status: 401 };
   }
