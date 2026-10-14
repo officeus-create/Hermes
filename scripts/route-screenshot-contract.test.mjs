@@ -24,6 +24,13 @@ assert.equal(SCREENSHOT_VIEWPORTS.length, 5, "visual evidence must keep the five
 
 const routeMap = new Map(DEFAULT_SCREENSHOT_ROUTES.map((route) => [route.id, route.path]));
 assert.equal(routeMap.get("ru-overview"), "/ru/");
+for (const [name, path] of Object.entries({
+  "uk-overview": "/ua/", "es-overview": "/es/",
+  "it-overview": "/it/", "fr-overview": "/fr/",
+})) {
+  assert.equal(routeMap.get(name), path, `visual capture must include ${path}`);
+  assert.equal(screenshotFileName(name, "mobile"), `${name}--mobile.png`);
+}
 assert.equal(routeMap.get("path-logistics"), "/paths/logistics/");
 assert.equal(routeMap.get("path-marketing"), "/paths/marketing/");
 assert.equal(routeMap.get("path-academy"), "/paths/academy/");
