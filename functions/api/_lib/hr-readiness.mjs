@@ -183,21 +183,31 @@ export async function appendHrBridgeEvent(db, {
 }) {
   await ensureHrReadinessSchema(db);
   if (!HR_BRIDGE_EVENT_TYPES.includes(type)) throw new Error("hr_bridge_event_type_invalid");
+  const key = cleanHrText(idempotencyKey, 180);
+  if (!key) throw new Error("hr_bridge_event_idempotency_key_required");
   const eventId = `hr-bridge-event-${crypto.randomUUID()}`;
+  const payloadJson = JSON.stringify(payload || {});
   await db.prepare(`
     INSERT OR IGNORE INTO hr_bridge_events
       (id,idempotency_key,candidate_id,type,payload_json,occurred_at,created_by_specialist_id)
     VALUES (?,?,?,?,?,?,?)
-  `).bind(
-    eventId,
-    cleanHrText(idempotencyKey, 180),
-    candidateId,
-    type,
-    JSON.stringify(payload || {}),
-    occurredAt,
-    actorSpecialistId,
-  ).run();
-  return { id: eventId, type, occurred_at: occurredAt };
+  `).bind(eventId, key, candidateId, type, payloadJson, occurredAt, actorSpecialistId).run();
+  // INSERT OR IGNORE means replay may not insert. Return the actual stored event
+  // and reject collisions instead of fabricating a receipt for an ignored row.
+  const stored = await db.prepare(
+    "SELECT id,candidate_id,type,payload_json,occurred_at FROM hr_bridge_events WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (!stored) throw new Error("hr_bridge_event_persistence_missing");
+  if (stored.candidate_id !== candidateId || stored.type !== type
+    || stored.payload_json !== payloadJson) {
+    throw new Error("hr_bridge_event_idempotency_conflict");
+  }
+  return {
+    id: stored.id,
+    type: stored.type,
+    occurred_at: stored.occurred_at,
+    duplicate: stored.id !== eventId,
+  };
 }
 
 export async function listHrCapabilityGaps(db, candidateId) {
