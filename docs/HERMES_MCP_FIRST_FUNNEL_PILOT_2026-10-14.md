@@ -118,3 +118,20 @@ That consent boolean is supplied by the calling client/model. It is **not a cryp
 - Before allowing general third-party AI hosts to invoke the full MCP tool catalog, the owner must decide whether to scope client-visible tools to public read-only, require independently verifiable per-user feedback consent, or leave the existing feedback endpoint intentionally public with clear disclosure and abuse controls. That decision requires an explicit existing-feature compatibility review, not an unannounced change.
 - Any future OAuth-backed customer tool remains **separate** from public product feedback and must validate account, issuer, audience, consent, Company/Workspace membership, and capability on every call.
 - CI proof of a read-only preview does not erase or test away this existing feedback write functionality. Source of truth: `functions/api/hermes-connect/mcp.ts`, `scripts/hermes-connect-public-mcp.test.mjs`.
+
+
+## First external-host pilot: server-enforced preview-only mode (2026-10-14)
+
+**Important distinction:** The existing public MCP endpoint includes the `submit_product_feedback` tool, which can mutate the `plugin_product_learning_events` table when a request carries `consent_to_product_learning:true` and D1 is available. This Boolean is **client-supplied** and does not independently prove a human approved that particular call. Neither a readOnlyHint on other tools nor the model's claim is a server-side authorization control.
+
+To allow a future explicitly approved no-write pilot while preserving existing product-learning behavior in environments where the flag is absent, this PR adds an **opt-in deployment flag** `MCP_PUBLIC_PREVIEW_ONLY=true`:
+
+- `tools/list` excludes `submit_product_feedback` for BOTH legacy 2025 and modern 2026 callers. Modern results remain `ttlMs:0` and `cacheScope:'private'`.
+- `tools/call` rejects even a direct `submit_product_feedback` invocation with HTTP 403 / JSON-RPC -32000 **before inspecting arguments or accessing D1**. Hiding a tool in the list is not sufficient, because HTTP clients can call it directly.
+- Public informational tools and `preview_crm_funnel` remain usable, without reading or mutating a customer's private CRM. The existing feedback writer remains available where this flag is unset, pending an explicit product owner decision.
+- The operator must separately approve the production/preview environment configuration. **This change does not enable or set any Cloudflare env var.** A future readback must establish that the flag is in effect on the specific hostname being tested, including a forbidden direct `tools/call` negative probe.
+- Long-term preference: implement verifiable end-user consent and separate capability scopes for all public and private write tools, rather than relying on a Boolean emitted by a model. Do not confuse public feedback writes with company-scoped CRM permissions.
+
+The updated `scripts/hermes-connect-public-mcp.test.mjs` verifies excluded tool listings in both protocol eras, HTTP403 on direct write attempt, zero DB prepares, permitted funnel preview, and backward-compatible tool listing when the flag is absent. It uses synthetic data and does not send a real user message or modify production.
+
+Relevant primary source: [MCP 2026-07-28 tools](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/server/tools.mdx) cautions that tool annotations are untrusted and human-in-the-loop confirmations SHOULD be provided for operations. Because annotations are not enforcement, the Hermes safeguard is in `onRequest`, ahead of the write handler.
