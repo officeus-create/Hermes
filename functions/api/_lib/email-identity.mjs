@@ -4,7 +4,9 @@ export const EMAIL_CONFIRM_SUBJECT = "[HERMES ACCOUNT] [EMAIL VERIFICATION]";
 export const EMAIL_ACCOUNT_PATH = "https://lead-email.internal/v1/send-account";
 export const EMAIL_CONFIRM_TTL_MS = 15 * 60_000;
 export const PRIVATE_HEADERS = { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow", "Referrer-Policy": "no-referrer" };
-export const normalizeEmail = (email) => String(email ?? "").trim().toLowerCase().slice(0, 160);
+// Never truncate a mailbox identity: an overlong submitted address must be
+// rejected, not converted into a different (possibly existing) account.
+export const normalizeEmail = (email) => String(email ?? "").trim().toLowerCase();
 export const hashSecret = async (token) => toHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(token))));
 export const validToken = (token) => typeof token === "string" && /^[a-f0-9]{64}$/.test(token);
 
