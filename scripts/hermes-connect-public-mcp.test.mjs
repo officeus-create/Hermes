@@ -354,3 +354,23 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   const response = await onRequest({request:hugeChunked,env:{}});
   assert.equal(response.status,413,'streamed bytes must be capped even with no declared length');
 }
+
+{
+  // A purportedly modern client may omit the version and _meta while keeping
+  // Mcp-Method/Mcp-Name. Never allow that to fall through the legacy path.
+  for (const headers of [
+    { "Mcp-Method": "tools/list" },
+    { "Mcp-Name": "preview_crm_funnel" },
+    { "MCP-Protocol-Version": "2025-06-18", "Mcp-Method": "tools/list" },
+  ]) {
+    const { response, json } = await call({
+      jsonrpc: "2.0", id: 854, method: "tools/list", params: {},
+    }, {}, headers);
+    assert.equal(response.status, 400, "partial modern MCP routing headers must fail closed");
+    assert.equal(json.error.code, -32020);
+  }
+  const legacy = await call({
+    jsonrpc: "2.0", id: 855, method: "tools/list", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(legacy.response.status, 200, "legacy 2025 mode stays compatible without modern headers");
+}
