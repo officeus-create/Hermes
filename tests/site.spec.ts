@@ -808,7 +808,7 @@ test("technology partnership presents four growth layers and evidence statuses",
   await expect(page.getByText("Live product", { exact: true })).toHaveCount(2);
   await expect(page.getByText("Working prototype", { exact: true })).toHaveCount(2);
   await expect(page.getByText("Build-ready capability", { exact: true })).toHaveCount(2);
-  await expect(page.getByText("Local preview", { exact: true })).toBeVisible();
+  await expect(page.getByText("Source-gated live + preview", { exact: true })).toBeVisible();
   await expect(page.getByText("Implemented capability", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Carrier and dispatcher workspace" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Multilingual website foundation" })).toBeVisible();

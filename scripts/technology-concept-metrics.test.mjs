@@ -41,4 +41,25 @@ assert.match(componentSource, /technologyDashboardMetrics\.map/);
 assert.doesNotMatch(componentSource, /const dashboardMetrics\s*=/);
 assert.doesNotMatch(componentSource, /\["Revenue Pipeline",\s*"\$284K"/);
 
+const partnershipSource = readFileSync(
+  new URL("../src/components/TechnologyPartnershipShowcase.astro", import.meta.url),
+  "utf8",
+);
+assert.match(partnershipSource, /status:\s*"Source-gated live \+ preview"/);
+assert.match(partnershipSource, /approved active records may appear when source, permission, freshness, and visibility gates pass/i);
+assert.match(partnershipSource, /preview examples remain clearly labeled and non-bookable/i);
+assert.match(partnershipSource, /proof:\s*"Open the source-gated Load Board"/);
+assert.doesNotMatch(partnershipSource, /status:\s*"Local preview"/);
+assert.doesNotMatch(partnershipSource, /A Load Board preview with carrier identity/);
+
+const homeProofSource = readFileSync(
+  new URL("../src/components/WebsiteProofBand.astro", import.meta.url),
+  "utf8",
+);
+assert.match(homeProofSource, /Product 04[\s\S]{0,220}Source-gated live \+ preview/);
+assert.match(homeProofSource, /Approved active load or capacity records may appear when source, permission, freshness, and visibility gates pass/);
+assert.match(homeProofSource, /Preview examples remain clearly labeled and non-bookable/);
+assert.match(homeProofSource, /External-board sync and scheduled updates are not claimed live/);
+assert.doesNotMatch(homeProofSource, /No load, truck, offer, dispatch, external-board sync, or scheduled update is live/);
+
 console.log("Technology concept metric provenance passed.");
