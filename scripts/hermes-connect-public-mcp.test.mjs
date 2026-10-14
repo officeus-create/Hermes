@@ -146,6 +146,56 @@ const call = async (body, env = {}, headers = {}) => {
     'modern discovery must keep server identity in _meta, not legacy result body');
 }
 
+
+{
+  // 2026-07-28 ListToolsResult is CacheableResult: both fields are required.
+  // Clients must not reuse this server's tool catalog across authorization
+  // contexts when future authenticated tools arrive.
+  const modern = {
+    "MCP-Protocol-Version": "2026-07-28",
+    "Mcp-Method": "tools/list",
+  };
+  const meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": {},
+  };
+  const { response, json } = await call({
+    jsonrpc: "2.0", id: 875, method: "tools/list", params: { _meta: meta },
+  }, {}, modern);
+  assert.equal(response.status, 200);
+  assert.equal(json.result.resultType, "complete");
+  assert.equal(json.result.ttlMs, 0);
+  assert.equal(json.result.cacheScope, "private");
+  assert.equal(json.result.tools.length, 7);
+  assert.deepEqual(json.result._meta["io.modelcontextprotocol/serverInfo"], {
+    name: "hermes-connect", version: "1.0.0",
+  });
+
+  const old = await call({
+    jsonrpc: "2.0", id: 876, method: "tools/list", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(old.response.status, 200);
+  assert.equal(old.json.result.tools.length, 7);
+  assert.equal("ttlMs" in old.json.result, false);
+  assert.equal("cacheScope" in old.json.result, false);
+}
+{
+  const meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": {},
+  };
+  const forbiddenPing = await call({
+    jsonrpc: "2.0", id: 877, method: "ping", params: { _meta: meta },
+  }, {}, { "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "ping" });
+  assert.equal(forbiddenPing.response.status, 400);
+  assert.equal(forbiddenPing.json.error.code, -32601);
+  const oldPing = await call({
+    jsonrpc: "2.0", id: 878, method: "ping", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(oldPing.response.status, 200);
+  assert.deepEqual(oldPing.json.result, {});
+}
+
 console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
 
 
