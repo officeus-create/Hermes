@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {
-  parsePa11yReport, evaluatePa11yBudget, formatPa11yBudgetSummary,
+  parsePa11yReport, parsePa11yRules, evaluatePa11yBudget, formatPa11yBudgetSummary,
 } from "./check-pa11y-nonregression.mjs";
 
 const budget = {
@@ -46,4 +46,28 @@ assert.ok(differentRoute.failures.some((f) => f.includes("unexpected_audited_rou
 
 assert.throws(() => evaluatePa11yBudget(report(), { schema_version: 2, paths: budget.paths }),
   /baseline_invalid/);
+// Two exact-rule evidence cases with an unchanged route error total.
+// Introduce a new aria finding while a previous contrast finding disappears:
+// the route total stays 2, but this must fail the new rule-level gate.
+const twoRules = (second = "color-contrast") => `Running Pa11y on 1 URLs:
+ > http://127.0.0.1:4321/ - 2 errors
+
+Errors in http://127.0.0.1:4321/:
+ • Contrast issue
+   (https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=axeAPI)
+ • Other rule
+   (https://dequeuniversity.com/rules/axe/4.11/${second}?application=axeAPI)
+
+✘ 0/1 URLs passed
+`;
+const ruleBudget = { schema_version: 1, paths: { "/": 2 }, rule_caps: { "color-contrast": 2 } };
+assert.equal(parsePa11yRules(twoRules()).get("color-contrast"), 2);
+assert.equal(evaluatePa11yBudget(twoRules(), ruleBudget).passed, true);
+const replacedRule = evaluatePa11yBudget(twoRules("aria-prohibited-attr"), ruleBudget);
+assert.equal(replacedRule.observedTotal, 2);
+assert.equal(replacedRule.passed, false);
+assert.ok(replacedRule.failures.includes("unexpected_a11y_rule:aria-prohibited-attr"));
+const missingRuleEvidence = evaluatePa11yBudget("Running Pa11y on 1 URLs:\\n > http://localhost:4321/ - 2 errors", ruleBudget);
+assert.equal(missingRuleEvidence.passed, false);
+assert.ok(missingRuleEvidence.failures.some((x) => x.startsWith("pa11y_rule_evidence_incomplete:")));
 console.log("Pa11y non-regression parsing, remediation, increased debt and fail-closed evidence tests PASS");
