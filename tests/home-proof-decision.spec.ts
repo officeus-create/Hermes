@@ -84,3 +84,46 @@ test("evidence-first decision band is accessible without scripts", async ({ brow
     await context.close();
   }
 });
+
+test("mobile contact remains visually available after proof cards and deferred section rendering", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const proof = page.locator("[data-home-proof-decision]");
+  await expect(proof).toBeVisible();
+  // Full-page screenshots can show content-visibility:auto sections as blank
+  // until scrolled into view. This tests the ACTUAL visitor journey.
+  const contact = page.locator("#contact .home-final-contact");
+  await contact.scrollIntoViewIfNeeded();
+  await expect(contact.getByRole("heading", { name: /build your.*next step/i })).toBeVisible();
+  const primary = contact.locator("[data-home-primary-contact]");
+  await expect(primary).toBeVisible();
+  await expect(primary).toHaveAttribute("href", "/contacts/");
+  expect(await primary.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const box = element.getBoundingClientRect();
+    return style.visibility !== "hidden" && Number(style.opacity) > 0
+      && box.height >= 44 && box.width > 0;
+  })).toBe(true);
+  await primary.click();
+  await expect(page).toHaveURL(/\/contacts\/$/);
+});
+
+test("contact section and proof anchors stay accessible without JavaScript", async ({ browser }, testInfo) => {
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    reducedMotion: "reduce",
+    baseURL: testInfo.project.use.baseURL,
+    viewport: { width: 390, height: 844 },
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto("/");
+    await expect(page.locator("[data-home-proof-decision] [data-proof-evidence]")).toHaveCount(4);
+    const primary = page.locator("#contact [data-home-primary-contact]");
+    await primary.scrollIntoViewIfNeeded();
+    await expect(primary).toBeVisible();
+    await expect(primary).toHaveAttribute("href", "/contacts/");
+  } finally {
+    await context.close();
+  }
+});
