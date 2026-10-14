@@ -239,6 +239,22 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(response.status, 200);
   assert.equal(json.result.tools.length, 7);
 }
+
+{
+  // Host/request URL and Origin can be attacker-controlled together when a
+  // server's route is exposed by a reverse proxy or DNS-rebinding scenario.
+  // An origin copied from request.url would mistakenly trust this request.
+  const request = new Request("https://attacker.example/api/hermes-connect/mcp", {
+    method: "POST",
+    headers: { Origin: "https://attacker.example", "Content-Type": "application/json" },
+    body: JSON.stringify({jsonrpc:"2.0",id:851,method:"tools/list",params:{}}),
+  });
+  const response = await onRequest({ request, env: {} });
+  const data = await response.json();
+  assert.equal(response.status, 403, "client-provided Host can never authorize its own Origin");
+  assert.equal(data.error.message, "Untrusted Origin");
+}
+
 {
   const { response } = await call(
     {jsonrpc:'2.0',id:86,method:'tools/list',params:{}}, {},
