@@ -57,6 +57,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
             <label>Email<input name="email" type="email" autocomplete="username" required /></label>
             <label><span data-i18n="password">Password</span><input name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
             <button class="primary" type="submit" data-i18n="secureLogin">Secure login</button>
+            <a data-email-magic-link href="/services/hermes-connect/email-access/" hidden data-i18n="emailLink">Use a one-time email sign-in link</a>
           </form>
         </article>
 
@@ -133,7 +134,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       architecture:"Архітектура Hermes Connect",notUniversal:"Не одна CRM для всіх бізнесів.",notUniversalCopy:"Один canonical business profile може мати vertical-specific workspace. Нові verticals підключаються до тієї ж Hermes identity і Catalog, а не створюють дублікати компаній.",
       repairShort:"Repair Shop",academyShort:"Academy",liveProduct:"Live product",businessCrm:"Business CRM + learner",privateFoundation:"Private foundation",logistics:"Logistics",marketing:"Marketing",professional:"Professional Services",preparing:"Готується",
       boundary:"Реєстрація Hermes-акаунта не публікує бізнес у Catalog автоматично. Публікація бізнес-профілю — окремий opt-in. Приватні CRM-дані не стають публічними.",
-      loginError:"Не вдалося увійти. Перевірте email і пароль."
+      loginError:"Не вдалося увійти. Перевірте email і пароль.,emailLink:"Увійти за одноразовим посиланням на email."
     },
     en: {
       pilotBoundary:"Repair Shop is the current live pilot. Account registration is followed by shop setup; it does not confirm activation or customer results.",
@@ -147,7 +148,7 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
       architecture:"Hermes Connect architecture",notUniversal:"Not one CRM for every business.",notUniversalCopy:"One canonical business profile can have a vertical-specific workspace. New verticals attach to the same Hermes identity and Catalog instead of creating duplicate companies.",
       repairShort:"Repair Shop",academyShort:"Academy",liveProduct:"Live product",businessCrm:"Business CRM + learner",privateFoundation:"Private foundation",logistics:"Logistics",marketing:"Marketing",professional:"Professional Services",preparing:"Preparing",
       boundary:"Creating a Hermes account does not publish the business to Catalog automatically. Public business listing is a separate opt-in. Private CRM data never becomes public by registration alone.",
-      loginError:"We could not sign you in. Check your email and password."
+      loginError:"We could not sign you in. Check your email and password.,emailLink:"Use a one-time email sign-in link."
     }
   } as const;
   type Lang = keyof typeof dictionary;
@@ -267,6 +268,17 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
     await check();
   });
   check();
+  void (async () => {
+    const link = document.querySelector<HTMLAnchorElement>("[data-email-magic-link]");
+    if (!link) return;
+    try {
+      const res = await fetch("/api/auth/email/start", {
+        credentials: "same-origin", headers: { Accept: "application/json" },
+      });
+      const availability = await res.json().catch(() => ({}));
+      if (res.ok && availability.enabled === true) link.hidden = false;
+    } catch {}
+  })();
 </script>
 
 <style>
