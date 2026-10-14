@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { beginOAuthState, consumeOAuthState, completeFederatedLogin } from "../functions/api/_lib/federated-login.mjs";
+import { beginOAuthState, consumeOAuthState, completeFederatedLogin, getVerifiedOAuthStartOwner } from "../functions/api/_lib/federated-login.mjs";
 
 const startSource = fs.readFileSync(new URL("../functions/api/auth/apple/start.ts", import.meta.url), "utf8");
 const callbackSource = fs.readFileSync(new URL("../functions/api/auth/apple/callback.ts", import.meta.url), "utf8");
@@ -9,12 +9,15 @@ assert.match(startSource, /getAuthenticatedSpecialist\(request, env.DB\)/);
 assert.match(startSource, /sessions WHERE token=\? AND specialist_id=\?/);
 assert.match(startSource, /Date\.parse\(String\(activeSession\.expires_at\)\) > Date\.now\(\)/);
 assert.match(startSource, /beginOAuthState\(env.DB, "apple", nonce, verifiedStartSession\)/);
-assert.match(callbackSource, /WHERE specialist_id=\? AND created_at=\? AND expires_at>\?/);
-assert.match(callbackSource, /verifiedAppleLinkOwnerId = String\(active\.specialist_id\)/);
+assert.match(callbackSource, /getVerifiedOAuthStartOwner\(env.DB, context\)/);
 assert.match(callbackSource, /completeFederatedLogin\(/);
 assert.match(callbackSource, /verifiedAppleLinkOwnerId,/);
 
 const stateRows = [];
+const startSessions = [{
+  specialist_id: "owner-1", created_at: "2026-10-14T13:00:00.000Z",
+  expires_at: new Date(Date.now()+300000).toISOString(), revoked: false,
+}];
 const identityRows = [];
 const sessions = [];
 const specialists = [{ id: "owner-1", email: "owner@example.com", name: "Existing Owner", role: "Business Owner" }];
@@ -58,6 +61,12 @@ const db = {
             throw Error("unexpected run: " + sql);
           },
           async first() {
+            if (sql.startsWith("SELECT specialist_id FROM sessions WHERE specialist_id=? AND created_at=? AND expires_at>?")) {
+              const [id, created, cutoff] = args;
+              const active = startSessions.find(x => x.specialist_id === id && x.created_at === created &&
+                x.expires_at > cutoff && !x.revoked);
+              return active ? {specialist_id: active.specialist_id} : null;
+            }
             if (sql.startsWith("SELECT code_verifier, nonce, link_specialist_id")) {
               const [hash, provider, cutoff] = args;
               const row = stateRows.find(x => x.hash === hash && x.provider === provider &&
@@ -106,6 +115,16 @@ assert.equal(consumed.link_session_created_at, "2026-10-14T13:00:00.000Z");
 assert.equal(await consumeOAuthState(db, request, "apple", start.state), null,
   "one-time state must reject replay");
 
+assert.equal(await getVerifiedOAuthStartOwner(db, consumed), "owner-1");
+startSessions[0].revoked = true;
+assert.equal(await getVerifiedOAuthStartOwner(db, consumed), null,
+  "revoked original Hermes session must prevent Apple provider link");
+startSessions[0].revoked = false;
+startSessions[0].expires_at = "2026-01-01T00:00:00Z";
+assert.equal(await getVerifiedOAuthStartOwner(db, consumed), null,
+  "expired original Hermes session must prevent Apple provider link");
+startSessions[0].expires_at = new Date(Date.now()+300000).toISOString();
+
 const other = await beginOAuthState(db, "apple", "nonce-2");
 assert.equal(stateRows.at(-1).link_specialist_id, null,
   "unauthenticated Apple start must never invent a linking identity");
@@ -127,7 +146,7 @@ assert.equal(identityRows.length, 0);
 
 const allowed = await completeFederatedLogin({
   db, request, provider: "apple", subject: "apple-user-1", email: "owner@example.com",
-  verifiedAppleLinkOwnerId: consumed.link_specialist_id,
+  verifiedAppleLinkOwnerId: await getVerifiedOAuthStartOwner(db, consumed),
 });
 assert.equal(allowed.success, true,
   "Apple one-time state from a verified still-active Hermes session permits explicit linking");
