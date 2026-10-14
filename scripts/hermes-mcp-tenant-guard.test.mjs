@@ -38,12 +38,14 @@ function mocks(overrides = {}) {
         introspections++;
         assert.equal(uri, "https://mcp-introspector.internal/introspect");
         assert.equal(opts.method, "POST");
+        assert.equal(opts.redirect, "error", "never forward Bearer credentials over redirects");
         assert.equal(opts.headers.Authorization, "Bearer " + token);
         assert.deepEqual(JSON.parse(opts.body), {
           resource: HERMES_MCP_RESOURCE, scope: "hermes:crm:read",
         });
         if (overrides.introspectionUnavailable) throw Error("service offline");
         if (overrides.introspectionReject) return new Response(null, { status: 401 });
+        if (overrides.introspectionRedirect) return new Response(null, { status: 302, headers: { Location: "https://attacker.example/steal" } });
         return new Response(JSON.stringify(proof), { status: 200 });
       },
     },
@@ -158,7 +160,7 @@ for (const change of wrongProofs) {
   assert.equal(result.reason, "invalid_oauth_resource_grant", JSON.stringify(change));
   assert.equal(mock.calls().dbReads, 0, "invalid token may not query tenant data");
 }
-for (const failure of ["introspectionReject", "introspectionUnavailable", "dbUnavailable", "identityDbUnavailable"]) {
+for (const failure of ["introspectionReject", "introspectionRedirect", "introspectionUnavailable", "dbUnavailable", "identityDbUnavailable"]) {
   const mock = mocks({ [failure]: true });
   const result = await attempt(mock.env);
   assert.equal(result.ok, false, failure);
