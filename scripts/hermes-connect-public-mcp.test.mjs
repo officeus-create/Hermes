@@ -522,3 +522,63 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(json.result.structuredContent.status, "PREVIEW_ONLY");
   assert.equal(dbTouches, 0);
 }
+
+{
+  // Preview-only is a *server* deployment policy, not a model suggestion.
+  // This can be used for an authorized host pilot without silently changing
+  // the current production feedback workflow when flag is absent.
+  const env = { MCP_PUBLIC_PREVIEW_ONLY: 'true' };
+  const oldList = await call({
+    jsonrpc:'2.0',id:891,method:'tools/list',params:{},
+  },env);
+  assert.equal(oldList.response.status,200);
+  assert.equal(oldList.json.result.tools.length,6);
+  assert.equal(oldList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
+
+  const meta = {
+    'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+    'io.modelcontextprotocol/clientCapabilities':{},
+  };
+  const modernList = await call({
+    jsonrpc:'2.0',id:892,method:'tools/list',params:{_meta:meta},
+  },env, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list'});
+  assert.equal(modernList.response.status,200);
+  assert.equal(modernList.json.result.tools.length,6);
+  assert.equal(modernList.json.result.ttlMs,0);
+  assert.equal(modernList.json.result.cacheScope,'private');
+  assert.equal(modernList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
+
+  let dbCalls=0;
+  const strict = { MCP_PUBLIC_PREVIEW_ONLY:'true',
+    DB: {prepare(){ dbCalls++; throw new Error('Blocked MCP tool touched D1'); }},
+  };
+  const attempted = await call({
+    jsonrpc:'2.0',id:893,method:'tools/call',params:{
+      name:'submit_product_feedback',arguments:{
+        business_type:'repair shop',problem_class:'follow up',
+        desired_capability:'one reminder',outcome:'workflow_friction',
+        consent_to_product_learning:true,
+      },
+    }
+  },strict);
+  assert.equal(attempted.response.status,403);
+  assert.equal(attempted.json.error.code,-32000);
+  assert.match(attempted.json.error.message,/Write tool unavailable/);
+  assert.equal(dbCalls,0,'direct calls must not reach D1 even if caller asserts consent');
+
+  const permitted = await call({
+    jsonrpc:'2.0',id:894,method:'tools/call',params:{
+      name:'preview_crm_funnel',arguments:{
+        business_type:'auto repair shop',goal:'reduce missed bookings',
+      }
+    }
+  },strict);
+  assert.equal(permitted.response.status,200);
+  assert.equal(permitted.json.result.structuredContent.status,'PREVIEW_ONLY');
+  assert.equal(dbCalls,0,'preview mode must not query D1');
+  const unconfigured = await call({
+    jsonrpc:'2.0',id:895,method:'tools/list',params:{},
+  },{});
+  assert.equal(unconfigured.json.result.tools.length,7,
+    'existing product feedback remains discoverable unless operator explicitly enables preview mode');
+}
