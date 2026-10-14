@@ -33,7 +33,9 @@ export async function ensureEmailIdentitySchema(db) {
 }
 export const magicLink = (token) => {
   const url = new URL("https://hermeslogisticsus.com/services/hermes-connect/confirm-email/");
-  url.searchParams.set("token", token);
+  // A URL fragment is never transmitted in the HTTP request or Referer.
+  // Keep this credential out of server logs, edge analytics and page-load metadata.
+  url.hash = new URLSearchParams({ token }).toString();
   return url.toString();
 };
 export const magicEmailText = (link) => [
