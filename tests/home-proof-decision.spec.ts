@@ -157,7 +157,8 @@ test("proof clicks emit only consent-gated, non-identifying funnel intent", asyn
     const events: Array<Record<string, unknown>> = [];
     (window as Window & { __proofEvents?: Array<Record<string, unknown>> }).__proofEvents = events;
     window.addEventListener("hermes:analytics", (evt) => {
-      events.push((evt as CustomEvent<Record<string, unknown>>).detail);
+      const detail = (evt as CustomEvent<Record<string, unknown>>).detail;
+      if (detail.name === "home_proof_link_clicked") events.push(detail);
     });
     // Keep this test inside the site; test only the measurement intent, not an outbound action.
     document.querySelectorAll<HTMLAnchorElement>("[data-home-proof-decision] a").forEach((a) => {
