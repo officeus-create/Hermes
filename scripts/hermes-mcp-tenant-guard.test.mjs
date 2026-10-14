@@ -51,11 +51,18 @@ function mocks(overrides = {}) {
       prepare(sql) {
         assert.match(sql, /^\s*SELECT /);
         dbReads++;
+        const identityLookup = /FROM specialists WHERE id/.test(sql);
         return {
           bind(...args) {
-            assert.deepEqual(args, ["specialist-1", overrides.expectedCompanyRef || companyRef]);
+            assert.deepEqual(args, identityLookup
+              ? ["specialist-1"]
+              : ["specialist-1", overrides.expectedCompanyRef || companyRef]);
             return { async first() {
               if (overrides.dbUnavailable) throw Error("db offline");
+              if (identityLookup) {
+                if (overrides.identityDbUnavailable) throw Error("specialist database offline");
+                return overrides.identityMissing ? null : { id: "specialist-1" };
+              }
               return row;
             }};
           },
@@ -80,7 +87,7 @@ const attempt = (env, auth = "Bearer " + token, company = companyRef, workspace 
     role: "member", capabilities: ["hermes:crm:read"],
     client_id: "approved-agent-client", grant_id: "grant-real-1",
   });
-  assert.deepEqual(mock.calls(), { dbReads: 1, introspections: 1, mutationCount: 0 });
+  assert.deepEqual(mock.calls(), { dbReads: 2, introspections: 1, mutationCount: 0 });
 }
 {
   const mock = mocks();
@@ -142,6 +149,7 @@ const wrongProofs = [
   { client_id: "" }, { consent_granted: false },
   { scope: "hermes:crm:write" }, { scope: "hermes:crm:read-all" },
   { exp: undefined }, { iat: undefined }, { exp: current - 10 },
+  { nbf: current + 30 }, { nbf: "not-a-time" },
   { iat: current + 120 }, { exp: current + 7200 },
 ];
 for (const change of wrongProofs) {
@@ -150,10 +158,21 @@ for (const change of wrongProofs) {
   assert.equal(result.reason, "invalid_oauth_resource_grant", JSON.stringify(change));
   assert.equal(mock.calls().dbReads, 0, "invalid token may not query tenant data");
 }
-for (const failure of ["introspectionReject", "introspectionUnavailable", "dbUnavailable"]) {
+for (const failure of ["introspectionReject", "introspectionUnavailable", "dbUnavailable", "identityDbUnavailable"]) {
   const mock = mocks({ [failure]: true });
   const result = await attempt(mock.env);
   assert.equal(result.ok, false, failure);
   assert.equal(mock.calls().mutationCount, 0);
 }
+
+// An expired/deleted specialist must not be resurrected by an orphaned,
+// apparently valid Company/Workspace grant and a previously minted token.
+{
+  const mock = mocks({ identityMissing: true });
+  const denied = await attempt(mock.env);
+  assert.equal(denied.status, 403);
+  assert.equal(denied.reason, "identity_not_active");
+  assert.deepEqual(mock.calls(), { dbReads: 2, introspections: 1, mutationCount: 0 });
+}
+
 console.log("HERMES_MCP_PRIVATE_TENANT_GUARD_CONTRACT_PASS=YES: fail closed, approved resource, consent, read scope and exact membership; no writes");
