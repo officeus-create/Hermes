@@ -256,6 +256,28 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
 }
 
 {
+  for (const mime of ["text/plain", "application/x-www-form-urlencoded", "text/html"]) {
+    const request = new Request("https://hermeslogisticsus.com/api/hermes-connect/mcp", {
+      method: "POST",
+      headers: { "Content-Type": mime },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 852, method: "tools/list", params: {} }),
+    });
+    const response = await onRequest({ request, env: {} });
+    const data = await response.json();
+    assert.equal(response.status, 415, `reject non-JSON MCP content type: ${mime}`);
+    assert.match(data.error.message, /Unsupported Media Type/);
+  }
+  const jsonWithCharset = new Request("https://hermeslogisticsus.com/api/hermes-connect/mcp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 853, method: "tools/list", params: {} }),
+  });
+  const accepted = await onRequest({ request: jsonWithCharset, env: {} });
+  assert.equal(accepted.status, 200, "valid JSON media type with charset stays compatible");
+}
+
+
+{
   const { response } = await call(
     {jsonrpc:'2.0',id:86,method:'tools/list',params:{}}, {},
     {'Origin':'https://trusted.example'});
