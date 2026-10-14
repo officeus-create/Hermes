@@ -30,11 +30,23 @@
     const availableFrom = root?.querySelector<HTMLInputElement>('input[name="available_from"]');
     if (!root || !form || !alert || !result || !decision || !state || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
 
-    const canonicalProductionHost = window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com";
-    if (canonicalProductionHost) {
-      form.dataset.leadMode = "live";
-      if (!form.dataset.leadEndpoint) form.dataset.leadEndpoint = "/api/logistics-lead";
+    // Server-rendered PUBLIC_CONTACT_MODE is the feature/safety gate.
+    // The browser hostname is NOT authorization to turn preview into live:
+    // backend LEAD_DELIVERY_MODE or receiver credentials may still be disabled.
+    // Only an explicitly configured live mode with a same-origin HTTPS endpoint
+    // can expose the send action. This never sends or mutates a lead by itself.
+    const declaredLive = form.dataset.leadMode === "live";
+    let configuredLive = false;
+    if (declaredLive && form.dataset.leadEndpoint) {
+      try {
+        const configuredEndpoint = new URL(form.dataset.leadEndpoint, window.location.origin);
+        configuredLive = configuredEndpoint.protocol === "https:" &&
+          configuredEndpoint.origin === window.location.origin;
+      } catch {
+        // Invalid endpoints are preview-only and never silently replaced.
+      }
     }
+    form.dataset.leadMode = configuredLive ? "live" : "preview";
 
     const modeNote = root.querySelector<HTMLElement>(".dispatch-mode-note");
     if (modeNote) {
