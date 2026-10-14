@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { onRequestPost as emailStart, onRequestGet as emailStatus } from "../functions/api/auth/email/start.ts";
 import { onRequestPost as emailVerify } from "../functions/api/auth/email/verify.ts";
 import { onRequestPost as legacyRegister } from "../functions/api/auth/register.ts";
-import { magicLink } from "../functions/api/_lib/email-identity.mjs";
+import { magicLink, normalizeEmail, validateEmailRequest } from "../functions/api/_lib/email-identity.mjs";
 
 const read = p => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const source = read("functions/api/_lib/email-identity.mjs");
@@ -102,5 +102,50 @@ const redirectedJson = await redirected.json();
 assert.equal(redirectedJson.error, "email_verification_required");
 assert.equal(redirectedJson.next_url, "/services/hermes-connect/email-access/");
 assert.equal(registerDbQueries, 0);
+
+
+const longEmail = "a".repeat(151) + "@example.com";
+assert.ok(longEmail.length > 160);
+assert.equal(normalizeEmail(longEmail), longEmail, "overlong emails must not truncate to a second identity");
+assert.equal(validateEmailRequest(normalizeEmail(longEmail)), false);
+
+let invalidDbReads = 0;
+let accidentalSends = 0;
+const enabledButNoIOEnv = {
+  DB: { prepare: () => { invalidDbReads++; throw new Error("invalid body touched DB"); } },
+  HERMES_EMAIL_MAGIC_ENABLED: "true",
+  HERMES_AUTH_TRANSACTIONAL_EMAIL_APPROVED: "true",
+  HERMES_AUTH_EMAIL_DELIVERY_READY: "true",
+  HERMES_EMAIL_RATE_SALT: "synthetic-rate-salt-for-tests-only",
+  LEAD_EMAIL_SERVICE: { fetch: async () => { accidentalSends++; throw new Error("invalid body sent email"); } },
+  LEAD_SERVICE_TOKEN: "synthetic-no-send-test-token",
+};
+for (const endpoint of [
+  { path: "/api/auth/email/start", handle: emailStart },
+  { path: "/api/auth/email/verify", handle: emailVerify },
+]) {
+  for (const invalid of ["null", "[]", "12", '"text"']) {
+    const request = new Request("https://hermeslogisticsus.com" + endpoint.path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "https://hermeslogisticsus.com" },
+      body: invalid,
+    });
+    const result = await endpoint.handle({ request, env: enabledButNoIOEnv });
+    assert.equal(result.status, 400, `${endpoint.path} must reject JSON ${invalid}`);
+    assert.equal((await result.json()).error, "invalid_request");
+  }
+}
+const tooLong = await emailStart({
+  env: enabledButNoIOEnv,
+  request: new Request("https://hermeslogisticsus.com/api/auth/email/start", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "https://hermeslogisticsus.com" },
+    body: JSON.stringify({ email: longEmail }),
+  }),
+});
+assert.equal(tooLong.status, 400);
+assert.equal((await tooLong.json()).error, "invalid_email");
+assert.equal(invalidDbReads, 0, "oversized and malformed payloads must not write/read DB");
+assert.equal(accidentalSends, 0, "invalid payloads must never trigger email transport");
 
 console.log("hermes-email-magic-contract: no-send-by-default, no-session-before-verified-email, rate limits, token consumption, safe UI PASS");
