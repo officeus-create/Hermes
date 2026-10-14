@@ -1,0 +1,153 @@
+---
+import type { SiteLocale } from "../data/locales";
+import { directionOwnerRoutes } from "../data/localized-direction-owners";
+
+type Direction = "logistics" | "marketing" | "technology" | "academy";
+type ProofItem = { title: string; reason: string };
+type ProofCopy = {
+  eyebrow: string; title: string; lead: string; source: string; explore: string;
+  contact: string; boundary: string; items: Record<Direction, ProofItem>;
+};
+
+interface Props { locale?: SiteLocale }
+const { locale = "en" } = Astro.props;
+const directionOrder: Direction[] = ["logistics", "marketing", "technology", "academy"];
+const sources: Record<Direction, string> = {
+  logistics: "/company-information/",
+  marketing: "/case/appleton-vehicle-transport-seo/",
+  technology: "/case/it-development/",
+  academy: "/academy/resources/",
+};
+const copy: Record<SiteLocale, ProofCopy> = {
+  en: {
+    eyebrow: "Evidence before promises",
+    title: "Before you choose, inspect what we can actually show.",
+    lead: "A referral should make the next decision easier. Open the evidence, understand the service, then choose a clear contact route.",
+    source: "Review source", explore: "Explore this direction", contact: "Describe your request",
+    boundary: "These links show public company records, delivered work or learning resources—not guaranteed loads, rankings, customers, income or employment.",
+    items: {
+      logistics: { title: "Carrier-led U.S. operations", reason: "Transport, equipment fit, documentation and human review start with a verifiable Wisconsin company identity." },
+      marketing: { title: "Search work you can inspect", reason: "The published Appleton SEO case separates a delivered resource cluster from search visibility and commercial outcomes." },
+      technology: { title: "Software with clear maturity labels", reason: "Inspect the released corporate website case. Hermes Connect Repair Shops is a live pilot; other modules are not presented as released." },
+      academy: { title: "Practice with a human decision", reason: "Open public exercises and preparation guides. Learning progress is not an automatic job, certification or team permission." },
+    },
+  },
+  uk: {
+    eyebrow: "Докази замість обіцянок",
+    title: "Перед вибором перевірте, що ми справді можемо показати.",
+    lead: "Рекомендація сайту має спрощувати рішення. Перегляньте джерело, умови послуги та оберіть наступний крок.",
+    source: "Джерело (англ.)", explore: "Переглянути напрям", contact: "Описати запит",
+    boundary: "Це відкриті реєстри, виконані роботи й навчальні матеріали, а не гарантії вантажів, позицій, клієнтів, доходу чи роботи.",
+    items: {
+      logistics: { title: "Логістика США з рішенням перевізника", reason: "Перевірка обладнання, документів і умов перевезення починається з підтвердження компанії у Вісконсині." },
+      marketing: { title: "SEO-роботу можна перевірити", reason: "Кейс Appleton відділяє опубліковані матеріали від пошукової видимості та продажів." },
+      technology: { title: "Цифрові продукти з чесним статусом", reason: "Є кейс працюючого корпоративного сайту. Hermes Connect для СТО — робочий пілот, інші модулі — не готові релізи." },
+      academy: { title: "Практика й перевірка людиною", reason: "Доступні відкриті вправи та довідники. Навчання не надає автоматично роботу, сертифікат чи доступ до команди." },
+    },
+  },
+  ru: {
+    eyebrow: "Доказательства вместо обещаний",
+    title: "До выбора проверьте, что мы действительно можем показать.",
+    lead: "Рекомендация сайта должна помогать принять решение. Посмотрите источник, условия услуги и следующий шаг.",
+    source: "Источник (англ.)", explore: "Открыть направление", contact: "Описать задачу",
+    boundary: "Здесь открытые реестры, выполненные работы и учебные материалы, а не гарантии грузов, позиций, клиентов, дохода или трудоустройства.",
+    items: {
+      logistics: { title: "Логистика США с контролем перевозчика", reason: "Проверка оборудования, документов и условий перевозки начинается с подтверждённой компании в Висконсине." },
+      marketing: { title: "SEO-работу можно проверить", reason: "Кейс Appleton отделяет опубликованные материалы от поисковой видимости и коммерческих результатов." },
+      technology: { title: "Продукты с честным статусом", reason: "Есть кейс работающего корпоративного сайта. Hermes Connect для СТО — действующий пилот; остальные модули не выдаются за готовые." },
+      academy: { title: "Практика и проверка человеком", reason: "Доступны открытые упражнения и руководства. Обучение не означает автоматическое трудоустройство, сертификат или доступ к команде." },
+    },
+  },
+  es: {
+    eyebrow: "Pruebas antes que promesas",
+    title: "Antes de elegir, revise lo que podemos demostrar.",
+    lead: "Una recomendación debe facilitar la decisión. Consulte las pruebas, el alcance y el siguiente paso.",
+    source: "Ver fuente (inglés)", explore: "Explorar esta área", contact: "Describir su solicitud",
+    boundary: "Son registros públicos, trabajo entregado y recursos educativos; no garantizan cargas, posiciones, clientes, ingresos ni empleo.",
+    items: {
+      logistics: { title: "Operaciones de transporte en EE. UU.", reason: "La verificación de equipos, documentos y condiciones parte de una entidad registrada en Wisconsin." },
+      marketing: { title: "Trabajo SEO verificable", reason: "El caso de Appleton distingue los recursos publicados de la visibilidad en búsquedas y de los resultados comerciales." },
+      technology: { title: "Software con estado comprobable", reason: "Hay un caso de sitio corporativo publicado. Hermes Connect para talleres es un piloto activo; los demás módulos no son productos lanzados." },
+      academy: { title: "Práctica con revisión humana", reason: "Consulte ejercicios y guías públicas. La formación no concede automáticamente empleo, certificados ni acceso al equipo." },
+    },
+  },
+  it: {
+    eyebrow: "Prove prima delle promesse",
+    title: "Prima di scegliere, verificate ciò che possiamo dimostrare.",
+    lead: "Una segnalazione deve facilitare la scelta. Esaminate le prove, il servizio e il passo successivo.",
+    source: "Apri fonte (inglese)", explore: "Esplora il settore", contact: "Descrivi la richiesta",
+    boundary: "Sono registri pubblici, lavori consegnati e risorse didattiche, non garanzie di carichi, posizioni, clienti, reddito o lavoro.",
+    items: {
+      logistics: { title: "Logistica USA sotto controllo del vettore", reason: "Verifica di mezzi, documenti e condizioni, con identità aziendale verificabile nel Wisconsin." },
+      marketing: { title: "SEO con prove consultabili", reason: "Il caso Appleton distingue i contenuti pubblicati dalla visibilità nei motori di ricerca e dai risultati commerciali." },
+      technology: { title: "Software con stato dichiarato", reason: "È disponibile il caso del sito aziendale pubblicato. Hermes Connect per officine è un progetto pilota attivo; gli altri moduli non sono lanciati." },
+      academy: { title: "Pratica con revisione umana", reason: "Consultate esercizi e guide pubbliche. La formazione non garantisce impiego, certificazioni o accesso al team." },
+    },
+  },
+  fr: {
+    eyebrow: "Des preuves avant des promesses",
+    title: "Avant de choisir, examinez ce que nous pouvons réellement montrer.",
+    lead: "Une recommandation doit faciliter la décision. Consultez les preuves, la prestation et la prochaine étape.",
+    source: "Voir la source (anglais)", explore: "Explorer ce domaine", contact: "Décrire votre demande",
+    boundary: "Il s'agit de registres publics, de réalisations et de ressources éducatives, sans garantie de chargements, de classement, de clients, de revenus ou d'emploi.",
+    items: {
+      logistics: { title: "Logistique américaine sous contrôle du transporteur", reason: "Vérification des équipements, documents et conditions, avec une entité identifiable dans le Wisconsin." },
+      marketing: { title: "Des travaux SEO vérifiables", reason: "L'étude Appleton distingue les ressources publiées de la visibilité sur les moteurs de recherche et des résultats commerciaux." },
+      technology: { title: "Des logiciels au statut explicite", reason: "Une étude du site d'entreprise publié est disponible. Hermes Connect pour garages est un pilote actif; les autres modules ne sont pas présentés comme livrés." },
+      academy: { title: "Pratique et évaluation humaine", reason: "Consultez les exercices et guides publics. La formation ne garantit pas un emploi, un certificat ou l'accès à une équipe." },
+    },
+  },
+};
+const current = copy[locale];
+---
+<section class="home-proof-decision" aria-labelledby="home-proof-title" data-home-proof-decision data-proof-locale={locale}>
+  <div class="home-proof-inner">
+    <header class="home-proof-heading">
+      <p class="home-proof-kicker">{current.eyebrow}</p>
+      <h2 id="home-proof-title">{current.title}</h2>
+      <p>{current.lead}</p>
+    </header>
+    <div class="home-proof-grid">
+      {directionOrder.map((id, index) => (
+        <article class="home-proof-card" data-proof-direction={id}>
+          <span class="home-proof-number">{String(index + 1).padStart(2, "0")}</span>
+          <h3>{current.items[id].title}</h3>
+          <p>{current.items[id].reason}</p>
+          <div class="home-proof-links">
+            <a class="home-proof-source" href={sources[id]} data-proof-evidence>{current.source}<span aria-hidden="true"> ↗</span></a>
+            <a class="home-proof-explore" href={directionOwnerRoutes[locale][id]} data-proof-service>{current.explore}<span aria-hidden="true"> →</span></a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="home-proof-bottom">
+      <p>{current.boundary}</p>
+      <a href="/contacts/" data-proof-contact>{current.contact}<span aria-hidden="true"> →</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-proof-decision{background:#f7f6f3;color:#202935;padding:clamp(30px,4.5vw,64px) 0}
+  .home-proof-inner{width:min(1180px,calc(100% - 40px));margin-inline:auto}
+  .home-proof-heading{max-width:850px;margin-bottom:clamp(20px,3vw,32px)}
+  .home-proof-kicker{font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#35649b;font-size:.72rem;margin:0 0 8px}
+  .home-proof-heading h2{font-size:clamp(1.35rem,3.1vw,2.4rem);line-height:1.17;letter-spacing:-.025em;max-width:22ch;margin:0}
+  .home-proof-heading>p:not(.home-proof-kicker){color:#566273;line-height:1.6;max-width:70ch;margin:12px 0 0}
+  .home-proof-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .home-proof-card{display:flex;flex-direction:column;min-width:0;padding:20px;background:#fff;border:1px solid #d9e1eb;border-radius:16px}
+  .home-proof-number{font-size:.7rem;font-weight:800;color:#35649b;letter-spacing:.08em}
+  .home-proof-card h3{font-size:1.04rem;line-height:1.3;margin:13px 0 8px}
+  .home-proof-card>p{margin:0 0 18px;font-size:.87rem;line-height:1.55;color:#536175;flex:1}
+  .home-proof-links{display:grid;gap:8px}
+  .home-proof-links a{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 12px;border-radius:9px;font-weight:700;font-size:.81rem;line-height:1.3;text-decoration:none}
+  .home-proof-source{border:1px solid #c7d5e5;color:#1e5483;background:#f5f9ff}
+  .home-proof-explore{color:#fff;background:#24385a}
+  .home-proof-links a:hover{text-decoration:underline;text-underline-offset:3px}
+  .home-proof-decision a:focus-visible{outline:3px solid #3877b7;outline-offset:3px}
+  .home-proof-bottom{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+  .home-proof-bottom p{max-width:74ch;margin:0;font-size:.78rem;line-height:1.55;color:#58667a}
+  .home-proof-bottom>a{white-space:nowrap;display:inline-flex;gap:14px;align-items:center;min-height:44px;font-size:.88rem;font-weight:750;color:#214778}
+  @media(max-width:1000px){.home-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:600px){.home-proof-grid{grid-template-columns:1fr}.home-proof-card{padding:18px}.home-proof-bottom{align-items:flex-start;flex-direction:column}.home-proof-bottom>a{white-space:normal}}
+</style>
