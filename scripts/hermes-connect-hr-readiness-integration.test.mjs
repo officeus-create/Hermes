@@ -3,6 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { ensureAcademySchema } from "../functions/api/_lib/academy.mjs";
 import { ensureAcademyProgressionSchema } from "../functions/api/_lib/academy-progression.mjs";
 import {
+  appendHrBridgeEvent,
   completeHrTeamHandoff,
   decideHrReadiness,
   ensureHrReadinessSchema,
@@ -40,6 +41,38 @@ const candidate={id:"hr_candidate_p0c_000000000000000001",specialist_id:"special
 const academyLink={program_slug:"us-logistics-operations",enrollment_id:"academy-enrollment-p0c-001"};
 const reviewer="reviewer-p0c-001";
 const now="2026-09-22T10:00:00.000Z";
+
+// The bridge event producer must acknowledge ONLY the stored row, never a
+// generated ID that SQLite ignored on a repeated idempotency key.
+const bridgeParams={
+  candidateId:candidate.id,
+  type:"academy_evidence_submitted",
+  idempotencyKey:"bridge-event-replay-p0c",
+  payload:{fixture:"synthetic"},
+  occurredAt:now,
+  actorSpecialistId:reviewer,
+};
+const bridgeFirst=await appendHrBridgeEvent(db,bridgeParams);
+const bridgeReplay=await appendHrBridgeEvent(db,bridgeParams);
+assert.equal(bridgeFirst.duplicate,false);
+assert.equal(bridgeReplay.duplicate,true);
+assert.equal(bridgeReplay.id,bridgeFirst.id);
+const persistedBridge=await db.prepare(
+  "SELECT id,candidate_id,type FROM hr_bridge_events WHERE idempotency_key=?"
+).bind(bridgeParams.idempotencyKey).first();
+assert.equal(persistedBridge.id,bridgeFirst.id);
+await assert.rejects(
+  appendHrBridgeEvent(db,{
+    ...bridgeParams,candidateId:"hr_candidate_p0c_000000000000000002",
+  }),
+  /hr_bridge_event_idempotency_conflict/,
+);
+await assert.rejects(
+  appendHrBridgeEvent(db,{
+    ...bridgeParams,payload:{fixture:"different"},
+  }),
+  /hr_bridge_event_idempotency_conflict/,
+);
 
 await db.prepare(`
   INSERT INTO hr_score_snapshots
