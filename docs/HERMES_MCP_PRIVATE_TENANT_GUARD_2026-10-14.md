@@ -47,3 +47,20 @@ Tests use **synthetic proofs from a mock introspector**, and are not external pr
 [MCP TypeScript SDK v2.3.1](https://github.com/modelcontextprotocol/typescript-sdk/releases/tag/2.3.1) adds/aligns optional `expectedResource` for bearer-auth middleware, hardening acceptance to the intended MCP resource. Preserve our exact audience/resource check if later migrating to official SDK; `expectedResource` is **opt-in** and must be explicitly configured. The v2 migration guide notes authorization rules require independent opt-ins, not simply a protocol-version toggle. An isolated Cloudflare compatibility and security test is required before replacing existing Hermes transport; no dependency is added here.
 
 Avoid treating a successful mocked introspector as proof of signature verification, OAuth client enrollment, end-user consent, owner MFA or suspended-identity checks. The live identity issuer, resource and per-client consent chain remain a separate release gate.
+
+
+## Preventive npm SDK security gate (2026-10-14)
+
+Independent source check on `main`: `package.json` **and** `package-lock.json` contain no `@modelcontextprotocol/*` packages. This means the Hermes **website repository's installed npm tree** is not presently affected by those SDK-specific advisories; it says nothing about ChatGPT, Claude, browser extensions, separately hosted MCP apps, other Hermes repos, or undisclosed indirect services.
+
+Added `scripts/hermes-mcp-sdk-advisory-gate.test.mjs` to standard `npm test`. It inspects both direct and transitive lockfile nodes and intentionally conservatively blocks introduction of below-floor versions, missing direct lockfile records, unknown versions and prereleases for `@modelcontextprotocol/sdk` (1.32.0), `client/core/server/server-legacy` (2.3.1), or `mcp-handler` (1.1.0). The broader 2.3.1 floor is a **Hermes adoption policy**, not a claim that every earlier version in every package is vulnerable. Requires reviewer attention rather than silently installing/upgrading dependencies. This check covers only npm lockfile packages, not external app installations.
+
+Official dated advisories and release evidence:
+
+- [GHSA-6qxp-vccf-f47h](https://github.com/advisories/GHSA-6qxp-vccf-f47h), Sep 30 2026: affected OAuth MCP clients may leak credentials to untrusted issuer; fixed `@modelcontextprotocol/client` 2.2.0 / `@modelcontextprotocol/sdk` 1.31.0. All future clients must pin issuer, use explicit OAuth consent and rotate credentials if exposed.
+- [GHSA-rvq5-wwqv-78pq](https://github.com/modelcontextprotocol/typescript-sdk/security), Oct 5 2026: bearer auth accepted tokens for another service; use a new SDK with **explicit** `expectedResource`. Hermes private guard already requires exact MCP audience/resource and a trusted introspection binding (not yet implemented).
+- [GHSA-22jm-h49p-29qw](https://github.com/modelcontextprotocol/typescript-sdk/security/advisories/GHSA-22jm-h49p-29qw), Oct 2 2026: legacy taskStore sessions were not properly isolated; patched 1.32.0. The planned Hermes `ProvisioningJob` must be scoped to exact verified Company/Workspace and client, not a global task ID.
+- [GHSA-w2fm-25vw-vh7f](https://github.com/advisories/GHSA-w2fm-25vw-vh7f): earlier `mcp-handler` releases could expose another client's tool response through a peer dependency. Do not add the package solely for convenience.
+- [Official SDK release](https://github.com/modelcontextprotocol/typescript-sdk/releases), Oct 5 2026: 2.3.1 is available with opt-in audience controls. No SDK package was added in this PR.
+
+Do not infer a library CVE is an exploitable defect in Hermes if the affected package is absent. Protect future dependencies, token routing and per-client session boundaries; rerun these checks when integrating outside MCP providers. Never forward client bearer tokens across untrusted redirects or store them in shared agent prompts/logs.
