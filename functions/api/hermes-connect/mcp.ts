@@ -793,7 +793,25 @@ export async function onRequest({ request, env }: Context) {
 
   let message: JsonRpcRequest;
   try {
-    message = (await request.json()) as JsonRpcRequest;
+    // Content-Length is client-controlled and may be absent. Enforce the same
+    // 64 KiB ceiling on actual streamed bytes before parsing public JSON-RPC.
+    const reader = request.body?.getReader();
+    if (!reader) return responseJson(400, rpcError(null, -32700, "Parse error"));
+    const decoder = new TextDecoder("utf-8", { fatal: true });
+    let jsonText = "";
+    let actualBytes = 0;
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      actualBytes += value.byteLength;
+      if (actualBytes > 65536) {
+        await reader.cancel().catch(() => {});
+        return responseJson(413, rpcError(null, -32600, "Request body too large"));
+      }
+      jsonText += decoder.decode(value, { stream: true });
+    }
+    jsonText += decoder.decode();
+    message = JSON.parse(jsonText) as JsonRpcRequest;
   } catch {
     return responseJson(400, rpcError(null, -32700, "Parse error"));
   }
