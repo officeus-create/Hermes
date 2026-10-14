@@ -243,3 +243,41 @@ test("public Hermes Connect account affordance stays hidden when account auth fa
   await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
   await expect(page.locator('header details[data-hc-account-switcher][data-public-safe="true"]')).toBeHidden();
 });
+
+
+test("existing delegated Dealer CRM appears only for server-returned membership, not role text", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const permitted = {
+    ...accountPortfolio,
+    delegated_access: [{
+      membership_id: "grant-existing-1",
+      company_ref: "company:legacy-toyota",
+      workspace_ref: "dealer_crm:company:legacy-toyota",
+      role: "member",
+      grant_source: "verified_owner_grant",
+    }],
+  };
+  await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json(permitted)));
+  await page.goto("/services/hermes-connect/?lang=ru", { waitUntil: "domcontentloaded" });
+  const menu = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
+  await expect(menu).toBeVisible();
+  await menu.locator("summary").click();
+  const delegated = menu.locator('[data-hc-workspace-link="dealer"]');
+  await expect(delegated).toHaveCount(1);
+  await expect(delegated).toContainText("Dealer CRM · legacy-toyota");
+  await expect(delegated).toHaveAttribute("href", /\/dealers\/workspace\/crm\/\?lang=ru$/);
+
+  await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json({
+    ...accountPortfolio,
+    delegated_access: [{
+      company_ref: "company:legacy-toyota",
+      workspace_ref: "other:company:legacy-toyota",
+      role: "superadmin",
+    }],
+  })));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  const unprivileged = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
+  await expect(unprivileged).toBeVisible();
+  await unprivileged.locator("summary").click();
+  await expect(unprivileged.locator('[data-hc-workspace-link="dealer"]')).toHaveCount(0);
+});
