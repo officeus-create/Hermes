@@ -53,7 +53,7 @@ function mocks(overrides = {}) {
         dbReads++;
         return {
           bind(...args) {
-            assert.deepEqual(args, ["specialist-1", companyRef]);
+            assert.deepEqual(args, ["specialist-1", overrides.expectedCompanyRef || companyRef]);
             return { async first() {
               if (overrides.dbUnavailable) throw Error("db offline");
               return row;
@@ -110,7 +110,7 @@ const attempt = (env, auth = "Bearer " + token, company = companyRef, workspace 
   assert.deepEqual(mock.calls(), { dbReads: 0, introspections: 0, mutationCount: 0 });
 }
 {
-  const mock = mocks();
+  const mock = mocks({ expectedCompanyRef: "company:someone-else" });
   const result = await attempt(mock.env, "Bearer " + token, "company:someone-else", workspaceRef);
   assert.equal(result.reason, "tenant_access_denied");
 }
