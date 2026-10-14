@@ -790,6 +790,12 @@ export async function onRequest({ request, env }: Context) {
   if (request.method !== "POST") {
     return responseJson(405, { error: "method_not_allowed" }, { Allow: "POST" });
   }
+  // Streamable HTTP accepts JSON-RPC as application/json only.
+  // Reject browser form/text requests before parsing or invoking any tool.
+  const mimeType = (request.headers.get("Content-Type") || "").split(";")[0].trim().toLowerCase();
+  if (mimeType !== "application/json") {
+    return responseJson(415, rpcError(null, -32600, "Unsupported Media Type"));
+  }
 
   const declaredLength = Number(request.headers.get("Content-Length") || "0");
   if (declaredLength > 65536) return responseJson(413, rpcError(null, -32600, "Request body too large"));
