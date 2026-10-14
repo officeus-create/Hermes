@@ -44,8 +44,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       const firstUse = JSON.parse(String(form.get("user") || "{}"));
       displayName = [firstUse?.name?.firstName, firstUse?.name?.lastName].filter(Boolean).join(" ");
     } catch {}
+    // The Apple response uses cross-site form_post, so Hermes's SameSite=Lax
+    // session may be absent. The consumed one-time state can carry evidence
+    // captured ONLY from a validated Hermes session on same-origin /start.
+    // Re-check that exact session creation row is still active: a signed-out
+    // or revoked session cannot authorize a new provider link.
+    let verifiedAppleLinkOwnerId: string | null = null;
+    if (context.link_specialist_id && context.link_session_created_at) {
+      const active = await env.DB.prepare(
+        "SELECT specialist_id FROM sessions WHERE specialist_id=? AND created_at=? AND expires_at>? LIMIT 1"
+      ).bind(context.link_specialist_id, context.link_session_created_at, new Date().toISOString()).first();
+      if (active?.specialist_id === context.link_specialist_id) {
+        verifiedAppleLinkOwnerId = String(active.specialist_id);
+      }
+    }
     const account = await completeFederatedLogin({
       db: env.DB, request, provider: "apple", subject: identity.sub, email: identity.email, name: displayName,
+      verifiedAppleLinkOwnerId,
     });
     if (!account.success) return finish(origin, String(account.error || "identity_conflict"));
     return finish(origin, "", account.cookie);
