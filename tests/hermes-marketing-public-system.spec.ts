@@ -10,6 +10,9 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   await page.goto("/paths/marketing/");
 
   await expect(page.locator(".marketing-service-system")).toBeVisible();
+  await expect(page.locator(".detail-page-marketing .detail-offerings")).toHaveCount(0);
+  await expect(page.locator(".detail-page-marketing .detail-process")).toHaveCount(0);
+  await expect(page.locator(".detail-page-marketing .service-group-grid")).toHaveCount(0);
   await expect(page.locator(".marketing-service-rails article").first()).toBeVisible();
   await expect(page.locator(".growth-console")).toBeVisible();
 
@@ -31,6 +34,7 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
       consoleRadius: getComputedStyle(consoleEl).borderRadius,
       selectedColor: getComputedStyle(selected).color,
       headingColor: getComputedStyle(panelHeading).color,
+      serviceColumns: getComputedStyle(document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-rails")!).gridTemplateColumns.split(" ").length,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   });
@@ -48,6 +52,8 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   expect(visual!.consoleRadius).toBe(expectedConsoleRadius);
   expect(visual!.selectedColor).toBe("rgb(255, 255, 255)");
   expect(visual!.headingColor).toBe("rgb(255, 255, 255)");
+  const width = page.viewportSize()?.width ?? 1440;
+  expect(visual!.serviceColumns).toBe(width <= 620 ? 1 : 2);
   expect(visual!.overflow).toBe(false);
 });
 
@@ -63,6 +69,7 @@ test("Marketing public system remains usable at 390px", async ({ page }) => {
     const consoleEl = document.querySelector<HTMLElement>(".detail-page-marketing .growth-console");
     if (!card || !consoleEl) return null;
     return {
+      serviceColumns: getComputedStyle(document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-rails")!).gridTemplateColumns.split(" ").length,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       cardRadius: getComputedStyle(card).borderRadius,
       consoleRadius: getComputedStyle(consoleEl).borderRadius,
@@ -71,6 +78,7 @@ test("Marketing public system remains usable at 390px", async ({ page }) => {
 
   expect(mobile).not.toBeNull();
   expect(mobile!.overflow).toBe(false);
+  expect(mobile!.serviceColumns).toBe(1);
   expect(mobile!.cardRadius).toBe("22px");
   expect(mobile!.consoleRadius).toBe("22px");
 });
