@@ -1,5 +1,5 @@
 import { appleClientSecret, appleConfig, verifyAppleIdentityToken } from "../../_lib/apple-oidc.mjs";
-import { accountRedirect, completeFederatedLogin, consumeOAuthState, privateAuthHeaders, secureStateCookie } from "../../_lib/federated-login.mjs";
+import { accountRedirect, completeFederatedLogin, consumeOAuthState, getVerifiedOAuthStartOwner, privateAuthHeaders, secureStateCookie } from "../../_lib/federated-login.mjs";
 
 type Env = { DB?: any; APPLE_LOGIN_ENABLED?: string; APPLE_SERVICES_ID?: string; APPLE_TEAM_ID?: string; APPLE_KEY_ID?: string; APPLE_PRIVATE_KEY_P8?: string; APPLE_REDIRECT_URI?: string };
 function finish(origin: string, reason: string, sessionCookie?: string) {
@@ -49,15 +49,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     // captured ONLY from a validated Hermes session on same-origin /start.
     // Re-check that exact session creation row is still active: a signed-out
     // or revoked session cannot authorize a new provider link.
-    let verifiedAppleLinkOwnerId: string | null = null;
-    if (context.link_specialist_id && context.link_session_created_at) {
-      const active = await env.DB.prepare(
-        "SELECT specialist_id FROM sessions WHERE specialist_id=? AND created_at=? AND expires_at>? LIMIT 1"
-      ).bind(context.link_specialist_id, context.link_session_created_at, new Date().toISOString()).first();
-      if (active?.specialist_id === context.link_specialist_id) {
-        verifiedAppleLinkOwnerId = String(active.specialist_id);
-      }
-    }
+    const verifiedAppleLinkOwnerId = await getVerifiedOAuthStartOwner(env.DB, context);
     const account = await completeFederatedLogin({
       db: env.DB, request, provider: "apple", subject: identity.sub, email: identity.email, name: displayName,
       verifiedAppleLinkOwnerId,
