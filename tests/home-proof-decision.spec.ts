@@ -142,3 +142,47 @@ test("every linked proof and locale-specific direction resolves to an actual HTM
     expect(body, `${target} must have visible page content`).toMatch(/<main\b/i);
   }
 });
+
+test("proof clicks emit only consent-gated, non-identifying funnel intent", async ({ page }) => {
+  const externalAnalytics: string[] = [];
+  page.on("request", (request) => {
+    const host = new URL(request.url()).hostname;
+    if (host.includes("google-analytics.com") || host.includes("googletagmanager.com")
+      || host.includes("clarity.ms")) externalAnalytics.push(request.url());
+  });
+  await page.goto("/");
+  await expect(page.locator("[data-home-proof-decision]")).toBeVisible();
+
+  await page.evaluate(() => {
+    const events: Array<Record<string, unknown>> = [];
+    (window as Window & { __proofEvents?: Array<Record<string, unknown>> }).__proofEvents = events;
+    window.addEventListener("hermes:analytics", (evt) => {
+      events.push((evt as CustomEvent<Record<string, unknown>>).detail);
+    });
+    // Keep this test inside the site; test only the measurement intent, not an outbound action.
+    document.querySelectorAll<HTMLAnchorElement>("[data-home-proof-decision] a").forEach((a) => {
+      a.addEventListener("click", (event) => event.preventDefault());
+    });
+  });
+
+  await page.locator('[data-proof-direction="logistics"] [data-proof-evidence]').click();
+  await page.locator('[data-proof-direction="marketing"] [data-proof-service]').click();
+  await page.locator("[data-proof-contact]").click();
+  const events = await page.evaluate(() =>
+    (window as Window & { __proofEvents?: Array<Record<string, unknown>> }).__proofEvents ?? []);
+  expect(events).toHaveLength(3);
+  expect(events.map(({ name, direction, action, locale, page_group }) => ({
+    name, direction, action, locale, page_group,
+  }))).toEqual([
+    { name: "home_proof_link_clicked", direction: "logistics", action: "source", locale: "en", page_group: "corporate_home" },
+    { name: "home_proof_link_clicked", direction: "marketing", action: "service", locale: "en", page_group: "corporate_home" },
+    { name: "home_proof_link_clicked", direction: "all", action: "contact", locale: "en", page_group: "corporate_home" },
+  ]);
+  for (const event of events) {
+    expect(Object.keys(event).sort()).toEqual([
+      "action", "direction", "locale", "name", "page_group", "ts",
+    ]);
+  }
+  expect(await page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  expect(externalAnalytics).toEqual([]);
+});
