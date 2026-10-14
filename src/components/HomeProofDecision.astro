@@ -127,6 +127,35 @@ const current = copy[locale];
   </div>
 </section>
 
+<script>
+  import { trackEvent } from "../lib/analytics";
+
+  // One page-local, consent-gated interaction marker. Never include message,
+  // contact, query, referrer, recipient or visitor identifiers in this event.
+  const proofRoot = document.querySelector<HTMLElement>("[data-home-proof-decision]");
+  proofRoot?.addEventListener("click", (event: MouseEvent) => {
+    const element = event.target;
+    if (!(element instanceof Element)) return;
+    const target = element.closest<HTMLAnchorElement>(
+      "a[data-proof-evidence], a[data-proof-service], a[data-proof-contact]",
+    );
+    if (!target || !proofRoot.contains(target)) return;
+    const kind = target.hasAttribute("data-proof-evidence")
+      ? "source"
+      : target.hasAttribute("data-proof-service")
+        ? "service"
+        : "contact";
+    const direction = target.closest<HTMLElement>("[data-proof-direction]")?.dataset.proofDirection ?? "all";
+    const locale = proofRoot.dataset.proofLocale || "en";
+    trackEvent("home_proof_link_clicked", {
+      direction,
+      action: kind,
+      locale,
+      page_group: "corporate_home",
+    });
+  });
+</script>
+
 <style>
   .home-proof-decision{background:#f7f6f3;color:#202935;padding:clamp(30px,4.5vw,64px) 0}
   .home-proof-inner{width:min(1180px,calc(100% - 40px));margin-inline:auto}
