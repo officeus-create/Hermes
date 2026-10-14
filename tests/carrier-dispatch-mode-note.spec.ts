@@ -16,6 +16,7 @@ function fixture(
   missingNote = false,
   deliveryResults: Array<"ok" | "error" | "bare" | "empty" | "mismatch" | "claimed-delivery" | "duplicate"> = ["ok"],
   consent = "denied",
+  endpointOverride?: string,
 ) {
   const compile = (source: string) => ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
@@ -49,7 +50,7 @@ function fixture(
     "[data-send-vehicle-lead]", "[data-vehicle-delivery-status]", "[data-vehicle-boundary]", ".dispatch-mode-note"];
   const nodes = Object.fromEntries(selectors.map(selector => [selector, element()]));
   const form = nodes["[data-vehicle-form]"];
-  form.dataset = { leadMode: mode, leadEndpoint: mode === "live" ? "/api/logistics-lead" : "" };
+  form.dataset = { leadMode: mode, leadEndpoint: endpointOverride ?? (mode === "live" ? "/api/logistics-lead" : "") };
   const requests: { url: string; options: any }[] = [];
   let requestSequence = 0;
   const location = new URL("/logistics/start-car-hauling-dispatch/", origin);
@@ -94,8 +95,8 @@ test("preview note matches email-only review without automatic delivery", () => 
   expect(view.requests).toHaveLength(0);
 });
 
-test("canonical host override and configured live mode show the explicit-send note", async () => {
-  for (const [origin, mode] of [["https://hermeslogisticsus.com", "preview"], ["https://preview.example.invalid", "live"]]) {
+test("only an explicitly enabled live mode shows a secure send action", async () => {
+  for (const [origin, mode] of [["https://hermeslogisticsus.com", "live"], ["https://preview.example.invalid", "live"]]) {
     const view = fixture(origin, mode);
     expect(view.form.dataset.leadMode).toBe("live");
     expect(view.form.dataset.leadEndpoint).toBe("/api/logistics-lead");
@@ -157,7 +158,7 @@ test("a delivery retry reuses the same idempotency key until the form changes", 
 test("an absent optional mode note leaves review functional", () => {
   const view = fixture("https://hermeslogisticsus.com", "preview", {}, true);
   view.review();
-  expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(false);
+  expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(true);
   expect(view.requests).toHaveLength(0);
 });
 
@@ -197,4 +198,31 @@ test("carrier acceptance preserves consent and controlled attribution without re
     page_path: "/logistics/start-car-hauling-dispatch/", preview_status: view.nodes["[data-vehicle-result]"].dataset.decision });
   expect(view.analyticsCalls.filter(call => call[1] === "carrier_submitted")).toHaveLength(1);
   expect(JSON.stringify(submitted)).not.toMatch(/request_id|Synthetic|MC123456|driver@|15555550123/);
+});
+
+
+test("canonical production hostname cannot override an explicit preview kill switch", async () => {
+  const view = fixture("https://hermeslogisticsus.com", "preview");
+  expect(view.form.dataset.leadMode).toBe("preview");
+  expect(view.form.dataset.leadEndpoint).toBe("");
+  expect(view.note.textContent).toBe(previewNote);
+  view.review();
+  expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(true);
+  expect(view.nodes["[data-vehicle-email]"].hidden).toBe(false);
+  await view.send();
+  expect(view.requests).toHaveLength(0);
+  expect(view.events.some(event => event.event === "carrier_submitted")).toBe(false);
+});
+
+test("live mode without an approved same-origin HTTPS endpoint is preview-only", async () => {
+  for (const endpoint of ["", "http://hermeslogisticsus.com/api/logistics-lead",
+    "https://another.example.invalid/api/logistics-lead", "::invalid url::"]) {
+    const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["ok"], "denied", endpoint);
+    expect(view.form.dataset.leadMode).toBe("preview");
+    expect(view.note.textContent).toBe(previewNote);
+    view.review();
+    expect(view.nodes["[data-send-vehicle-lead]"].hidden).toBe(true);
+    await view.send();
+    expect(view.requests).toHaveLength(0);
+  }
 });
