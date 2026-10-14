@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "captured_at": "2026-10-14",
-  "evidence_environment": "GitHub Actions built PR preview, not production or field data",
-  "evidence_commit": "967e1e95746e0cf3bcd4d910f1942b090eeb54ad",
-  "source_workflow_run_id": 38590653110,
-  "source_artifact_id": 11908210608,
+  "evidence_environment": "GitHub Actions locally-built PR preview with web source identical to current main base SHA; NOT deployed production",
+  "evidence_commit": "1637bee204ddbfcd24bb61bc726b78c63df6f225",
+  "source_workflow_run_id": 38594402143,
+  "source_artifact_id": 11909059108,
   "source_file": "pa11y.txt",
   "status": "KNOWN_DEBT_NONREGRESSION_CAP_NOT_WCAG_COMPLIANCE",
   "audit_tool": "pa11y-ci@4.1.1 (axe) WCAG2AA",
-  "note": "Existing workflow allowed Pa11y nonzero via continue-on-error. This ceiling is temporary per-route debt, NOT clean baseline; source is PR preview, so existing main may have fewer violations. Tighten after independent main and production readback. Never increase any cap without manual approval and evidence.",
+  "note": "Upper caps equal independently parsed Pa11y counts (1043 total) from draft QA-only PR source identical to base main, not a compliant baseline. Update only after current-main/preview matched runs and reviewer approval. Recheck when main advances. External production remains independently unverified.",
   "paths": {
-    "/": 66,
+    "/": 61,
     "/paths/logistics/": 77,
     "/logistics/car-hauler-loads/": 41,
     "/logistics/car-hauler-loads/colorado-springs-co/": 48,
@@ -21,6 +21,7 @@
     "/load-board/": 116,
     "/services/hermes-connect/repair-shops/": 117,
     "/carrier/": 40,
-    "/ru/": 23
-  }
+    "/ru/": 19
+  },
+  "base_main_sha": "63c980c782f0ac41411c93e191f931103e17efed"
 }
