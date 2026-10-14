@@ -8,9 +8,16 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator(".home-master-stage video, .home-master-stage canvas")).toHaveCount(0);
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator(".home-display-i")).toHaveCSS("animation-iteration-count", "infinite");
+  await expect(page.locator(".home-display-i")).toHaveCSS("animation-duration", "5.8s");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".home-display-i")).toHaveCSS("animation-name", "none");
-  await expect(page.locator(".home-story-frame").first()).toHaveCSS("animation-name", "none");
+  // Approved Marketing V4 removes the decorative story cards: reduced motion must
+  // keep its real four-stage SVG scene readable and entirely still.
+  await expect(page.locator(".home-story-frame")).toHaveCount(0);
+  await expect(page.locator("[data-home-marketing-journey]")).toHaveAttribute("data-journey-motion", "reduced");
+  await expect(page.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
 });
 
 test("Home update glow follows a dated public Insight and expires after seven days", async ({ page }) => {

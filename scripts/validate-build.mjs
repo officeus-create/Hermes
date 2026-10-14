@@ -188,7 +188,7 @@ const required = [
   "Car hauling · dealers · shippers · carriers",
   "Website · SEO/GEO · customer acquisition",
   "CRM · automation · custom software",
-  "U.S. logistics · sales · marketing · operations",
+  "Logistics · marketing · IT/AI · sales · operations",
   "Hermes Logistics",
   "Hermes Marketing",
   "Hermes Technology",
