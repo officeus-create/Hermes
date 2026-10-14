@@ -149,7 +149,7 @@ const wrongProofs = [
   { client_id: "" }, { consent_granted: false },
   { scope: "hermes:crm:write" }, { scope: "hermes:crm:read-all" },
   { exp: undefined }, { iat: undefined }, { exp: current - 10 },
-  { nbf: current + 30 }, { nbf: "not-a-time" },
+  { nbf: current + 30 }, { nbf: "not-a-time" }, { nbf: null },
   { iat: current + 120 }, { exp: current + 7200 },
 ];
 for (const change of wrongProofs) {
