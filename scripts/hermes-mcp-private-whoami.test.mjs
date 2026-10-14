@@ -21,7 +21,7 @@ const membership = {
   revoked_at: null,
 };
 
-function fixture({ proof = tokenProof, grant = membership, specialist = { id: "specialist-1" } } = {}) {
+function fixture({ proof = tokenProof, grant = membership, specialist = { id: "specialist-1" }, queriedCompanyRef = companyRef } = {}) {
   const statements = [], upstream = [];
   const DB = {
     prepare(sql) {
@@ -37,7 +37,7 @@ function fixture({ proof = tokenProof, grant = membership, specialist = { id: "s
                 assert.deepEqual(params, ["specialist-1"]);
                 return specialist;
               }
-              assert.deepEqual(params, ["specialist-1", companyRef]);
+              assert.deepEqual(params, ["specialist-1", queriedCompanyRef]);
               return grant;
             },
           };
@@ -128,7 +128,9 @@ for (const { input, error } of [
   assert.equal("workspace" in result, false);
 }
 {
-  const f = fixture();
+  // SQL binds the requested unrelated company, but a mocked stale row from
+  // the original company is still not accepted as authorization for it.
+  const f = fixture({ queriedCompanyRef: "company:unrelated" });
   const result = await f.run({ Authorization: bearer }, { companyRef: "company:unrelated" });
   assert.equal(result.reason, "tenant_access_denied");
 }
