@@ -192,6 +192,60 @@ const publicToolDefinitions = [
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   },
   {
+    name: "preview_crm_funnel",
+    title: "Preview a Hermes CRM funnel before connecting accounts",
+    description:
+      "Build a tangible read-only five-stage funnel preview from a generic business type, goal, and intake channel. No real customer data, account linking, messages, CRM writes, or background jobs. The response is an illustration of what an approved authenticated agent could later execute.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        business_type: { type: "string", minLength: 2, maxLength: 80 },
+        goal: { type: "string", minLength: 3, maxLength: 160 },
+        entry_channel: {
+          type: "string",
+          enum: ["website", "phone", "email", "instagram", "marketplace", "other"],
+        },
+      },
+      required: ["business_type", "goal"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        status: { type: "string", enum: ["PREVIEW_ONLY"] },
+        business_type: { type: "string" },
+        goal: { type: "string" },
+        entry_channel: { type: "string" },
+        stages: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              trigger: { type: "string" },
+              owner: { type: "string" },
+              next_action: { type: "string" },
+              automation_state: { type: "string" },
+            },
+            required: ["name", "trigger", "owner", "next_action", "automation_state"],
+            additionalProperties: false,
+          },
+        },
+        first_connection: { type: "string" },
+        first_kpi: { type: "string" },
+        trial_in_chat: { type: "string" },
+        not_performed: { type: "array", items: { type: "string" } },
+        live_activation_gate: { type: "string" },
+      },
+      required: [
+        "status", "business_type", "goal", "entry_channel", "stages",
+        "first_connection", "first_kpi", "trial_in_chat", "not_performed", "live_activation_gate",
+      ],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
     name: "get_hermes_business_routes",
     title: "Get Hermes business routes",
     description:
@@ -532,6 +586,74 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
   };
 }
 
+function previewCrmFunnel(args: Record<string, unknown>) {
+  const businessType = normalize(args.business_type, 80);
+  const goal = normalize(args.goal, 160);
+  const rawChannel = typeof args.entry_channel === "string" ? args.entry_channel : "website";
+  const allowedChannels = new Set(["website", "phone", "email", "instagram", "marketplace", "other"]);
+  // The preview must be safe for unauthenticated and customer/agent test users:
+  // no raw leads, tenant identity, personal information or credentials.
+  if (!allowedChannels.has(rawChannel) ||
+      businessType.length < 2 || goal.length < 3 ||
+      [businessType, goal].some(containsSensitivePattern)) {
+    throw new Error("invalid_preview_input");
+  }
+  const subject = businessType.toLowerCase();
+  const carrier = /car.?haul|carrier|trucking|dispatch|auto transport|logistics/.test(subject);
+  const repair = /repair|auto shop|garage|mechanic|service center/.test(subject);
+  const stages = carrier
+    ? [
+        ["Carrier inquiry", "New opt-in carrier inquiry", "Sales / carrier intake", "Record source, equipment and preferred lanes"],
+        ["Qualification", "Carrier responds with operating facts", "Carrier operations", "Verify authority, insurance, equipment and contact before commercial access"],
+        ["Offer", "Qualified carrier requests service", "Authorized sales owner", "Explain actual service model; do not promise available loads"],
+        ["Agreement", "Carrier requests to proceed", "Contract owner", "Present approved contract for review; no autonomous sending"],
+        ["Onboarding", "Signed approval recorded", "Dispatch coordinator", "Assign handoff only to permitted staff; keep dispatch inbox undisturbed"],
+      ]
+    : repair
+      ? [
+          ["New request", "Customer opts in through an intake channel", "Reception", "Capture requested service without duplicating existing CRM"],
+          ["Qualification", "Service type and timing identified", "Service advisor", "Determine vehicle/service fit and priority"],
+          ["Estimate", "Qualified inquiry requires quote", "Service advisor", "Prepare draft estimate; price approval stays with shop"],
+          ["Booking", "Customer agrees to an offered slot", "Shop scheduler", "Confirm actual availability before creating appointment"],
+          ["Follow-up", "Completed service is confirmed", "Shop owner", "Propose an opt-in feedback request; no messages sent by preview"],
+        ]
+      : [
+          ["New inquiry", "Opt-in inquiry received", "Sales intake", "Capture source and requested result"],
+          ["Qualification", "Problem and budget range understood", "Account manager", "Confirm scope, priority and decision owner"],
+          ["Proposal", "Fit and scope validated", "Sales owner", "Draft a scoped offer for approval"],
+          ["Delivery handoff", "Explicit acceptance recorded", "Operations", "Assign a task to the approved delivery team"],
+          ["Outcome review", "Work has a measured outcome", "Account manager", "Record evidence and next improvement"],
+        ];
+  return {
+    status: "PREVIEW_ONLY",
+    business_type: businessType,
+    goal,
+    entry_channel: rawChannel,
+    stages: stages.map(([name, trigger, owner, next_action]) => ({
+      name, trigger, owner, next_action, automation_state: "NOT_CONNECTED",
+    })),
+    first_connection: carrier
+      ? "Existing, owner-approved carrier CRM or intake table (read only)"
+      : repair
+        ? "Existing, owner-approved repair-shop CRM (read only)"
+        : "Existing, owner-approved CRM or intake source (read only)",
+    first_kpi: carrier
+      ? "Verified qualified carrier inquiries per week (exclude synthetic leads)"
+      : repair
+        ? "Qualified inquiries that become confirmed appointments"
+        : "Qualified inquiries converted to a recorded next action",
+    trial_in_chat:
+      "Review these five stages in ChatGPT or Claude, choose one bottleneck, and approve only the minimum relevant connector. A real CRM workflow requires separately authenticated and authorized Hermes MCP tools.",
+    not_performed: [
+      "No customer records were accessed, created or changed",
+      "No emails, social messages, calls, invitations or contracts were sent",
+      "No integrations were installed and no background job was started",
+    ],
+    live_activation_gate:
+      "Authenticated Hermes identity -> active company/workspace membership -> explicit tool capability -> source connection consent -> reviewed write permissions -> audit and readback. No automatic production activation.",
+  };
+}
+
 function getHermesBusinessRoutes() {
   return {
     routes: HERMES_ROUTES.map((route) => ({ ...route })),
@@ -637,6 +759,7 @@ async function callTool(env: Env, name: string, args: Record<string, unknown>) {
   if (name === "get_product_overview") return getOverview();
   if (name === "recommend_start_path") return recommendStartPath(args);
   if (name === "build_crm_onboarding_plan") return buildCrmOnboardingPlan(args);
+  if (name === "preview_crm_funnel") return previewCrmFunnel(args);
   if (name === "get_hermes_business_routes") return getHermesBusinessRoutes();
   if (name === "get_product_learning_policy") return getProductLearningPolicy();
   if (name === "submit_product_feedback") return submitProductFeedback(env, args);
