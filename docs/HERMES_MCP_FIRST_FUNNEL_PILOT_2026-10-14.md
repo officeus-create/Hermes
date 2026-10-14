@@ -105,3 +105,16 @@ Further strict-schema review revealed **two additional legacy vs modern differen
 | 15 months | Evaluate multi-agent coordination and scoped delegation versus existing plugin skills/Cloudflare Portal | Measured run completion, human approval/audit, per-agent identity, permission revocation, operating cost |
 
 **Release policy:** No commitment to autonomous execution or new background privileges from a technology blog, SDK example or green PR. Keep one MCP gateway, one existing Hermes Identity data model, one versioned plugin owner and a verified One Brain handoff. Work requiring owner approval remains a blocker, never an excuse to guess credentials, send emails or silently deploy.
+
+
+## Pre-release security clarification: legacy public feedback tool can write D1
+
+The **new** `preview_crm_funnel` and follow-on `preview_agent_handoff` are read-only, but the existing public Hermes MCP endpoint already exposes `submit_product_feedback` with `readOnlyHint:false`. When `consent_to_product_learning:true` and the configured D1 database are supplied, it creates/retains structured rows in `plugin_product_learning_events` (with retention cleanup and rate limiting). Therefore, describing the *entire existing MCP endpoint* as read-only is inaccurate.
+
+That consent boolean is supplied by the calling client/model. It is **not a cryptographic or independently checked receipt of explicit human consent**, and is not equivalent to an authenticated CRM grant. The tool intentionally rejects ordinary PII patterns and limits learning events, but it remains a public write surface. Keep this distinction visible during security review.
+
+**Pilot acceptance:**
+- Treat `preview_crm_funnel` and `preview_agent_handoff` as preview-only; dedicated regression tests prove they cannot access D1. Do not send sensitive data or trigger the feedback write tool in an exploratory ChatGPT/Claude session.
+- Before allowing general third-party AI hosts to invoke the full MCP tool catalog, the owner must decide whether to scope client-visible tools to public read-only, require independently verifiable per-user feedback consent, or leave the existing feedback endpoint intentionally public with clear disclosure and abuse controls. That decision requires an explicit existing-feature compatibility review, not an unannounced change.
+- Any future OAuth-backed customer tool remains **separate** from public product feedback and must validate account, issuer, audience, consent, Company/Workspace membership, and capability on every call.
+- CI proof of a read-only preview does not erase or test away this existing feedback write functionality. Source of truth: `functions/api/hermes-connect/mcp.ts`, `scripts/hermes-connect-public-mcp.test.mjs`.
