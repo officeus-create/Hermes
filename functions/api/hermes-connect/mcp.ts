@@ -867,6 +867,11 @@ export async function onRequest({ request, env }: Context) {
         {
           supportedVersions: [MODERN_PROTOCOL, LEGACY_PROTOCOL],
           capabilities: { tools: { listChanged: false } },
+          // Required by the 2026-07-28 DiscoverResult schema. This
+          // public-only endpoint opts out of shared caching now, so a future
+          // authenticated toolset cannot inherit a cross-user cache policy.
+          ttlMs: 0,
+          cacheScope: "private",
           instructions,
         },
         true
