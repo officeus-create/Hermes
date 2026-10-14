@@ -12,7 +12,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   // ordinary SameSite=Lax session cookie might be absent. Never substitute
   // an unverified email or a user-provided specialist ID for this proof.
   const verifiedOwner = await getAuthenticatedSpecialist(request, env.DB);
-  const sessionToken = parseCookies(request.headers.get("Cookie")).hermes_session;
+  const sessionToken = (parseCookies(request.headers.get("Cookie")) as Record<string, string | undefined>).hermes_session;
   let verifiedStartSession: { specialistId: string; sessionCreatedAt: string } | null = null;
   if (verifiedOwner && sessionToken) {
     const activeSession = await env.DB.prepare(
