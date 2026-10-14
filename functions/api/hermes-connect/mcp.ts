@@ -1,4 +1,4 @@
-type Env = { DB?: any };
+type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string };
 type Context = { request: Request; env: Env };
 
 type JsonRpcRequest = {
@@ -767,6 +767,20 @@ async function callTool(env: Env, name: string, args: Record<string, unknown>) {
 }
 
 export async function onRequest({ request, env }: Context) {
+  // MCP Streamable HTTP (2026-07-28) requires Origin checking for DNS-rebinding
+  // resistance. Default to same-origin; additional host/browser origins must
+  // be explicitly authorized in configuration. Remote server-to-server MCP
+  // clients usually omit Origin and do not need any cross-origin allowance.
+  const origin = request.headers.get("Origin");
+  const allowed = new Set([
+    new URL(request.url).origin,
+    ...String(env.MCP_ALLOWED_ORIGINS || "").split(",").map((x) => x.trim()).filter((x) =>
+      /^https:\/\/[^\/\s]+$/.test(x) && x !== "https://null"
+    ),
+  ]);
+  if (origin !== null && !allowed.has(origin)) {
+    return responseJson(403, rpcError(null, -32000, "Untrusted Origin"));
+  }
   if (request.method === "GET") {
     return responseJson(405, { error: "method_not_allowed", message: "Use MCP Streamable HTTP POST requests." }, { Allow: "POST" });
   }
@@ -786,6 +800,25 @@ export async function onRequest({ request, env }: Context) {
 
   if (!message || Array.isArray(message) || message.jsonrpc !== "2.0" || typeof message.method !== "string") {
     return responseJson(400, rpcError(message?.id ?? null, -32600, "Invalid Request"));
+  }
+
+  // Only modern 2026-07-28 requests require strict per-call header/body
+  // matching. Keep legacy 2025 callers working until explicit migration.
+  const headerVersion = request.headers.get("MCP-Protocol-Version");
+  const payloadVersion = message.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
+  const modernIntent = headerVersion === MODERN_PROTOCOL || payloadVersion === MODERN_PROTOCOL || message.method === "server/discover";
+  if (modernIntent) {
+    const expectedName = message.method === "tools/call" ? message.params?.name : undefined;
+    const gotName = request.headers.get("Mcp-Name");
+    if (headerVersion !== MODERN_PROTOCOL || payloadVersion !== MODERN_PROTOCOL ||
+        request.headers.get("Mcp-Method") !== message.method ||
+        (expectedName != null && (typeof expectedName !== "string" || gotName !== expectedName)) ||
+        (expectedName == null && gotName !== null)) {
+      return responseJson(400, rpcError(message.id, -32020, "HeaderMismatch"));
+    }
+    if (message.method === "initialize" || message.method === "notifications/initialized") {
+      return responseJson(400, rpcError(message.id, -32601, "Legacy handshake is not part of MCP 2026-07-28"));
+    }
   }
 
   if (message.id == null && message.method === "notifications/initialized") {
