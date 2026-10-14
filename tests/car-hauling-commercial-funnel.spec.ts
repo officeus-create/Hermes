@@ -86,10 +86,12 @@ test("Load Board ignores unsupported equipment query values", async ({ page }) =
 });
 
 
-test("canonical production carrier intake promotes only the main host to the approved same-origin receiver", () => {
+test("carrier intake never overrides server preview and requires an explicitly configured safe endpoint", () => {
   const source = readFileSync(new URL("../src/components/CarrierDispatchIntakeEnhancer.astro", import.meta.url), "utf8");
-  expect(source).toContain('window.location.protocol === "https:" && window.location.hostname === "hermeslogisticsus.com"');
-  expect(source).toContain('form.dataset.leadMode = "live"');
-  expect(source).toContain('form.dataset.leadEndpoint = "/api/logistics-lead"');
-  expect(source).toContain('endpoint.origin !== window.location.origin');
+  expect(source).not.toContain('window.location.hostname === "hermeslogisticsus.com"');
+  expect(source).toContain('form.dataset.leadMode === "live"');
+  expect(source).toContain('configuredEndpoint.protocol === "https:"');
+  expect(source).toContain('configuredEndpoint.origin === window.location.origin');
+  expect(source).toContain('configuredEndpoint.pathname === "/api/logistics-lead"');
+  expect(source).toContain('form.dataset.leadMode = configuredLive ? "live" : "preview"');
 });
