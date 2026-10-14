@@ -259,10 +259,10 @@ test("existing delegated Dealer CRM appears only for server-returned membership,
   };
   await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json(permitted)));
   await page.goto("/services/hermes-connect/?lang=ru", { waitUntil: "domcontentloaded" });
-  const menu = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
-  await expect(menu).toBeVisible();
-  await menu.locator("summary").click();
-  const delegated = menu.locator('[data-hc-workspace-link="dealer"]');
+  await page.locator("[data-menu-button]").click();
+  const mobilePanel = page.locator(".hc-mobile-account-panel [data-hc-account-switcher][data-public-safe='true']");
+  await expect(mobilePanel).toBeVisible();
+  const delegated = mobilePanel.locator('[data-hc-workspace-link="dealer"]');
   await expect(delegated).toHaveCount(1);
   await expect(delegated).toContainText("Dealer CRM · legacy-toyota");
   await expect(delegated).toHaveAttribute("href", /\/dealers\/workspace\/crm\/\?lang=ru$/);
@@ -276,8 +276,8 @@ test("existing delegated Dealer CRM appears only for server-returned membership,
     }],
   })));
   await page.reload({ waitUntil: "domcontentloaded" });
-  const unprivileged = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
+  await page.locator("[data-menu-button]").click();
+  const unprivileged = page.locator(".hc-mobile-account-panel [data-hc-account-switcher][data-public-safe='true']");
   await expect(unprivileged).toBeVisible();
-  await unprivileged.locator("summary").click();
   await expect(unprivileged.locator('[data-hc-workspace-link="dealer"]')).toHaveCount(0);
 });
