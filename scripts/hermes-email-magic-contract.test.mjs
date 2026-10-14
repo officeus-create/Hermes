@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { onRequestPost as emailStart, onRequestGet as emailStatus } from "../functions/api/auth/email/start.ts";
 import { onRequestPost as emailVerify } from "../functions/api/auth/email/verify.ts";
+import { magicLink } from "../functions/api/_lib/email-identity.mjs";
 
 const read = p => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const source = read("functions/api/_lib/email-identity.mjs");
@@ -30,6 +31,13 @@ assert.match(verify, /hermes_verified_emails/);
 assert.match(verify, /sessionCookieHeader\(sessionToken\)/);
 assert.match(confirm, /button\?\.addEventListener\("click"/);
 assert.match(confirm, /history\.replaceState/);
+const fakeToken = "a".repeat(64);
+const generated = new URL(magicLink(fakeToken));
+assert.equal(generated.search, "", "email credential must never enter request query");
+assert.equal(new URLSearchParams(generated.hash.slice(1)).get("token"), fakeToken);
+assert.match(confirm, /new URLSearchParams\(url\.hash\.slice\(1\)\)/);
+assert.match(confirm, /url\.hash = ""/);
+
 assert.match(requestPage, /payload\.enabled === true/);
 assert.match(requestPage, /form\.hidden = false/);
 
