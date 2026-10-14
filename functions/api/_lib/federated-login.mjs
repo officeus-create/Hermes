@@ -41,6 +41,11 @@ export async function ensureOAuthStateSchema(db) {
     used_at TEXT
   )`).run();
 }
+/** @param {any} db
+ *  @param {string} provider
+ *  @param {string} [nonce]
+ *  @param {{specialistId: string, sessionCreatedAt: string} | null} [verifiedStartSession]
+ */
 export async function beginOAuthState(db, provider, nonce = "", verifiedStartSession = null) {
   await ensureOAuthStateSchema(db);
   const state = createSessionToken();
@@ -94,6 +99,7 @@ async function ensureIdentitySchema(db) {
   )`).run();
 }
 
+/** @param {{db: any, request: Request, provider: string, subject: string, email: string, name?: string, verifiedAppleLinkOwnerId?: string | null}} args */
 export async function completeFederatedLogin({ db, request, provider, subject, email, name, verifiedAppleLinkOwnerId = null }) {
   const subjectId = text(subject, 180);
   const verifiedEmail = text(email, 160).toLowerCase();
