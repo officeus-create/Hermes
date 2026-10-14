@@ -175,10 +175,11 @@ These gates protect the business and cannot be silently removed by another agent
 
 ### Verified owner-private plugin inventory
 
-These are ten plugin identities returned by the authenticated Plugin Creator personal inventory on 2026-10-14. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
+These are eleven verified plugin identities: ten observed in the authenticated personal inventory plus the newly created and read-back private coordinator release on 2026-10-14. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.0 |
 | Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.6 |
 | HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
 | Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
@@ -204,7 +205,7 @@ Other existing owned, workspace, organization, marketplace, or connected plugins
 6. **Create a new plugin ONLY for a proven durable capability gap**, not for an individual task or chat. First compare existing plugin scopes, skills and connectors; prove there is no owner; define a single narrow mission, unique inputs/actions and safe read/write scope; create a private plugin with a bounded skill/evaluation/owner; register exact ID and version here + One Brain after plugin-creator readback. Do not create new databases, project folders or general-purpose superadmins.
 7. **Continue** through current-state source tests, PR review, CI, authorized deployment, production readback, actual user value. Route out-of-department work via linked issue to its existing owner; do not silently edit another department's area.
 
-If direct invocation of another plugin is unavailable in the current host, label the handoff **ROUTED_NOT_EXECUTED**. Do not impersonate another plugin or assert that autonomous inter-plugin communication exists. The plugin router uses GitHub/One Brain as a shared, inspectable handoff until a real authenticated MCP orchestrator exists.
+If direct invocation of another plugin is unavailable in the current host, label the handoff **ROUTED_NOT_EXECUTED**. Do not impersonate another plugin or assert that autonomous inter-plugin communication exists. The verified private `hermes-agent-coordinator` plugin is the routing-policy specialist (https://chatgpt.com/plugins/plugins_6acf865dbc3c8191a21ca0da11dfb094). It remains skills-only; the actual GitHub/One Brain handoff requires an authorized host invocation. It does not automatically start other agents, run background work or grant any permission. Use these inspectable handoffs until a real authenticated MCP orchestrator exists.
 
 ### Priority and learning boundaries
 
