@@ -139,6 +139,6 @@ test("every linked proof and locale-specific direction resolves to an actual HTM
     expect(response.status(), `linked local destination must be HTTP 200: ${target}`).toBe(200);
     expect(response.headers()["content-type"] ?? "", target).toMatch(/text\/html/);
     const body = await response.text();
-    expect(body, `${target} must have visible page content`).toMatch(/<main\\b/i);
+    expect(body, `${target} must have visible page content`).toMatch(/<main\b/i);
   }
 });
