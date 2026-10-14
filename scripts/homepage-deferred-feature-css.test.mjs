@@ -35,7 +35,7 @@ for (const signal of [
   "Car hauling · dealers · shippers · carriers",
   "Website · SEO/GEO · customer acquisition",
   "CRM · automation · custom software",
-  "U.S. logistics · sales · marketing · operations",
+  "Logistics · marketing · IT/AI · sales · operations",
 ]) {
   assert.ok(masterSource.includes(signal), `homepage master scene must preserve commercial intent signal: ${signal}`);
 }
@@ -54,8 +54,14 @@ assert.ok(
 assert.ok(masterSource.includes("prefers-reduced-motion"), "master-scene motion must respect reduced-motion preferences");
 assert.ok(masterSource.includes(":focus-visible"), "master-scene navigation must preserve keyboard focus treatment");
 assert.ok(masterSource.includes("car-hauler-768.webp 768w"), "mobile LCP image must expose a right-sized 768px candidate");
-assert.ok(masterSource.includes("leaves-160.webp 160w"), "decorative leaves must expose a right-sized mobile candidate");
-assert.ok(masterSource.includes("leaves-256.webp 256w"), "decorative leaves must expose an intermediate high-density candidate");
+assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
+assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
+assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
+for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
+  assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
+}
+assert.ok(masterSource.includes("data-journey-motion"), "Marketing animation must expose a pausable motion state");
+assert.ok(masterSource.includes("prefers-reduced-motion: reduce"), "Marketing motion must provide a static reduced-motion fallback");
 assert.equal(masterSource.includes('loading={path.id === "marketing" ? "eager" : "lazy"}'), false, "only the true LCP image should be eager on mobile");
 assert.equal(masterSource.includes("void preloadScene(next)"), false, "homepage must not download the next logistics scene before it is displayed");
 assert.equal(masterSource.trim().includes("applyScene();\n    update();"), false, "initial logistics artwork must not be decoded twice before rotation starts");
