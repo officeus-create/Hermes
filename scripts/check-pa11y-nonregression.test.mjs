@@ -67,7 +67,7 @@ const replacedRule = evaluatePa11yBudget(twoRules("aria-prohibited-attr"), ruleB
 assert.equal(replacedRule.observedTotal, 2);
 assert.equal(replacedRule.passed, false);
 assert.ok(replacedRule.failures.includes("unexpected_a11y_rule:aria-prohibited-attr"));
-const missingRuleEvidence = evaluatePa11yBudget("Running Pa11y on 1 URLs:\\n > http://localhost:4321/ - 2 errors", ruleBudget);
+const missingRuleEvidence = evaluatePa11yBudget(twoRules().replaceAll(/\(https:\/\/dequeuniversity\.com[^\n]+\)/g, ""), ruleBudget);
 assert.equal(missingRuleEvidence.passed, false);
 assert.ok(missingRuleEvidence.failures.some((x) => x.startsWith("pa11y_rule_evidence_incomplete:")));
 console.log("Pa11y non-regression parsing, remediation, increased debt and fail-closed evidence tests PASS");
