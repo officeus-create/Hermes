@@ -21,12 +21,13 @@ const call = async (body, env = {}, headers = {}) => {
 {
   const { json } = await call({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const names = json.result.tools.map((tool) => tool.name);
-  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
+  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','preview_crm_funnel','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
   assert.equal(json.result.tools[0].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[2].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[3].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[4].annotations.readOnlyHint, true);
-  assert.equal(json.result.tools[5].annotations.readOnlyHint, false);
+  assert.equal(json.result.tools[5].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[6].annotations.readOnlyHint, false);
 }
 
 {
@@ -175,4 +176,51 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.match(plan.crm_bootstrap_prompt, /Use only the sources and connectors I explicitly approve/);
   assert.match(plan.continuity_rule, /durable provisioning job/);
   assert.match(plan.authorization_rule, /recommendation never grants access/);
+}
+
+
+{
+  const { json } = await call({
+    jsonrpc: '2.0', id: 81, method: 'tools/call',
+    params: { name: 'preview_crm_funnel', arguments: {
+      business_type: 'US car hauling carriers', goal: 'Increase qualified carriers', entry_channel: 'instagram'
+    } }
+  });
+  const funnel = json.result.structuredContent;
+  assert.equal(funnel.status, 'PREVIEW_ONLY');
+  assert.equal(funnel.entry_channel, 'instagram');
+  assert.equal(funnel.stages.length, 5);
+  assert.equal(funnel.stages[0].name, 'Carrier inquiry');
+  assert.match(funnel.stages[1].next_action, /authority, insurance, equipment/i);
+  assert.match(funnel.stages[2].next_action, /do not promise available loads/i);
+  assert.ok(funnel.stages.every(s => s.automation_state === 'NOT_CONNECTED'));
+  assert.match(funnel.first_kpi, /exclude synthetic leads/i);
+  assert.match(funnel.live_activation_gate, /active company\/workspace membership/);
+  assert.match(funnel.not_performed.join(' '), /No emails.*sent/);
+}
+
+{
+  const { json } = await call({
+    jsonrpc: '2.0', id: 82, method: 'tools/call',
+    params: { name: 'preview_crm_funnel', arguments: {
+      business_type: 'auto repair shop', goal: 'reduce missed bookings', entry_channel: 'website'
+    } }
+  }, {}, {'MCP-Protocol-Version':'2026-07-28'});
+  assert.equal(json.result.resultType, 'complete');
+  assert.equal(json.result.structuredContent.status, 'PREVIEW_ONLY');
+  assert.equal(json.result.structuredContent.stages[3].name, 'Booking');
+  assert.match(json.result.structuredContent.stages[4].next_action, /opt-in/);
+}
+
+{
+  // Without auth, personal data is not accepted as an MCP funnel request.
+  const { json } = await call({
+    jsonrpc: '2.0', id: 83, method: 'tools/call',
+    params: { name: 'preview_crm_funnel', arguments: {
+      business_type: 'John john@example.com', goal: 'send leads to +1 414 555 0199',
+    } }
+  });
+  assert.equal(json.result.isError, true);
+  assert.equal(json.result.structuredContent, undefined);
+  assert.match(json.result.content[0].text, /could not complete this tool call/);
 }
