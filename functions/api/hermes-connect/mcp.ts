@@ -833,7 +833,12 @@ export async function onRequest({ request, env }: Context) {
   // matching. Keep legacy 2025 callers working until explicit migration.
   const headerVersion = request.headers.get("MCP-Protocol-Version");
   const payloadVersion = message.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
-  const modernIntent = headerVersion === MODERN_PROTOCOL || payloadVersion === MODERN_PROTOCOL || message.method === "server/discover";
+  // Even if a client omits the modern version in both places, presence of a
+  // modern routing header is a modern-protocol attempt, not a legacy escape.
+  // Otherwise an attacker could bypass header/body parity by dropping _meta.
+  const modernIntent = headerVersion === MODERN_PROTOCOL || payloadVersion === MODERN_PROTOCOL ||
+    request.headers.has("Mcp-Method") || request.headers.has("Mcp-Name") ||
+    message.method === "server/discover";
   if (modernIntent) {
     const expectedName = message.method === "tools/call" ? message.params?.name : undefined;
     const gotName = request.headers.get("Mcp-Name");
