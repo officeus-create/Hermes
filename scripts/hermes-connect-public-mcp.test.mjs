@@ -397,8 +397,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     jsonrpc: "2.0", id: 902, method: "tools/call",
     params: { name: "preview_agent_handoff", arguments: {
       task_category: "carriers", goal: "Qualify real US car hauling carriers",
-      _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28" },
-    } },
+    }, _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28" } },
   }, {}, {
     "MCP-Protocol-Version": "2026-07-28",
     "Mcp-Method": "tools/call",
