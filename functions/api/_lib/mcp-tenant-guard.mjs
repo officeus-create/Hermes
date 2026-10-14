@@ -69,7 +69,8 @@ export async function authorizeMcpTenantRead({ request, env, companyRef, workspa
     proof.exp - proof.iat <= 3600 &&
     // Token-not-before must never be accepted early, including after a clock
     // skew allowance for issued-at. The trusted introspector also checks it.
-    (proof.nbf == null || (Number.isSafeInteger(proof.nbf) &&
+    (!Object.prototype.hasOwnProperty.call(proof, "nbf") ||
+      (Number.isSafeInteger(proof.nbf) &&
       proof.nbf <= now && proof.nbf <= proof.exp));
   const audience = proof?.aud;
   const hasAudience = audience === HERMES_MCP_RESOURCE ||
