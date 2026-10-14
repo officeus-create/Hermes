@@ -74,3 +74,11 @@ The existing MCP endpoint is a lightweight custom handler, **not** an official S
 
 **Current public pilot limitations:** `preview_crm_funnel` is source code under draft PR #1884. No provider app installation, deployed SHA, verified user login, data write or autonomous workflow proof is implied. Owner review/approval is required for an actual release.
 
+
+## One-command post-deploy proof (safe GET-free readback, never self-deploys)
+
+After a separately owner-approved merge and deployment, use `node scripts/hermes-mcp-public-readback.mjs` on an authorized executor with Node.js network access. It sends three public **read-only** JSON-RPC calls to the fixed Hermes endpoint: `server/discover`, `tools/list`, and `preview_crm_funnel`. It checks the 2026-07-28 wire fields, five preview stages, NOT_CONNECTED state and no-outbound statement.
+
+`MCP_PUBLIC_PREVIEW_LIVE_VERIFIED` means only this public-read-only sample responded. A failure prints `MCP_PUBLIC_PREVIEW_NOT_VERIFIED`; do not label a draft PR as live or treat a 200 from a homepage as passing this test. This script is intentionally **not** an authenticated customer test: it sends no tokens or cookies and cannot perform CRM writes or messaging.
+
+The first complete external-host acceptance needs an additional explicit customer/user-host connection, a screenshot or host-side `tools/call` receipt, and proof the model correctly explains PREVIEW_ONLY. Do not request the owner to install anything until deployed endpoint actually passes independent readback.
