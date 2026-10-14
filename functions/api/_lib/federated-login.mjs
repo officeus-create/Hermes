@@ -101,9 +101,17 @@ async function ensureIdentitySchema(db) {
 
 /** @param {{db: any, request: Request, provider: string, subject: string, email: string, name?: string, verifiedAppleLinkOwnerId?: string | null}} args */
 export async function completeFederatedLogin({ db, request, provider, subject, email, name, verifiedAppleLinkOwnerId = null }) {
-  const subjectId = text(subject, 180);
-  const verifiedEmail = text(email, 160).toLowerCase();
-  if (!["github", "apple"].includes(provider) || !subjectId || !isValidEmail(verifiedEmail)) {
+  // OAuth provider subjects are opaque stable identifiers, not display text:
+  // truncation or sanitization can turn one verified identity into another.
+  // Likewise, never truncate a verified provider email into a different
+  // Hermes mailbox before checking for an existing account.
+  const subjectId = typeof subject === "string" ? subject : "";
+  const verifiedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+  if (!["github", "apple"].includes(provider) ||
+      subjectId.length < 1 || subjectId.length > 180 ||
+      /[<>\\u0000-\\u001f\\u007f\\s]/.test(subjectId) ||
+      verifiedEmail.length < 1 || verifiedEmail.length > 160 ||
+      !isValidEmail(verifiedEmail)) {
     return { success: false, error: "provider_identity_invalid", status: 401 };
   }
   await ensureIdentitySchema(db);
