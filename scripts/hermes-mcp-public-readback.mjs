@@ -38,8 +38,16 @@ try {
   if (!Array.isArray(discovery.supportedVersions) || !discovery.supportedVersions.includes(version)) {
     throw new Error("Remote MCP does not advertise verified modern protocol");
   }
+  if (discovery.resultType !== "complete" || discovery.ttlMs !== 0 ||
+      discovery.cacheScope !== "private") {
+    throw new Error("Modern MCP server/discover is missing required private no-cache contract");
+  }
   const tools = await fetchRpc({ id: 11, method: "tools/list" });
   if (!Array.isArray(tools.tools)) throw new Error("Remote tools/list is not a tool collection");
+  if (tools.resultType !== "complete" || tools.ttlMs !== 0 ||
+      tools.cacheScope !== "private") {
+    throw new Error("Modern MCP tools/list lacks required private no-cache contract");
+  }
   const names = tools.tools.map((t) => t.name);
   if (!names.includes("preview_crm_funnel")) throw new Error("MCP funnel preview not deployed on verified endpoint");
   const preview = await fetchRpc({ id: 12, method: "tools/call", params: {
