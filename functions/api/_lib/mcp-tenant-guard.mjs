@@ -43,6 +43,9 @@ export async function authorizeMcpTenantRead({ request, env, companyRef, workspa
       "https://mcp-introspector.internal/introspect",
       {
         method: "POST",
+        // Never forward a customer's bearer credential on an unexpected
+        // cross-origin redirect returned by the internal auth binding.
+        redirect: "error",
         headers: {
           Authorization: authorization,
           "Content-Type": "application/json",
