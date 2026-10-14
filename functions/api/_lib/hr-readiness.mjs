@@ -492,8 +492,21 @@ export async function completeHrTeamHandoff(db, {
   const scope = cleanHrLongText(boundedScope || decision.bounded_scope, 1000);
   const key = cleanHrText(idempotencyKey, 180);
   if (!key || !destination || !scope) throw new Error("handoff_fields_required");
-  const existing = await db.prepare("SELECT id,state FROM hr_team_handoffs WHERE idempotency_key=? LIMIT 1").bind(key).first();
-  if (existing) return { id: existing.id, state: existing.state, duplicate: true };
+  const existing = await db.prepare(
+    "SELECT id,state,candidate_id,readiness_decision_id,channel,destination_ref,bounded_scope FROM hr_team_handoffs WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (existing) {
+    // A replay must refer to the same approved person, decision and destination.
+    // A global idempotency key collision must not return another candidate's receipt.
+    if (existing.candidate_id !== candidateId
+      || existing.readiness_decision_id !== readinessDecisionId
+      || existing.channel !== normalizedChannel
+      || existing.destination_ref !== destination
+      || existing.bounded_scope !== scope) {
+      throw new Error("handoff_idempotency_conflict");
+    }
+    return { id: existing.id, state: existing.state, duplicate: true };
+  }
   const now = new Date().toISOString();
   const id = `hr-handoff-${crypto.randomUUID()}`;
   await db.prepare(`
@@ -535,8 +548,19 @@ export async function recordHrPerformanceOutcome(db, {
     : [];
   const feedback = cleanHrLongText(managerFeedback, 2000);
   if (!key || !result) throw new Error("outcome_fields_required");
-  const existing = await db.prepare("SELECT id,marker FROM hr_performance_outcomes WHERE idempotency_key=? LIMIT 1").bind(key).first();
-  if (existing) return { id: existing.id, marker: existing.marker, duplicate: true };
+  const existing = await db.prepare(
+    "SELECT id,candidate_id,handoff_id,marker,result_class FROM hr_performance_outcomes WHERE idempotency_key=? LIMIT 1"
+  ).bind(key).first();
+  if (existing) {
+    // The same key cannot acknowledge another candidate, handoff or outcome.
+    if (existing.candidate_id !== candidateId
+      || existing.handoff_id !== handoffId
+      || existing.marker !== marker
+      || existing.result_class !== result) {
+      throw new Error("outcome_idempotency_conflict");
+    }
+    return { id: existing.id, marker: existing.marker, duplicate: true };
+  }
   const now = new Date().toISOString();
   const id = `hr-outcome-${crypto.randomUUID()}`;
   await db.prepare(`
