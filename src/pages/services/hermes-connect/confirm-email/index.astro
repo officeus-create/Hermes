@@ -19,9 +19,13 @@ import SiteFooter from "../../../../components/SiteFooter.astro";
 </BaseLayout>
 <script>
   const url = new URL(window.location.href);
-  const token = url.searchParams.get("token") || "";
-  // Remove credential from the visible URL before any user action.
+  const fragment = new URLSearchParams(url.hash.slice(1));
+  // Fragment tokens do not reach the server in HTTP requests. Read the
+  // fragment first; preserve short-term compatibility with older query links.
+  const token = fragment.get("token") || url.searchParams.get("token") || "";
+  // Clear both forms immediately before any user interaction or navigation.
   url.searchParams.delete("token");
+  url.hash = "";
   window.history.replaceState({}, "", url.pathname + url.search);
   const button = document.querySelector<HTMLButtonElement>("[data-verify-button]");
   const status = document.querySelector<HTMLElement>("[data-verify-status]");
