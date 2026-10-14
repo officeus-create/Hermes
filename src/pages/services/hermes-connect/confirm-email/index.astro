@@ -1,0 +1,52 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+---
+<BaseLayout title="Confirm your Hermes email | Hermes Connect" description="Complete a one-time Hermes account email verification." robots="noindex,nofollow" htmlLang="en" locale="en">
+  <SiteHeader activePath="/paths/technology/" theme="light" locale="en" />
+  <main id="main-content" class="email-verify">
+    <section class="email-panel" aria-labelledby="verify-title">
+      <p class="eyebrow">Hermes Connect · secure identity</p>
+      <h1 id="verify-title">Confirm your email</h1>
+      <p>Confirm once to create or return to your Hermes account. This does not grant access to any business without authorization.</p>
+      <p class="status" data-verify-status role="status">Checking your confirmation link…</p>
+      <button type="button" data-verify-button disabled>Confirm and sign in</button>
+      <a href="/services/hermes-connect/access/">Return to sign in</a>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script>
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get("token") || "";
+  // Remove credential from the visible URL before any user action.
+  url.searchParams.delete("token");
+  window.history.replaceState({}, "", url.pathname + url.search);
+  const button = document.querySelector<HTMLButtonElement>("[data-verify-button]");
+  const status = document.querySelector<HTMLElement>("[data-verify-status]");
+  if (/^[a-f0-9]{64}$/.test(token)) {
+    if (button) button.disabled = false;
+    if (status) status.textContent = "Link ready. Select Confirm to continue.";
+  } else if (status) {
+    status.textContent = "This verification link is invalid. Request a new one.";
+  }
+  button?.addEventListener("click", async () => {
+    button.disabled = true;
+    if (status) status.textContent = "Verifying…";
+    try {
+      const res = await fetch("/api/auth/email/verify", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (!res.ok) throw new Error("invalid");
+      window.location.assign("/services/hermes-connect/access/");
+    } catch {
+      if (status) status.textContent = "Unable to verify this link. It may have expired or already been used.";
+    }
+  });
+</script>
+<style>
+.email-verify{min-height:70vh;display:grid;place-items:center;padding:132px 20px 70px;background:#f4f6f8;color:#142238}.email-panel{width:min(480px,100%);background:white;border:1px solid #dbe3ee;border-radius:20px;padding:32px;display:grid;gap:16px}.email-panel h1{font-size:34px;letter-spacing:-.03em;margin:0}.email-panel p{line-height:1.55;margin:0}.email-panel .eyebrow{font-size:12px;font-weight:800;color:#4867a2}.email-panel .status{font-size:13px;color:#4a5c75}.email-panel button{background:#142238;border:0;border-radius:11px;padding:14px 16px;color:#fff;font:inherit;font-weight:800;cursor:pointer}.email-panel button:disabled{opacity:.5;cursor:default}.email-panel a{color:#335e9c;font-size:13px}
+</style>
