@@ -15,7 +15,8 @@ The new isolated helper `functions/api/_lib/mcp-tenant-guard.mjs` exports `autho
 3. First-party **introspector** (to be implemented separately using an audited OAuth provider library) must validate token signatures, active status, revocation, specific OAuth client approval and per-client consent. The helper passes the token only to the internal, fixed service binding and requires a fresh `active:true` result. It does **not** take any user-supplied introspection URL.
 4. Introspection response must have exact configured HTTPS issuer, exact Hermes MCP resource in both `aud` and `resource`, short-lived valid integer `iat/exp`, `hermes_specialist` subject type, nonblank approved `client_id`, `consent_granted:true` and exact `hermes:crm:read` scope (not `read-all` or `write`).
 5. Existing `hermes_company_memberships` table is queried **by this verified subject and the requested company**, with active/revocation filters. Canonical `membershipRowAsPermission` validates the row; exact Company **and** Workspace must match. No new grants, memberships, elevated owner roles, or migrations are created.
-6. The helper returns only a read-only authorization context (identity reference, company/workspace, role, scoped read capability, grant ID). **It does not return any CRM data**, make a CRM change, send email, publish content or launch a job.
+6. Even a valid membership is denied if the referenced specialist no longer exists in the canonical `specialists` table. This checks *existence*, not an unspecified account suspension flag; any future suspension/deactivation state must also be checked when implemented. Optional `nbf` must be an integer not in the future; `iat` alone is insufficient.
+7. The helper returns only a read-only authorization context (identity reference, company/workspace, role, scoped read capability, grant ID). **It does not return any CRM data**, make a CRM change, send email, publish content or launch a job.
 
 ## Introspector requirements before a future route can call this
 
@@ -28,7 +29,7 @@ The new isolated helper `functions/api/_lib/mcp-tenant-guard.mjs` exports `autho
 
 ## Tests already added
 
-`node scripts/hermes-mcp-tenant-guard.test.mjs` is wired into existing `npm test`. It checks: off by default; browser cookie/prompt spoofing denied; missing/invalid Bearer denied; wrong company/workspace, revoked/self-granted and invalid membership denied; wrong issuer/audience/resource/client/scope/consent rejected before D1; missing/stale/long-lived exp/iat rejected; introspection or D1 errors fail closed; positive mock only reads membership, never writes.
+`node scripts/hermes-mcp-tenant-guard.test.mjs` is wired into existing `npm test`. It checks: off by default; browser cookie/prompt spoofing denied; missing/invalid Bearer denied; wrong company/workspace, revoked/self-granted and invalid membership denied; deleted specialist and identity database outage denied; wrong issuer/audience/resource/client/scope/consent rejected before D1; missing/stale/long-lived exp/iat and future/noninteger nbf rejected; introspection or D1 errors fail closed; positive mock only reads membership, never writes.
 
 Tests use **synthetic proofs from a mock introspector**, and are not external proof of a real OAuth provider, consent screen or production customer access. Keep the exact-head GitHub CI and later real-host tests separate.
 
@@ -40,3 +41,9 @@ Tests use **synthetic proofs from a mock introspector**, and are not external pr
 - **Next safe PR:** implement an owner-approved OAuth resource server/introspector, protected metadata and consent; then a minimal read-only `whoami` that derives actual identity and membership on each call. Negative tenant, issuer, resource, scope, revocation and prompt-injection tests before any live tenant data.
 
 **Mandatory release ladder:** drafted code → exact-head CI → security owner review → approved provider configuration/credentials → reviewed merge/deployment → independent live bearer and tenant-negative tests → specific user-host consent and proof. No automatic production deployment or outbound email.
+
+## SDK review notes (official release, 2026-10-14)
+
+[MCP TypeScript SDK v2.3.1](https://github.com/modelcontextprotocol/typescript-sdk/releases/tag/2.3.1) adds/aligns optional `expectedResource` for bearer-auth middleware, hardening acceptance to the intended MCP resource. Preserve our exact audience/resource check if later migrating to official SDK; `expectedResource` is **opt-in** and must be explicitly configured. The v2 migration guide notes authorization rules require independent opt-ins, not simply a protocol-version toggle. An isolated Cloudflare compatibility and security test is required before replacing existing Hermes transport; no dependency is added here.
+
+Avoid treating a successful mocked introspector as proof of signature verification, OAuth client enrollment, end-user consent, owner MFA or suspended-identity checks. The live identity issuer, resource and per-client consent chain remain a separate release gate.
