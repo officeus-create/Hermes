@@ -82,3 +82,39 @@ After a separately owner-approved merge and deployment, use `node scripts/hermes
 `MCP_PUBLIC_PREVIEW_LIVE_VERIFIED` means only this public-read-only sample responded. A failure prints `MCP_PUBLIC_PREVIEW_NOT_VERIFIED`; do not label a draft PR as live or treat a 200 from a homepage as passing this test. This script is intentionally **not** an authenticated customer test: it sends no tokens or cookies and cannot perform CRM writes or messaging.
 
 The first complete external-host acceptance needs an additional explicit customer/user-host connection, a screenshot or host-side `tools/call` receipt, and proof the model correctly explains PREVIEW_ONLY. Do not request the owner to install anything until deployed endpoint actually passes independent readback.
+
+
+## Second safe user demo — preview digital-employee routing (no agent launched)
+
+After the first public funnel pilot is verified, a ChatGPT/Claude host can invoke the **read-only** `preview_agent_handoff` tool. This is a routing explanation, not a private employee or an autonomous work runner.
+
+Example chat prompt:
+
+> Use Hermes Connect MCP and show which Hermes digital employee should handle verification of our Google/Apple/GitHub sign-in. Show one accountable owner, reviewer, next safe action, how success is evidenced, and what still requires my permission. Do not create, send or change anything.
+
+Expected tool arguments:
+```json
+{"task_category":"identity_mcp","goal":"Test Google Apple GitHub registration and MCP compatibility"}
+```
+
+Expected response semantics: `status=ROUTED_NOT_EXECUTED`, `accountable_employee=Hermes Technology Developer`, `consulted_employee=Hermes Agent Coordinator`, `actions_performed=[]`, specific completion evidence and approval gate. Neither the model nor the public tool can claim a plugin invocation, company permission, connected host, created task or real user onboarding.
+
+A second test uses `{"task_category":"carriers","goal":"Qualify real US car hauling carriers"}`, assigning Hermes Sales with Dispatch OS as reviewer. It must **not** send any email/DM or disturb dispatch. Other allowed public categories: sales, hr, academy, marketing (plugin connection must be separately verified), design, dispatch, catalog and infrastructure.
+
+Test forbidden cases: unknown category, email/phone/key in goal, an oversized goal, data extraction, or fake `superadmin` category. These must fail closed without D1 operations. Every protected write action in future requires approved tool scope, host/provider authorization, active Company/Workspace membership, audit and readback.
+
+This is a *second* review-only stacked PR based on the first public MCP pilot: releasing it must follow the original PR's approved merge/deploy and independent runtime verification.
+
+## Verified technology radar, 2026-10-14
+
+These are official external sources, **not** capabilities claimed in current Hermes production.
+
+| Evidence | Adoption candidate | Decision and proof gate |
+| --- | --- | --- |
+| [MCP TypeScript SDK v2 release](https://github.com/modelcontextprotocol/typescript-sdk/releases), version **2.3.1** published 2026-10-05 | Standardize transport, authorization, caching and compatibility, avoiding drift in custom handling | `WATCH/TEST`. In an isolated PR, compare a basic `createMcpHandler` against current Workers runtime, 2025/2026 request fixtures, bundle/performance and Cloudflare compatibility. Do not replace production handler just to upgrade a dependency |
+| SDK v2 [authenticated server guide](https://ts.sdk.modelcontextprotocol.io/v2/serving/authorization) | Audience-bound OAuth resource server for eventual `whoami` and private data | `FUTURE_P0` after verified identity and owner-approved provider setup. Reject wrong `aud`, missing `resource`, wrong `iss`, revoked/expired token and cross-tenant access; never accept browser session cookie as generic bearer |
+| [Official MCP Apps SDK](https://github.com/modelcontextprotocol/ext-apps), MIT license, stable Apps protocol 2026-01-26 | In-chat approval panel and CRM funnel visual for hosts with capability support | `P2_CANDIDATE`. Start with static read-only prototype and fallback text. Verify client support and user experience before adding extension dependency. No write-capable Apps UI in public preview |
+| [Official MCP 2026-07-28 protocol](https://blog.modelcontextprotocol.io/posts/2026-07-28/) | Stateless execution, modern routing headers, cacheable lists, Tasks extension | Keep one canonical Hermes MCP gateway and compatibility tests. Tasks only when durable ProvisioningJob state exists; do not fabricate long-running agent execution |
+
+This radar concerns the *current dated specifications and releases*. Its 3/6/9/12/15-month impact is a **decision horizon**, not a promise of future host features. Adoption choices need a measured user value, reviewed open-source license, no token/bearer leaks, negative security tests and release rollback.
+
