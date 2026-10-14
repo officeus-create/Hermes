@@ -462,3 +462,39 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   assert.equal(json.error.code, -32022);
   assert.equal(json.error.data.requested, '2027-01-01');
 }
+
+{
+  // The 2026-07-28 base spec requires clientCapabilities on EVERY modern
+  // request, not just the initial server/discover. Missing or malformed
+  // values must fail closed with -32602 before any tool is executed.
+  for (const missing of [undefined, null, "yes", [], true, 23]) {
+    const meta = { "io.modelcontextprotocol/protocolVersion": "2026-07-28" };
+    if (missing !== undefined) {
+      meta["io.modelcontextprotocol/clientCapabilities"] = missing;
+    }
+    const { response, json } = await call({
+      jsonrpc: "2.0", id: 879, method: "tools/list", params: { _meta: meta },
+    }, {}, { "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/list" });
+    assert.equal(response.status, 400, "modern request with invalid clientCapabilities must fail");
+    assert.equal(json.error.code, -32602);
+    assert.match(json.error.message, /client capabilities/i);
+  }
+  const request = {
+    jsonrpc: "2.0", id: 880, method: "tools/list",
+    params: { _meta: {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {},
+    } },
+  };
+  const accepted = await call(request, {}, {
+    "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/list",
+  });
+  assert.equal(accepted.response.status, 200,
+    "empty object is a valid capabilities declaration; clientInfo is only SHOULD");
+  assert.equal(accepted.json.result.cacheScope, "private");
+  const legacy = await call({
+    jsonrpc: "2.0", id: 881, method: "tools/list", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(legacy.response.status, 200,
+    "legacy clients do not require modern per-request capability envelope");
+}
