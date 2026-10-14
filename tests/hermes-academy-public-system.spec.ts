@@ -12,6 +12,15 @@ test("Academy uses a Pearl learning flow and preserves all five interactive scre
   const flow = page.locator("[data-academy-flow]");
   await expect(flow).toBeVisible();
   await expect(page.locator('[data-academy-screen="0"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Learn work by doing reviewed work." })).toBeVisible();
+  const proof = page.locator(".academy-attempt-proof");
+  await expect(proof).toBeVisible();
+  await expect(proof.locator(".academy-attempt-proof-flow li")).toHaveCount(5);
+  for (const label of ["ATTEMPT", "SELF-REVIEW", "HUMAN FEEDBACK", "RETRY", "TRANSFER"]) {
+    await expect(proof.getByText(new RegExp(label))).toBeVisible();
+  }
+  await expect(proof).toContainText("illustrative practice example");
+  await expect(proof).not.toContainText(/employment guaranteed|guaranteed income|real learner/i);
 
   const opening = await page.evaluate(() => {
     const progress = document.querySelector<HTMLElement>(".detail-page-academy .academy-flow-progress");
@@ -77,6 +86,17 @@ test("Academy learning system remains usable at 390px", async ({ page }) => {
 
   await expect(page.locator("[data-academy-flow]")).toBeVisible();
   await expect(page.locator('[data-academy-screen="0"]')).toBeVisible();
+  const mobileProof = page.locator(".academy-attempt-proof");
+  await expect(mobileProof).toBeVisible();
+  await expect(mobileProof.locator(".academy-attempt-proof-flow")).toHaveCSS("grid-template-columns", /.+/);
+  const boxes = await mobileProof.locator(".academy-attempt-proof-flow li").evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    }),
+  );
+  expect(boxes).toHaveLength(5);
+  expect(boxes.every((box) => box.left >= 0 && box.right <= 390 && box.width > 0)).toBe(true);
 
   const mobile = await page.evaluate(() => {
     const progress = document.querySelector<HTMLElement>(".detail-page-academy .academy-flow-progress");
