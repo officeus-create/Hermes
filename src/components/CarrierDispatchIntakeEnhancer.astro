@@ -41,7 +41,9 @@
       try {
         const configuredEndpoint = new URL(form.dataset.leadEndpoint, window.location.origin);
         configuredLive = configuredEndpoint.protocol === "https:" &&
-          configuredEndpoint.origin === window.location.origin;
+          configuredEndpoint.origin === window.location.origin &&
+          configuredEndpoint.pathname === "/api/logistics-lead" &&
+          !configuredEndpoint.search && !configuredEndpoint.hash;
       } catch {
         // Invalid endpoints are preview-only and never silently replaced.
       }
