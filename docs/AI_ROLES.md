@@ -179,8 +179,8 @@ These are eleven verified plugin identities: ten observed in the authenticated p
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
-| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.8 |
-| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.18 |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.9 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.19 |
 | HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
 | Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
 | Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
