@@ -205,6 +205,36 @@ const replay = await statePut({ request: stateRequest('session-reviewer', 'hr-st
 assert.equal(replay.status, 200);
 assert.equal((await replay.json()).duplicate, true);
 assert.equal(db.communicationEvents.size, 1, 'idempotent replay must not duplicate transition evidence');
+const replayBody = await statePut({
+  request: stateRequest('session-reviewer', 'hr-state-needs-reply-0001', needsReply), env,
+});
+assert.equal(replayBody.status, 200);
+assert.equal((await replayBody.json()).transition.event_id, createdBody.transition.event_id,
+  'replay must return the existing persisted event ID');
+
+// A reused key may not acknowledge a different stage or next-action owner.
+for (const changed of [
+  { ...needsReply, current_stage: 'ASSESSMENT', next_action: 'ASSIGN_ASSESSMENT' },
+  { ...needsReply, next_action_owner: 'TRAINER' },
+  { ...needsReply, gmail_message_ref: 'gmail-message-synthetic-conflict' },
+  { ...needsReply, occurred_at: '2026-09-15T08:02:00.000Z' },
+]) {
+  const invalidReplay = await statePut({
+    request: stateRequest('session-reviewer', 'hr-state-needs-reply-0001', changed), env,
+  });
+  assert.equal(invalidReplay.status, 409, 'changed request must not reuse success receipt');
+  assert.equal((await invalidReplay.json()).error, 'idempotency_key_conflict');
+}
+const secondCandidateId = 'hr_candidate_channel_state_000002';
+db.candidates.set(secondCandidateId, { id: secondCandidateId, status: 'completed' });
+const wrongCandidateReplay = await statePut({
+  request: stateRequest('session-reviewer', 'hr-state-needs-reply-0001', {
+    ...needsReply, candidate_id: secondCandidateId,
+  }), env,
+});
+assert.equal(wrongCandidateReplay.status, 409);
+assert.equal((await wrongCandidateReplay.json()).error, 'idempotency_key_conflict');
+assert.equal(db.communicationEvents.size, 1, 'conflicting retries must never add events');
 
 const waiting = await statePut({
   request: stateRequest('session-reviewer', 'hr-state-waiting-0001', {
@@ -220,6 +250,19 @@ const waiting = await statePut({
 });
 assert.equal(waiting.status, 200);
 assert.equal((await waiting.json()).communication_state.current_stage, 'WAITING_CANDIDATE');
+
+// Retrying the original transition after a later authorized transition is
+// not a fresh state mutation; the reply identifies the old event and reports
+// today's actual state separately.
+const oldTransitionReplay = await statePut({
+  request: stateRequest('session-reviewer', 'hr-state-needs-reply-0001', needsReply), env,
+});
+assert.equal(oldTransitionReplay.status, 200);
+const oldTransitionBody = await oldTransitionReplay.json();
+assert.equal(oldTransitionBody.duplicate, true);
+assert.equal(oldTransitionBody.transition.event_id, createdBody.transition.event_id);
+assert.equal(oldTransitionBody.communication_state.current_stage, 'WAITING_CANDIDATE');
+assert.equal(db.communicationEvents.size, 2);
 
 const missingTelegramEvidence = await statePut({
   request: stateRequest('session-reviewer', 'hr-state-tg-missing-0001', {
@@ -361,7 +404,7 @@ assert.equal(readbackBody.candidate_id, candidateId);
 assert.equal(readbackBody.communication_state.current_stage, 'ACCEPTED');
 assert.equal(readbackBody.communication_state.current_channel, 'academy');
 assert.equal(readbackBody.communication_state.next_action_owner, 'NONE');
-assert.equal(db.candidates.size, 1);
+assert.equal(db.candidates.size, 2, 'two synthetic identities, only one with a communication state');
 assert.equal(db.communicationStates.size, 1);
 
 console.log('Hermes Connect HR communication-state checks passed.');
