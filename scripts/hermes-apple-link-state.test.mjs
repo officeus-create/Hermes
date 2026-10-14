@@ -20,7 +20,10 @@ const startSessions = [{
 }];
 const identityRows = [];
 const sessions = [];
-const specialists = [{ id: "owner-1", email: "owner@example.com", name: "Existing Owner", role: "Business Owner" }];
+const specialists = [
+  { id: "owner-1", email: "owner@example.com", name: "Existing Owner", role: "Business Owner" },
+  { id: "owner-2", email: "other@example.com", name: "Another Owner", role: "Business Owner" },
+];
 const db = {
   prepare(query) {
     const sql = query.replace(/\s+/g, " ").trim();
@@ -83,6 +86,9 @@ const db = {
             }
             if (sql.includes("FROM specialists WHERE lower(email)")) {
               return specialists.find(x => x.email === args[0]) || null;
+            }
+            if (sql.startsWith("SELECT id,email,name,role,location,bio FROM specialists WHERE id=?")) {
+              return specialists.find(x => x.id === args[0]) || null;
             }
             if (sql.includes("FROM hermes_auth_identities WHERE provider=?")) {
               const row = identityRows.find(x => x.provider === args[0] && x.sub === args[1]);
@@ -157,5 +163,23 @@ const repeat = await completeFederatedLogin({
 });
 assert.equal(repeat.success, true, "already-linked stable Apple provider subject may sign in");
 assert.equal(sessions.length, 2);
+
+const relay = await completeFederatedLogin({
+  db, request, provider: "apple", subject: "apple-private-relay-2",
+  email: "unique@privaterelay.appleid.com", name: "Existing Owner",
+  verifiedAppleLinkOwnerId: await getVerifiedOAuthStartOwner(db, consumed),
+});
+assert.equal(relay.success, true,
+  "private-relay email must attach to proved existing owner instead of creating a duplicate account");
+assert.equal(identityRows.find(x => x.sub === "apple-private-relay-2").owner, "owner-1");
+assert.equal(specialists.length, 2);
+const collision = await completeFederatedLogin({
+  db, request, provider: "apple", subject: "apple-account-collision",
+  email: "other@example.com", name: "Another Owner",
+  verifiedAppleLinkOwnerId: await getVerifiedOAuthStartOwner(db, consumed),
+});
+assert.equal(collision.error, "existing_account_signin_required",
+  "link proof for owner-1 may never attach a provider email already owned by owner-2");
+assert.equal(identityRows.some(x => x.sub === "apple-account-collision"), false);
 
 console.log("hermes-apple-link-state: verified Apple start binding, one-time replay denial, no email-only linking, explicit existing owner PASS");
