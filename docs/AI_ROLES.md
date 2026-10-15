@@ -175,19 +175,19 @@ These gates protect the business and cannot be silently removed by another agent
 
 ### Verified owner-private plugin inventory
 
-These are eleven verified plugin identities: ten observed in the authenticated personal inventory plus the newly created and read-back private coordinator release on 2026-10-14. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
+These are eleven owner-private plugin identities read back in the authenticated personal inventory on 2026-10-15. Names, IDs and versions are point-in-time evidence. They are *not* claims that every plugin is installed in all agent hosts, connected to external provider accounts, or allowed to act autonomously.
 
 | Primary owner / scope | Existing private plugin | Exact plugin ID | Observed version |
 | --- | --- | --- | --- |
-| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.15 |
-| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.25 |
-| HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.5 |
-| Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.4 |
+| Cross-department plugin router, evidence-backed handoffs and versioned skill-growth (not CEO impersonation) | `hermes-agent-coordinator` | `plugins_6acf865dbc3c8191a21ca0da11dfb094` | 0.1.17 |
+| Technology, shared Identity, API, MCP, source CI, Website Factory | `hermes-technology-developer` | `plugins_6acf3453cfa48191884198be23defd3c` | 0.1.27 |
+| HR, candidate onboarding, recruitment communication drafts | `hermes-hr` | `plugins_6acf343b2738819194bff27b7452102d` | 0.1.6 |
+| Sales, commercial qualification and handoff | `hermes-sales` | `plugins_6acf5d95089c8191b5cb4a786148a0c1` | 0.1.5 |
 | Academy, curricula, training and learner progress | `hermes-academy` | `plugins_6acf344acf8481919ecb846796ea59ee` | 0.1.3 |
-| Hermes Catalog product/claims/public projection | `hermes-catalog` | `plugins_6acf345dede881918978f13ab23f4310` | 0.1.2 |
+| Hermes Catalog product/claims/public projection | `hermes-catalog` | `plugins_6acf345dede881918978f13ab23f4310` | 0.1.4 |
 | Dispatch processes and bounded operations (no unsolicited dispatcher contact) | `hermes-dispatch-os` | `plugins_6acccd5a49d48191932fc106919bf824` | 0.1.10 |
-| Design system, UX, mobile and visual approval | `hermes-design-hub` | `plugins_6acc9a1fe78c8191b7d149f2689029f8` | 0.2.8 |
-| Existing automation engine runtime/reliability/HAE only | `hermes-automatic-engineer` | `plugins_6ace1c27c458819186989a5aa3ef87b5` | 0.1.2 |
+| Design system, UX, mobile and visual approval | `hermes-design-hub` | `plugins_6acc9a1fe78c8191b7d149f2689029f8` | 0.2.16 |
+| Existing automation engine runtime/reliability/HAE only | `hermes-automatic-engineer` | `plugins_6ace1c27c458819186989a5aa3ef87b5` | 0.1.3 |
 | Open-source/news/technology research, evidence and radar support | `hermes-news` | `plugins_6acf3466650c8191960248cd2a96d49e` | 0.1.2 |
 | Authorized corporate VPN and private network only | `hermes-private-network` | `plugins_6ace33b7a780819181a6ce85eac06f05` | 0.1.0 |
 
@@ -259,3 +259,17 @@ Technical evidence: **draft PR #1904** corrects an explicit server `PUBLIC_CONTA
 Owner lifecycle: Search/Design owns discoverability and truthful crawler/SSR copy; Technology Developer owns Astro/browser/receiver tests; Sales owns genuine carrier qualification and recipient proof; COO/CEO owns release and permission approval. Avoid duplicate Sales databases, digital employees or unjustified Turnstile registration. Existing `functions/api/_lib/turnstile.mjs` is reusable ONLY if measured bot abuse establishes a need.
 
 Evidence states remain: CODED → EXACT-HEAD CI → PRODUCT/SECURITY REVIEW → APPROVED DEPLOY → LIVE RECEIVER PROOF → HUMAN QUALIFIED LEAD → AGREEMENT → REVENUE. No step inferred from an earlier one.
+
+
+### 2026-10-15 — Cloudflare MIT Security Audit Skill: three plugin learning releases
+
+Source-verified upstream: https://github.com/cloudflare/security-audit-skill (MIT, Copyright 2025–2026 Cloudflare, Inc.; adapted defensive methodology, NOT copied runner or an installed upstream CLI).
+
+Plugin Creator released and **re-read**:
+- Hermes Technology Developer **v0.1.27**, release `pluginrel_6ad0540cb85c81919d6c3df2d38eee81`; installed `skills/cloudflare-security-review/SKILL.md`. Source-first identity/MCP/tenant/Pages security review and strict no-production-probe.
+- Hermes Agent Coordinator **v0.1.17**, release `pluginrel_6ad0541567bc81918dd2327d73940de6`; installed `skills/security-audit-routing/SKILL.md`. Routes security candidates to existing owner and independent verifier, without claiming plugins were auto-invoked.
+- Hermes Automatic Engineer **v0.1.3**, release `pluginrel_6ad053a38e048191ada493ea770b07d3`; installed `skills/cloudflare-security-audit/SKILL.md`. HAE Worker/Queue/D1 security evidence; no HAE runtime/config change.
+
+Hermes threat map from authenticated read-only inputs: **One Brain** legacy/public snapshot anyone-Writer grants -> #431 owner-only permission correction, no exploitation asserted; **MCP public feedback** client Boolean consent != human authorization -> #1883/#1884 staged server write guard and owner review; **carrier UI** old host-based preview escalation -> #1296/PR #1904 DRAFT, runtime Sales receipt UNKNOWN. Classify boundary evidence as confirmed / needs_validation / rejected; don't label a configuration finding as successful compromise. Cloudflare upstream requires OS-enforced sandbox, no network, empty allowlisted env and independent verification for full audits; plugin skill installation by itself does not satisfy those execution requirements.
+
+Source and applied rules are in the existing One Brain; no new security daemon, plugin, CRM, account access, messages, ACL changes, production deploy, or paid dependency. Preserve search discovery and real carrier lead routing while repairing security. This section is post-release evidence for **skills only**; exact GitHub draft PR CI remains a separate gate.
