@@ -2,9 +2,9 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const homeFlows = {
  logistics: ["Request", "Route fit", "Human review", "Handoff"],
- marketing: ["Content", "Search + social", "Site action", "Inquiry"],
- technology: ["Request", "CRM context", "Automation", "Readback"],
- academy: ["Explain", "Practice", "Feedback", "Retry"],
+ marketing: ["Content + news", "Search + social", "Website action", "CRM evidence"],
+ technology: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
+ academy: ["Task", "Practice", "Feedback", "Next level"],
 } as const;
 
 // CI Chromium can stop rAF after history restoration while the focused document,
@@ -313,25 +313,34 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await page.goto('/');
  await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
  await expect(page.locator('[data-home-pillar-proof="attention"]')).toHaveCount(1);
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content');
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content + news');
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Search + social');
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Inquiry');
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('CRM evidence');
+ await expect(page.locator('.home-marketing-channels')).toContainText('Threads');
+ await expect(page.locator('.home-marketing-channels')).toContainText('IG');
+ await expect(page.locator('.home-marketing-channels')).toContainText('FB');
+ await expect(page.locator('.home-marketing-channels')).toContainText('TG');
  const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
  await expect(technologyProof).toHaveCount(1);
- await expect(technologyProof).toContainText('REQUEST');
- await expect(technologyProof).toContainText('CRM');
- await expect(technologyProof).toContainText('AUTOMATE');
- await expect(technologyProof).toContainText('VERIFIED');
- await expect(page.locator('[data-home-explainer="technology"]')).toContainText('Readback');
+ await expect(technologyProof).toContainText('HERMES CONNECT');
+ await expect(technologyProof).toContainText('LIVE PILOT');
+ await expect(technologyProof).toContainText('WEBSITE FACTORY');
+ await expect(technologyProof).toContainText('PRIVATE BUILD');
+ await expect(technologyProof).toContainText('SOCIAL CONNECTORS');
+ await expect(technologyProof).toContainText('BUILDING');
+ await expect(technologyProof).toContainText('QA READBACK');
+ await expect(technologyProof).toContainText('VERIFIED PROCESS');
+ await expect(page.locator('[data-home-explainer="technology"]')).toContainText('QA readback');
  const academyProof=page.locator('[data-home-pillar-proof="progress"]');
- await expect(academyProof).toContainText('ATTEMPT 1');
- await expect(academyProof).toContainText('HUMAN FEEDBACK');
- await expect(academyProof).toContainText('Ask one diagnostic question first.');
- await expect(academyProof).toContainText('RETRY');
- await expect(academyProof).toContainText('TRANSFER');
- await expect(page.locator('.home-book-page')).toHaveCount(0);
- await expect(page.locator('.home-academy-track')).toHaveCount(0);
- await expect(page.locator('.home-system-node')).toHaveCount(0);
+ await expect(academyProof).toContainText('TASK');
+ await expect(academyProof).toContainText('PRACTICE');
+ await expect(academyProof).toContainText('FEEDBACK');
+ await expect(academyProof).toContainText('NEXT LEVEL');
+ await expect(page.locator('.home-academy-book-page')).toHaveCount(1);
+ await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
+ await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
+ await expect(technologyProof).toHaveAttribute('data-home-living-motion','');
+ await expect(academyProof).toHaveAttribute('data-home-living-motion','');
 
  const mobileContext=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
  const mobile=await mobileContext.newPage();
