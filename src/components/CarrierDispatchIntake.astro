@@ -173,7 +173,13 @@ const { leadMode, leadEndpoint } = Astro.props;
           <input name="carrier_website" tabindex="-1" autocomplete="off" />
         </label>
 
-        <button class="button button-primary" type="submit">Review dispatch request</button>
+        <button class="button button-primary" type="submit" data-review-dispatch-request disabled>Review dispatch request</button>
+        <noscript>
+          <p class="dispatch-mode-note">
+            Interactive request review requires JavaScript. Nothing has been sent. You can
+            <a href="mailto:officeus@hermeslogisticsus.com">email Logistics Sales directly</a> instead.
+          </p>
+        </noscript>
         <p class="dispatch-mode-note">
           {leadMode === "live"
             ? "Secure delivery is available only when the approved same-origin receiver confirms the request."
