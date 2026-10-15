@@ -416,7 +416,7 @@ assert.match(routeScreenshotWorkflow, /workflow_dispatch:/, "Route screenshot ev
 assert.match(routeScreenshotWorkflow, /GITHUB_STEP_SUMMARY/, "Route screenshot evidence must retain sanitized Actions evidence.");
 assert.doesNotMatch(routeScreenshotWorkflow, /issue_comment:|github\.event\.issue\.number == 264|gh issue comment 264|issues:\s*write/, "Closed #264 must not remain a screenshot command/report sink.");
 const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
-assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \* \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
+assert.match(fiveSurfaceSyntheticWorkflow, /schedule:[\s\S]*?- cron: "37 \* \* \* \*"/, "The seven public Cloudflare surfaces need hourly availability coverage away from the top-of-hour peak.");
 for (const surface of [
   "https://hermeslogisticsus.com/",
   "https://hermeslogisticsus.com/paths/logistics/",
