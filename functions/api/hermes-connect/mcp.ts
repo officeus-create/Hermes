@@ -1,4 +1,4 @@
-type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string };
+type Env = { DB?: any; MCP_ALLOWED_ORIGINS?: string; MCP_PUBLIC_PREVIEW_ONLY?: string };
 type Context = { request: Request; env: Env };
 
 type JsonRpcRequest = {
@@ -628,15 +628,20 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
 }
 
 function previewCrmFunnel(args: Record<string, unknown>) {
-  const businessType = normalize(args.business_type, 80);
-  const goal = normalize(args.goal, 160);
+  // Enforce the declared schema on the raw input BEFORE truncation. Otherwise
+  // secrets/personal data past the character cap could be silently accepted.
+  const rawBusinessType = args.business_type;
+  const rawGoal = args.goal;
+  const businessType = typeof rawBusinessType === "string" ? normalize(rawBusinessType, 80) : "";
+  const goal = typeof rawGoal === "string" ? normalize(rawGoal, 160) : "";
   const rawChannel = typeof args.entry_channel === "string" ? args.entry_channel : "website";
   const allowedChannels = new Set(["website", "phone", "email", "instagram", "marketplace", "other"]);
-  // The preview must be safe for unauthenticated and customer/agent test users:
-  // no raw leads, tenant identity, personal information or credentials.
-  if (!allowedChannels.has(rawChannel) ||
+  // The unauthenticated preview may accept generic business context only.
+  if (typeof rawBusinessType !== "string" || rawBusinessType.length > 80 ||
+      typeof rawGoal !== "string" || rawGoal.length > 160 ||
+      !allowedChannels.has(rawChannel) ||
       businessType.length < 2 || goal.length < 3 ||
-      [businessType, goal].some(containsSensitivePattern)) {
+      [rawBusinessType, rawGoal, businessType, goal].some(containsSensitivePattern)) {
     throw new Error("invalid_preview_input");
   }
   const subject = businessType.toLowerCase();
@@ -954,6 +959,17 @@ export async function onRequest({ request, env }: Context) {
   // matching. Keep legacy 2025 callers working until explicit migration.
   const headerVersion = request.headers.get("MCP-Protocol-Version");
   const payloadVersion = message.params?._meta?.["io.modelcontextprotocol/protocolVersion"];
+  // Modern clients distinguish unsupported versions (-32022, with supported
+  // versions) from mismatched headers (-32020). Return the modern sentinel
+  // instead of silently attempting legacy or telling clients to re-probe.
+  const supported = [MODERN_PROTOCOL, LEGACY_PROTOCOL];
+  const unknownVersion = [headerVersion, payloadVersion].find((v) =>
+    v != null && !supported.includes(v));
+  if (unknownVersion != null) {
+    return responseJson(400, rpcError(message.id, -32022, "Unsupported protocol version", {
+      supported, requested: unknownVersion,
+    }));
+  }
   // Even if a client omits the modern version in both places, presence of a
   // modern routing header is a modern-protocol attempt, not a legacy escape.
   // Otherwise an attacker could bypass header/body parity by dropping _meta.
@@ -968,6 +984,14 @@ export async function onRequest({ request, env }: Context) {
         (expectedName != null && (typeof expectedName !== "string" || gotName !== expectedName)) ||
         (expectedName == null && gotName !== null)) {
       return responseJson(400, rpcError(message.id, -32020, "HeaderMismatch"));
+    }
+    // 2026-07-28 requires per-request clientCapabilities even if empty.
+    // Never infer permissions from a previous request/session or let malformed
+    // metadata silently fall back to a 2025-era call.
+    const clientCapabilities = message.params?._meta?.["io.modelcontextprotocol/clientCapabilities"];
+    if (!clientCapabilities || typeof clientCapabilities !== "object" ||
+        Array.isArray(clientCapabilities)) {
+      return responseJson(400, rpcError(message.id, -32602, "Missing or invalid client capabilities"));
     }
     if (message.method === "initialize" || message.method === "notifications/initialized") {
       return responseJson(400, rpcError(message.id, -32601, "Legacy handshake is not part of MCP 2026-07-28"));
@@ -988,6 +1012,11 @@ export async function onRequest({ request, env }: Context) {
         {
           supportedVersions: [MODERN_PROTOCOL, LEGACY_PROTOCOL],
           capabilities: { tools: { listChanged: false } },
+          // Required by the 2026-07-28 DiscoverResult schema. This
+          // public-only endpoint opts out of shared caching now, so a future
+          // authenticated toolset cannot inherit a cross-user cache policy.
+          ttlMs: 0,
+          cacheScope: "private",
           instructions,
         },
         true
@@ -1007,10 +1036,27 @@ export async function onRequest({ request, env }: Context) {
     );
   }
 
-  if (message.method === "ping") return responseJson(200, rpcResult(message.id, {}, modern));
+  // 2026-07-28 removed core "ping". Keep it only for the supported
+  // legacy 2025 client protocol so new clients do not see false capability.
+  if (message.method === "ping") {
+    if (modern) return responseJson(400, rpcError(message.id, -32601, "Method not found"));
+    return responseJson(200, rpcResult(message.id, {}, false));
+  }
 
   if (message.method === "tools/list") {
-    return responseJson(200, rpcResult(message.id, { tools: publicToolDefinitions }, modern));
+    // The existing public product feedback tool can WRITE consent-flagged
+    // product-learning rows to D1. For an owner-approved external host pilot,
+    // opt into a server-enforced read-only catalog without breaking existing
+    // feedback on environments where the feature flag is not configured.
+    // Client hints/annotations are not authorization.
+    const previewOnly = env.MCP_PUBLIC_PREVIEW_ONLY === "true";
+    const tools = previewOnly
+      ? publicToolDefinitions.filter((tool) => tool.name !== "submit_product_feedback")
+      : publicToolDefinitions;
+    return responseJson(200, rpcResult(message.id, {
+      tools,
+      ...(modern ? { ttlMs: 0, cacheScope: "private" } : {}),
+    }, modern));
   }
 
   if (message.method === "tools/call") {
@@ -1018,6 +1064,12 @@ export async function onRequest({ request, env }: Context) {
     const args = message.params?.arguments;
     if (!name || (args != null && (typeof args !== "object" || Array.isArray(args)))) {
       return responseJson(400, rpcError(message.id, -32602, "Invalid tool call parameters"));
+    }
+    // Enforce preview mode at the executable boundary, not merely tools/list:
+    // a model or direct HTTP caller can request an undisclosed tool by name.
+    // Deny BEFORE touching D1, interpreting consent or invoking the writer.
+    if (env.MCP_PUBLIC_PREVIEW_ONLY === "true" && name === "submit_product_feedback") {
+      return responseJson(403, rpcError(message.id, -32000, "Write tool unavailable in preview-only mode"));
     }
     try {
       const structuredContent = await callTool(env, name, (args || {}) as Record<string, unknown>);

@@ -136,6 +136,65 @@ const call = async (body, env = {}, headers = {}) => {
   const { json } = await call({jsonrpc:'2.0',id:8,method:'server/discover',params:{_meta:{'io.modelcontextprotocol/protocolVersion':'2026-07-28','io.modelcontextprotocol/clientCapabilities':{}}}}, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'server/discover'});
   assert.equal(json.result.resultType, 'complete');
   assert.ok(json.result.supportedVersions.includes('2026-07-28'));
+  // Strict 2026-07-28 DiscoverResult requires ttlMs and cacheScope, even
+  // when the server supports only public preview tools.
+  assert.equal(json.result.ttlMs, 0);
+  assert.equal(json.result.cacheScope, 'private');
+  assert.deepEqual(json.result._meta['io.modelcontextprotocol/serverInfo'], {
+    name: 'hermes-connect', version: '1.0.0',
+  });
+  assert.equal('serverInfo' in json.result, false,
+    'modern discovery must keep server identity in _meta, not legacy result body');
+}
+
+
+{
+  // 2026-07-28 ListToolsResult is CacheableResult: both fields are required.
+  // Clients must not reuse this server's tool catalog across authorization
+  // contexts when future authenticated tools arrive.
+  const modern = {
+    "MCP-Protocol-Version": "2026-07-28",
+    "Mcp-Method": "tools/list",
+  };
+  const meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": {},
+  };
+  const { response, json } = await call({
+    jsonrpc: "2.0", id: 875, method: "tools/list", params: { _meta: meta },
+  }, {}, modern);
+  assert.equal(response.status, 200);
+  assert.equal(json.result.resultType, "complete");
+  assert.equal(json.result.ttlMs, 0);
+  assert.equal(json.result.cacheScope, "private");
+  assert.equal(json.result.tools.length, 8);
+  assert.deepEqual(json.result._meta["io.modelcontextprotocol/serverInfo"], {
+    name: "hermes-connect", version: "1.0.0",
+  });
+
+  const old = await call({
+    jsonrpc: "2.0", id: 876, method: "tools/list", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(old.response.status, 200);
+  assert.equal(old.json.result.tools.length, 8);
+  assert.equal("ttlMs" in old.json.result, false);
+  assert.equal("cacheScope" in old.json.result, false);
+}
+{
+  const meta = {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientCapabilities": {},
+  };
+  const forbiddenPing = await call({
+    jsonrpc: "2.0", id: 877, method: "ping", params: { _meta: meta },
+  }, {}, { "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "ping" });
+  assert.equal(forbiddenPing.response.status, 400);
+  assert.equal(forbiddenPing.json.error.code, -32601);
+  const oldPing = await call({
+    jsonrpc: "2.0", id: 878, method: "ping", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(oldPing.response.status, 200);
+  assert.deepEqual(oldPing.json.result, {});
 }
 
 console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
@@ -377,6 +436,200 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
 }
 
 {
+  // 2026-era clients must receive UnsupportedProtocolVersionError (-32022)
+  // rather than a generic header mismatch, so they can retry an advertised
+  // supported version. Unknown versions must never silently select legacy.
+  for (const version of ['2027-01-01', '2025-11-25', 'not-a-version']) {
+    const { response, json } = await call(
+      { jsonrpc: '2.0', id: 871, method: 'tools/list', params: {
+        _meta: { 'io.modelcontextprotocol/protocolVersion': version },
+      }},
+      {},
+      { 'MCP-Protocol-Version': version, 'Mcp-Method': 'tools/list' },
+    );
+    assert.equal(response.status, 400);
+    assert.equal(json.error.code, -32022);
+    assert.equal(json.error.message, 'Unsupported protocol version');
+    assert.deepEqual(json.error.data.supported, ['2026-07-28', '2025-06-18']);
+    assert.equal(json.error.data.requested, version);
+  }
+  // Header and body are both checked independently, not whichever appears
+  // first or whichever the server prefers.
+  const { json } = await call({
+    jsonrpc:'2.0',id:872,method:'tools/list',params:{
+      _meta:{'io.modelcontextprotocol/protocolVersion':'2027-01-01'}
+    }
+  }, {}, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list'});
+  assert.equal(json.error.code, -32022);
+  assert.equal(json.error.data.requested, '2027-01-01');
+}
+
+{
+  // The 2026-07-28 base spec requires clientCapabilities on EVERY modern
+  // request, not just the initial server/discover. Missing or malformed
+  // values must fail closed with -32602 before any tool is executed.
+  for (const missing of [undefined, null, "yes", [], true, 23]) {
+    const meta = { "io.modelcontextprotocol/protocolVersion": "2026-07-28" };
+    if (missing !== undefined) {
+      meta["io.modelcontextprotocol/clientCapabilities"] = missing;
+    }
+    const { response, json } = await call({
+      jsonrpc: "2.0", id: 879, method: "tools/list", params: { _meta: meta },
+    }, {}, { "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/list" });
+    assert.equal(response.status, 400, "modern request with invalid clientCapabilities must fail");
+    assert.equal(json.error.code, -32602);
+    assert.match(json.error.message, /client capabilities/i);
+  }
+  const request = {
+    jsonrpc: "2.0", id: 880, method: "tools/list",
+    params: { _meta: {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {},
+    } },
+  };
+  const accepted = await call(request, {}, {
+    "MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/list",
+  });
+  assert.equal(accepted.response.status, 200,
+    "empty object is a valid capabilities declaration; clientInfo is only SHOULD");
+  assert.equal(accepted.json.result.cacheScope, "private");
+  const legacy = await call({
+    jsonrpc: "2.0", id: 881, method: "tools/list", params: {},
+  }, {}, { "MCP-Protocol-Version": "2025-06-18" });
+  assert.equal(legacy.response.status, 200,
+    "legacy clients do not require modern per-request capability envelope");
+}
+
+{
+  // Existing MCP has a separate feedback-writing tool. Public funnel preview
+  // must never inherit that tool's DB side effects, regardless of consent
+  // flags or model-supplied text.
+  let dbTouches = 0;
+  const failDb = {
+    prepare() { dbTouches++; throw new Error("read-only preview never accesses or writes D1"); },
+  };
+  const { response, json } = await call({
+    jsonrpc: "2.0", id: 882, method: "tools/call", params: {
+      name: "preview_crm_funnel",
+      arguments: {
+        business_type: "US car hauling fleet",
+        goal: "Map qualification stages without contacting drivers",
+        entry_channel: "website",
+        consent_to_product_learning: true,
+      },
+    },
+  }, { DB: failDb });
+  assert.equal(response.status, 200);
+  assert.equal(json.result.structuredContent.status, "PREVIEW_ONLY");
+  assert.equal(dbTouches, 0);
+}
+
+{
+  // The public preview must enforce maxLength and string types on the server,
+  // not just in tools/list schema. Never truncate and accept hidden PII.
+  let dbTouches = 0;
+  const env = { DB: { prepare() { dbTouches++; throw new Error("Preview touched D1"); } } };
+  for (const arguments_ of [
+    { business_type: "auto repair shop", goal: "Improve bookings " + "x".repeat(160) + " ops@example.com" },
+    { business_type: "US carrier " + "x".repeat(80) + " +1 202 555 0100", goal: "Map qualification" },
+    { business_type: { label: "repair shop" }, goal: "Map qualification" },
+    { business_type: "repair shop", goal: ["Map qualification"] },
+  ]) {
+    const { response, json } = await call({
+      jsonrpc: "2.0", id: 883, method: "tools/call",
+      params: { name: "preview_crm_funnel", arguments: arguments_ },
+    }, env);
+    assert.equal(response.status, 200);
+    assert.equal(json.result.isError, true, "invalid public preview must be rejected");
+    assert.equal(JSON.stringify(json).includes("ops@example.com"), false);
+    assert.equal(dbTouches, 0, "invalid public preview must never touch D1");
+  }
+}
+
+{
+  // Preview-only is a *server* deployment policy, not a model suggestion.
+  // This can be used for an authorized host pilot without silently changing
+  // the current production feedback workflow when flag is absent.
+  const env = { MCP_PUBLIC_PREVIEW_ONLY: 'true' };
+  const oldList = await call({
+    jsonrpc:'2.0',id:891,method:'tools/list',params:{},
+  },env);
+  assert.equal(oldList.response.status,200);
+  assert.equal(oldList.json.result.tools.length,7);
+  assert.equal(oldList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
+
+  const meta = {
+    'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+    'io.modelcontextprotocol/clientCapabilities':{},
+  };
+  const modernList = await call({
+    jsonrpc:'2.0',id:892,method:'tools/list',params:{_meta:meta},
+  },env, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list'});
+  assert.equal(modernList.response.status,200);
+  assert.equal(modernList.json.result.tools.length,7);
+  assert.equal(modernList.json.result.ttlMs,0);
+  assert.equal(modernList.json.result.cacheScope,'private');
+  assert.equal(modernList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
+
+  let dbCalls=0;
+  const strict = { MCP_PUBLIC_PREVIEW_ONLY:'true',
+    DB: {prepare(){ dbCalls++; throw new Error('Blocked MCP tool touched D1'); }},
+  };
+  const attempted = await call({
+    jsonrpc:'2.0',id:893,method:'tools/call',params:{
+      name:'submit_product_feedback',arguments:{
+        business_type:'repair shop',problem_class:'follow up',
+        desired_capability:'one reminder',outcome:'workflow_friction',
+        consent_to_product_learning:true,
+      },
+    }
+  },strict);
+  assert.equal(attempted.response.status,403);
+  assert.equal(attempted.json.error.code,-32000);
+  assert.match(attempted.json.error.message,/Write tool unavailable/);
+  assert.equal(dbCalls,0,'direct calls must not reach D1 even if caller asserts consent');
+  // The same rejection must hold for a modern client that declares capabilities
+  // and claims user consent. Merely hiding the tool from tools/list is not a gate.
+  const attemptedModern = await call({
+    jsonrpc:'2.0',id:8931,method:'tools/call',params:{
+      name:'submit_product_feedback',
+      arguments:{
+        business_type:'repair shop',problem_class:'follow up',
+        desired_capability:'one reminder',outcome:'workflow_friction',
+        consent_to_product_learning:true,
+      },
+      _meta:{
+        'io.modelcontextprotocol/protocolVersion':'2026-07-28',
+        'io.modelcontextprotocol/clientCapabilities':{},
+      },
+    }
+  },strict,{
+    'MCP-Protocol-Version':'2026-07-28',
+    'Mcp-Method':'tools/call',
+    'Mcp-Name':'submit_product_feedback',
+  });
+  assert.equal(attemptedModern.response.status,403);
+  assert.equal(attemptedModern.json.error.code,-32000);
+  assert.equal(dbCalls,0,'modern direct writes must not reach D1');
+
+  const permitted = await call({
+    jsonrpc:'2.0',id:894,method:'tools/call',params:{
+      name:'preview_crm_funnel',arguments:{
+        business_type:'auto repair shop',goal:'reduce missed bookings',
+      }
+    }
+  },strict);
+  assert.equal(permitted.response.status,200);
+  assert.equal(permitted.json.result.structuredContent.status,'PREVIEW_ONLY');
+  assert.equal(dbCalls,0,'preview mode must not query D1');
+  const unconfigured = await call({
+    jsonrpc:'2.0',id:895,method:'tools/list',params:{},
+  },{});
+  assert.equal(unconfigured.json.result.tools.length,8,
+    'existing product feedback remains discoverable unless operator explicitly enables preview mode');
+}
+
+{
   const { response, json } = await call({
     jsonrpc: "2.0", id: 901, method: "tools/call",
     params: { name: "preview_agent_handoff", arguments: {
@@ -397,7 +650,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     jsonrpc: "2.0", id: 902, method: "tools/call",
     params: { name: "preview_agent_handoff", arguments: {
       task_category: "carriers", goal: "Qualify real US car hauling carriers",
-    }, _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28" } },
+    }, _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {} } },
   }, {}, {
     "MCP-Protocol-Version": "2026-07-28",
     "Mcp-Method": "tools/call",

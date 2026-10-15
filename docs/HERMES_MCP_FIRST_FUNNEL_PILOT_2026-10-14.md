@@ -84,6 +84,58 @@ After a separately owner-approved merge and deployment, use `node scripts/hermes
 The first complete external-host acceptance needs an additional explicit customer/user-host connection, a screenshot or host-side `tools/call` receipt, and proof the model correctly explains PREVIEW_ONLY. Do not request the owner to install anything until deployed endpoint actually passes independent readback.
 
 
+## 2026-10-14 — full protocol parity and roadmap checkpoint
+
+Verification sources: [MCP 2026-07-28 official changelog](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/changelog.mdx), [official TypeScript migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28) and [maintainers' updated roadmap (2026-08-22)](https://blog.modelcontextprotocol.io/posts/mcp-roadmap/).
+
+Further strict-schema review revealed **two additional legacy vs modern differences**, patched under this same draft PR rather than creating a new MCP service:
+
+- Modern `tools/list` must include `ttlMs` and `cacheScope`, not only `server/discover`. Hermes now emits `ttlMs: 0` (immediately stale) and `cacheScope: "private"` (not reusable between identities). Legacy 2025 responses are unchanged. Unit test and independent remote readback verify both.
+- `ping` is *removed* in the 2026-07-28 protocol. Hermes replies with `-32601 Method not found` to a modern call while preserving the already supported legacy 2025 `ping`. These are distinct protocol-era contracts, not two methods exposed to new clients.
+- Modern headers and body routing remain strict, with supported-version negotiation by `-32022`. This server does not claim support for modern Tasks, subscriptions, MRTR or private OAuth; no such methods were added.
+
+**Technology outlook / dated decisions:** The maintainers' 2026-08-22 roadmap identifies (1) agentic messaging, (2) HTTP transport hardening, (3) agent identity and enterprise security, (4) improved primitives, and (5) SDK developer experience. These are **R&D directions**, not releases that Hermes or a host is already running.
+
+| Horizon from 2026-10-14 | Concrete Hermes decision | Promotion proof |
+| --- | --- | --- |
+| 3 months | Release owner-reviewed public `preview_crm_funnel` behind current public MCP handler, test 2025/2026 wire and supported AI host | Exact-head CI, independently reachable URL, user-host `tools/call` receipt |
+| 6 months | First verified identity and *tenant-scoped* `whoami` with stable issuer, audience, consent and current Company/Workspace read grant | Real OAuth provider, revocation test, cross-tenant negative, approved owner release |
+| 9 months | Durable `ProvisioningJob` proposal with idempotent, user-confirmed steps and cancellation; evaluate Tasks extension only for consenting client hosts | Actual job state, capability negotiation, caller/tenant ownership on `tasks/get/update/cancel`, billing bound |
+| 12 months | MCP Apps *optional UI* for funnel review and employee handoff, with text fallback | Supported host matrix, accessibility, CSP, security test, versioned SDK review |
+| 15 months | Evaluate multi-agent coordination and scoped delegation versus existing plugin skills/Cloudflare Portal | Measured run completion, human approval/audit, per-agent identity, permission revocation, operating cost |
+
+**Release policy:** No commitment to autonomous execution or new background privileges from a technology blog, SDK example or green PR. Keep one MCP gateway, one existing Hermes Identity data model, one versioned plugin owner and a verified One Brain handoff. Work requiring owner approval remains a blocker, never an excuse to guess credentials, send emails or silently deploy.
+
+
+## Pre-release security clarification: legacy public feedback tool can write D1
+
+The **new** `preview_crm_funnel` and follow-on `preview_agent_handoff` are read-only, but the existing public Hermes MCP endpoint already exposes `submit_product_feedback` with `readOnlyHint:false`. When `consent_to_product_learning:true` and the configured D1 database are supplied, it creates/retains structured rows in `plugin_product_learning_events` (with retention cleanup and rate limiting). Therefore, describing the *entire existing MCP endpoint* as read-only is inaccurate.
+
+That consent boolean is supplied by the calling client/model. It is **not a cryptographic or independently checked receipt of explicit human consent**, and is not equivalent to an authenticated CRM grant. The tool intentionally rejects ordinary PII patterns and limits learning events, but it remains a public write surface. Keep this distinction visible during security review.
+
+**Pilot acceptance:**
+- Treat `preview_crm_funnel` and `preview_agent_handoff` as preview-only; dedicated regression tests prove they cannot access D1. Do not send sensitive data or trigger the feedback write tool in an exploratory ChatGPT/Claude session.
+- Before allowing general third-party AI hosts to invoke the full MCP tool catalog, the owner must decide whether to scope client-visible tools to public read-only, require independently verifiable per-user feedback consent, or leave the existing feedback endpoint intentionally public with clear disclosure and abuse controls. That decision requires an explicit existing-feature compatibility review, not an unannounced change.
+- Any future OAuth-backed customer tool remains **separate** from public product feedback and must validate account, issuer, audience, consent, Company/Workspace membership, and capability on every call.
+- CI proof of a read-only preview does not erase or test away this existing feedback write functionality. Source of truth: `functions/api/hermes-connect/mcp.ts`, `scripts/hermes-connect-public-mcp.test.mjs`.
+
+
+## First external-host pilot: server-enforced preview-only mode (2026-10-14)
+
+**Important distinction:** The existing public MCP endpoint includes the `submit_product_feedback` tool, which can mutate the `plugin_product_learning_events` table when a request carries `consent_to_product_learning:true` and D1 is available. This Boolean is **client-supplied** and does not independently prove a human approved that particular call. Neither a readOnlyHint on other tools nor the model's claim is a server-side authorization control.
+
+To allow a future explicitly approved no-write pilot while preserving existing product-learning behavior in environments where the flag is absent, this PR adds an **opt-in deployment flag** `MCP_PUBLIC_PREVIEW_ONLY=true`:
+
+- `tools/list` excludes `submit_product_feedback` for BOTH legacy 2025 and modern 2026 callers. Modern results remain `ttlMs:0` and `cacheScope:'private'`.
+- `tools/call` rejects even a direct `submit_product_feedback` invocation with HTTP 403 / JSON-RPC -32000 **before inspecting arguments or accessing D1**. Hiding a tool in the list is not sufficient, because HTTP clients can call it directly.
+- Public informational tools and `preview_crm_funnel` remain usable, without reading or mutating a customer's private CRM. The existing feedback writer remains available where this flag is unset, pending an explicit product owner decision.
+- The operator must separately approve the production/preview environment configuration. **This change does not enable or set any Cloudflare env var.** A future readback must establish that the flag is in effect on the specific hostname being tested, including a forbidden direct `tools/call` negative probe.
+- Long-term preference: implement verifiable end-user consent and separate capability scopes for all public and private write tools, rather than relying on a Boolean emitted by a model. Do not confuse public feedback writes with company-scoped CRM permissions.
+
+The updated `scripts/hermes-connect-public-mcp.test.mjs` verifies excluded tool listings in both protocol eras, HTTP403 on direct write attempt, zero DB prepares, permitted funnel preview, and backward-compatible tool listing when the flag is absent. It uses synthetic data and does not send a real user message or modify production.
+
+Relevant primary source: [MCP 2026-07-28 tools](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/server/tools.mdx) cautions that tool annotations are untrusted and human-in-the-loop confirmations SHOULD be provided for operations. Because annotations are not enforcement, the Hermes safeguard is in `onRequest`, ahead of the write handler.
+
 ## Second safe user demo — preview digital-employee routing (no agent launched)
 
 After the first public funnel pilot is verified, a ChatGPT/Claude host can invoke the **read-only** `preview_agent_handoff` tool. This is a routing explanation, not a private employee or an autonomous work runner.
@@ -117,4 +169,3 @@ These are official external sources, **not** capabilities claimed in current Her
 | [Official MCP 2026-07-28 protocol](https://blog.modelcontextprotocol.io/posts/2026-07-28/) | Stateless execution, modern routing headers, cacheable lists, Tasks extension | Keep one canonical Hermes MCP gateway and compatibility tests. Tasks only when durable ProvisioningJob state exists; do not fabricate long-running agent execution |
 
 This radar concerns the *current dated specifications and releases*. Its 3/6/9/12/15-month impact is a **decision horizon**, not a promise of future host features. Adoption choices need a measured user value, reviewed open-source license, no token/bearer leaks, negative security tests and release rollback.
-
