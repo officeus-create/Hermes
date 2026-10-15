@@ -55,6 +55,36 @@ import "../styles/features/academy.css";
           </div>
         </div>
 
+        <div
+          class="academy-living-study"
+          data-academy-living-scene
+          data-motion-state="idle"
+          aria-hidden="true"
+        >
+          <span class="academy-study-light"></span>
+          <span class="academy-study-shadow academy-study-shadow-a"></span>
+          <span class="academy-study-shadow academy-study-shadow-b"></span>
+          <div class="academy-study-book">
+            <div class="academy-study-page academy-study-page-left">
+              <small>01 · SOURCE</small>
+              <strong>Understand the context.</strong>
+              <span></span><span></span><span></span>
+            </div>
+            <div class="academy-study-page academy-study-page-turn">
+              <small>02 · ATTEMPT</small>
+              <strong>Try the work.</strong>
+              <span></span><span></span>
+            </div>
+            <div class="academy-study-page academy-study-page-right">
+              <small>03 · CORRECTION</small>
+              <strong>Review → retry → transfer.</strong>
+              <span></span><span></span><span></span>
+            </div>
+            <i class="academy-study-spine"></i>
+          </div>
+          <p>Task → Attempt → Human correction → Retry → Transfer</p>
+        </div>
+
         <article class="academy-attempt-proof" aria-labelledby="academy-attempt-proof-title">
           <div class="academy-attempt-proof-head">
             <span>{methodExample.label}</span>
@@ -238,6 +268,35 @@ import "../styles/features/academy.css";
   .academy-public-entry-grid a { display: flex; align-items: center; gap: .5rem; min-height: 44px; margin-top: .75rem; }
   @media (max-width: 760px) { .academy-public-entry-grid { grid-template-columns: 1fr; } }
 </style>
+
+<script>
+  const academyLivingScenes = document.querySelectorAll<HTMLElement>("[data-academy-living-scene]");
+
+  academyLivingScenes.forEach((scene) => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+
+    const sync = () => {
+      if (reducedMotion.matches) {
+        scene.dataset.motionState = "reduced";
+        return;
+      }
+      scene.dataset.motionState = visible && !document.hidden ? "running" : "paused";
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = Boolean(entry?.isIntersecting);
+        sync();
+      },
+      { threshold: 0.22 },
+    );
+
+    observer.observe(scene);
+    reducedMotion.addEventListener("change", sync);
+    document.addEventListener("visibilitychange", sync);
+  });
+</script>
 
 <script is:inline define:vars={{ tracks: academyPublicTracks }}>
   document.querySelectorAll("[data-academy-flow]").forEach((flow) => {

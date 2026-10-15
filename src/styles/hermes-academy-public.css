@@ -109,6 +109,168 @@
   max-width: 900px;
 }
 
+.detail-page-academy .academy-living-study {
+  position: relative;
+  min-height: clamp(250px, 32vw, 390px);
+  overflow: hidden;
+  margin-top: 8px;
+  padding: clamp(22px, 4vw, 40px);
+  border: 1px solid color-mix(in srgb, var(--hermes-warning) 26%, var(--hermes-line-light));
+  border-radius: var(--hermes-radius-card);
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 216, 132, .23), transparent 28%),
+    linear-gradient(145deg, #f7f2e8 0%, #eee7da 100%);
+  box-shadow: var(--hermes-shadow-card);
+  isolation: isolate;
+}
+
+.detail-page-academy .academy-living-study > p {
+  position: absolute;
+  right: clamp(18px, 3vw, 34px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 5;
+  margin: 0;
+  color: #6e6354;
+  font: 700 .62rem/1.35 var(--font-mono);
+  letter-spacing: .035em;
+}
+
+.detail-page-academy .academy-study-light {
+  position: absolute;
+  inset: -18% -12% auto 30%;
+  z-index: 0;
+  width: 68%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,248,220,.9), rgba(255,231,169,.34) 45%, transparent 72%);
+  filter: blur(18px);
+  transform: translate3d(0,0,0);
+}
+
+.detail-page-academy .academy-study-shadow {
+  position: absolute;
+  z-index: 1;
+  width: 180px;
+  height: 92px;
+  border-radius: 65% 35% 70% 30%;
+  background: rgba(86, 104, 66, .12);
+  filter: blur(13px);
+  transform-origin: 80% 20%;
+}
+
+.detail-page-academy .academy-study-shadow-a { top: 16%; right: 5%; transform: rotate(18deg); }
+.detail-page-academy .academy-study-shadow-b { top: 8%; right: 18%; width: 120px; height: 70px; transform: rotate(-12deg); opacity: .72; }
+
+.detail-page-academy .academy-study-book {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(780px, 88%);
+  min-height: 220px;
+  margin: 0 auto;
+  perspective: 1200px;
+  filter: drop-shadow(0 24px 30px rgba(88,71,49,.15));
+  transform: rotate(-2deg);
+}
+
+.detail-page-academy .academy-study-page {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: clamp(20px, 3vw, 34px);
+  border: 1px solid rgba(106,91,69,.12);
+  color: #2d2924;
+  background:
+    linear-gradient(rgba(126,107,81,.08) 1px, transparent 1px),
+    #fffdf8;
+  background-size: 100% 28px;
+}
+
+.detail-page-academy .academy-study-page-left { border-radius: 18px 4px 4px 18px; }
+.detail-page-academy .academy-study-page-right { border-radius: 4px 18px 18px 4px; }
+
+.detail-page-academy .academy-study-page small {
+  color: #9a6d2e;
+  font: 800 .62rem/1.3 var(--font-mono);
+  letter-spacing: .075em;
+}
+
+.detail-page-academy .academy-study-page strong {
+  max-width: 18ch;
+  color: #24211d;
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  line-height: 1.1;
+}
+
+.detail-page-academy .academy-study-page > span {
+  display: block;
+  width: min(92%, 250px);
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(91,78,60,.11);
+}
+.detail-page-academy .academy-study-page > span:nth-of-type(2) { width: 72%; }
+.detail-page-academy .academy-study-page > span:nth-of-type(3) { width: 84%; }
+
+.detail-page-academy .academy-study-page-turn {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  z-index: 4;
+  width: 47%;
+  height: 88%;
+  border-radius: 4px 16px 16px 4px;
+  transform-origin: left center;
+  transform: rotateY(-72deg);
+  backface-visibility: hidden;
+  box-shadow: 14px 12px 30px rgba(78,63,45,.12);
+}
+
+.detail-page-academy .academy-study-spine {
+  position: absolute;
+  top: 3%;
+  bottom: 3%;
+  left: 50%;
+  z-index: 6;
+  width: 1px;
+  background: linear-gradient(transparent, rgba(76,63,47,.2), transparent);
+  box-shadow: 0 0 10px rgba(76,63,47,.12);
+}
+
+.detail-page-academy .academy-living-study[data-motion-state="running"] .academy-study-light {
+  animation: academy-study-light-drift 9s ease-in-out infinite alternate;
+}
+.detail-page-academy .academy-living-study[data-motion-state="running"] .academy-study-shadow-a {
+  animation: academy-study-shadow-a 7s ease-in-out infinite alternate;
+}
+.detail-page-academy .academy-living-study[data-motion-state="running"] .academy-study-shadow-b {
+  animation: academy-study-shadow-b 8.5s ease-in-out infinite alternate;
+}
+.detail-page-academy .academy-living-study[data-motion-state="running"] .academy-study-page-turn {
+  animation: academy-study-page-turn 8s cubic-bezier(.42,0,.28,1) infinite;
+}
+
+@keyframes academy-study-light-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(.98); opacity: .74; }
+  to { transform: translate3d(4%, 3%, 0) scale(1.04); opacity: 1; }
+}
+@keyframes academy-study-shadow-a {
+  from { transform: translate3d(0,0,0) rotate(18deg) scale(.96); }
+  to { transform: translate3d(-18px,12px,0) rotate(24deg) scale(1.04); }
+}
+@keyframes academy-study-shadow-b {
+  from { transform: translate3d(0,0,0) rotate(-12deg); }
+  to { transform: translate3d(14px,8px,0) rotate(-4deg); }
+}
+@keyframes academy-study-page-turn {
+  0%, 16% { transform: rotateY(-72deg); }
+  38%, 62% { transform: rotateY(-14deg); }
+  84%, 100% { transform: rotateY(-72deg); }
+}
+
 .detail-page-academy .academy-attempt-proof {
   display: grid;
   gap: 18px;
@@ -662,6 +824,32 @@
 }
 
 @media (max-width: 720px) {
+  .detail-page-academy .academy-living-study {
+    min-height: 310px;
+    padding: 18px 14px 52px;
+  }
+
+  .detail-page-academy .academy-study-book {
+    width: 100%;
+    min-height: 235px;
+    transform: none;
+  }
+
+  .detail-page-academy .academy-study-page {
+    padding: 18px 14px;
+  }
+
+  .detail-page-academy .academy-study-page-turn {
+    left: 50%;
+    width: 48%;
+  }
+
+  .detail-page-academy .academy-living-study > p {
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+  }
+
   .detail-page-academy .academy-attempt-proof { padding: 18px; }
   .detail-page-academy .academy-attempt-proof-flow { grid-template-columns: 1fr; }
   .detail-page-academy .academy-method-signals { display: grid; grid-template-columns: 1fr; }
@@ -721,6 +909,17 @@
 @media (prefers-reduced-motion: reduce) {
   .detail-page-academy .academy-flow {
     scroll-behavior: auto;
+  }
+
+  .detail-page-academy .academy-living-study *,
+  .detail-page-academy .academy-living-study *::before,
+  .detail-page-academy .academy-living-study *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .detail-page-academy .academy-study-page-turn {
+    transform: rotateY(-18deg);
   }
 }
 
