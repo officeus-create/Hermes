@@ -33,7 +33,7 @@ test("website development keeps keyboard interaction, canonical ownership, index
     await expect(showroom.locator(".website-showroom-panel.active .website-showroom-proof-feed")).toBeVisible();
   }
 
-  await showroom.locator("[data-showroom-step="context"]").click();
+  await showroom.locator('[data-showroom-step="context"]').click();
   await showroom.locator("[data-showroom-next]").click();
   await expect(showroom.locator("[data-showroom-current]")).toHaveText("02");
   await expect(showroom.locator('[data-showroom-step="brief"]')).toHaveAttribute("aria-pressed", "true");
