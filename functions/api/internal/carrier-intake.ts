@@ -112,3 +112,40 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return jsonResponse(503, { success: false, error: "intake_read_unavailable" }, PRIVATE);
   }
 }
+
+
+// Physical retention cleanup is an explicit, owner-authorized ADMIN operation.
+// No scheduler or production migration is created by this draft. Preview cannot
+// invoke it. The caller must consciously confirm each bounded purge batch.
+export async function onRequestDelete({ request, env }: { request: Request; env: Env }) {
+  const authorized = await requireInternalOwner(request, env);
+  if (authorized.response) return authorized.response;
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_unavailable" }, PRIVATE);
+  const url = new URL(request.url);
+  const origin = request.headers.get("Origin");
+  if (url.origin !== "https://hermeslogisticsus.com" ||
+      origin !== url.origin ||
+      request.headers.get("X-Hermes-Confirm-Expired-Purge") !== "PURGE_EXPIRED_CARRIER_INTAKE") {
+    return jsonResponse(403, { success: false, error: "purge_confirmation_required" }, PRIVATE);
+  }
+  try {
+    // Only records whose retention_until has passed; NEVER arbitrary deletion.
+    // The bounded 100-row batch avoids large D1 write spikes and is idempotent.
+    const result = await env.DB.prepare(`
+      DELETE FROM hermes_carrier_intake
+      WHERE request_id IN (
+        SELECT request_id FROM hermes_carrier_intake
+        WHERE retention_until <= ?
+        ORDER BY retention_until ASC, request_id ASC LIMIT 100
+      )
+    `).bind(new Date().toISOString()).run();
+    const count = Math.max(0, Number(result?.meta?.changes || 0));
+    return jsonResponse(200, {
+      success: true, purged_expired_rows: count, batch_size: 100,
+      more_batches_may_exist: count === 100,
+      policy: "Owner-confirmed physical expiry purge only. No outbound messages.",
+    }, PRIVATE);
+  } catch {
+    return jsonResponse(503, { success: false, error: "purge_temporarily_unavailable" }, PRIVATE);
+  }
+}
