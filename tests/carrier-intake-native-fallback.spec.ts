@@ -17,6 +17,7 @@ test.describe("carrier direct-intake native HTML safety", () => {
     const review = form.locator("[data-review-dispatch-request]");
 
     await expect(review).toBeDisabled();
+    await expect(form.locator("[data-review-js-fallback]")).toBeVisible();
     await expect(form).toContainText("Interactive request review requires JavaScript");
     await expect(form.getByRole("link", { name: "email Logistics Sales directly" }))
       .toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
@@ -38,6 +39,7 @@ test("carrier form review activates after safe browser handlers initialize", asy
   const review = form.locator("[data-review-dispatch-request]");
 
   await expect(review).toBeEnabled();
+  await expect(form.locator("[data-review-js-fallback]")).toBeHidden();
   await review.click();
   await expect(form.locator("[data-vehicle-alert]")).toBeVisible();
   await expect(form.locator("[data-vehicle-alert]")).toContainText("Complete the company");
