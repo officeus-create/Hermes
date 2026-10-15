@@ -14,7 +14,7 @@ function fixture(
   mode = "preview",
   overrides: Record<string, string> = {},
   missingNote = false,
-  deliveryResults: Array<"ok" | "error" | "bare" | "empty" | "mismatch" | "claimed-delivery" | "duplicate"> = ["ok"],
+  deliveryResults: Array<"ok" | "error" | "bare" | "empty" | "mismatch" | "claimed-delivery" | "duplicate" | "capture-only"> = ["ok"],
   consent = "denied",
   endpointOverride?: string,
 ) {
@@ -77,7 +77,8 @@ function fixture(
       const requestId = JSON.parse(options.body).request_id;
       const body = outcome === "bare" ? {} : { success: true, request_id: outcome === "mismatch" ? "wrong-request" : requestId,
         ...(outcome === "duplicate" ? { duplicate: true } : {}),
-        ...(outcome === "claimed-delivery" ? { delivery_status: "delivered", delivery_confirmed: true, human_receipt: true } : {}) };
+        ...(outcome === "claimed-delivery" ? { delivery_status: "delivered", delivery_confirmed: true, human_receipt: true } : {}),
+        ...(outcome === "capture-only" ? { capture_state: "persisted", delivery_state: "not_sent", human_receipt_state: "unconfirmed" } : {}) };
       // A native Fetch Response supports clone() for non-destructive receipt
       // inspection; mock must match that contract to test production semantics.
       const json = async () => {
@@ -214,14 +215,17 @@ test("carrier acceptance preserves consent and controlled attribution without re
 
 
 test("capture-only receipt confirms private storage, never email or human delivery", async () => {
-  const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["ok"]);
-  // Full native Fetch body/clone parity is checked above; the specialized
-  // capture-only state is exercised independently in the HTTP fixture below.
+  const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["capture-only"]);
+  // The secure endpoint explicitly acknowledges private D1 storage, not an email.
   view.review();
   await view.send();
   expect(view.requests).toHaveLength(1);
   expect(JSON.parse(view.requests[0].options.body).consent).toBe(true);
-  expect(view.nodes["[data-vehicle-delivery-status]"].dataset.humanReceiptState).toBe("unconfirmed");
+  const status = view.nodes["[data-vehicle-delivery-status]"];
+  expect(status.dataset.submissionState).toBe("submitted");
+  expect(status.dataset.deliveryState).toBe("not_sent");
+  expect(status.dataset.humanReceiptState).toBe("unconfirmed");
+  expect(status.textContent).toContain("No automated email was sent");
   expect(view.events.filter(event => event.event === "carrier_delivery_confirmed")).toHaveLength(0);
 });
 
