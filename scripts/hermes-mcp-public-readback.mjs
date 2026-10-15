@@ -33,6 +33,58 @@ const fetchRpc = async ({ id, method, params = {} }) => {
   return data.result;
 };
 
+// Never send a consent=true probe to production: on a misconfigured host it
+// could write a real D1 feedback row. A consent=false call is a safe negative
+// probe: it must still be denied at the executable boundary when preview-only.
+const assertPublicWriterDenied = async (modern, id) => {
+  const params = {
+    name: "submit_product_feedback",
+    arguments: {
+      business_type: "synthetic readback",
+      problem_class: "release safety check",
+      desired_capability: "no public writer",
+      outcome: "other",
+      consent_to_product_learning: false,
+    },
+    ...(modern ? { _meta: metadata } : {}),
+  };
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json, text/event-stream",
+    "MCP-Protocol-Version": modern ? version : "2025-06-18",
+    ...(modern ? { "Mcp-Method": "tools/call", "Mcp-Name": "submit_product_feedback" } : {}),
+  };
+  const response = await fetch(endpoint, {
+    method: "POST", headers,
+    body: JSON.stringify({ jsonrpc: "2.0", id, method: "tools/call", params }),
+    redirect: "error", signal: AbortSignal.timeout(12000),
+  });
+  const payload = await response.json();
+  if (response.status !== 403 || payload?.id !== id ||
+      payload?.error?.code !== -32000 ||
+      payload?.error?.message !== "Write tool unavailable in preview-only mode") {
+    throw new Error(`Public MCP writer was not denied in ${modern ? "modern" : "legacy"} mode`);
+  }
+};
+
+const fetchLegacyToolNames = async () => {
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json, text/event-stream",
+      "MCP-Protocol-Version": "2025-06-18",
+    },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 14, method: "tools/list", params: {} }),
+    redirect: "error", signal: AbortSignal.timeout(12000),
+  });
+  const payload = await response.json();
+  if (!response.ok || payload?.id !== 14 || !Array.isArray(payload?.result?.tools)) {
+    throw new Error("Legacy public MCP tool listing not verified");
+  }
+  return payload.result.tools.map(t => t.name);
+};
+
 try {
   const discovery = await fetchRpc({ id: 10, method: "server/discover" });
   if (!Array.isArray(discovery.supportedVersions) || !discovery.supportedVersions.includes(version)) {
@@ -50,6 +102,15 @@ try {
   }
   const names = tools.tools.map((t) => t.name);
   if (!names.includes("preview_crm_funnel")) throw new Error("MCP funnel preview not deployed on verified endpoint");
+  if (names.includes("submit_product_feedback")) {
+    throw new Error("Modern MCP still exposes a D1-writing public feedback tool");
+  }
+  const legacyNames = await fetchLegacyToolNames();
+  if (legacyNames.includes("submit_product_feedback")) {
+    throw new Error("Legacy MCP still exposes a D1-writing public feedback tool");
+  }
+  await assertPublicWriterDenied(true, 15);
+  await assertPublicWriterDenied(false, 16);
   const preview = await fetchRpc({ id: 12, method: "tools/call", params: {
     name: "preview_crm_funnel",
     arguments: {
@@ -75,6 +136,8 @@ try {
     version,
     tool: "preview_crm_funnel",
     stages: funnel.stages.length,
+    publicWriter: "HIDDEN_AND_DIRECT_CALL_DENIED_BOTH_PROTOCOLS",
+    writerNegativeProbe: "consent=false (zero write intent)",
     noCustomerWrite: true,
     authenticatedCrm: "NOT_TESTED",
   }, null, 2));
