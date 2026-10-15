@@ -314,6 +314,11 @@ export async function onRequestPost({ request, env }: Context) {
   const directCarrier = leadType === "load_board_access"
     && salesTag === CARRIER_SALES_TAG && pagePath === DIRECT_CAR_HAULING_PATH;
   const captureOnly = directCarrier && captureRequested;
+  // The owner-wide outbound hold may not fall back to the generic Sales email
+  // Worker when the D1 capture flag is absent. Never silently send instead.
+  if (directCarrier && !captureOnly) {
+    return json(allowedOrigin, 503, { success: false, error: "carrier_capture_not_enabled" });
+  }
   if (!captureOnly && !emailReady) return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
   if (captureOnly) {
     if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "capture_not_configured" });
