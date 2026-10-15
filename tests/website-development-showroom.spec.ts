@@ -15,6 +15,9 @@ test("website development keeps keyboard interaction, canonical ownership, index
   const showroom = page.locator("[data-website-showroom]");
   await expect(showroom).toBeVisible();
   await expect(page.getByRole("heading", { name: "See how a website moves from business context to verified release." })).toBeVisible();
+  await expect(showroom.locator("[data-showroom-current]")).toHaveText("01");
+  await expect(showroom.locator("[data-showroom-prev]")).toBeDisabled();
+  await expect(showroom.locator("[data-showroom-next]")).toBeEnabled();
 
   for (const [, label, heading] of stages) {
     const step = showroom.getByRole("button", { name: label, exact: false });
@@ -26,9 +29,23 @@ test("website development keeps keyboard interaction, canonical ownership, index
     await expect(showroom.locator('.website-showroom-step[aria-pressed="true"]')).toHaveCount(1);
     await expect(showroom.locator(".website-showroom-panel.active")).toHaveCount(1);
     await expect(showroom.locator(".website-showroom-explanation.active")).toHaveCount(1);
+    await expect(showroom.locator(".website-showroom-explanation.active .website-showroom-proof-copy")).toBeVisible();
+    await expect(showroom.locator(".website-showroom-panel.active .website-showroom-proof-feed")).toBeVisible();
   }
 
+  await showroom.locator("[data-showroom-step="context"]").click();
+  await showroom.locator("[data-showroom-next]").click();
+  await expect(showroom.locator("[data-showroom-current]")).toHaveText("02");
+  await expect(showroom.locator('[data-showroom-step="brief"]')).toHaveAttribute("aria-pressed", "true");
+  await showroom.locator("[data-showroom-prev]").click();
+  await expect(showroom.locator("[data-showroom-current]")).toHaveText("01");
+  await expect(showroom.locator('[data-showroom-step="context"]')).toHaveAttribute("aria-pressed", "true");
+
   await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Start a website project brief" })).toHaveAttribute(
+    "href",
+    "/paths/technology/?project=website_development#project-brief",
+  );
+  await expect(page.getByRole("link", { name: "Start the project brief" })).toHaveAttribute(
     "href",
     "/paths/technology/?project=website_development#project-brief",
   );
