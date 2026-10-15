@@ -436,6 +436,80 @@ assert.match(fiveSurfaceSyntheticWorkflow, /GITHUB_STEP_SUMMARY/, "Synthetic fai
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349|issues:\s*write/, "Closed #1349 must not remain a reporting sink or permission justification.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
 
+// Execute the existing inline synthetic against deterministic, network-free response
+// fixtures. Static string checks alone cannot prove a recovered 200 leaves CI red.
+const embeddedSyntheticSource = fiveSurfaceSyntheticWorkflow.match(/node <<'NODE'\r?\n([\s\S]*?)\r?\n\s*NODE/)?.[1];
+assert.ok(embeddedSyntheticSource, "Cloudflare synthetic must retain its executable Node script.");
+const SyntheticAsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+const syntheticRunner = new SyntheticAsyncFunction(
+  "fetch", "setTimeout", "console", "process", "URL", "AbortSignal", embeddedSyntheticSource,
+);
+
+async function runCloudflareSyntheticScenario(changeResponse) {
+  const observations = [];
+  let exitCode = 0;
+  let getRequests = 0;
+  const fetchMock = async (url, options) => {
+    assert.equal(options.method, "GET", "Production synthetics must never submit a form.");
+    getRequests += 1;
+    const parsed = new URL(url);
+    const target = parsed.hostname + parsed.pathname;
+    const attempt = Number(parsed.searchParams.get("synthetic")?.split("-").at(-1));
+    const baseline = {
+      status: target === "connect.hermeslogisticsus.com/" ? 308 : 200,
+      body: "Hermes Connect Founding Shop Plan Car Hauler Load Board",
+      location: target === "connect.hermeslogisticsus.com/"
+        ? "https://hermeslogisticsus.com/services/hermes-connect/"
+        : null,
+    };
+    const response = changeResponse?.(target, attempt, baseline) ?? baseline;
+    return {
+      status: response.status,
+      text: async () => response.body,
+      headers: { get: (name) => name === "location" ? response.location : null },
+    };
+  };
+
+  await syntheticRunner(
+    fetchMock,
+    (callback) => callback(), // no real wait in deterministic test
+    { log: (...args) => observations.push(args.join(" ")), error: (...args) => observations.push(args.join(" ")) },
+    { exit: (code) => { exitCode = code; } },
+    URL,
+    AbortSignal,
+  );
+  return { exitCode, getRequests, observations };
+}
+
+const syntheticClean = await runCloudflareSyntheticScenario();
+assert.equal(syntheticClean.exitCode, 0, "21 healthy observations across seven routes should pass.");
+assert.equal(syntheticClean.getRequests, 21, "Every route needs three samples, not early-exit on HTTP 200.");
+
+for (const failingAttempt of [1, 3]) {
+  const res = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
+    target === "hermeslogisticsus.com/" && attempt === failingAttempt
+      ? { ...baseline, status: 503, body: "Error 1102: Worker exceeded resource limits" }
+      : baseline,
+  );
+  assert.equal(res.exitCode, 1, "Even a recovered or late Cloudflare 1102 must fail the run.");
+  assert.equal(res.getRequests, 21, "A failure must not skip other public surfaces.");
+  assert.ok(res.observations.some((line) => line.includes("FAIL home stable=2/3 1102=1")));
+}
+
+const brokenRedirect = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
+  target === "connect.hermeslogisticsus.com/" && attempt === 2
+    ? { ...baseline, status: 302 }
+    : baseline,
+);
+assert.equal(brokenRedirect.exitCode, 1, "Intermittent wrong Connect redirect must fail.");
+
+const plain503 = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
+  target === "hermeslogisticsus.com/paths/logistics/" && attempt === 2
+    ? { ...baseline, status: 503, body: "Maintenance" }
+    : baseline,
+);
+assert.equal(plain503.exitCode, 1, "A non-1102 5xx must also fail the production synthetic.");
+
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
