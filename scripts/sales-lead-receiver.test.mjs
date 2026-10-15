@@ -890,7 +890,10 @@ class CarrierOwnerDb {
         if (/FROM hermes_carrier_intake/.test(sql)) return {
           results: [...db.rows.values()]
             .filter(x => x.classification === this.vals[0] && this.vals[1] === "new" && x.retention_until > this.vals[2])
-            .slice(0, 20)
+            .filter(x => this.vals.length < 6 ||
+              x.created_at < this.vals[3] || (x.created_at === this.vals[3] && x.request_id < this.vals[5]))
+            .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.request_id.localeCompare(a.request_id))
+            .slice(0, 21)
             .map(({ email_body, payload_hash, ...summary }) => ({ ...summary, status: "new" }))
         };
         return { results: [] };
@@ -938,5 +941,64 @@ for (const bad of ["?classification=other", "?status=deleted", "?request_id='or1
 }
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
   "An owner-read API must not trigger providers or dispatcher notifications.");
+
+/* Owner-only cursor pagination must not hide a 21st+ NEW request or leak
+ * batches to anonymous/ordinary Sales identities. These are synthetic rows. */
+const pagedDb = new CarrierOwnerDb();
+pagedDb.rows = new Map();
+for (let index = 0; index < 45; index += 1) {
+  const id = `synthetic_carrier_${String(index).padStart(5, "0")}`;
+  pagedDb.rows.set(id, {
+    request_id: id, classification: "commercial", status: "new",
+    source_path: "/logistics/start-car-hauling-dispatch/",
+    contact_email: "synthetic@example.invalid", email_body: "SYNTHETIC — NOT A REAL LEAD",
+    payload_hash: `fakehash${index}`, delivery_state: "not_sent",
+    created_at: new Date(Date.UTC(2026, 9, 15, 8, index % 60)).toISOString(),
+    retention_until: "2099-01-01T00:00:00.000Z",
+  });
+}
+const seenIds = [];
+let nextCursor = null;
+for (let pageNumber = 0; pageNumber < 4; pageNumber += 1) {
+  const search = nextCursor === null ? "" : "?cursor=" + encodeURIComponent(nextCursor);
+  const response = await readOwnerCarrierIntake({
+    request: ownerReadReq(search), env: { DB: pagedDb },
+  });
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.requests.length, pageNumber < 2 ? 20 : 5);
+  assert.equal(payload.partial, pageNumber < 2);
+  assert.equal(Boolean(payload.next_cursor), pageNumber < 2);
+  assert.ok(pagedDb.queries.some(sql => /ORDER BY created_at DESC, request_id DESC LIMIT 21/.test(sql)));
+  seenIds.push(...payload.requests.map(row => row.request_id));
+  nextCursor = payload.next_cursor;
+  if (!nextCursor) break;
+}
+assert.equal(seenIds.length, 45, "All synthetic requests must be retrievable, even past page 20.");
+assert.equal(new Set(seenIds).size, 45, "Keyset pages must not duplicate records.");
+assert.deepEqual(seenIds.slice(0, 2), ["synthetic_carrier_00044", "synthetic_carrier_00043"]);
+for (const invalidCursor of ["", "fake", "%%%%", "eyJ2IjoyfQ", "a".repeat(513)]) {
+  const response = await readOwnerCarrierIntake({
+    request: ownerReadReq("?cursor=" + encodeURIComponent(invalidCursor)), env: { DB: pagedDb },
+  });
+  assert.equal(response.status, 400, "Malformed or excessively long cursor must fail closed.");
+}
+const validFirst = await readOwnerCarrierIntake({ request: ownerReadReq(), env: { DB: pagedDb } });
+const validToken = (await validFirst.json()).next_cursor;
+const mismatchedScope = await readOwnerCarrierIntake({
+  request: ownerReadReq("?classification=qa&cursor=" + encodeURIComponent(validToken)), env: { DB: pagedDb },
+});
+assert.equal(mismatchedScope.status, 400, "Cursor cannot cross classification scope.");
+const hiddenPage = await readOwnerCarrierIntake({
+  request: ownerReadReq("?cursor=" + encodeURIComponent(validToken), false), env: { DB: pagedDb },
+});
+assert.equal(hiddenPage.status, 401, "Cursor never bypasses authentication.");
+const deniedPage = await readOwnerCarrierIntake({
+  request: ownerReadReq("?cursor=" + encodeURIComponent(validToken)), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(deniedPage.status, 403, "Cursor never expands owner capability.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Pagination must not trigger any outbound channel.");
+
 
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
