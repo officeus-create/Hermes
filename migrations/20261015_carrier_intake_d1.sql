@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS hermes_carrier_intake (
   retention_until TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_status
-  ON hermes_carrier_intake(classification, status, created_at);
+  ON hermes_carrier_intake(classification, status, created_at DESC, request_id DESC);
 CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_retention
   ON hermes_carrier_intake(retention_until);
 -- Release gate: private authorized Sales/CEO triage, data retention erasure,
