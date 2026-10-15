@@ -3,7 +3,11 @@ name: Cloudflare five-surface synthetic
 on:
   workflow_dispatch:
   schedule:
-    - cron: "23 * * * *"
+    # Reviewed cron change is intentionally off the top of the hour. Besides reducing
+    # GitHub Actions peak-load risk, a merged cron edit re-registers the schedule actor
+    # when GitHub has deactivated a scheduled workflow. A real event=schedule run is
+    # still required before calling the hourly monitor active.
+    - cron: "37 * * * *"
 
 permissions:
   contents: read
