@@ -561,54 +561,26 @@ const directCarrierPayload = {
   page_path: "/logistics/start-car-hauling-dispatch/",
   submitted_at: "2026-09-15T01:30:00.000Z",
 };
+// CEO transport hold: a direct carrier submission may not fall back to email
+// when D1 capture is OFF, even with a configured generic Worker or stale Sales
+// recipient settings. Keep the old Worker available to unrelated owner flows.
 const carrierLimits = new MemoryKv();
-const carrierWorkerEnv = { ...workerEnv, OWNER_LEAD_ALERT_RECIPIENT: "volkogon.v@gmail.com" };
-const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits, LEAD_EMAIL_SERVICE: serviceBinding(carrierWorkerEnv) };
+const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits };
 const emailsBeforeCarrier = emailMessages.length;
 const serviceCallsBeforeCarrier = serviceCalls.length;
 const telegramBeforeCarrier = telegramMessages.length;
-const NativeDate = globalThis.Date;
-const telegramWorkHoursNow = new NativeDate("2026-09-15T15:00:00.000Z");
-let realCarrier;
-try {
-  globalThis.Date = class extends NativeDate {
-    constructor(...args) {
-      super(...(args.length ? args : [telegramWorkHoursNow]));
-    }
-    static now() { return telegramWorkHoursNow.valueOf(); }
-  };
-  realCarrier = await onRequest({
-    request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
-    env: carrierEnv,
-  });
-} finally {
-  globalThis.Date = NativeDate;
-}
-assert.equal(realCarrier.status, 200);
-assert.deepEqual(await realCarrier.json(), { success: true, request_id: "carrier_real_1296_12345" });
-assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [LOGISTICS]");
-assert.match(serviceCalls.at(-1).payload.text, /Sales\/owner only — do not notify Dispatch Truck 107 or dispatcher inboxes/);
-const carrierEmails = emailMessages.slice(emailsBeforeCarrier);
-assert.deepEqual(
-  carrierEmails.map((message) => message.to).sort(),
-  ["officeus@hermeslogisticsus.com", "volkogon.v@gmail.com"].sort(),
-);
-assert.ok(carrierEmails.every((message) => !/^dispatchtruck\d+@gmail\.com$/i.test(message.to)), "Dispatcher inboxes must never receive Car Hauling lead notifications.");
-assert.equal(carrierEmails.find((message) => message.to === "officeus@hermeslogisticsus.com")?.subject, "!!! LEAD !!! [HERMES INQUIRY] [LOGISTICS] [ID:carrier_real_1296_12345]");
-assert.match(carrierEmails.find((message) => message.to === "volkogon.v@gmail.com")?.subject || "", /!!! LEAD !!! LOGISTICS/);
-assert.equal(telegramMessages.length, telegramBeforeCarrier, "Sales-only compatibility route must not call the old Car Hauling Telegram fan-out.");
-
+const directWithoutCapture = await onRequest({
+  request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
+  env: carrierEnv,
+});
+assert.equal(directWithoutCapture.status, 503);
+assert.equal((await directWithoutCapture.json()).error, "carrier_capture_not_enabled");
 const duplicateCarrier = await onRequest({
   request: leadRequest(directCarrierPayload, { "CF-Connecting-IP": "203.0.113.129" }),
   env: carrierEnv,
 });
-assert.equal(duplicateCarrier.status, 200);
-assert.equal((await duplicateCarrier.json()).duplicate, true);
-assert.equal(emailMessages.length, emailsBeforeCarrier + 2);
-assert.equal(serviceCalls.length, serviceCallsBeforeCarrier + 1);
-assert.equal(telegramMessages.length, telegramBeforeCarrier);
-
+assert.equal(duplicateCarrier.status, 503);
+assert.equal((await duplicateCarrier.json()).error, "carrier_capture_not_enabled");
 const syntheticCarrierPayload = {
   ...directCarrierPayload,
   request_id: "carrier_qa_1296_12345",
@@ -617,20 +589,17 @@ const syntheticCarrierPayload = {
     .replace("Company: Real Carrier LLC", "Company: Hermes Synthetic Carrier QA")
     .replace("Email: carrier@example.com", "Email: carrier-production-smoke@hermesconnect.app"),
 };
-const emailsBeforeQa = emailMessages.length;
-const telegramBeforeQa = telegramMessages.length;
 const syntheticCarrier = await onRequest({
   request: leadRequest(syntheticCarrierPayload, { "CF-Connecting-IP": "203.0.113.130" }),
   env: carrierEnv,
 });
-assert.equal(syntheticCarrier.status, 200);
-assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
-const qaEmails = emailMessages.slice(emailsBeforeQa);
-assert.equal(qaEmails.length, 1);
-assert.equal(qaEmails[0].to, "officeus@hermeslogisticsus.com");
-assert.equal(qaEmails[0].subject, "[HERMES TEST] [CAR HAULING] [CARRIER]");
-assert.match(qaEmails[0].text, /exclude from Sales\/CRM KPI/);
-assert.equal(telegramMessages.length, telegramBeforeQa);
+assert.equal(syntheticCarrier.status, 503);
+assert.equal((await syntheticCarrier.json()).error, "carrier_capture_not_enabled");
+assert.deepEqual(
+  [emailMessages.length, serviceCalls.length, telegramMessages.length],
+  [emailsBeforeCarrier, serviceCallsBeforeCarrier, telegramBeforeCarrier],
+  "No generic Sales email, owner alert or Telegram may fire for direct Car Hauling while capture is disabled.",
+);
 
 
 const durableEmailMessages = [];
