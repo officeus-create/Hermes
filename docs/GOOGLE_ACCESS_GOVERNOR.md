@@ -88,7 +88,7 @@ Do not connect multiple Google accounts “just in case”.
 
 ## Gmail + ChatGPT low-friction fast path (CEO direction, 2026-10-15)
 
-Goal: security must not unnecessarily slow the CEO's normal work with the separately authorized executive and office mailboxes or ChatGPT. **This is a workflow policy and proposed acceptance contract, not evidence that either mailbox is connected, a changed Google permission, or a working latency guarantee.** Do not publish private mailbox identifiers, OAuth grants, message contents or account membership lists in GitHub.
+Goal: security must not unnecessarily slow the CEO's normal work with the separately authorized executive and office mailboxes or ChatGPT. **This is a workflow policy and acceptance contract, not a changed Google permission or a working latency guarantee.** Do not publish private mailbox identifiers, OAuth grants, message contents or account membership lists in GitHub.
 
 ### Separate risk tiers, not a universal login bypass
 
@@ -123,6 +123,12 @@ Goal: security must not unnecessarily slow the CEO's normal work with the separa
 - Distinguish `POLICY_DEFINED`, `CONNECTED_AUTH_VERIFIED`, `MEASURED_FAST_PATH` and `PRODUCTION_VERIFIED`. This document is **POLICY_DEFINED** only.
 
 Primary vendor references: [Gmail incremental history API](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.history/list); [Google Workspace OAuth app access controls](https://support.google.com/a/answer/7281227). Google scopes and authorization must be verified in the specific owner-managed account, not inferred from these docs.
+
+### Bounded authorized baseline — 2026-10-15 (metadata only)
+
+An existing connected Gmail plugin performed one **read-only targeted message-ID search per independently selected executive and office connection**, in parallel. Both calls returned normally; recorded connector-call wall times were approximately 510 ms each. No message bodies/subjects, message IDs, raw account grants, private addresses, labels, or recipients were copied into this public artifact. No mail was sent, drafted, marked, or moved; no account settings were changed.
+
+Classification: `METADATA_SEARCH_AUTH_VERIFIED` **for the two tested connections in this session only**. This confirms neither ongoing access nor actual message-body reading, permission to send, p50/p95 latency, history-sync support, provider session expiry behavior or production SLA. Follow with consented, bounded first-party thread-read performance samples and explicit account isolation/expired-session tests when those are the active task. Do not repeatedly probe either account solely to increase a performance sample.
 
 ## Google Business Profile
 
