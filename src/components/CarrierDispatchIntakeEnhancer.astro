@@ -235,6 +235,7 @@
       const timeout = window.setTimeout(() => controller.abort(), 10000);
 
       try {
+        const consentInput = form.querySelector?.('input[name="carrier_consent"]') as HTMLInputElement | null | undefined;
         const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
@@ -242,7 +243,7 @@
             request_id: requestId,
             submitted_at: new Date().toISOString(),
             page_path: window.location.pathname,
-            consent: form.querySelector<HTMLInputElement>('input[name="carrier_consent"]')?.checked === true,
+            consent: consentInput?.checked === true,
             ...activeLead,
           }),
           signal: controller.signal,
