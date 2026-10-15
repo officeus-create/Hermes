@@ -2,12 +2,12 @@
 import { ArrowRight, CheckCircle2, FileText, LayoutTemplate, MonitorSmartphone, SearchCheck, ShieldCheck } from "@lucide/astro";
 
 const stages = [
-  { key: "context", label: "Business context", title: "Start with what the company actually needs.", body: "Clarify audiences, services, evidence, languages, customer actions, privacy boundaries, integrations, and the business result the website should support.", icon: FileText, signals: ["Audiences", "Services", "Primary action"] },
-  { key: "brief", label: "Brief + architecture", title: "Turn discovery into a controlled build plan.", body: "Map page ownership, navigation, conversion paths, internal links, content responsibilities, technical requirements, and the approved project scope before implementation.", icon: LayoutTemplate, signals: ["Page owners", "Navigation", "Internal links"] },
-  { key: "build", label: "Design + build", title: "Build the responsive product around the approved plan.", body: "Create the interface, reusable components, responsive behavior, crawlable content, contact paths, and only the integrations included in scope.", icon: MonitorSmartphone, signals: ["Components", "Semantic HTML", "Responsive"] },
-  { key: "qa", label: "QA + human review", title: "Check the system before it becomes a release.", body: "Run build, browser, mobile, keyboard, accessibility, privacy, content, form, link, and regression checks while a human reviews claims and release readiness.", icon: ShieldCheck, signals: ["Mobile", "Keyboard", "Regression"] },
-  { key: "search", label: "Search + release", title: "Protect discoverability while moving toward production.", body: "Validate metadata, canonical ownership, structured data where supported, internal links, sitemap/indexability rules, analytics boundaries, and controlled deployment evidence.", icon: SearchCheck, signals: ["Canonical", "Schema", "Sitemap"] },
-  { key: "evidence", label: "Evidence + next step", title: "Use real readback to decide what changes next.", body: "After release, use production readback, Search Console, privacy-safe analytics, inquiries, user feedback, errors, and operating capacity to prioritize the next bounded improvement.", icon: CheckCircle2, signals: ["Production readback", "Search evidence", "Inquiries"] },
+  { key: "context", label: "Business context", title: "Start with what the company actually needs.", body: "Clarify audiences, services, evidence, languages, customer actions, privacy boundaries, integrations, and the business result the website should support.", icon: FileText, signals: ["Audiences", "Services", "Primary action"], proof: "Public website project brief", proofDetail: "/resources/website-project-brief-template/" },
+  { key: "brief", label: "Brief + architecture", title: "Turn discovery into a controlled build plan.", body: "Map page ownership, navigation, conversion paths, internal links, content responsibilities, technical requirements, and the approved project scope before implementation.", icon: LayoutTemplate, signals: ["Page owners", "Navigation", "Internal links"], proof: "Canonical owner + route map", proofDetail: "/services/website-development/" },
+  { key: "build", label: "Design + build", title: "Build the responsive product around the approved plan.", body: "Create the interface, reusable components, responsive behavior, crawlable content, contact paths, and only the integrations included in scope.", icon: MonitorSmartphone, signals: ["Components", "Semantic HTML", "Responsive"], proof: "Reusable Astro component system", proofDetail: "Semantic DOM · responsive states · owned assets" },
+  { key: "qa", label: "QA + human review", title: "Check the system before it becomes a release.", body: "Run build, browser, mobile, keyboard, accessibility, privacy, content, form, link, and regression checks while a human reviews claims and release readiness.", icon: ShieldCheck, signals: ["Mobile", "Keyboard", "Regression"], proof: "Exact-head browser QA", proofDetail: "Desktop · 390px · keyboard · reduced motion" },
+  { key: "search", label: "Search + release", title: "Protect discoverability while moving toward production.", body: "Validate metadata, canonical ownership, structured data where supported, internal links, sitemap/indexability rules, analytics boundaries, and controlled deployment evidence.", icon: SearchCheck, signals: ["Canonical", "Schema", "Sitemap"], proof: "Search release gate", proofDetail: "Canonical · schema · sitemap · internal discovery" },
+  { key: "evidence", label: "Evidence + next step", title: "Use real readback to decide what changes next.", body: "After release, use production readback, Search Console, privacy-safe analytics, inquiries, user feedback, errors, and operating capacity to prioritize the next bounded improvement.", icon: CheckCircle2, signals: ["Production readback", "Search evidence", "Inquiries"], proof: "Release → readback → measured outcome", proofDetail: "Cloudflare · live route · GSC / inquiries when observed" },
 ];
 ---
 
@@ -53,10 +53,21 @@ const stages = [
                   {stage.signals.map((signal) => <span>{signal}</span>)}
                   <strong>{index < 3 ? "Build state" : index === 3 ? "Review gate" : index === 4 ? "Release gate" : "Evidence loop"}</strong>
                 </div>
+                <div class="website-showroom-proof-feed">
+                  <span>PROOF TYPE</span>
+                  <strong>{stage.proof}</strong>
+                  <code>{stage.proofDetail}</code>
+                </div>
               </article>
             ))}
             <div class="website-showroom-human"><ShieldCheck size={18} aria-hidden="true" /><span>Human review remains in control</span></div>
           </div>
+        </div>
+
+        <div class="website-showroom-tour-controls" aria-label="Website showroom controls">
+          <button type="button" data-showroom-prev disabled>Previous</button>
+          <span><b data-showroom-current>01</b> / 06 · self-guided proof</span>
+          <button type="button" data-showroom-next>Next</button>
         </div>
 
         <div class="website-showroom-semantic" aria-live="polite">
@@ -65,6 +76,7 @@ const stages = [
               <p class="eyebrow">0{index + 1} · {stage.label}</p>
               <h3>{stage.title}</h3>
               <p>{stage.body}</p>
+              <p class="website-showroom-proof-copy"><strong>Proof type:</strong> {stage.proof} · <code>{stage.proofDetail}</code></p>
             </article>
           ))}
         </div>
@@ -77,7 +89,10 @@ const stages = [
         <h3>The current Hermes website is the public case study behind this workflow.</h3>
         <p>The case study separates verified release evidence from customer-performance claims and shows the actual strategy-to-production cycle used on Hermes.</p>
       </div>
-      <a href="/case/it-development/" class="button button-ghost">Review the website case <ArrowRight size={18} aria-hidden="true" /></a>
+      <div class="website-showroom-proof-actions">
+        <a href="/paths/technology/?project=website_development#project-brief" class="button button-primary">Start the project brief <ArrowRight size={18} aria-hidden="true" /></a>
+        <a href="/case/it-development/" class="button button-ghost">Review the website case <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
     </div>
   </div>
 </section>
@@ -88,6 +103,11 @@ const stages = [
     const panels = Array.from(showroom.querySelectorAll("[data-showroom-panel]"));
     const explanations = Array.from(showroom.querySelectorAll("[data-showroom-explanation]"));
     const nodes = Array.from(showroom.querySelectorAll("[data-route-node]"));
+    const previous = showroom.querySelector<HTMLButtonElement>("[data-showroom-prev]");
+    const next = showroom.querySelector<HTMLButtonElement>("[data-showroom-next]");
+    const current = showroom.querySelector<HTMLElement>("[data-showroom-current]");
+    let activeIndex = 0;
+
     const activate = (key: string) => {
       const targetIndex = steps.findIndex((step) => step.getAttribute("data-showroom-step") === key);
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-showroom-step") === key)));
@@ -97,6 +117,10 @@ const stages = [
         const nodeIndex = steps.findIndex((step) => step.getAttribute("data-showroom-step") === node.getAttribute("data-route-node"));
         node.classList.toggle("active", nodeIndex <= targetIndex);
       });
+      activeIndex = targetIndex;
+      if (current) current.textContent = String(targetIndex + 1).padStart(2, "0");
+      if (previous) previous.disabled = targetIndex === 0;
+      if (next) next.disabled = targetIndex === steps.length - 1;
     };
     steps.forEach((step) => {
       const key = step.getAttribute("data-showroom-step");
@@ -104,6 +128,16 @@ const stages = [
       step.addEventListener("focus", () => activate(key));
       step.addEventListener("pointerenter", () => activate(key));
       step.addEventListener("click", () => activate(key));
+    });
+    previous?.addEventListener("click", () => {
+      const target = Math.max(0, activeIndex - 1);
+      const key = steps[target]?.getAttribute("data-showroom-step");
+      if (key) activate(key);
+    });
+    next?.addEventListener("click", () => {
+      const target = Math.min(steps.length - 1, activeIndex + 1);
+      const key = steps[target]?.getAttribute("data-showroom-step");
+      if (key) activate(key);
     });
   });
 </script>
@@ -141,6 +175,18 @@ const stages = [
   .website-showroom-mini-ui { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: 1.3rem; max-width: 680px; padding: .8rem; border: 1px solid rgba(255,255,255,.11); border-radius: 14px; background: rgba(255,255,255,.07); }
   .website-showroom-mini-ui span { display:inline-flex; align-items:center; min-height:30px; padding:.42rem .62rem; border:1px solid rgba(255,255,255,.10); border-radius:999px; background:rgba(255,255,255,.06); color:rgba(255,255,255,.76); font-size:.67rem; white-space:nowrap; }
   .website-showroom-mini-ui strong { margin-left:auto; padding: .42rem .65rem; border-radius: 999px; background: rgba(26,115,232,.18); color: #e3efff; font-size: .7rem; white-space: nowrap; }
+  .website-showroom-proof-feed { display:grid; grid-template-columns:auto 1fr; gap:.28rem .65rem; align-items:center; margin-top:.75rem; max-width:680px; padding:.7rem .8rem; border:1px solid rgba(156,197,255,.18); border-radius:12px; background:rgba(5,10,18,.28); }
+  .website-showroom-proof-feed > span { grid-row:1 / span 2; align-self:start; color:#9cc5ff; font:800 .55rem/1.35 var(--font-mono); letter-spacing:.08em; }
+  .website-showroom-proof-feed strong { color:#fff; font-size:.78rem; line-height:1.3; }
+  .website-showroom-proof-feed code { min-width:0; overflow:hidden; color:rgba(255,255,255,.58); font:600 .62rem/1.35 var(--font-mono); text-overflow:ellipsis; white-space:nowrap; }
+  .website-showroom-tour-controls { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:center; margin:.75rem 0 0; padding:.65rem .75rem; border:1px solid rgba(11,13,18,.09); border-radius:14px; background:#f8fafc; }
+  .website-showroom-tour-controls button { min-height:40px; padding:0 .8rem; border:1px solid rgba(11,13,18,.12); border-radius:10px; background:#fff; color:#0b0d12; font-weight:720; cursor:pointer; }
+  .website-showroom-tour-controls button:disabled { cursor:default; opacity:.38; }
+  .website-showroom-tour-controls button:focus-visible { outline:2px solid #155fbb; outline-offset:2px; }
+  .website-showroom-tour-controls span { color:#626977; font:650 .68rem/1.3 var(--font-mono); text-align:center; }
+  .website-showroom-tour-controls b { color:#155fbb; }
+  .website-showroom-proof-copy { margin:.65rem 0 0; color:#626977; font-size:.78rem; line-height:1.5; }
+  .website-showroom-proof-copy code { color:#155fbb; font-family:var(--font-mono); overflow-wrap:anywhere; }
   .website-showroom-human { position: absolute; left: clamp(1.2rem,4vw,2.5rem); bottom: 1.4rem; display: inline-flex; gap: .55rem; align-items: center; color: rgba(255,255,255,.7); font-size: .78rem; }
   .website-showroom-semantic { position: relative; min-height: 180px; padding: 1.25rem 1.1rem .35rem; }
   .website-showroom-explanation { display: none; }
@@ -150,7 +196,10 @@ const stages = [
   .website-showroom-proof { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2rem; align-items: center; margin-top: 1rem; padding: 1.35rem 1.5rem; border: 1px solid rgba(11,13,18,.10); border-radius: 22px; background: #fff; }
   .website-showroom-proof h3 { margin: .3rem 0 .45rem; }
   .website-showroom-proof p { margin: 0; color: #626977; line-height: 1.6; }
-  .website-showroom-proof .button { white-space: nowrap; color: #0b0d12; border-color: rgba(11,13,18,.18); }
+  .website-showroom-proof-actions { display:flex; flex-wrap:wrap; gap:.65rem; justify-content:flex-end; }
+  .website-showroom-proof-actions .button { white-space:nowrap; }
+  .website-showroom-proof-actions .button-primary { color:#fff; background:#0b0d12; border-color:#0b0d12; }
+  .website-showroom-proof-actions .button-ghost { color:#0b0d12; border-color:rgba(11,13,18,.18); }
   @media (max-width: 900px) {
     .website-showroom-heading, .website-showroom-proof { grid-template-columns: 1fr; }
     .website-showroom-frame { grid-template-columns: 1fr; }
@@ -175,6 +224,12 @@ const stages = [
     .website-showroom-panel > p { font-size: .9rem; }
     .website-showroom-mini-ui strong { width:100%; margin-left:0; justify-content:center; }
     .website-showroom-mini-ui span { flex:1 1 auto; justify-content:center; }
+    .website-showroom-proof-feed { grid-template-columns:1fr; }
+    .website-showroom-proof-feed > span { grid-row:auto; }
+    .website-showroom-proof-feed code { white-space:normal; overflow-wrap:anywhere; }
+    .website-showroom-tour-controls { grid-template-columns:1fr 1fr; }
+    .website-showroom-tour-controls span { grid-column:1 / -1; grid-row:1; }
+    .website-showroom-proof-actions { justify-content:flex-start; }
     .website-showroom-route span { width: 26px; height: 26px; font-size: .65rem; }
     .website-showroom-human { position: static; grid-row: 3; min-width: 0; }
   }
