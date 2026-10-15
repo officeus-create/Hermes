@@ -273,7 +273,11 @@
     // have been installed. If JavaScript is disabled or initialization fails,
     // the static disabled submit cannot issue a GET with contact/MC data in URL.
     const reviewButton = root.querySelector<HTMLButtonElement>("[data-review-dispatch-request]");
-    if (reviewButton) reviewButton.disabled = false;
+    if (reviewButton) {
+      const noScriptFallback = root.querySelector<HTMLElement>("[data-review-js-fallback]");
+      if (noScriptFallback) noScriptFallback.hidden = true;
+      reviewButton.disabled = false;
+    }
   };
 
   setupCarrierDispatchIntake();
