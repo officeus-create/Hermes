@@ -74,6 +74,11 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               )}
             </span>
             {path.id === "logistics" && (
+              <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle">
+                <img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="Illustrative logistics truck" loading="eager" decoding="async" />
+              </span>
+            )}
+            {path.id === "logistics" && (
               <span
                 class="home-logistics-living"
                 aria-hidden="true"
@@ -304,6 +309,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-logistics .home-portal-art img{object-position:center center;animation:home-logistics-camera 9.5s ease-in-out infinite alternate;transition:opacity .45s ease,filter .45s ease,transform .8s ease}
 .home-portal-motion{position:absolute;z-index:-2;pointer-events:none;display:block}
 .home-portal-motion img{display:block;width:100%;height:auto}
+.home-moving-truck{left:60%;top:47%;width:10.5%;min-width:30px;transform:rotate(-18deg);transform-origin:center;filter:drop-shadow(0 8px 8px rgba(4,18,31,.28));will-change:transform,opacity}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
