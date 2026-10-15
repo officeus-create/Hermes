@@ -166,6 +166,23 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
+test('Home Logistics restores independent moving subject with reduced-motion fallback',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/');
+ const subject=page.locator('[data-home-motion="truck"]');
+ await expect(subject).toHaveCount(1);
+ await expect(subject.locator('img')).toHaveAttribute('src','/images/home-20261001/truck.webp');
+ await expect(subject).toHaveAttribute('data-motion-state','running');
+ const normal=await subject.evaluate(node=>({animations:node.getAnimations().length,position:getComputedStyle(node).position,width:getComputedStyle(node).width}));
+ expect(normal.animations).toBeGreaterThan(0);
+ expect(normal.position).toBe('absolute');
+ expect(parseFloat(normal.width)).toBeGreaterThan(20);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(subject).toHaveAttribute('data-motion-state','reduced');
+ await expect.poll(async()=>subject.evaluate(node=>node.getAnimations().length)).toBe(0);
+});
+
 test('all four Home directions explain a causal workflow and remain static on touch',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
