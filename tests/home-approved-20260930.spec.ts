@@ -237,6 +237,31 @@ test('all four Home directions explain a causal workflow and remain static on to
  await touch.close();
 });
 
+
+test('Home Logistics keeps a camera-locked mobile environment across scene changes',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ const route=page.locator('[data-route-id="logistics"]');
+ const scene=page.locator('[data-home-logistics-scene-image]');
+ const echo=page.locator('[data-home-logistics-echo]');
+ const truck=page.locator('[data-home-motion="truck"]');
+ await route.scrollIntoViewIfNeeded();
+ await expect(scene).toHaveCSS('animation-name','none');
+ await expect(scene).toHaveCSS('transform','none');
+ await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
+ await expect(truck).toHaveAttribute('data-motion-state','running');
+ await page.evaluate(()=>document.fonts.ready);
+ const before=await route.boundingBox();
+ expect(before).not.toBeNull();
+ await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ const after=await route.boundingBox();
+ expect(after).not.toBeNull();
+ expect(Math.abs(after!.width-before!.width)).toBeLessThanOrEqual(1);
+ expect(Math.abs(after!.height-before!.height)).toBeLessThanOrEqual(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+});
+
 test('Home Logistics carries six owned equipment and weather states without changing the route',async({browser,page},testInfo)=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
