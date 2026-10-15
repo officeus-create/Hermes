@@ -242,16 +242,22 @@
             request_id: requestId,
             submitted_at: new Date().toISOString(),
             page_path: window.location.pathname,
+            consent: form.querySelector<HTMLInputElement>('input[name="carrier_consent"]')?.checked === true,
             ...activeLead,
           }),
           signal: controller.signal,
         });
+        const stateCopy = response.clone().json().catch(() => null);
         const receipt = await requireSubmittedReceipt(response, requestId);
+        const state = await stateCopy;
+        const storedWithoutEmail = state?.capture_state === "persisted" && state?.delivery_state === "not_sent";
 
         deliveryStatus.dataset.submissionState = receipt.submission;
-        deliveryStatus.dataset.deliveryState = receipt.delivery;
+        deliveryStatus.dataset.deliveryState = storedWithoutEmail ? "not_sent" : receipt.delivery;
         deliveryStatus.dataset.humanReceiptState = receipt.humanReceipt;
-        deliveryStatus.textContent = submittedReceiptCopy;
+        deliveryStatus.textContent = storedWithoutEmail
+          ? "Request securely saved for Logistics Sales review. No automated email was sent. Human review remains unconfirmed."
+          : submittedReceiptCopy;
         sendButton.hidden = true;
         pushEvent({
           event: "carrier_submitted",
