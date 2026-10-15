@@ -524,6 +524,28 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
 }
 
 {
+  // The public preview must enforce maxLength and string types on the server,
+  // not just in tools/list schema. Never truncate and accept hidden PII.
+  let dbTouches = 0;
+  const env = { DB: { prepare() { dbTouches++; throw new Error("Preview touched D1"); } } };
+  for (const arguments_ of [
+    { business_type: "auto repair shop", goal: "Improve bookings " + "x".repeat(160) + " ops@example.com" },
+    { business_type: "US carrier " + "x".repeat(80) + " +1 202 555 0100", goal: "Map qualification" },
+    { business_type: { label: "repair shop" }, goal: "Map qualification" },
+    { business_type: "repair shop", goal: ["Map qualification"] },
+  ]) {
+    const { response, json } = await call({
+      jsonrpc: "2.0", id: 883, method: "tools/call",
+      params: { name: "preview_crm_funnel", arguments: arguments_ },
+    }, env);
+    assert.equal(response.status, 200);
+    assert.equal(json.result.isError, true, "invalid public preview must be rejected");
+    assert.equal(JSON.stringify(json).includes("ops@example.com"), false);
+    assert.equal(dbTouches, 0, "invalid public preview must never touch D1");
+  }
+}
+
+{
   // Preview-only is a *server* deployment policy, not a model suggestion.
   // This can be used for an authorized host pilot without silently changing
   // the current production feedback workflow when flag is absent.
