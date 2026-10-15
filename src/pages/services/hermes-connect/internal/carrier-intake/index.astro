@@ -1,0 +1,262 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+---
+<BaseLayout
+  title={isRu ? "Приватная очередь заявок перевозчиков | Hermes Connect" : "Private Carrier Intake Queue | Hermes Connect"}
+  description="Owner-only, no-outbound triage of consenting carrier submissions in the existing Hermes Connect D1."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <main class="carrier-review">
+    <div class="shell">
+      <header class="intro">
+        <p class="kicker">Hermes Connect · {isRu ? "Приватный доступ" : "Private owner access"}</p>
+        <h1>{isRu ? "Очередь заявок перевозчиков" : "Carrier intake review"}</h1>
+        <p>{isRu
+          ? "Заявки сохранены без автоматических писем. Только владелец может просматривать записи; квалификация перевозчика и получение заявки человеком требуют отдельного подтверждения."
+          : "Consent-based records held without automated email. Owner review only; a saved record is not yet a qualified carrier or a confirmed human Sales receipt."}</p>
+      </header>
+
+      <section class="guard" data-access role="status" aria-live="polite">
+        {isRu ? "Проверяем доступ владельца и готовность хранилища…" : "Checking owner access and database readiness…"}
+      </section>
+
+      <section data-queue hidden aria-label="Private intake queue">
+        <div class="notice">PRIVATE · NO EMAIL SENT · NO DISPATCHER CONTACT · NOT A QUALIFIED CARRIER LIST</div>
+        <div class="controls">
+          <label>{isRu ? "Классификация" : "Classification"}
+            <select data-classification>
+              <option value="commercial">{isRu ? "Коммерческие заявки (не проверены)" : "Commercial requests (unverified)"}</option>
+              <option value="qa">{isRu ? "Тестовые / QA (не лиды)" : "Synthetic QA (not leads)"}</option>
+            </select>
+          </label>
+          <label>{isRu ? "Состояние" : "Status"}
+            <select data-status-filter>
+              <option value="new">New</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="qualified">Qualified (verified only)</option>
+              <option value="closed">Closed</option>
+            </select>
+          </label>
+          <button type="button" data-refresh>{isRu ? "Обновить" : "Refresh"}</button>
+        </div>
+        <p data-message role="status" aria-live="polite"></p>
+        <div data-records class="records"></div>
+        <nav class="pages" aria-label="Queue pagination">
+          <button type="button" data-previous disabled>{isRu ? "Назад" : "Previous"}</button>
+          <span data-page-number>Page 1</span>
+          <button type="button" data-next disabled>{isRu ? "Далее" : "Next"}</button>
+        </nav>
+        <section class="detail" data-detail hidden aria-label="Selected private request">
+          <div class="detail-title">
+            <h2>{isRu ? "Данные заявки" : "Request details"}</h2>
+            <button type="button" data-close-detail>{isRu ? "Закрыть" : "Close"}</button>
+          </div>
+          <p data-detail-meta></p>
+          <pre data-detail-body></pre>
+          <p class="caution">Owner review does not create an email, Telegram message, dispatcher assignment, contract or qualified Sales opportunity.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Row = {
+    request_id: string; classification: string; status: string;
+    source_path: string; contact_email: string; created_at: string;
+    retention_until: string; delivery_state: string;
+  };
+  type PagePayload = {
+    success?: boolean; requests?: Row[]; next_cursor?: string | null;
+    partial?: boolean; error?: string;
+  };
+  type DetailPayload = {
+    success?: boolean; request?: Row & { email_body?: string };
+    error?: string;
+  };
+  const ru = new URLSearchParams(location.search).get("lang") === "ru";
+  const tr = (en: string, translated: string) => ru ? translated : en;
+  const query = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector);
+  const guard = query<HTMLElement>("[data-access]");
+  const queue = query<HTMLElement>("[data-queue]");
+  const records = query<HTMLElement>("[data-records]");
+  const message = query<HTMLElement>("[data-message]");
+  const filter = query<HTMLSelectElement>("[data-classification]");
+  const status = query<HTMLSelectElement>("[data-status-filter]");
+  const previous = query<HTMLButtonElement>("[data-previous]");
+  const next = query<HTMLButtonElement>("[data-next]");
+  const pageNumber = query<HTMLElement>("[data-page-number]");
+  const detail = query<HTMLElement>("[data-detail]");
+  const detailMeta = query<HTMLElement>("[data-detail-meta]");
+  const detailBody = query<HTMLElement>("[data-detail-body]");
+  let position = 0;
+  let cursors: Array<string | null> = [null];
+  let nextCursor: string | null = null;
+  let generation = 0;
+
+  const api = async (url: string) => {
+    const response = await fetch(url, {
+      credentials: "same-origin", headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    let payload: PagePayload & DetailPayload = {};
+    try { payload = await response.json(); } catch {}
+    return { response, payload };
+  };
+
+  function field(label: string, value: string) {
+    const p = document.createElement("p");
+    const strong = document.createElement("strong");
+    strong.textContent = label + ": ";
+    p.append(strong, document.createTextNode(value || "—"));
+    return p;
+  }
+
+  function showRows(rows: Row[]) {
+    if (!records) return;
+    records.replaceChildren();
+    if (!rows.length) {
+      const empty = document.createElement("p");
+      empty.textContent = tr("No records on this page. This is not a global lead count.", "На странице нет записей. Это не общий показатель лидов.");
+      records.append(empty);
+      return;
+    }
+    for (const row of rows) {
+      const card = document.createElement("article");
+      card.className = "record";
+      const title = document.createElement("h2");
+      title.textContent = tr("Unverified carrier request", "Непроверенная заявка перевозчика");
+      card.append(title);
+      card.append(
+        field("Created", row.created_at),
+        field("Status", row.status),
+        field("Source", row.source_path),
+        field("Contact", row.contact_email),
+        field("Delivery", row.delivery_state || "not_sent"),
+      );
+      const inspect = document.createElement("button");
+      inspect.type = "button";
+      inspect.textContent = tr("View private details", "Посмотреть приватные данные");
+      inspect.addEventListener("click", () => { void openDetail(row.request_id); });
+      card.append(inspect);
+      records.append(card);
+    }
+  }
+
+  async function openDetail(id: string) {
+    if (detail) detail.hidden = true;
+    const { response, payload } = await api("/api/internal/carrier-intake?request_id=" + encodeURIComponent(id));
+    if (!response.ok || !payload.success || !payload.request || payload.request.request_id !== id) {
+      if (message) message.textContent = tr("Private details unavailable.", "Приватные данные недоступны.");
+      return;
+    }
+    if (detailMeta) detailMeta.textContent = `${payload.request.created_at} · ${payload.request.status} · ${payload.request.delivery_state}`;
+    if (detailBody) detailBody.textContent = payload.request.email_body || "";
+    if (detail) {
+      detail.hidden = false;
+      detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  async function loadPage() {
+    const thisGeneration = ++generation;
+    if (detail) detail.hidden = true;
+    if (detailBody) detailBody.textContent = "";
+    if (message) message.textContent = tr("Loading owner-only records…", "Загружаем приватные записи…");
+    const params = new URLSearchParams({
+      classification: filter?.value || "commercial", status: status?.value || "new",
+    });
+    if (cursors[position]) params.set("cursor", cursors[position]!);
+    try {
+      const { response, payload } = await api("/api/internal/carrier-intake?" + params.toString());
+      if (thisGeneration !== generation) return;
+      if (!response.ok || !payload.success) {
+        queue?.setAttribute("hidden", "");
+        if (guard) {
+          guard.hidden = false;
+          guard.textContent = response.status === 401
+            ? tr("Sign in to Hermes Connect first.", "Сначала войдите в Hermes Connect.")
+            : response.status === 403
+              ? tr("HERMES_INTERNAL_OWNER access required.", "Требуется право HERMES_INTERNAL_OWNER.")
+              : tr("Private storage is not enabled or available.", "Приватное хранилище не подключено или недоступно.");
+        }
+        return;
+      }
+      if (guard) guard.hidden = true;
+      if (queue) queue.hidden = false;
+      showRows(Array.isArray(payload.requests) ? payload.requests : []);
+      nextCursor = payload.next_cursor || null;
+      if (previous) previous.disabled = position === 0;
+      if (next) next.disabled = !nextCursor;
+      if (pageNumber) pageNumber.textContent = tr(`Page ${position + 1}`, `Страница ${position + 1}`);
+      if (message) message.textContent = tr(
+        "Records are unverified. Refresh to see newly arrived requests.",
+        "Заявки ещё не проверены. Обновите список для новых записей.");
+    } catch {
+      if (message) message.textContent = tr("Private queue temporarily unavailable.", "Приватная очередь временно недоступна.");
+    }
+  }
+
+  function reset() {
+    position = 0;
+    cursors = [null];
+    nextCursor = null;
+    void loadPage();
+  }
+  filter?.addEventListener("change", reset);
+  status?.addEventListener("change", reset);
+  query<HTMLButtonElement>("[data-refresh]")?.addEventListener("click", reset);
+  previous?.addEventListener("click", () => {
+    if (position > 0) { position--; void loadPage(); }
+  });
+  next?.addEventListener("click", () => {
+    if (!nextCursor) return;
+    cursors[position + 1] = nextCursor;
+    position++;
+    void loadPage();
+  });
+  query<HTMLButtonElement>("[data-close-detail]")?.addEventListener("click", () => {
+    if (detailBody) detailBody.textContent = "";
+    if (detail) detail.hidden = true;
+  });
+  void loadPage();
+</script>
+
+<style>
+  .carrier-review { min-height:75vh; background:#f7f6f3; color:#172336; }
+  .shell { width:min(1120px,calc(100% - 2rem)); margin:auto; padding:2.5rem 0 4rem; }
+  .intro { max-width:840px; margin-bottom:1.4rem; }
+  .intro h1 { font-size:clamp(2rem,4.7vw,3.5rem); letter-spacing:-.035em; line-height:1.1; margin:.35rem 0 .75rem; }
+  .intro>p:last-child { color:#4e5d70; line-height:1.65; }
+  .kicker { color:#9b4b03; font-size:.74rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+  .guard,.notice,.controls,.record,.detail { border:1px solid #dae0e8; border-radius:15px; background:white; }
+  .guard { padding:1.4rem; }
+  .notice { padding:.85rem 1rem; color:#68400b; background:#fff7e9; font-size:.78rem; font-weight:800; }
+  .controls { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin:1rem 0; padding:1rem; }
+  .controls label { display:grid; gap:.4rem; font-size:.84rem; color:#435168; }
+  select,button { font:inherit; border-radius:9px; padding:.58rem .8rem; border:1px solid #8392a5; background:#fff; color:#172336; }
+  button { cursor:pointer; font-weight:700; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  button:focus-visible,select:focus-visible { outline:3px solid #175dc4; outline-offset:3px; }
+  .records { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+  .record { padding:1rem; overflow-wrap:anywhere; }
+  .record h2 { font-size:1.06rem; margin:0 0 .65rem; }
+  .record p { color:#435168; font-size:.86rem; line-height:1.45; }
+  .record strong { color:#202e40; }
+  .record button { margin-top:.5rem; }
+  .pages { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin:1rem 0; }
+  .detail { padding:1.1rem; }
+  .detail-title { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+  .detail-title h2 { margin:0; font-size:1.15rem; }
+  pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:1rem; background:#f3f5f8; font-size:.85rem; }
+  .caution { font-size:.78rem; color:#674514; }
+  [hidden] { display:none !important; }
+  @media(max-width:680px) { .records { grid-template-columns:1fr; } .controls { align-items:stretch; } .controls label, .controls button { width:100%; } }
+</style>
