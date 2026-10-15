@@ -86,6 +86,44 @@ Keep these states separate:
 
 Do not connect multiple Google accounts “just in case”.
 
+## Gmail + ChatGPT low-friction fast path (CEO direction, 2026-10-15)
+
+Goal: security must not unnecessarily slow the CEO's normal work with the separately authorized executive and office mailboxes or ChatGPT. **This is a workflow policy and proposed acceptance contract, not evidence that either mailbox is connected, a changed Google permission, or a working latency guarantee.** Do not publish private mailbox identifiers, OAuth grants, message contents or account membership lists in GitHub.
+
+### Separate risk tiers, not a universal login bypass
+
+| Tier | User action | Required control | UX objective |
+| --- | --- | --- | --- |
+| FAST_READ | Search/list/read approved mail and threads; inspect authorized attachments; summarize; classify; compare against project context | Existing valid provider OAuth connection and per-mailbox read scope, provider authorization, privacy and tenant isolation | No repeated owner approvals or extra sign-in on each ordinary read while the authorized session and grants remain valid |
+| FAST_PREPARE | Compose a *local* proposed response, decision note, or unsent draft when the connector exposes the authorized capability | Verified mailbox identity, supported draft scope for Gmail draft writes, distinguish draft creation from local text; no send; no implicit external recipients | One bounded preparation step; avoid duplicated searches and redundant full-inbox scans |
+| CONTROLLED_WRITE | Send/reply/forward externally; modify labels/archive/trash/delete; share/forward private mail content into another system; change mail routing | Exact mailbox, action, target, explicit applicable owner permission, correct provider scopes, independent authorization and recipient/suppression gates | Confirm only the consequential requested action rather than re-authorizing unrelated reads |
+| STEP_UP | New mailbox/plugin/scope, sensitive access, cross-tenant or new staff delegation, account recovery, MFA/security configuration, tokens, automatic sending rules | Strong provider authentication/consent as necessary, least privilege, per-operation review and audit/revocation | Challenge only for genuine changed risk; never weaken provider MFA or authorization |
+
+**Standing external-email rule:** AI agents, ChatGPT, plugins and automations must not send emails from any Hermes/CEO/office mailbox without a new explicit authorization for the **specific send**. This includes replies, forwards, scheduled sends and internal dispatcher mail. Do not contact current dispatchers or use their inboxes for tests. Read-only analysis and local drafting do not require send permission. Creating a draft in the mailbox (unlike drafting text in chat) is a separate Gmail write and needs an existing authorized draft capability.
+
+**Per-mailbox identity:** executive and office mailboxes are distinct resources. A connected ChatGPT/Gmail plugin may access only mailboxes actually exposed by its authorized grant; user statements, an email string, a repository role, a Hermes account session or access to one mailbox do not imply rights over another. Do not share login sessions, passwords, raw refresh tokens, impersonation or global superadmin access across accounts or agents.
+
+### Performance architecture (reuse existing connectors)
+
+1. Route a request to exactly one already-connected provider/reader **per authorized mailbox**. Do not open more OAuth dialogs or ask for existing permissions again for every read. If absent, report `ACCESS_GAP` once with a precise action instead of retrying other identities.
+2. Prefer targeted `threadId` reads, filters/search and Gmail incremental change sync (`users.history.list`) over repeated full-mailbox fetches. Keep provider history cursor per mailbox and recover a stale/invalid cursor with a bounded resync, never silently treat missing history as empty.
+3. Cache only authorized, minimum-necessary readback/results with owner-defined freshness/retention; keep private email bodies and attachments within the authorized platform context. Do not make a cross-agent public cache, D1 mirror or second inbox by default. On revocation, scope change or expiry invalidate dependent cache and stop reads.
+4. Use bounded batching, dedupe, and provider-compliant backoff; no quota bypass through other OAuth clients or plugins. Avoid duplicate summaries/LLM passes if one fresh source-backed answer is adequate.
+5. Keep read/prepare paths independent of live send gates: a disabled sender must not disable legitimate incoming email, search, reading or the user's own Gmail UI. Never block owner manual Gmail actions by changing transport, MFA, DNS, Workspace admin policy or inbox rules under this documentation change.
+6. Before any real write, apply mailbox-specific scopes and controls **once for that requested action**; no hidden bulk/standing send permissions. Existing authentication expiration or high-risk provider step-up still takes precedence over latency.
+7. If a mailbox connection is unavailable, operate on already-provided information where lawful and label the mailbox state UNKNOWN. Do not claim that editing this policy activates an app integration.
+
+### Acceptance and measurement (proposed, not yet measured)
+
+- Authenticated read test per approved mailbox: routine search -> targeted thread read -> relevant brief without another unnecessary login prompt; record observed wall time and requests, with no PII copied into telemetry.
+- Cache hit / incremental sync tested separately; source timestamp and account boundary remain visible. Provider error/rate limit triggers accurate `THROTTLED` or `ACCESS_GAP`, not identity switching.
+- Draft request produces only clearly marked unsent text or an explicitly permitted provider draft; any external send from ChatGPT/agents remains **ZERO** until a particular approved send.
+- Revoked scope/user/membership -> immediate fail-closed read/write on new requests. Cross-mailbox access and stale session are denied.
+- Measure p50/p95 end-to-end time for FAST_READ and FAST_PREPARE over representative authorized cases, plus login prompts, duplicate calls, rate limits and false blocks. Optimize measured bottlenecks; do not claim a target is achieved without live authorized telemetry.
+- Distinguish `POLICY_DEFINED`, `CONNECTED_AUTH_VERIFIED`, `MEASURED_FAST_PATH` and `PRODUCTION_VERIFIED`. This document is **POLICY_DEFINED** only.
+
+Primary vendor references: [Gmail incremental history API](https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.history/list); [Google Workspace OAuth app access controls](https://support.google.com/a/answer/7281227). Google scopes and authorization must be verified in the specific owner-managed account, not inferred from these docs.
+
 ## Google Business Profile
 
 Google Business Profile management access is for businesses Hermes is authorized to manage.
