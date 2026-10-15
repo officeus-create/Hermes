@@ -9,6 +9,45 @@ const stages = [
 ];
 
 const firstFlow = ["Owner account", "Shop profile & services", "Availability & public booking", "Bookings & customer CRM"];
+
+const productFlow = [
+  {
+    number: "01",
+    eyebrow: "Public entry",
+    title: "Website / project brief",
+    status: "PUBLIC",
+    state: "public",
+    body: "Semantic pages and a reviewed project brief collect the operating context before any system build begins.",
+    href: "#project-brief",
+  },
+  {
+    number: "02",
+    eyebrow: "Current product",
+    title: "Hermes Connect · Repair Shops",
+    status: "LIVE PILOT",
+    state: "live",
+    body: "The owner workspace connects profile, services, availability, booking, customers, and controlled feedback.",
+    href: "/services/hermes-connect/repair-shops/",
+  },
+  {
+    number: "03",
+    eyebrow: "Private build workflow",
+    title: "Website Factory",
+    status: "PRIVATE",
+    state: "private",
+    body: "Owner-scoped sources and a structured brief become a reviewable website build workflow while private data stays noindex.",
+    href: "/services/hermes-connect/website-factory/",
+  },
+  {
+    number: "04",
+    eyebrow: "Release control",
+    title: "QA → deploy → readback",
+    status: "VERIFIED PROCESS",
+    state: "verified",
+    body: "Tests, owner approval, deployment, and production readback stay separate so code is never presented as live by assumption.",
+    href: "/case/it-development/",
+  },
+];
 import "../styles/features/technology.css";
 import "../styles/hermes-technology-public.css";
 import "../styles/hermes-technology-surface-ownership.css";
@@ -59,6 +98,96 @@ import "../styles/hermes-technology-surface-ownership.css";
           </li>
         ))}
       </ol>
+
+      <div
+        class="technology-system-choreography"
+        data-technology-system-choreography
+        data-motion-state="idle"
+        aria-label="Hermes Technology product proof flow"
+      >
+        <div class="technology-system-choreography-head">
+          <span>REAL PRODUCT FLOW</span>
+          <strong>Public → product → private build → verified release</strong>
+        </div>
+        <ol class="technology-system-flow">
+          {productFlow.map((item, index) => (
+            <li data-system-node data-system-state={item.state} data-active={String(index === 0)}>
+              <span class="technology-system-index">{item.number}</span>
+              <div>
+                <small>{item.eyebrow}</small>
+                <strong>{item.title}</strong>
+                <p>{item.body}</p>
+                <a href={item.href}>{item.status}<ArrowRight size={14} aria-hidden="true" /></a>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="technology-system-boundary">
+          Product truth only: live, private, preview, and release states remain explicitly separated.
+        </p>
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  const choreographyRoots = document.querySelectorAll<HTMLElement>("[data-technology-system-choreography]");
+
+  choreographyRoots.forEach((root) => {
+    const nodes = [...root.querySelectorAll<HTMLElement>("[data-system-node]")];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    let activeIndex = 0;
+    let timer: number | undefined;
+
+    const clearTimer = () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      timer = undefined;
+    };
+
+    const setActive = (index: number) => {
+      nodes.forEach((node, nodeIndex) => {
+        node.dataset.active = String(nodeIndex === index);
+      });
+    };
+
+    const pause = (state = "paused") => {
+      clearTimer();
+      root.dataset.motionState = state;
+    };
+
+    const schedule = () => {
+      clearTimer();
+      if (!visible || reducedMotion.matches || document.hidden || nodes.length === 0) return;
+      root.dataset.motionState = "running";
+      setActive(activeIndex);
+
+      const reachedEnd = activeIndex === nodes.length - 1;
+      activeIndex = reachedEnd ? 0 : activeIndex + 1;
+      timer = window.setTimeout(schedule, reachedEnd ? 6500 : 1700);
+    };
+
+    const syncMotionPreference = () => {
+      if (reducedMotion.matches) {
+        setActive(0);
+        pause("reduced");
+        return;
+      }
+      if (visible && !document.hidden) schedule();
+      else pause();
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = Boolean(entry?.isIntersecting);
+        if (visible) syncMotionPreference();
+        else pause();
+      },
+      { threshold: 0.25 },
+    );
+
+    observer.observe(root);
+    reducedMotion.addEventListener("change", syncMotionPreference);
+    document.addEventListener("visibilitychange", syncMotionPreference);
+  });
+</script>
