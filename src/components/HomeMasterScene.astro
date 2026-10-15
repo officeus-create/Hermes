@@ -316,13 +316,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
 [data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
 [data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:
-linear-gradient(168deg,transparent 0 45%,rgba(214,239,249,.28) 46% 48%,transparent 49%) 12% 8%/7px 54px no-repeat,
-linear-gradient(170deg,transparent 0 44%,rgba(225,244,251,.24) 45% 48%,transparent 49%) 31% 19%/5px 42px no-repeat,
-linear-gradient(166deg,transparent 0 46%,rgba(214,239,249,.31) 47% 49%,transparent 50%) 49% 4%/8px 63px no-repeat,
-linear-gradient(169deg,transparent 0 45%,rgba(233,247,252,.22) 46% 48%,transparent 49%) 67% 28%/5px 38px no-repeat,
-linear-gradient(167deg,transparent 0 45%,rgba(214,239,249,.3) 46% 49%,transparent 50%) 84% 12%/7px 57px no-repeat,
-radial-gradient(ellipse at 50% 15%,rgba(205,226,235,.16),transparent 48%);
-animation:home-logistics-rain 3.8s ease-in-out infinite alternate;opacity:.38;filter:blur(.12px)}
+linear-gradient(180deg,rgba(180,207,219,.16),rgba(33,61,74,.06)),
+radial-gradient(ellipse,rgba(229,244,250,.52) 0 .7px,transparent 1px) 0 0/23px 38px,
+radial-gradient(ellipse,rgba(211,235,245,.34) 0 .65px,transparent 1px) 11px 13px/31px 48px;
+animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18px)}
 [data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 [data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
 [data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
@@ -448,7 +445,7 @@ animation:home-logistics-rain 3.8s ease-in-out infinite alternate;opacity:.38;fi
 .home-master-route-academy:is(:hover,:focus-visible) .home-academy-arrow i{animation:home-academy-transfer 3.6s ease-in-out infinite}
 .home-master-route-academy:is(:hover,:focus-visible) .home-academy-next>i{animation:home-academy-ready 3.6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
-@keyframes home-logistics-rain{from{transform:translate3d(-.25%,-1.5%,0);opacity:.32}to{transform:translate3d(.35%,2.4%,0);opacity:.43}}
+@keyframes home-logistics-rain{from{background-position:0 0,0 0,11px 13px}to{background-position:0 0,-5px 38px,5px 61px}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
