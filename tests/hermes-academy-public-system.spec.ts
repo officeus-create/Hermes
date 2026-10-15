@@ -13,6 +13,12 @@ test("Academy uses a Pearl learning flow and preserves all five interactive scre
   await expect(flow).toBeVisible();
   await expect(page.locator('[data-academy-screen="0"]')).toBeVisible();
   await expect(page.getByRole("heading", { name: "Learn work by doing reviewed work." })).toBeVisible();
+  const livingScene = page.locator("[data-academy-living-scene]");
+  await expect(livingScene).toBeVisible();
+  await livingScene.scrollIntoViewIfNeeded();
+  await expect.poll(async () => livingScene.getAttribute("data-motion-state")).toBe("running");
+  await expect(livingScene.locator(".academy-study-page")).toHaveCount(3);
+
   const proof = page.locator(".academy-attempt-proof");
   await expect(proof).toBeVisible();
   await expect(proof.locator(".academy-attempt-proof-flow li")).toHaveCount(5);
@@ -84,10 +90,15 @@ test("Academy uses a Pearl learning flow and preserves all five interactive scre
 
 test("Academy learning system remains usable at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/paths/academy/");
 
   await expect(page.locator("[data-academy-flow]")).toBeVisible();
   await expect(page.locator('[data-academy-screen="0"]')).toBeVisible();
+  const mobileLivingScene = page.locator("[data-academy-living-scene]");
+  await expect(mobileLivingScene).toBeVisible();
+  await mobileLivingScene.scrollIntoViewIfNeeded();
+  await expect(mobileLivingScene).toHaveAttribute("data-motion-state", "reduced");
   const mobileProof = page.locator(".academy-attempt-proof");
   await expect(mobileProof).toBeVisible();
   await expect(mobileProof.locator(".academy-attempt-proof-flow")).toHaveCSS("grid-template-columns", /.+/);
