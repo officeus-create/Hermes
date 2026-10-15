@@ -135,6 +135,7 @@ Before consuming a large amount of context, check whether the answer already exi
 - Search for an existing implementation/PR before opening another branch.
 - Create small, reviewable commits and keep unrelated generated files out of the task.
 - Treat a green historical commit as historical evidence only; a newer head must pass its own required checks.
+- For public AI tools, treat JSON Schema/tool descriptions as hints, not a server-side trust boundary. Validate type, raw length, and sensitive content **before** trimming or truncation; add malformed/over-limit negative tests with zero private DB or outbound side effects. Evidence: public MCP pilot PR #1884, 2026-10-15, commits `12abc5b` + `9f7b63d`. This is a drafted lesson until exact-head CI succeeds; do not treat plugin guidance as a deployed security control.
 - When a branch becomes stale/non-mergeable and its useful change is small, prefer reconstructing the bounded diff on fresh `main` over carrying obsolete branch history.
 - At completion, update the applicable issue and `docs/ai-project-state.json` when canonical state materially changed; append a concise handoff only when historical/audit continuity adds value.
 - If blocked by access, state the exact missing permission/account/environment and the smallest next action. Do not claim a tool is unavailable until an actual access attempt fails.
