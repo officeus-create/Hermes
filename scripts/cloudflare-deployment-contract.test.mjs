@@ -416,9 +416,11 @@ assert.match(routeScreenshotWorkflow, /workflow_dispatch:/, "Route screenshot ev
 assert.match(routeScreenshotWorkflow, /GITHUB_STEP_SUMMARY/, "Route screenshot evidence must retain sanitized Actions evidence.");
 assert.doesNotMatch(routeScreenshotWorkflow, /issue_comment:|github\.event\.issue\.number == 264|gh issue comment 264|issues:\s*write/, "Closed #264 must not remain a screenshot command/report sink.");
 const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-surface-synthetic.yml");
-assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \*\/6 \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
+assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \* \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
 for (const surface of [
   "https://hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/paths/logistics/",
+  "https://hermeslogisticsus.com/paths/academy/",
   "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
   "https://hermeslogisticsus.com/load-board/",
   "https://connect.hermeslogisticsus.com/",
@@ -426,6 +428,10 @@ for (const surface of [
 ]) {
   assert.ok(fiveSurfaceSyntheticWorkflow.includes(surface), `Five-surface synthetic is missing ${surface}`);
 }
+assert.match(fiveSurfaceSyntheticWorkflow, /samplesPassed !== 3/, "All three samples must pass, even after a healthy retry.");
+assert.ok(fiveSurfaceSyntheticWorkflow.includes("Worker exceeded resource limits"), "1102 body must be explicitly detected.");
+assert.ok(fiveSurfaceSyntheticWorkflow.includes("firstFailure ??="), "Earlier failures must never be masked.");
+assert.match(fiveSurfaceSyntheticWorkflow, /method: "GET"/, "Availability checks must be explicit GET-only.");
 assert.match(fiveSurfaceSyntheticWorkflow, /GITHUB_STEP_SUMMARY/, "Synthetic failures must remain visible in the Actions summary.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349|issues:\s*write/, "Closed #1349 must not remain a reporting sink or permission justification.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /CLOUDFLARE_(?:API_TOKEN|ACCOUNT_ID)|CF_API_TOKEN|--request\s+POST/i, "Availability synthetics must stay public-read-only and credential-free.");
