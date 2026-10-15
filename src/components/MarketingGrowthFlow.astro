@@ -55,6 +55,26 @@ const stages = [
       <p>Select a stage to see how strategy, execution, sales, and evidence stay connected.<strong class="marketing-flow-boundary">Illustrative workflow — not live reach, ad spend, lead, conversion, attribution, or revenue data.</strong></p>
     </div>
 
+    <div
+      class="marketing-demand-signal"
+      data-marketing-demand-signal
+      data-active-step="0"
+      aria-label="Illustrative demand path from content to qualified action and learning"
+    >
+      <div class="marketing-demand-signal-head">
+        <span>CAUSAL DEMAND PATH</span>
+        <strong>Content → discovery → visit → qualified action → CRM learning</strong>
+      </div>
+      <ol>
+        <li data-signal-step="0"><span>01</span><strong>Content</strong><small>Useful signal</small></li>
+        <li data-signal-step="1"><span>02</span><strong>Discovery</strong><small>Search / social</small></li>
+        <li data-signal-step="2"><span>03</span><strong>Visit</strong><small>Owned page</small></li>
+        <li data-signal-step="3"><span>04</span><strong>Action</strong><small>Qualified next step</small></li>
+        <li data-signal-step="4"><span>05</span><strong>Learning</strong><small>CRM / evidence</small></li>
+      </ol>
+      <p>Illustrative operating path only — no live reach, lead, conversion, attribution or revenue is implied.</p>
+    </div>
+
     <div class="growth-console">
       <div class="growth-stage-list" role="tablist" aria-label="Marketing growth stages">
         {stages.map((stage, index) => {
@@ -110,6 +130,8 @@ const stages = [
     const tabs = [...flow.querySelectorAll<HTMLButtonElement>("[data-growth-tab]")];
     const panels = [...flow.querySelectorAll<HTMLElement>("[data-growth-panel]")];
 
+    const signal = flow.querySelector<HTMLElement>("[data-marketing-demand-signal]");
+
     const activate = (nextIndex: number, moveFocus = false) => {
       tabs.forEach((tab, index) => {
         const selected = index === nextIndex;
@@ -117,6 +139,7 @@ const stages = [
         tab.tabIndex = selected ? 0 : -1;
         panels[index].hidden = !selected;
       });
+      signal?.setAttribute("data-active-step", String(nextIndex));
       if (moveFocus) tabs[nextIndex].focus();
     };
 
