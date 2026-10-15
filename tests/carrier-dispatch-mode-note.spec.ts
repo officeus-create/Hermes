@@ -51,9 +51,9 @@ function fixture(
   const nodes = Object.fromEntries(selectors.map(selector => [selector, element()]));
   const form = nodes["[data-vehicle-form]"];
   // Browser parity: the real form exposes checked consent via querySelector.
-  form.querySelector = (selector: string) => selector === 'input[name="carrier_consent"]'
+  Object.assign(form, { querySelector: (selector: string) => selector === 'input[name="carrier_consent"]'
     ? { checked: values.carrier_consent === "on" }
-    : null;
+    : null });
   form.dataset = { leadMode: mode, leadEndpoint: endpointOverride ?? (mode === "live" ? "/api/logistics-lead" : "") };
   const requests: { url: string; options: any }[] = [];
   let requestSequence = 0;
