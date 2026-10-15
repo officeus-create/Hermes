@@ -35,6 +35,7 @@
 
 /* Four capabilities: one card family, not four competing mini-brands. */
 .detail-page-marketing .marketing-service-rails {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   border: 0;
   background: transparent;
@@ -45,7 +46,7 @@
 .detail-page-marketing .marketing-service-rails article:nth-child(3),
 .detail-page-marketing .marketing-service-rails article:nth-child(4),
 .detail-page-marketing .marketing-service-rails article:hover {
-  min-height: 490px;
+  min-height: 340px;
   padding: clamp(22px, 2.4vw, 30px);
   border: 1px solid var(--hermes-line-light);
   border-radius: var(--hermes-radius-card);
@@ -75,6 +76,15 @@
 .detail-page-marketing .marketing-service-rails h3,
 .detail-page-marketing .marketing-service-rails > article > strong {
   color: var(--hermes-ink);
+}
+.detail-page-marketing .marketing-service-rails h3 {
+  margin: 1.55rem 0 .8rem;
+}
+.detail-page-marketing .marketing-service-rails > article > strong {
+  min-height: 0;
+}
+.detail-page-marketing .marketing-service-rails ul {
+  margin-top: 1rem;
 }
 
 .detail-page-marketing .marketing-service-rails p,
@@ -203,6 +213,9 @@
 }
 
 @media (max-width: 620px) {
+  .detail-page-marketing .marketing-service-rails {
+    grid-template-columns: 1fr;
+  }
   .detail-page-marketing .marketing-service-rails article,
   .detail-page-marketing .marketing-service-rails article:nth-child(2),
   .detail-page-marketing .marketing-service-rails article:nth-child(3),

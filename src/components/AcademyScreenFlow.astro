@@ -12,10 +12,22 @@ const progression = [
 ];
 
 const method = [
-  { title: "Awareness", body: "Understand the role, U.S. market context, terminology, responsibilities, public boundaries, and standard of professional work." },
-  { title: "Understanding", body: "Work through systems, examples, decisions, reviews, and the connections between communication, execution, measurement, and quality." },
-  { title: "Application", body: "Practice defined tasks, receive correction, and build evidence of readiness without assuming employment, income, clients, certification, or promotion." },
+  { title: "Explain", body: "Read or watch the approved source, define unfamiliar terms, then explain the decision in your own words without copying a script." },
+  { title: "Practice", body: "Make a bounded attempt in a realistic scenario before live responsibility. The first attempt is evidence, not a pass/fail verdict." },
+  { title: "Self-review", body: "Name what worked, where the reasoning broke, and what you would change before seeing the reviewer answer." },
+  { title: "Human feedback", body: "An authorized reviewer gives one precise correction and names the next skill target instead of generic praise." },
+  { title: "Retry", body: "Apply the correction in a second attempt and show the change clearly enough for a reviewer to inspect." },
+  { title: "Transfer", body: "Repeat the skill in a changed scenario, ideally without notes, before progression is treated as reliable." },
 ];
+
+const methodExample = {
+  label: "SAMPLE PRACTICE · SANITIZED",
+  attempt: "Attempt 1 · The learner starts explaining the offer before understanding the other person's situation.",
+  selfReview: "Self-review · “I answered too early. I did not diagnose the actual need first.”",
+  feedback: "Human feedback · Ask one useful diagnostic question before presenting or defending the solution.",
+  retry: "Retry · “What is the main problem you are trying to solve today?”",
+  transfer: "Transfer · Use the same principle in a different scenario without repeating the exact sentence.",
+};
 
 const academyFaq = academyPublicPathOverrides.faq ?? [];
 import "../styles/features/academy.css";
@@ -24,7 +36,7 @@ import "../styles/features/academy.css";
 <section class="academy-flow" data-academy-flow data-active-screen="0" aria-labelledby="academy-flow-title">
   <div class="shell academy-flow-shell">
     <div class="academy-flow-progress" aria-label="Academy pathway progress">
-      {["Start", "Tracks", "Track", "Growth", "Method"].map((label, index) => (
+      {["Practice", "Tracks", "Track", "Growth", "Evidence"].map((label, index) => (
         <div class="academy-progress-step" data-academy-progress={index} data-active={index === 0 ? "true" : "false"}>
           <span>0{index + 1}</span><p>{label}</p>
         </div>
@@ -32,18 +44,37 @@ import "../styles/features/academy.css";
     </div>
 
     <div class="academy-screen" data-academy-screen="0" data-active="true">
-      <div class="academy-opening">
-        <p class="eyebrow">Hermes Academy · Human Progress · five public learning tracks</p>
-        <h2 id="academy-flow-title">Choose one practical professional path.</h2>
-        <p>{academyPublicPathOverrides.overview}</p>
-        <div class="academy-opening-actions">
-          <button class="button button-primary" type="button" data-academy-next="1">Choose a track <ChevronRight size={18} aria-hidden="true" /></button>
-          <a class="button button-ghost" href="#contact">Ask a question</a>
+      <div class="academy-opening academy-opening-method">
+        <div class="academy-opening-copy">
+          <p class="eyebrow">Hermes Academy · Human Progress</p>
+          <h2 id="academy-flow-title">Learn work by doing reviewed work.</h2>
+          <p>Hermes Academy is built around a visible correction loop: understand the context, make an attempt, diagnose your own gap, get precise human feedback, retry, then prove the skill in a changed scenario.</p>
+          <div class="academy-opening-actions">
+            <button class="button button-primary" type="button" data-academy-next="1">Choose a track <ChevronRight size={18} aria-hidden="true" /></button>
+            <a class="button button-ghost" href="/academy/how-training-works/">See how training works</a>
+          </div>
         </div>
-        <div class="academy-trust-facts" aria-label="Academy facts">
-          <div><strong>5</strong><span>public learning tracks</span></div>
-          <div><strong>3</strong><span>learning stages</span></div>
-          <div><strong>6</strong><span>capability layers</span></div>
+
+        <article class="academy-attempt-proof" aria-labelledby="academy-attempt-proof-title">
+          <div class="academy-attempt-proof-head">
+            <span>{methodExample.label}</span>
+            <strong id="academy-attempt-proof-title">One correction should change the next attempt.</strong>
+          </div>
+          <ol class="academy-attempt-proof-flow">
+            <li data-proof-state="attempt"><small>01 · ATTEMPT</small><p>{methodExample.attempt}</p></li>
+            <li data-proof-state="self-review"><small>02 · SELF-REVIEW</small><p>{methodExample.selfReview}</p></li>
+            <li data-proof-state="feedback"><small>03 · HUMAN FEEDBACK</small><p>{methodExample.feedback}</p></li>
+            <li data-proof-state="retry"><small>04 · RETRY</small><p>{methodExample.retry}</p></li>
+            <li data-proof-state="transfer"><small>05 · TRANSFER</small><p>{methodExample.transfer}</p></li>
+          </ol>
+          <p class="academy-attempt-boundary">This is an illustrative practice example, not a real learner record, job result, certification, income promise, or permission for live work.</p>
+        </article>
+
+        <div class="academy-method-signals" aria-label="Academy learning method">
+          <span>Explain in your own words</span>
+          <span>Practice before consequence</span>
+          <span>Self-review before correction</span>
+          <span>Human progression gate</span>
         </div>
       </div>
     </div>
@@ -114,9 +145,9 @@ import "../styles/features/academy.css";
       <div class="academy-method-heading">
         <div>
           <p class="eyebrow">How learning works</p>
-          <h2>Awareness. Understanding. Application.</h2>
+          <h2>Explain. Practice. Review. Retry. Transfer.</h2>
         </div>
-        <p>Each learning track moves from language and context into reviewed exercises. The exact cohort or practice scope is confirmed before participation.</p>
+        <p>Every track uses the same evidence-first engine. Learners explain the context, attempt the work, review their own gap, receive a precise correction, retry, and then use the skill in a different situation. The exact cohort or supervised-practice scope is confirmed before participation.</p>
       </div>
       <div class="academy-method-grid">
         {method.map((item, index) => (
