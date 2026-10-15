@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { onRequest } from "../functions/api/logistics-lead.ts";
+import { onRequestGet as readOwnerCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
@@ -889,5 +890,83 @@ const syntheticStored = await onRequest({
 assert.equal(syntheticStored.status, 200);
 assert.equal(captureDb.rows.get("carrier_qa_capture_20261015").classification, "qa", "Synthetic records are not commercial KPI.");
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
+
+/* Private intake evidence read: real session + ACTIVE owner capability only.
+ * Existing Hermes Connect auth must reject unauthenticated or ordinary users. */
+class CarrierOwnerDb {
+  constructor(isOwner = true) { this.isOwner = isOwner; this.rows = captureDb.rows; this.queries = []; }
+  prepare(sql) {
+    this.queries.push(sql);
+    const db = this;
+    return {
+      vals: [],
+      bind(...args) { this.vals = args; return this; },
+      async first() {
+        if (/FROM sessions WHERE token/.test(sql)) return this.vals[0] === "synthetic-owner-session"
+          ? { specialist_id: "synthetic-owner", expires_at: "2099-01-01T00:00:00.000Z" } : null;
+        if (/FROM specialists WHERE id/.test(sql)) return { id: "synthetic-owner", email: "owner@example.invalid", name: "Synthetic Owner", role: "Admin" };
+        if (/FROM hermes_internal_owner_access WHERE specialist_id/.test(sql)) return db.isOwner
+          ? { specialist_id: "synthetic-owner", capability: "HERMES_INTERNAL_OWNER" } : null;
+        if (/FROM hermes_carrier_intake/.test(sql)) {
+          const row = db.rows.get(this.vals[0]);
+          if (!row || row.retention_until <= this.vals[1]) return null;
+          return { ...row, status: "new" };
+        }
+        return null;
+      },
+      async all() {
+        if (/PRAGMA table_info/.test(sql)) return { results: [] };
+        if (/FROM hermes_carrier_intake/.test(sql)) return {
+          results: [...db.rows.values()]
+            .filter(x => x.classification === this.vals[0] && this.vals[1] === "new" && x.retention_until > this.vals[2])
+            .slice(0, 20)
+            .map(({ email_body, payload_hash, ...summary }) => ({ ...summary, status: "new" }))
+        };
+        return { results: [] };
+      },
+      async run() { return { success: true, meta: { changes: 0 } }; }
+    };
+  }
+}
+const ownerReadReq = (search = "", authenticated = true) => new Request(
+  "https://hermeslogisticsus.com/api/internal/carrier-intake" + search,
+  { headers: authenticated ? { Cookie: "hermes_session=synthetic-owner-session" } : {} },
+);
+const ownerDb = new CarrierOwnerDb();
+const ownerList = await readOwnerCarrierIntake({ request: ownerReadReq(), env: { DB: ownerDb } });
+assert.equal(ownerList.status, 200);
+assert.equal(ownerList.headers.get("Cache-Control"), "private, no-store");
+assert.equal(ownerList.headers.get("X-Robots-Tag"), "noindex, nofollow");
+const ownerRows = await ownerList.json();
+assert.equal(ownerRows.requests.length, 1);
+assert.equal(ownerRows.requests[0].request_id, capturedCarrier.request_id);
+assert.ok(!("email_body" in ownerRows.requests[0]), "Owner list must not expose unbounded lead body.");
+assert.equal(ownerRows.all_are_real_leads, false);
+const ownerQa = await readOwnerCarrierIntake({ request: ownerReadReq("?classification=qa"), env: { DB: ownerDb } });
+assert.equal(ownerQa.status, 200);
+assert.equal((await ownerQa.json()).requests[0].classification, "qa");
+const ownerDetail = await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + capturedCarrier.request_id), env: { DB: ownerDb },
+});
+assert.equal(ownerDetail.status, 200);
+const detail = await ownerDetail.json();
+assert.match(detail.request.email_body, /Real Carrier LLC/);
+assert.equal(detail.delivery_state, "not_sent");
+assert.equal(detail.human_receipt_state, "unconfirmed");
+const anonymousOwner = await readOwnerCarrierIntake({
+  request: ownerReadReq("", false), env: { DB: new CarrierOwnerDb() },
+});
+assert.equal(anonymousOwner.status, 401);
+const forbiddenOwner = await readOwnerCarrierIntake({
+  request: ownerReadReq(), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(forbiddenOwner.status, 403);
+for (const bad of ["?classification=other", "?status=deleted", "?request_id='or1=1"]) {
+  const denied = await readOwnerCarrierIntake({ request: ownerReadReq(bad), env: { DB: ownerDb } });
+  assert.equal(denied.status, 400);
+}
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "An owner-read API must not trigger providers or dispatcher notifications.");
 
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
