@@ -1,5 +1,5 @@
 import { parseUnambiguousJson } from "./_lib/unambiguous-json.ts";
-import { ensureCarrierIntakeSchema, readCarrierIntake, persistCarrierIntake } from "./_lib/carrier-intake-durable.mjs";
+import { readCarrierIntake, persistCarrierIntake } from "./_lib/carrier-intake-durable.mjs";
 import { brokerWeightEmailBody, brokerWeightSummary, validateBrokerWeight, type BrokerWeight } from "../../src/lib/broker-weight.ts";
 
 type KvNamespace = {
@@ -322,7 +322,7 @@ export async function onRequestPost({ request, env }: Context) {
     if (!contactEmail) return json(allowedOrigin, 400, { success: false, error: "invalid_contact_email" });
     const payloadHash = await hash(`${subject}\\n${canonicalEmailBody}\\nconsent:true`);
     try {
-      await ensureCarrierIntakeSchema(env.DB);
+      // Schema is applied once through an owner-approved migration; no DDL on the request path.
       const existing = await readCarrierIntake(env.DB, requestId);
       if (existing) {
         if (existing.payload_hash !== payloadHash) return json(allowedOrigin, 409, { success: false, error: "idempotency_conflict" });
