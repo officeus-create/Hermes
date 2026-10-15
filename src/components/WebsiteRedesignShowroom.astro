@@ -104,11 +104,25 @@ const stages = [
       review: "VERIFY",
       release: "RELEASE",
     };
-    const activate = (key: string) => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const commit = (key: string) => {
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-redesign-step") === key)));
       panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-redesign-panel") === key));
       if (state) state.textContent = stateLabels[key] || "REVIEW";
       showroom.setAttribute("data-active-redesign-stage", key);
+    };
+    const activate = (key: string) => {
+      if (showroom.querySelector('[data-redesign-step][aria-pressed="true"]')?.getAttribute("data-redesign-step") === key) return;
+      const nativeTransition = (document as Document & {
+        startViewTransition?: (update: () => void) => { finished?: Promise<unknown> };
+      }).startViewTransition;
+      if (!nativeTransition || reducedMotion.matches) {
+        commit(key);
+        return;
+      }
+      showroom.setAttribute("data-native-transition", "running");
+      const transition = nativeTransition.call(document, () => commit(key));
+      transition?.finished?.finally(() => showroom.setAttribute("data-native-transition", "ready"));
     };
     steps.forEach((step) => {
       const key = step.getAttribute("data-redesign-step");
@@ -136,6 +150,11 @@ const stages = [
   .redesign-showroom-step small { margin-top:.2rem; color:#6a7590; font-size:.72rem; line-height:1.35; }
   .redesign-showroom-stage { min-width:0; }
   .redesign-showroom-browser { overflow:hidden; border:1px solid rgba(16,32,78,.14); border-radius:23px; background:#f4f8fb; }
+  @supports (view-transition-name: website-redesign-stage) {
+    .redesign-showroom-browser { view-transition-name: website-redesign-stage; }
+    ::view-transition-old(website-redesign-stage),
+    ::view-transition-new(website-redesign-stage) { animation-duration:260ms; animation-timing-function:ease; }
+  }
   .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#6a7590; font-size:.67rem; letter-spacing:.12em; background:#fff; }
   .redesign-showroom-browser-bar i { width:8px; height:8px; border-radius:50%; background:#c8d0df; }
   .redesign-showroom-browser-bar span { margin-left:.45rem; }
@@ -192,5 +211,7 @@ const stages = [
   }
   @media (prefers-reduced-motion:reduce) {
     .redesign-showroom-step,.redesign-showroom-bridge span { transition:none !important; }
+    ::view-transition-old(website-redesign-stage),
+    ::view-transition-new(website-redesign-stage) { animation-duration:0s !important; }
   }
 </style>
