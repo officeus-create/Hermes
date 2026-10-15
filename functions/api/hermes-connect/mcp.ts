@@ -587,15 +587,20 @@ function buildCrmOnboardingPlan(args: Record<string, unknown>) {
 }
 
 function previewCrmFunnel(args: Record<string, unknown>) {
-  const businessType = normalize(args.business_type, 80);
-  const goal = normalize(args.goal, 160);
+  // Enforce the declared schema on the raw input BEFORE truncation. Otherwise
+  // secrets/personal data past the character cap could be silently accepted.
+  const rawBusinessType = args.business_type;
+  const rawGoal = args.goal;
+  const businessType = typeof rawBusinessType === "string" ? normalize(rawBusinessType, 80) : "";
+  const goal = typeof rawGoal === "string" ? normalize(rawGoal, 160) : "";
   const rawChannel = typeof args.entry_channel === "string" ? args.entry_channel : "website";
   const allowedChannels = new Set(["website", "phone", "email", "instagram", "marketplace", "other"]);
-  // The preview must be safe for unauthenticated and customer/agent test users:
-  // no raw leads, tenant identity, personal information or credentials.
-  if (!allowedChannels.has(rawChannel) ||
+  // The unauthenticated preview may accept generic business context only.
+  if (typeof rawBusinessType !== "string" || rawBusinessType.length > 80 ||
+      typeof rawGoal !== "string" || rawGoal.length > 160 ||
+      !allowedChannels.has(rawChannel) ||
       businessType.length < 2 || goal.length < 3 ||
-      [businessType, goal].some(containsSensitivePattern)) {
+      [rawBusinessType, rawGoal, businessType, goal].some(containsSensitivePattern)) {
     throw new Error("invalid_preview_input");
   }
   const subject = businessType.toLowerCase();
