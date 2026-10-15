@@ -564,6 +564,7 @@ const directCarrierPayload = {
 // CEO transport hold: a direct carrier submission may not fall back to email
 // when D1 capture is OFF, even with a configured generic Worker or stale Sales
 // recipient settings. Keep the old Worker available to unrelated owner flows.
+const NativeDate = globalThis.Date;
 const carrierLimits = new MemoryKv();
 const carrierEnv = { ...env, LEAD_LIMITS: carrierLimits };
 const emailsBeforeCarrier = emailMessages.length;
