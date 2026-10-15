@@ -16,16 +16,25 @@ test("website development keeps keyboard interaction, canonical ownership, index
   await expect(showroom).toBeVisible();
   await expect(page.getByRole("heading", { name: "See how a website moves from business context to verified release." })).toBeVisible();
 
-  for (const [, label, heading] of stages) {
+  for (const [key, label, heading] of stages) {
     const step = showroom.getByRole("button", { name: label, exact: false });
     await step.focus();
     await expect(step).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(step).toHaveAttribute("aria-pressed", "true");
+    await expect(step).toHaveAttribute("aria-controls", `website-showroom-explanation-${key}`);
+    const controlledExplanation = showroom.locator(`#website-showroom-explanation-${key}`);
+    await expect(controlledExplanation).toBeVisible();
+    expect(await controlledExplanation.evaluate((element) => element.closest('[aria-hidden="true"]') === null)).toBeTruthy();
     await expect(showroom.getByRole("heading", { name: heading })).toBeVisible();
     await expect(showroom.locator('.website-showroom-step[aria-pressed="true"]')).toHaveCount(1);
     await expect(showroom.locator(".website-showroom-panel.active")).toHaveCount(1);
     await expect(showroom.locator(".website-showroom-explanation.active")).toHaveCount(1);
+    await expect(showroom).toHaveAttribute("data-active-showroom-stage", key);
+    const proof = showroom.locator(`[data-showroom-live-proof="${key}"]`);
+    await expect(proof).toBeVisible();
+    await expect(proof.locator(".website-showroom-proof-page")).toBeVisible();
+    await expect(proof.locator(".website-showroom-proof-inspector")).toBeVisible();
   }
 
   await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Start a website project brief" })).toHaveAttribute(
@@ -66,6 +75,7 @@ test("all six showroom states stay contained with readable active text at 320, 3
           canvas: rect(".website-showroom-canvas"),
           panel: rect(`[data-showroom-panel="${activeKey}"]`),
           miniUi: rect(`[data-showroom-panel="${activeKey}"] .website-showroom-mini-ui`),
+          liveProof: rect(`[data-showroom-live-proof="${activeKey}"]`),
           humanReview: rect(".website-showroom-human"),
         };
       }, key);
@@ -78,6 +88,8 @@ test("all six showroom states stay contained with readable active text at 320, 3
       expect(geometry.panel.right, `${width}px ${key}: panel right containment`).toBeLessThanOrEqual(geometry.canvas.right + 1);
       expect(geometry.miniUi.left, `${width}px ${key}: mini UI left containment`).toBeGreaterThanOrEqual(geometry.canvas.left - 1);
       expect(geometry.miniUi.right, `${width}px ${key}: mini UI right containment`).toBeLessThanOrEqual(geometry.canvas.right + 1);
+      expect(geometry.liveProof.left, `${width}px ${key}: live proof left containment`).toBeGreaterThanOrEqual(geometry.canvas.left - 1);
+      expect(geometry.liveProof.right, `${width}px ${key}: live proof right containment`).toBeLessThanOrEqual(geometry.canvas.right + 1);
       expect(geometry.humanReview.left, `${width}px ${key}: footer left containment`).toBeGreaterThanOrEqual(geometry.canvas.left - 1);
       expect(geometry.humanReview.right, `${width}px ${key}: footer right containment`).toBeLessThanOrEqual(geometry.canvas.right + 1);
 
