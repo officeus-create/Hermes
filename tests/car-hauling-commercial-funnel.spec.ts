@@ -95,3 +95,12 @@ test("carrier intake never overrides server preview and requires an explicitly c
   expect(source).toContain('configuredEndpoint.pathname === "/api/logistics-lead"');
   expect(source).toContain('form.dataset.leadMode = configuredLive ? "live" : "preview"');
 });
+
+test("carrier intake does not mislabel the source-gated live Load Board as fictional", async ({ page }) => {
+  await page.goto("/logistics/start-car-hauling-dispatch/");
+  const intro = page.locator(".dispatch-intake-copy");
+  await expect(intro.getByText(/only source-approved live freight when available/i)).toBeVisible();
+  await expect(intro.getByText(/market examples as non-bookable previews/i)).toBeVisible();
+  expect(await intro.innerText()).not.toMatch(/fictional Load Board demo/i);
+  // This is a source/UX truth check, not a load-availability or send test.
+});
