@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { onRequest } from "../functions/api/logistics-lead.ts";
-import { onRequestGet as readOwnerCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
+import { onRequestGet as readOwnerCarrierIntake, onRequestDelete as purgeExpiredCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
@@ -898,7 +898,18 @@ class CarrierOwnerDb {
         };
         return { results: [] };
       },
-      async run() { return { success: true, meta: { changes: 0 } }; }
+      async run() {
+        if (/DELETE FROM hermes_carrier_intake/.test(sql)) {
+          const expired = [...db.rows.values()]
+            .filter(row => row.retention_until <= this.vals[0])
+            .sort((a, b) => a.retention_until.localeCompare(b.retention_until) ||
+              a.request_id.localeCompare(b.request_id))
+            .slice(0, 100);
+          for (const row of expired) db.rows.delete(row.request_id);
+          return { success: true, meta: { changes: expired.length } };
+        }
+        return { success: true, meta: { changes: 0 } };
+      }
     };
   }
 }
@@ -999,6 +1010,63 @@ const deniedPage = await readOwnerCarrierIntake({
 assert.equal(deniedPage.status, 403, "Cursor never expands owner capability.");
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
   "Pagination must not trigger any outbound channel.");
+
+/* Owner-confirmed expired-only physical purge. No automatic purger, production
+ * requests, mail or dispatcher side effects; pure synthetic D1 fixture. */
+const expiredPurgeDb = new CarrierOwnerDb();
+expiredPurgeDb.rows = new Map();
+for (let index = 0; index < 107; index += 1) {
+  const id = `expired_carrier_${String(index).padStart(5, "0")}`;
+  expiredPurgeDb.rows.set(id, {
+    request_id: id, classification: "commercial", status: "new",
+    created_at: "2025-01-01T00:00:00.000Z",
+    retention_until: "2026-01-01T00:00:00.000Z",
+  });
+}
+expiredPurgeDb.rows.set("active_carrier_12345", {
+  request_id: "active_carrier_12345", classification: "commercial",
+  status: "new", created_at: "2026-10-15T08:00:00.000Z",
+  retention_until: "2099-01-01T00:00:00.000Z",
+});
+const purgeRequest = (authenticated = true, confirm = true, origin = "https://hermeslogisticsus.com") =>
+  new Request("https://hermeslogisticsus.com/api/internal/carrier-intake", {
+    method: "DELETE",
+    headers: {
+      ...(authenticated ? { Cookie: "hermes_session=synthetic-owner-session" } : {}),
+      Origin: origin,
+      ...(confirm ? { "X-Hermes-Confirm-Expired-Purge": "PURGE_EXPIRED_CARRIER_INTAKE" } : {}),
+    },
+  });
+for (const badRequest of [
+  purgeRequest(false), purgeRequest(true, false), purgeRequest(true, true, "https://example.invalid"),
+]) {
+  const response = await purgeExpiredCarrierIntake({ request: badRequest, env: { DB: expiredPurgeDb } });
+  assert.ok(response.status === 401 || response.status === 403);
+  assert.equal(expiredPurgeDb.rows.size, 108, "Unauthorized purge must not delete rows.");
+}
+const purgeDenied = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: new CarrierOwnerDb(false) },
+});
+assert.equal(purgeDenied.status, 403);
+const purgeFirst = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: expiredPurgeDb },
+});
+assert.equal(purgeFirst.status, 200);
+assert.deepEqual(
+  { count: (await purgeFirst.json()).purged_expired_rows, size: expiredPurgeDb.rows.size },
+  { count: 100, size: 8 },
+);
+const purgeSecond = await purgeExpiredCarrierIntake({
+  request: purgeRequest(), env: { DB: expiredPurgeDb },
+});
+assert.equal((await purgeSecond.json()).purged_expired_rows, 7);
+assert.equal(expiredPurgeDb.rows.size, 1, "Active carrier must survive expiry purge.");
+assert.ok(expiredPurgeDb.rows.has("active_carrier_12345"));
+const purgeAgain = await purgeExpiredCarrierIntake({ request: purgeRequest(), env: { DB: expiredPurgeDb } });
+assert.equal((await purgeAgain.json()).purged_expired_rows, 0, "Repeated purge is idempotent.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Private retention purge must never send mail or Telegram.");
+
 
 
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
