@@ -29,6 +29,32 @@ test("website redesign explains controlled change without changing the canonical
   await expect(page.getByRole("heading", { name: "Website Redesign Built Around Business Priorities" })).toBeVisible();
 });
 
+test("redesign showroom uses native View Transition only when motion is allowed", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { __redesignTransitions?: number }).__redesignTransitions = 0;
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: (update: () => void) => {
+        (window as unknown as { __redesignTransitions: number }).__redesignTransitions += 1;
+        update();
+        return { finished: Promise.resolve() };
+      },
+    });
+  });
+  await page.goto("/services/website-redesign/");
+  const showroom = page.locator("[data-redesign-showroom]");
+  await showroom.getByRole("button", { name: "Diagnose", exact: false }).click();
+  await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0)).toBeGreaterThan(0);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const before = await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0);
+  await showroom.getByRole("button", { name: "IA + design system", exact: false }).click();
+  const after = await page.evaluate(() => (window as unknown as { __redesignTransitions?: number }).__redesignTransitions ?? 0);
+  expect(after).toBe(before);
+  await expect(showroom.getByRole("heading", { name: "Plan the new structure without losing useful ownership." })).toBeVisible();
+});
+
 test.describe("website redesign showroom mobile contract", () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
