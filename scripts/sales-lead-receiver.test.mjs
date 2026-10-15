@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { onRequest } from "../functions/api/logistics-lead.ts";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
@@ -775,6 +776,7 @@ globalThis.fetch = originalFetch;
 class CaptureOnlyD1 {
   rows = new Map();
   prepare(sql) {
+    assert.doesNotMatch(sql.trimStart(), /^CREATE (TABLE|INDEX)/i, "D1 schema DDL must not run on live lead requests.");
     const db = this;
     return {
       values: [],
@@ -854,6 +856,21 @@ const noDbCapture = await onRequest({
 });
 assert.equal(noDbCapture.status, 503);
 assert.equal((await noDbCapture.json()).error, "capture_not_configured");
+
+const oneTimeMigration = readFileSync(new URL("../migrations/20261015_carrier_intake_d1.sql", import.meta.url), "utf8");
+assert.match(oneTimeMigration, /CREATE TABLE IF NOT EXISTS hermes_carrier_intake/);
+assert.match(oneTimeMigration, /CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_retention/);
+assert.match(oneTimeMigration, /delivery_state TEXT NOT NULL DEFAULT 'not_sent'/);
+const unmigratedCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_missing_table_20261015" }, "203.0.113.227"),
+  env: {
+    ...captureEnv,
+    DB: { prepare() { throw new Error("no such table: hermes_carrier_intake"); } },
+  },
+});
+assert.equal(unmigratedCapture.status, 503);
+assert.equal((await unmigratedCapture.json()).error, "capture_temporarily_unavailable");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
 
 const unrelatedEmailGate = await onRequest({
   request: captureReq({ ...capturedCarrier, request_id: "carrier_unrelated_20261015", page_path: "/load-board/" }),
