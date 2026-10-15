@@ -769,4 +769,108 @@ try {
 }
 
 globalThis.fetch = originalFetch;
+
+/* CEO 2026-10-13: carrier intake must be durably captured without AI/Worker email.
+ * Synthetic D1 fixture only; zero provider/dispatcher or live network writes. */
+class CaptureOnlyD1 {
+  rows = new Map();
+  prepare(sql) {
+    const db = this;
+    return {
+      values: [],
+      bind(...values) { this.values = values; return this; },
+      async run() {
+        if (sql.trimStart().startsWith("INSERT OR IGNORE INTO hermes_carrier_intake")) {
+          const [request_id, payload_hash, classification, source_path, contact_email, email_body, created_at, retention_until] = this.values;
+          if (db.rows.has(request_id)) return { meta: { changes: 0 } };
+          db.rows.set(request_id, { request_id, payload_hash, classification, source_path, contact_email, email_body, created_at, retention_until, delivery_state: "not_sent" });
+          return { meta: { changes: 1 } };
+        }
+        return { meta: { changes: 0 } };
+      },
+      async first() { return db.rows.get(this.values[0]) ?? null; },
+    };
+  }
+}
+
+const captureDb = new CaptureOnlyD1();
+const captureLimits = new MemoryKv();
+const captureEnv = {
+  ALLOWED_ORIGIN: "https://hermeslogisticsus.com",
+  LEAD_DELIVERY_MODE: "live",
+  CARRIER_INTAKE_CAPTURE_MODE: "capture_only",
+  LEAD_LIMITS: captureLimits,
+  DB: captureDb,
+  // Explicitly no LEAD_EMAIL_SERVICE, LEAD_SERVICE_TOKEN or outbound provider.
+};
+const capturedCarrier = {
+  ...directCarrierPayload,
+  request_id: "carrier_capture_20261015_12345",
+  email_body: directCarrierBody.replace("carrier@example.com", "carrier@example.invalid"),
+  consent: true,
+};
+const captureBeforeProvider = [serviceCalls.length, emailMessages.length, telegramMessages.length];
+const captureReq = (input, ip = "203.0.113.225") =>
+  leadRequest(input, { "CF-Connecting-IP": ip });
+const captured = await onRequest({ request: captureReq(capturedCarrier), env: captureEnv });
+assert.equal(captured.status, 200);
+assert.deepEqual(await captured.json(), {
+  success: true,
+  request_id: capturedCarrier.request_id,
+  capture_state: "persisted",
+  delivery_state: "not_sent",
+  human_receipt_state: "unconfirmed",
+});
+assert.equal(captureDb.rows.size, 1);
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).classification, "commercial");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).delivery_state, "not_sent");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).contact_email, "carrier@example.invalid");
+assert.ok(Date.parse(captureDb.rows.get(capturedCarrier.request_id).retention_until) > Date.now());
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider, "D1 capture must never contact a provider.");
+
+const repeatedCapture = await onRequest({ request: captureReq(capturedCarrier), env: captureEnv });
+assert.equal(repeatedCapture.status, 200);
+assert.equal((await repeatedCapture.json()).duplicate, true);
+assert.equal(captureDb.rows.size, 1);
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
+const changedCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, email_body: capturedCarrier.email_body.replace("Real Carrier LLC", "Changed Carrier LLC") }),
+  env: captureEnv,
+});
+assert.equal(changedCapture.status, 409);
+assert.equal((await changedCapture.json()).error, "idempotency_conflict");
+
+const noConsentCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_no_consent_12345", consent: false }),
+  env: captureEnv,
+});
+assert.equal(noConsentCapture.status, 400);
+assert.equal((await noConsentCapture.json()).error, "consent_required");
+
+const noDbCapture = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_no_db_20261015" }),
+  env: { ...captureEnv, DB: undefined },
+});
+assert.equal(noDbCapture.status, 503);
+assert.equal((await noDbCapture.json()).error, "capture_not_configured");
+
+const unrelatedEmailGate = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_unrelated_20261015", page_path: "/load-board/" }),
+  env: captureEnv,
+});
+assert.equal(unrelatedEmailGate.status, 503);
+assert.equal((await unrelatedEmailGate.json()).error, "delivery_not_configured");
+
+const syntheticStored = await onRequest({
+  request: captureReq({
+    ...capturedCarrier, request_id: "carrier_qa_capture_20261015",
+    email_body: capturedCarrier.email_body.replace("Real Carrier", "Synthetic Carrier QA"),
+  }, "203.0.113.226"),
+  env: captureEnv,
+});
+assert.equal(syntheticStored.status, 200);
+assert.equal(captureDb.rows.get("carrier_qa_capture_20261015").classification, "qa", "Synthetic records are not commercial KPI.");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
+
 console.log("Sales lead receiver, four-direction contact intake, Car Hauling QA/commercial routing, and private Email Worker checks passed.");
