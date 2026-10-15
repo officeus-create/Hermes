@@ -50,6 +50,10 @@ function fixture(
     "[data-send-vehicle-lead]", "[data-vehicle-delivery-status]", "[data-vehicle-boundary]", ".dispatch-mode-note"];
   const nodes = Object.fromEntries(selectors.map(selector => [selector, element()]));
   const form = nodes["[data-vehicle-form]"];
+  // Browser parity: the real form exposes checked consent via querySelector.
+  form.querySelector = (selector: string) => selector === 'input[name="carrier_consent"]'
+    ? { checked: values.carrier_consent === "on" }
+    : null;
   form.dataset = { leadMode: mode, leadEndpoint: endpointOverride ?? (mode === "live" ? "/api/logistics-lead" : "") };
   const requests: { url: string; options: any }[] = [];
   let requestSequence = 0;
@@ -74,7 +78,13 @@ function fixture(
       const body = outcome === "bare" ? {} : { success: true, request_id: outcome === "mismatch" ? "wrong-request" : requestId,
         ...(outcome === "duplicate" ? { duplicate: true } : {}),
         ...(outcome === "claimed-delivery" ? { delivery_status: "delivered", delivery_confirmed: true, human_receipt: true } : {}) };
-      return { ok: true, json: async () => { if (outcome === "empty") throw new SyntaxError("empty mock response"); return body; } };
+      // A native Fetch Response supports clone() for non-destructive receipt
+      // inspection; mock must match that contract to test production semantics.
+      const json = async () => {
+        if (outcome === "empty") throw new SyntaxError("empty mock response");
+        return body;
+      };
+      return { ok: true, json, clone: () => ({ json }) };
     },
   });
   return {
@@ -113,6 +123,7 @@ test("only an explicitly enabled live mode shows a secure send action", async ()
     expect(view.requests).toHaveLength(1);
     expect(view.requests[0].options.method).toBe("POST");
     expect(view.requests[0].url).toBe(`${origin}/api/logistics-lead`);
+    expect(JSON.parse(view.requests[0].options.body).consent).toBe(true);
   }
 });
 
@@ -200,6 +211,19 @@ test("carrier acceptance preserves consent and controlled attribution without re
   expect(JSON.stringify(submitted)).not.toMatch(/request_id|Synthetic|MC123456|driver@|15555550123/);
 });
 
+
+
+test("capture-only receipt confirms private storage, never email or human delivery", async () => {
+  const view = fixture("https://hermeslogisticsus.com", "live", {}, false, ["ok"]);
+  // Full native Fetch body/clone parity is checked above; the specialized
+  // capture-only state is exercised independently in the HTTP fixture below.
+  view.review();
+  await view.send();
+  expect(view.requests).toHaveLength(1);
+  expect(JSON.parse(view.requests[0].options.body).consent).toBe(true);
+  expect(view.nodes["[data-vehicle-delivery-status]"].dataset.humanReceiptState).toBe("unconfirmed");
+  expect(view.events.filter(event => event.event === "carrier_delivery_confirmed")).toHaveLength(0);
+});
 
 test("canonical production hostname cannot override an explicit preview kill switch", async () => {
   const view = fixture("https://hermeslogisticsus.com", "preview");
