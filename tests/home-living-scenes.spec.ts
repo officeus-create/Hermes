@@ -13,6 +13,11 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator(".home-display-i")).toHaveCSS("animation-duration", "5.8s");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".home-display-i")).toHaveCSS("animation-name", "none");
+  const livingProofs = page.locator("[data-home-living-motion]");
+  await expect(livingProofs).toHaveCount(2);
+  for (const proof of await livingProofs.all()) {
+    await expect(proof).toHaveAttribute("data-motion-state", "reduced");
+  }
   // Approved Marketing V4 removes the decorative story cards: reduced motion must
   // keep its real four-stage SVG scene readable and entirely still.
   await expect(page.locator(".home-story-frame")).toHaveCount(0);
