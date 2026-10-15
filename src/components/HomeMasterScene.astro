@@ -14,21 +14,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   marketing: {
     accent: "var(--hermes-marketing)",
     detail: "Website · SEO/GEO · customer acquisition",
-    flow: ["Content", "Search + social", "Site action", "Inquiry"],
+    flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
     displayNumber: "02", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
-    flow: ["Request", "CRM context", "Automation", "Readback"],
+    flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
     displayNumber: "03", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
     detail: "Logistics · marketing · IT/AI · sales · operations",
-    flow: ["Explain", "Practice", "Feedback", "Retry"],
+    flow: ["Task", "Practice", "Feedback", "Next level"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
     displayNumber: "04", crop: 818, goal: "Develop people",
   },
@@ -112,45 +112,49 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   <path class="home-marketing-pulse" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
                 </svg>
                 <span class="home-marketing-card home-marketing-content">
-                  <small><i></i> 01 / CONTENT</small>
+                  <small><i></i> 01 / CONTENT + NEWS</small>
                   <span class="home-marketing-media"><b class="home-marketing-play"></b><em></em></span>
                   <span class="home-marketing-card-lines"><i></i><i></i></span>
                 </span>
                 <span class="home-marketing-card home-marketing-discovery">
-                  <small><i></i> 02 / DISCOVERY</small>
+                  <small><i></i> 02 / DISCOVERY + DISTRIBUTION</small>
+                  <span class="home-marketing-channels"><i>Search</i><i>Threads</i><i>IG</i><i>FB</i><i>TG</i></span>
                   <span class="home-marketing-search"><i></i><b></b></span>
-                  <span class="home-marketing-result"><i></i><b></b><b></b></span>
                 </span>
                 <span class="home-marketing-card home-marketing-site">
-                  <small><i></i> 03 / WEBSITE</small>
+                  <small><i></i> 03 / WEBSITE ACTION</small>
                   <span class="home-marketing-browser"><b></b><i></i><em></em></span>
                 </span>
                 <span class="home-marketing-card home-marketing-inquiry">
-                  <small><i></i> 04 / INQUIRY</small>
+                  <small><i></i> 04 / INQUIRY → CRM EVIDENCE</small>
                   <span class="home-marketing-person"><i></i><b></b><em></em></span>
                   <span class="home-marketing-beacon" aria-hidden="true"><i></i></span>
                 </span>
               </span>
             )}
             {path.id === "technology" && (
-              <span class="home-scene-detail home-system-display" aria-hidden="true" data-home-pillar-proof="systems">
-                <span class="home-system-caption">REQUEST <i></i> VERIFIED READBACK</span>
-                <span class="home-system-card home-system-input"><small>01 / REQUEST</small><b></b><em></em></span>
+              <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
+                <span class="home-system-caption">PUBLIC <i></i> VERIFIED PROCESS</span>
+                <span class="home-system-card home-system-connect"><small>01 / HERMES CONNECT</small><strong>LIVE PILOT</strong><em>CRM · business context</em></span>
                 <span class="home-system-wire home-system-wire-a"><i></i></span>
-                <span class="home-system-card home-system-crm"><small>02 / CRM</small><b></b><em></em></span>
+                <span class="home-system-card home-system-factory"><small>02 / WEBSITE FACTORY</small><strong>PRIVATE BUILD</strong><em>site + SEO workflow</em></span>
                 <span class="home-system-wire home-system-wire-b"><i></i></span>
-                <span class="home-system-card home-system-auto"><small>03 / AUTOMATE</small><b></b><em></em></span>
-                <span class="home-system-card home-system-readback"><small>04 / READBACK</small><strong><i></i> VERIFIED</strong></span>
+                <span class="home-system-card home-system-social"><small>03 / SOCIAL CONNECTORS</small><strong>BUILDING</strong><em>Threads · Meta</em></span>
+                <span class="home-system-wire home-system-wire-c"><i></i></span>
+                <span class="home-system-card home-system-readback"><small>04 / QA READBACK</small><strong><i></i> VERIFIED PROCESS</strong><em>deploy ≠ live until readback</em></span>
               </span>
             )}
             {path.id === "academy" && (
-              <span class="home-scene-detail home-learning-detail" aria-hidden="true" data-home-pillar-proof="progress">
-                <span class="home-academy-caption">CAPABILITY LOOP</span>
-                <span class="home-academy-card home-academy-attempt"><small>ATTEMPT 1</small><b></b><em></em><i></i></span>
-                <span class="home-academy-feedback"><small>HUMAN FEEDBACK</small><strong>Ask one diagnostic question first.</strong></span>
-                <span class="home-academy-arrow"><i></i></span>
-                <span class="home-academy-card home-academy-retry"><small>RETRY</small><b></b><em></em><i></i></span>
-                <span class="home-academy-next"><i></i><span><small>NEXT TARGET</small><b>TRANSFER</b></span></span>
+              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle">
+                <span class="home-academy-caption">TASK <i></i> NEXT LEVEL</span>
+                <span class="home-academy-sunlight"></span>
+                <span class="home-academy-leaf-shadow"><i></i><i></i><i></i></span>
+                <span class="home-academy-book">
+                  <span class="home-academy-book-left"><i></i><i></i><i></i></span>
+                  <span class="home-academy-book-right"><small>PRACTICE</small><i></i><i></i><i></i></span>
+                  <span class="home-academy-book-page"><small>FEEDBACK</small><i></i><i></i></span>
+                </span>
+                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT LEVEL</small></span>
               </span>
             )}
             <span class="home-master-route-copy">
@@ -273,6 +277,34 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     updateJourney();
   }
 
+  const livingProofScenes = document.querySelectorAll<HTMLElement>("[data-home-living-motion]");
+  const livingReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const livingVisibility = new Map<HTMLElement, boolean>();
+  const syncLivingProof = (scene: HTMLElement) => {
+    scene.dataset.motionState = livingReduced.matches ? "reduced" : livingVisibility.get(scene) && !document.hidden ? "running" : "paused";
+  };
+  if ("IntersectionObserver" in window) {
+    const livingObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const scene = entry.target as HTMLElement;
+        livingVisibility.set(scene, entry.isIntersecting && entry.intersectionRatio >= .2);
+        syncLivingProof(scene);
+      });
+    }, { threshold: .2 });
+    livingProofScenes.forEach((scene) => {
+      livingVisibility.set(scene, false);
+      livingObserver.observe(scene);
+      syncLivingProof(scene);
+    });
+  } else {
+    livingProofScenes.forEach((scene) => {
+      livingVisibility.set(scene, true);
+      syncLivingProof(scene);
+    });
+  }
+  livingReduced.addEventListener("change", () => livingProofScenes.forEach(syncLivingProof));
+  document.addEventListener("visibilitychange", () => livingProofScenes.forEach(syncLivingProof));
+
   document.querySelectorAll<HTMLAnchorElement>("[data-home-route]").forEach((link) => {
     link.addEventListener("click", () => {
       const id = link.dataset.routeId;
@@ -389,7 +421,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-marketing-play::after{content:"";position:absolute;top:7px;left:9px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #276b50}
 .home-marketing-card-lines{display:flex;flex-direction:column;gap:4px}
 .home-marketing-card-lines i{height:3px;width:77%;background:#b3cfbf;border-radius:4px}.home-marketing-card-lines i+ i{width:53%;background:#cdded4}
-.home-marketing-search{display:flex;align-items:center;gap:8px;margin-top:10px;padding:6px;background:#fff;border:1px solid #d4e5da;border-radius:6px}
+.home-marketing-channels{display:flex;flex-wrap:wrap;gap:3px;margin-top:7px}.home-marketing-channels i{padding:3px 4px;border:1px solid #bad6c7;border-radius:999px;background:#fff;color:#2a6a50;font:750 .42rem/1 var(--font-body);font-style:normal}.home-marketing-search{display:flex;align-items:center;gap:8px;margin-top:6px;padding:5px;background:#fff;border:1px solid #d4e5da;border-radius:6px}
 .home-marketing-search i{width:10px;height:10px;border:2px solid #438869;border-radius:50%;position:relative}
 .home-marketing-search i::after{content:"";position:absolute;width:5px;height:2px;background:#438869;right:-4px;bottom:-2px;rotate:45deg}
 .home-marketing-search b{width:60%;height:4px;border-radius:4px;background:#b6d4c1}
@@ -417,33 +449,37 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
 .home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
-.home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.72}
-.home-system-caption i{display:inline-block;width:22px;height:1px;margin:0 5px 2px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
-.home-system-card{position:absolute;width:41%;min-height:50px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
-.home-system-card small{display:block;color:#ffd8a5;font:800 .46rem/1 var(--font-body);letter-spacing:.1em}
-.home-system-card b,.home-system-card em{display:block;height:4px;margin-top:7px;border-radius:3px;background:#ffe1ba8f}.home-system-card em{width:58%;margin-top:5px;background:#ffc27488}
-.home-system-input{left:0;top:14%}.home-system-crm{right:0;top:26%}.home-system-auto{left:6%;bottom:4%}.home-system-readback{right:0;bottom:2%;min-height:46px}
-.home-system-readback strong{display:flex;align-items:center;gap:5px;margin-top:9px;color:#fff5e7;font:800 .52rem/1 var(--font-body);letter-spacing:.08em}
-.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
-.home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.5}
+.home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
+.home-system-caption i,.home-academy-caption i{display:inline-block;width:22px;height:1px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
+.home-system-card{position:absolute;width:43%;min-height:56px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
+.home-system-card small{display:block;color:#ffd8a5;font:800 .44rem/1.1 var(--font-body);letter-spacing:.08em}
+.home-system-card strong{display:block;margin-top:6px;color:#fff7e8;font:850 .56rem/1 var(--font-body);letter-spacing:.08em}
+.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1 var(--font-body);font-style:normal;letter-spacing:.035em}
+.home-system-connect{left:0;top:14%}.home-system-factory{right:0;top:24%}.home-system-social{left:4%;bottom:3%}.home-system-readback{right:0;bottom:2%}
+.home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
+.home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.58}
 .home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
-.home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:65%;width:33%;transform:rotate(-13deg)}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-wire i{animation:home-system-packet 3.2s ease-in-out infinite}
-.home-master-route-technology:is(:hover,:focus-visible) .home-system-readback strong i{animation:home-system-verified 3.2s ease-in-out infinite}
-.home-learning-detail{inset:7% 7% 39%;z-index:0}
-.home-academy-caption{color:#f0e3ff}
-.home-academy-card{position:absolute;width:42%;min-height:52px;padding:7px 8px;border:1px solid #eee0ff7d;border-radius:10px;background:linear-gradient(145deg,#382b50da,#21172fe8);box-shadow:0 8px 20px #1b102955,inset 0 1px #f9f0ff2e}
-.home-academy-card small,.home-academy-feedback small,.home-academy-next small{display:block;color:#dac4ff;font:800 .46rem/1 var(--font-body);letter-spacing:.1em}
-.home-academy-card b,.home-academy-card em,.home-academy-card i{display:block;height:4px;margin-top:7px;border-radius:3px;background:#eadcff94}.home-academy-card em{width:67%;margin-top:5px}.home-academy-card i{width:38%;margin-top:5px;background:#b890ff9c}
-.home-academy-attempt{left:0;top:14%}.home-academy-retry{right:0;bottom:1%}
-.home-academy-feedback{position:absolute;right:0;top:11%;width:48%;padding:7px 8px;border:1px solid #e8d7ff91;border-radius:10px;background:#f8f2ffef;box-shadow:0 8px 20px #1c102c4a}
-.home-academy-feedback small{color:#7855a9}.home-academy-feedback strong{display:block;margin-top:6px;color:#372649;font:750 .49rem/1.18 var(--font-body)}
-.home-academy-arrow{position:absolute;left:39%;top:58%;width:25%;height:1px;background:linear-gradient(90deg,#b28af9,#f1e4ff,#b28af9);transform:rotate(18deg);opacity:.7}
-.home-academy-arrow i{position:absolute;right:0;top:-3px;width:7px;height:7px;border-right:1px solid #eadcff;border-top:1px solid #eadcff;transform:rotate(45deg)}
-.home-academy-next{position:absolute;left:0;bottom:1%;display:flex;align-items:center;gap:6px;width:45%;padding:7px 8px;border:1px solid #caaaff66;border-radius:10px;background:#302143d9}
-.home-academy-next>i{width:9px;height:9px;border-radius:50%;background:#ae7cff;box-shadow:0 0 11px #a979ff}.home-academy-next b{display:block;margin-top:4px;color:#fff;font:800 .5rem/1 var(--font-body);letter-spacing:.08em}
-.home-master-route-academy:is(:hover,:focus-visible) .home-academy-arrow i{animation:home-academy-transfer 3.6s ease-in-out infinite}
-.home-master-route-academy:is(:hover,:focus-visible) .home-academy-next>i{animation:home-academy-ready 3.6s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-wire i{animation:home-system-packet 5.6s ease-in-out infinite}
+.home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:64%;width:33%;transform:rotate(-13deg)}.home-system-wire-c{left:42%;top:76%;width:31%;transform:rotate(13deg)}
+.home-product-choreography[data-motion-state="running"] .home-system-readback strong i{animation:home-system-verified 5.6s ease-in-out infinite}
+.home-learning-detail{inset:7% 7% 39%;z-index:0;overflow:hidden}
+.home-academy-caption{color:#f0e3ff}.home-academy-caption i{background:#cfb4ff;box-shadow:0 0 8px #a979ff}
+.home-academy-sunlight{position:absolute;inset:-5% -12% 20% 8%;background:linear-gradient(122deg,rgba(255,238,190,.34),rgba(255,245,222,.06) 48%,transparent 72%);clip-path:polygon(0 0,60% 0,100% 100%,28% 100%)}
+.home-academy-leaf-shadow{position:absolute;right:2%;top:8%;width:46%;height:48%;opacity:.18;filter:blur(.25px);transform-origin:85% 5%}
+.home-academy-leaf-shadow i{position:absolute;width:32%;height:18%;border-radius:70% 20% 70% 20%;background:#2b2440}.home-academy-leaf-shadow i:nth-child(1){right:8%;top:5%;rotate:22deg}.home-academy-leaf-shadow i:nth-child(2){right:33%;top:24%;rotate:-18deg}.home-academy-leaf-shadow i:nth-child(3){right:2%;top:45%;rotate:48deg}
+.home-academy-book{position:absolute;inset:16% 5% 26%;filter:drop-shadow(0 10px 13px rgba(27,16,41,.34));perspective:500px}
+.home-academy-book-left,.home-academy-book-right,.home-academy-book-page{position:absolute;top:13%;bottom:5%;width:49%;border:1px solid #eadff1;border-radius:8px 3px 3px 10px;background:linear-gradient(145deg,#fffdf7,#f4eadc);box-shadow:inset 0 0 0 1px #fff8}
+.home-academy-book-left{left:0;transform:rotate(-3deg);transform-origin:right center}.home-academy-book-right{right:0;border-radius:3px 8px 10px 3px;transform:rotate(3deg);transform-origin:left center}
+.home-academy-book-left i,.home-academy-book-right>i,.home-academy-book-page>i{display:block;height:2px;margin:9px 11px 0;border-radius:2px;background:#b6a3c3;opacity:.58}.home-academy-book-left i:nth-child(2),.home-academy-book-right>i:nth-of-type(2){width:68%}.home-academy-book-left i:nth-child(3),.home-academy-book-right>i:nth-of-type(3){width:46%}
+.home-academy-book small{display:block;margin:10px 10px 0;color:#795a97;font:850 .45rem/1 var(--font-body);letter-spacing:.1em}
+.home-academy-book-page{right:1%;width:48%;transform-origin:left center;backface-visibility:hidden}
+.home-academy-progress{position:absolute;left:0;right:0;bottom:2%;display:flex;align-items:center;justify-content:space-between;gap:4px}
+.home-academy-progress small{padding:4px 5px;border:1px solid #eadcff7d;border-radius:999px;background:#2f2342d9;color:#f4ecff;font:800 .42rem/1 var(--font-body);letter-spacing:.05em;white-space:nowrap}
+.home-academy-progress>i{height:1px;min-width:5px;flex:1;background:linear-gradient(90deg,#9f78de,#eadcff);opacity:.68}
+.home-academy-living[data-motion-state="running"] .home-academy-sunlight{animation:home-academy-sun 12s ease-in-out infinite alternate}
+.home-academy-living[data-motion-state="running"] .home-academy-leaf-shadow{animation:home-academy-breeze 9s ease-in-out infinite alternate}
+.home-academy-living[data-motion-state="running"] .home-academy-book-page{animation:home-academy-page 9s cubic-bezier(.45,.05,.3,1) infinite}
+.home-academy-living[data-motion-state="running"] .home-academy-progress>i{animation:home-academy-progress-pulse 6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
 @keyframes home-logistics-rain{from{background-position:0 0,0 0,11px 13px}to{background-position:0 0,-5px 38px,5px 61px}}
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
@@ -453,10 +489,12 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
-@keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}38%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
-@keyframes home-system-verified{0%,52%,100%{scale:1;opacity:.65}65%,78%{scale:1.35;opacity:1}}
-@keyframes home-academy-transfer{0%,18%{translate:-16px 0;opacity:0}36%,70%{opacity:1}84%,100%{translate:6px 0;opacity:0}}
-@keyframes home-academy-ready{0%,48%,100%{scale:1;opacity:.68}62%,78%{scale:1.4;opacity:1}}
+@keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}36%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
+@keyframes home-system-verified{0%,56%,100%{scale:1;opacity:.62}68%,78%{scale:1.3;opacity:1}}
+@keyframes home-academy-page{0%,62%,100%{transform:rotate(3deg) rotateY(0);opacity:.98}72%{transform:rotate(2deg) rotateY(-18deg);opacity:.92}82%{transform:rotate(3deg) rotateY(-4deg);opacity:.98}}
+@keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
+@keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
+@keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
 @keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
 @keyframes home-book-choose{0%,100%{translate:0 0;rotate:0deg;opacity:0}48%{translate:-4px -2px;rotate:-5deg;opacity:.6}}
@@ -473,7 +511,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card,.home-academy-card{padding:7px;min-height:54px}.home-system-card small,.home-academy-card small,.home-academy-feedback small,.home-academy-next small,.home-system-caption,.home-academy-caption{font-size:.625rem}.home-academy-feedback{padding:7px}.home-academy-feedback strong{font-size:.625rem}.home-academy-next b,.home-system-readback strong{font-size:.625rem}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:58px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-book small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-book{inset:15% 4% 25%}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
