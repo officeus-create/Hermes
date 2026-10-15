@@ -251,6 +251,11 @@ test('Home Logistics keeps a camera-locked mobile environment across scene chang
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect(truck).toHaveAttribute('data-motion-state','running');
+ await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','dry-van'));
+ const rain=route.locator('.home-logistics-weather');
+ await expect(rain).toHaveCSS('animation-name','home-logistics-rain');
+ await expect(rain).toHaveCSS('transform','none');
+ await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','car-hauler'));
  await page.evaluate(()=>document.fonts.ready);
  const before=await route.boundingBox();
  expect(before).not.toBeNull();
