@@ -36,18 +36,20 @@ export async function persistCarrierIntake(db, input) {
 
   const createdAt = new Date().toISOString();
   const retentionUntil = new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString();
+  let inserted = false;
   try {
     // D1 SQLite uniqueness provides idempotency across concurrent requests.
-    await db.prepare(`INSERT OR IGNORE INTO hermes_carrier_intake
+    const result = await db.prepare(`INSERT OR IGNORE INTO hermes_carrier_intake
       (request_id, payload_hash, classification, source_path, contact_email, email_body, created_at, retention_until)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
       .bind(input.requestId, input.payloadHash, input.classification, input.sourcePath,
         input.contactEmail, input.emailBody, createdAt, retentionUntil).run();
+    inserted = Number(result?.meta?.changes || 0) === 1;
   } catch (error) {
     const raced = await readCarrierIntake(db, input.requestId).catch(() => null);
     if (!raced) throw error;
   }
   const row = await readCarrierIntake(db, input.requestId);
   if (!row) throw new Error("carrier_capture_not_persisted");
-  return { created: row.payload_hash === input.payloadHash && !existing, conflict: row.payload_hash !== input.payloadHash, row };
+  return { created: inserted, conflict: row.payload_hash !== input.payloadHash, row };
 }
