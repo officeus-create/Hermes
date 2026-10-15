@@ -3,26 +3,9 @@
 // Release remains disabled unless CARRIER_INTAKE_CAPTURE_MODE=capture_only is owner-authorized.
 const classify = new Set(["commercial", "qa"]);
 
-export async function ensureCarrierIntakeSchema(db) {
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS hermes_carrier_intake (
-      request_id TEXT PRIMARY KEY,
-      payload_hash TEXT NOT NULL,
-      classification TEXT NOT NULL CHECK (classification IN ('commercial','qa')),
-      source_path TEXT NOT NULL,
-      contact_email TEXT NOT NULL,
-      email_body TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'new'
-        CHECK (status IN ('new','reviewed','qualified','closed')),
-      delivery_state TEXT NOT NULL DEFAULT 'not_sent'
-        CHECK (delivery_state = 'not_sent'),
-      created_at TEXT NOT NULL,
-      retention_until TEXT NOT NULL
-    )
-  `).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_status ON hermes_carrier_intake(classification, status, created_at)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_retention ON hermes_carrier_intake(retention_until)").run();
-}
+// Schema is provisioned once by owner-approved migrations/20261015_carrier_intake_d1.sql.
+// Never re-run CREATE TABLE/INDEX for every customer request: D1 indexes cost
+// both latency and rows-written. Missing schema fails closed without email.
 
 export async function readCarrierIntake(db, requestId) {
   return db.prepare("SELECT request_id, payload_hash, classification, delivery_state FROM hermes_carrier_intake WHERE request_id = ? LIMIT 1")
