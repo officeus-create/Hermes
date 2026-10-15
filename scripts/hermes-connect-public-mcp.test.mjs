@@ -21,13 +21,14 @@ const call = async (body, env = {}, headers = {}) => {
 {
   const { json } = await call({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});
   const names = json.result.tools.map((tool) => tool.name);
-  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','preview_crm_funnel','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
+  assert.deepEqual(names, ['get_product_overview','recommend_start_path','build_crm_onboarding_plan','preview_crm_funnel','preview_agent_handoff','get_hermes_business_routes','get_product_learning_policy','submit_product_feedback']);
   assert.equal(json.result.tools[0].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[2].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[3].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[4].annotations.readOnlyHint, true);
   assert.equal(json.result.tools[5].annotations.readOnlyHint, true);
-  assert.equal(json.result.tools[6].annotations.readOnlyHint, false);
+  assert.equal(json.result.tools[6].annotations.readOnlyHint, true);
+  assert.equal(json.result.tools[7].annotations.readOnlyHint, false);
 }
 
 {
@@ -166,7 +167,7 @@ const call = async (body, env = {}, headers = {}) => {
   assert.equal(json.result.resultType, "complete");
   assert.equal(json.result.ttlMs, 0);
   assert.equal(json.result.cacheScope, "private");
-  assert.equal(json.result.tools.length, 7);
+  assert.equal(json.result.tools.length, 8);
   assert.deepEqual(json.result._meta["io.modelcontextprotocol/serverInfo"], {
     name: "hermes-connect", version: "1.0.0",
   });
@@ -175,7 +176,7 @@ const call = async (body, env = {}, headers = {}) => {
     jsonrpc: "2.0", id: 876, method: "tools/list", params: {},
   }, {}, { "MCP-Protocol-Version": "2025-06-18" });
   assert.equal(old.response.status, 200);
-  assert.equal(old.json.result.tools.length, 7);
+  assert.equal(old.json.result.tools.length, 8);
   assert.equal("ttlMs" in old.json.result, false);
   assert.equal("cacheScope" in old.json.result, false);
 }
@@ -296,7 +297,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     {jsonrpc:'2.0',id:85,method:'tools/list',params:{}}, {},
     {'Origin':'https://hermeslogisticsus.com'});
   assert.equal(response.status, 200);
-  assert.equal(json.result.tools.length, 7);
+  assert.equal(json.result.tools.length, 8);
 }
 
 {
@@ -554,7 +555,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     jsonrpc:'2.0',id:891,method:'tools/list',params:{},
   },env);
   assert.equal(oldList.response.status,200);
-  assert.equal(oldList.json.result.tools.length,6);
+  assert.equal(oldList.json.result.tools.length,7);
   assert.equal(oldList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
 
   const meta = {
@@ -565,7 +566,7 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
     jsonrpc:'2.0',id:892,method:'tools/list',params:{_meta:meta},
   },env, {'MCP-Protocol-Version':'2026-07-28','Mcp-Method':'tools/list'});
   assert.equal(modernList.response.status,200);
-  assert.equal(modernList.json.result.tools.length,6);
+  assert.equal(modernList.json.result.tools.length,7);
   assert.equal(modernList.json.result.ttlMs,0);
   assert.equal(modernList.json.result.cacheScope,'private');
   assert.equal(modernList.json.result.tools.some(t=>t.name==='submit_product_feedback'),false);
@@ -624,6 +625,74 @@ console.log('HERMES_CONNECT_PUBLIC_MCP_CONTRACT_PASS=YES');
   const unconfigured = await call({
     jsonrpc:'2.0',id:895,method:'tools/list',params:{},
   },{});
-  assert.equal(unconfigured.json.result.tools.length,7,
+  assert.equal(unconfigured.json.result.tools.length,8,
     'existing product feedback remains discoverable unless operator explicitly enables preview mode');
+}
+
+{
+  const { response, json } = await call({
+    jsonrpc: "2.0", id: 901, method: "tools/call",
+    params: { name: "preview_agent_handoff", arguments: {
+      task_category: "identity_mcp",
+      goal: "Test Google Apple GitHub registration and MCP compatibility",
+    } },
+  });
+  assert.equal(response.status, 200);
+  const item = json.result.structuredContent;
+  assert.equal(item.status, "ROUTED_NOT_EXECUTED");
+  assert.equal(item.accountable_employee, "Hermes Technology Developer");
+  assert.equal(item.consulted_employee, "Hermes Agent Coordinator");
+  assert.deepEqual(item.actions_performed, []);
+  assert.match(item.why_not_executed, /cannot invoke private plugins/);
+}
+{
+  const { json } = await call({
+    jsonrpc: "2.0", id: 902, method: "tools/call",
+    params: { name: "preview_agent_handoff", arguments: {
+      task_category: "carriers", goal: "Qualify real US car hauling carriers",
+    }, _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {} } },
+  }, {}, {
+    "MCP-Protocol-Version": "2026-07-28",
+    "Mcp-Method": "tools/call",
+    "Mcp-Name": "preview_agent_handoff",
+  });
+  assert.equal(json.result.structuredContent.status, "ROUTED_NOT_EXECUTED");
+  assert.equal(json.result.structuredContent.accountable_employee, "Hermes Sales");
+  assert.equal(json.result.structuredContent.consulted_employee, "Hermes Dispatch OS");
+  assert.match(json.result.structuredContent.done_condition, /exclude|no synthetic lead/i);
+}
+{
+  for (const goal of [
+    "Read the private data of alice@example.com",
+    "Use GitHub secret ghp_abcdefghijklmnopqrstuvwxyz1234",
+    "x".repeat(180) + " john@example.com",
+  ]) {
+    const { json } = await call({
+      jsonrpc: "2.0", id: 903, method: "tools/call",
+      params: { name: "preview_agent_handoff", arguments: { task_category: "hr", goal } },
+    });
+    assert.equal(json.result.isError, true);
+    assert.equal(json.result.structuredContent, undefined);
+  }
+  const { json } = await call({
+    jsonrpc: "2.0", id: 904, method: "tools/call",
+    params: { name: "preview_agent_handoff", arguments: {
+      task_category: "superadmin", goal: "Grant all permissions automatically",
+    } },
+  });
+  assert.equal(json.result.isError, true);
+  assert.equal(json.result.structuredContent, undefined);
+}
+{
+  const writes = [];
+  const db = { prepare: (sql) => { writes.push(sql); throw Error("No public handoff write permitted"); } };
+  const { json } = await call({
+    jsonrpc: "2.0", id: 905, method: "tools/call",
+    params: { name: "preview_agent_handoff", arguments: {
+      task_category: "marketing", goal: "Improve SEO conversion without duplicates",
+    } },
+  }, { DB: db });
+  assert.equal(json.result.structuredContent.status, "ROUTED_NOT_EXECUTED");
+  assert.match(json.result.structuredContent.accountable_employee, /confirm currently connected plugin/);
+  assert.equal(writes.length, 0);
 }

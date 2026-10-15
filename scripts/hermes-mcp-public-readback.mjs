@@ -130,11 +130,34 @@ try {
   if (!Array.isArray(funnel.not_performed) || !funnel.not_performed.some(x => /No emails/i.test(x))) {
     throw new Error("Remote MCP preview lacks explicit no-outbound declaration");
   }
+  if (!names.includes("preview_agent_handoff")) {
+    throw new Error("Agent routing preview not deployed on verified endpoint");
+  }
+  if (!legacyNames.includes("preview_agent_handoff")) {
+    throw new Error("Legacy public agent routing is not exposed");
+  }
+  const handoff = await fetchRpc({ id: 13, method: "tools/call", params: {
+    name: "preview_agent_handoff",
+    arguments: {
+      task_category: "identity_mcp",
+      goal: "Verify social sign-in and public MCP compatibility",
+    },
+  } });
+  const route = handoff.structuredContent;
+  if (handoff.isError || route?.status !== "ROUTED_NOT_EXECUTED" ||
+      route?.accountable_employee !== "Hermes Technology Developer" ||
+      !Array.isArray(route?.actions_performed) || route.actions_performed.length !== 0) {
+    throw new Error("Remote agent routing has not proved safe no-execution semantics");
+  }
+  if (!route.why_not_executed?.includes("cannot invoke private plugins")) {
+    throw new Error("Remote agent routing hides essential private-tool limitation");
+  }
   console.log(JSON.stringify({
-    status: "MCP_PUBLIC_PREVIEW_LIVE_VERIFIED",
+    status: "MCP_PUBLIC_FUNNEL_AND_ROUTING_LIVE_VERIFIED",
     endpoint,
     version,
-    tool: "preview_crm_funnel",
+    tools: ["preview_crm_funnel", "preview_agent_handoff"],
+    routedNotExecuted: route.status,
     stages: funnel.stages.length,
     publicWriter: "HIDDEN_AND_DIRECT_CALL_DENIED_BOTH_PROTOCOLS",
     writerNegativeProbe: "consent=false (zero write intent)",

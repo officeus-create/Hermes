@@ -246,6 +246,47 @@ const publicToolDefinitions = [
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
   },
   {
+    name: "preview_agent_handoff",
+    title: "Preview a safe Hermes digital-employee handoff",
+    description:
+      "Show which existing Hermes digital employee would own a generic task and what evidence a real handoff would need. This is a read-only routing PREVIEW, not plugin invocation or task creation. Do not provide names, emails, phone numbers, passwords, customer data or credentials.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        task_category: {
+          type: "string",
+          enum: ["identity_mcp", "carriers", "sales", "hr", "academy", "marketing", "design", "dispatch", "catalog", "infrastructure"],
+        },
+        goal: { type: "string", minLength: 3, maxLength: 160 },
+      },
+      required: ["task_category", "goal"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        status: { type: "string", enum: ["ROUTED_NOT_EXECUTED"] },
+        task_category: { type: "string" },
+        goal: { type: "string" },
+        accountable_employee: { type: "string" },
+        consulted_employee: { type: "string" },
+        done_condition: { type: "string" },
+        first_safe_action: { type: "string" },
+        owner_gate: { type: "string" },
+        source_of_truth: { type: "string" },
+        actions_performed: { type: "array", maxItems: 0, items: { type: "string" } },
+        why_not_executed: { type: "string" },
+      },
+      required: [
+        "status", "task_category", "goal", "accountable_employee", "consulted_employee",
+        "done_condition", "first_safe_action", "owner_gate", "source_of_truth",
+        "actions_performed", "why_not_executed",
+      ],
+      additionalProperties: false,
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+  },
+  {
     name: "get_hermes_business_routes",
     title: "Get Hermes business routes",
     description:
@@ -659,6 +700,85 @@ function previewCrmFunnel(args: Record<string, unknown>) {
   };
 }
 
+function previewAgentHandoff(args: Record<string, unknown>) {
+  const category = typeof args.task_category === "string" ? args.task_category : "";
+  const rawGoal = typeof args.goal === "string" ? args.goal.trim() : "";
+  // Do not truncate private input before detecting account/email/phone or
+  // credentials: a long string must not be converted into accepted data.
+  if (rawGoal.length < 3 || rawGoal.length > 160 || containsSensitivePattern(rawGoal)) {
+    throw new Error("invalid_handoff_input");
+  }
+  const routes: Record<string, [string, string, string, string]> = {
+    identity_mcp: [
+      "Hermes Technology Developer", "Hermes Agent Coordinator",
+      "A tested and reviewed identity/MCP change, with exact-head CI and independently verified release state",
+      "Read the current #1873 Identity or #1883 MCP issue and classify a single bounded engineering change",
+    ],
+    carriers: [
+      "Hermes Sales", "Hermes Dispatch OS",
+      "One verified, genuine US car-hauling carrier inquiry, with explicit qualification and no synthetic lead counted",
+      "Review existing carrier qualification and record a source-valid, consented intake plan",
+    ],
+    sales: [
+      "Hermes Sales", "Hermes Agent Coordinator",
+      "A verifiable qualified opportunity and documented next action, not simply a prepared message",
+      "Review current CRM status, objections, and a draft response without sending it",
+    ],
+    hr: [
+      "Hermes HR", "Hermes Academy",
+      "Candidate qualification and consent-backed progression to approved training or sales review",
+      "Check the existing recruiting funnel and prepare a scoped candidate response draft",
+    ],
+    academy: [
+      "Hermes Academy", "Hermes HR",
+      "A versioned lesson or training exercise linked to real learner outcomes",
+      "Check the existing curriculum and identify the next evidence-based training exercise",
+    ],
+    marketing: [
+      "Hermes Marketing/SEO owner (confirm currently connected plugin)", "Hermes Sales",
+      "Verified qualified acquisition improvement without regression in SEO/GEO visibility",
+      "Read current search/landing-page proof and identify one measurable conversion gap",
+    ],
+    design: [
+      "Hermes Design Hub", "Hermes Technology Developer",
+      "Reviewed responsive design and accessibility acceptance on the existing component",
+      "Inspect the current design system and prepare one mobile and desktop comparison",
+    ],
+    dispatch: [
+      "Hermes Dispatch OS", "Hermes Sales",
+      "An owner-approved operational improvement that does not interrupt current dispatchers",
+      "Inspect the current dispatch/Load Board evidence in read-only mode",
+    ],
+    catalog: [
+      "Hermes Catalog", "Hermes Technology Developer",
+      "A correct, verified public Catalog projection without leaking customer workspace data",
+      "Review existing Catalog records and publication permissions before proposing changes",
+    ],
+    infrastructure: [
+      "Hermes Technology Developer", "Hermes Private Network",
+      "Verified and reversible secure infrastructure change with explicit owner authorization",
+      "Read existing GitHub/Cloudflare QA and identify the smallest isolated improvement",
+    ],
+  };
+  const route = Object.prototype.hasOwnProperty.call(routes, category) ? routes[category] : null;
+  if (!route) throw new Error("invalid_handoff_input");
+  return {
+    status: "ROUTED_NOT_EXECUTED",
+    task_category: category,
+    goal: rawGoal,
+    accountable_employee: route[0],
+    consulted_employee: route[1],
+    done_condition: route[2],
+    first_safe_action: route[3],
+    owner_gate:
+      "Read-only scoping is allowed; external writes, emails/DMs, provider credentials, production, permissions, paid resources and dispatch contact require separate authorization.",
+    source_of_truth: "Existing Hermes One Brain and officeus-create/Hermes canonical issue/PR",
+    actions_performed: [],
+    why_not_executed:
+      "This public MCP tool only describes responsibility. It cannot invoke private plugins, schedule background agents, grant access, write CRM records or assert another agent completed a task.",
+  };
+}
+
 function getHermesBusinessRoutes() {
   return {
     routes: HERMES_ROUTES.map((route) => ({ ...route })),
@@ -765,6 +885,7 @@ async function callTool(env: Env, name: string, args: Record<string, unknown>) {
   if (name === "recommend_start_path") return recommendStartPath(args);
   if (name === "build_crm_onboarding_plan") return buildCrmOnboardingPlan(args);
   if (name === "preview_crm_funnel") return previewCrmFunnel(args);
+  if (name === "preview_agent_handoff") return previewAgentHandoff(args);
   if (name === "get_hermes_business_routes") return getHermesBusinessRoutes();
   if (name === "get_product_learning_policy") return getProductLearningPolicy();
   if (name === "submit_product_feedback") return submitProductFeedback(env, args);
