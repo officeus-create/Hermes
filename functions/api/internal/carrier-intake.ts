@@ -10,6 +10,28 @@ const PRIVATE = {
 const STATES = new Set(["new", "reviewed", "qualified", "closed"]);
 const CLASSIFICATIONS = new Set(["commercial", "qa"]);
 const validRequestId = (value: string) => /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,79}$/.test(value);
+const PAGE_SIZE = 20;
+const validCreatedAt = (value: string) =>
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value));
+
+// The opaque cursor contains a row boundary and its authorized query scope;
+// it is not a bearer token. Owner authentication is always rechecked on each page.
+function encodeCursor(row: { created_at: string; request_id: string }, classification: string, status: string) {
+  return btoa(JSON.stringify({ v: 1, t: row.created_at, id: row.request_id, c: classification, s: status }))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function decodeCursor(raw: string | null, classification: string, status: string) {
+  if (raw === null) return null;
+  if (!/^[A-Za-z0-9_-]{10,512}$/.test(raw)) return false;
+  try {
+    const normalized = raw.replace(/-/g, "+").replace(/_/g, "/");
+    const data = JSON.parse(atob(normalized));
+    if (data.v !== 1 || data.c !== classification || data.s !== status ||
+      typeof data.t !== "string" || !validCreatedAt(data.t) ||
+      typeof data.id !== "string" || !validRequestId(data.id)) return false;
+    return { created_at: data.t, request_id: data.id };
+  } catch { return false; }
+}
 
 // Private Hermes INTERNAL OWNER read-only triage, using the existing verified
 // server-side Hermes Connect session + persisted capability. Not a public CRM
@@ -48,21 +70,39 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     }
     const requestedStatus = url.searchParams.get("status") || "new";
     if (!STATES.has(requestedStatus)) return jsonResponse(400, { success: false, error: "invalid_status" }, PRIVATE);
-    const rows = await env.DB.prepare(`
+    const cursor = decodeCursor(url.searchParams.get("cursor"), requestedClassification, requestedStatus);
+    if (cursor === false) return jsonResponse(400, { success: false, error: "invalid_cursor" }, PRIVATE);
+    // Keyset paging prevents records beyond the first 20 from becoming invisible.
+    // ORDER BY is deterministic on ties, and a 21st row proves a next page exists.
+    const cursorClause = cursor
+      ? "AND (created_at < ? OR (created_at = ? AND request_id < ?))" : "";
+    const query = `
       SELECT request_id, classification, status, source_path, contact_email,
         created_at, retention_until, delivery_state
       FROM hermes_carrier_intake
       WHERE classification = ? AND status = ? AND retention_until > ?
-      ORDER BY created_at ASC LIMIT 20
-    `).bind(requestedClassification, requestedStatus, now).all();
+      ${cursorClause}
+      ORDER BY created_at DESC, request_id DESC LIMIT 21
+    `;
+    const args = cursor
+      ? [requestedClassification, requestedStatus, now, cursor.created_at, cursor.created_at, cursor.request_id]
+      : [requestedClassification, requestedStatus, now];
+    const result = await env.DB.prepare(query).bind(...args).all();
+    const matches = Array.isArray(result?.results) ? result.results : [];
+    const rows = matches.slice(0, PAGE_SIZE);
+    const hasMore = matches.length > PAGE_SIZE;
     // Body/contact phone and MC/USDOT never appear in list/aggregate output.
+    // If new records arrive after the first page, refreshing starts from newest.
     return jsonResponse(200, {
       success: true,
       classification: requestedClassification,
       status: requestedStatus,
-      requests: Array.isArray(rows?.results) ? rows.results : [],
-      max_page_size: 20,
-      partial: Array.isArray(rows?.results) && rows.results.length === 20,
+      requests: rows,
+      max_page_size: PAGE_SIZE,
+      partial: hasMore,
+      next_cursor: hasMore && rows.length
+        ? encodeCursor(rows[rows.length - 1], requestedClassification, requestedStatus)
+        : null,
       all_are_real_leads: false,
       delivery_state: "not_sent",
       human_receipt_state: "unconfirmed",
