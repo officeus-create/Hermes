@@ -21,6 +21,10 @@ test("website redesign explains controlled change without changing the canonical
     await step.click();
     await expect(step).toHaveAttribute("aria-pressed", "true");
     await expect(showroom.getByRole("heading", { name: heading })).toBeVisible();
+    const key = await step.getAttribute("data-redesign-step");
+    if (!key) throw new Error("Missing redesign stage key");
+    await expect(showroom.locator(`[data-redesign-ledger="${key}"]`)).toHaveClass(/active/);
+    await expect(showroom.locator(".redesign-proof-ledger-state.active")).toHaveCount(1);
   }
 
   await expect(page.locator('a[href="/case/it-development/"]').filter({ hasText: "Review the Hermes website case" })).toBeVisible();
@@ -39,6 +43,16 @@ test.describe("website redesign showroom mobile contract", () => {
 
     await showroom.getByRole("button", { name: "Regression + human review", exact: false }).tap();
     await expect(showroom.getByRole("heading", { name: "Compare old and new before anything replaces production." })).toBeVisible();
+    const ledger = showroom.locator('[data-redesign-ledger="review"]');
+    await expect(ledger).toHaveClass(/active/);
+    await expect(ledger).toContainText("Exact-head CI + human gate");
+
+    const geometry = await ledger.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    });
+    expect(geometry.left).toBeGreaterThanOrEqual(0);
+    expect(geometry.right).toBeLessThanOrEqual(390);
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);

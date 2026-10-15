@@ -2,12 +2,12 @@
 import { Activity, ArrowRight, CheckCircle2, FileSearch, LayoutTemplate, MonitorSmartphone, ShieldCheck } from "@lucide/astro";
 
 const stages = [
-  { key: "existing", label: "Existing site", title: "Start with the real website, not a blank canvas.", body: "Capture the current routes, working content, customer actions, search visibility, analytics, mobile behavior, integrations, and operational dependencies before deciding what should change.", icon: FileSearch },
-  { key: "diagnose", label: "Diagnose", title: "Separate proven friction from visual preference.", body: "Identify navigation, conversion, accessibility, performance, content, search, maintenance, and technical problems while marking working elements that should be protected.", icon: Activity },
-  { key: "system", label: "IA + design system", title: "Plan the new structure without losing useful ownership.", body: "Map retained and changed pages, redirects, canonical ownership, navigation, reusable components, content responsibilities, and the visual system before replacing production behavior.", icon: LayoutTemplate },
-  { key: "prototype", label: "Responsive prototype", title: "Show the changed experience before release.", body: "Build the responsive interface around approved priorities and real customer actions, while preserving crawlable meaning, contact paths, privacy boundaries, and scoped integrations.", icon: MonitorSmartphone },
-  { key: "review", label: "Regression + human review", title: "Compare old and new before anything replaces production.", body: "Check routes, redirects, canonicals, metadata, forms, links, mobile layouts, accessibility, analytics, privacy, content, and visible claims. A human decides whether the release is ready.", icon: ShieldCheck },
-  { key: "release", label: "Controlled release + measure", title: "Release carefully, read back production, then measure.", body: "Verify the approved deployment and public routes, then use Search Console, privacy-safe analytics, inquiries, errors, and user feedback to decide the next bounded improvement.", icon: CheckCircle2 },
+  { key: "existing", label: "Existing site", title: "Start with the real website, not a blank canvas.", body: "Capture the current routes, working content, customer actions, search visibility, analytics, mobile behavior, integrations, and operational dependencies before deciding what should change.", icon: FileSearch, keep: "Working routes + customer actions", change: "Nothing until evidence exists", verify: "Current-state inventory", state: "BASELINE" },
+  { key: "diagnose", label: "Diagnose", title: "Separate proven friction from visual preference.", body: "Identify navigation, conversion, accessibility, performance, content, search, maintenance, and technical problems while marking working elements that should be protected.", icon: Activity, keep: "Useful content + conversion paths", change: "Only evidenced friction", verify: "Issue → evidence → owner", state: "DIAGNOSE" },
+  { key: "system", label: "IA + design system", title: "Plan the new structure without losing useful ownership.", body: "Map retained and changed pages, redirects, canonical ownership, navigation, reusable components, content responsibilities, and the visual system before replacing production behavior.", icon: LayoutTemplate, keep: "Canonical page ownership", change: "Navigation + reusable system", verify: "Redirect + internal-link map", state: "MAP" },
+  { key: "prototype", label: "Responsive prototype", title: "Show the changed experience before release.", body: "Build the responsive interface around approved priorities and real customer actions, while preserving crawlable meaning, contact paths, privacy boundaries, and scoped integrations.", icon: MonitorSmartphone, keep: "Semantic meaning + CTA", change: "Layout + interaction", verify: "390 + 1440 + keyboard", state: "PROTOTYPE" },
+  { key: "review", label: "Regression + human review", title: "Compare old and new before anything replaces production.", body: "Check routes, redirects, canonicals, metadata, forms, links, mobile layouts, accessibility, analytics, privacy, content, and visible claims. A human decides whether the release is ready.", icon: ShieldCheck, keep: "Known-good behavior", change: "Only reviewed defects", verify: "Exact-head CI + human gate", state: "VERIFY" },
+  { key: "release", label: "Controlled release + measure", title: "Release carefully, read back production, then measure.", body: "Verify the approved deployment and public routes, then use Search Console, privacy-safe analytics, inquiries, errors, and user feedback to decide the next bounded improvement.", icon: CheckCircle2, keep: "Rollback + search ownership", change: "Approved version only", verify: "Deploy → live → measured", state: "RELEASE" },
 ];
 ---
 
@@ -64,6 +64,26 @@ const stages = [
               <span><i class="improve"></i>Improve</span>
               <span><i class="verify"></i>Verify</span>
             </div>
+
+            <div class="redesign-proof-ledger" aria-hidden="true">
+              {stages.map((stage, index) => (
+                <div class:list={["redesign-proof-ledger-state", { active: index === 0 }]} data-redesign-ledger={stage.key}>
+                  <div>
+                    <small>KEEP</small>
+                    <strong>{stage.keep}</strong>
+                  </div>
+                  <div>
+                    <small>CHANGE</small>
+                    <strong>{stage.change}</strong>
+                  </div>
+                  <div>
+                    <small>VERIFY</small>
+                    <strong>{stage.verify}</strong>
+                  </div>
+                  <span>{stage.state}</span>
+                </div>
+              ))}
+            </div>
             <div class="redesign-showroom-human"><ShieldCheck size={18} aria-hidden="true" /><span>Human release approval remains required</span></div>
           </div>
         </div>
@@ -95,6 +115,7 @@ const stages = [
   document.querySelectorAll("[data-redesign-showroom]").forEach((showroom) => {
     const steps = Array.from(showroom.querySelectorAll("[data-redesign-step]"));
     const panels = Array.from(showroom.querySelectorAll("[data-redesign-panel]"));
+    const ledgers = Array.from(showroom.querySelectorAll("[data-redesign-ledger]"));
     const state = showroom.querySelector("[data-redesign-state]");
     const stateLabels: Record<string, string> = {
       existing: "PROTECT",
@@ -107,6 +128,7 @@ const stages = [
     const activate = (key: string) => {
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-redesign-step") === key)));
       panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-redesign-panel") === key));
+      ledgers.forEach((ledger) => ledger.classList.toggle("active", ledger.getAttribute("data-redesign-ledger") === key));
       if (state) state.textContent = stateLabels[key] || "REVIEW";
       showroom.setAttribute("data-active-redesign-stage", key);
     };
@@ -160,6 +182,56 @@ const stages = [
   .redesign-showroom-legend .keep { background:#315fd7; }
   .redesign-showroom-legend .improve { background:#d99a28; }
   .redesign-showroom-legend .verify { background:#2b9d68; }
+  .redesign-proof-ledger {
+    position:absolute;
+    right:clamp(1.2rem,4vw,2.5rem);
+    bottom:3.2rem;
+    left:clamp(1.2rem,4vw,2.5rem);
+    z-index:3;
+  }
+  .redesign-proof-ledger-state {
+    display:none;
+    grid-template-columns:repeat(3,minmax(0,1fr)) auto;
+    gap:.55rem;
+    align-items:stretch;
+    padding:.62rem;
+    border:1px solid rgba(16,32,78,.12);
+    border-radius:14px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 12px 30px rgba(17,43,103,.08);
+  }
+  .redesign-proof-ledger-state.active { display:grid; }
+  .redesign-proof-ledger-state > div {
+    display:grid;
+    gap:.24rem;
+    min-width:0;
+    padding:.58rem .62rem;
+    border-radius:10px;
+    background:#f6f8fb;
+  }
+  .redesign-proof-ledger-state small {
+    color:#75819a;
+    font:800 .5rem/1.2 var(--font-mono);
+    letter-spacing:.08em;
+  }
+  .redesign-proof-ledger-state strong {
+    color:#10204e;
+    font-size:.64rem;
+    line-height:1.35;
+  }
+  .redesign-proof-ledger-state > span {
+    display:grid;
+    place-items:center;
+    min-width:78px;
+    padding:.5rem .65rem;
+    border:1px solid rgba(25,125,139,.18);
+    border-radius:10px;
+    color:#197d8b;
+    background:#eef9fa;
+    font:800 .55rem/1.15 var(--font-mono);
+    letter-spacing:.06em;
+    text-align:center;
+  }
   .redesign-showroom-human { position:absolute; left:50%; bottom:1.1rem; transform:translateX(-50%); display:inline-flex; gap:.55rem; align-items:center; color:#526181; font-size:.76rem; white-space:nowrap; }
   .redesign-showroom-human svg { color:#23734a; }
   .redesign-showroom-semantic { min-height:180px; padding:1.25rem 1.1rem .35rem; }
@@ -188,6 +260,17 @@ const stages = [
     .redesign-showroom-bridge { grid-template-columns:1fr; justify-content:center; margin:-.15rem 0; }
     .redesign-showroom-bridge svg { transform:rotate(90deg); }
     .redesign-showroom-legend { left:1rem; top:.9rem; }
+    .redesign-proof-ledger {
+      position:static;
+      grid-column:1;
+      margin-top:.35rem;
+    }
+    .redesign-proof-ledger-state.active {
+      grid-template-columns:1fr;
+    }
+    .redesign-proof-ledger-state > span {
+      min-height:34px;
+    }
     .redesign-showroom-human { bottom:1rem; width:calc(100% - 2rem); justify-content:center; white-space:normal; text-align:center; }
   }
   @media (prefers-reduced-motion:reduce) {
