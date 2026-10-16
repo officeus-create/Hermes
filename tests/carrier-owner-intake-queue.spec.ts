@@ -125,3 +125,108 @@ test("private owner can acknowledge then close a synthetic commercial record wit
   expect(otherPostCount).toBe(0);
   await expect(page.locator("[data-detail]")).toBeHidden();
 });
+
+
+test("owner qualification requires all four manual checks and creates no outbound action", async ({ page }) => {
+  const row = { ...synthetic(302), status: "reviewed" };
+  let state = "reviewed";
+  let patchBody: Record<string, unknown> | null = null;
+  let otherMutationCount = 0;
+
+  await page.route("**/api/**", async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    if (url.pathname !== "/api/internal/carrier-intake") {
+      if (req.method() !== "GET") otherMutationCount++;
+      await route.continue();
+      return;
+    }
+    if (req.method() === "PATCH") {
+      patchBody = req.postDataJSON();
+      expect(req.headers()["x-hermes-owner-action"]).toBe("REVIEW_CARRIER_INTAKE");
+      expect(patchBody).toMatchObject({
+        request_id: row.request_id,
+        from_status: "reviewed",
+        to_status: "qualified",
+        review_code: "manual_carrier_qualification",
+        verification_checks: {
+          authority_verified: true,
+          insurance_verified: true,
+          equipment_capacity_verified: true,
+          operating_fit_verified: true,
+        },
+      });
+      state = "qualified";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          request_id: row.request_id,
+          status: state,
+          human_receipt_state: "owner_reviewed",
+          qualified_carrier_state: "owner_qualified",
+          delivery_state: "not_sent",
+        }),
+      });
+      return;
+    }
+    if (req.method() !== "GET") {
+      otherMutationCount++;
+      await route.abort();
+      return;
+    }
+    const id = url.searchParams.get("request_id");
+    if (id) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          request: {
+            ...row,
+            status: state,
+            email_body: "SYNTHETIC QUALIFICATION REVIEW — NOT A REAL CARRIER",
+          },
+        }),
+      });
+      return;
+    }
+    const filter = url.searchParams.get("status") || "new";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        requests: filter === state ? [{ ...row, status: state }] : [],
+        next_cursor: null,
+      }),
+    });
+  });
+
+  page.on("dialog", async (dialog) => { await dialog.accept(); });
+  await page.goto(path);
+  await page.locator("[data-status-filter]").selectOption("reviewed");
+  await expect(page.locator("[data-records] article")).toHaveCount(1);
+  await page.getByRole("button", { name: "View private details" }).click();
+
+  const qualify = page.locator("[data-qualify-record]");
+  const checks = page.locator("[data-qualification-check]");
+  await expect(checks).toHaveCount(4);
+  await expect(qualify).toBeVisible();
+  await expect(qualify).toBeDisabled();
+
+  for (let index = 0; index < 3; index += 1) {
+    await checks.nth(index).check();
+    await expect(qualify).toBeDisabled();
+  }
+  await checks.nth(3).check();
+  await expect(qualify).toBeEnabled();
+  await qualify.click();
+
+  await expect(page.locator("[data-status-filter]")).toHaveValue("qualified");
+  await expect(page.locator("[data-records] article")).toHaveCount(1);
+  expect(patchBody).not.toBeNull();
+  expect(otherMutationCount).toBe(0);
+  await expect(page.locator("[data-detail]")).toBeHidden();
+});
