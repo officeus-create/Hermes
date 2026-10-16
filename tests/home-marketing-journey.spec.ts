@@ -6,8 +6,11 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   const route = page.locator('[data-route-id="marketing"]');
   const scene = route.locator('[data-home-marketing-journey]');
   await expect(scene).toHaveCount(1);
-  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
-  // The user-approved Marketing scene must not load its retired hidden photography.
+  const human = route.locator("[data-home-marketing-human] img");
+  await expect(human).toHaveCount(1);
+  await expect(human).toBeVisible();
+  await expect(human).toHaveAttribute("src", "/images/home-20261001/marketing-512.webp");
+  // The selected scene uses the approved human anchor, not retired hidden photography or decorative leaves.
   await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
   for (const label of ["CONTENT", "DISCOVERY", "WEBSITE", "INQUIRY"]) {
     await expect(scene).toContainText(label);
