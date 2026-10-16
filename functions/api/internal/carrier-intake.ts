@@ -1,0 +1,199 @@
+import { requireInternalOwner } from "../_lib/internal-ai.mjs";
+import { jsonResponse } from "../_lib/session.mjs";
+
+type Env = { DB?: any };
+const PRIVATE = {
+  "Cache-Control": "private, no-store",
+  "X-Robots-Tag": "noindex, nofollow",
+  "X-Content-Type-Options": "nosniff",
+};
+const STATES = new Set(["new", "reviewed", "qualified", "closed"]);
+const CLASSIFICATIONS = new Set(["commercial", "qa"]);
+const validRequestId = (value: string) => /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,79}$/.test(value);
+const PAGE_SIZE = 20;
+const validCreatedAt = (value: string) =>
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) && Number.isFinite(Date.parse(value));
+
+// The opaque cursor contains a row boundary and its authorized query scope;
+// it is not a bearer token. Owner authentication is always rechecked on each page.
+function encodeCursor(row: { created_at: string; request_id: string }, classification: string, status: string) {
+  return btoa(JSON.stringify({ v: 1, t: row.created_at, id: row.request_id, c: classification, s: status }))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+function decodeCursor(raw: string | null, classification: string, status: string) {
+  if (raw === null) return null;
+  if (!/^[A-Za-z0-9_-]{10,512}$/.test(raw)) return false;
+  try {
+    const normalized = raw.replace(/-/g, "+").replace(/_/g, "/");
+    const data = JSON.parse(atob(normalized));
+    if (data.v !== 1 || data.c !== classification || data.s !== status ||
+      typeof data.t !== "string" || !validCreatedAt(data.t) ||
+      typeof data.id !== "string" || !validRequestId(data.id)) return false;
+    return { created_at: data.t, request_id: data.id };
+  } catch { return false; }
+}
+
+// Private Hermes INTERNAL OWNER read-only triage, using the existing verified
+// server-side Hermes Connect session + persisted capability. Not a public CRM
+// or a shared Sales-wide privilege; delegation requires a separate owner gate.
+export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
+  const authorized = await requireInternalOwner(request, env);
+  if (authorized.response) return authorized.response;
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_unavailable" }, PRIVATE);
+
+  const url = new URL(request.url);
+  const now = new Date().toISOString();
+  const id = url.searchParams.get("request_id");
+  try {
+    if (id !== null) {
+      if (!validRequestId(id)) return jsonResponse(400, { success: false, error: "invalid_request_id" }, PRIVATE);
+      const row = await env.DB.prepare(`
+        SELECT request_id, classification, status, source_path, contact_email,
+          email_body, created_at, retention_until, delivery_state,
+          status_updated_at, status_review_code
+        FROM hermes_carrier_intake
+        WHERE request_id = ? AND retention_until > ? LIMIT 1
+      `).bind(id, now).first();
+      if (!row) return jsonResponse(404, { success: false, error: "request_not_found" }, PRIVATE);
+      return jsonResponse(200, {
+        success: true,
+        request: row,
+        is_customer_proven: row.classification === "commercial" ? "not_verified" : "synthetic_qa",
+        delivery_state: "not_sent",
+        human_receipt_state: row.status === "new" ? "unconfirmed" : "owner_reviewed",
+        boundary: "Owner-only private intake review. No email, dispatcher or Telegram contact; no authorization to assign a carrier, book a load or claim revenue.",
+      }, PRIVATE);
+    }
+
+    const requestedClassification = url.searchParams.get("classification") || "commercial";
+    if (!CLASSIFICATIONS.has(requestedClassification)) {
+      return jsonResponse(400, { success: false, error: "invalid_classification" }, PRIVATE);
+    }
+    const requestedStatus = url.searchParams.get("status") || "new";
+    if (!STATES.has(requestedStatus)) return jsonResponse(400, { success: false, error: "invalid_status" }, PRIVATE);
+    const cursor = decodeCursor(url.searchParams.get("cursor"), requestedClassification, requestedStatus);
+    if (cursor === false) return jsonResponse(400, { success: false, error: "invalid_cursor" }, PRIVATE);
+    // Keyset paging prevents records beyond the first 20 from becoming invisible.
+    // ORDER BY is deterministic on ties, and a 21st row proves a next page exists.
+    const cursorClause = cursor
+      ? "AND (created_at < ? OR (created_at = ? AND request_id < ?))" : "";
+    const query = `
+      SELECT request_id, classification, status, source_path, contact_email,
+        created_at, retention_until, delivery_state
+      FROM hermes_carrier_intake
+      WHERE classification = ? AND status = ? AND retention_until > ?
+      ${cursorClause}
+      ORDER BY created_at DESC, request_id DESC LIMIT 21
+    `;
+    const args = cursor
+      ? [requestedClassification, requestedStatus, now, cursor.created_at, cursor.created_at, cursor.request_id]
+      : [requestedClassification, requestedStatus, now];
+    const result = await env.DB.prepare(query).bind(...args).all();
+    const matches = Array.isArray(result?.results) ? result.results : [];
+    const rows = matches.slice(0, PAGE_SIZE);
+    const hasMore = matches.length > PAGE_SIZE;
+    // Body/contact phone and MC/USDOT never appear in list/aggregate output.
+    // If new records arrive after the first page, refreshing starts from newest.
+    return jsonResponse(200, {
+      success: true,
+      classification: requestedClassification,
+      status: requestedStatus,
+      requests: rows,
+      max_page_size: PAGE_SIZE,
+      partial: hasMore,
+      next_cursor: hasMore && rows.length
+        ? encodeCursor(rows[rows.length - 1], requestedClassification, requestedStatus)
+        : null,
+      all_are_real_leads: false,
+      delivery_state: "not_sent",
+      human_receipt_state: "unconfirmed",
+      next_action: "Owner verifies authority, insurance, actual Sales eligibility and approved manual follow-up before marking anything qualified.",
+    }, PRIVATE);
+  } catch {
+    return jsonResponse(503, { success: false, error: "intake_read_unavailable" }, PRIVATE);
+  }
+}
+
+
+// A human owner may acknowledge an actual review or close a reviewed inquiry.
+// These changes do NOT qualify carriers or dispatch/notify anyone.
+export async function onRequestPatch({ request, env }: { request: Request; env: Env }) {
+  const auth = await requireInternalOwner(request, env);
+  if (auth.response) return auth.response;
+  const url = new URL(request.url);
+  if (url.origin !== "https://hermeslogisticsus.com" ||
+      request.headers.get("Origin") !== url.origin ||
+      request.headers.get("X-Hermes-Owner-Action") !== "REVIEW_CARRIER_INTAKE")
+    return jsonResponse(403, { success: false, error: "owner_review_confirmation_required" }, PRIVATE);
+  if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json"))
+    return jsonResponse(415, { success: false, error: "content_type_required" }, PRIVATE);
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > 1024)
+    return jsonResponse(413, { success: false, error: "request_too_large" }, PRIVATE);
+  let body: any;
+  try { body = JSON.parse(raw); } catch {
+    return jsonResponse(400, { success: false, error: "invalid_json" }, PRIVATE);
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body) || !validRequestId(body.request_id))
+    return jsonResponse(400, { success: false, error: "invalid_owner_review" }, PRIVATE);
+  const reviewed = body.from_status === "new" && body.to_status === "reviewed" &&
+    body.review_code === "initial_owner_review";
+  const closed = body.from_status === "reviewed" && body.to_status === "closed" &&
+    body.review_code === "manual_followup_closed";
+  if (!reviewed && !closed)
+    return jsonResponse(400, { success: false, error: "review_transition_not_allowed" }, PRIVATE);
+  const now = new Date().toISOString();
+  try {
+    // One atomic D1 row mutation holds status, reviewer and timestamp together.
+    const result = await env.DB.prepare(`
+      UPDATE hermes_carrier_intake SET
+        status = ?, status_updated_at = ?, status_updated_by = ?, status_review_code = ?
+      WHERE request_id = ? AND status = ? AND classification = 'commercial'
+        AND retention_until > ?
+    `).bind(body.to_status, now, auth.specialist.id, body.review_code,
+      body.request_id, body.from_status, now).run();
+    if (Number(result?.meta?.changes || 0) !== 1)
+      return jsonResponse(409, { success: false, error: "review_conflict_or_expired" }, PRIVATE);
+    return jsonResponse(200, { success: true, request_id: body.request_id,
+      status: body.to_status, status_updated_at: now, human_receipt_state: "owner_reviewed",
+      qualified_carrier_state: "not_verified", delivery_state: "not_sent" }, PRIVATE);
+  } catch {
+    return jsonResponse(503, { success: false, error: "owner_review_temporarily_unavailable" }, PRIVATE);
+  }
+}
+
+// Physical retention cleanup is an explicit, owner-authorized ADMIN operation.
+// No scheduler or production migration is created by this draft. Preview cannot
+// invoke it. The caller must consciously confirm each bounded purge batch.
+export async function onRequestDelete({ request, env }: { request: Request; env: Env }) {
+  const authorized = await requireInternalOwner(request, env);
+  if (authorized.response) return authorized.response;
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_unavailable" }, PRIVATE);
+  const url = new URL(request.url);
+  const origin = request.headers.get("Origin");
+  if (url.origin !== "https://hermeslogisticsus.com" ||
+      origin !== url.origin ||
+      request.headers.get("X-Hermes-Confirm-Expired-Purge") !== "PURGE_EXPIRED_CARRIER_INTAKE") {
+    return jsonResponse(403, { success: false, error: "purge_confirmation_required" }, PRIVATE);
+  }
+  try {
+    // Only records whose retention_until has passed; NEVER arbitrary deletion.
+    // The bounded 100-row batch avoids large D1 write spikes and is idempotent.
+    const result = await env.DB.prepare(`
+      DELETE FROM hermes_carrier_intake
+      WHERE request_id IN (
+        SELECT request_id FROM hermes_carrier_intake
+        WHERE retention_until <= ?
+        ORDER BY retention_until ASC, request_id ASC LIMIT 100
+      )
+    `).bind(new Date().toISOString()).run();
+    const count = Math.max(0, Number(result?.meta?.changes || 0));
+    return jsonResponse(200, {
+      success: true, purged_expired_rows: count, batch_size: 100,
+      more_batches_may_exist: count === 100,
+      policy: "Owner-confirmed physical expiry purge only. No outbound messages.",
+    }, PRIVATE);
+  } catch {
+    return jsonResponse(503, { success: false, error: "purge_temporarily_unavailable" }, PRIVATE);
+  }
+}
