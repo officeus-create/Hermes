@@ -59,6 +59,10 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
           </div>
           <p data-detail-meta></p>
           <pre data-detail-body></pre>
+          <div class="controls" data-owner-actions hidden>
+            <button type="button" data-review-record>{isRu ? "Отметить рассмотренной" : "Mark human-reviewed"}</button>
+            <button type="button" data-close-record>{isRu ? "Закрыть вручную" : "Close after manual review"}</button>
+          </div>
           <p class="caution">Owner review does not create an email, Telegram message, dispatcher assignment, contract or qualified Sales opportunity.</p>
         </section>
       </section>
@@ -96,6 +100,10 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   const detail = query<HTMLElement>("[data-detail]");
   const detailMeta = query<HTMLElement>("[data-detail-meta]");
   const detailBody = query<HTMLElement>("[data-detail-body]");
+  const ownerActions = query<HTMLElement>("[data-owner-actions]");
+  const reviewRecord = query<HTMLButtonElement>("[data-review-record]");
+  const closeRecord = query<HTMLButtonElement>("[data-close-record]");
+  let selectedRecord: { request_id: string; status: string; classification: string } | null = null;
   let position = 0;
   let cursors: Array<string | null> = [null];
   let nextCursor: string | null = null;
@@ -151,6 +159,8 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   }
 
   async function openDetail(id: string) {
+    selectedRecord = null;
+    if (ownerActions) ownerActions.hidden = true;
     if (detail) detail.hidden = true;
     const { response, payload } = await api("/api/internal/carrier-intake?request_id=" + encodeURIComponent(id));
     if (!response.ok || !payload.success || !payload.request || payload.request.request_id !== id) {
@@ -159,6 +169,11 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     }
     if (detailMeta) detailMeta.textContent = `${payload.request.created_at} · ${payload.request.status} · ${payload.request.delivery_state}`;
     if (detailBody) detailBody.textContent = payload.request.email_body || "";
+    selectedRecord = { request_id: id, status: payload.request.status, classification: payload.request.classification };
+    if (reviewRecord) reviewRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "new";
+    if (closeRecord) closeRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
+    if (ownerActions) ownerActions.hidden = selectedRecord.classification !== "commercial" ||
+      (selectedRecord.status !== "new" && selectedRecord.status !== "reviewed");
     if (detail) {
       detail.hidden = false;
       detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -167,6 +182,8 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
 
   async function loadPage() {
     const thisGeneration = ++generation;
+    selectedRecord = null;
+    if (ownerActions) ownerActions.hidden = true;
     if (detail) detail.hidden = true;
     if (detailBody) detailBody.textContent = "";
     if (message) message.textContent = tr("Loading owner-only records…", "Загружаем приватные записи…");
@@ -204,6 +221,46 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     }
   }
 
+  async function changeOwnerReview(toStatus: "reviewed" | "closed") {
+    const current = selectedRecord;
+    if (!current || current.classification !== "commercial" ||
+        (current.status !== "new" && toStatus === "reviewed") ||
+        (current.status !== "reviewed" && toStatus === "closed")) return;
+    if (!window.confirm(tr(
+      "Record a human decision? No carrier will be contacted or qualified.",
+      "Записать решение человека? Сообщение перевозчику не отправляется; квалификация не подтверждается.",
+    ))) return;
+    if (reviewRecord) reviewRecord.disabled = true;
+    if (closeRecord) closeRecord.disabled = true;
+    try {
+      const response = await fetch("/api/internal/carrier-intake", {
+        method: "PATCH", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json", "X-Hermes-Owner-Action": "REVIEW_CARRIER_INTAKE" },
+        body: JSON.stringify({
+          request_id: current.request_id, from_status: current.status,
+          to_status: toStatus,
+          review_code: toStatus === "reviewed" ? "initial_owner_review" : "manual_followup_closed",
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.success !== true) throw new Error("review_unconfirmed");
+      if (status) status.value = toStatus;
+      reset();
+      if (message) message.textContent = tr(
+        "Human review saved. Carrier qualification and agreement remain unverified.",
+        "Ручное рассмотрение сохранено. Квалификация и контракт не подтверждены.",
+      );
+    } catch {
+      if (message) message.textContent = tr(
+        "Review not confirmed. Reload the record before retrying.",
+        "Решение не подтверждено. Обновите запись перед повторной попыткой.",
+      );
+    } finally {
+      if (reviewRecord) reviewRecord.disabled = false;
+      if (closeRecord) closeRecord.disabled = false;
+    }
+  }
+
   function reset() {
     position = 0;
     cursors = [null];
@@ -213,6 +270,8 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   filter?.addEventListener("change", reset);
   status?.addEventListener("change", reset);
   query<HTMLButtonElement>("[data-refresh]")?.addEventListener("click", reset);
+  reviewRecord?.addEventListener("click", () => { void changeOwnerReview("reviewed"); });
+  closeRecord?.addEventListener("click", () => { void changeOwnerReview("closed"); });
   previous?.addEventListener("click", () => {
     if (position > 0) { position--; void loadPage(); }
   });
@@ -223,6 +282,8 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     void loadPage();
   });
   query<HTMLButtonElement>("[data-close-detail]")?.addEventListener("click", () => {
+    selectedRecord = null;
+    if (ownerActions) ownerActions.hidden = true;
     if (detailBody) detailBody.textContent = "";
     if (detail) detail.hidden = true;
   });
