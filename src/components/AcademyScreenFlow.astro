@@ -35,7 +35,7 @@ import "../styles/features/academy.css";
 
 <section class="academy-flow" data-academy-flow data-active-screen="0" aria-labelledby="academy-flow-title">
   <div class="shell academy-flow-shell">
-    <div class="academy-flow-progress" aria-label="Academy pathway progress">
+    <div class="academy-flow-progress" role="group" aria-label="Academy pathway progress">
       {["Practice", "Tracks", "Track", "Growth", "Evidence"].map((label, index) => (
         <div class="academy-progress-step" data-academy-progress={index} data-active={index === 0 ? "true" : "false"}>
           <span>0{index + 1}</span><p>{label}</p>
@@ -100,7 +100,7 @@ import "../styles/features/academy.css";
           <p class="academy-attempt-boundary">This is an illustrative practice example, not a real learner record, job result, certification, income promise, or permission for live work.</p>
         </article>
 
-        <div class="academy-method-signals" aria-label="Academy learning method">
+        <div class="academy-method-signals" role="group" aria-label="Academy learning method">
           <span>Explain in your own words</span>
           <span>Practice before consequence</span>
           <span>Self-review before correction</span>
