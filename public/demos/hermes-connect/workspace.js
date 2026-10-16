@@ -544,7 +544,7 @@
     currentView = id;
     $$('[data-view-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.viewPanel === id));
     $$('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === id));
-    $('[data-mobile-view]').forEach(button => button.classList.toggle('active', button.dataset.mobileView === id));
+    $$('[data-mobile-view]').forEach(button => button.classList.toggle('active', button.dataset.mobileView === id));
     const mobileMore = $('[data-mobile-more]');
     mobileMore?.classList.toggle('active', !mobilePrimaryViews.has(id));
     $('[data-view-kicker]').textContent = viewMeta[id][0];
@@ -564,14 +564,14 @@
 
   $$('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
   $$('[data-view-jump]').forEach(button => button.addEventListener('click', () => setView(button.dataset.viewJump)));
-  $('[data-mobile-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.mobileView)));
+  $$('[data-mobile-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.mobileView)));
   $('[data-mobile-more]')?.addEventListener('click', event => {
     event.stopPropagation();
     const trigger = event.currentTarget;
     setMobileMore(trigger?.getAttribute('aria-expanded') !== 'true');
   });
   $('[data-mobile-more-close]')?.addEventListener('click', () => setMobileMore(false));
-  $('[data-hermes-open]').forEach(button => button.addEventListener('click', () => setDrawer(true)));
+  $$('[data-hermes-open]').forEach(button => button.addEventListener('click', () => setDrawer(true)));
   $$('[data-hermes-close]').forEach(button => button.addEventListener('click', () => setDrawer(false)));
   $('[data-scrim]')?.addEventListener('click', () => setDrawer(false));
 
