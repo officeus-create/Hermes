@@ -43,7 +43,7 @@ const serviceSchema = {
   description: copy.metaDescription,
   url: canonicalUrl,
   inLanguage: locale,
-  provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  provider: { "@id": directionId === "logistics" ? "https://hermeslogisticsus.com/#logistics" : "https://hermeslogisticsus.com/#organization" },
   serviceType: direction.points,
 };
 const breadcrumbSchema = {
