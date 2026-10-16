@@ -22,12 +22,33 @@ test("Wisconsin expired server HTML retains mobile contact and search owner with
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("Careers hub no longer advertises expired Wisconsin vacancy but preserves its reference link", async ({ page }) => {
-  const built = readFileSync("dist/logistics/careers/index.html", "utf8");
-  await page.route("**/logistics/careers/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: expireWisconsinCareersHub(built, 0) }));
+test("Careers hub expires an old cached Wisconsin vacancy and preserves its reference link", async ({ page }) => {
+  const legacyHub = `<!doctype html><html><body>
+    <h2 data-current-vacancy-heading>Verified public vacancies are open.</h2>
+    <strong data-current-vacancy-count>1</strong>
+    <article data-vacancy-slug="wisconsin-owner-operators">
+      <a data-external-vacancy-source href="https://100hires.com/j/G4ek3eN">Apply</a>
+    </article>
+    <a href="/logistics/apply/?for=career">General careers inquiry</a>
+  </body></html>`;
+  await page.route("**/logistics/careers/", (route) => route.fulfill({
+    status: 200,
+    contentType: "text/html",
+    body: expireWisconsinCareersHub(legacyHub, 0),
+  }));
   await page.goto("/logistics/careers/");
   await expect(page.locator("[data-current-vacancy-count]")).toHaveText("0");
   await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
   await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Review recruiting information" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+});
+
+test("fresh careers build remains fail-closed after Wisconsin vacancy expiry", async ({ page }) => {
+  const built = readFileSync("dist/logistics/careers/index.html", "utf8");
+  await page.route("**/logistics/careers/", (route) => route.fulfill({ status: 200, contentType: "text/html", body: built }));
+  await page.goto("/logistics/careers/");
+  await expect(page.locator("[data-current-vacancy-count]")).toHaveText("0");
+  await expect(page.getByRole("heading", { name: /No verified public vacancy is listed today/ })).toBeVisible();
+  await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
+  await expect(page.locator('a[href="https://100hires.com/j/G4ek3eN"]')).toHaveCount(0);
 });
