@@ -1,7 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-const parseRgb = (value: string) => (value.match(/[0-9.]+/g) ?? []).map(Number);
-
 test("shared accessibility semantics survive on current design", async ({ page }) => {
   await page.goto("/paths/academy/");
   await expect(page.getByRole("group", { name: "Academy pathway progress" })).toHaveCount(1);
