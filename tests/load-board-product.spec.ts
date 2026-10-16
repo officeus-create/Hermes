@@ -118,6 +118,25 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(refresh).toHaveText("Refresh now");
 });
 
+test("generic Load Board active feed does not invent an equipment scope", async ({ page }) => {
+  const requested: string[] = [];
+  await page.route("**/api/load-board/active?type=load", async (route) => {
+    requested.push(new URL(route.request().url()).search);
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [], load_board_access: false, audience: "public" }) });
+  });
+  await page.route("**/api/load-board/active?type=capacity", async (route) => {
+    requested.push(new URL(route.request().url()).search);
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ records: [] }) });
+  });
+  await page.route("**/api/load-board/summary", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 0, available_trucks: 0 }) });
+  });
+
+  await page.goto("/load-board/");
+  await expect.poll(() => requested).toEqual(expect.arrayContaining(["?type=load", "?type=capacity"]));
+  expect(requested.some((query) => query.includes("equipment="))).toBe(false);
+});
+
 test("car-hauler links preserve equipment scope through API and marketplace UI", async ({ page }) => {
   const requested: string[] = [];
   await page.route("**/api/load-board/active?type=load&equipment=car_hauler", async (route) => {
