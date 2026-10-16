@@ -44,6 +44,7 @@ on:
       - 'src/styles/hermes-brand-system.css'
       - 'src/pages/services/hermes-connect/**'
       - 'src/pages/services/website-development/**'
+      - 'src/pages/services/auto-repair-website-design/**'
       - 'src/pages/services/website-redesign/**'
       - 'tests/website-development-showroom.spec.ts'
       - 'tests/website-redesign-showroom.spec.ts'
