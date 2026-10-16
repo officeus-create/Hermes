@@ -341,9 +341,12 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  const academyProof=page.locator('[data-home-pillar-proof="progress"]');
  await expect(academyProof).toContainText('TASK');
  await expect(academyProof).toContainText('PRACTICE');
- await expect(academyProof).toContainText('FEEDBACK');
- await expect(academyProof).toContainText('NEXT LEVEL');
- await expect(page.locator('.home-academy-book-page')).toHaveCount(1);
+ await expect(academyProof).toContainText('HUMAN FEEDBACK');
+ await expect(academyProof).toContainText('RETRY');
+ await expect(academyProof).toContainText('Human decision');
+ await expect(academyProof).toContainText('NEXT STEP');
+ await expect(page.locator('.home-academy-book')).toHaveCount(0);
+ await expect(page.locator('.home-academy-state')).toHaveCount(4);
  await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
  await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
  await expect(technologyProof).toHaveAttribute('data-home-living-motion','');
