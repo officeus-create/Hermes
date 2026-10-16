@@ -10,6 +10,8 @@ test("Wisconsin expired server HTML retains mobile contact and search owner with
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute("href", "https://hermeslogisticsus.com/careers/wisconsin-owner-operators/");
   await expect(page.locator("meta[name=robots]")).toHaveAttribute("content", /index,follow/);
   await expect(page.getByRole("heading", { name: "Publication review due", exact: true })).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("continuously recruits Wisconsin owner-operators");
+  await expect(page.locator("body")).toContainText("A fresh owner review is required before the page represents a current opening.");
   await expect(page.locator("[data-external-job-apply]")).toHaveCount(0);
   expect((await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ")).not.toContain('"JobPosting"');
   await expect(page.locator("#apply")).toHaveCount(1);
