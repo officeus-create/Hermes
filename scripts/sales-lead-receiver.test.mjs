@@ -1045,8 +1045,61 @@ assert.equal(captureDb.rows.get(capturedCarrier.request_id).status, "closed");
 assert.equal((await (await readOwnerCarrierIntake({
   request: ownerReadReq("?request_id=" + capturedCarrier.request_id), env: { DB: ownerDb },
 })).json()).human_receipt_state, "owner_reviewed");
+
+// Qualification is a separate explicit human decision. It is impossible without
+// the complete bounded verification checklist and never triggers outbound.
+const qualificationId = "carrier_qualified_20261017";
+const qualificationSource = captureDb.rows.get(capturedCarrier.request_id);
+ownerDb.rows.set(qualificationId, {
+  ...qualificationSource,
+  request_id: qualificationId,
+  payload_hash: "synthetic-qualification-payload-hash",
+  contact_email: "qualification@example.invalid",
+  email_body: "SYNTHETIC QUALIFICATION CANDIDATE — NOT A REAL LEAD",
+  status: "reviewed",
+  status_updated_at: "2026-10-17T00:00:00.000Z",
+  status_updated_by: "synthetic-owner",
+  status_review_code: "initial_owner_review",
+  created_at: "2026-10-17T00:00:00.000Z",
+  retention_until: "2099-01-01T00:00:00.000Z",
+});
+const qualificationBase = {
+  request_id: qualificationId,
+  from_status: "reviewed",
+  to_status: "qualified",
+  review_code: "manual_carrier_qualification",
+};
+for (const body of [
+  qualificationBase,
+  { ...qualificationBase, verification_checks: { authority_verified: true } },
+  { ...qualificationBase, verification_checks: {
+    authority_verified: true, insurance_verified: true,
+    equipment_capacity_verified: true, operating_fit_verified: false,
+  } },
+]) {
+  const denied = await reviewOwnerCarrierIntake({ request: ownerPatch(body), env: { DB: ownerDb } });
+  assert.equal(denied.status, 400);
+}
+const qualified = await reviewOwnerCarrierIntake({
+  request: ownerPatch({ ...qualificationBase, verification_checks: {
+    authority_verified: true,
+    insurance_verified: true,
+    equipment_capacity_verified: true,
+    operating_fit_verified: true,
+  } }),
+  env: { DB: ownerDb },
+});
+assert.equal(qualified.status, 200);
+const qualifiedBody = await qualified.json();
+assert.equal(qualifiedBody.qualified_carrier_state, "owner_qualified");
+assert.equal(ownerDb.rows.get(qualificationId).status, "qualified");
+assert.equal(ownerDb.rows.get(qualificationId).status_review_code, "manual_carrier_qualification");
+assert.equal((await (await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + qualificationId), env: { DB: ownerDb },
+})).json()).qualified_carrier_state, "owner_qualified");
+
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
-  "Owner status must never invoke email, Telegram or dispatcher notification.");
+  "Owner status or qualification must never invoke email, Telegram or dispatcher notification.");
 
 /* Owner-only cursor pagination must not hide a 21st+ NEW request or leak
  * batches to anonymous/ordinary Sales identities. These are synthetic rows. */
