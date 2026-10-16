@@ -238,6 +238,22 @@ const isLoadBoard = Astro.url.pathname === "/load-board/";
       }
     } catch {}
 
+    if (searchForm) {
+      const requestedEquipment = (new URLSearchParams(window.location.search).get("equipment") || "")
+        .trim()
+        .toLowerCase()
+        .replaceAll("_", " ")
+        .replaceAll("-", " ");
+      const equipmentControl = searchForm.elements.namedItem("equipment");
+      if (
+        requestedEquipment
+        && equipmentControl instanceof HTMLSelectElement
+        && [...equipmentControl.options].some((option) => option.value === requestedEquipment)
+      ) {
+        equipmentControl.value = requestedEquipment;
+      }
+    }
+
     const makeNode = (tag: string, className = "", text?: unknown) => {
       const node = document.createElement(tag);
       if (className) node.className = className;
