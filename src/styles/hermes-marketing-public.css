@@ -127,7 +127,7 @@
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--path-signal) 22%, var(--hermes-line-light));
   border-radius: var(--hermes-radius-card);
-  background: linear-gradient(135deg, var(--hermes-paper), color-mix(in srgb, var(--path-signal) 4%, var(--hermes-paper)));
+  background: var(--hermes-paper);
   box-shadow: var(--hermes-shadow-card);
 }
 
@@ -200,7 +200,7 @@
   padding: 12px;
   border: 1px solid var(--hermes-line-light);
   border-radius: 14px;
-  background: rgba(255,255,255,.7);
+  background: var(--hermes-paper);
   transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
 }
 
@@ -217,7 +217,7 @@
 .detail-page-marketing .marketing-demand-signal[data-active-step="2"] li[data-signal-step="2"],
 .detail-page-marketing .marketing-demand-signal[data-active-step="3"] li[data-signal-step="3"],
 .detail-page-marketing .marketing-demand-signal[data-active-step="4"] li[data-signal-step="4"] {
-  background: color-mix(in srgb, var(--path-signal) 8%, #fff);
+  background: #eef8f2;
   transform: translateY(-2px);
 }
 
