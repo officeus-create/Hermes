@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/components/HomeMasterScene.astro'
       - 'src/components/WebsiteDevelopmentShowroom.astro'
+      - 'src/components/AutoRepairWebsiteShowroom.astro'
       - 'src/components/WebsiteRedesignShowroom.astro'
       - 'src/components/LogisticsSpatialOperations.astro'
       - 'src/components/PathDetailPage.astro'
