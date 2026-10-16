@@ -157,14 +157,34 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             )}
             {path.id === "technology" && (
               <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
-                <span class="home-system-caption">PUBLIC <i></i> VERIFIED PROCESS</span>
-                <span class="home-system-card home-system-connect"><small>01 / HERMES CONNECT</small><strong>LIVE PILOT</strong><em>CRM · business context</em></span>
+                <span class="home-system-caption">REAL PRODUCT UI <i></i> TRUTHFUL STATES</span>
+                <span class="home-system-card home-system-connect" data-tech-source="/services/hermes-connect/repair-shops/dashboard/">
+                  <small>01 / HERMES CONNECT</small>
+                  <strong>SHOP OWNER WORKSPACE</strong>
+                  <span class="home-tech-mini home-tech-connect-ui"><i>Services</i><i>Booking inbox</i><i>Catalog inquiries</i></span>
+                  <em>private CRM surface</em>
+                </span>
                 <span class="home-system-wire home-system-wire-a"><i></i></span>
-                <span class="home-system-card home-system-factory"><small>02 / WEBSITE FACTORY</small><strong>PRIVATE BUILD</strong><em>site + SEO workflow</em></span>
+                <span class="home-system-card home-system-factory" data-tech-source="/services/website-development/">
+                  <small>02 / WEBSITE DELIVERY</small>
+                  <strong>SEMANTIC BUILD</strong>
+                  <span class="home-tech-mini home-tech-factory-ui"><i>Responsive</i><i>Canonical</i><i>Schema</i></span>
+                  <em>business context → release evidence</em>
+                </span>
                 <span class="home-system-wire home-system-wire-b"><i></i></span>
-                <span class="home-system-card home-system-social"><small>03 / SOCIAL CONNECTORS</small><strong>BUILDING</strong><em>Threads · Meta</em></span>
+                <span class="home-system-card home-system-social" data-tech-source="/services/hermes-connect/repair-shops/social/">
+                  <small>03 / SOCIAL STUDIO</small>
+                  <strong>OWNER AUTHORIZATION</strong>
+                  <span class="home-tech-mini home-tech-social-ui"><i>IG</i><i>f</i><i>@</i><b>provider readback</b></span>
+                  <em>connect ≠ writable until verified</em>
+                </span>
                 <span class="home-system-wire home-system-wire-c"><i></i></span>
-                <span class="home-system-card home-system-readback"><small>04 / QA READBACK</small><strong><i></i> VERIFIED PROCESS</strong><em>deploy ≠ live until readback</em></span>
+                <span class="home-system-card home-system-readback" data-tech-source="/services/website-development/">
+                  <small>04 / QA + READBACK</small>
+                  <strong><i></i> RELEASE EVIDENCE</strong>
+                  <span class="home-tech-mini home-tech-readback-ui"><i>Build</i><i>Browser</i><i>390 / 1440</i><i>Readback</i></span>
+                  <em>deploy ≠ live until readback</em>
+                </span>
               </span>
             )}
             {path.id === "academy" && (
@@ -510,14 +530,24 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-system-card{position:absolute;width:43%;min-height:56px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
 .home-system-card small{display:block;color:#ffd8a5;font:800 .44rem/1.1 var(--font-body);letter-spacing:.08em}
 .home-system-card strong{display:block;margin-top:6px;color:#fff7e8;font:850 .56rem/1 var(--font-body);letter-spacing:.08em}
-.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1 var(--font-body);font-style:normal;letter-spacing:.035em}
-.home-system-connect{left:0;top:14%}.home-system-factory{right:0;top:24%}.home-system-social{left:4%;bottom:3%}.home-system-readback{right:0;bottom:2%}
+.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1.2 var(--font-body);font-style:normal;letter-spacing:.025em}
+.home-tech-mini{display:flex;align-items:center;gap:3px;min-width:0;margin-top:6px;overflow:hidden}
+.home-tech-mini i,.home-tech-mini b{display:block;min-width:0;padding:3px 4px;border:1px solid #ffe8c744;border-radius:4px;background:#fff6e80f;color:#fff2d9;font:750 .36rem/1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.home-tech-connect-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-connect-ui i:last-child{grid-column:1/-1}
+.home-tech-factory-ui i{flex:1;text-align:center}
+.home-tech-social-ui i{display:grid;place-items:center;width:17px;height:17px;padding:0;border-radius:50%;flex:none}.home-tech-social-ui b{margin-left:auto;color:#ffd39d}
+.home-tech-readback-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-readback-ui i{text-align:center}
+.home-system-connect{left:0;top:14%;width:46%}.home-system-factory{right:0;top:22%;width:46%}.home-system-social{left:2%;bottom:1%;width:47%}.home-system-readback{right:0;bottom:0;width:47%}
 .home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
 .home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.58}
 .home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
 .home-product-choreography[data-motion-state="running"] .home-system-wire i{animation:home-system-packet 5.6s ease-in-out infinite}
 .home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:64%;width:33%;transform:rotate(-13deg)}.home-system-wire-c{left:42%;top:76%;width:31%;transform:rotate(13deg)}
 .home-product-choreography[data-motion-state="running"] .home-system-readback strong i{animation:home-system-verified 5.6s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-card{animation:home-system-surface 7.2s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-factory{animation-delay:-1.8s}
+.home-product-choreography[data-motion-state="running"] .home-system-social{animation-delay:-3.6s}
+.home-product-choreography[data-motion-state="running"] .home-system-readback{animation-delay:-5.4s}
 .home-learning-detail{inset:7% 7% 39%;z-index:0;overflow:hidden}
 .home-academy-caption{color:#f0e3ff}.home-academy-caption i{background:#cfb4ff;box-shadow:0 0 8px #a979ff}
 .home-academy-sunlight{position:absolute;inset:-5% -12% 20% 8%;background:linear-gradient(122deg,rgba(255,238,190,.34),rgba(255,245,222,.06) 48%,transparent 72%);clip-path:polygon(0 0,60% 0,100% 100%,28% 100%)}
@@ -547,6 +577,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 
 @keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}36%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
 @keyframes home-system-verified{0%,56%,100%{scale:1;opacity:.62}68%,78%{scale:1.3;opacity:1}}
+@keyframes home-system-surface{0%,100%{box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633;translate:0 0}50%{box-shadow:0 11px 25px #1a0f0a70,inset 0 1px #fff2d644;translate:0 -2px}}
 @keyframes home-academy-page{0%,62%,100%{transform:rotate(3deg) rotateY(0);opacity:.98}72%{transform:rotate(2deg) rotateY(-18deg);opacity:.92}82%{transform:rotate(3deg) rotateY(-4deg);opacity:.98}}
 @keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
@@ -567,7 +598,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:58px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-book small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-book{inset:15% 4% 25%}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-book small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-book{inset:15% 4% 25%}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
