@@ -81,7 +81,8 @@ for (const marker of ['data-mobile-view="home"', '>Today</span>', 'data-mobile-v
 assert(workspace.includes('data-mobile-more-sheet'), "workspace.html: progressive More sheet is missing.");
 assert(workspace.includes('data-mobile-hermes-entry'), "workspace.html: contextual mobile Ask Hermes entry is missing.");
 assert(workspace.includes('data-hermes-context'), "workspace.html: Hermes drawer must expose the current workspace/view context.");
-assert(!/<nav class="mobile-nav"[^>]*>[\s\S]*?data-hermes-open/.test(workspace), "workspace.html: Ask Hermes must remain outside the five primary mobile task tabs.");
+const mobileNavMarkup = workspace.match(/<nav class="mobile-nav"[^>]*>[\s\S]*?<\/nav>/)?.[0] ?? "";
+assert(mobileNavMarkup && !mobileNavMarkup.includes("data-hermes-open"), "workspace.html: Ask Hermes must remain outside the five primary mobile task tabs.");
 assert(workspace.includes('./sales-roleplay.html'), "workspace.html: Academy must link to Sales Coach.");
 assert(workspace.includes('./workspace.css') && workspace.includes('./workspace.js'), "workspace.html: local product assets are not linked.");
 assert(workspace.includes('./workspace-enhancements.css') && workspace.includes('./workspace-enhancements.js'), "workspace.html: canonical enhancement assets are not linked.");
