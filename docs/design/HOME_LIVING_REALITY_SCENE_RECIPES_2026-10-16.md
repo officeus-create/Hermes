@@ -83,7 +83,7 @@ Reduced motion: static connected system map with the same labels.
 
 Purpose: make the learner, not the book, the main subject.
 
-Current implementation: a local authored learner-at-laptop foreground is the primary visual subject. The existing Academy image is atmosphere/background only and is deliberately de-emphasized. This authored foreground has no external runtime or stock-license dependency.
+Current implementation: a local owner-reference learner-at-laptop derivative is the primary visual subject. The existing Academy image is atmosphere/background only and is deliberately de-emphasized. The learner asset is registered in media provenance, contains no external runtime/CDN dependency, and must be treated as illustrative AI-reference material rather than a real Hermes learner or endorsement.
 
 Story:
 `Task → Practice → Feedback → Next level`.
