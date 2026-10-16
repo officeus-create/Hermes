@@ -53,7 +53,8 @@ test("SEO live mode copy follows the production override at 390px without submit
       if (!previewMode || !emptyEndpoint) throw new Error("Expected fail-closed SEO contact SSR shell");
       const approvedFixture = source
         .replace(/\bdata-contact-mode=(["'])preview\1/, 'data-contact-mode="live"')
-        .replace(/\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-contact-endpoint="/api/logistics-lead"');
+        .replace(/\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-contact-endpoint="/api/logistics-lead"')
+        .replace(/<span([^>]*data-submit-label[^>]*)>Preview request<\/span>/, '<span$1>Send request</span>');
       await route.fulfill({ response, body: approvedFixture });
       return;
     }
