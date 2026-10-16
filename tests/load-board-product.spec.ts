@@ -118,6 +118,50 @@ test("canonical Load Board renders approved live loads and capacity from separat
   await expect(refresh).toHaveText("Refresh now");
 });
 
+test("car-hauler links preserve equipment scope through API and marketplace UI", async ({ page }) => {
+  const requested: string[] = [];
+  await page.route("**/api/load-board/active?type=load&equipment=car_hauler", async (route) => {
+    requested.push(new URL(route.request().url()).search);
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        count: 1,
+        load_board_access: true,
+        audience: "carrier_candidate",
+        records: [{
+          id: "car-hauler-filtered-load",
+          type: "load",
+          equipment: "car_hauler",
+          origin: "Dallas, TX",
+          destination: "Atlanta, GA",
+          rateAmount: 1800,
+          rateCurrency: "USD",
+          observedAt: new Date().toISOString(),
+        }],
+      }),
+    });
+  });
+  await page.route("**/api/load-board/active?type=capacity&equipment=car_hauler", async (route) => {
+    requested.push(new URL(route.request().url()).search);
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, count: 0, records: [] }) });
+  });
+  await page.route("**/api/load-board/summary", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ available_loads: 99, available_trucks: 77 }) });
+  });
+
+  await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");
+
+  await expect(page.locator('[data-lbv2-search-form] select[name="equipment"]')).toHaveValue("car hauler");
+  await expect(page.locator("[data-live-load-count]")).toHaveText("1");
+  await expect(page.getByText("Dallas, TX", { exact: true })).toBeVisible();
+  await expect.poll(() => requested).toEqual(expect.arrayContaining([
+    "?type=load&equipment=car_hauler",
+    "?type=capacity&equipment=car_hauler",
+  ]));
+});
+
 test("Load Board filter count identifies preview-only rows when active inventory is zero", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
