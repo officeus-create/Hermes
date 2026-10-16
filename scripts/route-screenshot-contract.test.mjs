@@ -35,6 +35,7 @@ assert.equal(routeMap.get("path-logistics"), "/paths/logistics/");
 assert.equal(routeMap.get("path-marketing"), "/paths/marketing/");
 assert.equal(routeMap.get("path-academy"), "/paths/academy/");
 assert.equal(routeMap.get("path-technology"), "/paths/technology/");
+assert.equal(routeMap.get("car-hauler-loads"), "/logistics/car-hauler-loads/");
 assert.equal(routeMap.get("hermes-catalog"), "/businesses/");
 assert.equal(routeMap.get("website-development"), "/services/website-development/");
 assert.equal(routeMap.get("auto-repair-website-design"), "/services/auto-repair-website-design/");
@@ -56,6 +57,8 @@ assert.equal(screenshotFileName("path-logistics", "desktop"), "path-logistics--d
 assert.equal(screenshotFileName("path-marketing", "mobile"), "path-marketing--mobile.png");
 assert.equal(screenshotFileName("path-academy", "desktop"), "path-academy--desktop.png");
 assert.equal(screenshotFileName("path-technology", "mobile"), "path-technology--mobile.png");
+assert.equal(screenshotFileName("car-hauler-loads", "desktop"), "car-hauler-loads--desktop.png");
+assert.equal(screenshotFileName("car-hauler-loads", "mobile"), "car-hauler-loads--mobile.png");
 assert.equal(screenshotFileName("hermes-catalog", "desktop"), "hermes-catalog--desktop.png");
 assert.equal(screenshotFileName("hermes-catalog", "mobile"), "hermes-catalog--mobile.png");
 assert.equal(screenshotFileName("website-development", "desktop"), "website-development--desktop.png");
