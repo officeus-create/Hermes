@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS hermes_carrier_intake (
     CHECK (status IN ('new','reviewed','qualified','closed')),
   status_updated_at TEXT,
   status_updated_by TEXT,
-  status_review_code TEXT CHECK (status_review_code IS NULL OR status_review_code IN ('initial_owner_review','manual_followup_closed')),
+  status_review_code TEXT CHECK (status_review_code IS NULL OR status_review_code IN ('initial_owner_review','manual_carrier_qualification','manual_followup_closed')),
   delivery_state TEXT NOT NULL DEFAULT 'not_sent'
     CHECK (delivery_state = 'not_sent'),
   created_at TEXT NOT NULL,
