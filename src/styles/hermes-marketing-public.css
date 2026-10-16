@@ -222,18 +222,18 @@
 }
 
 .detail-page-marketing .marketing-demand-signal li > span {
-  color: var(--path-signal-text,var(--path-signal));
+  color: #166534;
   font: 800 .6rem/1.2 var(--font-mono);
 }
 
 .detail-page-marketing .marketing-demand-signal li strong {
-  color: var(--hermes-ink);
+  color: #172033;
   font-size: .8rem;
 }
 
 .detail-page-marketing .marketing-demand-signal li small,
 .detail-page-marketing .marketing-demand-signal > p {
-  color: var(--hermes-muted);
+  color: #4b5563;
   font-size: .7rem;
   line-height: 1.4;
 }
