@@ -187,6 +187,7 @@
     // Focus Card Title
     const focusCardH3 = $('.focus-card h3');
     if (focusCardH3) focusCardH3.textContent = t.things_today;
+    updateHermesContext(currentView);
   }
 
   const verticals = {
@@ -337,6 +338,36 @@
   const startupTypeParam = urlParamsStartup.get('business_type');
   let currentVertical = verticalMapStartup[startupTypeParam] || verticalMapStartup[startupStoredType] || 'beauty';
   let currentView = 'home';
+  const mobilePrimaryViews = new Set(['home', 'inbox', 'crm', 'calendar']);
+  const mobileViewLabels = {
+    home: 'Today',
+    inbox: 'Inbox',
+    crm: 'Customers',
+    calendar: 'Calendar',
+    sales: 'Sales',
+    marketing: 'Marketing',
+    finance: 'Finance',
+    operations: 'Operations',
+    integrations: 'Integrations',
+    academy: 'Academy'
+  };
+
+  function updateHermesContext(id = currentView) {
+    const workspaceName = $('[data-workspace-name]')?.textContent?.trim() || 'Demo workspace';
+    const viewLabel = mobileViewLabels[id] || viewMeta[id]?.[1] || 'Workspace';
+    const context = $('[data-hermes-context]');
+    if (context) context.textContent = `${workspaceName} · ${viewLabel}`;
+    const mobileEntry = $('[data-mobile-hermes-entry]');
+    if (mobileEntry) mobileEntry.setAttribute('aria-label', `Ask Hermes about ${viewLabel}`);
+  }
+
+  function setMobileMore(open) {
+    const sheet = $('[data-mobile-more-sheet]');
+    const trigger = $('[data-mobile-more]');
+    sheet?.classList.toggle('open', open);
+    sheet?.setAttribute('aria-hidden', String(!open));
+    trigger?.setAttribute('aria-expanded', String(open));
+  }
 
   function renderActivity() {
     const target = $('[data-activity-list]');
@@ -505,6 +536,7 @@
 
     $('[data-workspace-popover]')?.classList.remove('open');
     $('[data-workspace-popover]')?.setAttribute('aria-hidden','true');
+    updateHermesContext(currentView);
   }
 
   function setView(id) {
@@ -512,13 +544,19 @@
     currentView = id;
     $$('[data-view-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.viewPanel === id));
     $$('[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === id));
-    $$('[data-mobile-view]').forEach(button => button.classList.toggle('active', button.dataset.mobileView === id));
+    $('[data-mobile-view]').forEach(button => button.classList.toggle('active', button.dataset.mobileView === id));
+    const mobileMore = $('[data-mobile-more]');
+    mobileMore?.classList.toggle('active', !mobilePrimaryViews.has(id));
     $('[data-view-kicker]').textContent = viewMeta[id][0];
     $('[data-view-title]').textContent = viewMeta[id][1];
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMobileMore(false);
+    updateHermesContext(id);
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
   }
 
   function setDrawer(open) {
+    if (open) updateHermesContext(currentView);
     $('[data-hermes-drawer]')?.classList.toggle('open', open);
     $('[data-hermes-drawer]')?.setAttribute('aria-hidden', String(!open));
     $('[data-scrim]')?.classList.toggle('open', open);
@@ -526,8 +564,14 @@
 
   $$('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
   $$('[data-view-jump]').forEach(button => button.addEventListener('click', () => setView(button.dataset.viewJump)));
-  $$('[data-mobile-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.mobileView)));
-  $$('[data-hermes-open]').forEach(button => button.addEventListener('click', () => setDrawer(true)));
+  $('[data-mobile-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.mobileView)));
+  $('[data-mobile-more]')?.addEventListener('click', event => {
+    event.stopPropagation();
+    const trigger = event.currentTarget;
+    setMobileMore(trigger?.getAttribute('aria-expanded') !== 'true');
+  });
+  $('[data-mobile-more-close]')?.addEventListener('click', () => setMobileMore(false));
+  $('[data-hermes-open]').forEach(button => button.addEventListener('click', () => setDrawer(true)));
   $$('[data-hermes-close]').forEach(button => button.addEventListener('click', () => setDrawer(false)));
   $('[data-scrim]')?.addEventListener('click', () => setDrawer(false));
 
@@ -545,6 +589,13 @@
       menu.classList.remove('open');
       menu.setAttribute('aria-hidden','true');
     }
+    const mobileMoreSheet = $('[data-mobile-more-sheet]');
+    if (mobileMoreSheet?.classList.contains('open') && !mobileMoreSheet.contains(event.target) && !event.target.closest('[data-mobile-more]')) {
+      setMobileMore(false);
+    }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') setMobileMore(false);
   });
 
   $('[data-theme-toggle]')?.addEventListener('click', () => {
