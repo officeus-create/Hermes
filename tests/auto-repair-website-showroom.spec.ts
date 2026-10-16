@@ -8,7 +8,7 @@ test("auto repair website owner shows a truthful search-to-shop workflow", async
   const proof = page.locator("[data-auto-repair-website-proof]");
   await expect(proof).toBeVisible();
   await expect(proof.locator("[data-repair-proof-stage]")).toHaveCount(4);
-  await expect(proof.locator('[data-repair-proof-stage="discover"]')).toHaveAttribute("data-proof-source", "/services/local-seo/");
+  await expect(proof.locator('[data-repair-proof-stage="discover"]')).toHaveAttribute("data-proof-source", "/services/seo-for-auto-repair-shops/");
   await expect(proof.locator('[data-repair-proof-stage="availability"]')).toHaveAttribute("data-proof-source", "/services/hermes-connect/repair-shops/availability/");
   await expect(proof.locator('[data-repair-proof-stage="workspace"]')).toHaveAttribute("data-proof-source", "/services/hermes-connect/repair-shops/dashboard/");
 
