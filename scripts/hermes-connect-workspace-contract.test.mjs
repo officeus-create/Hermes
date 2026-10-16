@@ -100,9 +100,9 @@ assert(js.includes("function setView") && js.includes("function setVertical") &&
 const invalidSingleCollectionBinding = js
   .split("\n")
   .some((line) => /^\s+\$\('\[data-(?:mobile-view|hermes-open)\]'\)\.forEach/.test(line));
-assert(!invalidSingleCollectionBinding, "workspace.js: collection bindings must use $()/querySelectorAll before forEach.");
+assert(!invalidSingleCollectionBinding, "workspace.js: collection bindings must use $$()/querySelectorAll before forEach.");
 assert((js.match(/\$\$\('\[data-mobile-view\]'\)\.forEach/g) || []).length >= 2, "workspace.js: mobile view collection must be used for state + listener binding.");
-assert(js.includes("$('[data-hermes-open]').forEach"), "workspace.js: all Ask Hermes actions must receive the drawer listener.");
+assert(js.includes("$$('[data-hermes-open]').forEach"), "workspace.js: all Ask Hermes actions must receive the drawer listener.");
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
 // The live private workspaces intentionally inherit the previously approved Pearl-room direction.
