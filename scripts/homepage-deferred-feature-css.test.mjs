@@ -9,6 +9,7 @@ const homepageSource = await readFile(join(root, "src", "pages", "index.astro"),
 const masterSource = await readFile(join(root, "src", "components", "HomeMasterScene.astro"), "utf8");
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
+const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance", "media-provenance.json"), "utf8"));
 const head = html.split("</head>")[0] ?? html;
 
 // Home remains an entrance, not a catalogue. Heavy showroom/technology feature CSS must not
@@ -60,6 +61,13 @@ assert.ok(masterSource.includes("home-moving-truck"), "Logistics subject must re
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
+assert.ok(masterSource.includes("data-home-marketing-human"), "Marketing must retain a real human/content-creation story anchor behind the causal UI flow");
+assert.ok(masterSource.includes("/images/home-20261001/marketing-512.avif"), "Marketing human anchor must use the existing responsive approved AVIF asset");
+assert.ok(masterSource.includes("/images/home-20261001/marketing-512.webp"), "Marketing human anchor must keep a WebP fallback");
+const marketingHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/marketing-512.webp");
+assert.ok(marketingHumanAsset, "Marketing human anchor must remain registered in media provenance");
+assert.equal(marketingHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Marketing human anchor reuse requires verified source/rights");
+assert.equal(marketingHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Marketing human anchor reuse requires current publication approval");
 for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
