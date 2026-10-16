@@ -59,11 +59,19 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
           </div>
           <p data-detail-meta></p>
           <pre data-detail-body></pre>
+          <div class="qualification-checks" data-qualification-checks hidden>
+            <p>{isRu ? "Перед квалификацией вручную подтвердите:" : "Before qualification, manually confirm:"}</p>
+            <label><input type="checkbox" data-qualification-check="authority_verified" /> {isRu ? "Authority проверена" : "Operating authority verified"}</label>
+            <label><input type="checkbox" data-qualification-check="insurance_verified" /> {isRu ? "Страхование проверено" : "Insurance verified"}</label>
+            <label><input type="checkbox" data-qualification-check="equipment_capacity_verified" /> {isRu ? "Оборудование и вместимость проверены" : "Equipment and capacity verified"}</label>
+            <label><input type="checkbox" data-qualification-check="operating_fit_verified" /> {isRu ? "Operating fit проверен" : "Operating fit verified"}</label>
+          </div>
           <div class="controls" data-owner-actions hidden>
             <button type="button" data-review-record>{isRu ? "Отметить рассмотренной" : "Mark human-reviewed"}</button>
+            <button type="button" data-qualify-record disabled>{isRu ? "Квалифицировать для Sales" : "Qualify for Sales triage"}</button>
             <button type="button" data-close-record>{isRu ? "Закрыть вручную" : "Close after manual review"}</button>
           </div>
-          <p class="caution">Owner review does not create an email, Telegram message, dispatcher assignment, contract or qualified Sales opportunity.</p>
+          <p class="caution">Owner review or qualification does not create an email, Telegram message, dispatcher assignment, contract, booked load, customer or revenue.</p>
         </section>
       </section>
     </div>
@@ -101,7 +109,10 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   const detailMeta = query<HTMLElement>("[data-detail-meta]");
   const detailBody = query<HTMLElement>("[data-detail-body]");
   const ownerActions = query<HTMLElement>("[data-owner-actions]");
+  const qualificationChecks = query<HTMLElement>("[data-qualification-checks]");
+  const verificationInputs = Array.from(document.querySelectorAll<HTMLInputElement>("[data-qualification-check]"));
   const reviewRecord = query<HTMLButtonElement>("[data-review-record]");
+  const qualifyRecord = query<HTMLButtonElement>("[data-qualify-record]");
   const closeRecord = query<HTMLButtonElement>("[data-close-record]");
   let selectedRecord: { request_id: string; status: string; classification: string } | null = null;
   let position = 0;
@@ -161,6 +172,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   async function openDetail(id: string) {
     selectedRecord = null;
     if (ownerActions) ownerActions.hidden = true;
+    if (qualificationChecks) qualificationChecks.hidden = true;
     if (detail) detail.hidden = true;
     const { response, payload } = await api("/api/internal/carrier-intake?request_id=" + encodeURIComponent(id));
     if (!response.ok || !payload.success || !payload.request || payload.request.request_id !== id) {
@@ -170,7 +182,14 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     if (detailMeta) detailMeta.textContent = `${payload.request.created_at} · ${payload.request.status} · ${payload.request.delivery_state}`;
     if (detailBody) detailBody.textContent = payload.request.email_body || "";
     selectedRecord = { request_id: id, status: payload.request.status, classification: payload.request.classification };
+    for (const input of verificationInputs) input.checked = false;
     if (reviewRecord) reviewRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "new";
+    if (qualifyRecord) {
+      qualifyRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
+      qualifyRecord.disabled = true;
+    }
+    if (qualificationChecks) qualificationChecks.hidden =
+      selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
     if (closeRecord) closeRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
     if (ownerActions) ownerActions.hidden = selectedRecord.classification !== "commercial" ||
       (selectedRecord.status !== "new" && selectedRecord.status !== "reviewed");
@@ -221,16 +240,25 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     }
   }
 
-  async function changeOwnerReview(toStatus: "reviewed" | "closed") {
+  async function changeOwnerReview(toStatus: "reviewed" | "qualified" | "closed") {
     const current = selectedRecord;
     if (!current || current.classification !== "commercial" ||
         (current.status !== "new" && toStatus === "reviewed") ||
-        (current.status !== "reviewed" && toStatus === "closed")) return;
+        (current.status !== "reviewed" && (toStatus === "qualified" || toStatus === "closed"))) return;
+    const verificationChecks = Object.fromEntries(
+      verificationInputs.map((input) => [input.dataset.qualificationCheck || "", input.checked]),
+    ) as Record<string, boolean>;
+    if (toStatus === "qualified" && !verificationInputs.every((input) => input.checked)) return;
     if (!window.confirm(tr(
-      "Record a human decision? No carrier will be contacted or qualified.",
-      "Записать решение человека? Сообщение перевозчику не отправляется; квалификация не подтверждается.",
+      toStatus === "qualified"
+        ? "Record owner qualification for Sales triage? This does not create a contract, load, customer or revenue."
+        : "Record a human decision? No carrier will be contacted automatically.",
+      toStatus === "qualified"
+        ? "Записать ручную квалификацию для Sales? Это не создаёт контракт, груз, клиента или выручку."
+        : "Записать решение человека? Автоматическое сообщение перевозчику не отправляется.",
     ))) return;
     if (reviewRecord) reviewRecord.disabled = true;
+    if (qualifyRecord) qualifyRecord.disabled = true;
     if (closeRecord) closeRecord.disabled = true;
     try {
       const response = await fetch("/api/internal/carrier-intake", {
@@ -239,7 +267,12 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
         body: JSON.stringify({
           request_id: current.request_id, from_status: current.status,
           to_status: toStatus,
-          review_code: toStatus === "reviewed" ? "initial_owner_review" : "manual_followup_closed",
+          review_code: toStatus === "reviewed"
+            ? "initial_owner_review"
+            : toStatus === "qualified"
+              ? "manual_carrier_qualification"
+              : "manual_followup_closed",
+          ...(toStatus === "qualified" ? { verification_checks: verificationChecks } : {}),
         }),
       });
       const result = await response.json().catch(() => ({}));
@@ -247,8 +280,12 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
       if (status) status.value = toStatus;
       reset();
       if (message) message.textContent = tr(
-        "Human review saved. Carrier qualification and agreement remain unverified.",
-        "Ручное рассмотрение сохранено. Квалификация и контракт не подтверждены.",
+        toStatus === "qualified"
+          ? "Owner qualification saved for Sales triage. Contract, load assignment, customer status and revenue remain unproven."
+          : "Human review saved. Carrier qualification and agreement remain unverified.",
+        toStatus === "qualified"
+          ? "Ручная квалификация для Sales сохранена. Контракт, назначение груза, статус клиента и выручка не подтверждены."
+          : "Ручное рассмотрение сохранено. Квалификация и контракт не подтверждены.",
       );
     } catch {
       if (message) message.textContent = tr(
@@ -257,6 +294,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
       );
     } finally {
       if (reviewRecord) reviewRecord.disabled = false;
+      if (qualifyRecord) qualifyRecord.disabled = !verificationInputs.every((input) => input.checked);
       if (closeRecord) closeRecord.disabled = false;
     }
   }
@@ -271,7 +309,12 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   status?.addEventListener("change", reset);
   query<HTMLButtonElement>("[data-refresh]")?.addEventListener("click", reset);
   reviewRecord?.addEventListener("click", () => { void changeOwnerReview("reviewed"); });
+  qualifyRecord?.addEventListener("click", () => { void changeOwnerReview("qualified"); });
   closeRecord?.addEventListener("click", () => { void changeOwnerReview("closed"); });
+  for (const input of verificationInputs) input.addEventListener("change", () => {
+    if (qualifyRecord && selectedRecord?.status === "reviewed")
+      qualifyRecord.disabled = !verificationInputs.every((item) => item.checked);
+  });
   previous?.addEventListener("click", () => {
     if (position > 0) { position--; void loadPage(); }
   });
@@ -284,6 +327,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   query<HTMLButtonElement>("[data-close-detail]")?.addEventListener("click", () => {
     selectedRecord = null;
     if (ownerActions) ownerActions.hidden = true;
+    if (qualificationChecks) qualificationChecks.hidden = true;
     if (detailBody) detailBody.textContent = "";
     if (detail) detail.hidden = true;
   });
@@ -297,7 +341,11 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   .intro h1 { font-size:clamp(2rem,4.7vw,3.5rem); letter-spacing:-.035em; line-height:1.1; margin:.35rem 0 .75rem; }
   .intro>p:last-child { color:#4e5d70; line-height:1.65; }
   .kicker { color:#9b4b03; font-size:.74rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
-  .guard,.notice,.controls,.record,.detail { border:1px solid #dae0e8; border-radius:15px; background:white; }
+  .guard,.notice,.controls,.record,.detail,.qualification-checks { border:1px solid #dae0e8; border-radius:15px; background:white; }
+  .qualification-checks { margin:1rem 0; padding:1rem; display:grid; gap:.65rem; }
+  .qualification-checks p { margin:0 0 .2rem; font-weight:800; }
+  .qualification-checks label { display:flex; align-items:center; gap:.55rem; color:#435168; font-size:.86rem; }
+  .qualification-checks input { width:1rem; height:1rem; }
   .guard { padding:1.4rem; }
   .notice { padding:.85rem 1rem; color:#68400b; background:#fff7e9; font-size:.78rem; font-weight:800; }
   .controls { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin:1rem 0; padding:1rem; }
