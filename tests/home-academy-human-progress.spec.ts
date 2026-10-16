@@ -19,7 +19,7 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   await expect(human.locator("svg")).toHaveCount(0);
   await expect(background).toBeVisible();
   await expect(background).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
-  await expect(background).toHaveCSS("opacity", "0.48");
+  await expect(background).toHaveCSS("opacity", "0.38");
   const geometry = await route.evaluate((node) => {
     const routeRect = node.getBoundingClientRect();
     const humanRect = node.querySelector("[data-home-academy-human]")?.getBoundingClientRect();
