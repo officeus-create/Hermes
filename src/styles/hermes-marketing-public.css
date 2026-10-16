@@ -70,7 +70,7 @@
 }
 
 .detail-page-marketing .marketing-service-meta {
-  color: var(--path-signal);
+  color: var(--path-signal-text,var(--path-signal));
 }
 
 .detail-page-marketing .marketing-service-rails h3,
@@ -105,7 +105,7 @@
 
 .detail-page-marketing .marketing-service-rails a:hover,
 .detail-page-marketing .marketing-service-rails a:focus-visible {
-  color: var(--path-signal);
+  color: var(--path-signal-text,var(--path-signal));
 }
 
 .detail-page-marketing .marketing-service-boundary {
@@ -139,7 +139,7 @@
 }
 
 .detail-page-marketing .marketing-demand-signal-head span {
-  color: var(--path-signal);
+  color: var(--path-signal-text,var(--path-signal));
   font: 800 .62rem/1.3 var(--font-mono);
   letter-spacing: .08em;
 }
@@ -222,7 +222,7 @@
 }
 
 .detail-page-marketing .marketing-demand-signal li > span {
-  color: var(--path-signal);
+  color: var(--path-signal-text,var(--path-signal));
   font: 800 .6rem/1.2 var(--font-mono);
 }
 

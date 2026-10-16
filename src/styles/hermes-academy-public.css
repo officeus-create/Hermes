@@ -4,6 +4,12 @@
  * Program data, screen navigation, analytics, eligibility, and application rules stay unchanged.
  */
 
+.detail-page-academy {
+  /* Root warning gold is a decorative brand token and is too light for small
+   * foreground copy on Pearl. Scope an AA-safe amber to Academy text only. */
+  --hermes-warning: #8f5f00;
+}
+
 .detail-page.detail-page-academy .academy-flow {
   padding: var(--hermes-section-space) 0;
   border-top: 1px solid var(--hermes-line-light);

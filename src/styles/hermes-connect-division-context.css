@@ -19,6 +19,7 @@ body:has(.detail-page-marketing),
 .detail-page-marketing {
   --hc-public-route-accent: var(--hermes-marketing,#00c853);
   --path-signal: var(--hermes-marketing,#00c853);
+  --path-signal-text: #08733f;
   --path-signal-soft: color-mix(in srgb,var(--hermes-marketing,#00c853) 9%,transparent);
 }
 
@@ -26,6 +27,7 @@ body:has(.detail-page-academy),
 .detail-page-academy {
   --hc-public-route-accent: var(--hermes-academy,#7c5cff);
   --path-signal: var(--hermes-academy,#7c5cff);
+  --path-signal-text: #5b3ec2;
   --path-signal-soft: color-mix(in srgb,var(--hermes-academy,#7c5cff) 10%,transparent);
 }
 
@@ -71,6 +73,13 @@ body:has(.detail-page) .detail-hero h1 {
 }
 
 body:has(.detail-page) .detail-hero .hero-eyebrow {
+  color: var(--path-signal-text,var(--path-signal));
+}
+
+body:has(.detail-page) .detail-page > .section .eyebrow,
+body:has(.detail-page) .detail-process-grid span,
+body:has(.detail-page) .offering-grid article > svg,
+body:has(.detail-page) .service-group-grid li > svg {
   color: var(--path-signal-text,var(--path-signal));
 }
 
