@@ -11,7 +11,7 @@
 .localized-hero{position:relative;display:flex;align-items:flex-end;min-height:min(760px,82svh);overflow:hidden;background:var(--hermes-obsidian);color:#fff}
 .localized-hero>picture{position:absolute;inset:0;width:100%;height:100%}
 .localized-hero>picture img{width:100%;height:100%;object-fit:cover}
-.localized-hero-shade{position:absolute;inset:0;background:rgba(11,13,18,.72)}
+.localized-hero-shade{position:absolute;inset:0;background:rgba(11,13,18,.84)}
 .localized-hero-content{position:relative;z-index:1;padding-bottom:clamp(3rem,7vh,6rem)}
 .localized-hero-content .eyebrow{color:#c8bdff}
 .localized-hero-content h1{max-width:1040px;color:#fff;line-height:var(--hermes-display-leading);letter-spacing:var(--hermes-display-tracking)}
@@ -73,5 +73,5 @@
 .localized-contact .button-primary:hover,.localized-contact .button-primary:focus-visible{background:#f1f1f1;color:var(--hermes-obsidian)}
 .localized-contact-layout>div:last-child p{max-width:520px;margin:0;font-size:.82rem}
 @media(max-width:900px){.localized-direction-layout{grid-template-columns:1fr}.localized-direction-layout.is-reversed .localized-direction-media{order:0}.localized-direction-media,.localized-direction-media img{min-height:420px}.localized-partnership-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.localized-contact-layout{grid-template-columns:1fr}}
-@media(max-width:620px){.localized-hero{min-height:82svh}.localized-hero-shade{background:rgba(11,13,18,.78)}.localized-hero-content{padding-top:7.5rem;padding-bottom:2.5rem}.localized-hero .hero-actions .button{width:100%;justify-content:center}.localized-direction-media,.localized-direction-media img{min-height:300px}.localized-partnership-grid{grid-template-columns:1fr}.localized-partnership-grid article{min-height:0}.localized-partnership-grid h3{margin-top:2.5rem}.localized-capability-list{grid-template-columns:1fr}.localized-capability-list article{min-height:0}.localized-contact .button-primary{width:100%;justify-content:center}}
+@media(max-width:620px){.localized-hero{min-height:82svh}.localized-hero-shade{background:rgba(11,13,18,.86)}.localized-hero-content{padding-top:7.5rem;padding-bottom:2.5rem}.localized-hero .hero-actions .button{width:100%;justify-content:center}.localized-direction-media,.localized-direction-media img{min-height:300px}.localized-partnership-grid{grid-template-columns:1fr}.localized-partnership-grid article{min-height:0}.localized-partnership-grid h3{margin-top:2.5rem}.localized-capability-list{grid-template-columns:1fr}.localized-capability-list article{min-height:0}.localized-contact .button-primary{width:100%;justify-content:center}}
 @media(forced-colors:active){.localized-direction-media,.localized-partnership-grid article,.localized-capability-list article{border:1px solid CanvasText}}
