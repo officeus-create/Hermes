@@ -1,0 +1,176 @@
+---
+import { ArrowRight, CalendarClock, CheckCircle2, MapPin, Search, Smartphone, Wrench } from "@lucide/astro";
+
+const stages = [
+  {
+    key: "discover",
+    label: "Local discovery",
+    title: "Real services and location facts create the entry point.",
+    source: "/services/local-seo/",
+    signals: ["Service intent", "Hours", "Location"],
+    icon: Search,
+  },
+  {
+    key: "site",
+    label: "Mobile website",
+    title: "The customer sees services and a clear next action.",
+    source: "/services/auto-repair-website-design/",
+    signals: ["Services", "Call / directions", "Book"],
+    icon: Smartphone,
+  },
+  {
+    key: "availability",
+    label: "Booking availability",
+    title: "A reviewed booking path uses real opening hours and availability.",
+    source: "/services/hermes-connect/repair-shops/availability/",
+    signals: ["Weekly availability", "Request slot", "Fallback"],
+    icon: CalendarClock,
+  },
+  {
+    key: "workspace",
+    label: "Shop-owned workflow",
+    title: "Hermes Connect keeps customer context inside the operating workspace.",
+    source: "/services/hermes-connect/repair-shops/dashboard/",
+    signals: ["Booking inbox", "Catalog inquiries", "Customer context"],
+    icon: Wrench,
+  },
+];
+---
+
+<section class="repair-website-proof section" aria-labelledby="repair-website-proof-title" data-auto-repair-website-proof>
+  <div class="shell">
+    <div class="repair-proof-heading">
+      <div>
+        <p class="eyebrow">Auto Repair Website · Product proof replay</p>
+        <h2 id="repair-website-proof-title">See the customer path from search to a shop-owned workflow.</h2>
+      </div>
+      <p>This is a sanitized demonstration of the Hermes website + optional Hermes Connect architecture. It uses current public product concepts and no customer records, invented bookings, prices, reviews, rankings, or lead claims.</p>
+    </div>
+
+    <div class="repair-proof-theatre">
+      <div class="repair-proof-flow" aria-hidden="true">
+        {stages.map((stage, index) => (
+          <>
+            <span class:list={{ active: index === 0 }}>{index + 1}</span>
+            {index < stages.length - 1 && <i><b></b></i>}
+          </>
+        ))}
+      </div>
+
+      <div class="repair-proof-phone" aria-hidden="true">
+        <div class="repair-proof-phone-top"><i></i><span>REPAIR SHOP WEBSITE · DEMO</span></div>
+        <div class="repair-proof-service-card">
+          <small>SERVICE PAGE</small>
+          <strong>Brake service</strong>
+          <span><MapPin size={12} /> Real location / eligible service area</span>
+          <div><b>Call</b><b>Directions</b><b>Book</b></div>
+        </div>
+        <div class="repair-proof-service-list"><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="repair-proof-operations" aria-hidden="true">
+        <div>
+          <small>HERMES CONNECT</small>
+          <strong>Weekly availability</strong>
+          <span>Real opening hours before the public booking link</span>
+        </div>
+        <div>
+          <small>SHOP WORKSPACE</small>
+          <strong>Booking inbox</strong>
+          <span>Catalog inquiries remain separate from scheduled appointments</span>
+        </div>
+        <div class="repair-proof-receipt">
+          <CheckCircle2 size={17} />
+          <span><b>READBACK</b> Public action → private workflow → reviewed receipt</span>
+        </div>
+      </div>
+
+      <div class="repair-proof-current" aria-hidden="true"><i></i></div>
+    </div>
+
+    <ol class="repair-proof-stages" aria-label="Auto repair website customer path">
+      {stages.map((stage, index) => {
+        const Icon = stage.icon;
+        return (
+          <li data-repair-proof-stage={stage.key} data-proof-source={stage.source}>
+            <span>0{index + 1}</span>
+            <Icon size={20} aria-hidden="true" />
+            <div>
+              <strong>{stage.label}</strong>
+              <p>{stage.title}</p>
+              <small>{stage.signals.join(" · ")}</small>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+
+    <div class="repair-proof-boundary">
+      <div>
+        <p class="eyebrow">Truth boundary</p>
+        <strong>Website action is not the same thing as a customer, appointment, or revenue outcome.</strong>
+        <p>Search engines control visibility. Customers control whether they act. Booking and CRM connections exist only when the shop has approved the provider, permissions, privacy, fallback, and operating workflow.</p>
+      </div>
+      <a class="button button-ghost" href="/services/hermes-connect/repair-shops/">Explore the repair-shop operating layer <ArrowRight size={18} aria-hidden="true" /></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .repair-website-proof{background:#f7f6f3;color:#11151b}
+  .repair-proof-heading{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(2rem,6vw,6rem);align-items:end;margin-bottom:1.4rem}
+  .repair-proof-heading h2{max-width:760px;margin:.45rem 0 0}
+  .repair-proof-heading>p{max-width:720px;margin:0;color:#626977;line-height:1.7}
+  .repair-proof-theatre{position:relative;display:grid;grid-template-columns:minmax(220px,.72fr) minmax(280px,1.28fr);gap:1rem;min-height:390px;padding:1rem;border:1px solid rgba(17,21,27,.1);border-radius:28px;background:linear-gradient(145deg,#eef4ef,#dbe8df 48%,#c8dad0);overflow:hidden;box-shadow:0 26px 70px rgba(18,48,37,.08)}
+  .repair-proof-flow{position:absolute;z-index:3;left:1.2rem;right:1.2rem;top:1rem;display:flex;align-items:center;gap:.45rem}
+  .repair-proof-flow>span{display:grid;place-items:center;width:26px;height:26px;border:1px solid rgba(21,79,58,.16);border-radius:50%;background:rgba(255,255,255,.7);color:#35654e;font:750 .62rem/1 var(--font-mono)}
+  .repair-proof-flow>span.active{background:#173f30;color:#fff}
+  .repair-proof-flow>i{position:relative;flex:1;height:2px;background:rgba(23,63,48,.14);overflow:hidden}
+  .repair-proof-flow>i b{position:absolute;inset:0 auto 0 -18%;width:22%;background:linear-gradient(90deg,transparent,#4d9b75,transparent);animation:repair-proof-current 3.6s linear infinite}
+  .repair-proof-phone{align-self:end;min-height:310px;padding:.72rem;border:1px solid rgba(17,21,27,.12);border-radius:28px 28px 18px 18px;background:#fff;box-shadow:0 18px 46px rgba(17,21,27,.12)}
+  .repair-proof-phone-top{display:flex;align-items:center;gap:.45rem;min-height:32px;padding:0 .45rem;border-bottom:1px solid #e8ece9;color:#647068;font-size:.54rem;letter-spacing:.08em}
+  .repair-proof-phone-top i{width:7px;height:7px;border-radius:50%;background:#173f30}
+  .repair-proof-service-card{display:grid;gap:.52rem;margin-top:.75rem;padding:1rem;border-radius:17px;background:#eff6f1}
+  .repair-proof-service-card small{color:#39715a;font:750 .5rem/1.2 var(--font-mono);letter-spacing:.08em}
+  .repair-proof-service-card strong{font-size:1.35rem}
+  .repair-proof-service-card>span{display:flex;gap:.35rem;align-items:center;color:#617067;font-size:.68rem}
+  .repair-proof-service-card>div{display:flex;gap:.4rem;flex-wrap:wrap}
+  .repair-proof-service-card b{padding:.45rem .58rem;border-radius:8px;background:#173f30;color:#fff;font-size:.6rem}
+  .repair-proof-service-list{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-top:.55rem}
+  .repair-proof-service-list i{height:58px;border:1px solid #e0e6e2;border-radius:11px;background:#fafcfb}
+  .repair-proof-operations{align-self:end;display:grid;gap:.65rem;padding:1rem}
+  .repair-proof-operations>div{display:grid;gap:.32rem;padding:1rem;border:1px solid rgba(23,63,48,.12);border-radius:16px;background:rgba(255,255,255,.72);backdrop-filter:blur(8px)}
+  .repair-proof-operations small{color:#39715a;font:750 .5rem/1.2 var(--font-mono);letter-spacing:.08em}
+  .repair-proof-operations strong{font-size:.92rem}
+  .repair-proof-operations span{color:#617067;font-size:.68rem;line-height:1.45}
+  .repair-proof-operations .repair-proof-receipt{grid-template-columns:auto 1fr;align-items:center;background:#173f30;color:#fff}
+  .repair-proof-receipt svg{color:#b7e1c9}
+  .repair-proof-receipt span{color:rgba(255,255,255,.78)}
+  .repair-proof-current{position:absolute;z-index:2;left:38%;top:52%;right:8%;height:1px;background:rgba(23,63,48,.12);pointer-events:none}
+  .repair-proof-current i{position:absolute;top:-3px;left:0;width:7px;height:7px;border-radius:50%;background:#397b5c;box-shadow:0 0 0 6px rgba(57,123,92,.08);animation:repair-proof-dot 4.4s ease-in-out infinite}
+  .repair-proof-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;list-style:none;margin:1rem 0 0;padding:0}
+  .repair-proof-stages li{display:grid;grid-template-columns:32px 24px 1fr;gap:.6rem;align-items:start;padding:.9rem;border:1px solid rgba(17,21,27,.09);border-radius:16px;background:#fff}
+  .repair-proof-stages li>span{color:#39715a;font:750 .56rem/1.2 var(--font-mono)}
+  .repair-proof-stages svg{color:#39715a}
+  .repair-proof-stages strong{display:block;font-size:.76rem}
+  .repair-proof-stages p{margin:.3rem 0;color:#626977;font-size:.65rem;line-height:1.4}
+  .repair-proof-stages small{color:#7a847e;font-size:.56rem;line-height:1.35}
+  .repair-proof-boundary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center;margin-top:1rem;padding:1.15rem 1.25rem;border:1px solid rgba(17,21,27,.09);border-radius:18px;background:#fff}
+  .repair-proof-boundary strong{display:block;margin:.25rem 0 .4rem}
+  .repair-proof-boundary p:last-child{max-width:860px;margin:0;color:#626977;line-height:1.6}
+  .repair-proof-boundary .button{white-space:nowrap;color:#173f30;border-color:rgba(23,63,48,.18)}
+  @keyframes repair-proof-current{from{transform:translateX(0)}to{transform:translateX(540%)}}
+  @keyframes repair-proof-dot{0%,12%{left:0}38%{left:31%}64%{left:65%}90%,100%{left:calc(100% - 7px)}}
+  @media(max-width:900px){.repair-proof-heading,.repair-proof-boundary{grid-template-columns:1fr}.repair-proof-stages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:640px){
+    .repair-proof-theatre{grid-template-columns:1fr;min-height:0;padding:3.5rem .75rem .75rem;border-radius:22px}
+    .repair-proof-phone{min-height:0}
+    .repair-proof-operations{padding:0}
+    .repair-proof-current{display:none}
+    .repair-proof-stages{grid-template-columns:1fr}
+    .repair-proof-stages li{grid-template-columns:28px 22px 1fr}
+    .repair-proof-flow{left:.8rem;right:.8rem}
+    .repair-proof-boundary .button{white-space:normal}
+  }
+  @media(prefers-reduced-motion:reduce){.repair-proof-flow>i b,.repair-proof-current i{animation:none!important}}
+</style>
