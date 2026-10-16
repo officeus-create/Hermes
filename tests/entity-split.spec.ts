@@ -75,6 +75,33 @@ test("canonical Logistics hub binds Service provider to the stable Logistics ent
   expect(service?.provider?.["@id"]).toBe("https://hermeslogisticsus.com/#logistics");
 });
 
+test("Logistics commercial and resource Service providers resolve to the approved Logistics LLC node", async ({ page }) => {
+  const routes = [
+    "/logistics/car-hauler-loads/",
+    "/logistics/car-hauler-loads/denver-co/",
+    "/logistics/resources/",
+    "/logistics/resources/rpm-calculator/",
+    "/logistics/resources/factoring-vs-direct-payment-calculator/",
+    "/logistics/resources/broker-setup-packet-checklist/",
+    "/logistics/resources/wisconsin-car-shipping-cost-guide/",
+    "/logistics/resources/dispatch-service-vs-self-dispatch/",
+    "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+    "/ru/logistics/",
+  ];
+
+  for (const route of routes) {
+    const response = await page.goto(route);
+    expect(response?.ok(), route).toBeTruthy();
+    const entities = await readJsonLd(page);
+    const providers = entities
+      .map((entity) => entity?.provider?.["@id"])
+      .filter((provider): provider is string => Boolean(provider));
+
+    expect(providers.length, `${route} must publish at least one provider-bearing schema node`).toBeGreaterThan(0);
+    expect(new Set(providers), route).toEqual(new Set(["https://hermeslogisticsus.com/#logistics"]));
+  }
+});
+
 test("homepage schema excludes unrelated and owner-unverified Hermes entity signals", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.ok()).toBeTruthy();
