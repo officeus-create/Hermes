@@ -770,7 +770,7 @@ const captureDb = new CaptureOnlyD1();
 const captureLimits = new MemoryKv();
 const captureEnv = {
   ALLOWED_ORIGIN: "https://hermeslogisticsus.com",
-  LEAD_DELIVERY_MODE: "live",
+  LEAD_DELIVERY_MODE: "preview",
   CARRIER_INTAKE_CAPTURE_MODE: "capture_only",
   LEAD_LIMITS: captureLimits,
   DB: captureDb,
@@ -848,7 +848,23 @@ const unrelatedEmailGate = await onRequest({
   env: captureEnv,
 });
 assert.equal(unrelatedEmailGate.status, 503);
-assert.equal((await unrelatedEmailGate.json()).error, "delivery_not_configured");
+assert.equal((await unrelatedEmailGate.json()).error, "outbound_disabled_during_carrier_capture");
+
+// Even a mistakenly present legacy Worker binding/global live flag must not
+// permit unrelated email traffic whenever capture-only is explicitly active.
+let forbiddenWorkerCalls = 0;
+const unrelatedWithBoundWorker = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: "carrier_worker_hold_20261016", page_path: "/load-board/" }),
+  env: {
+    ...captureEnv,
+    LEAD_DELIVERY_MODE: "live",
+    LEAD_EMAIL_SERVICE: { fetch() { forbiddenWorkerCalls++; throw new Error("forbidden_outbound"); } },
+    LEAD_SERVICE_TOKEN: "unused-test-token",
+  },
+});
+assert.equal(unrelatedWithBoundWorker.status, 503);
+assert.equal((await unrelatedWithBoundWorker.json()).error, "outbound_disabled_during_carrier_capture");
+assert.equal(forbiddenWorkerCalls, 0, "Capture-only must block unrelated Worker dispatch before touching transport.");
 
 const syntheticStored = await onRequest({
   request: captureReq({

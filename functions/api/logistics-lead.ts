@@ -240,10 +240,12 @@ export async function onRequestPost({ request, env }: Context) {
   if (origin !== allowedOrigin) return json(allowedOrigin, 403, { success: false, error: "origin_not_allowed" });
   const emailReady = Boolean(env.LEAD_EMAIL_SERVICE && env.LEAD_SERVICE_TOKEN);
   const captureRequested = env.CARRIER_INTAKE_CAPTURE_MODE === "capture_only";
+  // Carrier D1 capture is an independent, owner-opt-in capability and must
+  // never require enabling the shared Worker email delivery mode.
+  // All other lead types preserve the legacy mode gate below.
   if (
-    env.LEAD_DELIVERY_MODE !== "live" ||
     !env.LEAD_LIMITS ||
-    (!emailReady && !captureRequested)
+    (!captureRequested && (env.LEAD_DELIVERY_MODE !== "live" || !emailReady))
   ) {
     console.warn("LEAD_DELIVERY_NOT_CONFIGURED", {
       modeLive: env.LEAD_DELIVERY_MODE === "live",
@@ -319,7 +321,16 @@ export async function onRequestPost({ request, env }: Context) {
   if (directCarrier && !captureOnly) {
     return json(allowedOrigin, 503, { success: false, error: "carrier_capture_not_enabled" });
   }
-  if (!captureOnly && !emailReady) return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
+  // Enabling private capture must NOT silently re-enable unrelated email
+  // transports through this shared Logistics endpoint, even if credentials
+  // happen to remain bound to production. An outbound release is a separate
+  // business/owner authorization.
+  if (!captureOnly && captureRequested) {
+    return json(allowedOrigin, 503, { success: false, error: "outbound_disabled_during_carrier_capture" });
+  }
+  if (!captureOnly && (env.LEAD_DELIVERY_MODE !== "live" || !emailReady)) {
+    return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
+  }
   if (captureOnly) {
     if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "capture_not_configured" });
     if (input.consent !== true) return json(allowedOrigin, 400, { success: false, error: "consent_required" });

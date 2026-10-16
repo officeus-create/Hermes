@@ -80,6 +80,13 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(page.locator("[data-dispatch-intake] [data-vehicle-form]")).toHaveAttribute("data-lead-mode", "preview");
 });
 
+test("carrier capture stays independent of global email mode", () => {
+  const source = readFileSync(new URL("../src/pages/logistics/start-car-hauling-dispatch/index.astro", import.meta.url), "utf8");
+  expect(source).toContain('PUBLIC_CARRIER_CAPTURE_MODE === "capture_only"');
+  expect(source).not.toContain('PUBLIC_CONTACT_MODE === "live"');
+  expect(source).toContain('leadMode === "live" ? "/api/logistics-lead" : ""');
+});
+
 test("Load Board ignores unsupported equipment query values", async ({ page }) => {
   await page.goto("/load-board/?role=carrier&equipment=unknown_equipment#carrier-access");
   await expect(page.locator('select[name="equipment_class"]')).toHaveValue("");
