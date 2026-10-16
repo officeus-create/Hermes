@@ -244,11 +244,11 @@
     },
     {
       "path": "public/images/home-20261001/academy-learner-owner-reference.webp",
-      "sha256": "1681d891ecab6c3ca10c453912d7f7628dc6d2d55eb33a35a09ba6b328fa2f36",
+      "sha256": "a640121c7e478985e788dfc6667577d9d861ff3322f72857f59ce9fdbbb2d333",
       "firstTrackedCommit": "3c71ea018f5b9a3d5961cc7dc019922d34b25e8c",
       "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
-      "source": "Local crop/cleanup derived on 2026-10-17 from owner-provided Hermes AI visual reference 'ChatGPT Image 12 июл. 2026 г., 04_52_42.png'; recruitment copy excluded; WebP encoded locally; no third-party stock/CDN material.",
+      "source": "Owner-provided Hermes AI visual reference derivative, locally cropped/cleaned for the Academy learner foreground on 2026-10-17; recruitment copy excluded; exact repository bytes reviewed by the media-provenance gate; no third-party stock/CDN runtime material.",
       "rightsEvidence": "Source visual was provided in the owner-controlled Hermes design conversation and reused only as an illustrative Academy learner reference. It must not be represented as a real Hermes student, customer, employee or endorsement. Independent rendered QA required before production.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
