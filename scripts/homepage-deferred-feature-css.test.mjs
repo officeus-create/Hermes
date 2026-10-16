@@ -78,9 +78,14 @@ assert.ok(masterSource.includes("data-journey-motion"), "Marketing animation mus
 assert.ok(masterSource.includes("prefers-reduced-motion: reduce"), "Marketing motion must provide a static reduced-motion fallback");
 assert.equal(masterSource.includes("LIVE PILOT"), false, "Home Technology must not use a release-status slogan in place of a real product surface");
 assert.equal(masterSource.includes("<strong>BUILDING</strong>"), false, "Home Technology must not imply a generic build state without product evidence");
-for (const token of ["Shop Owner Workspace", "Services", "Booking inbox", "Catalog inquiries"]) {
-  assert.ok(repairWorkspaceSource.includes(token), `Repair Shop product source must own Technology token: ${token}`);
-  assert.ok(masterSource.includes(token.toUpperCase() === token ? token : token), `Home Technology must reuse real Repair Shop UI token: ${token}`);
+for (const [sourceToken, homeToken] of [
+  ["Shop Owner Workspace", "SHOP OWNER WORKSPACE"],
+  ["Services", "Services"],
+  ["Booking inbox", "Booking inbox"],
+  ["Catalog inquiries", "Catalog inquiries"],
+]) {
+  assert.ok(repairWorkspaceSource.includes(sourceToken), `Repair Shop product source must own Technology token: ${sourceToken}`);
+  assert.ok(masterSource.includes(homeToken), `Home Technology must reuse real Repair Shop UI token: ${homeToken}`);
 }
 for (const token of ["Semantic HTML", "Responsive", "Canonical", "Schema", "Production readback"]) {
   assert.ok(websiteShowroomSource.includes(token), `Website showroom source must own Technology token: ${token}`);
