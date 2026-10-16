@@ -49,7 +49,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       if (!validRequestId(id)) return jsonResponse(400, { success: false, error: "invalid_request_id" }, PRIVATE);
       const row = await env.DB.prepare(`
         SELECT request_id, classification, status, source_path, contact_email,
-          email_body, created_at, retention_until, delivery_state
+          email_body, created_at, retention_until, delivery_state,
+          status_updated_at, status_review_code
         FROM hermes_carrier_intake
         WHERE request_id = ? AND retention_until > ? LIMIT 1
       `).bind(id, now).first();
@@ -59,7 +60,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         request: row,
         is_customer_proven: row.classification === "commercial" ? "not_verified" : "synthetic_qa",
         delivery_state: "not_sent",
-        human_receipt_state: "unconfirmed",
+        human_receipt_state: row.status === "new" ? "unconfirmed" : "owner_reviewed",
         boundary: "Owner-only private intake review. No email, dispatcher or Telegram contact; no authorization to assign a carrier, book a load or claim revenue.",
       }, PRIVATE);
     }
@@ -113,6 +114,53 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   }
 }
 
+
+// A human owner may acknowledge an actual review or close a reviewed inquiry.
+// These changes do NOT qualify carriers or dispatch/notify anyone.
+export async function onRequestPatch({ request, env }: { request: Request; env: Env }) {
+  const auth = await requireInternalOwner(request, env);
+  if (auth.response) return auth.response;
+  const url = new URL(request.url);
+  if (url.origin !== "https://hermeslogisticsus.com" ||
+      request.headers.get("Origin") !== url.origin ||
+      request.headers.get("X-Hermes-Owner-Action") !== "REVIEW_CARRIER_INTAKE")
+    return jsonResponse(403, { success: false, error: "owner_review_confirmation_required" }, PRIVATE);
+  if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json"))
+    return jsonResponse(415, { success: false, error: "content_type_required" }, PRIVATE);
+  const raw = await request.text();
+  if (new TextEncoder().encode(raw).byteLength > 1024)
+    return jsonResponse(413, { success: false, error: "request_too_large" }, PRIVATE);
+  let body: any;
+  try { body = JSON.parse(raw); } catch {
+    return jsonResponse(400, { success: false, error: "invalid_json" }, PRIVATE);
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body) || !validRequestId(body.request_id))
+    return jsonResponse(400, { success: false, error: "invalid_owner_review" }, PRIVATE);
+  const reviewed = body.from_status === "new" && body.to_status === "reviewed" &&
+    body.review_code === "initial_owner_review";
+  const closed = body.from_status === "reviewed" && body.to_status === "closed" &&
+    body.review_code === "manual_followup_closed";
+  if (!reviewed && !closed)
+    return jsonResponse(400, { success: false, error: "review_transition_not_allowed" }, PRIVATE);
+  const now = new Date().toISOString();
+  try {
+    // One atomic D1 row mutation holds status, reviewer and timestamp together.
+    const result = await env.DB.prepare(`
+      UPDATE hermes_carrier_intake SET
+        status = ?, status_updated_at = ?, status_updated_by = ?, status_review_code = ?
+      WHERE request_id = ? AND status = ? AND classification = 'commercial'
+        AND retention_until > ?
+    `).bind(body.to_status, now, auth.specialist.id, body.review_code,
+      body.request_id, body.from_status, now).run();
+    if (Number(result?.meta?.changes || 0) !== 1)
+      return jsonResponse(409, { success: false, error: "review_conflict_or_expired" }, PRIVATE);
+    return jsonResponse(200, { success: true, request_id: body.request_id,
+      status: body.to_status, status_updated_at: now, human_receipt_state: "owner_reviewed",
+      qualified_carrier_state: "not_verified", delivery_state: "not_sent" }, PRIVATE);
+  } catch {
+    return jsonResponse(503, { success: false, error: "owner_review_temporarily_unavailable" }, PRIVATE);
+  }
+}
 
 // Physical retention cleanup is an explicit, owner-authorized ADMIN operation.
 // No scheduler or production migration is created by this draft. Preview cannot

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { onRequest } from "../functions/api/logistics-lead.ts";
-import { onRequestGet as readOwnerCarrierIntake, onRequestDelete as purgeExpiredCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
+import { onRequestGet as readOwnerCarrierIntake, onRequestDelete as purgeExpiredCarrierIntake, onRequestPatch as reviewOwnerCarrierIntake } from "../functions/api/internal/carrier-intake.ts";
 import leadEmailWorker, { CarHaulingDeliveryCoordinatorCore, isCarHaulingTelegramWorkHours, sendCarHaulingSalesTelegram } from "../workers/lead-email/src/index.mjs";
 
 class MemoryKv {
@@ -922,7 +922,7 @@ class CarrierOwnerDb {
         if (/FROM hermes_carrier_intake/.test(sql)) {
           const row = db.rows.get(this.vals[0]);
           if (!row || row.retention_until <= this.vals[1]) return null;
-          return { ...row, status: "new" };
+          return { ...row, status: row.status || "new" };
         }
         return null;
       },
@@ -930,16 +930,26 @@ class CarrierOwnerDb {
         if (/PRAGMA table_info/.test(sql)) return { results: [] };
         if (/FROM hermes_carrier_intake/.test(sql)) return {
           results: [...db.rows.values()]
-            .filter(x => x.classification === this.vals[0] && this.vals[1] === "new" && x.retention_until > this.vals[2])
+            .filter(x => x.classification === this.vals[0] && (x.status || "new") === this.vals[1] && x.retention_until > this.vals[2])
             .filter(x => this.vals.length < 6 ||
               x.created_at < this.vals[3] || (x.created_at === this.vals[3] && x.request_id < this.vals[5]))
             .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.request_id.localeCompare(a.request_id))
             .slice(0, 21)
-            .map(({ email_body, payload_hash, ...summary }) => ({ ...summary, status: "new" }))
+            .map(({ email_body, payload_hash, ...summary }) => ({ ...summary, status: summary.status || "new" }))
         };
         return { results: [] };
       },
       async run() {
+        if (/UPDATE hermes_carrier_intake SET/.test(sql)) {
+          const [nextStatus, updatedAt, updatedBy, reviewCode, id, fromStatus, now] = this.vals;
+          const row = db.rows.get(id);
+          if (!row || (row.status || "new") !== fromStatus ||
+              row.classification !== "commercial" || row.retention_until <= now)
+            return { success: true, meta: { changes: 0 } };
+          db.rows.set(id, { ...row, status: nextStatus, status_updated_at: updatedAt,
+            status_updated_by: updatedBy, status_review_code: reviewCode });
+          return { success: true, meta: { changes: 1 } };
+        }
         if (/DELETE FROM hermes_carrier_intake/.test(sql)) {
           const expired = [...db.rows.values()]
             .filter(row => row.retention_until <= this.vals[0])
@@ -993,6 +1003,50 @@ for (const bad of ["?classification=other", "?status=deleted", "?request_id='or1
 }
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
   "An owner-read API must not trigger providers or dispatcher notifications.");
+
+// Owner-only human review is distinct from verified carrier qualification.
+const ownerPatch = (payload, opt = {}) => new Request("https://hermeslogisticsus.com/api/internal/carrier-intake", {
+  method: "PATCH", headers: {
+    ...(opt.anonymous ? {} : { Cookie: "hermes_session=synthetic-owner-session" }),
+    Origin: opt.origin || "https://hermeslogisticsus.com",
+    "Content-Type": "application/json",
+    ...(opt.noAction ? {} : { "X-Hermes-Owner-Action": "REVIEW_CARRIER_INTAKE" }),
+  },
+  body: JSON.stringify(payload),
+});
+const intendedReview = { request_id: capturedCarrier.request_id, from_status: "new",
+  to_status: "reviewed", review_code: "initial_owner_review" };
+for (const bad of [
+  ownerPatch(intendedReview, { anonymous: true }),
+  ownerPatch(intendedReview, { origin: "https://example.invalid" }),
+  ownerPatch(intendedReview, { noAction: true }),
+  ownerPatch({ ...intendedReview, to_status: "qualified" }),
+  ownerPatch({ ...intendedReview, request_id: "carrier_qa_capture_20261015" }),
+]) {
+  const denied = await reviewOwnerCarrierIntake({ request: bad, env: { DB: ownerDb } });
+  assert.notEqual(denied.status, 200);
+}
+const reviewed = await reviewOwnerCarrierIntake({
+  request: ownerPatch(intendedReview), env: { DB: ownerDb },
+});
+assert.equal(reviewed.status, 200);
+assert.equal((await reviewed.json()).qualified_carrier_state, "not_verified");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status, "reviewed");
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status_updated_by, "synthetic-owner");
+assert.equal((await reviewOwnerCarrierIntake({
+  request: ownerPatch(intendedReview), env: { DB: ownerDb },
+})).status, 409);
+const closed = await reviewOwnerCarrierIntake({
+  request: ownerPatch({ request_id: capturedCarrier.request_id, from_status: "reviewed",
+    to_status: "closed", review_code: "manual_followup_closed" }), env: { DB: ownerDb },
+});
+assert.equal(closed.status, 200);
+assert.equal(captureDb.rows.get(capturedCarrier.request_id).status, "closed");
+assert.equal((await (await readOwnerCarrierIntake({
+  request: ownerReadReq("?request_id=" + capturedCarrier.request_id), env: { DB: ownerDb },
+})).json()).human_receipt_state, "owner_reviewed");
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "Owner status must never invoke email, Telegram or dispatcher notification.");
 
 /* Owner-only cursor pagination must not hide a 21st+ NEW request or leak
  * batches to anonymous/ordinary Sales identities. These are synthetic rows. */
