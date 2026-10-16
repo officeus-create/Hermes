@@ -15,6 +15,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "catalog-repair-profile", path: "/businesses/arkansas/little-rock/smart-bubble-mobile-auto-body-repair/" },
   { id: "catalog-uk-profile", path: "/businesses/ukraine/bila-tserkva/kons-na-bis/" },
   { id: "car-hauling-dispatch", path: "/logistics/car-hauling-dispatch/" },
+  { id: "car-hauler-loads", path: "/logistics/car-hauler-loads/" },
   { id: "carrier-audience", path: "/logistics/carrier/" },
   { id: "carrier-sales", path: "/carrier/" },
   { id: "carrier-signing", path: "/sign/" },
