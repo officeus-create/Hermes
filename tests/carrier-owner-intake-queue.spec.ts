@@ -64,3 +64,64 @@ test("private carrier queue pages past 20 without disclosing body until a delibe
   await expect(page.locator("[data-detail-body]")).toHaveText("");
   expect(outbound).toBe(0);
 });
+
+
+test("private owner can acknowledge then close a synthetic commercial record without sending messages or marking qualified", async ({ page }) => {
+  const row = synthetic(301);
+  let state = "new";
+  const mutations: Array<{ from_status: string; to_status: string; review_code: string }> = [];
+  let otherPostCount = 0;
+  await page.route("**/api/**", async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    if (url.pathname !== "/api/internal/carrier-intake") {
+      if (req.method() !== "GET") otherPostCount++;
+      await route.continue(); return;
+    }
+    if (req.method() === "PATCH") {
+      const body = req.postDataJSON();
+      mutations.push(body);
+      expect(req.headers()["x-hermes-owner-action"]).toBe("REVIEW_CARRIER_INTAKE");
+      expect(body.request_id).toBe(row.request_id);
+      expect(body.from_status).toBe(state);
+      expect([["new", "reviewed"], ["reviewed", "closed"]]).toContainEqual([state, body.to_status]);
+      state = body.to_status;
+      await route.fulfill({ status: 200, contentType: "application/json",
+        body: JSON.stringify({ success: true, status: state, human_receipt_state: "owner_reviewed",
+          qualified_carrier_state: "not_verified", delivery_state: "not_sent" }) });
+      return;
+    }
+    if (req.method() !== "GET") { otherPostCount++; await route.abort(); return; }
+    const id = url.searchParams.get("request_id");
+    if (id) {
+      await route.fulfill({ status: 200, contentType: "application/json",
+        body: JSON.stringify({ success: true, request: { ...row, status: state,
+          email_body: "SYNTHETIC ONLY — no real contact", status_updated_at: "2026-10-16T00:00:00.000Z" } }) });
+    } else {
+      const filter = url.searchParams.get("status") || "new";
+      await route.fulfill({ status: 200, contentType: "application/json",
+        body: JSON.stringify({ success: true, requests: filter === state ? [{ ...row, status: state }] : [],
+          next_cursor: null }) });
+    }
+  });
+  page.on("dialog", async (dialog) => { await dialog.accept(); });
+  await page.goto(path);
+  await page.getByRole("button", { name: "View private details" }).click();
+  await expect(page.locator("[data-review-record]")).toBeVisible();
+  await expect(page.locator("[data-close-record]")).toBeHidden();
+  await page.locator("[data-review-record]").click();
+  await expect(page.locator("[data-status-filter]")).toHaveValue("reviewed");
+  await expect(page.locator("[data-records] article")).toHaveCount(1);
+  await page.getByRole("button", { name: "View private details" }).click();
+  await expect(page.locator("[data-review-record]")).toBeHidden();
+  await expect(page.locator("[data-close-record]")).toBeVisible();
+  await page.locator("[data-close-record]").click();
+  await expect(page.locator("[data-status-filter]")).toHaveValue("closed");
+  await expect(page.locator("[data-records] article")).toHaveCount(1);
+  expect(mutations.map(x => [x.from_status, x.to_status, x.review_code])).toEqual([
+    ["new", "reviewed", "initial_owner_review"],
+    ["reviewed", "closed", "manual_followup_closed"],
+  ]);
+  expect(otherPostCount).toBe(0);
+  await expect(page.locator("[data-detail]")).toBeHidden();
+});
