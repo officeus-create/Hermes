@@ -13,6 +13,8 @@ const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance
 const repairWorkspaceSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", "dashboard.astro"), "utf8");
 const websiteShowroomSource = await readFile(join(root, "src", "components", "WebsiteDevelopmentShowroom.astro"), "utf8");
 const socialStudioSource = await readFile(join(root, "src", "components", "BusinessSocialConnectionsWorkspace.astro"), "utf8");
+const academyScreenFlowSource = await readFile(join(root, "src", "components", "AcademyScreenFlow.astro"), "utf8");
+const academyHubSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "academy", "index.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
 
 // Home remains an entrance, not a catalogue. Heavy showroom/technology feature CSS must not
@@ -96,6 +98,21 @@ for (const token of ["Social Studio", "Instagram", "Facebook", "Threads", "provi
 for (const route of ["/services/hermes-connect/repair-shops/dashboard/", "/services/website-development/", "/services/hermes-connect/repair-shops/social/"]) {
   assert.ok(masterSource.includes(`data-tech-source="${route}"`), `Home Technology must retain source boundary: ${route}`);
 }
+for (const token of ["Practice before consequence", "Human feedback", "Retry", "Human progression gate"]) {
+  assert.ok(academyScreenFlowSource.includes(token), `Academy learning source must own Home progression token: ${token}`);
+}
+for (const token of ["evidence submission", "reviewer feedback/correction", "human progression decision"]) {
+  assert.ok(academyHubSource.includes(token), `Academy Hub must preserve human-reviewed boundary: ${token}`);
+}
+assert.ok(masterSource.includes('data-academy-source="/services/hermes-connect/academy/"'), "Home Academy must declare its current product source");
+for (const token of ["TASK + PRACTICE", "Practice before consequence", "HUMAN FEEDBACK", "RETRY", "PROGRESSION", "Human decision", "not automatic"]) {
+  assert.ok(masterSource.includes(token), `Home Academy must expose reviewed-progression token: ${token}`);
+}
+assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not restore the book as the central interface");
+const academyHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-512.webp");
+assert.ok(academyHumanAsset, "Academy human anchor must remain registered in media provenance");
+assert.equal(academyHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Academy human anchor reuse requires verified source/rights");
+assert.equal(academyHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Academy human anchor reuse requires current publication approval");
 for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
   assert.ok(masterSource.includes(token), `Home Technology must expose real-product proof token: ${token}`);
 }
