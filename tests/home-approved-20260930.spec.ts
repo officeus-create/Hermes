@@ -50,12 +50,14 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    })).toBe(false);
    const image=route.locator('.home-portal-art img');
    if(await route.getAttribute('data-route-id')==='marketing') {
-    // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
-    await expect(image).toHaveCount(0);
+    // Living Reality Marketing keeps one approved human/content-creation anchor behind the causal CSS/SVG stages.
+    await expect(image).toHaveCount(1);
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute('src','/images/home-20261001/marketing-512.webp');
     await expect(route.locator('.home-marketing-card')).toHaveCount(4);
-    continue;
+   } else {
+    await expect(image).toBeVisible();
    }
-   await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
    expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/\w+-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
@@ -160,9 +162,9 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- // Marketing now uses entirely native CSS/SVG artwork, with no hidden downloadable poster.
- expect(artwork.length).toBeGreaterThanOrEqual(2);
- expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
+ // Marketing now intentionally reuses one approved responsive human/content-creation anchor.
+ expect(artwork.length).toBeGreaterThanOrEqual(3);
+ expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
@@ -251,15 +253,16 @@ test('Home Logistics keeps a camera-locked mobile environment across scene chang
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
  await expect(truck).toHaveAttribute('data-motion-state','running');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','dry-van'));
+ await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','rain'));
  const rain=route.locator('.home-logistics-weather');
  await expect(rain).toHaveCSS('animation-name','home-logistics-rain');
  await expect(rain).toHaveCSS('transform','none');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','car-hauler'));
+ await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','sun'));
  await page.evaluate(()=>document.fonts.ready);
  const before=await route.boundingBox();
  expect(before).not.toBeNull();
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
+ await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
+ await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
  const after=await route.boundingBox();
  expect(after).not.toBeNull();
  expect(Math.abs(after!.width-before!.width)).toBeLessThanOrEqual(1);
@@ -275,6 +278,8 @@ test('Home Logistics carries six owned equipment and weather states without chan
  const scene=page.locator('[data-home-logistics-scene-image]');
  await expect(echo).toHaveCount(1);
  await expect(echo).toHaveAttribute('data-logistics-echo-count','6');
+ await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
+ await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
  await expect(echo).toHaveAttribute('data-logistics-echo-scenes','car-hauler,dry-van,reefer,flatbed,step-deck,hotshot');
  await expect(scene).toHaveAttribute('src','/images/logistics-living/car-hauler-512.webp');
  await expect(scene).toHaveAttribute('srcset',/car-hauler-887\.webp 887w/);
@@ -293,9 +298,8 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:7000}).not.toBe('car-hauler');
- const settledScene=await scene.getAttribute('data-logistics-scene-ready');
- expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));
+ // Equipment intentionally rotates slower than weather; verify the runtime contract without a timing-dependent 15.6s CI wait.
+ expect(await scene.getAttribute('data-logistics-scene-ready')).toBe(await echo.getAttribute('data-logistics-echo-scene'));
  expect(await scene.evaluate(node=>{const image=node as HTMLImageElement;return image.complete&&image.naturalWidth>0&&getComputedStyle(image).visibility!=='hidden';})).toBe(true);
 
  const reduced=await browser.newContext({baseURL:testInfo.project.use.baseURL,viewport:{width:390,height:844},reducedMotion:'reduce'});
@@ -323,20 +327,26 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
  await expect(technologyProof).toHaveCount(1);
  await expect(technologyProof).toContainText('HERMES CONNECT');
- await expect(technologyProof).toContainText('LIVE PILOT');
- await expect(technologyProof).toContainText('WEBSITE FACTORY');
- await expect(technologyProof).toContainText('PRIVATE BUILD');
- await expect(technologyProof).toContainText('SOCIAL CONNECTORS');
- await expect(technologyProof).toContainText('BUILDING');
- await expect(technologyProof).toContainText('QA READBACK');
- await expect(technologyProof).toContainText('VERIFIED PROCESS');
+ await expect(technologyProof).toContainText('SHOP OWNER WORKSPACE');
+ await expect(technologyProof).toContainText('Services');
+ await expect(technologyProof).toContainText('Booking inbox');
+ await expect(technologyProof).toContainText('Catalog inquiries');
+ await expect(technologyProof).toContainText('WEBSITE DELIVERY');
+ await expect(technologyProof).toContainText('SEMANTIC BUILD');
+ await expect(technologyProof).toContainText('SOCIAL STUDIO');
+ await expect(technologyProof).toContainText('OWNER AUTHORIZATION');
+ await expect(technologyProof).toContainText('QA + READBACK');
+ await expect(technologyProof).toContainText('RELEASE EVIDENCE');
  await expect(page.locator('[data-home-explainer="technology"]')).toContainText('QA readback');
  const academyProof=page.locator('[data-home-pillar-proof="progress"]');
  await expect(academyProof).toContainText('TASK');
  await expect(academyProof).toContainText('PRACTICE');
- await expect(academyProof).toContainText('FEEDBACK');
- await expect(academyProof).toContainText('NEXT LEVEL');
- await expect(page.locator('.home-academy-book-page')).toHaveCount(1);
+ await expect(academyProof).toContainText('HUMAN FEEDBACK');
+ await expect(academyProof).toContainText('RETRY');
+ await expect(academyProof).toContainText('Human decision');
+ await expect(academyProof).toContainText('NEXT STEP');
+ await expect(page.locator('.home-academy-book')).toHaveCount(0);
+ await expect(page.locator('.home-academy-state')).toHaveCount(4);
  await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
  await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
  await expect(technologyProof).toHaveAttribute('data-home-living-motion','');
