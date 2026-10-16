@@ -12,7 +12,11 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   await route.scrollIntoViewIfNeeded();
 
   await expect(human).toBeVisible();
-  await expect(human.locator("svg")).toBeVisible();
+  await expect(human).toHaveAttribute("data-home-academy-human-kind", "owner-reference-derivative");
+  const learnerImage = human.locator("img");
+  await expect(learnerImage).toBeVisible();
+  await expect(learnerImage).toHaveAttribute("src", "/images/home-20261001/academy-learner-owner-reference.webp");
+  await expect(human.locator("svg")).toHaveCount(0);
   await expect(background).toBeVisible();
   await expect(background).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
   await expect(background).toHaveCSS("opacity", "0.48");
@@ -42,7 +46,7 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   await expect(proof).toContainText("not automatic");
   await expect(proof.locator(".home-academy-state").first()).toHaveCSS("animation-name", "home-academy-focus");
   await expect(human).toHaveCSS("animation-name", "home-academy-human-breathe");
-  await expect(proof).toContainText("LEARNER · ACTIVE TASK");
+  await expect(proof).toContainText("ILLUSTRATIVE LEARNER · ACTIVE TASK");
   await expect(proof).toContainText("Practice → correction → retry");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
