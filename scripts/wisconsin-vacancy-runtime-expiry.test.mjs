@@ -33,12 +33,29 @@ assert.match(expireWisconsinHtml(graph), /Organization/);
 assert.equal(expireWisconsinHtml('<script type="application/ld+json">invalid</script>'), "");
 
 const hub = await readFile(new URL("../dist/logistics/careers/index.html", import.meta.url), "utf8");
-const expiredHub = expireWisconsinCareersHub(hub, 0);
+// Exercise expiry against an old/cached hub shape even after the current static
+// build has already failed closed and stopped rendering the expired vacancy.
+const legacyHubFixture = `
+  <h2 data-current-vacancy-heading>Verified public vacancies are open.</h2>
+  <strong data-current-vacancy-count>1</strong>
+  <article data-vacancy-slug="wisconsin-owner-operators">
+    <a href="https://100hires.com/j/G4ek3eN">Apply</a>
+  </article>
+  <a href="/logistics/apply/?for=career">General careers inquiry</a>
+`;
+const expiredHub = expireWisconsinCareersHub(legacyHubFixture, 0);
 assert.doesNotMatch(expiredHub, /Verified public vacancies are open\./);
 assert.doesNotMatch(expiredHub, /href="https:\/\/100hires.com\/j\/G4ek3eN"/);
 assert.match(expiredHub, /data-current-vacancy-count[^>]*>0<\/strong>/);
 assert.match(expiredHub, /href="\/careers\/wisconsin-owner-operators\/"/);
 assert.match(expiredHub, /href="\/logistics\/apply\/\?for=career"/);
+
+// A fresh build after expiry may already omit the governed vacancy entirely;
+// that is also fail-closed and must never revive the external ATS application.
+assert.doesNotMatch(hub, /href="https:\/\/100hires.com\/j\/G4ek3eN"/);
+if (!hub.includes('data-vacancy-slug="wisconsin-owner-operators"')) {
+  assert.doesNotMatch(hub, /Verified public vacancies are open\./);
+}
 
 const guarded = await guardedWisconsinResponse(new Response(built, { headers: { "content-type": "text/html", etag: "old", "last-modified": "old", "cache-control": "max-age=86400" } }), false);
 assert.equal(guarded.headers.get("cache-control"), "no-store, max-age=0");
