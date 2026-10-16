@@ -83,6 +83,8 @@ Reduced motion: static connected system map with the same labels.
 
 Purpose: make the learner, not the book, the main subject.
 
+Current implementation: a local authored learner-at-laptop foreground is the primary visual subject. The existing Academy image is atmosphere/background only and is deliberately de-emphasized. This authored foreground has no external runtime or stock-license dependency.
+
 Story:
 `Task → Practice → Feedback → Next level`.
 
