@@ -267,7 +267,7 @@
 .detail-page-marketing .growth-stage-list button,
 .detail-page-marketing .growth-stage-list button:nth-child(3) {
   border-color: var(--hermes-line-dark);
-  color: var(--hermes-muted-dark);
+  color: #fff;
   background: transparent;
   transition:
     color var(--hermes-motion-fast) var(--hermes-ease),
