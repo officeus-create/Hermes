@@ -12,7 +12,7 @@ const futureDate = (days: number) => {
   return date.toISOString().slice(0, 10);
 };
 
-test("canonical Load Board upgrades preview handoffs to same-origin secure delivery", async ({ page }) => {
+test("explicit server-authorized live Load Board fixture uses same-origin mocked delivery", async ({ page }) => {
   test.setTimeout(60_000);
   const deliveries: Array<{ url: string; method: string; body: any }> = [];
 
@@ -27,8 +27,17 @@ test("canonical Load Board upgrades preview handoffs to same-origin secure deliv
     }
 
     const localResponse = await fetch(`${localOrigin}${url.pathname}${url.search}`);
-    const body = Buffer.from(await localResponse.arrayBuffer());
+    let body = Buffer.from(await localResponse.arrayBuffer());
     const contentType = localResponse.headers.get("content-type") || "application/octet-stream";
+    if (url.pathname === "/load-board/" && contentType.includes("text/html")) {
+      const html = body.toString("utf8");
+      const needle = 'data-lead-mode="preview" data-lead-endpoint=""';
+      const count = html.split(needle).length - 1;
+      if (count !== 2) throw new Error("Expected two preview-only Load Board server-rendered forms.");
+      // Test-only explicit SSR activation; hostname itself is NEVER authority.
+      // Every simulated POST below is intercepted and returned by Playwright.
+      body = Buffer.from(html.replaceAll(needle, 'data-lead-mode="live" data-lead-endpoint="/api/logistics-lead"'));
+    }
     await route.fulfill({ status: localResponse.status, headers: { "content-type": contentType }, body });
   });
 

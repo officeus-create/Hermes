@@ -7,9 +7,21 @@ test.beforeEach(async ({ page, baseURL }) => {
     const incoming = new URL(route.request().url());
     const local = new URL(`${incoming.pathname}${incoming.search}`, baseURL);
     const response = await route.fetch({ url: local.href });
-    await route.fulfill({ response });
+    if (incoming.pathname === "/paths/logistics/" && (response.headers()["content-type"] || "").includes("text/html")) {
+      // Simulate a separately approved server-rendered live build, NOT a
+      // client-side hostname promotion. All POSTs remain Playwright-mocked.
+      const source = await response.text();
+      const needle = 'data-contact-mode="preview" data-contact-endpoint=""';
+      if (!source.includes(needle)) throw new Error("Expected fail-closed SSR contact shell");
+      const approvedFixture = source.replace(needle,
+        'data-contact-mode="live" data-contact-endpoint="/api/logistics-lead"');
+      await route.fulfill({ response, body: approvedFixture });
+    } else {
+      await route.fulfill({ response });
+    }
   });
   await page.goto("https://hermeslogisticsus.com/paths/logistics/", { waitUntil: "domcontentloaded" });
+  // The "live" property comes from mocked SSR response, not browser hostname.
   await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-mode", "live");
   await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-endpoint", "/api/logistics-lead");
 });
