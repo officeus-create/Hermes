@@ -75,7 +75,13 @@ for (const vertical of ["beauty", "logistics", "fitness", "agency", "realestate"
 }
 
 assert(workspace.includes('data-hermes-drawer'), "workspace.html: global Hermes Intelligence drawer is missing.");
-assert(workspace.includes('data-mobile-view="home"'), "workspace.html: responsive mobile navigation is missing.");
+for (const marker of ['data-mobile-view="home"', '>Today</span>', 'data-mobile-view="inbox"', '>Inbox</span>', 'data-mobile-view="crm"', '>Customers</span>', 'data-mobile-view="calendar"', '>Calendar</span>', 'data-mobile-more', '>More</span>']) {
+  assert(workspace.includes(marker), `workspace.html: task-first mobile navigation missing ${marker}.`);
+}
+assert(workspace.includes('data-mobile-more-sheet'), "workspace.html: progressive More sheet is missing.");
+assert(workspace.includes('data-mobile-hermes-entry'), "workspace.html: contextual mobile Ask Hermes entry is missing.");
+assert(workspace.includes('data-hermes-context'), "workspace.html: Hermes drawer must expose the current workspace/view context.");
+assert(!/<nav class="mobile-nav"[^>]*>[\s\S]*?data-hermes-open/.test(workspace), "workspace.html: Ask Hermes must remain outside the five primary mobile task tabs.");
 assert(workspace.includes('./sales-roleplay.html'), "workspace.html: Academy must link to Sales Coach.");
 assert(workspace.includes('./workspace.css') && workspace.includes('./workspace.js'), "workspace.html: local product assets are not linked.");
 assert(workspace.includes('./workspace-enhancements.css') && workspace.includes('./workspace-enhancements.js'), "workspace.html: canonical enhancement assets are not linked.");
@@ -88,8 +94,8 @@ for (const marker of ["Canonical Review Hub", "Responsive Workspace", "Request A
 assert(!review.includes("Brand Direction V1"), "review.html: retired V1 review language must not remain.");
 assert(!review.includes("workspace-v2"), "review.html: retired workspace-v2 references must not remain.");
 
-assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav"), "workspace.css: Hermes drawer or mobile navigation style is missing.");
-assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer"), "workspace.js: core interaction contracts are missing.");
+assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav") && css.includes(".mobile-more-sheet"), "workspace.css: Hermes drawer, mobile navigation, or More sheet style is missing.");
+assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer") && js.includes("function setMobileMore") && js.includes("function updateHermesContext"), "workspace.js: core interaction/mobile progressive-disclosure contracts are missing.");
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
 // The live private workspaces intentionally inherit the previously approved Pearl-room direction.
