@@ -17,11 +17,39 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   await expect(page.locator(".growth-console")).toBeVisible();
   const signal = page.locator("[data-marketing-demand-signal]");
   await expect(signal).toBeVisible();
+  await expect(signal).toHaveAttribute("role", "group");
   await expect(signal.locator("li")).toHaveCount(5);
   await expect(signal).toContainText("Content");
   await expect(signal).toContainText("Qualified next step");
   await expect(signal).toContainText("CRM / evidence");
   await expect(signal).toHaveAttribute("data-active-step", "0");
+
+  const signalContrast = await signal.evaluate((root) => {
+    const parseRgb = (value: string) => {
+      const match = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+      if (!match) throw new Error(`Unsupported color: ${value}`);
+      return [Number(match[1]), Number(match[2]), Number(match[3])];
+    };
+    const luminance = (rgb: number[]) => {
+      const channels = rgb.map((value) => {
+        const normalized = value / 255;
+        return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const ratio = (foreground: string, background: string) => {
+      const lighter = Math.max(luminance(parseRgb(foreground)), luminance(parseRgb(background)));
+      const darker = Math.min(luminance(parseRgb(foreground)), luminance(parseRgb(background)));
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+    return [...root.querySelectorAll<HTMLElement>("li")].flatMap((card) => {
+      const background = getComputedStyle(card).backgroundColor;
+      return [...card.querySelectorAll<HTMLElement>("span,strong,small")].map((child) =>
+        ratio(getComputedStyle(child).color, background),
+      );
+    });
+  });
+  expect(Math.min(...signalContrast)).toBeGreaterThanOrEqual(4.5);
 
   const visual = await page.evaluate(() => {
     const services = document.querySelector<HTMLElement>(".detail-page-marketing .marketing-service-system");
