@@ -25,6 +25,19 @@ const routes = [
       "/logistics/car-hauling-dispatch/",
       "DEMO · SANITIZED",
       "Semantic HTML",
+      "Public sources",
+      "Business DNA / sources",
+      "Visual direction",
+      "Tokens + components",
+      "Responsive behavior",
+      "Accessibility + visual QA",
+      "Approved design system",
+      "Website Factory brief",
+      "Accessibility",
+      "Security",
+      "SEO/GEO",
+      "Distribution",
+      "CRM evidence",
       "Production readback",
     ],
   },
@@ -122,6 +135,9 @@ assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-digita
 assert.ok(home.includes('href="/services/website-development/"'), "homepage footer must link website development");
 assert.ok(home.includes('href="/services/seo/"'), "homepage footer must link SEO services");
 assert.ok(websiteShowroomSource.includes("DEMO · SANITIZED"), "website showroom must label its proof replay as demo/sanitized");
+for (const proofSignal of ["Business DNA / sources", "Visual direction", "Tokens + components", "Responsive behavior", "Accessibility + visual QA", "Approved design system", "SOURCES", "BRIEF", "BUILD", "QA", "SEARCH", "DISTRIBUTE", "Website Factory brief", "SEO/GEO", "CRM evidence"]) {
+  assert.ok(websiteShowroomSource.includes(proofSignal), `website showroom missing proof-replay signal: ${proofSignal}`);
+}
 assert.ok(websiteShowroomSource.includes("background: radial-gradient(circle at 80% 18%, rgba(26,115,232,.24)"), "website showroom may keep one bounded dark product-theatre scene");
 assert.ok(!websiteShowroomSource.includes("linear-gradient(145deg,#07143d,#122b72"), "website showroom must not restore the retired blue microsite shell");
 
