@@ -1,4 +1,5 @@
 import { parseUnambiguousJson } from "./_lib/unambiguous-json.ts";
+import { readCarrierIntake, persistCarrierIntake } from "./_lib/carrier-intake-durable.mjs";
 import { brokerWeightEmailBody, brokerWeightSummary, validateBrokerWeight, type BrokerWeight } from "../../src/lib/broker-weight.ts";
 
 type KvNamespace = {
@@ -15,6 +16,8 @@ type Env = {
   LEAD_LIMITS?: KvNamespace;
   LEAD_SERVICE_TOKEN?: string;
   LEAD_DELIVERY_MODE?: string;
+  CARRIER_INTAKE_CAPTURE_MODE?: string;
+  DB?: any;
   ALLOWED_ORIGIN?: string;
 };
 
@@ -235,11 +238,14 @@ export async function onRequestPost({ request, env }: Context) {
   const allowedOrigin = env.ALLOWED_ORIGIN || DEFAULT_ORIGIN;
   const origin = request.headers.get("Origin") || "";
   if (origin !== allowedOrigin) return json(allowedOrigin, 403, { success: false, error: "origin_not_allowed" });
+  const emailReady = Boolean(env.LEAD_EMAIL_SERVICE && env.LEAD_SERVICE_TOKEN);
+  const captureRequested = env.CARRIER_INTAKE_CAPTURE_MODE === "capture_only";
+  // Carrier D1 capture is an independent, owner-opt-in capability and must
+  // never require enabling the shared Worker email delivery mode.
+  // All other lead types preserve the legacy mode gate below.
   if (
-    env.LEAD_DELIVERY_MODE !== "live" ||
-    !env.LEAD_EMAIL_SERVICE ||
     !env.LEAD_LIMITS ||
-    !env.LEAD_SERVICE_TOKEN
+    (!captureRequested && (env.LEAD_DELIVERY_MODE !== "live" || !emailReady))
   ) {
     console.warn("LEAD_DELIVERY_NOT_CONFIGURED", {
       modeLive: env.LEAD_DELIVERY_MODE === "live",
@@ -303,6 +309,64 @@ export async function onRequestPost({ request, env }: Context) {
   let canonicalEmailBody = emailBody;
   try { canonicalEmailBody = brokerWeightEmailBody(emailBody, brokerWeight); }
   catch { return json(allowedOrigin, 400, { success: false, error: "conflicting_broker_weight_body" }); }
+
+  // CEO 2026-10-13: an authorized, consenting carrier must not be lost merely
+  // because automatic email is held. This is an opt-in, private D1-only capture
+  // using the existing Hermes Connect DB, never a second outbound route/CRM.
+  const directCarrier = leadType === "load_board_access"
+    && salesTag === CARRIER_SALES_TAG && pagePath === DIRECT_CAR_HAULING_PATH;
+  const captureOnly = directCarrier && captureRequested;
+  // The owner-wide outbound hold may not fall back to the generic Sales email
+  // Worker when the D1 capture flag is absent. Never silently send instead.
+  if (directCarrier && !captureOnly) {
+    return json(allowedOrigin, 503, { success: false, error: "carrier_capture_not_enabled" });
+  }
+  // Enabling private capture must NOT silently re-enable unrelated email
+  // transports through this shared Logistics endpoint, even if credentials
+  // happen to remain bound to production. An outbound release is a separate
+  // business/owner authorization.
+  if (!captureOnly && captureRequested) {
+    return json(allowedOrigin, 503, { success: false, error: "outbound_disabled_during_carrier_capture" });
+  }
+  if (!captureOnly && (env.LEAD_DELIVERY_MODE !== "live" || !emailReady)) {
+    return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
+  }
+  if (captureOnly) {
+    if (!env.DB) return json(allowedOrigin, 503, { success: false, error: "capture_not_configured" });
+    if (input.consent !== true) return json(allowedOrigin, 400, { success: false, error: "consent_required" });
+    const contactEmail = extractReplyTo(canonicalEmailBody);
+    if (!contactEmail) return json(allowedOrigin, 400, { success: false, error: "invalid_contact_email" });
+    const payloadHash = await hash(`${subject}\\n${canonicalEmailBody}\\nconsent:true`);
+    try {
+      // Schema is applied once through an owner-approved migration; no DDL on the request path.
+      const existing = await readCarrierIntake(env.DB, requestId);
+      if (existing) {
+        if (existing.payload_hash !== payloadHash) return json(allowedOrigin, 409, { success: false, error: "idempotency_conflict" });
+        return json(allowedOrigin, 200, { success: true, duplicate: true, request_id: requestId,
+          capture_state: "persisted", delivery_state: "not_sent", human_receipt_state: "unconfirmed" });
+      }
+      const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
+      const rateKey = `lead:rate:${await hash(clientAddress)}`;
+      const currentRate = Number(await env.LEAD_LIMITS.get(rateKey) || "0");
+      if (currentRate >= RATE_LIMIT) return json(allowedOrigin, 429, { success: false, error: "rate_limit_exceeded" });
+      // Reserve the KV admission quota before committing the D1 receipt.
+      // KV write errors must fail closed BEFORE persistence: an already-saved
+      // carrier must never receive a false 503 or be urged to submit twice.
+      // A failed D1 insert may consume one quota slot, but never claims success.
+      await env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS });
+      const saved = await persistCarrierIntake(env.DB, {
+        requestId, payloadHash, sourcePath: pagePath, contactEmail, emailBody: canonicalEmailBody,
+        classification: subject === CAR_HAULING_TEST_SUBJECT ? "qa" : "commercial",
+      });
+      if (saved.conflict) return json(allowedOrigin, 409, { success: false, error: "idempotency_conflict" });
+      return json(allowedOrigin, 200, { success: true, request_id: requestId,
+        ...(saved.created ? {} : { duplicate: true }),
+        capture_state: "persisted", delivery_state: "not_sent", human_receipt_state: "unconfirmed" });
+    } catch {
+      // Never fall back to Worker email when D1 or the private capture receipt fails.
+      return json(allowedOrigin, 503, { success: false, error: "capture_temporarily_unavailable" });
+    }
+  }
 
   const requestKey = `lead:id:${await hash(requestId)}`;
   if (await env.LEAD_LIMITS.get(requestKey)) {
