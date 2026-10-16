@@ -560,14 +560,8 @@ import "../styles/features/load-board-marketplace.css";
   });
 
   const form = document.querySelector<HTMLFormElement>("[data-load-board-form]");
-  const canonicalProductionHost = window.location.protocol === "https:" && ["hermeslogisticsus.com", "www.hermeslogisticsus.com"].includes(window.location.hostname);
-  if (canonicalProductionHost) {
-    [vehicleForm, form].forEach((leadForm) => {
-      if (!leadForm) return;
-      leadForm.dataset.leadMode = "live";
-      leadForm.dataset.leadEndpoint = "/api/logistics-lead";
-    });
-  }
+  // Do not promote the two Load Board forms from preview to live by hostname.
+  // Their server-declared mode and endpoint stay authoritative.
   const alert = document.querySelector<HTMLElement>("[data-load-alert]");
   const result = document.querySelector<HTMLElement>("[data-load-result]");
   const decision = document.querySelector<HTMLElement>("[data-load-decision]");
