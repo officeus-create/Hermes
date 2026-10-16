@@ -141,7 +141,7 @@
     title.id = "website-project-scope-title";
     title.textContent = "Define the commercial website path before the broader technology brief.";
     const boundary = document.createElement("p");
-    boundary.textContent = "These answers are added to the local project summary and explicit email handoff. They are not sent to GA4.";
+    boundary.textContent = "These answers are added to the local project summary and only to an explicit send/email handoff. They are not sent to GA4.";
     heading.append(eyebrow, title, boundary);
 
     const grid = document.createElement("div");
@@ -167,6 +167,20 @@
     ]);
     const integrations = createTextarea("website_integrations", "CRM, scheduling, payments, forms, portals, analytics, APIs, or other systems");
     const languages = createInput("website_languages", "English, Spanish, Ukrainian, or another language set");
+    const publicSources = createTextarea(
+      "website_public_sources",
+      "Approved public sources: website, Google Business Profile, Instagram, Facebook, LinkedIn, X/Threads, directories, or other public URLs",
+    );
+    const competitorOne = createInput("website_competitor_1", "https://competitor-one.example");
+    competitorOne.type = "url";
+    const competitorTwo = createInput("website_competitor_2", "https://competitor-two.example");
+    competitorTwo.type = "url";
+    const competitorThree = createInput("website_competitor_3", "https://competitor-three.example");
+    competitorThree.type = "url";
+    const designDirection = createTextarea(
+      "website_design_direction",
+      "Visual direction, reference qualities, interaction/motion priorities, examples to emulate or avoid",
+    );
 
     grid.append(
       createLabel("Project type *", projectType),
@@ -175,6 +189,11 @@
       createLabel("Required page range *", pageRange),
       createLabel("Integrations needed", integrations),
       createLabel("Languages", languages),
+      createLabel("Approved public sources", publicSources),
+      createLabel("Competitor 1", competitorOne),
+      createLabel("Competitor 2", competitorTwo),
+      createLabel("Competitor 3", competitorThree),
+      createLabel("Visual direction", designDirection),
     );
     section.append(heading, grid);
     projects.before(section);
@@ -200,6 +219,11 @@
         `Required page range: ${selectedLabel(pageRange)}`,
         `Integrations: ${clean(integrations.value, 800) || "Not provided"}`,
         `Languages: ${clean(languages.value, 240) || "Not provided"}`,
+        `Approved public sources: ${clean(publicSources.value, 800) || "Not provided"}`,
+        `Competitor 1: ${clean(competitorOne.value, 240) || "Not provided"}`,
+        `Competitor 2: ${clean(competitorTwo.value, 240) || "Not provided"}`,
+        `Competitor 3: ${clean(competitorThree.value, 240) || "Not provided"}`,
+        `Visual direction: ${clean(designDirection.value, 800) || "Not provided"}`,
       ].join("\n");
       const boundaryText = "\n\nPrepared on hermeslogisticsus.com.";
       const enhanced = baseSummary.includes(boundaryText)
