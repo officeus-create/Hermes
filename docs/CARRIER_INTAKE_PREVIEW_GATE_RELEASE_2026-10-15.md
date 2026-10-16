@@ -8,12 +8,14 @@ Status: **DRAFT CODE / NOT DEPLOYED / NO REAL LEAD OR DELIVERY PROOF.** Linked t
 
 The result was inconsistent SSR/non-JS versus hydrated copy, an unusable send control, and incorrect assumptions that a submitted lead was actually delivered or received.
 
-## This PR changes only the UI gate
+## Current draft scope
 
 - Server-declared `preview` is **never** upgraded merely from a hostname.
 - To show live send controls, the server must have explicitly emitted `data-lead-mode=live` **and** a configured same-origin HTTPS endpoint whose exact path is `/api/logistics-lead`, with no query or fragment. Otherwise browser controls remain preview-only and user-initiated email fallback remains available.
-- The API remains the independent final authority: it checks origin, live runtime delivery mode, bindings/token, validation, rate/duplicate limits, consent and Sales routing. This source PR does NOT prove those bindings exist, enable them, or cause sends.
-- A browser says `submitted` only upon a matching accepted receipt; delivery and human acknowledgement stay **UNKNOWN** absent independent evidence. Synthetic fixture events never count as leads or money.
+- The direct carrier path now has a second, separately gated source change: owner-opt-in **D1 capture-only**. It requires `CARRIER_INTAKE_CAPTURE_MODE=capture_only`, the existing `LEAD_LIMITS` KV and existing Hermes Connect `DB`, explicit consent, validation, rate/idempotency checks and the one-time migration. It returns `delivery_state=not_sent` and does not call `LEAD_EMAIL_SERVICE`.
+- The API remains the independent final authority. Legacy non-carrier delivery still has its own email runtime gates; while carrier capture-only is enabled, this draft intentionally fails unrelated outbound lead types closed with `outbound_disabled_during_carrier_capture` rather than silently re-enabling mail. That shared-endpoint business impact must be accepted before release.
+- The draft also adds an **owner-capability-protected private triage route** for reading captured carrier records, recording bounded human review/closure state, and purging expired rows. It is `noindex`; it is not a public CRM and does not qualify, dispatch, notify or email anyone.
+- A browser says `submitted` only after a persisted D1 receipt. Delivery remains **not sent** and human acknowledgement stays **UNKNOWN** until an authorized person actually reviews the record. Synthetic fixture events never count as leads or money.
 
 ## Tests and environment acceptance
 
@@ -27,6 +29,13 @@ Before requesting owner approval to merge, confirm with the authorised Cloudflar
 4. Independent browser QA with full JavaScript and no JavaScript on the canonical landing page, confirm consistent truth/expectations and accessible user-initiated fallback.
 5. When owner explicitly approves a *real, consenting* business inquiry, record `landing -> form start -> reviewed -> server accepted -> delivery independently confirmed -> Sales human receipt -> qualified -> agreement`. The UI cannot infer the final steps from HTTP 2xx. Do not submit artificial leads just to make a green metric.
 6. Stage first, then updated-base exact-head CI, business/Sales review, security review and separately authorised deploy. Roll back if conversion path becomes inaccessible.
+
+## Additional release blockers discovered in source review (2026-10-16)
+
+- **Retention policy is not owner-approved yet.** The draft stores carrier contact email and the submitted body in D1 for **180 days**. Do not apply the migration or enable capture until privacy/retention/erasure ownership explicitly accepts or changes that period.
+- **Shared endpoint impact is intentional but material.** With `CARRIER_INTAKE_CAPTURE_MODE=capture_only`, unrelated lead types on `/api/logistics-lead` are failed closed instead of emailed. Confirm this is the desired temporary business policy so Marketing/Technology/general-contact demand is not accidentally discarded.
+- **No migration/runtime proof yet.** `migrations/20261015_carrier_intake_d1.sql` remains unapplied by this PR; production `DB`, `LEAD_LIMITS`, build-time `PUBLIC_CARRIER_CAPTURE_MODE` and runtime capture mode require authorized readback. Do not create a synthetic production lead just to prove the path.
+- **Qualification remains human/unproven.** The schema contains a `qualified` state, but the owner API in this draft only permits `new -> reviewed -> closed`. No code path may infer a qualified carrier, load assignment, agreement or revenue from a persisted intake.
 
 ## Existing technology to reuse
 
