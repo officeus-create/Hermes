@@ -61,6 +61,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
         is_customer_proven: row.classification === "commercial" ? "not_verified" : "synthetic_qa",
         delivery_state: "not_sent",
         human_receipt_state: row.status === "new" ? "unconfirmed" : "owner_reviewed",
+        qualified_carrier_state: row.status === "qualified" ? "owner_qualified" : "not_verified",
         boundary: "Owner-only private intake review. No email, dispatcher or Telegram contact; no authorization to assign a carrier, book a load or claim revenue.",
       }, PRIVATE);
     }
@@ -138,9 +139,17 @@ export async function onRequestPatch({ request, env }: { request: Request; env: 
     return jsonResponse(400, { success: false, error: "invalid_owner_review" }, PRIVATE);
   const reviewed = body.from_status === "new" && body.to_status === "reviewed" &&
     body.review_code === "initial_owner_review";
+  const checks = body.verification_checks;
+  const qualified = body.from_status === "reviewed" && body.to_status === "qualified" &&
+    body.review_code === "manual_carrier_qualification" &&
+    checks && typeof checks === "object" && !Array.isArray(checks) &&
+    checks.authority_verified === true &&
+    checks.insurance_verified === true &&
+    checks.equipment_capacity_verified === true &&
+    checks.operating_fit_verified === true;
   const closed = body.from_status === "reviewed" && body.to_status === "closed" &&
     body.review_code === "manual_followup_closed";
-  if (!reviewed && !closed)
+  if (!reviewed && !qualified && !closed)
     return jsonResponse(400, { success: false, error: "review_transition_not_allowed" }, PRIVATE);
   const now = new Date().toISOString();
   try {
@@ -156,7 +165,11 @@ export async function onRequestPatch({ request, env }: { request: Request; env: 
       return jsonResponse(409, { success: false, error: "review_conflict_or_expired" }, PRIVATE);
     return jsonResponse(200, { success: true, request_id: body.request_id,
       status: body.to_status, status_updated_at: now, human_receipt_state: "owner_reviewed",
-      qualified_carrier_state: "not_verified", delivery_state: "not_sent" }, PRIVATE);
+      qualified_carrier_state: body.to_status === "qualified" ? "owner_qualified" : "not_verified",
+      delivery_state: "not_sent",
+      boundary: body.to_status === "qualified"
+        ? "Owner-qualified for Sales triage only; not a contract, booked load, customer, dispatcher assignment or revenue."
+        : "Owner review recorded without outbound contact or automatic qualification." }, PRIVATE);
   } catch {
     return jsonResponse(503, { success: false, error: "owner_review_temporarily_unavailable" }, PRIVATE);
   }
