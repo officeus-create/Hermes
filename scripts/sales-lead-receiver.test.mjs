@@ -807,6 +807,31 @@ assert.equal((await repeatedCapture.json()).duplicate, true);
 assert.equal(captureDb.rows.size, 1);
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider);
 
+// A failure updating the anti-abuse KV quota must happen BEFORE any durable
+// carrier capture, so a previously saved D1 record can never be misreported as
+// "capture_temporarily_unavailable". No Worker or email fallback is allowed.
+const kvWriteRejectedRequestId = "carrier_kv_write_rejected_20261016";
+let kvRejectedWriteCount = 0;
+const kvRejectEnv = {
+  ...captureEnv,
+  LEAD_LIMITS: {
+    async get() { return null; },
+    async put() { kvRejectedWriteCount += 1; throw new Error("kv_quota_write_unavailable"); },
+  },
+};
+const captureRowsBeforeKvReject = captureDb.rows.size;
+const kvRejectedAdmission = await onRequest({
+  request: captureReq({ ...capturedCarrier, request_id: kvWriteRejectedRequestId }, "203.0.113.229"),
+  env: kvRejectEnv,
+});
+assert.equal(kvRejectedAdmission.status, 503, "KV write failure must fail closed before D1 capture.");
+assert.equal((await kvRejectedAdmission.json()).error, "capture_temporarily_unavailable");
+assert.equal(kvRejectedWriteCount, 1);
+assert.equal(captureDb.rows.size, captureRowsBeforeKvReject, "Failed KV admission must not durably store an unconfirmed lead.");
+assert.equal(captureDb.rows.has(kvWriteRejectedRequestId), false);
+assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
+  "KV admission failure may not invoke outbound Workers, email or Telegram.");
+
 const changedCapture = await onRequest({
   request: captureReq({ ...capturedCarrier, email_body: capturedCarrier.email_body.replace("Real Carrier LLC", "Changed Carrier LLC") }),
   env: captureEnv,

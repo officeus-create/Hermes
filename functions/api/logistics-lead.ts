@@ -349,12 +349,16 @@ export async function onRequestPost({ request, env }: Context) {
       const rateKey = `lead:rate:${await hash(clientAddress)}`;
       const currentRate = Number(await env.LEAD_LIMITS.get(rateKey) || "0");
       if (currentRate >= RATE_LIMIT) return json(allowedOrigin, 429, { success: false, error: "rate_limit_exceeded" });
+      // Reserve the KV admission quota before committing the D1 receipt.
+      // KV write errors must fail closed BEFORE persistence: an already-saved
+      // carrier must never receive a false 503 or be urged to submit twice.
+      // A failed D1 insert may consume one quota slot, but never claims success.
+      await env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS });
       const saved = await persistCarrierIntake(env.DB, {
         requestId, payloadHash, sourcePath: pagePath, contactEmail, emailBody: canonicalEmailBody,
         classification: subject === CAR_HAULING_TEST_SUBJECT ? "qa" : "commercial",
       });
       if (saved.conflict) return json(allowedOrigin, 409, { success: false, error: "idempotency_conflict" });
-      if (saved.created) await env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS });
       return json(allowedOrigin, 200, { success: true, request_id: requestId,
         ...(saved.created ? {} : { duplicate: true }),
         capture_state: "persisted", delivery_state: "not_sent", human_receipt_state: "unconfirmed" });
