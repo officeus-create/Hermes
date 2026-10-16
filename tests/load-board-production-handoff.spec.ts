@@ -31,12 +31,20 @@ test("explicit server-authorized live Load Board fixture uses same-origin mocked
     const contentType = localResponse.headers.get("content-type") || "application/octet-stream";
     if (url.pathname === "/load-board/" && contentType.includes("text/html")) {
       const html = body.toString("utf8");
-      const needle = 'data-lead-mode="preview" data-lead-endpoint=""';
-      const count = html.split(needle).length - 1;
-      if (count !== 2) throw new Error("Expected two preview-only Load Board server-rendered forms.");
+      const previewMode = /\bdata-lead-mode=(["'])preview\1/g;
+      const emptyEndpoint = /\bdata-lead-endpoint(?:=(["'])\1)?(?=[\s>])/g;
+      const previewCount = (html.match(previewMode) ?? []).length;
+      const emptyEndpointCount = (html.match(emptyEndpoint) ?? []).length;
+      if (previewCount !== 2 || emptyEndpointCount !== 2) {
+        throw new Error(`Expected two preview-only Load Board server-rendered forms; got preview=${previewCount}, emptyEndpoint=${emptyEndpointCount}.`);
+      }
       // Test-only explicit SSR activation; hostname itself is NEVER authority.
       // Every simulated POST below is intercepted and returned by Playwright.
-      body = Buffer.from(html.replaceAll(needle, 'data-lead-mode="live" data-lead-endpoint="/api/logistics-lead"'));
+      body = Buffer.from(
+        html
+          .replace(previewMode, 'data-lead-mode="live"')
+          .replace(emptyEndpoint, 'data-lead-endpoint="/api/logistics-lead"'),
+      );
     }
     await route.fulfill({ status: localResponse.status, headers: { "content-type": contentType }, body });
   });
