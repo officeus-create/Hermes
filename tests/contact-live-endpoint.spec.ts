@@ -11,10 +11,12 @@ test.beforeEach(async ({ page, baseURL }) => {
       // Simulate a separately approved server-rendered live build, NOT a
       // client-side hostname promotion. All POSTs remain Playwright-mocked.
       const source = await response.text();
-      const needle = 'data-contact-mode="preview" data-contact-endpoint=""';
-      if (!source.includes(needle)) throw new Error("Expected fail-closed SSR contact shell");
-      const approvedFixture = source.replace(needle,
-        'data-contact-mode="live" data-contact-endpoint="/api/logistics-lead"');
+      const previewMode = /\bdata-contact-mode=(["'])preview\1/.test(source);
+      const emptyEndpoint = /\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/.test(source);
+      if (!previewMode || !emptyEndpoint) throw new Error("Expected fail-closed SSR contact shell");
+      const approvedFixture = source
+        .replace(/\bdata-contact-mode=(["'])preview\1/, 'data-contact-mode="live"')
+        .replace(/\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-contact-endpoint="/api/logistics-lead"');
       await route.fulfill({ response, body: approvedFixture });
     } else {
       await route.fulfill({ response });
