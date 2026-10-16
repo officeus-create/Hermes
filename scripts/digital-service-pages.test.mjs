@@ -46,7 +46,7 @@ const routes = [
     reviewedAt: "July 31, 2026",
     proofHref: "/case/",
     proofLabel: "Review verified case studies",
-    required: ["Technical SEO review", "Search-intent architecture", "Can Hermes guarantee first-page rankings?"],
+    required: ["Technical SEO review", "Search-intent architecture", "Can Hermes guarantee first-page rankings?", "EVIDENCE REPLAY", "NO RANKING GUARANTEE", "Query × page evidence", "Production readback"],
   },
   {
     route: "/services/local-seo/",
@@ -56,7 +56,7 @@ const routes = [
     reviewedAt: "July 31, 2026",
     proofHref: "/case/",
     proofLabel: "Review verified case studies",
-    required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?"],
+    required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?", "EVIDENCE REPLAY", "Service + location eligibility", "Production readback"],
   },
   {
     route: "/services/auto-repair-website-design/",
@@ -93,6 +93,7 @@ const sitemap = await readFile(join(dist, "sitemap-digital-services.xml"), "utf8
 const robots = await readFile(join(dist, "robots.txt"), "utf8");
 const home = await readFile(join(dist, "index.html"), "utf8");
 const websiteShowroomSource = await readFile(join(root, "src/components/WebsiteDevelopmentShowroom.astro"), "utf8");
+const seoShowroomSource = await readFile(join(root, "src/components/SeoEvidenceShowroom.astro"), "utf8");
 
 for (const page of routes) {
   const html = await readFile(join(dist, page.file), "utf8");
@@ -124,6 +125,12 @@ assert.ok(home.includes('href="/services/seo/"'), "homepage footer must link SEO
 assert.ok(websiteShowroomSource.includes("DEMO · SANITIZED"), "website showroom must label its proof replay as demo/sanitized");
 assert.ok(websiteShowroomSource.includes("background: radial-gradient(circle at 80% 18%, rgba(26,115,232,.24)"), "website showroom may keep one bounded dark product-theatre scene");
 assert.ok(!websiteShowroomSource.includes("linear-gradient(145deg,#07143d,#122b72"), "website showroom must not restore the retired blue microsite shell");
+for (const proofSignal of ["EVIDENCE REPLAY", "NO RANKING GUARANTEE", "Demand evidence", "Production readback", "Qualified action", "Next bounded change", "Submission ≠ indexing ≠ ranking"]) {
+  assert.ok(seoShowroomSource.includes(proofSignal), `SEO proof replay missing truth-safe signal: ${proofSignal}`);
+}
+for (const prohibited of ["guaranteed rankings", "guaranteed traffic", "guaranteed leads", "guaranteed revenue", "guaranteed roi"]) {
+  assert.ok(!seoShowroomSource.toLowerCase().includes(prohibited), `SEO proof replay must not contain ${prohibited}`);
+}
 
 const serialized = routes.map((page) => page.required.join(" ")).join(" ").toLowerCase();
 for (const prohibited of ["guaranteed rankings", "guaranteed leads", "guaranteed revenue", "guaranteed roi"]) {
