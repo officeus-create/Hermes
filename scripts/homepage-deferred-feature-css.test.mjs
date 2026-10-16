@@ -10,6 +10,9 @@ const masterSource = await readFile(join(root, "src", "components", "HomeMasterS
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance", "media-provenance.json"), "utf8"));
+const repairWorkspaceSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", "dashboard.astro"), "utf8");
+const websiteShowroomSource = await readFile(join(root, "src", "components", "WebsiteDevelopmentShowroom.astro"), "utf8");
+const socialStudioSource = await readFile(join(root, "src", "components", "BusinessSocialConnectionsWorkspace.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
 
 // Home remains an entrance, not a catalogue. Heavy showroom/technology feature CSS must not
@@ -73,6 +76,24 @@ for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQ
 }
 assert.ok(masterSource.includes("data-journey-motion"), "Marketing animation must expose a pausable motion state");
 assert.ok(masterSource.includes("prefers-reduced-motion: reduce"), "Marketing motion must provide a static reduced-motion fallback");
+assert.equal(masterSource.includes("LIVE PILOT"), false, "Home Technology must not use a release-status slogan in place of a real product surface");
+assert.equal(masterSource.includes("<strong>BUILDING</strong>"), false, "Home Technology must not imply a generic build state without product evidence");
+for (const token of ["Shop Owner Workspace", "Services", "Booking inbox", "Catalog inquiries"]) {
+  assert.ok(repairWorkspaceSource.includes(token), `Repair Shop product source must own Technology token: ${token}`);
+  assert.ok(masterSource.includes(token.toUpperCase() === token ? token : token), `Home Technology must reuse real Repair Shop UI token: ${token}`);
+}
+for (const token of ["Semantic HTML", "Responsive", "Canonical", "Schema", "Production readback"]) {
+  assert.ok(websiteShowroomSource.includes(token), `Website showroom source must own Technology token: ${token}`);
+}
+for (const token of ["Social Studio", "Instagram", "Facebook", "Threads", "provider authorization", "provider readback"]) {
+  assert.ok(socialStudioSource.includes(token), `Social Studio source must own Technology token: ${token}`);
+}
+for (const route of ["/services/hermes-connect/repair-shops/dashboard/", "/services/website-development/", "/services/hermes-connect/repair-shops/social/"]) {
+  assert.ok(masterSource.includes(`data-tech-source="${route}"`), `Home Technology must retain source boundary: ${route}`);
+}
+for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
+  assert.ok(masterSource.includes(token), `Home Technology must expose real-product proof token: ${token}`);
+}
 assert.equal(masterSource.includes('loading={path.id === "marketing" ? "eager" : "lazy"}'), false, "only the true LCP image should be eager on mobile");
 assert.equal(masterSource.includes("void preloadScene(next)"), false, "homepage must not download the next logistics scene before it is displayed");
 assert.equal(masterSource.trim().includes("applyScene();\n    update();"), false, "initial logistics artwork must not be decoded twice before rotation starts");
