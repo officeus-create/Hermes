@@ -51,3 +51,12 @@ PR #1902 (shared contrast/map semantics repair) is now **MERGED** into current p
 Do **not** raise Pa11y ceilings to absorb that failure. Trigger a fresh exact-head #1888 pull-request run against current `main`, then classify only the remaining delta. If the Academy/RU contrast counts fall back under the existing cap, keep the lower cap. If any count still exceeds it, repair the demonstrated shared selector/component instead of weakening the gate.
 
 This replay note changes QA evidence only; no production CSS, public content, Cloudflare setting, analytics, form transport, email, social or dispatcher workflow is modified here.
+
+
+## 2026-10-16 post-#1922 replay trigger
+
+Accessibility source repair #1922 is now merged to protected `main` as `122c48c53af07d79008497a2a17f3d6872cfe64f`. The prior #1888 Pa11y failure was measured before that repair.
+
+Trigger a fresh pull-request merge-context run **without changing any Pa11y route/rule ceiling**. Acceptance: current-main merge context must stay within the existing recorded budget and ZAP evidence must persist. If the audit still exceeds a cap, classify and repair the demonstrated selector/root cause; do not weaken the gate.
+
+This is QA evidence only; no production CSS/content/analytics/send behavior changes.
