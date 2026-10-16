@@ -23,6 +23,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "dealer-vehicle-transportation", path: "/logistics/dealer-vehicle-transportation/" },
   { id: "load-board", path: "/load-board/" },
   { id: "seo-service", path: "/services/seo/" },
+  { id: "logistics-seo-service", path: "/services/seo-for-logistics-companies/" },
   { id: "website-development", path: "/services/website-development/" },
   { id: "auto-repair-website-design", path: "/services/auto-repair-website-design/" },
   { id: "website-redesign", path: "/services/website-redesign/" },
