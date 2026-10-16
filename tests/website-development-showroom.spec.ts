@@ -14,6 +14,12 @@ test("website development keeps keyboard interaction, canonical ownership, index
 
   const showroom = page.locator("[data-website-showroom]");
   await expect(showroom).toBeVisible();
+  const designLab = page.locator("[data-website-design-lab]");
+  await expect(designLab).toBeVisible();
+  await expect(designLab.locator("[data-design-stage]")).toHaveCount(6);
+  for (const label of ["Business DNA / sources", "Visual direction", "Tokens + components", "Responsive behavior", "Accessibility + visual QA", "Approved design system"]) {
+    await expect(designLab).toContainText(label);
+  }
   await expect(page.getByRole("heading", { name: "See how a website moves from business context to verified release." })).toBeVisible();
   const factoryFlow = showroom.locator("[data-website-factory-flow]");
   await expect(factoryFlow).toBeVisible();
@@ -82,11 +88,14 @@ test("all six showroom states stay contained with readable active text at 320, 3
           miniUi: rect(`[data-showroom-panel="${activeKey}"] .website-showroom-mini-ui`),
           liveProof: rect(`[data-showroom-live-proof="${activeKey}"]`),
           humanReview: rect(".website-showroom-human"),
+          designLab: rect("[data-website-design-lab]"),
         };
       }, key);
 
       expect(geometry.documentWidth, `${width}px ${key}: document horizontal fit`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
       expect(geometry.bodyWidth, `${width}px ${key}: body horizontal fit`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+      expect(geometry.designLab.left, `${width}px ${key}: design lab left containment`).toBeGreaterThanOrEqual(-1);
+      expect(geometry.designLab.right, `${width}px ${key}: design lab right containment`).toBeLessThanOrEqual(geometry.viewportWidth + 1);
       expect(geometry.browserBar.left, `${width}px ${key}: browser bar left containment`).toBeGreaterThanOrEqual(geometry.browser.left - 1);
       expect(geometry.browserBar.right, `${width}px ${key}: browser bar right containment`).toBeLessThanOrEqual(geometry.browser.right + 1);
       expect(geometry.panel.left, `${width}px ${key}: panel left containment`).toBeGreaterThanOrEqual(geometry.canvas.left - 1);
@@ -135,7 +144,7 @@ test("showroom remains operable and removes transitions when reduced motion is r
   await expect(target).toHaveAttribute("aria-pressed", "true");
   await expect(showroom.getByRole("heading", { name: "Turn a verified release into measurable business evidence." })).toBeVisible();
 
-  const transitionDurations = await showroom.locator(".website-showroom-step, .website-showroom-route span, .website-showroom-panel").evaluateAll((elements) =>
+  const transitionDurations = await page.locator(".website-design-lab-flow article, .website-showroom-step, .website-showroom-route span, .website-showroom-panel").evaluateAll((elements) =>
     elements.map((element) => getComputedStyle(element).transitionDuration),
   );
   expect(transitionDurations.every((duration) => duration.split(",").every((value) => Number.parseFloat(value) === 0))).toBeTruthy();
