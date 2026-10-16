@@ -84,6 +84,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 aria-hidden="true"
                 data-home-logistics-echo
                 data-logistics-echo-scene="car-hauler"
+                data-logistics-weather-state="sun"
                 data-logistics-echo-count="6"
                 data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
                 data-logistics-echo-motion="idle"
@@ -178,10 +179,14 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
+    const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
+    const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let sceneIndex = 0;
+    let weatherIndex = 0;
     let sceneTimer: number | undefined;
+    let weatherTimer: number | undefined;
     let visible = false;
 
     let sceneRequest = 0;
@@ -213,14 +218,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
     };
+    const applyWeather = () => {
+      logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
+    };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
+      if (weatherTimer) window.clearInterval(weatherTimer);
       sceneTimer = undefined;
+      weatherTimer = undefined;
     };
     const update = () => {
       if (reduced.matches) {
         stop();
         sceneIndex = 0;
+        weatherIndex = 0;
+        applyWeather();
         sceneRequest += 1;
         if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
           sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
@@ -237,11 +249,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return;
       }
       logisticsEcho.dataset.logisticsEchoMotion = "running";
-      if (sceneTimer) return;
-      sceneTimer = window.setInterval(() => {
-        sceneIndex = (sceneIndex + 1) % scenes.length;
-        applyScene();
-      }, 5200);
+      if (!sceneTimer) {
+        sceneTimer = window.setInterval(() => {
+          sceneIndex = (sceneIndex + 1) % scenes.length;
+          applyScene();
+        }, 15600);
+      }
+      if (!weatherTimer) {
+        weatherTimer = window.setInterval(() => {
+          weatherIndex = (weatherIndex + 1) % weatherStates.length;
+          applyWeather();
+        }, 5200);
+      }
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -249,6 +268,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       update();
     }, { threshold: .2 });
     observer.observe(logisticsEcho);
+    const nudgeWeather = () => {
+      if (reduced.matches) return;
+      weatherIndex = (weatherIndex + 1) % weatherStates.length;
+      applyWeather();
+      if (weatherTimer) {
+        window.clearInterval(weatherTimer);
+        weatherTimer = undefined;
+      }
+      update();
+    };
+    logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
+    logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
     update();
@@ -346,19 +377,17 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
-[data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:
+[data-logistics-weather-state="sun"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
+[data-logistics-weather-state="fog"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.42),transparent 28%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.46),transparent 35%),linear-gradient(180deg,rgba(232,242,245,.12),rgba(111,139,151,.16));animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.72;filter:blur(.25px)}
+[data-logistics-weather-state="fog"]::before{background:linear-gradient(180deg,rgba(224,237,241,.05),rgba(75,105,119,.18));opacity:.58}
+[data-logistics-weather-state="dusk"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.38),transparent 26%),linear-gradient(180deg,rgba(31,43,68,.05),rgba(7,16,28,.46));opacity:.8}
+[data-logistics-weather-state="dusk"]::before{background:linear-gradient(180deg,rgba(8,25,45,.10),rgba(5,12,26,.5));opacity:.82}
+[data-logistics-weather-state="rain"] .home-logistics-weather{background:
 linear-gradient(180deg,rgba(180,207,219,.16),rgba(33,61,74,.06)),
 radial-gradient(ellipse,rgba(229,244,250,.52) 0 .7px,transparent 1px) 0 0/23px 38px,
 radial-gradient(ellipse,rgba(211,235,245,.34) 0 .65px,transparent 1px) 11px 13px/31px 48px;
 animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18px)}
-[data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
-[data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
-[data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
-[data-logistics-echo-scene="flatbed"] .home-logistics-weather{background:radial-gradient(ellipse at 72% 23%,rgba(255,221,146,.38),transparent 30%),linear-gradient(180deg,rgba(191,126,72,.05),rgba(131,78,42,.18));animation:home-logistics-heat 3.2s ease-in-out infinite alternate;opacity:.64}
-[data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
-[data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
-[data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
+[data-logistics-weather-state="rain"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
 .home-road-flow{inset:23% 8% auto 26%;height:38%}
