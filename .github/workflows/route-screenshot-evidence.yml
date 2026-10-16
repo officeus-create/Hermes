@@ -78,6 +78,10 @@ jobs:
           if (manifest.source !== 'local-reviewed-build') throw new Error('Unexpected source');
           if (manifest.productionEvidence !== false) throw new Error('Artifact must not claim production evidence');
           if (manifest.externalRequestsBlocked !== true) throw new Error('External requests were not recorded as blocked');
+          if (manifest.consentPolicy !== 'continue-without-analytics-for-screenshot-only') throw new Error('Unexpected screenshot consent policy');
+          if (manifest.observations?.some((item) => item.consentOverlayVisibleAfterSetup !== false)) {
+            throw new Error('At least one owner-review screenshot was captured with the analytics consent overlay visible');
+          }
           if (manifest.observations?.length !== expectedCount || pngs.length !== expectedCount) {
             throw new Error(`Expected ${expectedCount} observations and PNGs from the route contract; got ${manifest.observations?.length} and ${pngs.length}`);
           }
@@ -113,6 +117,8 @@ jobs:
           console.log(`- Source: \`${manifest.source}\``);
           console.log(`- Production evidence: \`${manifest.productionEvidence}\``);
           console.log(`- External requests blocked: \`${manifest.externalRequestsBlocked}\``);
+          console.log(`- Consent overlay after capture setup: \`${manifest.observations.some((item) => item.consentOverlayVisibleAfterSetup)}\``);
+          console.log(`- Capture consent policy: \`${manifest.consentPolicy}\``);
           console.log(`- Retention: ${manifest.retentionDays} days`);
           NODE
             {
