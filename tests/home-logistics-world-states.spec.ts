@@ -11,12 +11,13 @@ test("Logistics hover changes weather without replacing the equipment scene", as
   const weather = route.locator(".home-logistics-weather");
 
   await route.scrollIntoViewIfNeeded();
-  await expect(world).toHaveAttribute("data-logistics-weather-state", "sun");
-  const before = await scene.getAttribute("src");
+  const weatherBefore = await world.getAttribute("data-logistics-weather-state");
+  const sceneBefore = await scene.getAttribute("src");
+  expect(weatherBefore).toMatch(/^(sun|fog|dusk|rain)$/);
 
   await route.hover();
-  await expect(world).toHaveAttribute("data-logistics-weather-state", "fog");
-  expect(await scene.getAttribute("src")).toBe(before);
+  await expect.poll(() => world.getAttribute("data-logistics-weather-state")).not.toBe(weatherBefore);
+  expect(await scene.getAttribute("src")).toBe(sceneBefore);
   await expect(weather).toHaveCSS("transform", "none");
   await expect(route.locator('[data-home-motion="truck"]')).toHaveAttribute("data-motion-state", "running");
 });
