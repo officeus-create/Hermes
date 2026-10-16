@@ -42,3 +42,12 @@ Downloaded actual artifact `11908210608` from [workflow 38590653110](https://git
 ## Hard boundaries
 
 This is a **preview/CI** artifact and a draft non-regression proposal. It changes no public copy, canonicals, hreflang, indexed pages, D1/Cloudflare production, customer identity, paid tooling, email or social messaging. Do not alter other chat's MCP/HAE/identity work. The next proof must be green *exact PR head* CI and independent review; no claims of zero violations, zero vulnerabilities, SEO uplift or revenue.
+
+
+## 2026-10-16 current-main replay note
+
+PR #1902 (shared contrast/map semantics repair) is now **MERGED** into current protected `main`. That changes the relevant comparison base for #1888: the previous 2026-10-15 quality failure on #1888 head `3c02e32b...` was measured before this current-main repair could be incorporated into a fresh pull-request merge test.
+
+Do **not** raise Pa11y ceilings to absorb that failure. Trigger a fresh exact-head #1888 pull-request run against current `main`, then classify only the remaining delta. If the Academy/RU contrast counts fall back under the existing cap, keep the lower cap. If any count still exceeds it, repair the demonstrated shared selector/component instead of weakening the gate.
+
+This replay note changes QA evidence only; no production CSS, public content, Cloudflare setting, analytics, form transport, email, social or dispatcher workflow is modified here.
