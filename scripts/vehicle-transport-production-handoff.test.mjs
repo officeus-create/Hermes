@@ -4,9 +4,11 @@ import { execFileSync } from "node:child_process";
 
 const source = await readFile(new URL("../src/components/VehicleTransportRequestEnhancer.astro", import.meta.url), "utf8");
 
-assert.match(source, /window\.location\.protocol === "https:" && window\.location\.hostname === "hermeslogisticsus\.com"/);
-assert.match(source, /form\.dataset\.leadMode = "live"/);
-assert.match(source, /form\.dataset\.leadEndpoint = "\/api\/logistics-lead"/);
+assert.doesNotMatch(source, /canonicalProductionHost/);
+assert.doesNotMatch(source, /form\.dataset\.leadMode\s*=\s*"live"/);
+assert.match(source, /declaredLive = form\.dataset\.leadMode === "live"/);
+assert.match(source, /endpoint\.pathname === "\/api\/logistics-lead"/);
+assert.match(source, /form\.dataset\.leadMode = configuredLive \? "live" : "preview"/);
 assert.match(source, /endpoint\.origin !== window\.location\.origin/);
 assert.match(source, /"Idempotency-Key": requestId/);
 assert.match(source, /event: "vehicle_transport_submitted"/);
