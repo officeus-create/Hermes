@@ -66,7 +66,27 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   decoding="async"
                   fetchpriority="high"
                 />
-              ) : path.id === "marketing" ? null : (
+              ) : path.id === "marketing" ? (
+                <picture class="home-marketing-human" data-home-marketing-human>
+                  <source
+                    type="image/avif"
+                    srcset="/images/home-20261001/marketing-512.avif 512w, /images/home-20261001/marketing-887.avif 887w"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                  />
+                  <img
+                    src="/images/home-20261001/marketing-512.webp"
+                    srcset="/images/home-20261001/marketing-512.webp 512w, /images/home-20261001/marketing-887.webp 887w"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    width="887"
+                    height="1774"
+                    aria-hidden="true"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    fetchpriority="auto"
+                  />
+                </picture>
+              ) : (
                 <picture>
                   <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
                   <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
@@ -429,7 +449,12 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 /* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
 .home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
 .home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
-/* Marketing scene is fully CSS/SVG, without hidden downloaded background photography. */
+/* Marketing keeps the approved human/content-creation frame as the story anchor while the causal UI flow remains separate. */
+.home-master-route-marketing .home-portal-art{background:linear-gradient(180deg,#dff5ea,#89b9a4 58%,#24483a)}
+.home-master-route-marketing .home-portal-art picture{height:100%}
+.home-master-route-marketing .home-marketing-human img{object-position:center 28%;opacity:.68;filter:saturate(.78) contrast(.94) brightness(1.04);transition:opacity .25s ease,filter .25s ease}
+.home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.12) 0%,rgba(29,82,61,.06) 44%,rgba(18,48,37,.68) 91%)}
+.home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-human img{opacity:.76;filter:saturate(.86) contrast(.96) brightness(1.05)}
 .home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
 .home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
 .home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
@@ -474,7 +499,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(max-width:700px){.home-master-route-marketing .home-marketing-human img{object-position:center 22%;opacity:.56}.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
 .home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
