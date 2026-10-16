@@ -1231,7 +1231,7 @@ h3 { font-size: 1.75rem; }
 .footer-main { display: grid; grid-template-columns: 1.1fr .55fr .85fr .45fr auto; gap: 1.5rem; align-items: start; }
 .footer-location { margin-top: .75rem !important; color: rgba(255,255,255,.75) !important; font-weight: 700; }
 .footer-contacts { display: grid; gap: .45rem; font-size: .86rem; }
-.footer-contacts-label { margin: .55rem 0 .15rem; color: rgba(255,255,255,.45); font-family: var(--font-mono); font-size: .68rem; text-transform: none; letter-spacing: 0; }
+.footer-contacts-label { margin: .55rem 0 .15rem; color: rgba(255,255,255,.65); font-family: var(--font-mono); font-size: .68rem; text-transform: none; letter-spacing: 0; }
 .footer-contacts-label:first-child { margin-top: 0; }
 .footer-contacts a { display: grid; gap: .1rem; color: rgba(255,255,255,.88); }
 .footer-contacts a span { color: rgba(255,255,255,.5); font-size: .72rem; }
