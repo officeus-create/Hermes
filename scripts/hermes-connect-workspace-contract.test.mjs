@@ -97,6 +97,9 @@ assert(!review.includes("workspace-v2"), "review.html: retired workspace-v2 refe
 
 assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav") && css.includes(".mobile-more-sheet"), "workspace.css: Hermes drawer, mobile navigation, or More sheet style is missing.");
 assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer") && js.includes("function setMobileMore") && js.includes("function updateHermesContext"), "workspace.js: core interaction/mobile progressive-disclosure contracts are missing.");
+assert(!/\$\('\[data-(?:mobile-view|hermes-open)\]'\)\.forEach/.test(js), "workspace.js: collection bindings must use $()/querySelectorAll before forEach.");
+assert((js.match(/\$\$\('\[data-mobile-view\]'\)\.forEach/g) || []).length >= 2, "workspace.js: mobile view collection must be used for state + listener binding.");
+assert(js.includes("$('[data-hermes-open]').forEach"), "workspace.js: all Ask Hermes actions must receive the drawer listener.");
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
 // The live private workspaces intentionally inherit the previously approved Pearl-room direction.
