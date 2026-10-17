@@ -185,6 +185,19 @@ async function capture() {
         });
         await page.waitForTimeout(350);
 
+        const consentBanner = page.locator("[data-consent-banner]");
+        const consentDecline = page.locator("[data-consent-decline]");
+        let consentCaptureDecision = "already-resolved";
+        if (await consentBanner.isVisible().catch(() => false)) {
+          await consentDecline.click();
+          await consentBanner.waitFor({ state: "hidden", timeout: 5_000 });
+          consentCaptureDecision = "declined-for-capture";
+        }
+        const consentOverlayVisibleAfterSetup = await consentBanner.isVisible().catch(() => false);
+        if (consentOverlayVisibleAfterSetup) {
+          throw new Error(`${route.path} analytics consent overlay still covers owner-review screenshot evidence`);
+        }
+
         const status = response?.status() ?? 0;
         if (status === 0 || status >= 400) {
           throw new Error(`${route.path} returned screenshot status ${status}`);
@@ -209,6 +222,8 @@ async function capture() {
           documentClientWidth: layout.documentClientWidth,
           bodyScrollWidth: layout.bodyScrollWidth,
           drawerVerification,
+          consentCaptureDecision,
+          consentOverlayVisibleAfterSetup,
           file: fileName,
           sha256: await sha256(filePath),
         });
@@ -227,6 +242,7 @@ async function capture() {
     gitSha: process.env.GITHUB_SHA || process.env.GIT_SHA || null,
     retentionDays: 14,
     externalRequestsBlocked: true,
+    consentPolicy: "continue-without-analytics-for-screenshot-only",
     observations,
   };
   await writeFile(
