@@ -83,20 +83,20 @@ Reduced motion: static connected system map with the same labels.
 
 ## Academy — Human Progress
 
-Purpose: make the learner, not the book, the main subject.
+Purpose: preserve the approved warm Academy environment and express human progress through truthful progression states and restrained environmental motion.
 
-Current implementation: a local owner-reference learner-at-laptop derivative is the primary visual subject. The retired Academy background containing books/bookcase is not loaded on Home; a simple owned CSS atmosphere sits behind the learner and progression states. The learner asset is registered in media provenance, contains no external runtime/CDN dependency, and must be treated as illustrative AI-reference material rather than a real Hermes learner or endorsement.
+Current implementation source lock: the owner-approved responsive Academy image family (`academy-512/887.avif|webp`) provides the visual environment: warm/light architectural study atmosphere, staircase/library context, daylight and the existing integrated book/page element. The generated learner-at-laptop derivative is not owner-approved and must not be loaded on Home. The progression UI is explanatory, not a replacement visual subject.
 
 Story:
-`Task → Practice → Feedback → Next level`.
+`Task → Practice → Feedback → Correction / Retry → Next step`.
 
 Truth boundary: no guaranteed employment, income, completion or advancement.
 
-Motion: natural light, subtle environment movement, task/progress/feedback state changes; future human micro-clips require approved owned/licensed assets.
+Motion: this step does not add final Academy animation. Only restrained existing-safe atmosphere may remain when it does not alter the approved composition. Future movement may animate already-approved environmental elements only after visual approval; no new person, book, bookcase, page object, background or illustration is implied.
 
-Mobile: learner + one active progression state at a time.
+Mobile: preserve the same approved Academy environment with a simplified readable progression overlay.
 
-Reduced motion: all progression labels visible; no decorative motion. Stale page-turn/book-selection animation code is forbidden.
+Reduced motion: all progression labels remain readable; no decorative motion is required. Separate CSS book/bookcase objects, learner-primary overlays and stale page-turn/book-selection code are forbidden.
 
 ## Asset provenance gate
 
