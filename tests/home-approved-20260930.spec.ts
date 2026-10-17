@@ -165,9 +165,10 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- // Marketing now intentionally reuses one approved responsive human/content-creation anchor.
- expect(artwork.length).toBeGreaterThanOrEqual(3);
- expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(true);
+ expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.some(url=>/\/academy-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.some(url=>/\/technology-(512|887)\./.test(url))).toBe(true);
+ expect(artwork.some(url=>url.includes('/academy-learner-owner-reference.webp'))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
