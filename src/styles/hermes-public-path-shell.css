@@ -22,12 +22,12 @@ body:has(.detail-page) {
 }
 
 .detail-page-marketing {
-  --path-signal: #9b5de5;
+  --path-signal: #6f32b5;
   --path-signal-soft: rgba(155, 93, 229, .10);
 }
 
 .detail-page-academy {
-  --path-signal: #a97828;
+  --path-signal: #7a5112;
   --path-signal-soft: rgba(169, 120, 40, .10);
 }
 
