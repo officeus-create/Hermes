@@ -11,8 +11,8 @@ Owner: existing Technology Developer. Hermes Agent Coordinator / One Brain owns 
 - Connected MacBookPro was reachable on October 17, 2026 but had no Docker. An always-on US host was not available in connected device inventory. No installation was performed; do not use unreviewed curl-pipe-bash.
 
 ## Actual components
-- scripts/hermes-free-llm-pilot.mjs: **default off**, explicit caller department/purpose/data classification, loopback-only http://127.0.0.1:3001/v1, short timeout, one non-streamed completion, no automatic retries, no paid fallback, output labeled INTERNAL_DRAFT_ONLY.
-- scripts/hermes-free-llm-pilot.test.mjs: six synthetic local tests. They do **not** call a provider and do not prove Docker runtime.
+- scripts/hermes-free-llm-pilot.mjs: **default off**, explicit caller department/purpose/data classification, loopback-only http://127.0.0.1:3001/v1, short timeout, one non-streamed completion capped at 640 output tokens, read-only usage-token metadata, no automatic retries, no paid fallback, output labeled INTERNAL_DRAFT_ONLY.
+- scripts/hermes-free-llm-pilot.test.mjs: seven synthetic local tests. They do **not** call a provider and do not prove Docker runtime.
 - infra/freellmapi/docker-compose.yml: requires manually vetted official GHCR sha256 digest and host-secret encryption key, localhost-only port, persistent volume, /api/ping health.
 - infra/freellmapi/.gitignore keeps .env/SQLite/keys out of Git.
 
@@ -35,7 +35,7 @@ Owner: existing Technology Developer. Hermes Agent Coordinator / One Brain owns 
 
 Cloud-hosted ChatGPT, private ChatGPT plugins and Cloudflare Workers cannot access somebody else's localhost. This pilot does **not** give them a replacement LLM. Wider integration would need a separately designed authenticated multi-agent service approved for business data; do not fake it by exposing this single-user proxy.
 
-## Gates / evidence ladder
+## Independent verification\n\nThe dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs synthetic tests, a real localhost TCP request against a fixture without external AI calls, and Docker Compose syntax/security assertions using FAKE keys. It also builds the **exact pinned** public FreeLLMAPI upstream commit on an ephemeral GitHub runner with no Hermes secrets, then checks local `/api/ping`. This is not an installation or provider API-key test. Treat only observed completed CI jobs as passed. The currently connected MacBookPro is not the chosen 24/7 production host.\n\n## Gates / evidence ladder
 SOURCE_VERIFIED → CODED → SYNTHETIC_TEST_PASS → APPROVED_HOST → PRIVATE_DEPLOYED → PROVIDER_CONFIGURED → PUBLIC_PROMPT_SMOKE → VERIFIED_INTERNAL_USE.
 
 No external messages, deployments, purchased upgrades, secrets, public services or changes to Hermes provider/HAE runtime under this PR. Keep existing business prioritization and independent QA.
