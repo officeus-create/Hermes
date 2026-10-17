@@ -247,7 +247,14 @@ import SiteHeader from "../../../../../components/SiteHeader.astro";
           message(authMessage, 'Account created. Add your company for role-specific review.');
           await showCompany(payload.specialist);
         } catch (error) {
-          const text = error?.payload?.error === 'email_already_registered' ? 'This email already has a Hermes account. Use Sign in.' : `Could not create account: ${error.message}`;
+          const code = error?.payload?.error;
+          const text = code === 'email_already_registered'
+            ? 'This email already has a Hermes account. Use Sign in.'
+            : code === 'email_verification_required'
+              ? 'Verify your email first: /services/hermes-connect/email-access/'
+              : code === 'verified_signup_unavailable'
+                ? 'Verified registration is temporarily unavailable. Existing account sign-in still works.'
+                : `Could not create account: ${error.message}`;
           message(authMessage, text, true);
         } finally { if (button instanceof HTMLButtonElement) button.disabled = false; }
       });
