@@ -90,7 +90,13 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     partial?: boolean; error?: string;
   };
   type DetailPayload = {
-    success?: boolean; request?: Row & { email_body?: string };
+    success?: boolean; request?: Row & {
+      email_body?: string;
+      qualification_authority_verified?: number;
+      qualification_insurance_verified?: number;
+      qualification_equipment_capacity_verified?: number;
+      qualification_operating_fit_verified?: number;
+    };
     error?: string;
   };
   const ru = new URLSearchParams(location.search).get("lang") === "ru";
@@ -182,14 +188,25 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     if (detailMeta) detailMeta.textContent = `${payload.request.created_at} · ${payload.request.status} · ${payload.request.delivery_state}`;
     if (detailBody) detailBody.textContent = payload.request.email_body || "";
     selectedRecord = { request_id: id, status: payload.request.status, classification: payload.request.classification };
-    for (const input of verificationInputs) input.checked = false;
+    const persistedQualificationChecks: Record<string, boolean> = {
+      authority_verified: Number(payload.request.qualification_authority_verified) === 1,
+      insurance_verified: Number(payload.request.qualification_insurance_verified) === 1,
+      equipment_capacity_verified: Number(payload.request.qualification_equipment_capacity_verified) === 1,
+      operating_fit_verified: Number(payload.request.qualification_operating_fit_verified) === 1,
+    };
+    for (const input of verificationInputs) {
+      const key = input.dataset.qualificationCheck || "";
+      input.checked = selectedRecord.status === "qualified" && persistedQualificationChecks[key] === true;
+      input.disabled = selectedRecord.status === "qualified";
+    }
     if (reviewRecord) reviewRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "new";
     if (qualifyRecord) {
       qualifyRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
       qualifyRecord.disabled = true;
     }
     if (qualificationChecks) qualificationChecks.hidden =
-      selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
+      selectedRecord.classification !== "commercial" ||
+      (selectedRecord.status !== "reviewed" && selectedRecord.status !== "qualified");
     if (closeRecord) closeRecord.hidden = selectedRecord.classification !== "commercial" || selectedRecord.status !== "reviewed";
     if (ownerActions) ownerActions.hidden = selectedRecord.classification !== "commercial" ||
       (selectedRecord.status !== "new" && selectedRecord.status !== "reviewed");
