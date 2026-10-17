@@ -8,7 +8,6 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   const route = page.locator('[data-route-id="academy"]');
   const proof = route.locator('[data-home-pillar-proof="progress"]');
   const human = route.locator("[data-home-academy-human]");
-  const background = route.locator(".home-portal-art img");
   await route.scrollIntoViewIfNeeded();
 
   await expect(human).toBeVisible();
@@ -17,9 +16,9 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   await expect(learnerImage).toBeVisible();
   await expect(learnerImage).toHaveAttribute("src", "/images/home-20261001/academy-learner-owner-reference.webp");
   await expect(human.locator("svg")).toHaveCount(0);
-  await expect(background).toBeVisible();
-  await expect(background).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
-  await expect(background).toHaveCSS("opacity", "0.38");
+  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
+  await expect(route.locator('img[src*="/images/home-20261001/academy-512"]')).toHaveCount(0);
+  await expect(route.locator('img[src*="/images/home-20261001/academy-887"]')).toHaveCount(0);
   const geometry = await route.evaluate((node) => {
     const routeRect = node.getBoundingClientRect();
     const humanRect = node.querySelector("[data-home-academy-human]")?.getBoundingClientRect();
@@ -39,6 +38,7 @@ test("Academy keeps the human artwork primary and replays reviewed progression",
   await expect(proof).toHaveAttribute("data-motion-state", "running");
   await expect(proof.locator(".home-academy-state")).toHaveCount(4);
   await expect(route.locator(".home-academy-book")).toHaveCount(0);
+  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(proof).toContainText("Practice before consequence");
   await expect(proof).toContainText("HUMAN FEEDBACK");
   await expect(proof).toContainText("RETRY");
