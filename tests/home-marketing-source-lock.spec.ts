@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Marketing retires the botanical legacy background and keeps one causal demand journey", async ({ page }) => {
+test("Marketing source lock keeps causal demand journey without an unapproved pictorial subject", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
@@ -19,7 +19,7 @@ test("Marketing retires the botanical legacy background and keeps one causal dem
   await expect(route.locator(".home-marketing-inquiry")).toContainText("CRM EVIDENCE");
 });
 
-test("Marketing remains legible and static under reduced motion at 390px", async ({ page }) => {
+test("Marketing source lock stays legible and static under reduced motion at 390px", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
