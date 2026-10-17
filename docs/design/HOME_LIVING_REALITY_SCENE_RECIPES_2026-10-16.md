@@ -58,7 +58,9 @@ Story:
 
 Truth boundary: sanitized demonstration only; no invented reach, leads or revenue.
 
-Motion: current travels between real workflow stages; human micro-clips may replace the static source frame only after owned/licensed assets pass provenance review.
+Current visual field: the retired botanical AI background is not loaded. The causal journey is the only visual proof until an owned/licensed human content-production clip or frame passes owner review and provenance.
+
+Motion: current travels between real workflow stages; a future human micro-clip may be added only after owned/licensed assets pass provenance review.
 
 Mobile: stacked causal sequence, not a shrunken desktop canvas.
 
@@ -83,7 +85,7 @@ Reduced motion: static connected system map with the same labels.
 
 Purpose: make the learner, not the book, the main subject.
 
-Current implementation: a local owner-reference learner-at-laptop derivative is the primary visual subject. The existing Academy image is atmosphere/background only and is deliberately de-emphasized. The learner asset is registered in media provenance, contains no external runtime/CDN dependency, and must be treated as illustrative AI-reference material rather than a real Hermes learner or endorsement.
+Current implementation: a local owner-reference learner-at-laptop derivative is the primary visual subject. The retired Academy background containing books/bookcase is not loaded on Home; a simple owned CSS atmosphere sits behind the learner and progression states. The learner asset is registered in media provenance, contains no external runtime/CDN dependency, and must be treated as illustrative AI-reference material rather than a real Hermes learner or endorsement.
 
 Story:
 `Task → Practice → Feedback → Next level`.
@@ -94,7 +96,7 @@ Motion: natural light, subtle environment movement, task/progress/feedback state
 
 Mobile: learner + one active progression state at a time.
 
-Reduced motion: all progression labels visible; no page/light/leaf animation.
+Reduced motion: all progression labels visible; no decorative motion. Stale page-turn/book-selection animation code is forbidden.
 
 ## Asset provenance gate
 
