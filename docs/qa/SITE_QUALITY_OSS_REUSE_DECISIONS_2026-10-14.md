@@ -60,3 +60,8 @@ Accessibility source repair #1922 is now merged to protected `main` as `122c48c5
 Trigger a fresh pull-request merge-context run **without changing any Pa11y route/rule ceiling**. Acceptance: current-main merge context must stay within the existing recorded budget and ZAP evidence must persist. If the audit still exceeds a cap, classify and repair the demonstrated selector/root cause; do not weaken the gate.
 
 This is QA evidence only; no production CSS/content/analytics/send behavior changes.
+
+
+## 2026-10-17 final Home integration gate
+
+PR #1937 replays this non-regression gate on top of the final Living Reality Home rather than on the historical pre-Home base. Do not raise or regenerate the 2026-10-14 ceilings merely because the final Home changes route counts. The exact final-Home Pa11y run must either remain at/below every approved route/rule ceiling or identify a concrete regression to fix. A green gate still means known-debt non-regression, not WCAG compliance.
