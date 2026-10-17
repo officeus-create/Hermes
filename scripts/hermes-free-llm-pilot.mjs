@@ -29,11 +29,11 @@ export async function callHermesFreeLlm(input,{env=process.env,fetchImpl=fetch,t
   if(!Number.isInteger(timeoutMs)||timeoutMs<100||timeoutMs>30000)deny("INVALID_TIMEOUT");
   let response;
   try{
-    response=await fetchImpl(base+"/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({...payload,stream:false}),redirect:"error",signal:AbortSignal.timeout(timeoutMs)});
+    response=await fetchImpl(base+"/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({...payload,stream:false,max_tokens:640}),redirect:"error",signal:AbortSignal.timeout(timeoutMs)});
   }catch{deny("TRANSPORT_ERROR");}
   if(!response?.ok)deny("UPSTREAM_UNAVAILABLE");
   let result;try{result=await response.json();}catch{deny("BAD_RESPONSE");}
   const value=result?.choices?.[0]?.message?.content;
   if(typeof value!=="string")deny("BAD_RESPONSE");
-  return {text:value,model:result.model??payload.model,routedVia:response.headers?.get?.("x-routed-via")??null,status:"INTERNAL_DRAFT_ONLY"};
+  return {text:value,model:result.model??payload.model,routedVia:response.headers?.get?.("x-routed-via")??null,usage:{promptTokens:Number.isInteger(result?.usage?.prompt_tokens)?result.usage.prompt_tokens:null,completionTokens:Number.isInteger(result?.usage?.completion_tokens)?result.usage.completion_tokens:null,totalTokens:Number.isInteger(result?.usage?.total_tokens)?result.usage.total_tokens:null},status:"INTERNAL_DRAFT_ONLY"};
 }
