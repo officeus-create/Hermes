@@ -251,6 +251,79 @@ try {
     } finally {await context.close();}
   }
 
+
+  // P1.3 Marketing A/B/C evidence. A/B are read-only; C is a browser-only style override.
+  const marketingABC=[];
+  for(const width of [1440,390]) {
+    // A — current exact PR.
+    {
+      const context=await browser.newContext({
+        viewport:{width,height:width===1440?1000:844},
+        reducedMotion:'reduce',colorScheme:'light',locale:'en-US',deviceScaleFactor:1
+      });
+      try {
+        const page=await context.newPage();
+        await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+        await page.evaluate(()=>document.fonts.ready);
+        const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+        if(await decline.isVisible().catch(()=>false)) await decline.click();
+        const route=page.locator('[data-route-id="marketing"]');
+        await route.scrollIntoViewIfNeeded();
+        const diagnosis=await page.evaluate(()=>{
+          const selectors=[
+            '.home-marketing-journey',
+            '.home-marketing-conductor',
+            '.home-marketing-content',
+            '.home-marketing-discovery',
+            '.home-marketing-site',
+            '.home-marketing-inquiry'
+          ];
+          return Object.fromEntries(selectors.map(selector=>{
+            const node=document.querySelector(selector);
+            if(!(node instanceof HTMLElement) && !(node instanceof SVGElement)) return [selector,null];
+            const rect=node.getBoundingClientRect();
+            const style=getComputedStyle(node);
+            return [selector,{
+              x:Math.round(rect.x),y:Math.round(rect.y),width:Math.round(rect.width),height:Math.round(rect.height),
+              position:style.position,display:style.display,opacity:style.opacity,zIndex:style.zIndex
+            }];
+          }));
+        });
+        await route.screenshot({path:`${directory}/marketing-abc-A-current-pr-${width}.png`,animations:'disabled'});
+        // C — hide only the current decorative/process construction in this browser context.
+        await page.addStyleTag({content:'.home-marketing-journey{display:none!important}'});
+        await route.screenshot({path:`${directory}/marketing-abc-C-clean-neutral-${width}.png`,animations:'disabled'});
+        marketingABC.push({width,state:'A_CURRENT_PR',diagnosis});
+        marketingABC.push({width,state:'C_CLEAN_NEUTRAL',hiddenSelector:'.home-marketing-journey'});
+      } finally {await context.close();}
+    }
+
+    // B — current production/main, comparison only.
+    {
+      const context=await browser.newContext({
+        viewport:{width,height:width===1440?1000:844},
+        reducedMotion:'reduce',colorScheme:'light',locale:'en-US',deviceScaleFactor:1
+      });
+      try {
+        const page=await context.newPage();
+        await page.goto(`https://hermeslogisticsus.com/?p13_marketing=${Date.now()}-${width}`,{waitUntil:'load',timeout:60000});
+        await page.evaluate(()=>document.fonts?.ready);
+        const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+        if(await decline.isVisible().catch(()=>false)) await decline.click();
+        const route=page.locator('[data-route-id="marketing"]');
+        await route.scrollIntoViewIfNeeded();
+        await route.screenshot({path:`${directory}/marketing-abc-B-previous-live-${width}.png`,animations:'disabled'});
+        const state=await page.evaluate(()=>({
+          academyBook:document.querySelectorAll('.home-academy-book').length,
+          marketingJourney:document.querySelectorAll('.home-marketing-journey').length,
+          marketingCards:document.querySelectorAll('.home-marketing-card').length,
+          marketingConductor:document.querySelectorAll('.home-marketing-conductor').length
+        }));
+        marketingABC.push({width,state:'B_PREVIOUS_LIVE',...state});
+      } finally {await context.close();}
+    }
+  }
+
   const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
   const touchPage=await touchContext.newPage();
   await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
@@ -280,6 +353,7 @@ try {
     results,
     cleanReview,
     logisticsForensic,
-    productionForensic
+    productionForensic,
+    marketingABC
   },null,2)+'\n');
 } finally {await browser.close();}
