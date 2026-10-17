@@ -6,7 +6,8 @@ import path from "node:path";
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const registry = JSON.parse(fs.readFileSync(path.join(repoRoot, "docs/compliance/media-provenance.json"), "utf8"));
 const allowedStatuses = new Set(["NEEDS_OWNER_PROVENANCE", "REPOSITORY_SOURCE_VERIFIED", "SOURCE_AND_RIGHTS_VERIFIED"]);
-const allowedDecisions = new Set(["PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE", "CURRENT_USE_ALLOWED"]);
+const allowedDecisions = new Set(["PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE", "CURRENT_USE_ALLOWED", "RETIRED_DO_NOT_PUBLISH"]);
+const allowedAssetStatuses = new Set(["ACTIVE", "REPLACED", "RETIRED", "EXPERIMENT"]);
 
 function walk(directory) {
   if (!fs.existsSync(directory)) return [];
@@ -23,17 +24,30 @@ const scopedFiles = registry.scope.roots.flatMap((root) => walk(path.join(repoRo
   .map((file) => path.relative(repoRoot, file).split(path.sep).join("/"))
   .sort();
 const registeredPaths = registry.assets.map((asset) => asset.path).sort();
+const currentAssets = registry.assets.filter((asset) => asset.assetStatus !== "RETIRED");
+const retiredAssets = registry.assets.filter((asset) => asset.assetStatus === "RETIRED");
+const currentRegisteredPaths = currentAssets.map((asset) => asset.path).sort();
 
 assert.deepEqual(registeredPaths, [...new Set(registeredPaths)], "Media registry contains duplicate paths");
-assert.deepEqual(registeredPaths, scopedFiles, "Every in-scope public media asset needs exactly one registry record");
+assert.deepEqual(currentRegisteredPaths, scopedFiles, "Every in-scope public media asset needs exactly one non-retired registry record");
+
+for (const retired of retiredAssets) {
+  assert.equal(retired.publicationDecision, "RETIRED_DO_NOT_PUBLISH", `${retired.path} must remain publication-ineligible while retired`);
+  assert.equal(fs.existsSync(path.join(repoRoot, retired.path)), false, `${retired.path} is RETIRED and must be physically absent`);
+}
 
 for (const asset of registry.assets) {
   assert.match(asset.sha256, /^[a-f0-9]{64}$/, `${asset.path} must record a SHA-256 hash`);
   assert.match(asset.firstTrackedCommit, /^[a-f0-9]{40}$/, `${asset.path} must record its first tracked commit`);
   assert.ok(allowedStatuses.has(asset.provenanceStatus), `${asset.path} has an unsupported provenance status`);
   assert.ok(allowedDecisions.has(asset.publicationDecision), `${asset.path} has an unsupported publication decision`);
-  const actual = crypto.createHash("sha256").update(fs.readFileSync(path.join(repoRoot, asset.path))).digest("hex");
-  assert.equal(actual, asset.sha256, `${asset.path} bytes changed without provenance review`);
+  if (asset.assetStatus !== undefined) {
+    assert.ok(allowedAssetStatuses.has(asset.assetStatus), `${asset.path} has an unsupported asset status`);
+  }
+  if (asset.assetStatus !== "RETIRED") {
+    const actual = crypto.createHash("sha256").update(fs.readFileSync(path.join(repoRoot, asset.path))).digest("hex");
+    assert.equal(actual, asset.sha256, `${asset.path} bytes changed without provenance review`);
+  }
   if (asset.provenanceStatus === "NEEDS_OWNER_PROVENANCE") {
     assert.equal(asset.source, null, `${asset.path} must not invent a source`);
     assert.equal(asset.rightsEvidence, null, `${asset.path} must not invent rights evidence`);

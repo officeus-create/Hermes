@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-17",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -210,7 +210,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-512.webp",
@@ -220,7 +222,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-887.avif",
@@ -230,7 +234,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-887.webp",
@@ -240,7 +246,22 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-learner-owner-reference.webp",
+      "sha256": "1681d891ecab6c3ca10c453912d7f7628dc6d2d55eb33a35a09ba6b328fa2f36",
+      "firstTrackedCommit": "3c71ea018f5b9a3d5961cc7dc019922d34b25e8c",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-provided Hermes AI visual reference derivative, locally cropped/cleaned for the Academy learner foreground on 2026-10-17; recruitment copy excluded; valid WebP repository bytes verified locally before commit; no third-party stock/CDN runtime material.",
+      "rightsEvidence": "Source visual was provided in the owner-controlled Hermes design conversation and reused only as an illustrative Academy learner reference. It must not be represented as a real Hermes student, customer, employee or endorsement. Independent rendered QA required before production. Supervisor correction 2026-10-17: visual subject not owner-approved for Home; preserve provenance only and do not publish.",
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED",
+      "ownerApprovalStatus": "NOT_OWNER_APPROVED",
+      "experimentStatus": "EXPERIMENT"
     },
     {
       "path": "public/images/home-20261001/contact.webp",
@@ -250,7 +271,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Cropped unchanged lower field from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; encoded for existing contact scene.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/home-20261001/leaves-160.webp",
@@ -260,7 +282,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale. This responsive variant was locally downsampled from public/images/home-20261001/leaves.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/leaves-256.webp",
@@ -270,7 +293,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale. This responsive variant was locally downsampled from public/images/home-20261001/leaves.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/leaves.webp",
@@ -280,7 +304,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/logistics-512.avif",
@@ -290,7 +315,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/logistics-512.webp",
@@ -300,7 +326,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/logistics-887.avif",
@@ -310,7 +337,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/logistics-887.webp",
@@ -320,7 +348,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/marketing-512.avif",
@@ -330,7 +359,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/marketing-512.webp",
@@ -340,7 +370,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/marketing-887.avif",
@@ -350,7 +381,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/marketing-887.webp",
@@ -360,7 +392,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-20261001/technology-512.avif",
@@ -370,7 +403,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/home-20261001/technology-512.webp",
@@ -380,7 +414,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/home-20261001/technology-887.avif",
@@ -390,7 +425,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/home-20261001/technology-887.webp",
@@ -400,7 +436,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/home-20261001/truck.webp",
@@ -410,7 +447,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED"
     },
     {
       "path": "public/images/home-approved-20260930.webp",
@@ -430,7 +468,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/car-hauler-768.webp",
@@ -440,7 +479,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/car-hauler-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/car-hauler-887.webp",
@@ -450,7 +490,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/dry-van-512.webp",
@@ -460,7 +501,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/dry-van-768.webp",
@@ -470,7 +512,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/dry-van-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/dry-van-887.webp",
@@ -480,7 +523,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/flatbed-512.webp",
@@ -490,7 +534,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/flatbed-768.webp",
@@ -500,7 +545,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/flatbed-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/flatbed-887.webp",
@@ -510,7 +556,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/hotshot-512.webp",
@@ -520,7 +567,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/hotshot-768.webp",
@@ -530,7 +578,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/hotshot-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/hotshot-887.webp",
@@ -540,7 +589,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/reefer-512.webp",
@@ -550,7 +600,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/reefer-768.webp",
@@ -560,7 +611,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/reefer-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/reefer-887.webp",
@@ -570,7 +622,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/step-deck-512.webp",
@@ -580,7 +633,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/step-deck-768.webp",
@@ -590,7 +644,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency. This responsive variant was locally downsampled from public/images/logistics-living/step-deck-887.webp on 2026-10-07 without adding external material.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/logistics-living/step-deck-887.webp",
@@ -600,7 +655,8 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-requested Hermes Logistics aerial scene generated in the connected Runway workspace on 2026-10-03, then downloaded, resized and converted to owned local WebP assets through GitHub Actions. No third-party stock source or production CDN dependency.",
       "rightsEvidence": "Owner explicitly requested completion of the Hermes website visual system using available free connectors and authorized generated visual assets. The generated scenes contain no customer data, real load/rate claims, third-party logos or stock-license claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE"
     },
     {
       "path": "public/images/path-academy-system.jpg",

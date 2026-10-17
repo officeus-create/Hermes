@@ -20,6 +20,32 @@ Current design authority: `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 + One 
 
 
 
+### Closure update — 2026-10-17
+
+**OWNER-DIRECTED WEBSITE VISUAL-SYSTEM IMPLEMENTATION = COMPLETE AT REVIEW-READY CODE LEVEL.**
+
+The 2026-10-04 seven-item execution list below is no longer an open coding backlog. Current disposition:
+
+1. **Home / Logistics** — `DONE_IN_REVIEW`: one coherent camera-locked logistics scene with separate equipment/weather states; the rejected standalone mini-truck overlay is explicitly removed and regression-blocked in #1935.
+2. **Home / Marketing** — `DONE_IN_REVIEW`: approved human/content anchor + Content → Discovery/Distribution → Website Action → CRM Evidence causal scene in #1935.
+3. **Home / Technology** — `DONE_IN_REVIEW`: real Hermes product/source replay + QA/readback truth boundary in #1935.
+4. **Home / Academy** — `DONE_IN_REVIEW`: provenance-registered illustrative learner foreground + Task/Practice → Human Feedback → Retry → Human Decision in #1935.
+5. **Mobile Home** — `DONE_IN_REVIEW`: sequential four-chapter composition, no compressed desktop grid and no hover dependency in #1935.
+6. **Hermes Connect mobile** — `DONE_IN_REVIEW`: Today / Inbox / Customers / Calendar / More + contextual Ask Hermes in #1934.
+7. **Commercial Scene Kit migration** — `REVIEW_STACK`: #1927 Web Design/Website Development → #1928 Auto Repair → #1931 Car Hauler → #1933 SEO/GEO evidence proof.
+
+Additional closure facts:
+- #1934 and #1935 are independent Ready-for-review PRs; merge/deploy/live remain separate owner gates.
+- The commercial proof stack is intentionally sequential; do not merge an upper layer without its base.
+- Old #1924, #1929, #1930 and #1932 are superseded/closed and must not return as active writers.
+- Website/Insights → channel-native social distribution → attributed return → CRM evidence already exists in current architecture; remaining Meta/Threads activation is provider/owner-gated, not unfinished Design code.
+- Do not create another Home redesign, V5 shell, Web Design SEO duplicate, social publisher or design backlog to represent already-closed work.
+
+**Primary implementation lane returns to Search/Growth P0 after review promotion:** qualified Car Hauling carrier acquisition through existing canonical owners and truthful evidence/qualification stages.
+
+Runtime truth remains:
+`REVIEW_READY != MERGED != DEPLOYED != LIVE_VERIFIED != BUSINESS_RESULT`.
+
 ### Owner implementation refinement — 2026-10-04
 
 The current website direction is now explicit:
@@ -39,7 +65,7 @@ Execution continues through the existing V4 lane; do not create V5 or a second d
 The visual differentiation of the four directions comes primarily from scene content, motion and information physics, not from four loud page-color themes.
 
 
-Last updated: 2026-10-04
+Last updated: 2026-10-17
 
 ## Queue state
 

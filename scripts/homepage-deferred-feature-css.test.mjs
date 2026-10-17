@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -9,6 +10,27 @@ const homepageSource = await readFile(join(root, "src", "pages", "index.astro"),
 const masterSource = await readFile(join(root, "src", "components", "HomeMasterScene.astro"), "utf8");
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
+const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance", "media-provenance.json"), "utf8"));
+const retiredHomeAssetPaths = [
+  "public/images/home-20261001/leaves-160.webp",
+  "public/images/home-20261001/leaves-256.webp",
+  "public/images/home-20261001/leaves.webp",
+  "public/images/home-20261001/logistics-512.avif",
+  "public/images/home-20261001/logistics-512.webp",
+  "public/images/home-20261001/logistics-887.avif",
+  "public/images/home-20261001/logistics-887.webp",
+  "public/images/home-20261001/marketing-512.avif",
+  "public/images/home-20261001/marketing-512.webp",
+  "public/images/home-20261001/marketing-887.avif",
+  "public/images/home-20261001/marketing-887.webp",
+  "public/images/home-20261001/truck.webp",
+  "public/images/home-20261001/academy-learner-owner-reference.webp"
+];
+const repairWorkspaceSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", "dashboard.astro"), "utf8");
+const websiteShowroomSource = await readFile(join(root, "src", "components", "WebsiteDevelopmentShowroom.astro"), "utf8");
+const socialStudioSource = await readFile(join(root, "src", "components", "BusinessSocialConnectionsWorkspace.astro"), "utf8");
+const academyScreenFlowSource = await readFile(join(root, "src", "components", "AcademyScreenFlow.astro"), "utf8");
+const academyHubSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "academy", "index.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
 
 // Home remains an entrance, not a catalogue. Heavy showroom/technology feature CSS must not
@@ -54,17 +76,95 @@ assert.ok(
 assert.ok(masterSource.includes("prefers-reduced-motion"), "master-scene motion must respect reduced-motion preferences");
 assert.ok(masterSource.includes(":focus-visible"), "master-scene navigation must preserve keyboard focus treatment");
 assert.ok(masterSource.includes("car-hauler-768.webp 768w"), "mobile LCP image must expose a right-sized 768px candidate");
-assert.ok(masterSource.includes('data-home-motion="truck"'), "Logistics must preserve an independent subject-motion layer instead of camera-only motion");
-assert.ok(masterSource.includes('/images/home-20261001/truck.webp'), "Logistics subject-motion layer must use the existing owned transparent truck asset");
-assert.ok(masterSource.includes("home-moving-truck"), "Logistics subject must retain scene-aligned positioning separate from the flattened background");
+assert.equal(masterSource.includes('data-home-motion="truck"'), false, "Logistics must not restore a duplicate standalone mini-truck motion layer");
+assert.equal(masterSource.includes('/images/home-20261001/truck.webp'), false, "Home runtime must not load the retired standalone mini-truck asset");
+assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must remain one coherent primary scene without a second tiny truck overlay");
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
+assert.equal(masterSource.includes("data-home-marketing-human"), false, "Marketing must not label the retired botanical artwork as a human story anchor");
+assert.equal(masterSource.includes("/images/home-20261001/marketing-512.avif"), false, "Home runtime must not restore the retired Marketing botanical AVIF");
+assert.equal(masterSource.includes("/images/home-20261001/marketing-512.webp"), false, "Home runtime must not restore the retired Marketing botanical WebP");
+const retiredMarketingAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/marketing-512.webp");
+assert.ok(retiredMarketingAsset, "Retired Marketing artwork must stay in provenance history even when removed from runtime");
 for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
 assert.ok(masterSource.includes("data-journey-motion"), "Marketing animation must expose a pausable motion state");
 assert.ok(masterSource.includes("prefers-reduced-motion: reduce"), "Marketing motion must provide a static reduced-motion fallback");
+assert.equal(masterSource.includes("LIVE PILOT"), false, "Home Technology must not use a release-status slogan in place of a real product surface");
+assert.equal(masterSource.includes("<strong>BUILDING</strong>"), false, "Home Technology must not imply a generic build state without product evidence");
+for (const [sourceToken, homeToken] of [
+  ["Shop Owner Workspace", "SHOP OWNER WORKSPACE"],
+  ["Services", "Services"],
+  ["Booking inbox", "Booking inbox"],
+  ["Catalog inquiries", "Catalog inquiries"],
+]) {
+  assert.ok(repairWorkspaceSource.includes(sourceToken), `Repair Shop product source must own Technology token: ${sourceToken}`);
+  assert.ok(masterSource.includes(homeToken), `Home Technology must reuse real Repair Shop UI token: ${homeToken}`);
+}
+for (const token of ["Semantic HTML", "Responsive", "Canonical", "Schema", "Production readback"]) {
+  assert.ok(websiteShowroomSource.includes(token), `Website showroom source must own Technology token: ${token}`);
+}
+for (const token of ["Social Studio", "Instagram", "Facebook", "Threads", "provider authorization", "provider readback"]) {
+  assert.ok(socialStudioSource.includes(token), `Social Studio source must own Technology token: ${token}`);
+}
+for (const route of ["/services/hermes-connect/repair-shops/dashboard/", "/services/website-development/", "/services/hermes-connect/repair-shops/social/"]) {
+  assert.ok(masterSource.includes(`data-tech-source="${route}"`), `Home Technology must retain source boundary: ${route}`);
+}
+for (const token of ["Practice before consequence", "Human feedback", "Retry", "Human progression gate"]) {
+  assert.ok(academyScreenFlowSource.includes(token), `Academy learning source must own Home progression token: ${token}`);
+}
+for (const token of ["evidence submission", "reviewer feedback/correction", "human progression decision"]) {
+  assert.ok(academyHubSource.includes(token), `Academy Hub must preserve human-reviewed boundary: ${token}`);
+}
+assert.ok(masterSource.includes('data-academy-source="/services/hermes-connect/academy/"'), "Home Academy must declare its current product source");
+for (const token of ["TASK + PRACTICE", "Practice before consequence", "HUMAN FEEDBACK", "RETRY", "PROGRESSION", "Human decision", "not automatic"]) {
+  assert.ok(masterSource.includes(token), `Home Academy must expose reviewed-progression token: ${token}`);
+}
+assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not introduce a separate CSS book/bookcase object");
+for (const token of [
+  "/images/home-20261001/academy-512.avif",
+  "/images/home-20261001/academy-512.webp",
+  "/images/home-20261001/academy-887.avif",
+  "/images/home-20261001/academy-887.webp",
+]) {
+  assert.ok(masterSource.includes(token), `Home Academy must preserve approved responsive visual source: ${token}`);
+}
+assert.equal(masterSource.includes("data-home-academy-human"), false, "Home Academy must not restore the rejected learner overlay");
+assert.equal(masterSource.includes("home-academy-human"), false, "Home Academy must not retain learner-primary CSS/runtime");
+assert.equal(masterSource.includes("owner-reference-derivative"), false, "Home Academy must not retain rejected learner semantics");
+for (const assetPath of retiredHomeAssetPaths) {
+  assert.equal(existsSync(join(root, assetPath)), false, `Retired Home asset must be physically absent: ${assetPath}`);
+  const provenance = mediaProvenance.assets.find((asset) => asset.path === assetPath);
+  assert.ok(provenance, `Retired Home asset must remain in provenance history: ${assetPath}`);
+  assert.equal(provenance.assetStatus, "RETIRED", `Retired Home asset status must stay RETIRED: ${assetPath}`);
+  assert.equal(provenance.publicationDecision, "RETIRED_DO_NOT_PUBLISH", `Retired Home asset must never be publication-eligible: ${assetPath}`);
+}
+assert.equal(masterSource.includes("home-page-turn"), false, "Home Academy must not retain stale page-turn animation code");
+assert.equal(masterSource.includes("home-book-choose"), false, "Home Academy must not retain stale book-selection animation code");
+const academyLearnerExperiment = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-learner-owner-reference.webp");
+assert.ok(academyLearnerExperiment, "Rejected Academy learner experiment must remain in provenance history");
+assert.equal(academyLearnerExperiment.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Learner experiment provenance must remain truthful");
+assert.equal(academyLearnerExperiment.publicationDecision, "RETIRED_DO_NOT_PUBLISH", "Rejected learner experiment must stay publication-ineligible");
+assert.equal(academyLearnerExperiment.assetStatus, "RETIRED", "Rejected learner experiment must stay RETIRED");
+assert.equal(academyLearnerExperiment.ownerApprovalStatus, "NOT_OWNER_APPROVED", "Learner experiment must never be promoted without owner approval");
+assert.equal(academyLearnerExperiment.experimentStatus, "EXPERIMENT", "Learner derivative must remain classified as EXPERIMENT");
+for (const assetPath of [
+  "public/images/home-20261001/academy-512.avif",
+  "public/images/home-20261001/academy-512.webp",
+  "public/images/home-20261001/academy-887.avif",
+  "public/images/home-20261001/academy-887.webp",
+]) {
+  const approvedAcademyAsset = mediaProvenance.assets.find((asset) => asset.path === assetPath);
+  assert.ok(approvedAcademyAsset, `Approved Academy asset must remain registered: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.assetStatus, "ACTIVE", `Approved Academy asset must stay ACTIVE: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.publicationDecision, "CURRENT_USE_ALLOWED", `Approved Academy asset must remain publishable: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.ownerApprovalStatus, "OWNER_APPROVED", `Approved Academy asset must remain owner-approved: ${assetPath}`);
+}
+for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
+  assert.ok(masterSource.includes(token), `Home Technology must expose real-product proof token: ${token}`);
+}
 assert.equal(masterSource.includes('loading={path.id === "marketing" ? "eager" : "lazy"}'), false, "only the true LCP image should be eager on mobile");
 assert.equal(masterSource.includes("void preloadScene(next)"), false, "homepage must not download the next logistics scene before it is displayed");
 assert.equal(masterSource.trim().includes("applyScene();\n    update();"), false, "initial logistics artwork must not be decoded twice before rotation starts");

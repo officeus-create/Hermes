@@ -128,12 +128,202 @@ try {
         throw new Error(`Owner-review capture geometry failed at ${width}: ${JSON.stringify(geometry)}`);
       }
       await page.screenshot({path:`${directory}/home-${width}-review-no-analytics.png`,fullPage:true,animations:'disabled'});
-      await page.locator('[data-route-id="marketing"]').screenshot({
-        path:`${directory}/home-${width}-marketing-review.png`,animations:'disabled'
+      if(width===390 || width===1440) {
+        for(const direction of ['logistics','marketing','technology','academy']) {
+          const route=page.locator(`[data-route-id="${direction}"]`);
+          await route.scrollIntoViewIfNeeded();
+          await route.screenshot({
+            path:`${directory}/home-${width}-${direction}-review.png`,
+            animations:'disabled'
+          });
+        }
+      } else {
+        await page.locator('[data-route-id="marketing"]').screenshot({
+          path:`${directory}/home-${width}-marketing-review.png`,animations:'disabled'
+        });
+      }
+      cleanReview.push({
+        ...geometry,
+        consent:'declined',
+        captured:width===390||width===1440?'full-page + all four pillars':'full-page + marketing pillar',
+        contactPaintedForCapture:true,
+        productionEvidence:false
       });
-      cleanReview.push({...geometry,consent:'declined',captured:'full-page and marketing pillar',contactPaintedForCapture:true,productionEvidence:false});
     } finally {await context.close();}
   }
+
+  // Logistics owner-forensic capture: force existing scene assets in the evidence browser only.
+  // This does not alter Home production behavior, timings, weather logic or runtime source.
+  const logisticsForensic=[];
+  const logisticsScenes=['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot'];
+  for(const width of [1440,390]) {
+    const context=await browser.newContext({
+      viewport:{width,height:width===1440?1000:844},
+      reducedMotion:'no-preference',
+      colorScheme:'light',
+      locale:'en-US',
+      deviceScaleFactor:1
+    });
+    try {
+      const page=await context.newPage();
+      await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+      await page.evaluate(()=>document.fonts.ready);
+      const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+      if(await decline.isVisible().catch(()=>false)) await decline.click();
+      const route=page.locator('[data-route-id="logistics"]');
+      await route.scrollIntoViewIfNeeded();
+      for(const scene of logisticsScenes) {
+        const loaded=await page.evaluate(async(sceneName)=>{
+          const image=document.querySelector('[data-home-logistics-scene-image]');
+          const echo=document.querySelector('[data-home-logistics-echo]');
+          if(!(image instanceof HTMLImageElement) || !(echo instanceof HTMLElement)) {
+            throw new Error('Logistics forensic target missing');
+          }
+          // Isolate the source image from weather/pseudo-element ambiguity.
+          echo.dataset.logisticsWeatherState='sun';
+          image.src=`/images/logistics-living/${sceneName}-512.webp`;
+          image.srcset=`/images/logistics-living/${sceneName}-512.webp 512w, /images/logistics-living/${sceneName}-768.webp 768w, /images/logistics-living/${sceneName}-887.webp 887w`;
+          image.dataset.logisticsSceneReady=sceneName;
+          echo.dataset.logisticsEchoScene=sceneName;
+          await image.decode();
+          return {
+            scene:sceneName,
+            requestedSrc:image.getAttribute('src'),
+            requestedSrcset:image.getAttribute('srcset'),
+            currentSrc:new URL(image.currentSrc).pathname,
+            naturalWidth:image.naturalWidth,
+            naturalHeight:image.naturalHeight,
+            weather:echo.dataset.logisticsWeatherState
+          };
+        },scene);
+        await route.screenshot({
+          path:`${directory}/logistics-forensic-${scene}-${width}.png`,
+          animations:'disabled'
+        });
+        logisticsForensic.push({width,...loaded});
+      }
+    } finally {await context.close();}
+  }
+
+
+  // P1.2 production forensic: read-only live Home captures. No runtime mutation.
+  const productionForensic=[];
+  for(const width of [1440,390]) {
+    const context=await browser.newContext({
+      viewport:{width,height:width===1440?1000:844},
+      reducedMotion:'no-preference',
+      colorScheme:'light',
+      locale:'en-US',
+      deviceScaleFactor:1
+    });
+    try {
+      const page=await context.newPage();
+      const url=`https://hermeslogisticsus.com/?p12_forensic=${Date.now()}-${width}`;
+      await page.goto(url,{waitUntil:'load',timeout:60000});
+      await page.evaluate(()=>document.fonts?.ready);
+      const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+      if(await decline.isVisible().catch(()=>false)) await decline.click();
+      await page.screenshot({path:`${directory}/production-${width}-initial.png`,fullPage:true,animations:'allow'});
+      const stateInitial=await page.evaluate(()=>({
+        href:location.href,
+        title:document.title,
+        bodyText:document.body.innerText,
+        academyBook:document.querySelectorAll('.home-academy-book').length,
+        academyBookPage:document.querySelectorAll('.home-academy-book-page').length,
+        marketingJourney:document.querySelectorAll('[data-home-marketing-journey]').length,
+        marketingFb:[...document.querySelectorAll('.home-marketing-channels i')].filter(n=>n.textContent?.trim()==='FB').length,
+        marketingFacebook:[...document.querySelectorAll('*')].filter(n=>n.children.length===0 && n.textContent?.trim()==='Facebook').length
+      }));
+      await page.waitForTimeout(10000);
+      await page.screenshot({path:`${directory}/production-${width}-elapsed-10s.png`,fullPage:true,animations:'allow'});
+      productionForensic.push({width,phase:'initial',...stateInitial});
+      if(width===390) {
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await page.waitForTimeout(250);
+        await page.screenshot({path:`${directory}/production-390-reduced.png`,fullPage:true,animations:'disabled'});
+        productionForensic.push({width,phase:'reduced',...(await page.evaluate(()=>({
+          academyBook:document.querySelectorAll('.home-academy-book').length,
+          academyBookPage:document.querySelectorAll('.home-academy-book-page').length,
+          marketingJourney:document.querySelectorAll('[data-home-marketing-journey]').length,
+          marketingFb:[...document.querySelectorAll('.home-marketing-channels i')].filter(n=>n.textContent?.trim()==='FB').length
+        })))});
+      }
+    } finally {await context.close();}
+  }
+
+
+  // P1.3 Marketing A/B/C evidence. A/B are read-only; C is a browser-only style override.
+  const marketingABC=[];
+  for(const width of [1440,390]) {
+    // A — current exact PR.
+    {
+      const context=await browser.newContext({
+        viewport:{width,height:width===1440?1000:844},
+        reducedMotion:'reduce',colorScheme:'light',locale:'en-US',deviceScaleFactor:1
+      });
+      try {
+        const page=await context.newPage();
+        await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+        await page.evaluate(()=>document.fonts.ready);
+        const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+        if(await decline.isVisible().catch(()=>false)) await decline.click();
+        const route=page.locator('[data-route-id="marketing"]');
+        await route.scrollIntoViewIfNeeded();
+        const diagnosis=await page.evaluate(()=>{
+          const selectors=[
+            '.home-marketing-journey',
+            '.home-marketing-conductor',
+            '.home-marketing-content',
+            '.home-marketing-discovery',
+            '.home-marketing-site',
+            '.home-marketing-inquiry'
+          ];
+          return Object.fromEntries(selectors.map(selector=>{
+            const node=document.querySelector(selector);
+            if(!(node instanceof HTMLElement) && !(node instanceof SVGElement)) return [selector,null];
+            const rect=node.getBoundingClientRect();
+            const style=getComputedStyle(node);
+            return [selector,{
+              x:Math.round(rect.x),y:Math.round(rect.y),width:Math.round(rect.width),height:Math.round(rect.height),
+              position:style.position,display:style.display,opacity:style.opacity,zIndex:style.zIndex
+            }];
+          }));
+        });
+        await route.screenshot({path:`${directory}/marketing-abc-A-current-pr-${width}.png`,animations:'disabled'});
+        // C — hide only the current decorative/process construction in this browser context.
+        await page.addStyleTag({content:'.home-marketing-journey{display:none!important}'});
+        await route.screenshot({path:`${directory}/marketing-abc-C-clean-neutral-${width}.png`,animations:'disabled'});
+        marketingABC.push({width,state:'A_CURRENT_PR',diagnosis});
+        marketingABC.push({width,state:'C_CLEAN_NEUTRAL',hiddenSelector:'.home-marketing-journey'});
+      } finally {await context.close();}
+    }
+
+    // B — current production/main, comparison only.
+    {
+      const context=await browser.newContext({
+        viewport:{width,height:width===1440?1000:844},
+        reducedMotion:'reduce',colorScheme:'light',locale:'en-US',deviceScaleFactor:1
+      });
+      try {
+        const page=await context.newPage();
+        await page.goto(`https://hermeslogisticsus.com/?p13_marketing=${Date.now()}-${width}`,{waitUntil:'load',timeout:60000});
+        await page.evaluate(()=>document.fonts?.ready);
+        const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+        if(await decline.isVisible().catch(()=>false)) await decline.click();
+        const route=page.locator('[data-route-id="marketing"]');
+        await route.scrollIntoViewIfNeeded();
+        await route.screenshot({path:`${directory}/marketing-abc-B-previous-live-${width}.png`,animations:'disabled'});
+        const state=await page.evaluate(()=>({
+          academyBook:document.querySelectorAll('.home-academy-book').length,
+          marketingJourney:document.querySelectorAll('.home-marketing-journey').length,
+          marketingCards:document.querySelectorAll('.home-marketing-card').length,
+          marketingConductor:document.querySelectorAll('.home-marketing-conductor').length
+        }));
+        marketingABC.push({width,state:'B_PREVIOUS_LIVE',...state});
+      } finally {await context.close();}
+    }
+  }
+
   const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
   const touchPage=await touchContext.newPage();
   await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
@@ -158,9 +348,12 @@ try {
   await touchContext.close();
   await writeFile(`${directory}/evidence.json`,JSON.stringify({
     sha:process.env.GITHUB_SHA,
-    source:'Marketing CSS/SVG scene, client-side visible+reduced-mode checkpoint',
-    proof:'preview-only; not production',
+    source:'Home Living Reality: Logistics world states + Marketing causal demand flow + Technology product replay + Academy human reviewed progression',
+    proof:'exact PR-head preview only; not merged/deployed/production',
     results,
-    cleanReview
+    cleanReview,
+    logisticsForensic,
+    productionForensic,
+    marketingABC
   },null,2)+'\n');
 } finally {await browser.close();}

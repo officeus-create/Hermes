@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-10-14",
+  "evidence_environment": "GitHub Actions locally-built PR preview with web source identical to current main base SHA; NOT deployed production",
+  "evidence_commit": "1637bee204ddbfcd24bb61bc726b78c63df6f225",
+  "source_workflow_run_id": 38594402143,
+  "source_artifact_id": 11909059108,
+  "source_file": "pa11y.txt",
+  "status": "KNOWN_DEBT_NONREGRESSION_CAP_NOT_WCAG_COMPLIANCE",
+  "audit_tool": "pa11y-ci@4.1.1 (axe) WCAG2AA",
+  "note": "Upper caps equal independently parsed Pa11y counts (1043 total) from draft QA-only PR source identical to base main, not a compliant baseline. Update only after current-main/preview matched runs and reviewer approval. Recheck when main advances. External production remains independently unverified. Rule-class ceilings and explicit check for unknown axe rules are also enforced; lower total cannot mask newly introduced types.",
+  "paths": {
+    "/": 61,
+    "/paths/logistics/": 77,
+    "/logistics/car-hauler-loads/": 41,
+    "/logistics/car-hauler-loads/colorado-springs-co/": 48,
+    "/paths/marketing/": 66,
+    "/paths/technology/": 49,
+    "/paths/academy/": 46,
+    "/businesses/": 363,
+    "/load-board/": 116,
+    "/services/hermes-connect/repair-shops/": 117,
+    "/carrier/": 40,
+    "/ru/": 19
+  },
+  "base_main_sha": "63c980c782f0ac41411c93e191f931103e17efed",
+  "rule_caps": {
+    "color-contrast": 970,
+    "aria-prohibited-attr": 70,
+    "aria-valid-attr-value": 2,
+    "nested-interactive": 1
+  }
+}

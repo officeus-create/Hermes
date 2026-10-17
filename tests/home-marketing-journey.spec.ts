@@ -6,8 +6,9 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   const route = page.locator('[data-route-id="marketing"]');
   const scene = route.locator('[data-home-marketing-journey]');
   await expect(scene).toHaveCount(1);
+  await expect(route.locator("[data-home-marketing-human]")).toHaveCount(0);
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
-  // The user-approved Marketing scene must not load its retired hidden photography.
+  // The selected scene keeps the causal workflow without the retired botanical legacy artwork.
   await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
   for (const label of ["CONTENT", "DISCOVERY", "WEBSITE", "INQUIRY"]) {
     await expect(scene).toContainText(label);
@@ -71,6 +72,9 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
     await expect(stage.locator(`[data-route-id="${id}"] .home-portal-art img`))
       .toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
+  await expect(stage.locator('[data-route-id="marketing"] .home-portal-art img')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   const tabletCards = await stage.locator("[data-home-route]").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
   expect(tabletCards[0].top).toBe(tabletCards[1].top);
