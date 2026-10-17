@@ -43,3 +43,20 @@ The dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs synthetic tests
 SOURCE_VERIFIED → CODED → SYNTHETIC_TEST_PASS → APPROVED_HOST → PRIVATE_DEPLOYED → PROVIDER_CONFIGURED → PUBLIC_PROMPT_SMOKE → VERIFIED_INTERNAL_USE.
 
 No external messages, deployments, purchased upgrades, secrets, public services or changes to Hermes provider/HAE runtime under this PR. Keep existing business prioritization and independent QA.
+
+
+## Verified Docker-free option, if approved host has Node 20+
+
+On 2026-10-17 a secret-free ephemeral GitHub Actions job built the **pinned upstream commit `369c47128edf92d30abb59d7b7c0e46c43e1ce57`** using `npm ci` and `npm run build -w server` and successfully received `GET http://127.0.0.1:3001/api/ping` from the real compiled Node server. This confirms the **server runtime** does not require Docker. The offline smoke does **not** validate provider credentials, the dashboard UI, persistent data, external model calls, or a permanent service.
+
+A vetted always-on private server with Node 22 and a dedicated restricted OS user may use this option instead of Docker:
+1. Verify upstream SHA, licensing/dependencies and network access, then clone/checkout that exact commit. Never install with `curl | bash`.
+2. `npm ci --no-audit --no-fund && npm run build` on the private host (full build includes the dashboard). Do not reuse the ephemeral CI test database.
+3. Create a private host-local `.env` with a persistent fresh `ENCRYPTION_KEY` (64 lowercase hex), `HOST=127.0.0.1`, `PORT=3001`, `NODE_ENV=production`, and local database storage. File permission `0600`. **Do not paste real values into GitHub, Drive, CI logs or chat.**
+4. Start `node server/dist/index.js` under an owner-approved OS supervisor scoped to that private account, **not** a ChatGPT automation, dispatch device, browsing host or customer-facing web worker.
+5. Verify `/api/ping` from the same host, no incoming TCP 3001 from LAN/WAN, then dashboard setup and one licensed free-tier provider key supplied locally by the owner. Only a PUBLIC/SYNTHETIC completion can graduate the pilot to PROVIDER_TESTED.
+6. Stop with the supervisor and disable `HERMES_FREE_LLM_ENABLED` in any client for rollback. The full ChatGPT/Claude/HAE/CRM workflows remain unaffected.
+
+**Operational limitation:** an ordinary laptop is not proof of a 24/7 server, even if its localhost health check succeeds. A local proxy cannot directly serve independently cloud-hosted Hermes plugins. Promotion requires a separately reviewed authenticated shared service, not an open 0.0.0.0 port.
+
+Current adapter also includes a strict **640 completion-token cap** and returns nullable provider usage counters for later zero-spend/quota evaluation.
