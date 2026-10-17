@@ -40,3 +40,13 @@ test("unexpected engine and oversized answer are not trusted",async()=>{
   await assert.rejects(readHaECapabilities({...base,fetchImpl:async()=>({
     ok:true,headers:{get:()=>null},text:async()=>JSON.stringify(response)+"x".repeat(9000)})}),/RESPONSE_TOO_LARGE/);
 });
+
+test("CLI is fail-closed when imported code is launched as executable",async()=>{
+  const {spawnSync}=await import("node:child_process");
+  const {fileURLToPath}=await import("node:url");
+  const res=spawnSync(process.execPath,[fileURLToPath(new URL("./hermes-hae-public-capabilities.mjs",import.meta.url))],{
+    env:{PATH:process.env.PATH||""},encoding:"utf8",timeout:4000
+  });
+  assert.equal(res.status,1);
+  assert.match(res.stderr,/HERMES_HAE_STATUS_DISABLED/);
+});
