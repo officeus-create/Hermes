@@ -1,3 +1,4 @@
+// Exact-head integration gate: required audit after retarget to main.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
