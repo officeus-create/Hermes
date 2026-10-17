@@ -168,21 +168,15 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
-test('Home Logistics restores independent moving subject with reduced-motion fallback',async({page})=>{
+test('Home Logistics uses one coherent primary scene without a duplicate mini truck overlay',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:1440,height:1000});
  await page.goto('/');
- const subject=page.locator('[data-home-motion="truck"]');
- await expect(subject).toHaveCount(1);
- await expect(subject.locator('img')).toHaveAttribute('src','/images/home-20261001/truck.webp');
- await expect(subject).toHaveAttribute('data-motion-state','running');
- const normal=await subject.evaluate(node=>({animations:node.getAnimations().length,position:getComputedStyle(node).position,width:getComputedStyle(node).width}));
- expect(normal.animations).toBeGreaterThan(0);
- expect(normal.position).toBe('absolute');
- expect(parseFloat(normal.width)).toBeGreaterThan(20);
- await page.emulateMedia({reducedMotion:'reduce'});
- await expect(subject).toHaveAttribute('data-motion-state','reduced');
- await expect.poll(async()=>subject.evaluate(node=>node.getAnimations().length)).toBe(0);
+ const route=page.locator('[data-route-id="logistics"]');
+ await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
+ await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
+ await expect(route.locator('.home-moving-truck')).toHaveCount(0);
+ await expect(route.locator('img[src="/images/home-20261001/truck.webp"]')).toHaveCount(0);
 });
 
 test('all four Home directions explain a causal workflow and remain static on touch',async({browser,page},testInfo)=>{
@@ -247,12 +241,11 @@ test('Home Logistics keeps a camera-locked mobile environment across scene chang
  const route=page.locator('[data-route-id="logistics"]');
  const scene=page.locator('[data-home-logistics-scene-image]');
  const echo=page.locator('[data-home-logistics-echo]');
- const truck=page.locator('[data-home-motion="truck"]');
  await route.scrollIntoViewIfNeeded();
  await expect(scene).toHaveCSS('animation-name','none');
  await expect(scene).toHaveCSS('transform','none');
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect(truck).toHaveAttribute('data-motion-state','running');
+ await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
  await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','rain'));
  const rain=route.locator('.home-logistics-weather');
  await expect(rain).toHaveCSS('animation-name','home-logistics-rain');
