@@ -857,6 +857,14 @@ const oneTimeMigration = readFileSync(new URL("../migrations/20261015_carrier_in
 assert.match(oneTimeMigration, /CREATE TABLE IF NOT EXISTS hermes_carrier_intake/);
 assert.match(oneTimeMigration, /CREATE INDEX IF NOT EXISTS idx_hermes_carrier_intake_retention/);
 assert.match(oneTimeMigration, /delivery_state TEXT NOT NULL DEFAULT 'not_sent'/);
+for (const column of [
+  "qualification_authority_verified",
+  "qualification_insurance_verified",
+  "qualification_equipment_capacity_verified",
+  "qualification_operating_fit_verified",
+]) {
+  assert.match(oneTimeMigration, new RegExp(column + " INTEGER NOT NULL DEFAULT 0"));
+}
 const unmigratedCapture = await onRequest({
   request: captureReq({ ...capturedCarrier, request_id: "carrier_missing_table_20261015" }, "203.0.113.227"),
   env: {
@@ -941,13 +949,19 @@ class CarrierOwnerDb {
       },
       async run() {
         if (/UPDATE hermes_carrier_intake SET/.test(sql)) {
-          const [nextStatus, updatedAt, updatedBy, reviewCode, id, fromStatus, now] = this.vals;
+          const [nextStatus, updatedAt, updatedBy, reviewCode,
+            authorityFlag, insuranceFlag, equipmentFlag, operatingFitFlag,
+            id, fromStatus, now] = this.vals;
           const row = db.rows.get(id);
           if (!row || (row.status || "new") !== fromStatus ||
               row.classification !== "commercial" || row.retention_until <= now)
             return { success: true, meta: { changes: 0 } };
           db.rows.set(id, { ...row, status: nextStatus, status_updated_at: updatedAt,
-            status_updated_by: updatedBy, status_review_code: reviewCode });
+            status_updated_by: updatedBy, status_review_code: reviewCode,
+            qualification_authority_verified: Math.max(Number(row.qualification_authority_verified || 0), Number(authorityFlag || 0)),
+            qualification_insurance_verified: Math.max(Number(row.qualification_insurance_verified || 0), Number(insuranceFlag || 0)),
+            qualification_equipment_capacity_verified: Math.max(Number(row.qualification_equipment_capacity_verified || 0), Number(equipmentFlag || 0)),
+            qualification_operating_fit_verified: Math.max(Number(row.qualification_operating_fit_verified || 0), Number(operatingFitFlag || 0)) });
           return { success: true, meta: { changes: 1 } };
         }
         if (/DELETE FROM hermes_carrier_intake/.test(sql)) {
@@ -1094,9 +1108,18 @@ const qualifiedBody = await qualified.json();
 assert.equal(qualifiedBody.qualified_carrier_state, "owner_qualified");
 assert.equal(ownerDb.rows.get(qualificationId).status, "qualified");
 assert.equal(ownerDb.rows.get(qualificationId).status_review_code, "manual_carrier_qualification");
-assert.equal((await (await readOwnerCarrierIntake({
+assert.equal(ownerDb.rows.get(qualificationId).qualification_authority_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_insurance_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_equipment_capacity_verified, 1);
+assert.equal(ownerDb.rows.get(qualificationId).qualification_operating_fit_verified, 1);
+const qualificationReadback = await (await readOwnerCarrierIntake({
   request: ownerReadReq("?request_id=" + qualificationId), env: { DB: ownerDb },
-})).json()).qualified_carrier_state, "owner_qualified");
+})).json();
+assert.equal(qualificationReadback.qualified_carrier_state, "owner_qualified");
+assert.equal(qualificationReadback.request.qualification_authority_verified, 1);
+assert.equal(qualificationReadback.request.qualification_insurance_verified, 1);
+assert.equal(qualificationReadback.request.qualification_equipment_capacity_verified, 1);
+assert.equal(qualificationReadback.request.qualification_operating_fit_verified, 1);
 
 assert.deepEqual([serviceCalls.length, emailMessages.length, telegramMessages.length], captureBeforeProvider,
   "Owner status or qualification must never invoke email, Telegram or dispatcher notification.");
