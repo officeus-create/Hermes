@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -10,6 +11,24 @@ const masterSource = await readFile(join(root, "src", "components", "HomeMasterS
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance", "media-provenance.json"), "utf8"));
+const retiredHomeAssetPaths = [
+  "public/images/home-20261001/academy-512.avif",
+  "public/images/home-20261001/academy-512.webp",
+  "public/images/home-20261001/academy-887.avif",
+  "public/images/home-20261001/academy-887.webp",
+  "public/images/home-20261001/leaves-160.webp",
+  "public/images/home-20261001/leaves-256.webp",
+  "public/images/home-20261001/leaves.webp",
+  "public/images/home-20261001/logistics-512.avif",
+  "public/images/home-20261001/logistics-512.webp",
+  "public/images/home-20261001/logistics-887.avif",
+  "public/images/home-20261001/logistics-887.webp",
+  "public/images/home-20261001/marketing-512.avif",
+  "public/images/home-20261001/marketing-512.webp",
+  "public/images/home-20261001/marketing-887.avif",
+  "public/images/home-20261001/marketing-887.webp",
+  "public/images/home-20261001/truck.webp"
+];
 const repairWorkspaceSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", "dashboard.astro"), "utf8");
 const websiteShowroomSource = await readFile(join(root, "src", "components", "WebsiteDevelopmentShowroom.astro"), "utf8");
 const socialStudioSource = await readFile(join(root, "src", "components", "BusinessSocialConnectionsWorkspace.astro"), "utf8");
@@ -109,12 +128,20 @@ for (const token of ["TASK + PRACTICE", "Practice before consequence", "HUMAN FE
 assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not restore the book as the central interface");
 assert.equal(masterSource.includes("/images/home-20261001/academy-512.avif"), false, "Home Academy must not restore the legacy books/background AVIF");
 assert.equal(masterSource.includes("/images/home-20261001/academy-512.webp"), false, "Home Academy must not restore the legacy books/background WebP");
+for (const assetPath of retiredHomeAssetPaths) {
+  assert.equal(existsSync(join(root, assetPath)), false, `Retired Home asset must be physically absent: ${assetPath}`);
+  const provenance = mediaProvenance.assets.find((asset) => asset.path === assetPath);
+  assert.ok(provenance, `Retired Home asset must remain in provenance history: ${assetPath}`);
+  assert.equal(provenance.assetStatus, "RETIRED", `Retired Home asset status must stay RETIRED: ${assetPath}`);
+  assert.equal(provenance.publicationDecision, "RETIRED_DO_NOT_PUBLISH", `Retired Home asset must never be publication-eligible: ${assetPath}`);
+}
 assert.equal(masterSource.includes("home-page-turn"), false, "Home Academy must not retain stale page-turn animation code");
 assert.equal(masterSource.includes("home-book-choose"), false, "Home Academy must not retain stale book-selection animation code");
 const academyHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-learner-owner-reference.webp");
 assert.ok(academyHumanAsset, "Academy learner foreground must remain registered in media provenance");
 assert.equal(academyHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Academy learner reuse requires verified source/rights");
 assert.equal(academyHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Academy learner reuse requires current publication approval");
+assert.equal(academyHumanAsset.assetStatus, "ACTIVE", "Academy learner foreground must stay ACTIVE while it is the selected Home subject");
 const retiredAcademyBackground = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-512.webp");
 assert.ok(retiredAcademyBackground, "Retired Academy background must stay in provenance history even when removed from runtime");
 for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
