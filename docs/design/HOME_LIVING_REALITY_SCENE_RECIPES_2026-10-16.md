@@ -24,21 +24,21 @@ Purpose: make movement, environment and equipment feel physically separate.
 Story states:
 - equipment: car hauler / dry van / reefer / flatbed / step deck / hotshot;
 - weather: sun / fog / dusk / rain;
-- subject: independent truck layer;
+- subject: one coherent primary logistics scene; no second standalone mini-truck overlay;
 - operational meaning: request → route fit → human review → handoff.
 
 Truth boundary: illustrative operating scene; no live loads, rates, capacity, tracking or customer data.
 
 Motion:
 - camera/background geometry remains locked;
-- truck moves as an independent subject;
+- vehicle movement belongs inside an approved coherent scene/asset; do not simulate it with a second tiny HTML truck over another truck scene;
 - weather changes on its own layer;
 - desktop pointer/focus may nudge the world state;
 - ambient equipment replacement runs more slowly than weather state changes.
 
 Mobile fallback: one-column composition; ambient state cycle remains optional and must not alter layout geometry.
 
-Reduced motion: stable sun state, no weather animation, no subject travel animation.
+Reduced motion: stable sun state and no decorative weather/vehicle travel animation.
 
 Performance: no runtime video-provider dependency. Existing responsive WebP assets + CSS/WAAPI first.
 
@@ -47,7 +47,7 @@ Acceptance:
 - weather change must not replace the equipment image;
 - rain uses distributed droplets/mist, never large translating glitch lines;
 - background transform stays none;
-- subject motion stops under reduced motion.
+- no standalone duplicate/tiny truck layer is present at any motion preference.
 
 ## Marketing — Attention & Demand
 
