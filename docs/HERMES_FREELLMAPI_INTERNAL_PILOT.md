@@ -12,7 +12,7 @@ Owner: existing Technology Developer. Hermes Agent Coordinator / One Brain owns 
 
 ## Actual components
 - scripts/hermes-free-llm-pilot.mjs: **default off**, explicit caller department/purpose/data classification, loopback-only http://127.0.0.1:3001/v1, short timeout, one non-streamed completion capped at 640 output tokens, read-only usage-token metadata, no automatic retries, no paid fallback, output labeled INTERNAL_DRAFT_ONLY.
-- scripts/hermes-free-llm-pilot.test.mjs: seven synthetic local tests. They do **not** call a provider and do not prove Docker runtime.
+- scripts/hermes-free-llm-pilot.test.mjs: eight synthetic local tests. They do **not** call a provider and do not prove Docker runtime.
 - infra/freellmapi/docker-compose.yml: requires manually vetted official GHCR sha256 digest and host-secret encryption key, localhost-only port, persistent volume, /api/ping health.
 - infra/freellmapi/.gitignore keeps .env/SQLite/keys out of Git.
 
@@ -37,7 +37,7 @@ Cloud-hosted ChatGPT, private ChatGPT plugins and Cloudflare Workers cannot acce
 
 ## Independent verification
 
-The dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs synthetic tests, a real localhost TCP request against a fixture without external AI calls, and Docker Compose syntax/security assertions using FAKE keys. It also builds the **exact pinned** public FreeLLMAPI upstream commit on an ephemeral GitHub runner with no Hermes secrets, then checks local `/api/ping`. This is not an installation or provider API-key test. Treat only observed completed CI jobs as passed. The currently connected MacBookPro is not the chosen 24/7 production host.
+The dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs eight synthetic tests, a real localhost TCP request against a fixture without external AI calls, and Docker Compose syntax/security assertions using FAKE keys. It also builds the **exact pinned** public FreeLLMAPI upstream commit on an ephemeral GitHub runner with no Hermes secrets, then checks local `/api/ping`. This is not an installation or provider API-key test. Treat only observed completed CI jobs as passed. The currently connected MacBookPro is not the chosen 24/7 production host.
 
 ## Gates / evidence ladder
 SOURCE_VERIFIED → CODED → SYNTHETIC_TEST_PASS → APPROVED_HOST → PRIVATE_DEPLOYED → PROVIDER_CONFIGURED → PUBLIC_PROMPT_SMOKE → VERIFIED_INTERNAL_USE.
@@ -60,3 +60,12 @@ A vetted always-on private server with Node 22 and a dedicated restricted OS use
 **Operational limitation:** an ordinary laptop is not proof of a 24/7 server, even if its localhost health check succeeds. A local proxy cannot directly serve independently cloud-hosted Hermes plugins. Promotion requires a separately reviewed authenticated shared service, not an open 0.0.0.0 port.
 
 Current adapter also includes a strict **640 completion-token cap** and returns nullable provider usage counters for later zero-spend/quota evaluation.
+
+
+## 2026-10-17 full offline end-to-end proof (NOT a real paid/free provider call)
+
+CI workflow [run 39033754314](https://github.com/officeus-create/Hermes/actions/runs/39033754314) passed both jobs and shows the **real** pinned FreeLLMAPI Node server accepting an adapter request, selecting the explicitly configured local mock OpenAI-compatible endpoint, and sending one `POST /v1/chat/completions`. The Hermes adapter received `SYNTHETIC_HERMES_E2E_OK`, `x-routed-via: custom/hermes-synthetic-model`, and synthetic usage of **12 prompt + 5 completion = 17 tokens**. The throwaway admin password, database, encryption key, unified key, mock provider and model existed solely inside a disposable GitHub runner; no provider or customer credentials. All tests finish with process shutdown and local DB deletion. The latest direct MacBookPro adapter tests passed **8/8**, including eligibility for 11 current Hermes plugin owner lanes, but this is not a release of those plugins.
+
+Important distinction: the claim `no automatic paid fallback` applies to the **Hermes adapter's own policy** only. FreeLLMAPI's upstream `auto` router can use **any enabled model/provider**, including a separately configured paid/custom account if present. The real pilot MUST use its **own dedicated, empty, single-user instance**, add only verified free-tier provider credentials with billing/paid-overage disabled, and verify the enabled catalog and provider terms before allowing any real inference. **Do not attach this pilot to a preexisting FreeLLMAPI installation with unknown keys or paid fallback routes.** An apparent zero-cost result from a local mock cannot certify real free-tier cost.
+
+The current connected MacBookPro is online but has none of the usual Groq/Gemini/Cerebras/Mistral/OpenRouter/GitHub/Cloudflare/Cohere credential environment variables set in that Remote Desktop session (only presence was checked, not values); it is not designated an always-on production host. A real compliant free-tier provider request remains `PROVIDER_CREDENTIAL_AND_PRIVATE_HOST_PENDING`. No 11-plugin ChatGPT hosted connection is implied.
