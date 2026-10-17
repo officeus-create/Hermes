@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-17",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -240,6 +240,16 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/home-20261001/academy-learner-owner-reference.webp",
+      "sha256": "1681d891ecab6c3ca10c453912d7f7628dc6d2d55eb33a35a09ba6b328fa2f36",
+      "firstTrackedCommit": "3c71ea018f5b9a3d5961cc7dc019922d34b25e8c",
+      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "Owner-provided Hermes AI visual reference derivative, locally cropped/cleaned for the Academy learner foreground on 2026-10-17; recruitment copy excluded; valid WebP repository bytes verified locally before commit; no third-party stock/CDN runtime material.",
+      "rightsEvidence": "Source visual was provided in the owner-controlled Hermes design conversation and reused only as an illustrative Academy learner reference. It must not be represented as a real Hermes student, customer, employee or endorsement. Independent rendered QA required before production.",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
