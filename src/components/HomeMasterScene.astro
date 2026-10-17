@@ -66,32 +66,12 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   decoding="async"
                   fetchpriority="high"
                 />
-              ) : path.id === "marketing" ? (
-                <picture class="home-marketing-human" data-home-marketing-human>
-                  <source
-                    type="image/avif"
-                    srcset="/images/home-20261001/marketing-512.avif 512w, /images/home-20261001/marketing-887.avif 887w"
-                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
-                  />
-                  <img
-                    src="/images/home-20261001/marketing-512.webp"
-                    srcset="/images/home-20261001/marketing-512.webp 512w, /images/home-20261001/marketing-887.webp 887w"
-                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
-                    width="887"
-                    height="1774"
-                    aria-hidden="true"
-                    alt="Illustrative Hermes Marketing content creation workspace"
-                    loading="lazy"
-                    decoding="async"
-                    fetchpriority="auto"
-                  />
-                </picture>
-              ) : (
+              ) : path.id === "technology" ? (
                 <picture>
-                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
+                  <source type="image/avif" srcset="/images/home-20261001/technology-512.avif 512w, /images/home-20261001/technology-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                  <img src="/images/home-20261001/technology-512.webp" srcset="/images/home-20261001/technology-512.webp 512w, /images/home-20261001/technology-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Technology architectural scene" loading="lazy" decoding="async" fetchpriority="auto" />
                 </picture>
-              )}
+              ) : null}
             </span>
             {path.id === "logistics" && (
               <span
@@ -484,12 +464,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 /* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
 .home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
 .home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
-/* Marketing keeps the approved human/content-creation frame as the story anchor while the causal UI flow remains separate. */
+/* Marketing retires the old botanical AI background; causal demand stages remain the current proof until a rights-safe human clip is owner-approved. */
 .home-master-route-marketing .home-portal-art{background:linear-gradient(180deg,#dff5ea,#89b9a4 58%,#24483a)}
-.home-master-route-marketing .home-portal-art picture{height:100%}
-.home-master-route-marketing .home-marketing-human img{object-position:center 28%;opacity:.68;filter:saturate(.78) contrast(.94) brightness(1.04);transition:opacity .25s ease,filter .25s ease}
 .home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.12) 0%,rgba(29,82,61,.06) 44%,rgba(18,48,37,.68) 91%)}
-.home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-human img{opacity:.76;filter:saturate(.86) contrast(.96) brightness(1.05)}
 .home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
 .home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
 .home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
@@ -534,7 +511,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-master-route-marketing .home-marketing-human img{object-position:center 22%;opacity:.56}.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
 .home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
@@ -562,7 +539,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-product-choreography[data-motion-state="running"] .home-system-social{animation-delay:-3.6s}
 .home-product-choreography[data-motion-state="running"] .home-system-readback{animation-delay:-5.4s}
 .home-learning-detail{inset:7% 7% 39%;z-index:0;overflow:hidden}
-.home-master-route-academy .home-portal-art img{opacity:.38;filter:saturate(.62) contrast(.9) brightness(1.04)}
+.home-master-route-academy .home-portal-art{background:radial-gradient(circle at 28% 18%,#fff1d2 0%,#e6d7ef 35%,#8d6fa8 72%,#49365c 100%)}
 .home-master-route-academy .home-portal-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(40,29,57,.05),rgba(40,29,57,.20) 48%,rgba(40,29,57,.52));pointer-events:none}
 .home-academy-caption{color:#f0e3ff}.home-academy-caption i{background:#cfb4ff;box-shadow:0 0 8px #a979ff}
 .home-academy-human{position:absolute;left:-1%;top:8%;width:48%;height:76%;z-index:2;display:grid;place-items:end center;isolation:isolate;filter:drop-shadow(0 18px 30px rgba(29,18,45,.32))}
@@ -609,9 +586,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
-@keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
-@keyframes home-book-choose{0%,100%{translate:0 0;rotate:0deg;opacity:0}48%{translate:-4px -2px;rotate:-5deg;opacity:.6}}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
 .home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
 .home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
