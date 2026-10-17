@@ -60,9 +60,9 @@ assert.ok(
 assert.ok(masterSource.includes("prefers-reduced-motion"), "master-scene motion must respect reduced-motion preferences");
 assert.ok(masterSource.includes(":focus-visible"), "master-scene navigation must preserve keyboard focus treatment");
 assert.ok(masterSource.includes("car-hauler-768.webp 768w"), "mobile LCP image must expose a right-sized 768px candidate");
-assert.ok(masterSource.includes('data-home-motion="truck"'), "Logistics must preserve an independent subject-motion layer instead of camera-only motion");
-assert.ok(masterSource.includes('/images/home-20261001/truck.webp'), "Logistics subject-motion layer must use the existing owned transparent truck asset");
-assert.ok(masterSource.includes("home-moving-truck"), "Logistics subject must retain scene-aligned positioning separate from the flattened background");
+assert.equal(masterSource.includes('data-home-motion="truck"'), false, "Logistics must not restore a duplicate standalone mini-truck motion layer");
+assert.equal(masterSource.includes('/images/home-20261001/truck.webp'), false, "Home runtime must not load the retired standalone mini-truck asset");
+assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must remain one coherent primary scene without a second tiny truck overlay");
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
