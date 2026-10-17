@@ -6,11 +6,9 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   const route = page.locator('[data-route-id="marketing"]');
   const scene = route.locator('[data-home-marketing-journey]');
   await expect(scene).toHaveCount(1);
-  const human = route.locator("[data-home-marketing-human] img");
-  await expect(human).toHaveCount(1);
-  await expect(human).toBeVisible();
-  await expect(human).toHaveAttribute("src", "/images/home-20261001/marketing-512.webp");
-  // The selected scene uses the approved human anchor, not retired hidden photography or decorative leaves.
+  await expect(route.locator("[data-home-marketing-human]")).toHaveCount(0);
+  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
+  // The selected scene keeps the causal workflow without the retired botanical legacy artwork.
   await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
   for (const label of ["CONTENT", "DISCOVERY", "WEBSITE", "INQUIRY"]) {
     await expect(scene).toContainText(label);
@@ -70,10 +68,12 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   const stage = page.locator(".home-master-stage");
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
   expect(await countColumns()).toBe(2);
-  for (const id of ["logistics", "technology", "academy"]) {
+  for (const id of ["logistics", "technology"]) {
     await expect(stage.locator(`[data-route-id="${id}"] .home-portal-art img`))
       .toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
+  await expect(stage.locator('[data-route-id="marketing"] .home-portal-art img')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(0);
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   const tabletCards = await stage.locator("[data-home-route]").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
   expect(tabletCards[0].top).toBe(tabletCards[1].top);
