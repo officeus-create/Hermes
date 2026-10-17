@@ -114,15 +114,15 @@ const current = copy[locale];
           <h3>{current.items[id].title}</h3>
           <p>{current.items[id].reason}</p>
           <div class="home-proof-links">
-            <a class="home-proof-source" href={sources[id]} data-proof-evidence>{current.source}<span aria-hidden="true"> ↗</span></a>
-            <a class="home-proof-explore" href={directionOwnerRoutes[locale][id]} data-proof-service>{current.explore}<span aria-hidden="true"> →</span></a>
+            <a class="home-proof-source" href={sources[id]} data-proof-evidence>{current.source}<span class="home-proof-arrow home-proof-arrow--source" aria-hidden="true"></span></a>
+            <a class="home-proof-explore" href={directionOwnerRoutes[locale][id]} data-proof-service>{current.explore}<span class="home-proof-arrow home-proof-arrow--next" aria-hidden="true"></span></a>
           </div>
         </article>
       ))}
     </div>
     <div class="home-proof-bottom">
       <p>{current.boundary}</p>
-      <a href="/contacts/" data-proof-contact>{current.contact}<span aria-hidden="true"> →</span></a>
+      <a href="/contacts/" data-proof-contact>{current.contact}<span class="home-proof-arrow home-proof-arrow--next" aria-hidden="true"></span></a>
     </div>
   </div>
 </section>
@@ -171,15 +171,15 @@ const current = copy[locale];
   .home-proof-links{display:grid;gap:8px}
   .home-proof-links a{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 12px;border-radius:9px;font-weight:700;font-size:.81rem;line-height:1.3;text-decoration:none}
   .home-proof-source{border:1px solid #c7d5e5;color:#1e5483;background:#f5f9ff}
-  .home-proof-source>span{color:#1e5483;background:#f5f9ff;opacity:1}
+  .home-proof-source{color:#1e5483}
   .home-proof-explore{color:#fff;background:#24385a}
-  .home-proof-explore>span{color:#fff;background:#24385a;opacity:1}
   .home-proof-links a:hover{text-decoration:underline;text-underline-offset:3px}
   .home-proof-decision a:focus-visible{outline:3px solid #3877b7;outline-offset:3px}
   .home-proof-bottom{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:18px}
   .home-proof-bottom p{max-width:74ch;margin:0;font-size:.78rem;line-height:1.55;color:#58667a}
   .home-proof-bottom>a{white-space:nowrap;display:inline-flex;gap:14px;align-items:center;min-height:44px;font-size:.88rem;font-weight:750;color:#214778}
-  .home-proof-bottom>a>span{color:#214778;background:#f7f6f3;opacity:1}
+  .home-proof-arrow{display:inline-block;flex:0 0 auto;width:8px;height:8px;border-top:2px solid currentColor;border-right:2px solid currentColor;opacity:1}
+  .home-proof-arrow--next{transform:rotate(45deg)}
   @media(max-width:1000px){.home-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:600px){.home-proof-grid{grid-template-columns:1fr}.home-proof-card{padding:18px}.home-proof-bottom{align-items:flex-start;flex-direction:column}.home-proof-bottom>a{white-space:normal}}
 </style>
