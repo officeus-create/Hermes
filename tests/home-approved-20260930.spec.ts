@@ -49,18 +49,21 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
    const image=route.locator('.home-portal-art img');
-   if(await route.getAttribute('data-route-id')==='marketing') {
-    // Living Reality Marketing keeps one approved human/content-creation anchor behind the causal CSS/SVG stages.
+   const routeId=await route.getAttribute('data-route-id');
+   if(routeId==='marketing') {
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   } else if(routeId==='academy') {
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('[data-home-academy-human] img')).toBeVisible();
+    await expect(route.locator('.home-academy-state')).toHaveCount(4);
+   } else {
     await expect(image).toHaveCount(1);
     await expect(image).toBeVisible();
-    await expect(image).toHaveAttribute('src','/images/home-20261001/marketing-512.webp');
-    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
-   } else {
-    await expect(image).toBeVisible();
+    await image.evaluate(node=>(node as HTMLImageElement).decode());
+    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/technology-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
    }
-   await image.evaluate(node=>(node as HTMLImageElement).decode());
-   await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/\w+-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
