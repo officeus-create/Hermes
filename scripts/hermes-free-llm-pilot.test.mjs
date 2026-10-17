@@ -22,3 +22,24 @@ test("no key and transport failure are safe",async()=>{
   await assert.rejects(callHermesFreeLlm(i,{env:{...env,HERMES_FREE_LLM_API_KEY:""},fetchImpl:()=>{throw Error("unexpected")}}),/MISSING_KEY/);
   await assert.rejects(callHermesFreeLlm(i,{env,fetchImpl:()=>{throw Error("sensitive provider detail")}}),/TRANSPORT_ERROR/);
 });
+
+test("each of the 11 existing Hermes plugin owner lanes can use a synthetic draft safely",async()=>{
+  const pluginOwners=["coordinator","sales","news","catalog","technology","academy",
+    "hr","network","automation","dispatch","design"];
+  let routed=0;
+  for(const department of pluginOwners){
+    const result=await callHermesFreeLlm({...i,department},{env,fetchImpl:async (_url,options)=>{
+      routed++;
+      const body=JSON.parse(options.body);
+      assert.equal(body.stream,false);
+      assert.ok(body.max_tokens<=640);
+      return {ok:true,headers:{get:()=>null},json:async()=>({
+        choices:[{message:{content:"SYNTHETIC DRAFT"}}],
+        usage:{prompt_tokens:10,completion_tokens:2,total_tokens:12}
+      })};
+    }});
+    assert.equal(result.status,"INTERNAL_DRAFT_ONLY");
+    assert.equal(result.usage.totalTokens,12);
+  }
+  assert.equal(routed,11);
+});
