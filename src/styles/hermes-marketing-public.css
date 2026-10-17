@@ -222,20 +222,23 @@
 }
 
 .detail-page-marketing .marketing-demand-signal li > span {
-  color: #166534 !important;
+  color: #14532d !important;
   font: 800 .6rem/1.2 var(--font-mono);
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal li strong {
-  color: #172033 !important;
+  color: #111827 !important;
   font-size: .8rem;
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal li small,
 .detail-page-marketing .marketing-demand-signal > p {
-  color: #4b5563 !important;
+  color: #374151 !important;
   font-size: .7rem;
   line-height: 1.4;
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal > p {
