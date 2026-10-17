@@ -12,8 +12,8 @@ test("scope and actions restricted",()=>{
   for(const p of [{dataClass:"CLIENT_PII"},{externalAction:true},{purpose:"send-email"},{model:"paid-pro"},{messages:[]},{department:"unknown"}])assert.throws(()=>validatePilotRequest({...i,...p}),/HERMES_FREE_LLM_/);
 });
 test("one synthetic completion, draft-only",async()=>{
-  let n=0;const x=await callHermesFreeLlm(i,{env,fetchImpl:async(url,options)=>{n++;assert.equal(url,"http://127.0.0.1:3001/v1/chat/completions");assert.equal(options.redirect,"error");assert.equal(JSON.parse(options.body).model,"auto:fast");return {ok:true,headers:{get:()=>"mock/provider"},json:async()=>({model:"mock",choices:[{message:{content:"safe"}}]})};}});
-  assert.equal(n,1);assert.equal(x.status,"INTERNAL_DRAFT_ONLY");assert.equal(x.routedVia,"mock/provider");
+  let n=0;const x=await callHermesFreeLlm(i,{env,fetchImpl:async(url,options)=>{n++;assert.equal(url,"http://127.0.0.1:3001/v1/chat/completions");assert.equal(options.redirect,"error");assert.equal(JSON.parse(options.body).model,"auto:fast");assert.equal(JSON.parse(options.body).max_tokens,640);return {ok:true,headers:{get:()=>"mock/provider"},json:async()=>({model:"mock",choices:[{message:{content:"safe"}}]})};}});
+  assert.equal(n,1);assert.equal(x.status,"INTERNAL_DRAFT_ONLY");assert.equal(x.routedVia,"mock/provider");assert.deepEqual(x.usage,{promptTokens:null,completionTokens:null,totalTokens:null});
 });
 test("429 fails closed without retry",async()=>{
   let n=0;await assert.rejects(callHermesFreeLlm(i,{env,fetchImpl:async()=>{n++;return {ok:false,status:429}}}),/UPSTREAM_UNAVAILABLE/);assert.equal(n,1);
