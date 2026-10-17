@@ -210,8 +210,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
-      "assetStatus": "RETIRED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-512.webp",
@@ -221,8 +222,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
-      "assetStatus": "RETIRED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-887.avif",
@@ -232,8 +234,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
-      "assetStatus": "RETIRED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-887.webp",
@@ -243,8 +246,9 @@
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
       "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
-      "assetStatus": "RETIRED"
+      "publicationDecision": "CURRENT_USE_ALLOWED",
+      "assetStatus": "ACTIVE",
+      "ownerApprovalStatus": "OWNER_APPROVED"
     },
     {
       "path": "public/images/home-20261001/academy-learner-owner-reference.webp",
@@ -253,9 +257,11 @@
       "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
       "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
       "source": "Owner-provided Hermes AI visual reference derivative, locally cropped/cleaned for the Academy learner foreground on 2026-10-17; recruitment copy excluded; valid WebP repository bytes verified locally before commit; no third-party stock/CDN runtime material.",
-      "rightsEvidence": "Source visual was provided in the owner-controlled Hermes design conversation and reused only as an illustrative Academy learner reference. It must not be represented as a real Hermes student, customer, employee or endorsement. Independent rendered QA required before production.",
-      "publicationDecision": "CURRENT_USE_ALLOWED",
-      "assetStatus": "ACTIVE"
+      "rightsEvidence": "Source visual was provided in the owner-controlled Hermes design conversation and reused only as an illustrative Academy learner reference. It must not be represented as a real Hermes student, customer, employee or endorsement. Independent rendered QA required before production. Supervisor correction 2026-10-17: visual subject not owner-approved for Home; preserve provenance only and do not publish.",
+      "publicationDecision": "RETIRED_DO_NOT_PUBLISH",
+      "assetStatus": "RETIRED",
+      "ownerApprovalStatus": "NOT_OWNER_APPROVED",
+      "experimentStatus": "EXPERIMENT"
     },
     {
       "path": "public/images/home-20261001/contact.webp",
