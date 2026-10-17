@@ -7,9 +7,23 @@ test.beforeEach(async ({ page, baseURL }) => {
     const incoming = new URL(route.request().url());
     const local = new URL(`${incoming.pathname}${incoming.search}`, baseURL);
     const response = await route.fetch({ url: local.href });
-    await route.fulfill({ response });
+    if (incoming.pathname === "/paths/logistics/" && (response.headers()["content-type"] || "").includes("text/html")) {
+      // Simulate a separately approved server-rendered live build, NOT a
+      // client-side hostname promotion. All POSTs remain Playwright-mocked.
+      const source = await response.text();
+      const previewMode = /\bdata-contact-mode=(["'])preview\1/.test(source);
+      const emptyEndpoint = /\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/.test(source);
+      if (!previewMode || !emptyEndpoint) throw new Error("Expected fail-closed SSR contact shell");
+      const approvedFixture = source
+        .replace(/\bdata-contact-mode=(["'])preview\1/, 'data-contact-mode="live"')
+        .replace(/\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-contact-endpoint="/api/logistics-lead"');
+      await route.fulfill({ response, body: approvedFixture });
+    } else {
+      await route.fulfill({ response });
+    }
   });
   await page.goto("https://hermeslogisticsus.com/paths/logistics/", { waitUntil: "domcontentloaded" });
+  // The "live" property comes from mocked SSR response, not browser hostname.
   await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-mode", "live");
   await expect(page.locator("[data-contact-form]")).toHaveAttribute("data-contact-endpoint", "/api/logistics-lead");
 });

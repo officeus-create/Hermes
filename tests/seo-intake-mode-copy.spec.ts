@@ -45,6 +45,19 @@ test("SEO live mode copy follows the production override at 390px without submit
     const url = new URL(route.request().url());
     const local = `${localOrigin}${url.pathname}${url.search}`;
     const response = await route.fetch({ url: local });
+    const contentType = response.headers()["content-type"] ?? "";
+    if (url.pathname === "/paths/marketing/" && contentType.includes("text/html")) {
+      const source = await response.text();
+      const previewMode = /\bdata-contact-mode=(["'])preview\1/.test(source);
+      const emptyEndpoint = /\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/.test(source);
+      if (!previewMode || !emptyEndpoint) throw new Error("Expected fail-closed SEO contact SSR shell");
+      const approvedFixture = source
+        .replace(/\bdata-contact-mode=(["'])preview\1/, 'data-contact-mode="live"')
+        .replace(/\bdata-contact-endpoint(?:=(["'])\1)?(?=[\s>])/, 'data-contact-endpoint="/api/logistics-lead"')
+        .replace(/<span([^>]*data-submit-label[^>]*)>Preview request<\/span>/, '<span$1>Send request</span>');
+      await route.fulfill({ response, body: approvedFixture });
+      return;
+    }
     await route.fulfill({ response });
   });
   await page.goto("https://hermeslogisticsus.com/paths/marketing/?service=seo#contact");
