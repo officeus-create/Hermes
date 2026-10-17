@@ -175,7 +175,7 @@ try {
   await touchContext.close();
   await writeFile(`${directory}/evidence.json`,JSON.stringify({
     sha:process.env.GITHUB_SHA,
-    source:'Home Living Reality: Logistics world states + Marketing human demand flow + Technology product replay + Academy reviewed progression',
+    source:'Home Living Reality: Logistics world states + Marketing causal demand flow + Technology product replay + Academy human reviewed progression',
     proof:'exact PR-head preview only; not merged/deployed/production',
     results,
     cleanReview
