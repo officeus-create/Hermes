@@ -151,6 +151,60 @@ try {
       });
     } finally {await context.close();}
   }
+
+  // Logistics owner-forensic capture: force existing scene assets in the evidence browser only.
+  // This does not alter Home production behavior, timings, weather logic or runtime source.
+  const logisticsForensic=[];
+  const logisticsScenes=['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot'];
+  for(const width of [1440,390]) {
+    const context=await browser.newContext({
+      viewport:{width,height:width===1440?1000:844},
+      reducedMotion:'no-preference',
+      colorScheme:'light',
+      locale:'en-US',
+      deviceScaleFactor:1
+    });
+    try {
+      const page=await context.newPage();
+      await page.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
+      await page.evaluate(()=>document.fonts.ready);
+      const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+      if(await decline.isVisible().catch(()=>false)) await decline.click();
+      const route=page.locator('[data-route-id="logistics"]');
+      await route.scrollIntoViewIfNeeded();
+      for(const scene of logisticsScenes) {
+        const loaded=await page.evaluate(async(sceneName)=>{
+          const image=document.querySelector('[data-home-logistics-scene-image]');
+          const echo=document.querySelector('[data-home-logistics-echo]');
+          if(!(image instanceof HTMLImageElement) || !(echo instanceof HTMLElement)) {
+            throw new Error('Logistics forensic target missing');
+          }
+          // Isolate the source image from weather/pseudo-element ambiguity.
+          echo.dataset.logisticsWeatherState='sun';
+          image.src=`/images/logistics-living/${sceneName}-512.webp`;
+          image.srcset=`/images/logistics-living/${sceneName}-512.webp 512w, /images/logistics-living/${sceneName}-768.webp 768w, /images/logistics-living/${sceneName}-887.webp 887w`;
+          image.dataset.logisticsSceneReady=sceneName;
+          echo.dataset.logisticsEchoScene=sceneName;
+          await image.decode();
+          return {
+            scene:sceneName,
+            requestedSrc:image.getAttribute('src'),
+            requestedSrcset:image.getAttribute('srcset'),
+            currentSrc:new URL(image.currentSrc).pathname,
+            naturalWidth:image.naturalWidth,
+            naturalHeight:image.naturalHeight,
+            weather:echo.dataset.logisticsWeatherState
+          };
+        },scene);
+        await route.screenshot({
+          path:`${directory}/logistics-forensic-${scene}-${width}.png`,
+          animations:'disabled'
+        });
+        logisticsForensic.push({width,...loaded});
+      }
+    } finally {await context.close();}
+  }
+
   const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
   const touchPage=await touchContext.newPage();
   await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
@@ -178,6 +232,7 @@ try {
     source:'Home Living Reality: Logistics world states + Marketing causal demand flow + Technology product replay + Academy human reviewed progression',
     proof:'exact PR-head preview only; not merged/deployed/production',
     results,
-    cleanReview
+    cleanReview,
+    logisticsForensic
   },null,2)+'\n');
 } finally {await browser.close();}
