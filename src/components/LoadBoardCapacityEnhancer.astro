@@ -458,6 +458,19 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         for (const record of active.slice(0, 8)) rows.append(createCapacityRow(record));
       };
 
+      const requestedEquipment = (() => {
+        const raw = new URLSearchParams(window.location.search).get("equipment") || "";
+        const normalized = raw.trim().toLowerCase().replaceAll("-", "_").replaceAll(" ", "_");
+        return ["dry_van", "reefer", "flatbed", "step_deck", "power_only", "hotshot", "box_truck", "sprinter_van", "car_hauler", "other"].includes(normalized)
+          ? normalized
+          : "";
+      })();
+      const activeFeedUrl = (type) => {
+        const url = new URL("/api/load-board/active", window.location.origin);
+        url.searchParams.set("type", type);
+        if (requestedEquipment) url.searchParams.set("equipment", requestedEquipment);
+        return url.pathname + url.search;
+      };
       const fetchJson = async (url) => {
         const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(8000) });
         if (!response.ok) throw new Error(`load_board_${response.status}`);
@@ -474,15 +487,19 @@ const previewRpm = (item: { rateAmount: number; distanceMiles: number }) => (ite
         }
         try {
         const results = await Promise.allSettled([
-          fetchJson('/api/load-board/active?type=load'),
-          fetchJson('/api/load-board/active?type=capacity'),
+          fetchJson(activeFeedUrl("load")),
+          fetchJson(activeFeedUrl("capacity")),
           fetchJson('/api/load-board/summary'),
         ]);
         const loadPayload = results[0].status === 'fulfilled' ? results[0].value : { records: [], load_board_access: false, audience: 'public' };
         const capacityPayload = results[1].status === 'fulfilled' ? results[1].value : { records: [] };
         const summaryPayload = results[2].status === 'fulfilled' ? results[2].value : null;
         const accessGranted = Boolean(loadPayload.load_board_access || loadPayload.audience === 'carrier_candidate');
-        renderLoads(loadPayload.records, accessGranted, summaryPayload?.available_loads);
+        renderLoads(
+          loadPayload.records,
+          accessGranted,
+          requestedEquipment ? loadPayload?.count : summaryPayload?.available_loads,
+        );
         renderCapacity(capacityPayload.records);
         if (results[0].status !== 'fulfilled') {
           const status = root.querySelector('[data-live-load-status]');

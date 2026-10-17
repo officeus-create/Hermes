@@ -69,8 +69,10 @@ test("canonical Load Board source is wired to separate live load, capacity and t
   expect(layout).toContain('import LoadBoardCapacityEnhancer from "../components/LoadBoardCapacityEnhancer.astro"');
   expect(layout).toContain("<LoadBoardCapacityEnhancer />");
   expect(live).toContain('Astro.url.pathname === "/load-board/"');
-  expect(live).toContain("fetchJson('/api/load-board/active?type=load')");
-  expect(live).toContain("fetchJson('/api/load-board/active?type=capacity')");
+  expect(live).toContain('url.searchParams.set("type", type)');
+  expect(live).toContain('if (requestedEquipment) url.searchParams.set("equipment", requestedEquipment)');
+  expect(live).toContain('fetchJson(activeFeedUrl("load"))');
+  expect(live).toContain('fetchJson(activeFeedUrl("capacity"))');
   expect(live).toContain("fetchJson('/api/load-board/summary')");
   expect(live).toContain("Interface preview rows are not inventory.");
   expect(live).toContain("Only the real count above represents active, unexpired records.");
