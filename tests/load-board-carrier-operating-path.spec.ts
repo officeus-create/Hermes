@@ -101,3 +101,34 @@ test("plain Load Board keeps the carrier agreement journey hidden", async ({ pag
   await expect(journey).toBeHidden();
   await expect(journey).toHaveAttribute("data-carrier-role-gated", "");
 });
+
+test("mobile carrier journey stays connected from Home to intake", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const logisticsHome = page.locator('#paths a[href="/paths/logistics/"]').first();
+  await expect(logisticsHome).toBeVisible();
+  await logisticsHome.click();
+  await expect(page).toHaveURL(/\/paths\/logistics\/$/);
+
+  const carrierPath = page.getByRole("link", { name: /Carrier or owner-operator/i }).first();
+  await expect(carrierPath).toBeVisible();
+  await carrierPath.click();
+  await expect(page).toHaveURL(/\/logistics\/carrier\/$/);
+
+  const rpm = page.getByRole("link", { name: /RPM & profitability/i }).first();
+  const loadBoard = page.getByRole("link", { name: /Open Load Board|Live Load Board/i }).first();
+  const dispatch = page.getByRole("link", { name: /Start dispatch review|Dispatch review/i }).first();
+  await expect(rpm).toBeVisible();
+  await expect(loadBoard).toBeVisible();
+  await expect(dispatch).toBeVisible();
+
+  await rpm.click();
+  await expect(page).toHaveURL(/\/logistics\/resources\/rpm-calculator\/$/);
+  const intake = page.getByRole("link", { name: /Request dispatch-fit review|Open carrier intake/i }).first();
+  await expect(intake).toBeVisible();
+  await intake.click();
+  await expect(page).toHaveURL(/\/logistics\/start-car-hauling-dispatch\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/carrier|dispatch/i);
+  await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
+});
