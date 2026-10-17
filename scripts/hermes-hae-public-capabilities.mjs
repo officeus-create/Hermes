@@ -1,5 +1,4 @@
 import {isIP} from "node:net";
-import {pathToFileURL} from "node:url";
 const fail = reason => { throw new Error("HERMES_HAE_STATUS_" + reason); };
 export function verifyStatusUrl(value, hostname) {
   if(typeof hostname !== "string" || !/^[a-z0-9.-]+$/i.test(hostname) || !hostname.includes(".") || isIP(hostname)) fail("HOST_REQUIRED");
@@ -37,7 +36,7 @@ export async function readHaECapabilities({enabled=false,url,allowedHost,fetchIm
     nextAction:"Ask HAE owner to verify private health separately; never submit jobs."
   });
 }
-if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
+if(process.argv[1] && process.argv[1].split(/[\\/]/).at(-1)==="hermes-hae-public-capabilities.mjs") {
   readHaECapabilities({
     enabled:process.env.HERMES_HAE_CAPABILITIES_ENABLED==="true",
     url:process.env.HERMES_HAE_CAPABILITIES_URL,
