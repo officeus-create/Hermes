@@ -66,13 +66,11 @@ assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must 
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
-assert.ok(masterSource.includes("data-home-marketing-human"), "Marketing must retain a real human/content-creation story anchor behind the causal UI flow");
-assert.ok(masterSource.includes("/images/home-20261001/marketing-512.avif"), "Marketing human anchor must use the existing responsive approved AVIF asset");
-assert.ok(masterSource.includes("/images/home-20261001/marketing-512.webp"), "Marketing human anchor must keep a WebP fallback");
-const marketingHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/marketing-512.webp");
-assert.ok(marketingHumanAsset, "Marketing human anchor must remain registered in media provenance");
-assert.equal(marketingHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Marketing human anchor reuse requires verified source/rights");
-assert.equal(marketingHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Marketing human anchor reuse requires current publication approval");
+assert.equal(masterSource.includes("data-home-marketing-human"), false, "Marketing must not label the retired botanical artwork as a human story anchor");
+assert.equal(masterSource.includes("/images/home-20261001/marketing-512.avif"), false, "Home runtime must not restore the retired Marketing botanical AVIF");
+assert.equal(masterSource.includes("/images/home-20261001/marketing-512.webp"), false, "Home runtime must not restore the retired Marketing botanical WebP");
+const retiredMarketingAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/marketing-512.webp");
+assert.ok(retiredMarketingAsset, "Retired Marketing artwork must stay in provenance history even when removed from runtime");
 for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
@@ -109,10 +107,16 @@ for (const token of ["TASK + PRACTICE", "Practice before consequence", "HUMAN FE
   assert.ok(masterSource.includes(token), `Home Academy must expose reviewed-progression token: ${token}`);
 }
 assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not restore the book as the central interface");
-const academyHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-512.webp");
-assert.ok(academyHumanAsset, "Academy human anchor must remain registered in media provenance");
-assert.equal(academyHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Academy human anchor reuse requires verified source/rights");
-assert.equal(academyHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Academy human anchor reuse requires current publication approval");
+assert.equal(masterSource.includes("/images/home-20261001/academy-512.avif"), false, "Home Academy must not restore the legacy books/background AVIF");
+assert.equal(masterSource.includes("/images/home-20261001/academy-512.webp"), false, "Home Academy must not restore the legacy books/background WebP");
+assert.equal(masterSource.includes("home-page-turn"), false, "Home Academy must not retain stale page-turn animation code");
+assert.equal(masterSource.includes("home-book-choose"), false, "Home Academy must not retain stale book-selection animation code");
+const academyHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-learner-owner-reference.webp");
+assert.ok(academyHumanAsset, "Academy learner foreground must remain registered in media provenance");
+assert.equal(academyHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Academy learner reuse requires verified source/rights");
+assert.equal(academyHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Academy learner reuse requires current publication approval");
+const retiredAcademyBackground = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-512.webp");
+assert.ok(retiredAcademyBackground, "Retired Academy background must stay in provenance history even when removed from runtime");
 for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
   assert.ok(masterSource.includes(token), `Home Technology must expose real-product proof token: ${token}`);
 }
