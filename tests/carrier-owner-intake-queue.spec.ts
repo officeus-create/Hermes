@@ -187,6 +187,10 @@ test("owner qualification requires all four manual checks and creates no outboun
             ...row,
             status: state,
             email_body: "SYNTHETIC QUALIFICATION REVIEW — NOT A REAL CARRIER",
+            qualification_authority_verified: state === "qualified" ? 1 : 0,
+            qualification_insurance_verified: state === "qualified" ? 1 : 0,
+            qualification_equipment_capacity_verified: state === "qualified" ? 1 : 0,
+            qualification_operating_fit_verified: state === "qualified" ? 1 : 0,
           },
         }),
       });
@@ -229,4 +233,12 @@ test("owner qualification requires all four manual checks and creates no outboun
   expect(patchBody).not.toBeNull();
   expect(otherMutationCount).toBe(0);
   await expect(page.locator("[data-detail]")).toBeHidden();
+
+  await page.getByRole("button", { name: "View private details" }).click();
+  await expect(page.locator("[data-qualification-checks]")).toBeVisible();
+  for (const checkbox of await page.locator("[data-qualification-check]").all()) {
+    await expect(checkbox).toBeChecked();
+    await expect(checkbox).toBeDisabled();
+  }
+  await expect(page.locator("[data-qualify-record]")).toBeHidden();
 });
