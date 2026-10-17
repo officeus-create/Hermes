@@ -49,18 +49,21 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
    const image=route.locator('.home-portal-art img');
-   if(await route.getAttribute('data-route-id')==='marketing') {
-    // Living Reality Marketing keeps one approved human/content-creation anchor behind the causal CSS/SVG stages.
+   const routeId=await route.getAttribute('data-route-id');
+   if(routeId==='marketing') {
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   } else if(routeId==='academy') {
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('[data-home-academy-human] img')).toBeVisible();
+    await expect(route.locator('.home-academy-state')).toHaveCount(4);
+   } else {
     await expect(image).toHaveCount(1);
     await expect(image).toBeVisible();
-    await expect(image).toHaveAttribute('src','/images/home-20261001/marketing-512.webp');
-    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
-   } else {
-    await expect(image).toBeVisible();
+    await image.evaluate(node=>(node as HTMLImageElement).decode());
+    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/technology-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
    }
-   await image.evaluate(node=>(node as HTMLImageElement).decode());
-   await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-   expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/\w+-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
   if(width<1181){
@@ -162,9 +165,10 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await expect(page.locator('[data-home-contact-fallback]')).toHaveAttribute('href','mailto:officeus@hermeslogisticsus.com');
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
- // Marketing now intentionally reuses one approved responsive human/content-creation anchor.
- expect(artwork.length).toBeGreaterThanOrEqual(3);
- expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(true);
+ expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.some(url=>/\/academy-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.some(url=>/\/technology-(512|887)\./.test(url))).toBe(true);
+ expect(artwork.some(url=>url.includes('/academy-learner-owner-reference.webp'))).toBe(true);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
