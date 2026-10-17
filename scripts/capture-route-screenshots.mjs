@@ -97,7 +97,10 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
   }
   assertMobileWidth(initial, viewport, route.path, "before Hermes interaction");
 
-  const opener = page.locator("[data-hermes-open]:visible").first();
+  const contextualMobileOpener = page.locator("[data-mobile-hermes-entry]:visible").first();
+  const opener = (await contextualMobileOpener.count())
+    ? contextualMobileOpener
+    : page.locator("[data-hermes-open]:visible").first();
   if (!(await opener.count())) {
     throw new Error(`${route.path} has no visible Ask Hermes action after onboarding`);
   }

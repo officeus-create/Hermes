@@ -48,7 +48,7 @@ test("Hermes Connect workspace switches industry context", async ({ page }, test
   await expect(page.locator('[data-activity-list]')).toContainText("load opportunities");
 });
 
-test("Hermes Connect mobile browser uses the same responsive product shell", async ({ page }, testInfo) => {
+test("Hermes Connect mobile browser uses task-first progressive disclosure", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile interaction contract.");
   await page.addInitScript(() => {
     window.localStorage.setItem('hermes_business_type', 'logistics');
@@ -57,15 +57,40 @@ test("Hermes Connect mobile browser uses the same responsive product shell", asy
 
   await expect(page.locator('.sidebar')).toBeHidden();
   await expect(page.locator('.mobile-bar')).toBeVisible();
-  await expect(page.locator('.mobile-nav')).toBeVisible();
+  const mobileNav = page.locator('.mobile-nav');
+  await expect(mobileNav).toBeVisible();
+  for (const label of ["Today", "Inbox", "Customers", "Calendar", "More"]) {
+    await expect(mobileNav.getByText(label, { exact: true })).toBeVisible();
+  }
+  await expect(mobileNav.locator('[data-hermes-open]')).toHaveCount(0);
 
-  const inboxTab = page.locator('[data-mobile-view="inbox"]');
-  await inboxTab.click({ force: true });
-  await expect(page.locator('[data-view-panel="inbox"]')).toBeVisible();
-  await expect(page.locator('[data-view-title]')).toHaveText("Conversations");
+  await mobileNav.locator('[data-mobile-view="calendar"]').click({ force: true });
+  await expect(page.locator('[data-view-panel="calendar"]')).toBeVisible();
+  await expect(page.locator('[data-view-title]')).toHaveText("Calendar");
+  await expect(page.locator('[data-mobile-hermes-entry]')).toHaveAttribute("aria-label", "Ask Hermes about Calendar");
+
+  const more = mobileNav.locator('[data-mobile-more]');
+  await more.click({ force: true });
+  await expect(more).toHaveAttribute("aria-expanded", "true");
+  const sheet = page.locator('[data-mobile-more-sheet]');
+  await expect(sheet).toHaveClass(/open/);
+  await expect(sheet).toContainText("Sales");
+  await expect(sheet).toContainText("Marketing");
+  await expect(sheet).toContainText("Finance");
+  await expect(sheet).toContainText("Operations");
+  await expect(sheet).toContainText("Integrations");
+  await expect(sheet).toContainText("Academy");
+
+  await sheet.locator('[data-mobile-view="operations"]').click({ force: true });
+  await expect(sheet).not.toHaveClass(/open/);
+  await expect(page.locator('[data-view-panel="operations"]')).toBeVisible();
+  await expect(page.locator('[data-view-title]')).toHaveText("Operations");
+  await expect(more).toHaveClass(/active/);
 
   await page.locator('.mobile-bar [data-hermes-open]').click({ force: true });
-  await expect(page.locator('[data-hermes-drawer]')).toHaveClass(/open/);
+  const drawer = page.locator('[data-hermes-drawer]');
+  await expect(drawer).toHaveClass(/open/);
+  await expect(drawer.locator('[data-hermes-context]')).toContainText("Hermes Logistics Ops · Operations");
 });
 
 test("Hermes Connect review hub exposes only canonical review surfaces", async ({ page }) => {
