@@ -1,0 +1,43 @@
+name: FreeLLMAPI local pilot checks (no provider calls)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hermes-free-llm-pilot.yml"
+      - "scripts/hermes-free-llm-pilot*"
+      - "infra/freellmapi/**"
+      - "docs/HERMES_FREELLMAPI_INTERNAL_PILOT.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check out exact PR commit
+        uses: actions/checkout@v6
+      - name: Install supported Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Validate offline adapter and local TCP mock (no credentials)
+        run: node --test scripts/hermes-free-llm-pilot.test.mjs scripts/hermes-free-llm-pilot.http.test.mjs
+      - name: Validate Compose schema with fake offline keys; do not pull or start image
+        env:
+          FREELLMAPI_IMAGE_DIGEST: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          ENCRYPTION_KEY: ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        run: |
+          docker compose -f infra/freellmapi/docker-compose.yml config --quiet
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          import {strict as assert} from "node:assert";
+          const yaml = readFileSync("infra/freellmapi/docker-compose.yml", "utf8");
+          assert.match(yaml, /127\.0\.0\.1:3001:3001/);
+          assert.match(yaml, /FREELLMAPI_IMAGE_DIGEST:\?/);
+          assert.match(yaml, /ENCRYPTION_KEY:\?/);
+          assert.doesNotMatch(yaml, /0\.0\.0\.0:3001|HOST_BIND|watchtower|docker\.sock/);
+          console.log("Offline-only Compose invariants passed.");
+          JS
