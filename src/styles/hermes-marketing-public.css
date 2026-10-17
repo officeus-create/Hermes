@@ -28,7 +28,7 @@
 .detail-page-marketing .marketing-flow-boundary {
   display: block;
   margin-top: 10px;
-  color: color-mix(in srgb, var(--hermes-muted) 84%, var(--path-signal));
+  color: #4b5563;
   font-size: .76rem;
   line-height: 1.5;
 }
@@ -127,7 +127,7 @@
   padding: 18px;
   border: 1px solid color-mix(in srgb, var(--path-signal) 22%, var(--hermes-line-light));
   border-radius: var(--hermes-radius-card);
-  background: linear-gradient(135deg, var(--hermes-paper), color-mix(in srgb, var(--path-signal) 4%, var(--hermes-paper)));
+  background: var(--hermes-paper);
   box-shadow: var(--hermes-shadow-card);
 }
 
@@ -139,14 +139,14 @@
 }
 
 .detail-page-marketing .marketing-demand-signal-head span {
-  color: var(--path-signal-text,var(--path-signal));
+  color: #166534 !important;
   font: 800 .62rem/1.3 var(--font-mono);
   letter-spacing: .08em;
 }
 
 .detail-page-marketing .marketing-demand-signal-head strong {
   max-width: 520px;
-  color: var(--hermes-muted);
+  color: #374151 !important;
   font-size: .76rem;
   line-height: 1.35;
   text-align: right;
@@ -200,7 +200,7 @@
   padding: 12px;
   border: 1px solid var(--hermes-line-light);
   border-radius: 14px;
-  background: rgba(255,255,255,.7);
+  background: #fff !important;
   transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
 }
 
@@ -217,25 +217,28 @@
 .detail-page-marketing .marketing-demand-signal[data-active-step="2"] li[data-signal-step="2"],
 .detail-page-marketing .marketing-demand-signal[data-active-step="3"] li[data-signal-step="3"],
 .detail-page-marketing .marketing-demand-signal[data-active-step="4"] li[data-signal-step="4"] {
-  background: color-mix(in srgb, var(--path-signal) 8%, #fff);
+  background: #eef8f2 !important;
   transform: translateY(-2px);
 }
 
 .detail-page-marketing .marketing-demand-signal li > span {
-  color: var(--path-signal-text,var(--path-signal));
+  color: #14532d !important;
   font: 800 .6rem/1.2 var(--font-mono);
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal li strong {
-  color: var(--hermes-ink);
+  color: #111827 !important;
   font-size: .8rem;
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal li small,
 .detail-page-marketing .marketing-demand-signal > p {
-  color: var(--hermes-muted);
+  color: #374151 !important;
   font-size: .7rem;
   line-height: 1.4;
+  opacity: 1 !important;
 }
 
 .detail-page-marketing .marketing-demand-signal > p {
@@ -267,7 +270,7 @@
 .detail-page-marketing .growth-stage-list button,
 .detail-page-marketing .growth-stage-list button:nth-child(3) {
   border-color: var(--hermes-line-dark);
-  color: var(--hermes-muted-dark);
+  color: #fff;
   background: transparent;
   transition:
     color var(--hermes-motion-fast) var(--hermes-ease),
