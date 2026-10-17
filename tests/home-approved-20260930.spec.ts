@@ -53,16 +53,17 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    if(routeId==='marketing') {
     await expect(image).toHaveCount(0);
     await expect(route.locator('.home-marketing-card')).toHaveCount(4);
-   } else if(routeId==='academy') {
-    await expect(image).toHaveCount(0);
-    await expect(route.locator('[data-home-academy-human] img')).toBeVisible();
-    await expect(route.locator('.home-academy-state')).toHaveCount(4);
    } else {
     await expect(image).toHaveCount(1);
     await expect(image).toBeVisible();
     await image.evaluate(node=>(node as HTMLImageElement).decode());
     await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/technology-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
+    expect(await image.evaluate(node=>(node as HTMLImageElement).currentSrc)).toMatch(/\/images\/(?:home-20261001\/(?:technology|academy)-(512|887)\.(avif|webp)|logistics-living\/[a-z-]+-(512|887)\.webp)$/);
+    if(routeId==='academy') {
+     await expect(route.locator('[data-home-academy-human]')).toHaveCount(0);
+     await expect(route.locator('.home-academy-book')).toHaveCount(0);
+     await expect(route.locator('.home-academy-state')).toHaveCount(4);
+    }
    }
   }
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
@@ -166,9 +167,9 @@ test('compact Home CTA reaches native contact actions and approved artwork loads
  await page.getByRole('link',{name:'Explore Hermes Connect',exact:true}).click();
  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
  expect(artwork.some(url=>/\/marketing-(512|887)\./.test(url))).toBe(false);
- expect(artwork.some(url=>/\/academy-(512|887)\./.test(url))).toBe(false);
+ expect(artwork.some(url=>/\/academy-(512|887)\./.test(url))).toBe(true);
  expect(artwork.some(url=>/\/technology-(512|887)\./.test(url))).toBe(true);
- expect(artwork.some(url=>url.includes('/academy-learner-owner-reference.webp'))).toBe(true);
+ expect(artwork.some(url=>url.includes('/academy-learner-owner-reference.webp'))).toBe(false);
  expect(new Set(artwork).size).toBe(artwork.length);
 });
 
