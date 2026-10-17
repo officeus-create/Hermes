@@ -128,10 +128,27 @@ try {
         throw new Error(`Owner-review capture geometry failed at ${width}: ${JSON.stringify(geometry)}`);
       }
       await page.screenshot({path:`${directory}/home-${width}-review-no-analytics.png`,fullPage:true,animations:'disabled'});
-      await page.locator('[data-route-id="marketing"]').screenshot({
-        path:`${directory}/home-${width}-marketing-review.png`,animations:'disabled'
+      if(width===390 || width===1440) {
+        for(const direction of ['logistics','marketing','technology','academy']) {
+          const route=page.locator(`[data-route-id="${direction}"]`);
+          await route.scrollIntoViewIfNeeded();
+          await route.screenshot({
+            path:`${directory}/home-${width}-${direction}-review.png`,
+            animations:'disabled'
+          });
+        }
+      } else {
+        await page.locator('[data-route-id="marketing"]').screenshot({
+          path:`${directory}/home-${width}-marketing-review.png`,animations:'disabled'
+        });
+      }
+      cleanReview.push({
+        ...geometry,
+        consent:'declined',
+        captured:width===390||width===1440?'full-page + all four pillars':'full-page + marketing pillar',
+        contactPaintedForCapture:true,
+        productionEvidence:false
       });
-      cleanReview.push({...geometry,consent:'declined',captured:'full-page and marketing pillar',contactPaintedForCapture:true,productionEvidence:false});
     } finally {await context.close();}
   }
   const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
@@ -158,8 +175,8 @@ try {
   await touchContext.close();
   await writeFile(`${directory}/evidence.json`,JSON.stringify({
     sha:process.env.GITHUB_SHA,
-    source:'Marketing CSS/SVG scene, client-side visible+reduced-mode checkpoint',
-    proof:'preview-only; not production',
+    source:'Home Living Reality: Logistics world states + Marketing human demand flow + Technology product replay + Academy reviewed progression',
+    proof:'exact PR-head preview only; not merged/deployed/production',
     results,
     cleanReview
   },null,2)+'\n');
