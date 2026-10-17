@@ -27,7 +27,8 @@
         "owner_review_transition": "new → reviewed",
         "owner_qualification_transition": "reviewed → qualified only after authority + insurance + equipment/capacity + operating-fit checks",
         "manual_close_transition": "reviewed → closed",
-        "physical_expiry_purge": "owner-confirmed expired rows only, max 100 per batch"
+        "physical_expiry_purge": "owner-confirmed expired rows only, max 100 per batch",
+        "qualification_audit": "four persisted D1 verification flags + reviewer/time/review-code; read-only evidence after qualification"
       },
       "truth_boundary": [
         "saved record is not a qualified carrier",
