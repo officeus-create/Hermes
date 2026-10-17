@@ -35,7 +35,11 @@ Owner: existing Technology Developer. Hermes Agent Coordinator / One Brain owns 
 
 Cloud-hosted ChatGPT, private ChatGPT plugins and Cloudflare Workers cannot access somebody else's localhost. This pilot does **not** give them a replacement LLM. Wider integration would need a separately designed authenticated multi-agent service approved for business data; do not fake it by exposing this single-user proxy.
 
-## Independent verification\n\nThe dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs synthetic tests, a real localhost TCP request against a fixture without external AI calls, and Docker Compose syntax/security assertions using FAKE keys. It also builds the **exact pinned** public FreeLLMAPI upstream commit on an ephemeral GitHub runner with no Hermes secrets, then checks local `/api/ping`. This is not an installation or provider API-key test. Treat only observed completed CI jobs as passed. The currently connected MacBookPro is not the chosen 24/7 production host.\n\n## Gates / evidence ladder
+## Independent verification
+
+The dedicated `.github/workflows/hermes-free-llm-pilot.yml` runs synthetic tests, a real localhost TCP request against a fixture without external AI calls, and Docker Compose syntax/security assertions using FAKE keys. It also builds the **exact pinned** public FreeLLMAPI upstream commit on an ephemeral GitHub runner with no Hermes secrets, then checks local `/api/ping`. This is not an installation or provider API-key test. Treat only observed completed CI jobs as passed. The currently connected MacBookPro is not the chosen 24/7 production host.
+
+## Gates / evidence ladder
 SOURCE_VERIFIED → CODED → SYNTHETIC_TEST_PASS → APPROVED_HOST → PRIVATE_DEPLOYED → PROVIDER_CONFIGURED → PUBLIC_PROMPT_SMOKE → VERIFIED_INTERNAL_USE.
 
 No external messages, deployments, purchased upgrades, secrets, public services or changes to Hermes provider/HAE runtime under this PR. Keep existing business prioritization and independent QA.
