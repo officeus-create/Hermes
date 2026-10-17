@@ -50,18 +50,26 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       const row = await env.DB.prepare(`
         SELECT request_id, classification, status, source_path, contact_email,
           email_body, created_at, retention_until, delivery_state,
-          status_updated_at, status_review_code
+          status_updated_at, status_review_code,
+          qualification_authority_verified, qualification_insurance_verified,
+          qualification_equipment_capacity_verified, qualification_operating_fit_verified
         FROM hermes_carrier_intake
         WHERE request_id = ? AND retention_until > ? LIMIT 1
       `).bind(id, now).first();
       if (!row) return jsonResponse(404, { success: false, error: "request_not_found" }, PRIVATE);
+      const qualificationEvidenceComplete = [
+        row.qualification_authority_verified,
+        row.qualification_insurance_verified,
+        row.qualification_equipment_capacity_verified,
+        row.qualification_operating_fit_verified,
+      ].every((value) => Number(value) === 1);
       return jsonResponse(200, {
         success: true,
         request: row,
         is_customer_proven: row.classification === "commercial" ? "not_verified" : "synthetic_qa",
         delivery_state: "not_sent",
         human_receipt_state: row.status === "new" ? "unconfirmed" : "owner_reviewed",
-        qualified_carrier_state: row.status === "qualified" ? "owner_qualified" : "not_verified",
+        qualified_carrier_state: row.status === "qualified" && qualificationEvidenceComplete ? "owner_qualified" : "not_verified",
         boundary: "Owner-only private intake review. No email, dispatcher or Telegram contact; no authorization to assign a carrier, book a load or claim revenue.",
       }, PRIVATE);
     }
@@ -116,8 +124,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 }
 
 
-// A human owner may acknowledge an actual review or close a reviewed inquiry.
-// These changes do NOT qualify carriers or dispatch/notify anyone.
+// A human owner may acknowledge review, record a bounded manual qualification,
+// or close a reviewed inquiry. Nothing here dispatches/notifies anyone, and
+// "qualified" means Sales-triage evidence only — never contract/load/revenue.
 export async function onRequestPatch({ request, env }: { request: Request; env: Env }) {
   const auth = await requireInternalOwner(request, env);
   if (auth.response) return auth.response;
@@ -154,18 +163,25 @@ export async function onRequestPatch({ request, env }: { request: Request; env: 
   const now = new Date().toISOString();
   try {
     // One atomic D1 row mutation holds status, reviewer and timestamp together.
+    const qualificationFlag = qualified ? 1 : 0;
     const result = await env.DB.prepare(`
       UPDATE hermes_carrier_intake SET
-        status = ?, status_updated_at = ?, status_updated_by = ?, status_review_code = ?
+        status = ?, status_updated_at = ?, status_updated_by = ?, status_review_code = ?,
+        qualification_authority_verified = MAX(qualification_authority_verified, ?),
+        qualification_insurance_verified = MAX(qualification_insurance_verified, ?),
+        qualification_equipment_capacity_verified = MAX(qualification_equipment_capacity_verified, ?),
+        qualification_operating_fit_verified = MAX(qualification_operating_fit_verified, ?)
       WHERE request_id = ? AND status = ? AND classification = 'commercial'
         AND retention_until > ?
     `).bind(body.to_status, now, auth.specialist.id, body.review_code,
+      qualificationFlag, qualificationFlag, qualificationFlag, qualificationFlag,
       body.request_id, body.from_status, now).run();
     if (Number(result?.meta?.changes || 0) !== 1)
       return jsonResponse(409, { success: false, error: "review_conflict_or_expired" }, PRIVATE);
     return jsonResponse(200, { success: true, request_id: body.request_id,
       status: body.to_status, status_updated_at: now, human_receipt_state: "owner_reviewed",
       qualified_carrier_state: body.to_status === "qualified" ? "owner_qualified" : "not_verified",
+      qualification_evidence_persisted: body.to_status === "qualified",
       delivery_state: "not_sent",
       boundary: body.to_status === "qualified"
         ? "Owner-qualified for Sales triage only; not a contract, booked load, customer, dispatcher assignment or revenue."
