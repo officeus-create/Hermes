@@ -94,11 +94,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               )}
             </span>
             {path.id === "logistics" && (
-              <span class="home-portal-motion home-moving-truck" aria-hidden="true" data-home-motion="truck" data-motion-state="idle">
-                <img src="/images/home-20261001/truck.webp" width="192" height="207" aria-hidden="true" alt="Illustrative logistics truck" loading="eager" decoding="async" />
-              </span>
-            )}
-            {path.id === "logistics" && (
               <span
                 class="home-logistics-living"
                 aria-hidden="true"
@@ -237,10 +232,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   </div>
 </section>
 <script>
-  import { initializeHomePortalMotion } from "../lib/home-portal-motion";
   import { trackCtaClicked, trackEvent, trackTrackSelected } from "../lib/analytics.ts";
-
-  initializeHomePortalMotion();
 
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
@@ -437,9 +429,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
 /* Camera-locked environment: real subject/weather layers move; the background itself never breathes/zooms. */
 .home-master-route-logistics .home-portal-art img{object-position:center center;transition:opacity .45s ease,filter .45s ease}
-.home-portal-motion{position:absolute;z-index:-2;pointer-events:none;display:block}
-.home-portal-motion img{display:block;width:100%;height:auto}
-.home-moving-truck{left:60%;top:47%;width:10.5%;min-width:30px;transform:rotate(-18deg);transform-origin:center;filter:drop-shadow(0 8px 8px rgba(4,18,31,.28));will-change:transform,opacity}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
@@ -645,5 +634,5 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-journey{inset:6% 7% 31%}
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
-@media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-portal-motion,.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>
