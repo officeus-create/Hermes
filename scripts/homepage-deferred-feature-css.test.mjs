@@ -12,10 +12,6 @@ const footerSource = await readFile(join(root, "src", "components", "SiteFooter.
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const mediaProvenance = JSON.parse(await readFile(join(root, "docs", "compliance", "media-provenance.json"), "utf8"));
 const retiredHomeAssetPaths = [
-  "public/images/home-20261001/academy-512.avif",
-  "public/images/home-20261001/academy-512.webp",
-  "public/images/home-20261001/academy-887.avif",
-  "public/images/home-20261001/academy-887.webp",
   "public/images/home-20261001/leaves-160.webp",
   "public/images/home-20261001/leaves-256.webp",
   "public/images/home-20261001/leaves.webp",
@@ -27,7 +23,8 @@ const retiredHomeAssetPaths = [
   "public/images/home-20261001/marketing-512.webp",
   "public/images/home-20261001/marketing-887.avif",
   "public/images/home-20261001/marketing-887.webp",
-  "public/images/home-20261001/truck.webp"
+  "public/images/home-20261001/truck.webp",
+  "public/images/home-20261001/academy-learner-owner-reference.webp"
 ];
 const repairWorkspaceSource = await readFile(join(root, "src", "pages", "services", "hermes-connect", "repair-shops", "dashboard.astro"), "utf8");
 const websiteShowroomSource = await readFile(join(root, "src", "components", "WebsiteDevelopmentShowroom.astro"), "utf8");
@@ -125,9 +122,18 @@ assert.ok(masterSource.includes('data-academy-source="/services/hermes-connect/a
 for (const token of ["TASK + PRACTICE", "Practice before consequence", "HUMAN FEEDBACK", "RETRY", "PROGRESSION", "Human decision", "not automatic"]) {
   assert.ok(masterSource.includes(token), `Home Academy must expose reviewed-progression token: ${token}`);
 }
-assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not restore the book as the central interface");
-assert.equal(masterSource.includes("/images/home-20261001/academy-512.avif"), false, "Home Academy must not restore the legacy books/background AVIF");
-assert.equal(masterSource.includes("/images/home-20261001/academy-512.webp"), false, "Home Academy must not restore the legacy books/background WebP");
+assert.equal(masterSource.includes("home-academy-book"), false, "Home Academy must not introduce a separate CSS book/bookcase object");
+for (const token of [
+  "/images/home-20261001/academy-512.avif",
+  "/images/home-20261001/academy-512.webp",
+  "/images/home-20261001/academy-887.avif",
+  "/images/home-20261001/academy-887.webp",
+]) {
+  assert.ok(masterSource.includes(token), `Home Academy must preserve approved responsive visual source: ${token}`);
+}
+assert.equal(masterSource.includes("data-home-academy-human"), false, "Home Academy must not restore the rejected learner overlay");
+assert.equal(masterSource.includes("home-academy-human"), false, "Home Academy must not retain learner-primary CSS/runtime");
+assert.equal(masterSource.includes("owner-reference-derivative"), false, "Home Academy must not retain rejected learner semantics");
 for (const assetPath of retiredHomeAssetPaths) {
   assert.equal(existsSync(join(root, assetPath)), false, `Retired Home asset must be physically absent: ${assetPath}`);
   const provenance = mediaProvenance.assets.find((asset) => asset.path === assetPath);
@@ -137,13 +143,25 @@ for (const assetPath of retiredHomeAssetPaths) {
 }
 assert.equal(masterSource.includes("home-page-turn"), false, "Home Academy must not retain stale page-turn animation code");
 assert.equal(masterSource.includes("home-book-choose"), false, "Home Academy must not retain stale book-selection animation code");
-const academyHumanAsset = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-learner-owner-reference.webp");
-assert.ok(academyHumanAsset, "Academy learner foreground must remain registered in media provenance");
-assert.equal(academyHumanAsset.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Academy learner reuse requires verified source/rights");
-assert.equal(academyHumanAsset.publicationDecision, "CURRENT_USE_ALLOWED", "Academy learner reuse requires current publication approval");
-assert.equal(academyHumanAsset.assetStatus, "ACTIVE", "Academy learner foreground must stay ACTIVE while it is the selected Home subject");
-const retiredAcademyBackground = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-512.webp");
-assert.ok(retiredAcademyBackground, "Retired Academy background must stay in provenance history even when removed from runtime");
+const academyLearnerExperiment = mediaProvenance.assets.find((asset) => asset.path === "public/images/home-20261001/academy-learner-owner-reference.webp");
+assert.ok(academyLearnerExperiment, "Rejected Academy learner experiment must remain in provenance history");
+assert.equal(academyLearnerExperiment.provenanceStatus, "SOURCE_AND_RIGHTS_VERIFIED", "Learner experiment provenance must remain truthful");
+assert.equal(academyLearnerExperiment.publicationDecision, "RETIRED_DO_NOT_PUBLISH", "Rejected learner experiment must stay publication-ineligible");
+assert.equal(academyLearnerExperiment.assetStatus, "RETIRED", "Rejected learner experiment must stay RETIRED");
+assert.equal(academyLearnerExperiment.ownerApprovalStatus, "NOT_OWNER_APPROVED", "Learner experiment must never be promoted without owner approval");
+assert.equal(academyLearnerExperiment.experimentStatus, "EXPERIMENT", "Learner derivative must remain classified as EXPERIMENT");
+for (const assetPath of [
+  "public/images/home-20261001/academy-512.avif",
+  "public/images/home-20261001/academy-512.webp",
+  "public/images/home-20261001/academy-887.avif",
+  "public/images/home-20261001/academy-887.webp",
+]) {
+  const approvedAcademyAsset = mediaProvenance.assets.find((asset) => asset.path === assetPath);
+  assert.ok(approvedAcademyAsset, `Approved Academy asset must remain registered: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.assetStatus, "ACTIVE", `Approved Academy asset must stay ACTIVE: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.publicationDecision, "CURRENT_USE_ALLOWED", `Approved Academy asset must remain publishable: ${assetPath}`);
+  assert.equal(approvedAcademyAsset.ownerApprovalStatus, "OWNER_APPROVED", `Approved Academy asset must remain owner-approved: ${assetPath}`);
+}
 for (const token of ["SHOP OWNER WORKSPACE", "Booking inbox", "Catalog inquiries", "SEMANTIC BUILD", "Responsive", "Canonical", "Schema", "OWNER AUTHORIZATION", "provider readback", "RELEASE EVIDENCE", "390 / 1440", "deploy ≠ live until readback"]) {
   assert.ok(masterSource.includes(token), `Home Technology must expose real-product proof token: ${token}`);
 }
