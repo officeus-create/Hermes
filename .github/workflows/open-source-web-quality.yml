@@ -48,7 +48,12 @@ jobs:
           exit 1
 
       - name: Prepare audit artifacts
-        run: mkdir -p artifacts/web-quality
+        shell: bash
+        run: |
+          mkdir -p artifacts/web-quality
+          # ZAP's container user must be able to write only its ephemeral
+          # report subdirectory, never the repository or Pa11y evidence.
+          install -d -m 0777 artifacts/web-quality/zap
 
       - name: Measure WCAG 2 AA baseline on critical public routes
         continue-on-error: true
@@ -73,11 +78,10 @@ jobs:
 
       - name: Run OWASP ZAP baseline security audit
         if: always()
-        continue-on-error: true
         shell: bash
         run: |
           docker run --rm --network=host \
-            -v "${PWD}/artifacts/web-quality:/zap/wrk/:rw" \
+            -v "${PWD}/artifacts/web-quality/zap:/zap/wrk/:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t http://127.0.0.1:4321/ \
@@ -85,6 +89,12 @@ jobs:
             -w zap.md \
             -r zap.html \
             -I
+          for report in zap.json zap.md zap.html; do
+            test -s "artifacts/web-quality/zap/${report}" || {
+              echo "::error::OWASP ZAP did not persist expected evidence: ${report}" >&2
+              exit 1
+            }
+          done
 
       - name: Upload audit evidence
         if: always()
@@ -94,3 +104,18 @@ jobs:
           path: artifacts/web-quality/
           if-no-files-found: warn
           retention-days: 30
+
+
+      # Pa11y runs as evidence collection above. Its existing violations are
+      # not an excuse for silent regression: count per-route against a dated cap.
+      # This does NOT declare the current pages WCAG compliant.
+      - name: Test accessibility debt budget parser
+        if: always()
+        run: node --test scripts/check-pa11y-nonregression.test.mjs
+
+      - name: Enforce accessibility debt non-regression
+        if: always()
+        run: |
+          node scripts/check-pa11y-nonregression.mjs \
+            artifacts/web-quality/pa11y.txt \
+            docs/qa/PA11Y_ACCESSIBILITY_BASELINE_2026-10-14.json
