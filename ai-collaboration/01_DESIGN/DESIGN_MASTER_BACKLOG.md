@@ -26,7 +26,7 @@ Current design authority: `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 + One 
 
 The 2026-10-04 seven-item execution list below is no longer an open coding backlog. Current disposition:
 
-1. **Home / Logistics** — `DONE_IN_REVIEW`: independent truck subject, camera-locked environment, separate equipment/weather states, reduced-motion contract in #1935.
+1. **Home / Logistics** — `DONE_IN_REVIEW`: one coherent camera-locked logistics scene with separate equipment/weather states; the rejected standalone mini-truck overlay is explicitly removed and regression-blocked in the final Home lane.
 2. **Home / Marketing** — `DONE_IN_REVIEW`: approved human/content anchor + Content → Discovery/Distribution → Website Action → CRM Evidence causal scene in #1935.
 3. **Home / Technology** — `DONE_IN_REVIEW`: real Hermes product/source replay + QA/readback truth boundary in #1935.
 4. **Home / Academy** — `DONE_IN_REVIEW`: provenance-registered illustrative learner foreground + Task/Practice → Human Feedback → Retry → Human Decision in #1935.
