@@ -68,12 +68,13 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   const stage = page.locator(".home-master-stage");
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
   expect(await countColumns()).toBe(2);
-  for (const id of ["logistics", "technology"]) {
+  for (const id of ["logistics", "technology", "academy"]) {
     await expect(stage.locator(`[data-route-id="${id}"] .home-portal-art img`))
       .toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
   await expect(stage.locator('[data-route-id="marketing"] .home-portal-art img')).toHaveCount(0);
-  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   const tabletCards = await stage.locator("[data-home-route]").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
   expect(tabletCards[0].top).toBe(tabletCards[1].top);
