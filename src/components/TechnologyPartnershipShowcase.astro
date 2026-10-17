@@ -163,7 +163,7 @@ import "../styles/features/technology.css";
       </div>
     </div>
 
-    <div class="partnership-rails" data-reveal aria-label="Hermes growth partnership layers">
+    <div class="partnership-rails" data-reveal role="group" aria-label="Hermes growth partnership layers">
       {growthLayers.map((layer, index) => (
         <article class:list={[`partnership-rail partnership-rail-${index + 1}`, { "is-primary": index === 0 }]} tabindex="0">
           <div class="partnership-rail-label"><span>{layer.number}</span><strong>{layer.name}</strong></div>
