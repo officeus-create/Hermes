@@ -205,6 +205,52 @@ try {
     } finally {await context.close();}
   }
 
+
+  // P1.2 production forensic: read-only live Home captures. No runtime mutation.
+  const productionForensic=[];
+  for(const width of [1440,390]) {
+    const context=await browser.newContext({
+      viewport:{width,height:width===1440?1000:844},
+      reducedMotion:'no-preference',
+      colorScheme:'light',
+      locale:'en-US',
+      deviceScaleFactor:1
+    });
+    try {
+      const page=await context.newPage();
+      const url=`https://hermeslogisticsus.com/?p12_forensic=${Date.now()}-${width}`;
+      await page.goto(url,{waitUntil:'load',timeout:60000});
+      await page.evaluate(()=>document.fonts?.ready);
+      const decline=page.getByRole('button',{name:'Continue without analytics',exact:true});
+      if(await decline.isVisible().catch(()=>false)) await decline.click();
+      await page.screenshot({path:`${directory}/production-${width}-initial.png`,fullPage:true,animations:'allow'});
+      const stateInitial=await page.evaluate(()=>({
+        href:location.href,
+        title:document.title,
+        bodyText:document.body.innerText,
+        academyBook:document.querySelectorAll('.home-academy-book').length,
+        academyBookPage:document.querySelectorAll('.home-academy-book-page').length,
+        marketingJourney:document.querySelectorAll('[data-home-marketing-journey]').length,
+        marketingFb:[...document.querySelectorAll('.home-marketing-channels i')].filter(n=>n.textContent?.trim()==='FB').length,
+        marketingFacebook:[...document.querySelectorAll('*')].filter(n=>n.children.length===0 && n.textContent?.trim()==='Facebook').length
+      }));
+      await page.waitForTimeout(10000);
+      await page.screenshot({path:`${directory}/production-${width}-elapsed-10s.png`,fullPage:true,animations:'allow'});
+      productionForensic.push({width,phase:'initial',...stateInitial});
+      if(width===390) {
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await page.waitForTimeout(250);
+        await page.screenshot({path:`${directory}/production-390-reduced.png`,fullPage:true,animations:'disabled'});
+        productionForensic.push({width,phase:'reduced',...(await page.evaluate(()=>({
+          academyBook:document.querySelectorAll('.home-academy-book').length,
+          academyBookPage:document.querySelectorAll('.home-academy-book-page').length,
+          marketingJourney:document.querySelectorAll('[data-home-marketing-journey]').length,
+          marketingFb:[...document.querySelectorAll('.home-marketing-channels i')].filter(n=>n.textContent?.trim()==='FB').length
+        })))});
+      }
+    } finally {await context.close();}
+  }
+
   const touchContext=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'no-preference',deviceScaleFactor:1});
   const touchPage=await touchContext.newPage();
   await touchPage.goto('http://127.0.0.1:4321/',{waitUntil:'load'});
@@ -233,6 +279,7 @@ try {
     proof:'exact PR-head preview only; not merged/deployed/production',
     results,
     cleanReview,
-    logisticsForensic
+    logisticsForensic,
+    productionForensic
   },null,2)+'\n');
 } finally {await browser.close();}
