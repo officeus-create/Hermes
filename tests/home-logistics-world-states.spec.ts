@@ -19,7 +19,7 @@ test("Logistics hover changes weather without replacing the equipment scene", as
   await expect.poll(() => world.getAttribute("data-logistics-weather-state")).not.toBe(weatherBefore);
   expect(await scene.getAttribute("src")).toBe(sceneBefore);
   await expect(scene).toHaveCSS("transform", "none");
-  await expect(route.locator('[data-home-motion="truck"]')).toHaveAttribute("data-motion-state", "running");
+  await expect(route.locator('[data-home-motion="truck"]')).toHaveCount(0);
 });
 
 test("Logistics reduced motion freezes the world in the stable sun state", async ({ page }) => {
