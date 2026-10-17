@@ -410,11 +410,12 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     font-size: .78rem;
   }
   .tracking-consent-settings {
-    position: fixed;
-    z-index: 70;
-    left: .7rem;
-    bottom: .7rem;
+    position: static;
+    z-index: auto;
+    display: block;
+    width: max-content;
     min-height: 40px;
+    margin: .75rem .75rem .75rem auto;
     padding: .45rem .72rem;
     border: 1px solid rgba(11,13,18,.14);
     border-radius: 999px;
@@ -424,7 +425,7 @@ const isRepairShopRoute = Astro.url.pathname.startsWith("/services/hermes-connec
     font-size: .74rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(11,13,18,.07);
+    box-shadow: none;
   }
   .tracking-consent-settings[hidden] { display: none; }
   .tracking-consent-actions .button:focus-visible,

@@ -403,16 +403,6 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
-      "path": "public/images/home-20261001/truck.webp",
-      "sha256": "23abc399dd1b108242d80787f15942337f16f3ab17a5293154c0565dc70445ae",
-      "firstTrackedCommit": "55392021431201038fdd06cef59a78bc3f673c1a",
-      "classification": "OWNER_REQUESTED_AI_REFERENCE_DERIVATIVE_HOME_CANDIDATE",
-      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
-      "source": "Native image_gen reference reconstruction on2026-10-01 from approved Library libfile_ae6e471fd5d0819183e0e32c45af5854; new887x1774 per-portal originals, transparent subject sheet; downsampled AVIF/WebP only, no upscale.",
-      "rightsEvidence": "Owner requested improved Home artwork and living subjects on2026-10-01. This is authoring/preview scope; independent rendered QA required before production. Original generated reference owner-approved Sept30. No third-party stock/licensing claim.",
-      "publicationDecision": "CURRENT_USE_ALLOWED"
-    },
-    {
       "path": "public/images/home-approved-20260930.webp",
       "sha256": "e02487abe4a1bfbce7877d4588d97efe2bbbb8994643c5dee527796b030958d8",
       "firstTrackedCommit": "345e2fc30f675067b2a16b769ec9e0422e3016d0",
