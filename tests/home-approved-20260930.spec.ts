@@ -361,6 +361,8 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await expect(academyProof).toContainText('PRACTICE');
  await expect(academyProof).toContainText('FEEDBACK');
  await expect(academyProof).toContainText('NEXT STEP');
+ await expect(academyProof).toHaveAttribute('data-academy-visual-owner','warm-progress-rail');
+ await expect(academyProof.locator('.home-academy-progress')).toHaveCount(0);
  await expect(page.locator('.home-academy-book-page')).toHaveCount(0);
  await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
  await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);
