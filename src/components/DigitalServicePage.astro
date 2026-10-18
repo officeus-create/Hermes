@@ -140,6 +140,11 @@ const proofLabel = websiteContext
   : isLogisticsSeoProof
     ? "View the logistics SEO case"
     : "Review verified case studies";
+const usesWebsiteProofSocialImage = content.slug === "/services/website-development/" || content.slug === "/services/website-redesign/";
+const websiteProofSocialImage = usesWebsiteProofSocialImage ? "/images/hermes-live-product.jpg" : undefined;
+const websiteProofSocialAlt = usesWebsiteProofSocialImage
+  ? "The live Hermes website showing its four interactive business portals"
+  : undefined;
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -169,7 +174,16 @@ const faqSchema = {
 };
 ---
 
-<BaseLayout title={content.title} description={content.description} schema={[serviceSchema, breadcrumbSchema, faqSchema]}>
+<BaseLayout
+  title={content.title}
+  description={content.description}
+  image={websiteProofSocialImage}
+  imageAlt={websiteProofSocialAlt}
+  imageWidth={usesWebsiteProofSocialImage ? 1440 : undefined}
+  imageHeight={usesWebsiteProofSocialImage ? 900 : undefined}
+  imageType={usesWebsiteProofSocialImage ? "image/jpeg" : undefined}
+  schema={[serviceSchema, breadcrumbSchema, faqSchema]}
+>
   <SiteHeader contactHref="#contact" activePath={parentHref} theme={websiteContext ? "light" : "dark"} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
