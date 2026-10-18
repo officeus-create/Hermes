@@ -17,7 +17,7 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   await expect(page.locator(".home-moving-leaves")).toHaveCount(0);
   await expect(page.locator(".home-story-board")).toHaveCount(0);
   await expect(route).toHaveAttribute("href", "/paths/marketing/");
-  await expect(route).toHaveAttribute("aria-label", /Example flow: content \+ news, search \+ social, website action, crm evidence/i);
+  await expect(route).toHaveAttribute("aria-label", /Example flow: canonical content, search \+ social, website action, crm evidence/i);
   await route.scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-journey-motion", "running");
   await expect(scene.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "home-marketing-current");
