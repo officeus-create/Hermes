@@ -60,6 +60,12 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     await expect(route.locator('[data-marketing-stage]')).toHaveCount(4);
     continue;
    }
+   if(routeId==='technology') {
+    // Technology is product-native: the truthful system pipeline owns the visual field.
+    await expect(image).toHaveCount(0);
+    await expect(route.locator('[data-home-pillar-proof="systems"]')).toHaveAttribute('data-technology-visual-owner','product-pipeline');
+    continue;
+   }
    await expect(image).toHaveCount(1);
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
