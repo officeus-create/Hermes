@@ -112,27 +112,32 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               <span class="home-scene-detail home-marketing-journey" data-home-pillar-proof="attention" data-home-marketing-journey data-journey-motion="paused" aria-hidden="true">
                 <span class="home-marketing-caption">ATTENTION <i></i> DEMAND</span>
                 <svg class="home-marketing-conductor" viewBox="0 0 300 480" preserveAspectRatio="none" aria-hidden="true">
-                  <path class="home-marketing-track" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
-                  <path class="home-marketing-pulse" d="M104 82 C240 105 248 153 192 188 S55 252 132 296 S258 361 205 408" />
+                  <path class="home-marketing-track" d="M56 72 C83 116 74 153 105 190 S173 249 149 293 S105 347 151 412" />
+                  <path class="home-marketing-pulse" d="M56 72 C83 116 74 153 105 190 S173 249 149 293 S105 347 151 412" />
                 </svg>
-                <span class="home-marketing-card home-marketing-content">
-                  <small><i></i> 01 / CONTENT + NEWS</small>
-                  <span class="home-marketing-media"><b class="home-marketing-play"></b><em></em></span>
-                  <span class="home-marketing-card-lines"><i></i><i></i></span>
+                <span class="home-marketing-stage home-marketing-origin" data-marketing-stage="content">
+                  <small>01 / CANONICAL CONTENT</small>
+                  <strong>INSIGHT / RELEASE</strong>
+                  <em>one source of truth</em>
                 </span>
-                <span class="home-marketing-card home-marketing-discovery">
-                  <small><i></i> 02 / DISCOVERY + DISTRIBUTION</small>
+                <span class="home-marketing-stage home-marketing-distribution" data-marketing-stage="distribution">
+                  <small>02 / DISTRIBUTION</small>
                   <span class="home-marketing-channels"><i>Search</i><i>Threads</i><i>IG</i><i>FB</i><i>TG</i></span>
-                  <span class="home-marketing-search"><i></i><b></b></span>
+                  <em>channel-native adaptation</em>
                 </span>
-                <span class="home-marketing-card home-marketing-site">
-                  <small><i></i> 03 / WEBSITE ACTION</small>
-                  <span class="home-marketing-browser"><b></b><i></i><em></em></span>
+                <span class="home-marketing-stage home-marketing-site" data-marketing-stage="website">
+                  <small>03 / WEBSITE ACTION</small>
+                  <span class="home-marketing-browser">
+                    <b><i></i><i></i><i></i></b>
+                    <strong>hermeslogisticsus.com</strong>
+                    <em>proof → clear next action</em>
+                  </span>
                 </span>
-                <span class="home-marketing-card home-marketing-inquiry">
-                  <small><i></i> 04 / INQUIRY → CRM EVIDENCE</small>
-                  <span class="home-marketing-person"><i></i><b></b><em></em></span>
-                  <span class="home-marketing-beacon" aria-hidden="true"><i></i></span>
+                <span class="home-marketing-stage home-marketing-inquiry" data-marketing-stage="evidence">
+                  <small>04 / CRM EVIDENCE</small>
+                  <span class="home-marketing-evidence-row"><i></i><b>source captured</b></span>
+                  <span class="home-marketing-evidence-row"><i></i><b>human qualification</b></span>
+                  <span class="home-marketing-evidence-row"><i></i><b>next action</b></span>
                 </span>
               </span>
             )}
@@ -462,59 +467,70 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="system"]{transition-delay:.6s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="human"]{transition-delay:.94s}
 .home-master-route:is(:hover,:focus-visible) .home-live-step[data-live-step="outcome"]{transition-delay:1.28s}
-/* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
-.home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
-.home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
-/* Marketing retires the old botanical AI background; causal demand stages remain the current proof until a rights-safe human clip is owner-approved. */
-.home-master-route-marketing .home-portal-art{background:linear-gradient(180deg,#dff5ea,#89b9a4 58%,#24483a)}
-.home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.12) 0%,rgba(29,82,61,.06) 44%,rgba(18,48,37,.68) 91%)}
-.home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
-.home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
-.home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
-.home-marketing-conductor{position:absolute;inset:4% 0 0;width:100%;height:95%;overflow:visible}
-.home-marketing-track,.home-marketing-pulse{fill:none;stroke:#168663;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.65}
-.home-marketing-track{opacity:.2}
-.home-marketing-pulse{opacity:.8;stroke:#2bbf83;stroke-width:2;stroke-dasharray:2 14;stroke-dashoffset:0;filter:drop-shadow(0 0 4px #74d4a2)}
-.home-marketing-card{position:absolute;display:block;box-sizing:border-box;border:1px solid #ffffffd9;border-radius:13px;background:linear-gradient(150deg,#ffffffed,#ecfaf4ea);box-shadow:0 12px 26px #0a412d2b,0 2px 6px #0a412d18;backdrop-filter:blur(8px);padding:10px;overflow:hidden;color:#204536;transform:translate3d(0,0,0)}
-.home-marketing-card small{display:flex;align-items:center;gap:5px;font:800 clamp(.625rem,.68vw,.74rem)/1.2 var(--font-mono);letter-spacing:.045em;white-space:nowrap}
-.home-marketing-discovery small,.home-marketing-inquiry small{font-size:clamp(.52rem,.56vw,.64rem);letter-spacing:.012em}
-.home-marketing-card small i{display:block;height:5px;width:5px;flex:none;border-radius:50%;background:#16a572}
-.home-marketing-content{top:12%;left:4%;width:55%;height:22%}
-.home-marketing-discovery{top:31%;right:3%;width:57%;height:20%}
-.home-marketing-site{top:51%;left:6%;width:61%;height:22%}
-.home-marketing-inquiry{top:72%;right:4%;width:55%;height:19%}
-.home-marketing-media{position:relative;display:block;height:53%;margin:7px 0 5px;border-radius:6px;background:linear-gradient(140deg,#2d725e,#8dcdb2 56%,#e2eedc);overflow:hidden}
-.home-marketing-media::after{content:"";position:absolute;inset:auto -12% -42% 28%;height:90%;background:linear-gradient(30deg,#c6e5d5,#529a7f);border-radius:50% 50% 0 0;transform:rotate(-12deg)}
-.home-marketing-play{position:absolute;z-index:1;top:50%;left:50%;translate:-50% -50%;width:23px;height:23px;border:1px solid #fff9;border-radius:50%;background:#ffffffab}
-.home-marketing-play::after{content:"";position:absolute;top:7px;left:9px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid #276b50}
-.home-marketing-card-lines{display:flex;flex-direction:column;gap:4px}
-.home-marketing-card-lines i{height:3px;width:77%;background:#b3cfbf;border-radius:4px}.home-marketing-card-lines i+ i{width:53%;background:#cdded4}
-.home-marketing-channels{display:flex;flex-wrap:wrap;gap:3px;margin-top:7px}.home-marketing-channels i{padding:3px 4px;border:1px solid #bad6c7;border-radius:999px;background:#fff;color:#2a6a50;font:750 .42rem/1 var(--font-body);font-style:normal}.home-marketing-search{display:flex;align-items:center;gap:8px;margin-top:6px;padding:5px;background:#fff;border:1px solid #d4e5da;border-radius:6px}
-.home-marketing-search i{width:10px;height:10px;border:2px solid #438869;border-radius:50%;position:relative}
-.home-marketing-search i::after{content:"";position:absolute;width:5px;height:2px;background:#438869;right:-4px;bottom:-2px;rotate:45deg}
-.home-marketing-search b{width:60%;height:4px;border-radius:4px;background:#b6d4c1}
-.home-marketing-result{display:grid;grid-template-columns:22px 1fr;gap:4px;margin-top:7px}
-.home-marketing-result i{grid-row:span 2;height:25px;border-radius:4px;background:linear-gradient(140deg,#6dac8b,#d2e5ce)}
-.home-marketing-result b{height:4px;margin-top:2px;border-radius:4px;background:#8dac9c}.home-marketing-result b:last-child{width:70%;background:#c5d7cc}
-.home-marketing-browser{display:block;margin-top:8px;border:1px solid #d6e7de;border-radius:6px;overflow:hidden;background:#fff;height:60%}
-.home-marketing-browser b{display:block;height:7px;background:linear-gradient(90deg,#c1dacd 0 6%,transparent 6% 9%,#c1dacd 9% 15%,transparent 15% 18%,#c1dacd 18% 24%,transparent 24%) #f0f7f2}
-.home-marketing-browser i{display:block;margin:5px;height:45%;border-radius:4px;background:linear-gradient(130deg,#cadecd,#63a38b)}
-.home-marketing-browser em{display:block;width:43%;height:5px;margin-left:5px;border-radius:4px;background:#39a575}
-.home-marketing-person{display:block;position:relative;margin-top:9px;height:35px;border-radius:6px;background:#fff;border:1px solid #d3e7dc}
-.home-marketing-person i{position:absolute;left:8px;top:7px;width:20px;height:20px;border-radius:50%;background:linear-gradient(130deg,#83bb9d,#2d7c60)}
-.home-marketing-person b,.home-marketing-person em{position:absolute;left:36px;top:10px;height:4px;width:43%;border-radius:3px;background:#91b5a0}.home-marketing-person em{top:19px;width:28%;background:#c9d9ce}
-.home-marketing-beacon{display:block;position:absolute;right:10px;bottom:17px;width:15px;height:15px;border-radius:50%;border:1px solid #2da777;background:#edfff5}
-.home-marketing-beacon i{position:absolute;left:4px;top:4px;display:block;width:5px;height:5px;border-radius:50%;background:#2da777}
-[data-journey-motion="running"] .home-marketing-pulse{animation:home-marketing-current 8s linear infinite}
-[data-journey-motion="running"] .home-marketing-card{animation:home-marketing-hover 8s ease-in-out infinite}
-[data-journey-motion="running"] .home-marketing-discovery{animation-delay:-2s}
-[data-journey-motion="running"] .home-marketing-site{animation-delay:-4s}
-[data-journey-motion="running"] .home-marketing-inquiry{animation-delay:-6s}
+/* Marketing: one continuous demand corridor. No botanical poster, fake metrics, or four competing floating cards. */
+.home-master-route-marketing{background:
+  radial-gradient(circle at 78% 18%,rgba(224,255,239,.78),transparent 26%),
+  linear-gradient(180deg,#dff5ea 0%,#92c7ad 50%,#21483a 100%);color:#fff}
+.home-master-route-marketing .home-live-explainer{display:none}
+.home-master-route-marketing .home-portal-art{background:
+  linear-gradient(115deg,rgba(255,255,255,.2),transparent 46%),
+  radial-gradient(circle at 18% 14%,rgba(255,255,255,.3),transparent 28%),
+  linear-gradient(180deg,#dff5ea,#83b99f 57%,#24483a)}
+.home-master-route-marketing .home-portal-art::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(90deg,rgba(255,255,255,.11) 1px,transparent 1px),
+  linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size:38px 38px;mask-image:linear-gradient(180deg,#0008,transparent 82%);opacity:.38}
+.home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.06) 0%,rgba(29,82,61,.03) 43%,rgba(18,48,37,.72) 91%)}
+.home-marketing-journey{position:absolute;z-index:0;inset:6% 6% 31%;display:block;pointer-events:none;overflow:hidden;transform:translateZ(0)}
+.home-marketing-journey::before{content:"";position:absolute;left:17%;top:13%;bottom:8%;width:1px;background:linear-gradient(#2ca77c55,#2ca77ccc 18% 80%,#c7f4df66)}
+.home-marketing-caption{position:absolute;top:0;left:2%;display:flex;align-items:center;gap:8px;color:#163f31;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
+.home-marketing-caption i{height:1px;width:25px;background:#348e6c;opacity:.7}
+.home-marketing-conductor{position:absolute;inset:5% 0 0;width:100%;height:94%;overflow:visible}
+.home-marketing-track,.home-marketing-pulse{fill:none;stroke:#178a65;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.35}
+.home-marketing-track{opacity:.16}
+.home-marketing-pulse{opacity:.9;stroke:#1db77e;stroke-width:2;stroke-dasharray:2 16;stroke-dashoffset:0;filter:drop-shadow(0 0 5px rgba(72,210,151,.58))}
+.home-marketing-stage{position:absolute;display:block;box-sizing:border-box;color:#173f31;text-shadow:0 1px rgba(255,255,255,.45)}
+.home-marketing-stage::before{content:"";position:absolute;left:-17px;top:5px;width:7px;height:7px;border-radius:50%;background:#1daa76;border:3px solid #eafff4;box-shadow:0 0 0 1px #218d69,0 0 13px rgba(27,179,120,.42)}
+.home-marketing-stage small{display:block;color:#1d6f54;font:850 clamp(.56rem,.59vw,.66rem)/1.15 var(--font-mono);letter-spacing:.055em;white-space:nowrap}
+.home-marketing-stage>strong{display:block;margin-top:5px;color:#143d2e;font:850 clamp(.68rem,.72vw,.82rem)/1.08 var(--font-body);letter-spacing:.02em}
+.home-marketing-stage>em{display:block;margin-top:3px;color:#3f705d;font:650 .53rem/1.2 var(--font-body);font-style:normal}
+.home-marketing-origin{top:12%;left:23%;width:68%}
+.home-marketing-distribution{top:31%;left:23%;width:70%}
+.home-marketing-site{top:51%;left:23%;width:70%}
+.home-marketing-inquiry{top:72%;left:23%;width:70%}
+.home-marketing-channels{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.home-marketing-channels i{padding:4px 6px;border:1px solid rgba(30,129,92,.24);border-radius:999px;background:rgba(255,255,255,.7);color:#205f49;font:800 .45rem/1 var(--font-body);font-style:normal;box-shadow:0 3px 10px rgba(17,91,64,.08)}
+.home-marketing-browser{display:grid;grid-template-columns:1fr;gap:3px;margin-top:7px;padding:6px 7px 7px;border:1px solid rgba(40,116,88,.22);border-radius:8px;background:rgba(255,255,255,.76);box-shadow:0 8px 18px rgba(12,73,51,.1)}
+.home-marketing-browser>b{display:flex;gap:3px}
+.home-marketing-browser>b i{width:4px;height:4px;border-radius:50%;background:#80af9b}
+.home-marketing-browser>strong{color:#285d49;font:750 .49rem/1.15 var(--font-mono);letter-spacing:0}
+.home-marketing-browser>em{color:#4e7667;font:650 .47rem/1.15 var(--font-body);font-style:normal}
+.home-marketing-evidence-row{display:grid;grid-template-columns:7px 1fr;align-items:center;gap:6px;margin-top:5px}
+.home-marketing-evidence-row i{width:6px;height:6px;border-radius:50%;background:#20a877;box-shadow:0 0 0 3px rgba(32,168,119,.11)}
+.home-marketing-evidence-row b{color:#2d624d;font:700 .49rem/1.15 var(--font-body)}
+[data-journey-motion="running"] .home-marketing-pulse{animation:home-marketing-current 7.2s linear infinite}
+[data-journey-motion="running"] .home-marketing-stage::before{animation:home-marketing-node 3.6s ease-in-out infinite}
+[data-journey-motion="running"] .home-marketing-distribution::before{animation-delay:-.9s}
+[data-journey-motion="running"] .home-marketing-site::before{animation-delay:-1.8s}
+[data-journey-motion="running"] .home-marketing-inquiry::before{animation-delay:-2.7s}
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
-@keyframes home-marketing-current{to{stroke-dashoffset:-192}}
-@keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-discovery small,.home-marketing-inquiry small{font-size:.53rem;letter-spacing:.008em}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
-@media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
+@keyframes home-marketing-current{to{stroke-dashoffset:-216}}
+@keyframes home-marketing-node{0%,100%{transform:scale(1);opacity:.74}50%{transform:scale(1.22);opacity:1}}
+@media(max-width:700px){
+  .home-marketing-journey{inset:6% 8% 38%;opacity:1}
+  .home-marketing-caption{font-size:.625rem}
+  .home-marketing-stage{left:24%;width:70%}
+  .home-marketing-stage small{font-size:.57rem;letter-spacing:.02em}
+  .home-marketing-stage>strong{font-size:.69rem}
+  .home-marketing-stage>em{font-size:.5rem}
+  .home-marketing-channels{gap:3px;margin-top:5px}
+  .home-marketing-channels i{padding:3px 5px;font-size:.42rem}
+  .home-marketing-browser{margin-top:5px;padding:5px 6px}
+  .home-marketing-evidence-row{margin-top:4px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-marketing-journey,.home-marketing-pulse,.home-marketing-stage::before{animation:none!important;transform:none!important;transition:none!important}
+}
 .home-master-route-logistics .home-live-explainer,.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
 .home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
