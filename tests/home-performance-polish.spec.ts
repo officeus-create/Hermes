@@ -27,6 +27,8 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
     expect(scene).toContain('muted');
     expect(scene).toContain('playsinline');
     expect(scene).toContain('poster="/images/logistics-living/car-hauler-512.webp"');
+    expect(scene).toContain('src="/media/home/logistics-golden-v1.mp4"');
+    expect(scene).toContain('type="video/mp4"');
     expect(scene).not.toMatch(/<video[\s\S]*?src=["']https?:\/\//);
   }
   expect(layer).not.toContain("new Image()");
@@ -44,6 +46,7 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   expect(headers).toContain("/_astro/*");
   expect(headers).toContain("/fonts/*");
   expect(headers).toContain("/images/*");
+  expect(headers).toContain("/media/*");
   expect(headers).toContain("max-age=31536000, immutable");
   expect(headers).toContain("max-age=2592000, stale-while-revalidate=86400");
 });
