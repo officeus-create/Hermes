@@ -58,6 +58,8 @@ assert.equal(masterSource.includes('data-home-motion="truck"'), false, "Logistic
 assert.equal(masterSource.includes('/images/home-20261001/truck.webp'), false, "Home must not load the retired standalone truck asset");
 assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must not reintroduce the standalone mini-truck layer");
 assert.equal(masterSource.includes("home-academy-book"), false, "Academy must not introduce a separate CSS book over its original architecture");
+assert.ok(masterSource.includes('data-academy-visual-owner="warm-progress-rail"'), "Academy must preserve the approved warm environment with one progress rail");
+assert.equal(masterSource.includes("home-academy-progress"), false, "Academy must not restore the duplicate bottom progress strip");
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry one self-contained attention-to-demand scene");
