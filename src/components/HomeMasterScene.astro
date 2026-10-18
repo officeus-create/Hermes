@@ -53,6 +53,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
+                  <video
+                    class="home-logistics-cinematic"
+                    data-home-cinematic-video="logistics"
+                    data-home-cinematic-version="v1"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    poster="/images/logistics-living/car-hauler-512.webp"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source src="/media/home/logistics-golden-v1.mp4" type="video/mp4" />
+                  </video>
                   <img
                     data-home-logistics-scene-image
                     data-logistics-scene-ready="car-hauler"
@@ -218,8 +233,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
     const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
+    const cinematicVideo = document.querySelector<HTMLVideoElement>('[data-home-cinematic-video="logistics"]');
     const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    let cinematicAvailable = Boolean(cinematicVideo);
     let sceneIndex = 0;
     let weatherIndex = 0;
     let sceneTimer: number | undefined;
@@ -269,6 +286,17 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       sceneTimer = undefined;
       weatherTimer = undefined;
     };
+    const syncCinematic = () => {
+      if (!cinematicVideo) return;
+      const shouldPause = reduced.matches || !visible || document.hidden || !cinematicAvailable;
+      if (shouldPause) {
+        cinematicVideo.pause();
+        return;
+      }
+      void cinematicVideo.play().catch(() => {
+        // Muted autoplay can still be blocked by a browser policy. The poster/image remains the fallback.
+      });
+    };
     const update = () => {
       if (reduced.matches) {
         stop();
@@ -283,19 +311,25 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
           logisticsEcho.dataset.logisticsEchoScene = scenes[0];
         }
         setMotionState("reduced");
+        syncCinematic();
         return;
       }
       if (!visible || document.hidden) {
         stop();
         setMotionState("paused");
+        syncCinematic();
         return;
       }
       setMotionState("running");
-      if (!sceneTimer) {
+      syncCinematic();
+      if (!cinematicAvailable && !sceneTimer) {
         sceneTimer = window.setInterval(() => {
           sceneIndex = (sceneIndex + 1) % scenes.length;
           applyScene();
         }, 15600);
+      } else if (cinematicAvailable && sceneTimer) {
+        window.clearInterval(sceneTimer);
+        sceneTimer = undefined;
       }
       if (!weatherTimer) {
         weatherTimer = window.setInterval(() => {
@@ -320,6 +354,19 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       }
       update();
     };
+    cinematicVideo?.addEventListener("canplay", () => {
+      cinematicAvailable = true;
+      cinematicVideo.dataset.cinematicReady = "true";
+      logisticsRoute?.setAttribute("data-logistics-cinematic", "ready");
+      update();
+    }, { once: true });
+    cinematicVideo?.addEventListener("error", () => {
+      cinematicAvailable = false;
+      cinematicVideo.dataset.cinematicFailed = "true";
+      cinematicVideo.hidden = true;
+      logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
+      update();
+    });
     logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
     logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
@@ -412,9 +459,12 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
 /* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */
-.home-logistics-layer-stack{position:absolute;inset:0;display:block;overflow:hidden}
+.home-logistics-layer-stack{position:absolute;inset:0;display:block;overflow:hidden;background:#203140}
 .home-master-route-logistics .home-portal-art img{object-position:center center;transition:opacity .45s ease,filter .45s ease}
-.home-logistics-layer-stack>img{position:absolute;inset:0}
+.home-logistics-layer-stack>img,.home-logistics-layer-stack>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.home-logistics-layer-stack>img{z-index:0}
+.home-logistics-cinematic{z-index:1;object-position:center 61%;background:#203140}
+.home-logistics-cinematic[hidden]{display:none}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
@@ -596,7 +646,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
+@media(max-width:700px){.home-logistics-cinematic{object-position:center 66%}.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -606,5 +656,5 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:none}.home-master-route-copy strong{padding-right:0}}
-@media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>
