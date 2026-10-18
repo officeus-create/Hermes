@@ -49,6 +49,8 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCount(0);
   await expect(route.locator(".home-logistics-road-plate")).toHaveCount(0);
   await expect(route.locator(".home-logistics-truck-layer")).toHaveCount(0);
+  await expect(route.locator(".home-road-flow")).toHaveCount(0);
+  await expect(route.locator('[data-home-explainer="logistics"]')).toHaveCSS("display", "none");
 
   const externalMedia = await route.locator("img, video, source").evaluateAll((nodes) =>
     nodes
