@@ -10,7 +10,12 @@ test("Technology replays real Hermes product surfaces instead of abstract status
   await route.scrollIntoViewIfNeeded();
 
   await expect(proof).toHaveAttribute("data-motion-state", "running");
+  await expect(proof).toHaveAttribute("data-technology-visual-owner", "product-pipeline");
+  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(proof.locator(".home-system-card")).toHaveCount(4);
+  for (const card of await proof.locator(".home-system-card").all()) {
+    await expect(card).toHaveCSS("position", "relative");
+  }
   await expect(proof.locator('[data-tech-source="/services/hermes-connect/repair-shops/dashboard/"]')).toContainText("SHOP OWNER WORKSPACE");
   await expect(proof).toContainText("Services");
   await expect(proof).toContainText("Booking inbox");
@@ -43,6 +48,8 @@ test("Technology has a static readable 390px reduced-motion composition", async 
 
   await expect(proof).toBeVisible();
   await expect(proof).toHaveAttribute("data-motion-state", "reduced");
+  await expect(proof).toHaveAttribute("data-technology-visual-owner", "product-pipeline");
+  await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(proof.locator(".home-system-card")).toHaveCount(4);
   await expect(proof.locator(".home-system-card").first()).toHaveCSS("animation-name", "none");
   await expect(proof).toContainText("SHOP OWNER WORKSPACE");
@@ -52,5 +59,9 @@ test("Technology has a static readable 390px reduced-motion composition", async 
   for (const label of await proof.locator(".home-tech-factory-ui i").all()) {
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
+  const primaryLabelSizes = await proof.locator(".home-system-card small, .home-system-card strong").evaluateAll(nodes =>
+    nodes.map(node => parseFloat(getComputedStyle(node).fontSize)),
+  );
+  expect(Math.min(...primaryLabelSizes)).toBeGreaterThanOrEqual(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
