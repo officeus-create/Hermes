@@ -61,6 +61,8 @@ assert.equal(masterSource.includes("home-academy-book"), false, "Academy must no
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
 assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry one self-contained attention-to-demand scene");
+assert.ok(masterSource.includes('data-technology-visual-owner="product-pipeline"'), "Technology must make the real product pipeline the visual owner");
+assert.equal(masterSource.includes("/images/home-20261001/technology-512"), false, "Technology must not restore the retired abstract architectural poster");
 for (const stage of ["01 / CANONICAL CONTENT", "02 / DISTRIBUTION", "03 / WEBSITE ACTION", "04 / CRM EVIDENCE"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
