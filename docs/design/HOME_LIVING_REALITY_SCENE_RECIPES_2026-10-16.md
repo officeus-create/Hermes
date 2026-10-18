@@ -22,9 +22,11 @@ Key information remains semantic HTML. Video, WebGL, canvas, generated media and
 Purpose: make movement, environment and equipment feel physically separate.
 
 Story states:
-- equipment: car hauler / dry van / reefer / flatbed / step deck / hotshot;
+- canonical visual owner: the owned true 90-degree top-down car-hauler Golden Frame (`golden-car-hauler-512/768/887.webp`);
 - weather: sun / fog / dusk / rain;
 - subject: one coherent primary logistics scene; no second standalone mini-truck overlay;
+- legacy Oct-03 equipment images (car hauler / dry van / reefer / flatbed / step deck / hotshot) remain provenance/history only and must not be expanded back into Home;
+- future equipment variants are allowed only after they match the Golden Frame camera family, scale, composition, QA and provenance;
 - operational meaning: request → route fit → human review → handoff.
 
 Truth boundary: illustrative operating scene; no live loads, rates, capacity, tracking or customer data.
@@ -33,10 +35,10 @@ Motion:
 - camera/background geometry remains locked;
 - vehicle movement belongs inside an approved coherent scene/asset; do not simulate it with a second tiny HTML truck over another truck scene;
 - weather changes on its own layer;
-- desktop pointer/focus may nudge the world state;
-- ambient equipment replacement runs more slowly than weather state changes.
+- desktop pointer/focus may nudge the weather state;
+- equipment replacement is disabled until matching true top-down Golden Frames exist.
 
-Mobile fallback: one-column composition; ambient state cycle remains optional and must not alter layout geometry.
+Mobile fallback: one-column composition with the same Golden Frame family; weather state remains optional and must not alter layout geometry.
 
 Reduced motion: stable sun state and no decorative weather/vehicle travel animation.
 
@@ -44,7 +46,7 @@ Performance: no runtime video-provider dependency. The fallback remains the loca
 
 Acceptance:
 - 390 and 1440 no overflow;
-- weather change must not replace the equipment image;
+- weather change must not replace the Golden Frame image;
 - rain uses distributed droplets/mist, never large translating glitch lines;
 - background transform stays none;
 - no standalone duplicate/tiny truck layer is present at any motion preference;
