@@ -22,12 +22,18 @@ test("Academy preserves the approved visual source and reviewed progression at 1
   await expect(route.locator('img[src*="academy-learner-owner-reference"]')).toHaveCount(0);
 
   await expect(proof).toHaveAttribute("data-academy-source", "/services/hermes-connect/academy/");
+  await expect(proof).toHaveAttribute("data-academy-visual-owner", "warm-progress-rail");
   await expect(proof.locator(".home-academy-state")).toHaveCount(4);
+  await expect(proof.locator(".home-academy-progress")).toHaveCount(0);
   await expect(proof).toContainText("TASK + PRACTICE");
   await expect(proof).toContainText("HUMAN FEEDBACK");
   await expect(proof).toContainText("RETRY");
-  await expect(proof).toContainText("PROGRESSION");
   await expect(proof).toContainText("NEXT STEP");
+  await expect(proof).toContainText("progression is not automatic");
+  await expect(proof).toContainText("NEXT STEP");
+  await expect(proof.locator(".home-academy-sunlight")).toHaveCSS("animation-name", "home-academy-sun");
+  await expect(proof.locator(".home-academy-leaf-shadow")).toHaveCSS("animation-name", "home-academy-breeze");
+  await expect(proof.locator(".home-academy-state").first()).toHaveCSS("animation-name", "none");
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
@@ -45,11 +51,17 @@ test("Academy keeps approved source and all progression meaning at 390 reduced m
   await expect(route.locator("[data-home-academy-human]")).toHaveCount(0);
   await expect(route.locator(".home-academy-book")).toHaveCount(0);
   await expect(proof).toHaveAttribute("data-motion-state", "reduced");
+  await expect(proof).toHaveAttribute("data-academy-visual-owner", "warm-progress-rail");
   await expect(proof.locator(".home-academy-state")).toHaveCount(4);
+  await expect(proof.locator(".home-academy-progress")).toHaveCount(0);
   await expect(proof.locator(".home-academy-state").first()).toHaveCSS("animation-name", "none");
   await expect(proof).toContainText("TASK");
   await expect(proof).toContainText("PRACTICE");
   await expect(proof).toContainText("FEEDBACK");
   await expect(proof).toContainText("NEXT STEP");
+  const primaryLabelSizes = await proof.locator(".home-academy-state small, .home-academy-state strong").evaluateAll(nodes =>
+    nodes.map(node => parseFloat(getComputedStyle(node).fontSize)),
+  );
+  expect(Math.min(...primaryLabelSizes)).toBeGreaterThanOrEqual(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
