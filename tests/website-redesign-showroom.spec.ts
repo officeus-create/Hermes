@@ -74,6 +74,8 @@ test("redesign showroom uses native View Transition only when motion is allowed"
   });
   await page.goto("/services/website-redesign/");
   const showroom = page.locator("[data-redesign-showroom]");
+  await expect(page.locator("html")).toHaveCSS("view-transition-name", "none");
+  await expect(showroom.locator(".redesign-showroom-browser")).toHaveCSS("view-transition-name", "website-redesign-stage");
 
   await showroom.getByRole("button", { name: "Diagnose", exact: false }).click();
   await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
