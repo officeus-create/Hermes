@@ -30,6 +30,10 @@ test("Logistics car-hauler separates the moving subject from the camera-locked r
 });
 
 test("Logistics separated subject enhancement stays off for reduced motion", async ({ page }) => {
+  const externalRequests: string[] = [];
+  page.on("request", request => {
+    if (new URL(request.url()).hostname.endsWith(".cloudfront.net")) externalRequests.push(request.url());
+  });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -42,6 +46,10 @@ test("Logistics separated subject enhancement stays off for reduced motion", asy
   await expect(route).toHaveAttribute("data-logistics-motion", "reduced");
   await expect(scene).toHaveCSS("opacity", "1");
   await expect(truckLayer).toHaveCSS("animation-name", "none");
+  await route.scrollIntoViewIfNeeded();
+  await expect(route.locator("[data-home-logistics-road-plate]")).not.toHaveAttribute("src", /./);
+  await expect(truckLayer).not.toHaveAttribute("src", /./);
+  expect(externalRequests).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
@@ -61,6 +69,11 @@ test("Logistics untouched CDN originals decode independently and retain a fixed 
 
   // No src mutation or local substitution: this test exercises the actual
   // currently configured external assets, unlike the separate deterministic mock.
+  // Original CDN images are requested only after the scene intersects the viewport.
+  // Do not substitute the full static fallback into the independent road/truck layers.
+  await route.scrollIntoViewIfNeeded();
+  await expect.poll(() => roadPlate.getAttribute("src")).toMatch(/^https:\/\/[^/]+\.cloudfront\.net\/.+\.png$/);
+  await expect.poll(() => truckLayer.getAttribute("src")).toMatch(/^https:\/\/[^/]+\.cloudfront\.net\/.+\.png$/);
   const [roadURL, truckURL] = await Promise.all([
     roadPlate.getAttribute("src"), truckLayer.getAttribute("src"),
   ]);
@@ -100,4 +113,32 @@ test("Logistics CDN failure preserves the local fallback without duplicate movin
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCSS("opacity", "0");
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCSS("opacity", "0");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+});
+
+test("Logistics keeps one approved local scene without JavaScript and never fetches optional CDN layers", async ({ browser }, testInfo) => {
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    javaScriptEnabled: false,
+    reducedMotion: "reduce",
+    viewport: { width: 390, height: 844 },
+  });
+  try {
+    const page = await context.newPage();
+    const externalRequests: string[] = [];
+    page.on("request", request => {
+      if (new URL(request.url()).hostname.endsWith(".cloudfront.net")) externalRequests.push(request.url());
+    });
+    await page.goto("/");
+    const route = page.locator('[data-route-id="logistics"]');
+    const scene = route.locator("[data-home-logistics-scene-image]");
+    await expect(scene).toHaveCount(1);
+    await scene.evaluate(node => (node as HTMLImageElement).decode());
+    await expect(scene).toHaveCSS("opacity", "1");
+    await route.scrollIntoViewIfNeeded();
+    await expect(route.locator("[data-home-logistics-road-plate]")).not.toHaveAttribute("src", /./);
+    await expect(route.locator("[data-home-logistics-truck-layer]")).not.toHaveAttribute("src", /./);
+    expect(externalRequests).toEqual([]);
+  } finally {
+    await context.close();
+  }
 });
