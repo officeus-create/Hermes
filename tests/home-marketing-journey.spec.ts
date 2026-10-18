@@ -6,8 +6,9 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   const route = page.locator('[data-route-id="marketing"]');
   const scene = route.locator('[data-home-marketing-journey]');
   await expect(scene).toHaveCount(1);
+  await expect(route.locator("[data-home-marketing-human]")).toHaveCount(0);
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
-  // The user-approved Marketing scene must not load its retired hidden photography.
+  // The selected scene keeps the causal workflow without the retired botanical legacy artwork.
   await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
   for (const label of ["CONTENT", "DISCOVERY", "WEBSITE", "INQUIRY"]) {
     await expect(scene).toContainText(label);
@@ -23,6 +24,10 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   // New live scene replaces the duplicate legacy workflow overlay.
   await expect(route.locator('[data-home-explainer="marketing"]')).toHaveCSS("display", "none");
   await expect(scene).toHaveCSS("opacity", "1");
+  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+    const label = scene.locator(selector);
+    expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
@@ -41,6 +46,10 @@ test("Marketing scene is static for reduced motion and keeps native links withou
   await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
   await expect(scene.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
   await expect(route.locator('[data-home-explainer="marketing"]')).toContainText("CRM evidence");
+  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+    const label = scene.locator(selector);
+    expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await route.click();
   await expect(page).toHaveURL(/\/paths\/marketing\/$/);
@@ -68,9 +77,20 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
   expect(await countColumns()).toBe(2);
   for (const id of ["logistics", "technology", "academy"]) {
-    await expect(stage.locator(`[data-route-id="${id}"] .home-portal-art img`))
-      .toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
+    const route = stage.locator(`[data-route-id="${id}"]`);
+    // The Logistics scene has independent road/truck enhancement layers; the
+    // responsive sizes contract belongs to its one canonical fallback image.
+    const image = id === "logistics"
+      ? route.locator("[data-home-logistics-scene-image]")
+      : route.locator(".home-portal-art img");
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
+  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-truck-layer]')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="marketing"] .home-portal-art img')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   const tabletCards = await stage.locator("[data-home-route]").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
   expect(tabletCards[0].top).toBe(tabletCards[1].top);
