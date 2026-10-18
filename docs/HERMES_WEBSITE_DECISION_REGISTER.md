@@ -1,5 +1,19 @@
 # Hermes website decision register
 
+## Current production override — 2026-10-18
+
+Use current `main` and production readback before any historical snapshot below. The following slices are already implemented and must not be rebuilt from older branches:
+
+- Home: `HomeMasterScene.astro` with Logistics Spatial Operations, Marketing Attention & Demand, Technology real-product choreography, and Academy Human Progress / reviewed-practice grammar;
+- `/services/website-development/`: live capability showroom with Web Design system proof plus Website Factory / semantic build / QA / SEO-GEO / production-readback evidence loop;
+- `/services/website-redesign/`: live controlled-change showroom;
+- `/paths/logistics/`: live Spatial Operations explanation plus the canonical Path Engine / Load Board continuations;
+- `/services/seo/`: live SEO/GEO Evidence Proof Replay;
+- `/paths/technology/`: live Hermes Connect / Website Factory / QA-readback product truth and current Product Hub continuation;
+- `/paths/academy/`: five public tracks plus Explain → Practice → Self-review → Human feedback → Retry → Transfer / progression truth.
+
+Historical statements below that say these scenes/showrooms are missing are SOURCE_ONLY and superseded. Reuse current components; replay an old branch only for a unique, bounded delta after current-main comparison. Generated video is optional enhancement, never a completion dependency.
+
 ## Current V4 override — 2026-09-30
 
 This historical register remains provenance, but current design authority is `docs/design/HERMES_UNIFIED_BRAND_SYSTEM.md` V4 plus the Drive `HERMES DESIGN CONSTITUTION V4 — CURRENT`.

@@ -149,3 +149,34 @@ test("showroom remains operable and removes transitions when reduced motion is r
   );
   expect(transitionDurations.every((duration) => duration.split(",").every((value) => Number.parseFloat(value) === 0))).toBeTruthy();
 });
+
+
+test("showroom uses native View Transition progressively and skips it for reduced motion", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as { __showroomTransitions?: number }).__showroomTransitions = 0;
+    Object.defineProperty(document, "startViewTransition", {
+      configurable: true,
+      value: (update: () => void) => {
+        (window as unknown as { __showroomTransitions: number }).__showroomTransitions += 1;
+        update();
+        return { finished: Promise.resolve() };
+      },
+    });
+  });
+  await page.goto("/services/website-development/");
+  const showroom = page.locator("[data-website-showroom]");
+  await expect(page.locator("html")).toHaveCSS("view-transition-name", "none");
+  await expect(showroom.locator(".website-showroom-browser")).toHaveCSS("view-transition-name", "website-development-stage");
+
+  await showroom.getByRole("button", { name: "Factory brief + architecture", exact: false }).click();
+  await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0)).toBeGreaterThan(0);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const before = await page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0);
+  await showroom.getByRole("button", { name: "Semantic responsive build", exact: false }).click();
+  const after = await page.evaluate(() => (window as unknown as { __showroomTransitions?: number }).__showroomTransitions ?? 0);
+
+  expect(after).toBe(before);
+  await expect(showroom.getByRole("heading", { name: "Build the approved design as a real responsive product." })).toBeVisible();
+});
