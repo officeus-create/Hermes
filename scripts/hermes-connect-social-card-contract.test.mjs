@@ -14,6 +14,8 @@ assert(layout.includes('Astro.url.pathname === "/services/hermes-connect/"'), "B
 assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.path"), "Hermes Connect hub must use its dedicated social card instead of the generic ecosystem hero.");
 assert(layout.includes('useHermesConnectSocialCard ? "image/png" : "image/jpeg"'), "BaseLayout must advertise the correct social image MIME type without changing other routes.");
 assert(layout.includes("socialImageAlt"), "Hermes Connect social image must have route-specific alt text.");
+assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.width"), "Hermes Connect social image width must come from the card metadata contract.");
+assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.height"), "Hermes Connect social image height must come from the card metadata contract.");
 
 const endpoint = await text("src/pages/images/hermes-connect-social-card.png.ts");
 assert(endpoint.includes("export const prerender = true"), "Hermes Connect social card endpoint must be pre-rendered into a static asset.");
