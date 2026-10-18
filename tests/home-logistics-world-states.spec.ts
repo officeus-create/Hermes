@@ -32,6 +32,7 @@ test("Logistics reduced motion freezes the world in the stable sun state", async
   await expect(world).toHaveAttribute("data-logistics-weather-state", "sun");
   await expect(world).toHaveAttribute("data-logistics-echo-motion", "reduced");
   await expect(route.locator(".home-logistics-weather")).toHaveCSS("animation-name", "none");
+  await expect(route.locator('[data-home-cinematic-video="logistics"]')).toHaveCSS("display", "none");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
@@ -44,6 +45,23 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
   const slot = route.locator('[data-home-cinematic-slot="logistics"]');
 
   await expect(slot).toHaveAttribute("data-cinematic-source-policy", "local-only");
+  const video = route.locator('[data-home-cinematic-video="logistics"]');
+  await expect(video).toHaveCount(1);
+  await expect(video).toHaveAttribute("poster", "/images/logistics-living/car-hauler-512.webp");
+  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
+  expect(await video.evaluate((node) => ({
+    autoplay: node.autoplay,
+    muted: node.muted,
+    loop: node.loop,
+    playsInline: node.playsInline,
+    preload: node.preload,
+  }))).toEqual({
+    autoplay: true,
+    muted: true,
+    loop: true,
+    playsInline: true,
+    preload: "metadata",
+  });
   await expect(route.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCount(0);
