@@ -55,14 +55,14 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
                   <img
                     data-home-logistics-scene-image
-                    data-logistics-scene-ready="car-hauler"
-                    src="/images/logistics-living/car-hauler-512.webp"
-                    srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
+                    data-logistics-scene-ready="golden-car-hauler"
+                    src="/images/logistics-living/golden-car-hauler-512.webp"
+                    srcset="/images/logistics-living/golden-car-hauler-512.webp 512w, /images/logistics-living/golden-car-hauler-768.webp 768w, /images/logistics-living/golden-car-hauler-887.webp 887w"
                     sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
                     width="887"
                     height="1590"
                     aria-hidden="true"
-                    alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
+                    alt="Illustrative true top-down U.S. car-hauler route with ambient weather"
                     loading="eager"
                     decoding="async"
                     fetchpriority="high"
@@ -85,12 +85,11 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 class="home-logistics-living"
                 aria-hidden="true"
                 data-home-logistics-echo
-                data-logistics-echo-scene="car-hauler"
+                data-logistics-echo-scene="golden-car-hauler"
                 data-logistics-weather-state="sun"
-                data-logistics-echo-count="6"
-                data-logistics-equipment-cycle-ms="15600"
+                data-logistics-echo-count="1"
                 data-logistics-weather-cycle-ms="5200"
-                data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
+                data-logistics-echo-scenes="golden-car-hauler"
                 data-logistics-echo-motion="idle"
               >
                 <span class="home-logistics-weather"></span>
@@ -215,14 +214,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
-    const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
     const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
-    const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
     const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    let sceneIndex = 0;
     let weatherIndex = 0;
-    let sceneTimer: number | undefined;
     let weatherTimer: number | undefined;
     let visible = false;
 
@@ -230,58 +225,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       logisticsEcho.dataset.logisticsEchoMotion = state;
       logisticsRoute?.setAttribute("data-logistics-motion", state);
     };
-
-    let sceneRequest = 0;
-    const preloadScene = (scene: (typeof scenes)[number]) => {
-      if (!sceneImage) return Promise.resolve();
-      const candidate = new Image();
-      candidate.sizes = sceneImage.sizes;
-      candidate.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-768.webp 768w, /images/logistics-living/${scene}-887.webp 887w`;
-      candidate.src = `/images/logistics-living/${scene}-512.webp`;
-      if (candidate.decode) return candidate.decode();
-      return new Promise<void>((resolve, reject) => {
-        candidate.addEventListener("load", () => resolve(), { once: true });
-        candidate.addEventListener("error", () => reject(new Error(`Failed to decode ${scene}`)), { once: true });
-      });
-    };
-    const applyScene = async () => {
-      const scene = scenes[sceneIndex];
-      const request = ++sceneRequest;
-      if (sceneImage) {
-        try {
-          await preloadScene(scene);
-        } catch {
-          return;
-        }
-        if (request !== sceneRequest) return;
-        sceneImage.src = `/images/logistics-living/${scene}-512.webp`;
-        sceneImage.srcset = `/images/logistics-living/${scene}-512.webp 512w, /images/logistics-living/${scene}-768.webp 768w, /images/logistics-living/${scene}-887.webp 887w`;
-        sceneImage.dataset.logisticsSceneReady = scene;
-      }
-      logisticsEcho.dataset.logisticsEchoScene = scene;
-    };
     const applyWeather = () => {
       logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
     };
     const stop = () => {
-      if (sceneTimer) window.clearInterval(sceneTimer);
       if (weatherTimer) window.clearInterval(weatherTimer);
-      sceneTimer = undefined;
       weatherTimer = undefined;
     };
     const update = () => {
       if (reduced.matches) {
         stop();
-        sceneIndex = 0;
         weatherIndex = 0;
         applyWeather();
-        sceneRequest += 1;
-        if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
-          sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
-          sceneImage.srcset = `/images/logistics-living/${scenes[0]}-512.webp 512w, /images/logistics-living/${scenes[0]}-768.webp 768w, /images/logistics-living/${scenes[0]}-887.webp 887w`;
-          sceneImage.dataset.logisticsSceneReady = scenes[0];
-          logisticsEcho.dataset.logisticsEchoScene = scenes[0];
-        }
         setMotionState("reduced");
         return;
       }
@@ -291,12 +246,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         return;
       }
       setMotionState("running");
-      if (!sceneTimer) {
-        sceneTimer = window.setInterval(() => {
-          sceneIndex = (sceneIndex + 1) % scenes.length;
-          applyScene();
-        }, 15600);
-      }
       if (!weatherTimer) {
         weatherTimer = window.setInterval(() => {
           weatherIndex = (weatherIndex + 1) % weatherStates.length;
