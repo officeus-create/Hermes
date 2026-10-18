@@ -12,7 +12,7 @@ test("Logistics Golden Scene uses one coherent local visual owner", async ({ pag
   await expect(slot).toHaveCount(1);
   await expect(slot).toHaveAttribute("data-cinematic-source-policy", "local-only");
   await expect(scene).toHaveCount(1);
-  await expect(scene).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
+  await expect(scene).toHaveAttribute("src", "/images/logistics-living/golden-car-hauler-512.webp");
   await expect(scene).toBeVisible();
   await expect(route).toHaveAttribute("data-logistics-motion", "running");
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
@@ -21,7 +21,7 @@ test("Logistics Golden Scene uses one coherent local visual owner", async ({ pag
   await expect(route.locator('[data-home-explainer="logistics"]')).toHaveCSS("display", "none");
 
   const currentSrc = await scene.evaluate(node => (node as HTMLImageElement).currentSrc);
-  expect(currentSrc).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/images\/logistics-living\/[a-z-]+-(512|768|887)\.webp$/);
+  expect(currentSrc).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/images\/logistics-living\/golden-car-hauler-(512|768|887)\.webp$/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
@@ -47,25 +47,27 @@ test("Logistics Golden Scene stays static and local for reduced motion", async (
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
-test("Logistics six equipment scenes decode from owned local assets only", async ({ page }) => {
+test("Logistics Golden Frame responsive assets decode from owned local files only", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
 
-  const names = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"];
-  const decoded = await page.evaluate(async (sceneNames) => Promise.all(sceneNames.map(async name => {
+  const widths = [512, 768, 887];
+  const decoded = await page.evaluate(async (variants) => Promise.all(variants.map(async width => {
     const image = new Image();
-    image.srcset = `/images/logistics-living/${name}-512.webp 512w, /images/logistics-living/${name}-768.webp 768w, /images/logistics-living/${name}-887.webp 887w`;
-    image.src = `/images/logistics-living/${name}-512.webp`;
+    image.src = `/images/logistics-living/golden-car-hauler-${width}.webp`;
     await image.decode();
     return {
-      name,
+      width,
       ok: image.naturalWidth > 0 && image.naturalHeight > 0,
       currentSrc: image.currentSrc,
     };
-  })), names);
+  })), widths);
 
   expect(decoded.every(item => item.ok)).toBe(true);
   expect(decoded.every(item => new URL(item.currentSrc).origin === "http://127.0.0.1:4321")).toBe(true);
+  await expect(page.locator('[data-home-logistics-echo]')).toHaveAttribute("data-logistics-echo-count", "1");
+  await expect(page.locator('[data-home-logistics-echo]')).toHaveAttribute("data-logistics-echo-scenes", "golden-car-hauler");
+  await expect(page.locator('[data-home-logistics-echo]')).not.toHaveAttribute("data-logistics-equipment-cycle-ms", /./);
 });
 
 test("Logistics keeps the integrated local fallback without JavaScript", async ({ browser }, testInfo) => {
