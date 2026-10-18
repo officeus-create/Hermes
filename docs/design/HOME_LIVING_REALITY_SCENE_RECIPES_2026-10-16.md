@@ -40,14 +40,16 @@ Mobile fallback: one-column composition; ambient state cycle remains optional an
 
 Reduced motion: stable sun state and no decorative weather/vehicle travel animation.
 
-Performance: no runtime video-provider dependency. Existing responsive WebP assets + CSS/WAAPI first.
+Performance: no runtime video-provider dependency. The fallback remains the local responsive WebP scene. One optimized local cinematic video may be added only after frame QA and provenance approval; it must be muted, playsinline, poster-backed, reduced-motion safe, and must never depend on a provider URL at runtime. Canvas remains unnecessary for Home.
 
 Acceptance:
 - 390 and 1440 no overflow;
 - weather change must not replace the equipment image;
 - rain uses distributed droplets/mist, never large translating glitch lines;
 - background transform stays none;
-- no standalone duplicate/tiny truck layer is present at any motion preference.
+- no standalone duplicate/tiny truck layer is present at any motion preference;
+- no remote road/truck image layer or provider-hosted runtime media is present;
+- if a cinematic video is later approved, exactly one local video layer is allowed and the integrated static scene remains the fallback.
 
 ## Marketing — Attention & Demand
 

@@ -49,9 +49,8 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
    const routeId=await route.getAttribute('data-route-id');
-   // The Logistics enhancement has distinct road and truck layers. This general
-   // route contract validates only the canonical local fallback image; the
-   // separate motion spec owns enhancement behavior and provenance.
+   // Logistics owns one coherent local scene. The Golden Scene source-lock
+   // test owns cinematic/fallback provenance and prevents split truck layers.
    const image=routeId==='logistics'
     ? route.locator('[data-home-logistics-scene-image]')
     : route.locator('.home-portal-art img');
@@ -113,6 +112,9 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
   if(direction==='marketing') {
    await expect(page.locator('[data-home-marketing-journey]')).toBeVisible();
    await expect(explainer).toHaveCSS('display','none'); // original duplicated workflow is superseded
+  } else if(direction==='logistics') {
+   await expect(page.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(explainer).toHaveCSS('display','none'); // cinematic field stays free of HUD
   } else {
    await expect(explainer).toHaveCSS('opacity','1');
   }
@@ -202,6 +204,10 @@ test('all four Home directions explain a causal workflow and remain static on to
    await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+  } else if(direction==='logistics') {
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(route.locator('.home-road-flow')).toHaveCount(0);
   } else {
    await expect(explainer).toHaveCSS('opacity','1');
    for(const id of ['event','system','human','outcome']) {
@@ -221,6 +227,9 @@ test('all four Home directions explain a causal workflow and remain static on to
   if(direction==='marketing') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
+  } else if(direction==='logistics') {
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
   } else if(direction==='technology') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-pillar-proof="systems"]')).toBeVisible();
