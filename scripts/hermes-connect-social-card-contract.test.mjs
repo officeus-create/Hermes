@@ -12,7 +12,8 @@ console.log("Running Hermes Connect social card contract...");
 const layout = await text("src/layouts/BaseLayout.astro");
 assert(layout.includes('Astro.url.pathname === "/services/hermes-connect/"'), "BaseLayout must identify the canonical Hermes Connect product hub.");
 assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.path"), "Hermes Connect hub must use its dedicated social card instead of the generic ecosystem hero.");
-assert(layout.includes('useHermesConnectSocialCard ? "image/png" : "image/jpeg"'), "BaseLayout must advertise the correct social image MIME type without changing other routes.");
+assert(layout.includes('type: "image/png"') && layout.includes('type: "image/jpeg"'), "BaseLayout must preserve distinct Connect PNG and canonical JPEG default MIME types.");
+assert(layout.includes(': defaultSocialImage.type;'), "BaseLayout must use the route-specific default MIME when no explicit social image is supplied.");
 assert(layout.includes("socialImageAlt"), "Hermes Connect social image must have route-specific alt text.");
 
 const endpoint = await text("src/pages/images/hermes-connect-social-card.png.ts");

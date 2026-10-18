@@ -52,26 +52,33 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
-                <img
-                  data-home-logistics-scene-image
-                  data-logistics-scene-ready="car-hauler"
-                  src="/images/logistics-living/car-hauler-512.webp"
-                  srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
-                  sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
-                  width="887"
-                  height="1590"
-                  aria-hidden="true"
-                  alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                />
-              ) : path.id === "marketing" ? null : (
+                <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
+                  <img
+                    data-home-logistics-scene-image
+                    data-logistics-scene-ready="car-hauler"
+                    src="/images/logistics-living/car-hauler-512.webp"
+                    srcset="/images/logistics-living/car-hauler-512.webp 512w, /images/logistics-living/car-hauler-768.webp 768w, /images/logistics-living/car-hauler-887.webp 887w"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    width="887"
+                    height="1590"
+                    aria-hidden="true"
+                    alt="Illustrative aerial U.S. logistics route with changing freight equipment and weather"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                  />
+                </span>
+              ) : path.id === "technology" ? (
                 <picture>
-                  <source type="image/avif" srcset={`/images/home-20261001/${path.id}-512.avif 512w, /images/home-20261001/${path.id}-887.avif 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src={`/images/home-20261001/${path.id}-512.webp`} srcset={`/images/home-20261001/${path.id}-512.webp 512w, /images/home-20261001/${path.id}-887.webp 887w`} sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt={`${path.brandLabel} architectural scene`} loading="lazy" decoding="async" fetchpriority="auto" />
+                  <source type="image/avif" srcset="/images/home-20261001/technology-512.avif 512w, /images/home-20261001/technology-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                  <img src="/images/home-20261001/technology-512.webp" srcset="/images/home-20261001/technology-512.webp 512w, /images/home-20261001/technology-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Technology architectural scene" loading="lazy" decoding="async" fetchpriority="auto" />
                 </picture>
-              )}
+              ) : path.id === "academy" ? (
+                <picture>
+                  <source type="image/avif" srcset="/images/home-20261001/academy-512.avif 512w, /images/home-20261001/academy-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
+                  <img src="/images/home-20261001/academy-512.webp" srcset="/images/home-20261001/academy-512.webp 512w, /images/home-20261001/academy-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Academy warm architectural study environment" loading="lazy" decoding="async" fetchpriority="auto" />
+                </picture>
+              ) : null}
             </span>
             {path.id === "logistics" && (
               <span
@@ -79,7 +86,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                 aria-hidden="true"
                 data-home-logistics-echo
                 data-logistics-echo-scene="car-hauler"
+                data-logistics-weather-state="sun"
                 data-logistics-echo-count="6"
+                data-logistics-equipment-cycle-ms="15600"
+                data-logistics-weather-cycle-ms="5200"
                 data-logistics-echo-scenes="car-hauler,dry-van,reefer,flatbed,step-deck,hotshot"
                 data-logistics-echo-motion="idle"
               >
@@ -87,7 +97,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               </span>
             )}
             
-            {path.id === "logistics" && <span class="home-scene-detail home-road-flow" aria-hidden="true"><i></i><i></i><i></i></span>}
             <span class={`home-live-explainer home-live-explainer-${path.id}`} data-home-explainer={path.id} aria-hidden="true">
               <span class="home-live-kicker">Example workflow</span>
               <svg class="home-live-path" viewBox="0 0 100 58" preserveAspectRatio="none" aria-hidden="true">
@@ -129,22 +138,64 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             )}
             {path.id === "technology" && (
               <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
-                <span class="home-system-caption">PUBLIC <i></i> VERIFIED PROCESS</span>
-                <span class="home-system-card home-system-connect"><small>01 / HERMES CONNECT</small><strong>LIVE PILOT</strong><em>CRM · business context</em></span>
+                <span class="home-system-caption">REAL PRODUCT UI <i></i> TRUTHFUL STATES</span>
+                <span class="home-system-card home-system-connect" data-tech-source="/services/hermes-connect/repair-shops/dashboard/">
+                  <small>01 / HERMES CONNECT</small>
+                  <strong>SHOP OWNER WORKSPACE</strong>
+                  <span class="home-tech-mini home-tech-connect-ui"><i>Services</i><i>Booking inbox</i><i>Catalog inquiries</i></span>
+                  <em>private CRM surface</em>
+                </span>
                 <span class="home-system-wire home-system-wire-a"><i></i></span>
-                <span class="home-system-card home-system-factory"><small>02 / WEBSITE FACTORY</small><strong>PRIVATE BUILD</strong><em>site + SEO workflow</em></span>
+                <span class="home-system-card home-system-factory" data-tech-source="/services/website-development/">
+                  <small>02 / WEBSITE DELIVERY</small>
+                  <strong>SEMANTIC BUILD</strong>
+                  <span class="home-tech-mini home-tech-factory-ui"><i>Responsive</i><i>Canonical</i><i>Schema</i></span>
+                  <em>business context → release evidence</em>
+                </span>
                 <span class="home-system-wire home-system-wire-b"><i></i></span>
-                <span class="home-system-card home-system-social"><small>03 / SOCIAL CONNECTORS</small><strong>BUILDING</strong><em>Threads · Meta</em></span>
+                <span class="home-system-card home-system-social" data-tech-source="/services/hermes-connect/repair-shops/social/">
+                  <small>03 / SOCIAL STUDIO</small>
+                  <strong>OWNER AUTHORIZATION</strong>
+                  <span class="home-tech-mini home-tech-social-ui"><i>IG</i><i>f</i><i>@</i><b>provider readback</b></span>
+                  <em>connect ≠ writable until verified</em>
+                </span>
                 <span class="home-system-wire home-system-wire-c"><i></i></span>
-                <span class="home-system-card home-system-readback"><small>04 / QA READBACK</small><strong><i></i> VERIFIED PROCESS</strong><em>deploy ≠ live until readback</em></span>
+                <span class="home-system-card home-system-readback" data-tech-source="/services/website-development/">
+                  <small>04 / QA + READBACK</small>
+                  <strong><i></i> RELEASE EVIDENCE</strong>
+                  <span class="home-tech-mini home-tech-readback-ui"><i>Build</i><i>Browser</i><i>390 / 1440</i><i>Readback</i></span>
+                  <em>deploy ≠ live until readback</em>
+                </span>
               </span>
             )}
             {path.id === "academy" && (
-              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle">
-                <span class="home-academy-caption">TASK <i></i> NEXT LEVEL</span>
+              <span class="home-scene-detail home-learning-detail home-academy-living" aria-hidden="true" data-home-pillar-proof="progress" data-home-living-motion data-motion-state="idle" data-academy-source="/services/hermes-connect/academy/">
+                <span class="home-academy-caption">HUMAN PROGRESS <i></i> REVIEWED EVIDENCE</span>
                 <span class="home-academy-sunlight"></span>
                 <span class="home-academy-leaf-shadow"><i></i><i></i><i></i></span>
-                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT LEVEL</small></span>
+                <span class="home-academy-workflow">
+                  <span class="home-academy-state home-academy-attempt">
+                    <small>01 / TASK + PRACTICE</small>
+                    <strong>Practice before consequence</strong>
+                    <em>attempt becomes evidence</em>
+                  </span>
+                  <span class="home-academy-state home-academy-feedback">
+                    <small>02 / HUMAN FEEDBACK</small>
+                    <strong>One precise correction</strong>
+                    <em>reviewer feedback</em>
+                  </span>
+                  <span class="home-academy-state home-academy-retry">
+                    <small>03 / RETRY</small>
+                    <strong>Show the change</strong>
+                    <em>reviewed second attempt</em>
+                  </span>
+                  <span class="home-academy-state home-academy-gate">
+                    <small>04 / PROGRESSION</small>
+                    <strong>Human decision</strong>
+                    <em>not automatic</em>
+                  </span>
+                </span>
+                <span class="home-academy-progress"><small>TASK</small><i></i><small>PRACTICE</small><i></i><small>FEEDBACK</small><i></i><small>NEXT STEP</small></span>
               </span>
             )}
             <span class="home-master-route-copy">
@@ -165,11 +216,20 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
   const logisticsEcho = document.querySelector<HTMLElement>("[data-home-logistics-echo]");
   if (logisticsEcho && window.IntersectionObserver) {
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
+    const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
+    const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let sceneIndex = 0;
+    let weatherIndex = 0;
     let sceneTimer: number | undefined;
+    let weatherTimer: number | undefined;
     let visible = false;
+
+    const setMotionState = (state: "running" | "paused" | "reduced") => {
+      logisticsEcho.dataset.logisticsEchoMotion = state;
+      logisticsRoute?.setAttribute("data-logistics-motion", state);
+    };
 
     let sceneRequest = 0;
     const preloadScene = (scene: (typeof scenes)[number]) => {
@@ -200,14 +260,21 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
     };
+    const applyWeather = () => {
+      logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
+    };
     const stop = () => {
       if (sceneTimer) window.clearInterval(sceneTimer);
+      if (weatherTimer) window.clearInterval(weatherTimer);
       sceneTimer = undefined;
+      weatherTimer = undefined;
     };
     const update = () => {
       if (reduced.matches) {
         stop();
         sceneIndex = 0;
+        weatherIndex = 0;
+        applyWeather();
         sceneRequest += 1;
         if (sceneImage && sceneImage.dataset.logisticsSceneReady !== scenes[0]) {
           sceneImage.src = `/images/logistics-living/${scenes[0]}-512.webp`;
@@ -215,20 +282,27 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
           sceneImage.dataset.logisticsSceneReady = scenes[0];
           logisticsEcho.dataset.logisticsEchoScene = scenes[0];
         }
-        logisticsEcho.dataset.logisticsEchoMotion = "reduced";
+        setMotionState("reduced");
         return;
       }
       if (!visible || document.hidden) {
         stop();
-        logisticsEcho.dataset.logisticsEchoMotion = "paused";
+        setMotionState("paused");
         return;
       }
-      logisticsEcho.dataset.logisticsEchoMotion = "running";
-      if (sceneTimer) return;
-      sceneTimer = window.setInterval(() => {
-        sceneIndex = (sceneIndex + 1) % scenes.length;
-        applyScene();
-      }, 5200);
+      setMotionState("running");
+      if (!sceneTimer) {
+        sceneTimer = window.setInterval(() => {
+          sceneIndex = (sceneIndex + 1) % scenes.length;
+          applyScene();
+        }, 15600);
+      }
+      if (!weatherTimer) {
+        weatherTimer = window.setInterval(() => {
+          weatherIndex = (weatherIndex + 1) % weatherStates.length;
+          applyWeather();
+        }, 5200);
+      }
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -236,6 +310,18 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       update();
     }, { threshold: .2 });
     observer.observe(logisticsEcho);
+    const nudgeWeather = () => {
+      if (reduced.matches) return;
+      weatherIndex = (weatherIndex + 1) % weatherStates.length;
+      applyWeather();
+      if (weatherTimer) {
+        window.clearInterval(weatherTimer);
+        weatherTimer = undefined;
+      }
+      update();
+    };
+    logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
+    logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
     update();
@@ -318,45 +404,40 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-legacy-anchor{display:block;scroll-margin-top:6rem}
 .home-master-stage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;border:1px solid #dfe2e7;border-radius:34px;overflow:hidden;box-shadow:0 20px 54px rgba(17,19,24,.08);scroll-margin-top:6rem;background:#dfe2e7}
 .home-master-route{position:relative;isolation:isolate;aspect-ratio:267/568;min-width:0;display:flex;align-items:end;padding:clamp(18px,2.6vw,40px);text-decoration:none;color:#fff;overflow:hidden;background:#18273d}
-.home-master-route-logistics{--flow-panel:#0b2139d9;--flow-kicker:#0b2139c7;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
-.home-master-route-marketing{--flow-panel:#102c25dc;--flow-kicker:#102c25c9;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
-.home-master-route-technology{--flow-panel:#3a281edc;--flow-kicker:#3a281ec9;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
-.home-master-route-academy{--flow-panel:#2d2044dc;--flow-kicker:#2d2044c9;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
+.home-master-route-logistics{--flow-panel:#0b2139;--flow-kicker:#0b2139;--flow-border:#dff3ff99;--flow-dot:#a9e4ff;--flow-light:#9ed8ff;--flow-line:#d8f4ff;--flow-glow:#51bfff}
+.home-master-route-marketing{--flow-panel:#102c25;--flow-kicker:#102c25;--flow-border:#dfffe999;--flow-dot:#9de7b7;--flow-light:#a9edbf;--flow-line:#dcffe7;--flow-glow:#45ce78}
+.home-master-route-technology{--flow-panel:#3a281e;--flow-kicker:#3a281e;--flow-border:#ffe8c799;--flow-dot:#ffc274;--flow-light:#ffd096;--flow-line:#ffe4b5;--flow-glow:#ff9f4b}
+.home-master-route-academy{--flow-panel:#2d2044;--flow-kicker:#2d2044;--flow-border:#eee0ff99;--flow-dot:#c7a6ff;--flow-light:#d5bdff;--flow-line:#efe3ff;--flow-glow:#a979ff}
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
-/* Camera-locked environment: real subject/weather layers move; the background itself never breathes/zooms. */
+/* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */
+.home-logistics-layer-stack{position:absolute;inset:0;display:block;overflow:hidden}
 .home-master-route-logistics .home-portal-art img{object-position:center center;transition:opacity .45s ease,filter .45s ease}
+.home-logistics-layer-stack>img{position:absolute;inset:0}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
-[data-logistics-echo-scene="car-hauler"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
-[data-logistics-echo-scene="dry-van"] .home-logistics-weather{background:
+[data-logistics-weather-state="sun"] .home-logistics-weather{background:radial-gradient(circle at 20% 13%,rgba(255,229,165,.75),transparent 28%),linear-gradient(132deg,transparent 54%,rgba(255,255,255,.12));opacity:.46}
+[data-logistics-weather-state="fog"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.42),transparent 28%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.46),transparent 35%),linear-gradient(180deg,rgba(232,242,245,.12),rgba(111,139,151,.16));animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.72;filter:blur(.25px)}
+[data-logistics-weather-state="fog"]::before{background:linear-gradient(180deg,rgba(224,237,241,.05),rgba(75,105,119,.18));opacity:.58}
+[data-logistics-weather-state="dusk"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.38),transparent 26%),linear-gradient(180deg,rgba(31,43,68,.05),rgba(7,16,28,.46));opacity:.8}
+[data-logistics-weather-state="dusk"]::before{background:linear-gradient(180deg,rgba(8,25,45,.10),rgba(5,12,26,.5));opacity:.82}
+[data-logistics-weather-state="rain"] .home-logistics-weather{background:
 linear-gradient(180deg,rgba(180,207,219,.16),rgba(33,61,74,.06)),
 radial-gradient(ellipse,rgba(229,244,250,.52) 0 .7px,transparent 1px) 0 0/23px 38px,
 radial-gradient(ellipse,rgba(211,235,245,.34) 0 .65px,transparent 1px) 11px 13px/31px 48px;
 animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18px)}
-[data-logistics-echo-scene="dry-van"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
-[data-logistics-echo-scene="reefer"] .home-logistics-weather{background:radial-gradient(circle,#fff 0 1px,transparent 1.6px) 0 0/20px 25px,radial-gradient(circle,#edf8ff 0 1px,transparent 1.6px) 10px 8px/27px 30px;animation:home-logistics-snow 4.4s linear infinite;opacity:.72}
-[data-logistics-echo-scene="reefer"]::before{background:linear-gradient(180deg,rgba(226,242,248,.08),rgba(93,130,148,.3));opacity:.72}
-[data-logistics-echo-scene="flatbed"] .home-logistics-weather{background:radial-gradient(ellipse at 72% 23%,rgba(255,221,146,.38),transparent 30%),linear-gradient(180deg,rgba(191,126,72,.05),rgba(131,78,42,.18));animation:home-logistics-heat 3.2s ease-in-out infinite alternate;opacity:.64}
-[data-logistics-echo-scene="step-deck"] .home-logistics-weather{background:radial-gradient(ellipse at 22% 25%,rgba(245,250,250,.35),transparent 24%),radial-gradient(ellipse at 72% 19%,rgba(235,243,245,.38),transparent 31%);animation:home-logistics-cloud 6.8s ease-in-out infinite alternate;opacity:.65}
-[data-logistics-echo-scene="hotshot"] .home-logistics-weather{background:radial-gradient(circle at 80% 19%,rgba(251,174,126,.34),transparent 25%),linear-gradient(180deg,rgba(14,29,51,.08),rgba(7,16,28,.44));opacity:.78}
-[data-logistics-echo-scene="hotshot"]::before{background:linear-gradient(180deg,rgba(8,25,45,.12),rgba(5,12,26,.48));opacity:.82}
+[data-logistics-weather-state="rain"]::before{background:linear-gradient(180deg,rgba(13,36,52,.16),rgba(3,18,29,.35));opacity:.58}
 
 .home-scene-detail{position:absolute;z-index:-2;display:block;pointer-events:none}
-.home-road-flow{inset:23% 8% auto 26%;height:38%}
-.home-road-flow i{position:absolute;display:block;width:10%;height:2px;border-radius:3px;background:#d0f4ff;box-shadow:0 0 8px 2px #63c7ffb0;opacity:0;transform:rotate(-51deg)}
-.home-road-flow i:nth-child(1){left:12%;top:14%}.home-road-flow i:nth-child(2){left:44%;top:37%}.home-road-flow i:nth-child(3){left:74%;top:13%}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i{animation:home-road-streak 1.9s ease-in-out 2}
-.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(2){animation-delay:.28s}.home-master-route-logistics:is(:hover,:focus-visible) .home-road-flow i:nth-child(3){animation-delay:.56s}
 .home-live-explainer{position:absolute;z-index:1;inset:9% 5% 37%;pointer-events:none;opacity:0;transform:translateY(7px);transition:opacity .28s ease .08s,transform .38s cubic-bezier(.16,1,.3,1) .08s}
 .home-live-kicker{position:absolute;left:1%;top:0;padding:5px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-kicker);box-shadow:0 7px 18px #0715272e;backdrop-filter:blur(7px);color:#fff;font:700 .5rem/1 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-live-path{position:absolute;inset:9% 0 0;width:100%;height:82%;overflow:visible}
 .home-live-path path{fill:none;stroke:var(--flow-line);stroke-width:.75;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:180;stroke-dashoffset:180;filter:drop-shadow(0 0 4px var(--flow-glow));opacity:.88}
 .home-live-step{position:absolute;display:flex;align-items:center;gap:5px;min-width:0;padding:6px 8px;border:1px solid var(--flow-border);border-radius:999px;background:var(--flow-panel);box-shadow:0 8px 20px #0715273b;backdrop-filter:blur(7px);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .3s ease,transform .42s cubic-bezier(.16,1,.3,1)}
 .home-live-step::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:var(--flow-dot);box-shadow:0 0 0 3px color-mix(in srgb,var(--flow-dot) 22%,transparent),0 0 9px var(--flow-glow)}
-.home-live-step b{color:var(--flow-light);font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
+.home-live-step b{color:#fff;font:700 .48rem/1 var(--font-mono);letter-spacing:.04em}
 .home-live-step em{overflow:hidden;color:#fff;font:700 clamp(.48rem,.62vw,.64rem)/1.1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis}
 .home-live-step[data-live-step="event"]{left:2%;top:21%}
 .home-live-step[data-live-step="system"]{left:29%;top:48%}
@@ -384,7 +465,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 /* Marketing: one connected demand journey, not botanical decoration or generic social-logo confetti. */
 .home-master-route-marketing{background:radial-gradient(ellipse at 57% 36%,#d9f7e8 0%,#b9dccd 37%,#234638 94%);color:#fff}
 .home-master-route-marketing .home-live-explainer{display:none}/* Replaced by the four readable stages of the living Marketing scene; avoid duplicate competing overlays. */
-/* Marketing scene is fully CSS/SVG, without hidden downloaded background photography. */
+/* Marketing retires the old botanical AI background; causal demand stages remain the current proof until a rights-safe human clip is owner-approved. */
+.home-master-route-marketing .home-portal-art{background:linear-gradient(180deg,#dff5ea,#89b9a4 58%,#24483a)}
+.home-master-route-marketing .home-portal-art::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(239,252,246,.12) 0%,rgba(29,82,61,.06) 44%,rgba(18,48,37,.68) 91%)}
 .home-marketing-journey{position:absolute;z-index:0;inset:6% 5% 31%;display:block;pointer-events:none;overflow:visible;transform:translateZ(0)}
 .home-marketing-caption{position:absolute;top:0;left:5%;display:flex;align-items:center;gap:8px;color:#184734;font:800 .58rem/1.2 var(--font-mono);letter-spacing:.13em}
 .home-marketing-caption i{height:1px;width:25px;background:#489876;opacity:.65}
@@ -394,6 +477,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-marketing-pulse{opacity:.8;stroke:#2bbf83;stroke-width:2;stroke-dasharray:2 14;stroke-dashoffset:0;filter:drop-shadow(0 0 4px #74d4a2)}
 .home-marketing-card{position:absolute;display:block;box-sizing:border-box;border:1px solid #ffffffd9;border-radius:13px;background:linear-gradient(150deg,#ffffffed,#ecfaf4ea);box-shadow:0 12px 26px #0a412d2b,0 2px 6px #0a412d18;backdrop-filter:blur(8px);padding:10px;overflow:hidden;color:#204536;transform:translate3d(0,0,0)}
 .home-marketing-card small{display:flex;align-items:center;gap:5px;font:800 clamp(.625rem,.68vw,.74rem)/1.2 var(--font-mono);letter-spacing:.045em;white-space:nowrap}
+.home-marketing-discovery small,.home-marketing-inquiry small{font-size:clamp(.52rem,.56vw,.64rem);letter-spacing:.012em}
 .home-marketing-card small i{display:block;height:5px;width:5px;flex:none;border-radius:50%;background:#16a572}
 .home-marketing-content{top:12%;left:4%;width:55%;height:22%}
 .home-marketing-discovery{top:31%;right:3%;width:57%;height:20%}
@@ -429,33 +513,58 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-discovery small,.home-marketing-inquiry small{font-size:.53rem;letter-spacing:.008em}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
-.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
+.home-master-route-logistics .home-live-explainer,.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
 .home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
 .home-system-caption i,.home-academy-caption i{display:inline-block;width:22px;height:1px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
 .home-system-card{position:absolute;width:43%;min-height:56px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
 .home-system-card small{display:block;color:#ffd8a5;font:800 .44rem/1.1 var(--font-body);letter-spacing:.08em}
 .home-system-card strong{display:block;margin-top:6px;color:#fff7e8;font:850 .56rem/1 var(--font-body);letter-spacing:.08em}
-.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1 var(--font-body);font-style:normal;letter-spacing:.035em}
-.home-system-connect{left:0;top:14%}.home-system-factory{right:0;top:24%}.home-system-social{left:4%;bottom:3%}.home-system-readback{right:0;bottom:2%}
+.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1.2 var(--font-body);font-style:normal;letter-spacing:.025em}
+.home-tech-mini{display:flex;align-items:center;gap:3px;min-width:0;margin-top:6px;overflow:hidden}
+.home-tech-mini i,.home-tech-mini b{display:block;min-width:0;padding:3px 4px;border:1px solid #ffe8c744;border-radius:4px;background:#fff6e80f;color:#fff2d9;font:750 .36rem/1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.home-tech-connect-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-connect-ui i:last-child{grid-column:1/-1}
+.home-tech-factory-ui{display:grid;grid-template-columns:1fr 1fr}
+.home-tech-factory-ui i{width:auto;padding-inline:3px;font-size:.34rem;text-align:center}
+.home-tech-factory-ui i:last-child{grid-column:1/-1}
+.home-tech-social-ui i{display:grid;place-items:center;width:17px;height:17px;padding:0;border-radius:50%;flex:none}.home-tech-social-ui b{margin-left:auto;color:#ffd39d}
+.home-tech-readback-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-readback-ui i{text-align:center}
+.home-system-connect{left:0;top:14%;width:46%}.home-system-factory{right:0;top:22%;width:46%}.home-system-social{left:2%;bottom:1%;width:47%}.home-system-readback{right:0;bottom:0;width:47%}
 .home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
 .home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.58}
 .home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
 .home-product-choreography[data-motion-state="running"] .home-system-wire i{animation:home-system-packet 5.6s ease-in-out infinite}
 .home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:64%;width:33%;transform:rotate(-13deg)}.home-system-wire-c{left:42%;top:76%;width:31%;transform:rotate(13deg)}
 .home-product-choreography[data-motion-state="running"] .home-system-readback strong i{animation:home-system-verified 5.6s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-card{animation:home-system-surface 7.2s ease-in-out infinite}
+.home-product-choreography[data-motion-state="running"] .home-system-factory{animation-delay:-1.8s}
+.home-product-choreography[data-motion-state="running"] .home-system-social{animation-delay:-3.6s}
+.home-product-choreography[data-motion-state="running"] .home-system-readback{animation-delay:-5.4s}
 .home-learning-detail{inset:7% 7% 39%;z-index:0;overflow:hidden}
+.home-master-route-academy .home-portal-art{background:radial-gradient(circle at 28% 18%,#fff1d2 0%,#e6d7ef 35%,#8d6fa8 72%,#49365c 100%)}
+.home-master-route-academy .home-portal-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(40,29,57,.05),rgba(40,29,57,.20) 48%,rgba(40,29,57,.52));pointer-events:none}
 .home-academy-caption{color:#f0e3ff}.home-academy-caption i{background:#cfb4ff;box-shadow:0 0 8px #a979ff}
 .home-academy-sunlight{position:absolute;inset:-5% -12% 20% 8%;background:linear-gradient(122deg,rgba(255,238,190,.34),rgba(255,245,222,.06) 48%,transparent 72%);clip-path:polygon(0 0,60% 0,100% 100%,28% 100%)}
 .home-academy-leaf-shadow{position:absolute;right:2%;top:8%;width:46%;height:48%;opacity:.18;filter:blur(.25px);transform-origin:85% 5%}
 .home-academy-leaf-shadow i{position:absolute;width:32%;height:18%;border-radius:70% 20% 70% 20%;background:#2b2440}.home-academy-leaf-shadow i:nth-child(1){right:8%;top:5%;rotate:22deg}.home-academy-leaf-shadow i:nth-child(2){right:33%;top:24%;rotate:-18deg}.home-academy-leaf-shadow i:nth-child(3){right:2%;top:45%;rotate:48deg}
+.home-academy-workflow{position:absolute;inset:16% 0 24% 48%;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:center;z-index:3}
+.home-academy-state{display:block;min-width:0;padding:7px;border:1px solid #eee1ffb8;border-radius:9px;background:linear-gradient(145deg,#fffdf3e8,#f6effde0);box-shadow:0 8px 18px rgba(35,20,55,.18);backdrop-filter:blur(7px);color:#3b2d4f}
+.home-academy-state small{display:block;color:#765798;font:850 .38rem/1.1 var(--font-body);letter-spacing:.065em}
+.home-academy-state strong{display:block;margin-top:5px;color:#30213f;font:850 .5rem/1.08 var(--font-body)}
+.home-academy-state em{display:block;margin-top:4px;color:#6e617a;font:700 .39rem/1.15 var(--font-body);font-style:normal}
+.home-academy-feedback{border-color:#d9c1ff}.home-academy-gate{background:linear-gradient(145deg,#3a2b4fdf,#271d37e8);border-color:#dcc9ff8f;color:#fff}
+.home-academy-gate small,.home-academy-gate strong,.home-academy-gate em{color:#f5edff}
 .home-academy-progress{position:absolute;left:0;right:0;bottom:2%;display:flex;align-items:center;justify-content:space-between;gap:4px}
 .home-academy-progress small{padding:4px 5px;border:1px solid #eadcff7d;border-radius:999px;background:#2f2342d9;color:#f4ecff;font:800 .42rem/1 var(--font-body);letter-spacing:.05em;white-space:nowrap}
 .home-academy-progress>i{height:1px;min-width:5px;flex:1;background:linear-gradient(90deg,#9f78de,#eadcff);opacity:.68}
 .home-academy-living[data-motion-state="running"] .home-academy-sunlight{animation:home-academy-sun 12s ease-in-out infinite alternate}
 .home-academy-living[data-motion-state="running"] .home-academy-leaf-shadow{animation:home-academy-breeze 9s ease-in-out infinite alternate}
+.home-academy-living[data-motion-state="running"] .home-academy-state{animation:home-academy-focus 8s ease-in-out infinite}
+.home-academy-living[data-motion-state="running"] .home-academy-feedback{animation-delay:-2s}
+.home-academy-living[data-motion-state="running"] .home-academy-retry{animation-delay:-4s}
+.home-academy-living[data-motion-state="running"] .home-academy-gate{animation-delay:-6s}
 .home-academy-living[data-motion-state="running"] .home-academy-progress>i{animation:home-academy-progress-pulse 6s ease-in-out infinite}
 @keyframes home-live-route{to{stroke-dashoffset:0}}
 @keyframes home-logistics-rain{from{background-position:0 0,0 0,11px 13px}to{background-position:0 0,-5px 38px,5px 61px}}
@@ -468,12 +577,12 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 
 @keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}36%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
 @keyframes home-system-verified{0%,56%,100%{scale:1;opacity:.62}68%,78%{scale:1.3;opacity:1}}
+@keyframes home-system-surface{0%,100%{box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633;translate:0 0}50%{box-shadow:0 11px 25px #1a0f0a70,inset 0 1px #fff2d644;translate:0 -2px}}
+@keyframes home-academy-focus{0%,100%{translate:0 0;box-shadow:0 8px 18px rgba(35,20,55,.18)}50%{translate:0 -2px;box-shadow:0 12px 24px rgba(35,20,55,.28)}}
 @keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
-@keyframes home-page-turn{0%,100%{transform:skewY(-8deg) rotate(-8deg);opacity:0}42%,60%{transform:skewY(-8deg) rotate(-8deg) rotateY(-55deg);opacity:.75}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
-@keyframes home-book-choose{0%,100%{translate:0 0;rotate:0deg;opacity:0}48%{translate:-4px -2px;rotate:-5deg;opacity:.6}}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
 .home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
 .home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
@@ -487,7 +596,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route:hover .home-portal-art img{filter:brightness(1.07)}
 .home-master-route:focus-visible{outline:4px solid #fff;outline-offset:-7px;box-shadow:inset 0 0 0 10px #131b52}
 @media(max-width:1000px){.home-master{padding-top:7rem}.home-master-route{padding:18px}.home-master-route-arrow{width:36px;height:36px;right:12px;top:60%}.home-master-route-copy strong{font-size:1.5rem}.home-route-detail{font-size:.73rem}.home-master-route-copy small{font-size:.6rem}}
-@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:58px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
+@media(max-width:700px){.home-master{padding-top:6rem}.home-master-shell{width:calc(100% - 24px)}.home-master-intro{padding:0 8px 24px}.home-master-display{font-size:clamp(2.5rem,10.2vw,4.4rem);letter-spacing:-.065em}.home-master-script{font-size:.82rem}.home-master-stage{grid-template-columns:1fr;gap:10px;border:0;border-radius:26px;overflow:visible;box-shadow:none;background:transparent}.home-master-route{padding:20px 16px;aspect-ratio:4/5;border:1px solid rgba(17,19,24,.1);border-radius:24px}.home-master-route-copy{gap:8px}.home-master-route-copy strong{font-size:clamp(1.35rem,5vw,2rem);padding:0 52px 0 0}.home-master-route-copy small{font-size:.56rem;gap:6px;letter-spacing:.08em}.home-route-detail{font-size:.7rem}.home-master-route-arrow{right:12px;top:52%;width:36px;height:36px}.home-master-route-technology .home-master-route-arrow{top:46%}.home-master-route::after{inset:56% 0 0}.home-live-explainer{inset:7% 5px 57%;}.home-live-kicker{left:0;padding:4px 6px;font-size:.58rem}.home-live-path{display:none}.home-live-step{max-width:49%;padding:5px 7px;gap:4px;border-radius:10px}.home-live-step::before{width:4px;height:4px}.home-live-step b{font-size:.48rem}.home-live-step em{font-size:.625rem;line-height:1.14;white-space:normal}.home-live-step[data-live-step="event"]{left:0;top:34%}.home-live-step[data-live-step="system"]{left:51%;top:34%}.home-live-step[data-live-step="human"]{left:0;top:69%}.home-live-step[data-live-step="outcome"]{right:0;top:69%}.home-system-display,.home-learning-detail{inset:6% 5% 38%}.home-system-card{padding:7px;min-height:66px}.home-tech-mini i,.home-tech-mini b{font-size:.5rem;padding:3px}.home-system-card small,.home-system-caption,.home-academy-caption,.home-academy-progress small,.home-academy-state small{font-size:.625rem}.home-system-card strong,.home-system-readback strong{font-size:.66rem}.home-system-card em{font-size:.58rem}.home-academy-workflow{inset:14% 0 25% 49%;grid-template-columns:1fr;gap:3px}.home-academy-state{padding:5px}.home-academy-state strong{font-size:.68rem}.home-academy-state em{font-size:.58rem}.home-academy-progress{gap:4px}.home-academy-progress small{padding:4px 5px}}
 @media(min-width:701px) and (max-width:1000px){
   /* Tablet: four 180px-wide pillars are illegible. Give each living scene real space. */
   .home-master-stage{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -496,5 +605,6 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-journey{inset:6% 7% 31%}
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
+@media(max-width:700px) and (hover:none){.home-master-route-arrow{display:none}.home-master-route-copy strong{padding-right:0}}
 @media(prefers-reduced-motion:reduce){.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 </style>

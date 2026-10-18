@@ -48,13 +48,19 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
-   const image=route.locator('.home-portal-art img');
-   if(await route.getAttribute('data-route-id')==='marketing') {
+   const routeId=await route.getAttribute('data-route-id');
+   // Logistics owns one coherent local scene. The Golden Scene source-lock
+   // test owns cinematic/fallback provenance and prevents split truck layers.
+   const image=routeId==='logistics'
+    ? route.locator('[data-home-logistics-scene-image]')
+    : route.locator('.home-portal-art img');
+   if(routeId==='marketing') {
     // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
     await expect(image).toHaveCount(0);
     await expect(route.locator('.home-marketing-card')).toHaveCount(4);
     continue;
    }
+   await expect(image).toHaveCount(1);
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -106,6 +112,9 @@ test('approved portals stay usable without JavaScript and honor reduced motion',
   if(direction==='marketing') {
    await expect(page.locator('[data-home-marketing-journey]')).toBeVisible();
    await expect(explainer).toHaveCSS('display','none'); // original duplicated workflow is superseded
+  } else if(direction==='logistics') {
+   await expect(page.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(explainer).toHaveCSS('display','none'); // cinematic field stays free of HUD
   } else {
    await expect(explainer).toHaveCSS('opacity','1');
   }
@@ -195,6 +204,10 @@ test('all four Home directions explain a causal workflow and remain static on to
    await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+  } else if(direction==='logistics') {
+   await expect(explainer).toHaveCSS('display','none');
+   await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
+   await expect(route.locator('.home-road-flow')).toHaveCount(0);
   } else {
    await expect(explainer).toHaveCSS('opacity','1');
    for(const id of ['event','system','human','outcome']) {
@@ -214,6 +227,9 @@ test('all four Home directions explain a causal workflow and remain static on to
   if(direction==='marketing') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
+  } else if(direction==='logistics') {
+   await expect(mobileExplainer).toHaveCSS('display','none');
+   await expect(mobile.locator('[data-home-logistics-scene-image]')).toBeVisible();
   } else if(direction==='technology') {
    await expect(mobileExplainer).toHaveCSS('display','none');
    await expect(mobile.locator('[data-home-pillar-proof="systems"]')).toBeVisible();
@@ -234,7 +250,7 @@ test('all four Home directions explain a causal workflow and remain static on to
 });
 
 
-test('Home Logistics keeps a camera-locked mobile environment across scene changes',async({page})=>{
+test('Home Logistics keeps a camera-locked mobile environment across weather states',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.setViewportSize({width:390,height:844});
  await page.goto('/');
@@ -249,17 +265,17 @@ test('Home Logistics keeps a camera-locked mobile environment across scene chang
  // Sample the weather style synchronously: the 5.2s scene timer can otherwise
  // switch equipment during a multi-second Playwright style poll.
  const rainStyle=await echo.evaluate(node=>{
-   node.setAttribute('data-logistics-echo-scene','dry-van');
+   node.setAttribute('data-logistics-weather-state','rain');
    const weather=node.querySelector('.home-logistics-weather')!;
    return {animation:getComputedStyle(weather).animationName,transform:getComputedStyle(weather).transform};
  });
  expect(rainStyle.animation).toBe('home-logistics-rain');
  expect(rainStyle.transform).toBe('none');
- await echo.evaluate(node=>node.setAttribute('data-logistics-echo-scene','car-hauler'));
+ await echo.evaluate(node=>node.setAttribute('data-logistics-weather-state','sun'));
  await page.evaluate(()=>document.fonts.ready);
  const before=await route.boundingBox();
  expect(before).not.toBeNull();
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:14000}).not.toBe('car-hauler');
+ await expect(scene).toHaveAttribute('data-logistics-scene-ready','car-hauler');
  const after=await route.boundingBox();
  expect(after).not.toBeNull();
  expect(Math.abs(after!.width-before!.width)).toBeLessThanOrEqual(1);
@@ -293,8 +309,10 @@ test('Home Logistics carries six owned equipment and weather states without chan
  await expect(page.locator('[data-route-id="logistics"]')).toHaveAttribute('href','/paths/logistics/');
  await page.locator('#paths').scrollIntoViewIfNeeded();
  await expect(echo).toHaveAttribute('data-logistics-echo-motion','running');
- await expect.poll(async()=>scene.getAttribute('data-logistics-scene-ready'),{timeout:14000}).not.toBe('car-hauler');
+ await expect(echo).toHaveAttribute('data-logistics-equipment-cycle-ms','15600');
+ await expect(echo).toHaveAttribute('data-logistics-weather-cycle-ms','5200');
  const settledScene=await scene.getAttribute('data-logistics-scene-ready');
+ expect(['car-hauler','dry-van','reefer','flatbed','step-deck','hotshot']).toContain(settledScene);
  expect(settledScene).toBe(await echo.getAttribute('data-logistics-echo-scene'));
  expect(await scene.evaluate(node=>{const image=node as HTMLImageElement;return image.complete&&image.naturalWidth>0&&getComputedStyle(image).visibility!=='hidden';})).toBe(true);
 
@@ -322,20 +340,21 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await expect(page.locator('.home-marketing-channels')).toContainText('TG');
  const technologyProof=page.locator('[data-home-pillar-proof="systems"]');
  await expect(technologyProof).toHaveCount(1);
+ await expect(technologyProof).toContainText('REAL PRODUCT UI');
  await expect(technologyProof).toContainText('HERMES CONNECT');
- await expect(technologyProof).toContainText('LIVE PILOT');
- await expect(technologyProof).toContainText('WEBSITE FACTORY');
- await expect(technologyProof).toContainText('PRIVATE BUILD');
- await expect(technologyProof).toContainText('SOCIAL CONNECTORS');
- await expect(technologyProof).toContainText('BUILDING');
- await expect(technologyProof).toContainText('QA READBACK');
- await expect(technologyProof).toContainText('VERIFIED PROCESS');
+ await expect(technologyProof).toContainText('SHOP OWNER WORKSPACE');
+ await expect(technologyProof).toContainText('WEBSITE DELIVERY');
+ await expect(technologyProof).toContainText('SEMANTIC BUILD');
+ await expect(technologyProof).toContainText('SOCIAL STUDIO');
+ await expect(technologyProof).toContainText('OWNER AUTHORIZATION');
+ await expect(technologyProof).toContainText('QA + READBACK');
+ await expect(technologyProof).toContainText('RELEASE EVIDENCE');
  await expect(page.locator('[data-home-explainer="technology"]')).toContainText('QA readback');
  const academyProof=page.locator('[data-home-pillar-proof="progress"]');
  await expect(academyProof).toContainText('TASK');
  await expect(academyProof).toContainText('PRACTICE');
  await expect(academyProof).toContainText('FEEDBACK');
- await expect(academyProof).toContainText('NEXT LEVEL');
+ await expect(academyProof).toContainText('NEXT STEP');
  await expect(page.locator('.home-academy-book-page')).toHaveCount(0);
  await expect(page.locator('.home-academy-leaf-shadow')).toHaveCount(1);
  await expect(page.locator('.home-academy-sunlight')).toHaveCount(1);

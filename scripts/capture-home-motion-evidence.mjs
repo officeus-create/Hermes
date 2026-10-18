@@ -18,7 +18,9 @@ try {
     const images=await page.evaluate(async()=>{
       const posters=[...document.querySelectorAll('.home-portal-art img')];
       for(const image of posters) image.loading='eager';
-      await Promise.all([...document.querySelectorAll('.home-master-stage img')].map(image=>image.decode()));
+      await Promise.all([...document.querySelectorAll('.home-master-stage img')]
+        .filter(image=>image.currentSrc || image.getAttribute('src'))
+        .map(image=>image.decode()));
       return posters.map(image=>({src:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}));
     });
     const scene=page.locator('[data-home-marketing-journey]');
@@ -90,7 +92,8 @@ try {
       await page.evaluate(async()=>{
         const photos=[...document.querySelectorAll('.home-master-stage img')];
         for(const photo of photos) photo.loading='eager';
-        await Promise.all(photos.map(photo=>photo.decode()));
+        await Promise.all(photos.filter(photo=>photo.currentSrc || photo.getAttribute('src'))
+          .map(photo=>photo.decode()));
         if(document.activeElement instanceof HTMLElement) document.activeElement.blur();
         window.scrollTo({top:0,behavior:'instant'});
       });
@@ -142,15 +145,15 @@ try {
   if(await touchConsent.count()) await touchConsent.click();
   for(const direction of ['logistics','marketing','technology','academy']) {
     // Each direction's screenshot must target the visible visual owner, never a hidden superseded explainer.
-    const selector=direction==='marketing'
-      ? '[data-home-marketing-journey]'
-      : direction==='technology'
-        ? '[data-home-pillar-proof="systems"]'
-        : direction==='academy'
-          ? '[data-home-pillar-proof="progress"]'
-          : `[data-home-explainer="${direction}"]`;
+    const selector=direction==='logistics'
+      ? '[data-route-id="logistics"]'
+      : direction==='marketing'
+        ? '[data-home-marketing-journey]'
+        : direction==='technology'
+          ? '[data-home-pillar-proof="systems"]'
+          : '[data-home-pillar-proof="progress"]';
     const target=touchPage.locator(selector);
-    await target.screenshot({path:`${directory}/home-390-touch-${direction}-explainer.png`,animations:'allow'});
+    await target.screenshot({path:`${directory}/home-390-touch-${direction}-visual-owner.png`,animations:'allow'});
   }
   if(await touchPage.evaluate(()=>document.documentElement.scrollWidth>innerWidth)) {
     throw new Error('Home touch geometry failed at 390');
@@ -158,7 +161,7 @@ try {
   await touchContext.close();
   await writeFile(`${directory}/evidence.json`,JSON.stringify({
     sha:process.env.GITHUB_SHA,
-    source:'Marketing CSS/SVG scene, client-side visible+reduced-mode checkpoint',
+    source:'Home visual-owner evidence with Logistics Golden Scene and reduced-mode checkpoints',
     proof:'preview-only; not production',
     results,
     cleanReview

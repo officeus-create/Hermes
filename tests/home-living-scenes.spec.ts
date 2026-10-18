@@ -4,7 +4,9 @@ test("Home keeps native routes and shows living details without layout overflow"
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Four directions." })).toBeVisible();
-  await expect(page.locator(".home-scene-detail")).toHaveCount(4);
+  await expect(page.locator(".home-scene-detail")).toHaveCount(3);
+  await expect(page.locator('[data-route-id="logistics"] .home-scene-detail')).toHaveCount(0);
+  await expect(page.locator('[data-route-id="logistics"] [data-home-cinematic-slot="logistics"]')).toBeVisible();
   await expect(page.locator(".home-master-stage video, .home-master-stage canvas")).toHaveCount(0);
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
