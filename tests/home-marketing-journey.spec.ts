@@ -25,7 +25,7 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   // New live scene replaces the duplicate legacy workflow overlay.
   await expect(route.locator('[data-home-explainer="marketing"]')).toHaveCSS("display", "none");
   await expect(scene).toHaveCSS("opacity", "1");
-  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+  for (const selector of [".home-marketing-distribution small", ".home-marketing-inquiry small"]) {
     const label = scene.locator(selector);
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
@@ -47,7 +47,7 @@ test("Marketing scene is static for reduced motion and keeps native links withou
   await expect(scene.locator("[data-marketing-stage]")).toHaveCount(4);
   await expect(scene.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
   await expect(route.locator('[data-home-explainer="marketing"]')).toContainText("CRM evidence");
-  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+  for (const selector of [".home-marketing-distribution small", ".home-marketing-inquiry small"]) {
     const label = scene.locator(selector);
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
