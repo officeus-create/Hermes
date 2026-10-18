@@ -165,6 +165,8 @@ test("showroom uses native View Transition progressively and skips it for reduce
   });
   await page.goto("/services/website-development/");
   const showroom = page.locator("[data-website-showroom]");
+  await expect(page.locator("html")).toHaveCSS("view-transition-name", "none");
+  await expect(showroom.locator(".website-showroom-browser")).toHaveCSS("view-transition-name", "website-development-stage");
 
   await showroom.getByRole("button", { name: "Factory brief + architecture", exact: false }).click();
   await expect(showroom).toHaveAttribute("data-native-transition", /running|ready/);
