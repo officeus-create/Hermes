@@ -53,20 +53,28 @@ Acceptance:
 
 ## Marketing — Attention & Demand
 
-Purpose: show the causal path from content creation to qualified business evidence.
+Purpose: show one causal demand system from a canonical fact/release to human-qualified business evidence.
 
 Story:
-`content/news → discovery/distribution → website action → inquiry/CRM evidence`.
+`canonical content → Search/social distribution → website action → CRM evidence`.
 
-Truth boundary: sanitized demonstration only; no invented reach, leads or revenue.
+Truth boundary: sanitized demonstration only; no invented reach, views, leads, CAC, revenue or attribution result.
 
-Current visual field: the retired botanical AI background is not loaded. The causal journey is the only visual proof until an owned/licensed human content-production clip or frame passes owner review and provenance.
+Current visual field: one continuous demand corridor with four stations, not four floating UI cards and not the retired botanical AI background. Distribution labels may name Search, Threads, Instagram, Facebook and Telegram because these are real Hermes channel families, but they do not imply account authorization, current posting, or measured performance.
 
-Motion: current travels between real workflow stages; a future human micro-clip may be added only after owned/licensed assets pass provenance review.
+Motion: one restrained current travels through the shared corridor; station nodes may pulse sequentially. Independent floating-card motion, logo confetti and vanity-metric counters are rejected. A future owned/licensed human content-production clip may be added only after provenance and owner review.
 
-Mobile: stacked causal sequence, not a shrunken desktop canvas.
+Mobile: the same four stations remain a readable vertical causal corridor; do not shrink or overlap a desktop collage.
 
-Reduced motion: all stages remain visible and understandable without animated current.
+Reduced motion: signal travel and node pulse stop; all four stations remain visible and understandable.
+
+Acceptance:
+- exactly one `[data-home-marketing-journey]`;
+- exactly four `[data-marketing-stage]` stations;
+- zero `.home-marketing-card`, botanical leaves, or competing legacy story-board layers;
+- no invented quantitative marketing claim;
+- 390 / 768 / 1024 / 1440 remain overflow-free;
+- native `/paths/marketing/` route and semantic aria flow remain the continuation.
 
 ## Technology — Systems / Build / QA
 
