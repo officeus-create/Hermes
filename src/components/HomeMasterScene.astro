@@ -468,9 +468,9 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-master-route-logistics[data-logistics-layered="true"] [data-home-logistics-scene-image]{opacity:0}
 .home-master-route-logistics[data-logistics-layered="true"] .home-logistics-road-plate,
 .home-master-route-logistics[data-logistics-layered="true"] .home-logistics-truck-layer{opacity:1}
-.home-master-route-logistics[data-logistics-layered="true"] .home-logistics-truck-layer{animation:home-logistics-truck-drive 7.8s ease-in-out infinite;animation-play-state:paused}
+.home-master-route-logistics[data-logistics-layered="true"] .home-logistics-truck-layer{animation:home-logistics-truck-drive 7.8s cubic-bezier(.32,.72,.2,1) 1 forwards;animation-play-state:paused}
 .home-master-route-logistics[data-logistics-layered="true"][data-logistics-motion="running"] .home-logistics-truck-layer{animation-play-state:running}
-@keyframes home-logistics-truck-drive{0%,100%{transform:translate3d(.85%,-1.15%,0)}50%{transform:translate3d(-.9%,1.25%,0)}}
+@keyframes home-logistics-truck-drive{from{transform:translate3d(.85%,-1.15%,0)}to{transform:translate3d(-.9%,1.25%,0)}}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
