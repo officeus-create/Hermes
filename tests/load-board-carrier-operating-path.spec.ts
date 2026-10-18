@@ -69,8 +69,10 @@ test("canonical Load Board source is wired to separate live load, capacity and t
   expect(layout).toContain('import LoadBoardCapacityEnhancer from "../components/LoadBoardCapacityEnhancer.astro"');
   expect(layout).toContain("<LoadBoardCapacityEnhancer />");
   expect(live).toContain('Astro.url.pathname === "/load-board/"');
-  expect(live).toContain("fetchJson('/api/load-board/active?type=load')");
-  expect(live).toContain("fetchJson('/api/load-board/active?type=capacity')");
+  expect(live).toContain('url.searchParams.set("type", type)');
+  expect(live).toContain('if (requestedEquipment) url.searchParams.set("equipment", requestedEquipment)');
+  expect(live).toContain('fetchJson(activeFeedUrl("load"))');
+  expect(live).toContain('fetchJson(activeFeedUrl("capacity"))');
   expect(live).toContain("fetchJson('/api/load-board/summary')");
   expect(live).toContain("Interface preview rows are not inventory.");
   expect(live).toContain("Only the real count above represents active, unexpired records.");
@@ -98,4 +100,35 @@ test("plain Load Board keeps the carrier agreement journey hidden", async ({ pag
   const journey = page.locator("[data-carrier-contract-journey]");
   await expect(journey).toBeHidden();
   await expect(journey).toHaveAttribute("data-carrier-role-gated", "");
+});
+
+test("mobile carrier journey stays connected from Home to intake", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const logisticsHome = page.locator('#paths a[href="/paths/logistics/"]').first();
+  await expect(logisticsHome).toBeVisible();
+  await logisticsHome.click();
+  await expect(page).toHaveURL(/\/paths\/logistics\/$/);
+
+  const carrierPath = page.getByRole("link", { name: /Carrier or owner-operator/i }).first();
+  await expect(carrierPath).toBeVisible();
+  await carrierPath.click();
+  await expect(page).toHaveURL(/\/logistics\/carrier\/$/);
+
+  const rpm = page.getByRole("link", { name: /RPM & profitability/i }).first();
+  const loadBoard = page.getByRole("link", { name: /Open Load Board|Live Load Board/i }).first();
+  const dispatch = page.getByRole("link", { name: /Start dispatch review|Dispatch review/i }).first();
+  await expect(rpm).toBeVisible();
+  await expect(loadBoard).toBeVisible();
+  await expect(dispatch).toBeVisible();
+
+  await rpm.click();
+  await expect(page).toHaveURL(/\/logistics\/resources\/rpm-calculator\/$/);
+  const intake = page.getByRole("link", { name: /Request dispatch-fit review|Open carrier intake/i }).first();
+  await expect(intake).toBeVisible();
+  await intake.click();
+  await expect(page).toHaveURL(/\/logistics\/start-car-hauling-dispatch\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/carrier|dispatch/i);
+  await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
 });
