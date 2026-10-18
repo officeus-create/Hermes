@@ -155,7 +155,10 @@ const stages = [
       });
     };
     const activate = (key: string) => {
-      if (showroom.querySelector('[data-showroom-step][aria-pressed="true"]')?.getAttribute("data-showroom-step") === key) return;
+      if (showroom.querySelector('[data-showroom-step][aria-pressed="true"]')?.getAttribute("data-showroom-step") === key) {
+        commit(key);
+        return;
+      }
       const nativeTransition = (document as Document & {
         startViewTransition?: (update: () => void) => { finished?: Promise<unknown> };
       }).startViewTransition;
