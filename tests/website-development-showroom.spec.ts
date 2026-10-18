@@ -56,8 +56,8 @@ test("website development keeps keyboard interaction, canonical ownership, index
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-development/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
-  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1440");
-  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "900");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
   await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
 });
