@@ -55,6 +55,11 @@ test("website development keeps keyboard interaction, canonical ownership, index
   await expect(page.getByRole("link", { name: "Review the website case" })).toHaveAttribute("href", "/case/it-development/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/services/website-development/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1440");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "900");
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
 });
 
 test("all six showroom states stay contained with readable active text at 320, 390, and 430px", async ({ page }) => {
