@@ -78,16 +78,16 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   expect(await countColumns()).toBe(2);
   for (const id of ["logistics", "technology", "academy"]) {
     const route = stage.locator(`[data-route-id="${id}"]`);
-    // The Logistics scene has independent road/truck enhancement layers; the
-    // responsive sizes contract belongs to its one canonical fallback image.
+    // Logistics keeps one coherent local fallback image; no independent road/truck layers.
     const image = id === "logistics"
       ? route.locator("[data-home-logistics-scene-image]")
       : route.locator(".home-portal-art img");
     await expect(image).toHaveCount(1);
     await expect(image).toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
-  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(1);
-  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-truck-layer]')).toHaveCount(1);
+  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-truck-layer]')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="logistics"] [data-home-cinematic-slot="logistics"]')).toHaveCount(1);
   await expect(stage.locator('[data-route-id="marketing"] .home-portal-art img')).toHaveCount(0);
   await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveCount(1);
   await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src", "/images/home-20261001/academy-512.webp");
