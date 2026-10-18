@@ -1,0 +1,14 @@
+{
+  "name": "hermes-home-logistics-v1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:vendor": "node scripts/prepare-vendor.mjs",
+    "check": "hyperframes check . --strict --samples 12",
+    "render:draft": "hyperframes render --quality draft --fps 30 --output renders/home-logistics-v1.mp4 --strict"
+  },
+  "dependencies": {
+    "gsap": "3.14.2",
+    "hyperframes": "0.8.30"
+  }
+}
