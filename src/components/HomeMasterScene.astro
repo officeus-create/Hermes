@@ -74,7 +74,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   <img
                     class="home-logistics-road-plate"
                     data-home-logistics-road-plate
-                    src={logisticsMotionAssets.roadPlate}
+                    data-logistics-source={logisticsMotionAssets.roadPlate}
                     width="768"
                     height="1376"
                     aria-hidden="true"
@@ -86,7 +86,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   <img
                     class="home-logistics-truck-layer"
                     data-home-logistics-truck-layer
-                    src={logisticsMotionAssets.truckLayer}
+                    data-logistics-source={logisticsMotionAssets.truckLayer}
                     width="887"
                     height="1590"
                     aria-hidden="true"
@@ -267,6 +267,15 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
       logisticsEcho.dataset.logisticsLayerReady = layerReady ? "true" : "false";
       syncLayerMode();
     };
+    // Enhancement remains optional: reduce requests to external image providers.
+    const requestEnhancementLayers = () => {
+      if (reduced.matches || !visible || document.hidden) return;
+      for (const image of [roadPlate, truckLayer]) {
+        if (!image || image.hasAttribute("src")) continue;
+        const source = image.dataset.logisticsSource;
+        if (source) image.src = source;
+      }
+    };
     const setMotionState = (state: "running" | "paused" | "reduced") => {
       logisticsEcho.dataset.logisticsEchoMotion = state;
       logisticsRoute?.setAttribute("data-logistics-motion", state);
@@ -337,6 +346,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         setMotionState("paused");
         return;
       }
+      requestEnhancementLayers();
       setMotionState("running");
       if (!sceneTimer) {
         sceneTimer = window.setInterval(() => {
