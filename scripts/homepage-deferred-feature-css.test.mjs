@@ -60,10 +60,12 @@ assert.equal(masterSource.includes("home-moving-truck"), false, "Logistics must 
 assert.equal(masterSource.includes("home-academy-book"), false, "Academy must not introduce a separate CSS book over its original architecture");
 assert.equal(masterSource.includes("home-moving-leaves"), false, "Marketing must not restore unrelated decorative leaves");
 assert.equal(masterSource.includes("home-story-board"), false, "Marketing must not restore competing mock-card decoration");
-assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry the selected self-contained attention-to-inquiry scene");
-for (const stage of ["01 / CONTENT", "02 / DISCOVERY", "03 / WEBSITE", "04 / INQUIRY"]) {
+assert.ok(masterSource.includes("data-home-marketing-journey"), "Marketing must carry one self-contained attention-to-demand scene");
+for (const stage of ["01 / CANONICAL CONTENT", "02 / DISTRIBUTION", "03 / WEBSITE ACTION", "04 / CRM EVIDENCE"]) {
   assert.ok(masterSource.includes(stage), `Marketing living scene must preserve causal stage: ${stage}`);
 }
+assert.equal(masterSource.includes("home-marketing-card"), false, "Marketing must not restore the retired four-floating-card composition");
+assert.ok(masterSource.includes("data-marketing-stage"), "Marketing must expose bounded stations within one continuous demand corridor");
 assert.ok(masterSource.includes("data-journey-motion"), "Marketing animation must expose a pausable motion state");
 assert.ok(masterSource.includes("prefers-reduced-motion: reduce"), "Marketing motion must provide a static reduced-motion fallback");
 assert.equal(masterSource.includes('loading={path.id === "marketing" ? "eager" : "lazy"}'), false, "only the true LCP image should be eager on mobile");
