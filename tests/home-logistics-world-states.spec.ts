@@ -29,14 +29,16 @@ test("Logistics reduced motion freezes the world in the stable sun state", async
 
   const route = page.locator('[data-route-id="logistics"]');
   const world = route.locator("[data-home-logistics-echo]");
+  const video = route.locator('[data-home-cinematic-video="logistics"]');
   await expect(world).toHaveAttribute("data-logistics-weather-state", "sun");
   await expect(world).toHaveAttribute("data-logistics-echo-motion", "reduced");
   await expect(route.locator(".home-logistics-weather")).toHaveCSS("animation-name", "none");
+  await expect(video).toHaveCSS("display", "none");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
 
-test("Logistics golden scene stays coherent and local without split vehicle layers", async ({ page }) => {
+test("Logistics golden scene stays coherent and local without split vehicle layers", async ({ page, request }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
 
@@ -45,6 +47,22 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
 
   await expect(slot).toHaveAttribute("data-cinematic-source-policy", "local-only");
   await expect(route.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
+  const video = route.locator('[data-home-cinematic-video="logistics"]');
+  await expect(video).toHaveCount(1);
+  await expect(video).toHaveAttribute("poster", "/images/logistics-living/car-hauler-512.webp");
+  await expect(video.locator("source")).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
+  await expect(video.locator("source")).toHaveAttribute("type", "video/mp4");
+  const videoContract = await video.evaluate((node: HTMLVideoElement) => ({
+    autoplay: node.autoplay,
+    muted: node.muted,
+    loop: node.loop,
+    playsInline: node.playsInline,
+    preload: node.preload,
+  }));
+  expect(videoContract).toEqual({ autoplay: true, muted: true, loop: true, playsInline: true, preload: "metadata" });
+  const mediaResponse = await request.get("/media/home/logistics-golden-v1.mp4");
+  expect(mediaResponse.ok()).toBeTruthy();
+  expect(mediaResponse.headers()["content-type"]).toContain("video/mp4");
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCount(0);
   await expect(route.locator(".home-logistics-road-plate")).toHaveCount(0);
