@@ -86,7 +86,7 @@ test("Logistics untouched CDN originals decode independently and retain a fixed 
 });
 
 test("Logistics CDN failure preserves the local fallback without duplicate moving subjects", async ({ page }) => {
-  await page.route("https://**/*.cloudfront.net/**", async route => route.abort("failed"));
+  await page.route(url => url.hostname.endsWith(".cloudfront.net"), route => route.abort("failed"));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
