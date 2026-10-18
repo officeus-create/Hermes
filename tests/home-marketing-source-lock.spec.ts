@@ -13,10 +13,11 @@ test("Marketing source lock keeps causal demand journey without an unapproved pi
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(route.locator('img[src*="/images/home-20261001/marketing-"]')).toHaveCount(0);
   await expect(journey).toHaveAttribute("data-journey-motion", "running");
-  await expect(route.locator(".home-marketing-content")).toContainText("CONTENT");
-  await expect(route.locator(".home-marketing-discovery")).toContainText("DISCOVERY");
-  await expect(route.locator(".home-marketing-site")).toContainText("WEBSITE");
-  await expect(route.locator(".home-marketing-inquiry")).toContainText("CRM EVIDENCE");
+  await expect(route.locator('[data-marketing-stage="content"]')).toContainText("CANONICAL CONTENT");
+  await expect(route.locator('[data-marketing-stage="distribution"]')).toContainText("DISTRIBUTION");
+  await expect(route.locator('[data-marketing-stage="website"]')).toContainText("WEBSITE ACTION");
+  await expect(route.locator('[data-marketing-stage="evidence"]')).toContainText("CRM EVIDENCE");
+  await expect(route.locator(".home-marketing-card")).toHaveCount(0);
 });
 
 test("Marketing source lock stays legible and static under reduced motion at 390px", async ({ page }) => {
@@ -30,6 +31,11 @@ test("Marketing source lock stays legible and static under reduced motion at 390
   await route.scrollIntoViewIfNeeded();
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(journey).toHaveAttribute("data-journey-motion", "reduced");
-  await expect(route.locator(".home-marketing-content")).toHaveCSS("animation-name", "none");
+  await expect(journey.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
+  await expect(journey.locator("[data-marketing-stage]")).toHaveCount(4);
+  const smallestLabel = await journey.locator("[data-marketing-stage] small").evaluateAll(nodes =>
+    Math.min(...nodes.map(node => parseFloat(getComputedStyle(node).fontSize))),
+  );
+  expect(smallestLabel).toBeGreaterThanOrEqual(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
