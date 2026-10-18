@@ -68,11 +68,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     fetchpriority="high"
                   />
                 </span>
-              ) : path.id === "technology" ? (
-                <picture>
-                  <source type="image/avif" srcset="/images/home-20261001/technology-512.avif 512w, /images/home-20261001/technology-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src="/images/home-20261001/technology-512.webp" srcset="/images/home-20261001/technology-512.webp 512w, /images/home-20261001/technology-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Technology architectural scene" loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
               ) : path.id === "academy" ? (
                 <picture>
                   <source type="image/avif" srcset="/images/home-20261001/academy-512.avif 512w, /images/home-20261001/academy-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
@@ -142,7 +137,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
               </span>
             )}
             {path.id === "technology" && (
-              <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-home-living-motion data-motion-state="idle">
+              <span class="home-scene-detail home-system-display home-product-choreography" aria-hidden="true" data-home-pillar-proof="systems" data-technology-visual-owner="product-pipeline" data-home-living-motion data-motion-state="idle">
                 <span class="home-system-caption">REAL PRODUCT UI <i></i> TRUTHFUL STATES</span>
                 <span class="home-system-card home-system-connect" data-tech-source="/services/hermes-connect/repair-shops/dashboard/">
                   <small>01 / HERMES CONNECT</small>
@@ -532,27 +527,34 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-journey,.home-marketing-pulse,.home-marketing-stage::before{animation:none!important;transform:none!important;transition:none!important}
 }
 .home-master-route-logistics .home-live-explainer,.home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
-.home-system-display{inset:8% 7% 39%;z-index:0}
-.home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
-.home-system-caption i,.home-academy-caption i{display:inline-block;width:22px;height:1px;background:#ffc274;box-shadow:0 0 8px #ff9f4b}
-.home-system-card{position:absolute;width:43%;min-height:56px;padding:7px 8px;border:1px solid #ffe8c777;border-radius:10px;background:linear-gradient(145deg,#3a281ed8,#251a14e8);box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633}
-.home-system-card small{display:block;color:#ffd8a5;font:800 .44rem/1.1 var(--font-body);letter-spacing:.08em}
-.home-system-card strong{display:block;margin-top:6px;color:#fff7e8;font:850 .56rem/1 var(--font-body);letter-spacing:.08em}
-.home-system-card em{display:block;margin-top:4px;color:#e7c9a3;font:700 .43rem/1.2 var(--font-body);font-style:normal;letter-spacing:.025em}
-.home-tech-mini{display:flex;align-items:center;gap:3px;min-width:0;margin-top:6px;overflow:hidden}
-.home-tech-mini i,.home-tech-mini b{display:block;min-width:0;padding:3px 4px;border:1px solid #ffe8c744;border-radius:4px;background:#fff6e80f;color:#fff2d9;font:750 .36rem/1 var(--font-body);font-style:normal;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-.home-tech-connect-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-connect-ui i:last-child{grid-column:1/-1}
-.home-tech-factory-ui{display:grid;grid-template-columns:1fr 1fr}
-.home-tech-factory-ui i{width:auto;padding-inline:3px;font-size:.34rem;text-align:center}
-.home-tech-factory-ui i:last-child{grid-column:1/-1}
-.home-tech-social-ui i{display:grid;place-items:center;width:17px;height:17px;padding:0;border-radius:50%;flex:none}.home-tech-social-ui b{margin-left:auto;color:#ffd39d}
-.home-tech-readback-ui{display:grid;grid-template-columns:1fr 1fr}.home-tech-readback-ui i{text-align:center}
-.home-system-connect{left:0;top:14%;width:46%}.home-system-factory{right:0;top:22%;width:46%}.home-system-social{left:2%;bottom:1%;width:47%}.home-system-readback{right:0;bottom:0;width:47%}
-.home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#ffb25d;box-shadow:0 0 10px #ff9f4b}
-.home-system-wire{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#ffc274,#fff0cf,transparent);transform-origin:left center;opacity:.58}
-.home-system-wire i{position:absolute;right:15%;top:-2px;width:5px;height:5px;border-radius:50%;background:#fff3d6;box-shadow:0 0 8px #ff9f4b}
+.home-master-route-technology{background:
+  radial-gradient(circle at 82% 13%,rgba(255,206,145,.38),transparent 27%),
+  linear-gradient(180deg,#fbfaf7 0%,#eee5db 56%,#695343 100%);color:#2c2118}
+.home-master-route-technology .home-portal-art{background:
+  linear-gradient(rgba(118,87,57,.055) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(118,87,57,.055) 1px,transparent 1px),
+  radial-gradient(circle at 18% 18%,rgba(255,255,255,.95),transparent 35%);
+  background-size:24px 24px,24px 24px,auto}
+.home-system-display{inset:6% 6% 39%;z-index:0;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:5px;padding:30px 8px 8px;border:1px solid rgba(117,79,46,.22);border-radius:17px;background:rgba(255,253,249,.94);box-shadow:0 18px 42px rgba(65,43,28,.18),inset 0 1px rgba(255,255,255,.9);overflow:hidden}
+.home-system-display::before{content:"";position:absolute;left:0;right:0;top:0;height:24px;border-bottom:1px solid rgba(117,79,46,.12);background:linear-gradient(180deg,#fffdf9,#f5eee7)}
+.home-system-display::after{content:"";position:absolute;left:17px;top:42px;bottom:16px;width:1px;background:linear-gradient(180deg,#ef9d4e,#d88c42 82%,rgba(216,140,66,.14));opacity:.66}
+.home-system-caption,.home-academy-caption{position:absolute;left:10px;top:8px;display:flex;align-items:center;gap:5px;font:850 .625rem/1 var(--font-body);letter-spacing:.075em;color:#75491f;opacity:.9;z-index:3}
+.home-system-caption::before{content:"";width:6px;height:6px;border-radius:50%;background:#f0a458;box-shadow:11px 0 #e3b27f,22px 0 #d9c8b8}
+.home-system-caption i{display:none}.home-academy-caption i{display:inline-block;width:22px;height:1px;background:#cfb4ff;box-shadow:0 0 8px #a979ff}
+.home-system-card{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:auto!important;min-height:0;padding:7px 8px 7px 24px;border:1px solid rgba(128,90,55,.12);border-radius:9px;background:rgba(255,255,255,.72);box-shadow:none;color:#2f241a;overflow:hidden;z-index:1}
+.home-system-card::before{content:"";position:absolute;left:5px;top:50%;width:7px;height:7px;border:2px solid #f0a458;border-radius:50%;background:#fffaf4;translate:0 -50%;box-shadow:0 0 0 3px rgba(240,164,88,.12)}
+.home-system-card small{display:block;color:#8a5a2e;font:850 .625rem/1.05 var(--font-body);letter-spacing:.045em;white-space:nowrap}
+.home-system-card strong{display:block;margin-top:3px;color:#2c2118;font:850 .72rem/1.05 var(--font-body);letter-spacing:.025em}
+.home-system-card em{display:block;margin-top:3px;color:#77685b;font:700 .58rem/1.15 var(--font-body);font-style:normal;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-tech-mini{display:flex;align-items:center;flex-wrap:wrap;gap:3px;min-width:0;margin-top:4px;overflow:visible}
+.home-tech-mini i,.home-tech-mini b{display:block;min-width:0;padding:2px 4px;border:1px solid rgba(149,104,62,.18);border-radius:4px;background:#fbf5ee;color:#664629;font:760 .54rem/1 var(--font-body);font-style:normal;white-space:nowrap}
+.home-tech-connect-ui,.home-tech-factory-ui,.home-tech-readback-ui{display:flex;flex-wrap:wrap}
+.home-tech-social-ui i{display:grid;place-items:center;width:17px;height:17px;padding:0;border-radius:50%;flex:none}.home-tech-social-ui b{margin-left:0;color:#7c4b20}
+.home-system-readback strong{display:flex;align-items:center;gap:5px}.home-system-readback strong i{width:7px;height:7px;border-radius:50%;background:#db8d3f;box-shadow:0 0 0 3px rgba(219,141,63,.14)}
+.home-system-wire{position:absolute;left:15px!important;width:5px!important;height:9%!important;transform:none!important;background:transparent;opacity:1;z-index:2}
+.home-system-wire i{position:absolute;left:0;top:0;width:5px;height:5px;border-radius:50%;background:#e79648;box-shadow:0 0 8px rgba(231,150,72,.62)}
+.home-system-wire-a{top:27%!important}.home-system-wire-b{top:48.5%!important}.home-system-wire-c{top:70%!important}
 .home-product-choreography[data-motion-state="running"] .home-system-wire i{animation:home-system-packet 5.6s ease-in-out infinite}
-.home-system-wire-a{left:36%;top:37%;width:34%;transform:rotate(18deg)}.home-system-wire-b{left:38%;top:64%;width:33%;transform:rotate(-13deg)}.home-system-wire-c{left:42%;top:76%;width:31%;transform:rotate(13deg)}
 .home-product-choreography[data-motion-state="running"] .home-system-readback strong i{animation:home-system-verified 5.6s ease-in-out infinite}
 .home-product-choreography[data-motion-state="running"] .home-system-card{animation:home-system-surface 7.2s ease-in-out infinite}
 .home-product-choreography[data-motion-state="running"] .home-system-factory{animation-delay:-1.8s}
@@ -591,9 +593,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
-@keyframes home-system-packet{0%,20%{translate:-24px 0;opacity:0}36%,68%{opacity:1}82%,100%{translate:8px 0;opacity:0}}
+@keyframes home-system-packet{0%,20%{translate:0 -8px;opacity:0}36%,68%{opacity:1}82%,100%{translate:0 12px;opacity:0}}
 @keyframes home-system-verified{0%,56%,100%{scale:1;opacity:.62}68%,78%{scale:1.3;opacity:1}}
-@keyframes home-system-surface{0%,100%{box-shadow:0 8px 20px #1a0f0a55,inset 0 1px #fff2d633;translate:0 0}50%{box-shadow:0 11px 25px #1a0f0a70,inset 0 1px #fff2d644;translate:0 -2px}}
+@keyframes home-system-surface{0%,100%{border-color:rgba(128,90,55,.12);background:rgba(255,255,255,.72)}50%{border-color:rgba(226,145,68,.42);background:rgba(255,252,247,.94)}}
 @keyframes home-academy-focus{0%,100%{translate:0 0;box-shadow:0 8px 18px rgba(35,20,55,.18)}50%{translate:0 -2px;box-shadow:0 12px 24px rgba(35,20,55,.28)}}
 @keyframes home-academy-breeze{from{transform:rotate(-2deg) translate3d(0,0,0)}to{transform:rotate(3deg) translate3d(-3px,4px,0)}}
 @keyframes home-academy-sun{from{opacity:.68;transform:translateX(-2%)}to{opacity:.92;transform:translateX(2%)}}
