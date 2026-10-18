@@ -474,6 +474,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-marketing-pulse{opacity:.8;stroke:#2bbf83;stroke-width:2;stroke-dasharray:2 14;stroke-dashoffset:0;filter:drop-shadow(0 0 4px #74d4a2)}
 .home-marketing-card{position:absolute;display:block;box-sizing:border-box;border:1px solid #ffffffd9;border-radius:13px;background:linear-gradient(150deg,#ffffffed,#ecfaf4ea);box-shadow:0 12px 26px #0a412d2b,0 2px 6px #0a412d18;backdrop-filter:blur(8px);padding:10px;overflow:hidden;color:#204536;transform:translate3d(0,0,0)}
 .home-marketing-card small{display:flex;align-items:center;gap:5px;font:800 clamp(.625rem,.68vw,.74rem)/1.2 var(--font-mono);letter-spacing:.045em;white-space:nowrap}
+.home-marketing-discovery small,.home-marketing-inquiry small{font-size:clamp(.52rem,.56vw,.64rem);letter-spacing:.012em}
 .home-marketing-card small i{display:block;height:5px;width:5px;flex:none;border-radius:50%;background:#16a572}
 .home-marketing-content{top:12%;left:4%;width:55%;height:22%}
 .home-marketing-discovery{top:31%;right:3%;width:57%;height:20%}
@@ -509,7 +510,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-master-route-marketing:is(:hover,:focus-visible) .home-marketing-journey{opacity:1;transition:opacity .25s ease}
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
-@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
+@media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-discovery small,.home-marketing-inquiry small{font-size:.53rem;letter-spacing:.008em}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
 @media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
 .home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
