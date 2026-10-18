@@ -1,0 +1,59 @@
+name: Home Logistics candidate import
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/home-logistics-candidate-import.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import-candidate:
+    if: github.head_ref == 'design/20261019-home-logistics-golden-scene'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Import completed HeyGen candidate
+        env:
+          SOURCE_URL: "https://resource2.heygen.ai/videos/f7b3e2323947405683dfcbea5f5c1b34/f7b3e2323947405683dfcbea5f5c1b34/01a14dbb-d971-7488-9643-251da6de5702.mp4"
+        run: |
+          set -euo pipefail
+          mkdir -p public/media/home review/home-logistics
+          curl --fail --location --retry 3 --retry-all-errors "$SOURCE_URL" -o public/media/home/logistics-golden-v1.mp4
+          test -s public/media/home/logistics-golden-v1.mp4
+          ffprobe -v error -show_streams -show_format public/media/home/logistics-golden-v1.mp4
+          for stamp in 0.1 1.2 2.5 3.7 4.8; do
+            ffmpeg -hide_banner -loglevel error -ss "$stamp" -i public/media/home/logistics-golden-v1.mp4 -frames:v 1 "review/home-logistics/frame-$stamp.png"
+          done
+          sha256sum public/media/home/logistics-golden-v1.mp4 > review/home-logistics/sha256.txt
+      - name: Upload review frames
+        uses: actions/upload-artifact@v4
+        with:
+          name: heygen-home-logistics-review
+          path: review/home-logistics/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Commit Hermes-controlled candidate
+        run: |
+          set -euo pipefail
+          git config user.name "hermes-release-bot"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add public/media/home/logistics-golden-v1.mp4
+          if git diff --cached --quiet; then
+            echo "Candidate already committed."
+            exit 0
+          fi
+          git commit -m "feat(home): import Logistics cinematic candidate"
+          git push origin HEAD:"${{ github.head_ref }}"
