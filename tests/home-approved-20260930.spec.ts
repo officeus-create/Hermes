@@ -57,7 +57,7 @@ for (const width of [390, 430, 768, 1024, 1440]) {
    if(routeId==='marketing') {
     // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
     await expect(image).toHaveCount(0);
-    await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+    await expect(route.locator('[data-marketing-stage]')).toHaveCount(4);
     continue;
    }
    await expect(image).toHaveCount(1);
