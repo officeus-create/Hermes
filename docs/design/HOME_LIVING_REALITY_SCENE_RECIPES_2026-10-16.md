@@ -81,15 +81,25 @@ Acceptance:
 Purpose: show information moving through real Hermes products.
 
 Story:
-`Hermes Connect → Website Factory → Social Connectors → QA readback`.
+`Hermes Connect → Website Delivery → Social Studio → QA readback`.
 
 Truth boundary: every status must remain LIVE / VERIFIED / DEMO / CONCEPT accurate. Deploy is never presented as live without readback.
 
-Motion: data packet / system activity / QA verification only where it explains a real transition.
+Current visual field: one light product-native pipeline owns the scene. The retired 2026-10-01 architectural poster and four floating dark cards are not visual owners. The scene reuses truthful, sanitized product states from current Hermes Connect, Website Delivery, Social Studio and QA/readback surfaces.
 
-Mobile: simplified vertical system chain.
+Motion: one bounded data packet travels down the shared product rail; the current stage may gain a restrained border/surface emphasis. No independent floating-card drift, sci-fi wallpaper, invented dashboard metric or provider status is allowed.
 
-Reduced motion: static connected system map with the same labels.
+Mobile: the same four product stages remain a readable vertical pipeline inside one workspace frame.
+
+Reduced motion: packet and stage emphasis stop; all four product states remain visible and readable.
+
+Acceptance:
+- exactly one `[data-home-pillar-proof="systems"]` with `data-technology-visual-owner="product-pipeline"`;
+- exactly four truthful product stages;
+- zero `/images/home-20261001/technology-*` Home poster usage;
+- primary labels remain at least 10px on 390px;
+- no horizontal overflow at 390 / 768 / 1024 / 1440;
+- native `/paths/technology/` route and real product continuations remain unchanged.
 
 ## Academy — Human Progress
 
