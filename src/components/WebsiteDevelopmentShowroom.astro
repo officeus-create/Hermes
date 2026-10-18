@@ -216,9 +216,9 @@ const stages = [
   .website-showroom-stage { min-width: 0; }
   .website-showroom-browser { overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 24px; background: #0b0d12; box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 24px 60px rgba(11,13,18,.18); }
   @supports (view-transition-name: website-development-stage) {
+    :global(:root) { view-transition-name: none; }
     .website-showroom-browser { view-transition-name: website-development-stage; }
-    ::view-transition-old(website-development-stage),
-    ::view-transition-new(website-development-stage) { animation-duration: 260ms; animation-timing-function: ease; }
+    :global(::view-transition-group(website-development-stage)) { animation-duration: 260ms; animation-timing-function: ease; }
   }
   .website-showroom-browser-bar { display: flex; gap: .38rem; align-items: center; min-height: 46px; padding: 0 1rem; border-bottom: 1px solid rgba(255,255,255,.09); color: rgba(255,255,255,.62); font-size: .67rem; letter-spacing: .12em; }
   .website-showroom-browser-bar i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.22); }
@@ -325,7 +325,6 @@ const stages = [
   @media (prefers-reduced-motion: reduce) {
     .website-design-lab-flow article,
     .website-showroom-step, .website-showroom-route span, .website-showroom-panel, .website-showroom-live-proof * { transition: none !important; }
-    ::view-transition-old(website-development-stage),
-    ::view-transition-new(website-development-stage) { animation-duration: 0s !important; }
+    :global(::view-transition-group(website-development-stage)) { animation-duration: 0s !important; }
   }
 </style>
