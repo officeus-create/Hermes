@@ -48,13 +48,20 @@ for (const width of [390, 430, 768, 1024, 1440]) {
     const title=n.querySelector('strong')!.getBoundingClientRect();const arrow=n.querySelector('.home-master-route-arrow')!.getBoundingClientRect();
     return title.left<arrow.right&&title.right>arrow.left&&title.top<arrow.bottom&&title.bottom>arrow.top;
    })).toBe(false);
-   const image=route.locator('.home-portal-art img');
-   if(await route.getAttribute('data-route-id')==='marketing') {
+   const routeId=await route.getAttribute('data-route-id');
+   // The Logistics enhancement has distinct road and truck layers. This general
+   // route contract validates only the canonical local fallback image; the
+   // separate motion spec owns enhancement behavior and provenance.
+   const image=routeId==='logistics'
+    ? route.locator('[data-home-logistics-scene-image]')
+    : route.locator('.home-portal-art img');
+   if(routeId==='marketing') {
     // V4 Marketing replaces the legacy poster with server-rendered, animated CSS/SVG stages.
     await expect(image).toHaveCount(0);
     await expect(route.locator('.home-marketing-card')).toHaveCount(4);
     continue;
    }
+   await expect(image).toHaveCount(1);
    await expect(image).toBeVisible();
    await image.evaluate(node=>(node as HTMLImageElement).decode());
    await expect.poll(()=>image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
