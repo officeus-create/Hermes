@@ -331,7 +331,7 @@ test('Home uses a quiet corporate shell and purposeful direction scenes',async({
  await page.goto('/');
  await expect(page.locator('.home-master')).toHaveCSS('background-color','rgb(247, 246, 243)');
  await expect(page.locator('[data-home-pillar-proof="attention"]')).toHaveCount(1);
- await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Content + news');
+ await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Canonical content');
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('Search + social');
  await expect(page.locator('[data-home-explainer="marketing"]')).toContainText('CRM evidence');
  await expect(page.locator('.home-marketing-channels')).toContainText('Threads');
@@ -401,7 +401,8 @@ test('Home Marketing animation respects live reduced-motion preference and remai
  const scene=page.locator('[data-home-marketing-journey]');
  const pulse=scene.locator('.home-marketing-pulse');
  await expect(scene).toHaveAttribute('aria-hidden','true');
- await expect(scene.locator('.home-marketing-beacon')).toHaveAttribute('aria-hidden','true');
+ await expect(scene.locator('[data-marketing-stage]')).toHaveCount(4);
+ await expect(scene.locator('.home-marketing-beacon')).toHaveCount(0);
  await expect(scene).toHaveAttribute('data-journey-motion','reduced');
  await expect(pulse).toHaveCSS('animation-name','none');
  await page.emulateMedia({reducedMotion:'no-preference'});
