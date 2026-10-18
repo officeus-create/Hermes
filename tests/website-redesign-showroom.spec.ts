@@ -18,6 +18,14 @@ test("website redesign explains controlled change without changing the canonical
 
   for (const [label, heading] of expected) {
     const step = showroom.getByRole("button", { name: label, exact: false });
+    // On narrow viewports the fixed header and mobile inquiry bar reserve
+    // the upper/lower edges; exercise a real pointer click in the safe center.
+    await step.evaluate((element) => element.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" }));
+    await expect.poll(() => step.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return hit === element || (hit !== null && element.contains(hit));
+    })).toBe(true);
     await step.click();
     await expect(step).toHaveAttribute("aria-pressed", "true");
     await expect(showroom.getByRole("heading", { name: heading })).toBeVisible();
