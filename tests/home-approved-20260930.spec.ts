@@ -203,7 +203,7 @@ test('all four Home directions explain a causal workflow and remain static on to
   if(direction==='marketing') {
    await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-marketing-journey]')).toHaveCSS('opacity','1');
-   await expect(route.locator('.home-marketing-card')).toHaveCount(4);
+   await expect(route.locator('[data-marketing-stage]')).toHaveCount(4);
   } else if(direction==='logistics') {
    await expect(explainer).toHaveCSS('display','none');
    await expect(route.locator('[data-home-logistics-scene-image]')).toBeVisible();
