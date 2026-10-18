@@ -10,6 +10,7 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   // The selected scene keeps the causal workflow without the retired botanical legacy artwork.
   await expect(scene.locator("[data-marketing-stage]")).toHaveCount(4);
+  await expect(scene.locator(".home-marketing-card")).toHaveCount(0);
   for (const label of ["CANONICAL CONTENT", "DISTRIBUTION", "WEBSITE ACTION", "CRM EVIDENCE"]) {
     await expect(scene).toContainText(label);
   }
