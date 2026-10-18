@@ -3,10 +3,6 @@ import { ArrowUpRight } from "@lucide/astro";
 import { publicPaths } from "../data/public-paths";
 
 const flowStages = ["event", "system", "human", "outcome"] as const;
-const logisticsMotionAssets = {
-  roadPlate: "https://d2ol7oe51mr4n9.cloudfront.net/user_3K2RIb8GaEmI9eYSW3sHa7Z6C2J/1be856c6-56bc-4bc5-ba98-a9e4f1afd4f4.png",
-  truckLayer: "https://d2ol7oe51mr4n9.cloudfront.net/user_3K2RIb8GaEmI9eYSW3sHa7Z6C2J/c0fa738b-9af6-4c84-9d8c-1445ea0ba6d0.png",
-} as const;
 const routeMeta: Record<string, { accent: string; detail: string; displayNumber: string; crop: number; goal: string; flow: readonly [string, string, string, string]; flowPath: string }> = {
   logistics: {
     accent: "var(--hermes-logistics)",
@@ -56,7 +52,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
             aria-label={`${meta.goal}: ${path.brandLabel} — ${meta.detail}. Example flow: ${flowLabel}.`} data-home-route data-route-id={path.id}>
             <span class="home-portal-art" aria-hidden="true">
               {path.id === "logistics" ? (
-                <span class="home-logistics-layer-stack">
+                <span class="home-logistics-layer-stack" data-home-cinematic-slot="logistics" data-cinematic-source-policy="local-only">
                   <img
                     data-home-logistics-scene-image
                     data-logistics-scene-ready="car-hauler"
@@ -70,30 +66,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     loading="eager"
                     decoding="async"
                     fetchpriority="high"
-                  />
-                  <img
-                    class="home-logistics-road-plate"
-                    data-home-logistics-road-plate
-                    data-logistics-source={logisticsMotionAssets.roadPlate}
-                    width="768"
-                    height="1376"
-                    aria-hidden="true"
-                    alt="Aerial U.S. highway road plate for the Hermes Logistics living scene"
-                    loading="eager"
-                    decoding="async"
-                    referrerpolicy="no-referrer"
-                  />
-                  <img
-                    class="home-logistics-truck-layer"
-                    data-home-logistics-truck-layer
-                    data-logistics-source={logisticsMotionAssets.truckLayer}
-                    width="887"
-                    height="1590"
-                    aria-hidden="true"
-                    alt="Single car-hauler truck motion layer for the Hermes Logistics living scene"
-                    loading="eager"
-                    decoding="async"
-                    referrerpolicy="no-referrer"
                   />
                 </span>
               ) : path.id === "technology" ? (
@@ -247,8 +219,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const scenes = ["car-hauler", "dry-van", "reefer", "flatbed", "step-deck", "hotshot"] as const;
     const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
-    const roadPlate = document.querySelector<HTMLImageElement>("[data-home-logistics-road-plate]");
-    const truckLayer = document.querySelector<HTMLImageElement>("[data-home-logistics-truck-layer]");
     const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let sceneIndex = 0;
@@ -256,34 +226,11 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     let sceneTimer: number | undefined;
     let weatherTimer: number | undefined;
     let visible = false;
-    let layerReady = false;
 
-    const syncLayerMode = () => {
-      const active = layerReady && scenes[sceneIndex] === "car-hauler" && !reduced.matches;
-      logisticsRoute?.setAttribute("data-logistics-layered", active ? "true" : "false");
-    };
-    const syncLayerReadiness = () => {
-      layerReady = Boolean(roadPlate?.complete && roadPlate.naturalWidth > 0 && truckLayer?.complete && truckLayer.naturalWidth > 0);
-      logisticsEcho.dataset.logisticsLayerReady = layerReady ? "true" : "false";
-      syncLayerMode();
-    };
-    // Enhancement remains optional: reduce requests to external image providers.
-    const requestEnhancementLayers = () => {
-      if (reduced.matches || !visible || document.hidden) return;
-      for (const image of [roadPlate, truckLayer]) {
-        if (!image || image.hasAttribute("src")) continue;
-        const source = image.dataset.logisticsSource;
-        if (source) image.src = source;
-      }
-    };
     const setMotionState = (state: "running" | "paused" | "reduced") => {
       logisticsEcho.dataset.logisticsEchoMotion = state;
       logisticsRoute?.setAttribute("data-logistics-motion", state);
     };
-    roadPlate?.addEventListener("load", syncLayerReadiness);
-    roadPlate?.addEventListener("error", syncLayerReadiness);
-    truckLayer?.addEventListener("load", syncLayerReadiness);
-    truckLayer?.addEventListener("error", syncLayerReadiness);
 
     let sceneRequest = 0;
     const preloadScene = (scene: (typeof scenes)[number]) => {
@@ -313,7 +260,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         sceneImage.dataset.logisticsSceneReady = scene;
       }
       logisticsEcho.dataset.logisticsEchoScene = scene;
-      syncLayerMode();
     };
     const applyWeather = () => {
       logisticsEcho.dataset.logisticsWeatherState = weatherStates[weatherIndex];
@@ -338,7 +284,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
           logisticsEcho.dataset.logisticsEchoScene = scenes[0];
         }
         setMotionState("reduced");
-        syncLayerMode();
         return;
       }
       if (!visible || document.hidden) {
@@ -346,7 +291,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
         setMotionState("paused");
         return;
       }
-      requestEnhancementLayers();
       setMotionState("running");
       if (!sceneTimer) {
         sceneTimer = window.setInterval(() => {
@@ -381,7 +325,6 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
     document.addEventListener("visibilitychange", update);
-    syncLayerReadiness();
     update();
   }
 
@@ -469,18 +412,10 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
 .home-portal-art{position:absolute;z-index:-2;inset:0;overflow:hidden}
 .home-portal-art picture{display:block;width:100%;height:92%}
 .home-portal-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:filter 180ms ease}
-/* Camera-locked environment: the road plate stays fixed while one isolated real vehicle layer moves over it. */
+/* Golden-scene contract: one coherent local scene only. No independent road/truck overlays. */
 .home-logistics-layer-stack{position:absolute;inset:0;display:block;overflow:hidden}
 .home-master-route-logistics .home-portal-art img{object-position:center center;transition:opacity .45s ease,filter .45s ease}
 .home-logistics-layer-stack>img{position:absolute;inset:0}
-.home-logistics-road-plate{z-index:1;opacity:0;transform:none}
-.home-logistics-truck-layer{z-index:2;opacity:0;transform:none;transform-origin:50% 72%;will-change:transform;filter:drop-shadow(2px 6px 4px rgba(7,24,35,.2))}
-.home-master-route-logistics[data-logistics-layered="true"] [data-home-logistics-scene-image]{opacity:0}
-.home-master-route-logistics[data-logistics-layered="true"] .home-logistics-road-plate,
-.home-master-route-logistics[data-logistics-layered="true"] .home-logistics-truck-layer{opacity:1}
-.home-master-route-logistics[data-logistics-layered="true"] .home-logistics-truck-layer{animation:home-logistics-truck-drive 7.8s cubic-bezier(.32,.72,.2,1) 1 forwards;animation-play-state:paused}
-.home-master-route-logistics[data-logistics-layered="true"][data-logistics-motion="running"] .home-logistics-truck-layer{animation-play-state:running}
-@keyframes home-logistics-truck-drive{from{transform:translate3d(.85%,-1.15%,0)}to{transform:translate3d(-.9%,1.25%,0)}}
 .home-logistics-living{position:absolute;z-index:-1;inset:0;display:block;overflow:hidden;pointer-events:none}
 .home-logistics-weather{position:absolute;z-index:1;inset:0;display:block;opacity:.28;transition:background .9s ease,opacity .9s ease,filter .9s ease}
 .home-logistics-living::before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,rgba(5,22,38,.04),rgba(5,22,38,.18));opacity:.45;transition:background .9s ease,opacity .9s ease}
@@ -585,7 +520,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-marketing-current{to{stroke-dashoffset:-192}}
 @keyframes home-marketing-hover{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-4px,0)}}
 @media(max-width:700px){.home-marketing-journey{inset:6% 8% 38%;opacity:1}.home-marketing-card{padding:7px;border-radius:10px}.home-marketing-card small{font-size:.625rem}.home-marketing-discovery small,.home-marketing-inquiry small{font-size:.53rem;letter-spacing:.008em}.home-marketing-caption{font-size:.625rem}.home-marketing-media{margin:5px 0 3px}.home-marketing-search{margin-top:5px;padding:4px}.home-marketing-result{margin-top:3px}.home-marketing-browser{margin-top:4px}.home-marketing-person{margin-top:5px}.home-master-route-marketing .home-live-explainer{z-index:2}}
-@media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}.home-logistics-truck-layer{animation:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.home-marketing-journey,.home-marketing-card,.home-marketing-pulse,.home-marketing-beacon{animation:none!important;transform:none!important;transition:none!important}}
 .home-master-route-technology .home-live-explainer,.home-master-route-academy .home-live-explainer{display:none}
 .home-system-display{inset:8% 7% 39%;z-index:0}
 .home-system-caption,.home-academy-caption{position:absolute;left:0;top:0;display:flex;align-items:center;gap:5px;font:800 .48rem/1 var(--font-body);letter-spacing:.14em;color:#fff7e6;opacity:.82}
