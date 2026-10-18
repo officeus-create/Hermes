@@ -18,7 +18,9 @@ try {
     const images=await page.evaluate(async()=>{
       const posters=[...document.querySelectorAll('.home-portal-art img')];
       for(const image of posters) image.loading='eager';
-      await Promise.all([...document.querySelectorAll('.home-master-stage img')].map(image=>image.decode()));
+      await Promise.all([...document.querySelectorAll('.home-master-stage img')]
+        .filter(image=>image.currentSrc || image.getAttribute('src'))
+        .map(image=>image.decode()));
       return posters.map(image=>({src:image.currentSrc,width:image.naturalWidth,height:image.naturalHeight}));
     });
     const scene=page.locator('[data-home-marketing-journey]');
@@ -90,7 +92,8 @@ try {
       await page.evaluate(async()=>{
         const photos=[...document.querySelectorAll('.home-master-stage img')];
         for(const photo of photos) photo.loading='eager';
-        await Promise.all(photos.map(photo=>photo.decode()));
+        await Promise.all(photos.filter(photo=>photo.currentSrc || photo.getAttribute('src'))
+          .map(photo=>photo.decode()));
         if(document.activeElement instanceof HTMLElement) document.activeElement.blur();
         window.scrollTo({top:0,behavior:'instant'});
       });
