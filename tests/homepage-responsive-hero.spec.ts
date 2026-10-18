@@ -37,7 +37,7 @@ test("homepage entry uses four architectural system scene and keeps the canonica
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
   // CEO-approved V4 Marketing removes decorative leaves; validate the purposeful scene instead.
   await expect(page.locator('[data-home-marketing-journey]')).toHaveCount(1);
-  await expect(page.locator('[data-home-marketing-journey] .home-marketing-card')).toHaveCount(4);
+  await expect(page.locator('[data-home-marketing-journey] [data-marketing-stage]')).toHaveCount(4);
   await expect(page.locator('.home-moving-leaves')).toHaveCount(0);
   await expect(page.locator(".home-master-stage video, .home-master-stage canvas")).toHaveCount(0);
 });
