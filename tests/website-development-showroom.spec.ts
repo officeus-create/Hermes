@@ -185,3 +185,14 @@ test("showroom uses native View Transition progressively and skips it for reduce
   expect(after).toBe(before);
   await expect(showroom.getByRole("heading", { name: "Build the approved design as a real responsive product." })).toBeVisible();
 });
+
+
+test("verified website case publishes the owned live-product social image accurately", async ({ page }) => {
+  await page.goto("/case/it-development/");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hermeslogisticsus.com/images/hermes-live-product.jpg");
+  await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute("content", "image/jpeg");
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1800");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "1125");
+  await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+  await expect(page.locator('meta[name="twitter:image:alt"]')).toHaveAttribute("content", "The live Hermes website showing its four interactive business portals");
+});
