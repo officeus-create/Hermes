@@ -23,6 +23,9 @@ test("Technology replays real Hermes product surfaces instead of abstract status
   await expect(proof).toContainText("provider readback");
   await expect(proof).toContainText("RELEASE EVIDENCE");
   await expect(proof).toContainText("deploy ≠ live until readback");
+  for (const label of await proof.locator(".home-tech-factory-ui i").all()) {
+    expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
+  }
 
   const packet = proof.locator(".home-system-wire i").first();
   await expect(packet).toHaveCSS("animation-name", "home-system-packet");
@@ -46,5 +49,8 @@ test("Technology has a static readable 390px reduced-motion composition", async 
   await expect(proof).toContainText("SEMANTIC BUILD");
   await expect(proof).toContainText("OWNER AUTHORIZATION");
   await expect(proof).toContainText("RELEASE EVIDENCE");
+  for (const label of await proof.locator(".home-tech-factory-ui i").all()) {
+    expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
