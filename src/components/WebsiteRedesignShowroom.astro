@@ -126,7 +126,6 @@ const stages = [
       release: "RELEASE",
     };
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
     const commit = (key: string) => {
       steps.forEach((step) => step.setAttribute("aria-pressed", String(step.getAttribute("data-redesign-step") === key)));
       panels.forEach((panel) => panel.classList.toggle("active", panel.getAttribute("data-redesign-panel") === key));
@@ -154,7 +153,7 @@ const stages = [
       const key = step.getAttribute("data-redesign-step");
       if (!key) return;
       step.addEventListener("focus", () => activate(key));
-      if (finePointer.matches) step.addEventListener("pointerenter", () => activate(key));
+      step.addEventListener("pointerenter", () => activate(key));
       step.addEventListener("click", () => activate(key));
     });
   });
@@ -168,10 +167,7 @@ const stages = [
   .redesign-showroom-frame { display:grid; grid-template-columns:minmax(240px,.72fr) minmax(0,1.55fr); gap:1rem; padding:1rem; border:1px solid rgba(28,62,141,.13); border-radius:28px; background:rgba(255,255,255,.86); box-shadow:0 28px 80px rgba(17,43,103,.08); }
   .redesign-showroom-steps { display:grid; gap:.55rem; list-style:none; margin:0; padding:0; align-content:start; }
   .redesign-showroom-step { width:100%; display:grid; grid-template-columns:34px 22px 1fr; gap:.7rem; align-items:center; padding:.9rem; border:1px solid transparent; border-radius:17px; background:transparent; color:#10204e; text-align:left; cursor:pointer; transition:background .35s ease,border-color .35s ease,transform .35s ease; }
-  .redesign-showroom-step:focus-visible,.redesign-showroom-step[aria-pressed="true"] { border-color:rgba(31,139,155,.22); background:#edf8fa; outline:none; }
-  @media (hover:hover) and (pointer:fine) {
-    .redesign-showroom-step:hover,.redesign-showroom-step[aria-pressed="true"] { transform:translateX(4px); }
-  }
+  .redesign-showroom-step:hover,.redesign-showroom-step:focus-visible,.redesign-showroom-step[aria-pressed="true"] { border-color:rgba(31,139,155,.22); background:#edf8fa; transform:translateX(4px); outline:none; }
   .redesign-showroom-step-number { font-size:.72rem; letter-spacing:.12em; color:#197d8b; }
   .redesign-showroom-step svg { color:#197d8b; }
   .redesign-showroom-step strong,.redesign-showroom-step small { display:block; }
