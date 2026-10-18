@@ -8,7 +8,6 @@ test("Logistics hover changes weather without replacing the equipment scene", as
   const route = page.locator('[data-route-id="logistics"]');
   const world = route.locator("[data-home-logistics-echo]");
   const scene = route.locator("[data-home-logistics-scene-image]");
-  const weather = route.locator(".home-logistics-weather");
 
   await route.scrollIntoViewIfNeeded();
   const weatherBefore = await world.getAttribute("data-logistics-weather-state");
@@ -49,13 +48,16 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
   await expect(video).toHaveCount(1);
   await expect(video).toHaveAttribute("poster", "/images/logistics-living/car-hauler-512.webp");
   await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
-  expect(await video.evaluate((node) => ({
-    autoplay: node.autoplay,
-    muted: node.muted,
-    loop: node.loop,
-    playsInline: node.playsInline,
-    preload: node.preload,
-  }))).toEqual({
+  expect(await video.evaluate((node) => {
+    const media = node as HTMLVideoElement;
+    return {
+      autoplay: media.autoplay,
+      muted: media.muted,
+      loop: media.loop,
+      playsInline: media.playsInline,
+      preload: media.preload,
+    };
+  })).toEqual({
     autoplay: true,
     muted: true,
     loop: true,
