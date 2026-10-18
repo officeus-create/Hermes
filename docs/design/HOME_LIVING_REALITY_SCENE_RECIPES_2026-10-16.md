@@ -105,18 +105,29 @@ Acceptance:
 
 Purpose: preserve the approved warm Academy environment and express human progress through truthful progression states and restrained environmental motion.
 
-Current implementation source lock: the owner-approved responsive Academy image family (`academy-512/887.avif|webp`) provides the visual environment: warm/light architectural study atmosphere, staircase/library context, daylight and the existing integrated book/page element. The generated learner-at-laptop derivative is not owner-approved and must not be loaded on Home. The progression UI is explanatory, not a replacement visual subject.
+Current implementation source lock: the owner-approved responsive Academy image family (`academy-512/887.avif|webp`) remains the visual environment: warm/light architectural study atmosphere, staircase/library context, daylight and the existing integrated book/page element. The generated learner-at-laptop derivative is not owner-approved and must not be loaded on Home.
+
+Current visual field: the environment stays primary. One translucent reviewed-progress rail explains `Task + Practice → Human Feedback → Retry → Next Step`. The retired four floating cards plus duplicate bottom TASK/PRACTICE/FEEDBACK/NEXT STEP strip are not visual owners and must not return.
 
 Story:
 `Task → Practice → Feedback → Correction / Retry → Next step`.
 
-Truth boundary: no guaranteed employment, income, completion or advancement.
+Truth boundary: no guaranteed employment, income, completion or advancement. The fourth stage remains an explicit human progression decision, never an automatic gate.
 
-Motion: this step does not add final Academy animation. Only restrained existing-safe atmosphere may remain when it does not alter the approved composition. Future movement may animate already-approved environmental elements only after visual approval; no new person, book, bookcase, page object, background or illustration is implied.
+Motion: only already-approved environmental cues move — sunlight drift and restrained leaf-shadow breeze. Progress states do not float, bob or animate independently.
 
-Mobile: preserve the same approved Academy environment with a simplified readable progression overlay.
+Mobile: preserve the same approved Academy environment with the same single compact progress rail.
 
-Reduced motion: all progression labels remain readable; no decorative motion is required. Separate CSS book/bookcase objects, learner-primary overlays and stale page-turn/book-selection code are forbidden.
+Reduced motion: sunlight and leaf-shadow animation stop; all four progression meanings remain readable. Separate CSS book/bookcase objects, learner-primary overlays and stale page-turn/book-selection code are forbidden.
+
+Acceptance:
+- exactly one `[data-home-pillar-proof="progress"]` with `data-academy-visual-owner="warm-progress-rail"`;
+- exactly four progression rows;
+- zero `.home-academy-progress` duplicate strip;
+- zero separate CSS book or learner-primary overlay;
+- primary progression labels remain at least 10px at 390px;
+- approved Academy image family remains the only Home Academy image source;
+- 390 / 768 / 1024 / 1440 remain overflow-free.
 
 ## Asset provenance gate
 
