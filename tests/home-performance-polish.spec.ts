@@ -26,7 +26,7 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
     expect(scene).toContain('data-home-cinematic-video="logistics"');
     expect(scene).toContain('muted');
     expect(scene).toContain('playsinline');
-    expect(scene).toContain('poster="/images/logistics-living/car-hauler-512.webp"');
+    expect(scene).toContain('poster="/images/logistics-living/golden-car-hauler-512.webp"');
     expect(scene).not.toMatch(/<video[\s\S]*?src=["']https?:\/\//);
   }
   expect(layer).not.toContain("new Image()");
