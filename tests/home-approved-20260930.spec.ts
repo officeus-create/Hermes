@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const homeFlows = {
  logistics: ["Request", "Route fit", "Human review", "Handoff"],
- marketing: ["Content + news", "Search + social", "Website action", "CRM evidence"],
+ marketing: ["Canonical content", "Search + social", "Website action", "CRM evidence"],
  technology: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
  academy: ["Task", "Practice", "Feedback", "Next level"],
 } as const;
