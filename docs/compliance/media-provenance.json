@@ -1,12 +1,13 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-19",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
       "src/assets",
       "public/images",
-      "public/demos/hermes-connect"
+      "public/demos/hermes-connect",
+      "public/media"
     ],
     "explicitFiles": [
       "public/favicon.svg"
@@ -17,7 +18,8 @@
       ".jpg",
       ".png",
       ".svg",
-      ".webp"
+      ".webp",
+      ".mp4"
     ]
   },
   "policy": {
@@ -631,6 +633,16 @@
       "source": null,
       "rightsEvidence": null,
       "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/media/home/logistics-golden-v1.mp4",
+      "sha256": "c45c42df3d4a7e6a11b1b6e994e584e69eec07f6b704ebc56ce2a1eb208de5c7",
+      "firstTrackedCommit": "20dabc33f8574f5bf7f05d248a27759fdb2f5e73",
+      "classification": "OWNER_REQUESTED_AI_VIDEO_DERIVATIVE_HOME_GOLDEN_V1",
+      "provenanceStatus": "SOURCE_AND_RIGHTS_VERIFIED",
+      "source": "HeyGen Video 1 image-to-video generation ce8772920dd348b28484ab95ec98e742 from the owner-approved Hermes source image public/images/logistics-living/car-hauler-887.webp; five timeline frames were reviewed on 2026-10-19 for one coherent car-hauler, stable composition, and no duplicate/morphing vehicle. The completed 768x1376 source was locally re-encoded with macOS AVFoundation AVAssetExportPreset640x480 to a 356x640 H.264 MP4 for the Home portal without adding external material.",
+      "rightsEvidence": "The owner explicitly requested generation, integration, and publication of the Hermes Living Reality website scene using connected generation tools. The source image is an existing Hermes website asset used for this Home direction; the generated scene contains no customer data, third-party logos, load/rate claims, or identifiable private people.",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
       "path": "src/assets/hermes-ecosystem-hero.jpg",
