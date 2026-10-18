@@ -77,15 +77,17 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   const stage = page.locator(".home-master-stage");
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
   expect(await countColumns()).toBe(2);
-  for (const id of ["logistics", "technology", "academy"]) {
+  for (const id of ["logistics", "academy"]) {
     const route = stage.locator(`[data-route-id="${id}"]`);
-    // Logistics keeps one coherent local fallback image; no independent road/truck layers.
+    // Logistics keeps one coherent local fallback image; Academy keeps its approved warm environment.
     const image = id === "logistics"
       ? route.locator("[data-home-logistics-scene-image]")
       : route.locator(".home-portal-art img");
     await expect(image).toHaveCount(1);
     await expect(image).toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
+  await expect(stage.locator('[data-route-id="technology"] .home-portal-art img')).toHaveCount(0);
+  await expect(stage.locator('[data-route-id="technology"] [data-home-pillar-proof="systems"]')).toHaveAttribute("data-technology-visual-owner", "product-pipeline");
   await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(0);
   await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-truck-layer]')).toHaveCount(0);
   await expect(stage.locator('[data-route-id="logistics"] [data-home-cinematic-slot="logistics"]')).toHaveCount(1);
