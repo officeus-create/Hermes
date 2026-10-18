@@ -54,6 +54,7 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   expect(headers).toContain("/_astro/*");
   expect(headers).toContain("/fonts/*");
   expect(headers).toContain("/images/*");
+  expect(headers).toContain("/media/*");
   expect(headers).toContain("max-age=31536000, immutable");
   expect(headers).toContain("max-age=2592000, stale-while-revalidate=86400");
 });
