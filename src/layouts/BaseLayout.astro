@@ -33,6 +33,10 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageType?: string;
   schema?: Record<string, unknown> | Record<string, unknown>[];
   locale?: SiteLocale;
   alternates?: { lang: string; href: string }[];
@@ -50,6 +54,10 @@ const {
   title,
   description,
   image,
+  imageAlt,
+  imageWidth,
+  imageHeight,
+  imageType,
   schema,
   locale = "en",
   alternates = [],
@@ -78,10 +86,12 @@ const clarityEligible = !robots.toLowerCase().includes("noindex")
   && !CLARITY_BLOCKED_PATH_PREFIXES.some((prefix) => Astro.url.pathname.startsWith(prefix));
 const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
 const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);
-const socialImageType = useHermesConnectSocialCard ? "image/png" : "image/jpeg";
-const socialImageAlt = useHermesConnectSocialCard
+const socialImageType = imageType ?? (useHermesConnectSocialCard ? "image/png" : "image/jpeg");
+const socialImageAlt = imageAlt ?? (useHermesConnectSocialCard
   ? HERMES_CONNECT_SOCIAL_CARD.alt
-  : "Hermes ecosystem with four illuminated business portals";
+  : "Hermes ecosystem with four illuminated business portals");
+const socialImageWidth = imageWidth ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.width : 2200);
+const socialImageHeight = imageHeight ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.height : 1238);
 
 const PUBLIC_TEXT_REPLACEMENTS = new Map([
   ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
@@ -158,8 +168,8 @@ const safeSchema = schema
     <meta property="og:image:url" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
     <meta property="og:image:type" content={socialImageType} />
-    <meta property="og:image:width" content="2200" />
-    <meta property="og:image:height" content="1238" />
+    <meta property="og:image:width" content={String(socialImageWidth)} />
+    <meta property="og:image:height" content={String(socialImageHeight)} />
     <meta property="og:image:alt" content={socialImageAlt} />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
