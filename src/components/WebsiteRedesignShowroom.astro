@@ -173,9 +173,9 @@ const stages = [
   .redesign-showroom-stage { min-width:0; }
   .redesign-showroom-browser { overflow:hidden; border:1px solid rgba(16,32,78,.14); border-radius:23px; background:#f4f8fb; }
   @supports (view-transition-name: website-redesign-stage) {
+    :global(:root) { view-transition-name: none; }
     .redesign-showroom-browser { view-transition-name: website-redesign-stage; }
-    ::view-transition-old(website-redesign-stage),
-    ::view-transition-new(website-redesign-stage) { animation-duration:260ms; animation-timing-function:ease; }
+    :global(::view-transition-group(website-redesign-stage)) { animation-duration:260ms; animation-timing-function:ease; }
   }
   .redesign-showroom-browser-bar { display:flex; gap:.38rem; align-items:center; min-height:46px; padding:0 1rem; border-bottom:1px solid rgba(16,32,78,.1); color:#6a7590; font-size:.67rem; letter-spacing:.12em; background:#fff; }
   .redesign-showroom-browser-bar i { width:8px; height:8px; border-radius:50%; background:#c8d0df; }
@@ -294,7 +294,6 @@ const stages = [
   }
   @media (prefers-reduced-motion:reduce) {
     .redesign-showroom-step,.redesign-showroom-bridge span { transition:none !important; }
-    ::view-transition-old(website-redesign-stage),
-    ::view-transition-new(website-redesign-stage) { animation-duration:0s !important; }
+    :global(::view-transition-group(website-redesign-stage)) { animation-duration:0s !important; }
   }
 </style>
