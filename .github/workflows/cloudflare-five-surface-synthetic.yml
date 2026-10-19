@@ -1,4 +1,4 @@
-name: Cloudflare seven-surface synthetic
+name: Cloudflare eight-surface synthetic
 
 on:
   workflow_dispatch:
@@ -29,6 +29,10 @@ jobs:
           // Credential-free GET only. Three independent samples expose intermittent 1102.
           const targets = [
             { name: "home", url: "https://hermeslogisticsus.com/", status: 200, markers: ["Hermes Connect"] },
+            // This repository-recorded immutable snapshot was one of the two
+            // surfaces implicated by #1909. Keep it distinct from current
+            // production: a healthy result here is comparative evidence only.
+            { name: "immutable-baseline-655e4425", url: "https://655e4425.hermes-eu4.pages.dev/", status: 200 },
             { name: "logistics", url: "https://hermeslogisticsus.com/paths/logistics/", status: 200 },
             { name: "academy", url: "https://hermeslogisticsus.com/paths/academy/", status: 200 },
             { name: "repair-shops", url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/", status: 200, markers: ["Founding Shop Plan"] },
@@ -144,11 +148,11 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Cloudflare seven-surface synthetic — FAIL"
+            echo "## Cloudflare eight-surface synthetic — FAIL"
             echo
             echo "At least one of three samples failed on one or more public surfaces in scheduled run `${GITHUB_RUN_ID}`."
             echo
-            echo "Checked seven public GET-only surfaces (home, Logistics, Academy, Repair Shops, Load Board, Connect, app), three spaced samples each. A recovered retry never clears an observed 1102. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
+            echo "Checked eight public GET-only surfaces (home, the repository-recorded immutable Pages baseline, Logistics, Academy, Repair Shops, Load Board, Connect, app), three spaced samples each. The immutable baseline is comparative evidence, not current-deployment proof. A recovered retry never clears an observed 1102. No customer payload, production mutation, Cloudflare credential, or private identifier was used."
             echo
             echo "Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } >> "$GITHUB_STEP_SUMMARY"

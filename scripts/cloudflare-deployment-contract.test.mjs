@@ -429,6 +429,7 @@ const fiveSurfaceSyntheticWorkflow = read(".github/workflows/cloudflare-five-sur
 assert.match(fiveSurfaceSyntheticWorkflow, /schedule:\s*\n\s*- cron: "23 \* \* \* \*"/, "The five public Cloudflare surfaces need bounded recurring availability coverage.");
 for (const surface of [
   "https://hermeslogisticsus.com/",
+  "https://655e4425.hermes-eu4.pages.dev/",
   "https://hermeslogisticsus.com/paths/logistics/",
   "https://hermeslogisticsus.com/paths/academy/",
   "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
@@ -508,8 +509,8 @@ async function runCloudflareSyntheticScenario(changeResponse) {
 }
 
 const syntheticClean = await runCloudflareSyntheticScenario();
-assert.equal(syntheticClean.exitCode, 0, "21 healthy observations across seven routes should pass.");
-assert.equal(syntheticClean.getRequests, 21, "Every route needs three samples, not early-exit on HTTP 200.");
+assert.equal(syntheticClean.exitCode, 0, "24 healthy observations across eight routes should pass.");
+assert.equal(syntheticClean.getRequests, 24, "Every route needs three samples, not early-exit on HTTP 200.");
 
 for (const failingAttempt of [1, 3]) {
   const res = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
@@ -527,7 +528,7 @@ for (const failingAttempt of [1, 3]) {
       : baseline,
   );
   assert.equal(res.exitCode, 1, "Even a recovered or late Cloudflare 1102 must fail the run.");
-  assert.equal(res.getRequests, 21, "A failure must not skip other public surfaces.");
+  assert.equal(res.getRequests, 24, "A failure must not skip other public surfaces.");
   assert.ok(res.observations.some((line) => line.includes("FAIL home stable=2/3 1102=1")));
   assert.ok(res.observations.some((line) => line.includes(`\"ray\":\"resource-${failingAttempt}-SJC\"`)), "1102 receipt must preserve the Cloudflare Ray ID.");
   assert.ok(res.observations.some((line) => line.includes('"kind":"cloudflare_1102"')), "1102 receipt must be explicitly classified.");
