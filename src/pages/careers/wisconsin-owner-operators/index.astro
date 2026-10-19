@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Clock3, ExternalLink, Mail, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
+import { ArrowRight, Check, ExternalLink, Mail, MapPin, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
@@ -17,7 +17,7 @@ const recruitingEmail = "officeus@hermeslogisticsus.com";
 const recruitingStatusEmail = `mailto:${recruitingEmail}?subject=Wisconsin%20Owner-Operator%20Recruiting%20Question`;
 const title = "Owner-Operator Truck Drivers in Wisconsin | Hermes Logistics";
 const description = vacancyIsCurrent
-  ? "Hermes Logistics continuously recruits Wisconsin owner-operators with their own truck and trailer. No forced dispatch. Apply by email or call recruiting."
+  ? "Hermes Logistics continuously recruits Wisconsin owner-operators with their own truck and trailer. No forced dispatch. Apply directly by email."
   : "Information on Wisconsin owner-operator trucking with Hermes Logistics. This opportunity is not currently accepting applications; contact us for updates.";
 const equipment = [
   "Dry Van",
@@ -79,12 +79,12 @@ const faq = [
   {
     question: "Is Hermes still accepting Wisconsin owner-operator applications?",
     answer: vacancyIsCurrent
-      ? "Yes. Hermes Logistics continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. To apply, email officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short summary of your truck and trailer, home base, experience, and preferred lanes, or call +1 (414) 269-7377 during posted Central Time hours. Applying does not guarantee onboarding or a particular carrier arrangement."
+      ? "Yes. Hermes Logistics continuously recruits Wisconsin owner-operators with their own commercial truck and trailer. To apply, email officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short summary of your truck and trailer, home base, experience, and preferred lanes, Applying does not guarantee onboarding or a particular carrier arrangement."
       : "This opportunity is temporarily unavailable for applications. Contact Hermes to ask about future status; no carrier or onboarding approval is implied.",
   },
   {
     question: "Do I need a 100Hires account to apply?",
-    answer: "No. Apply to Hermes directly using the email or recruiting phone on this page. An earlier 100Hires listing is kept as historical context only; it is not the application route. No loads, income, carrier approval, authority, or insurance are guaranteed.",
+    answer: "No. Apply to Hermes directly using the company recruiting email on this page. An earlier 100Hires listing is kept as historical context only; it is not the application route. No loads, income, carrier approval, authority, or insurance are guaranteed.",
   },
 ];
 
@@ -95,7 +95,7 @@ const jobDescription = [
   `<p>Equipment considered individually (not automatic acceptance): ${equipment.join(", ")}.</p>`,
   "<p>No forced dispatch. The owner-operator reviews each load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>",
   "<p>Compensation, percentage, carrier requirements, deductions, dispatch support, and final terms are discussed individually after review of experience, equipment, safety history, home base, and preferred lanes. No loads, income, weekly gross, miles, or weekend home time are guaranteed.</p>",
-  "<p>Apply by emailing officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short summary of truck/trailer equipment, home base, experience, and preferred lanes, or call +1 (414) 269-7377 during published Central Time hours. No application or call guarantees acceptance.</p>",
+  "<p>Apply by emailing officeus@hermeslogisticsus.com with the subject Wisconsin Owner-Operator Application and a short summary of truck/trailer equipment, home base, experience, and preferred lanes, Your email is an application inquiry and does not guarantee acceptance.</p>",
 ].join("");
 
 const schema = [
@@ -194,7 +194,6 @@ const schema = [
           {vacancyIsCurrent && (
             <section class="career-actions" data-wi-vacancy-current>
               <a class="button button-primary" href={recruitingApplyEmail} data-owner-operator-apply><Mail size={18} aria-hidden="true" /> Apply by email</a>
-              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Call recruiting</a>
             </section>
           )}
           <section class="career-review-required" data-wi-vacancy-expired hidden={vacancyIsCurrent} aria-labelledby="vacancy-review-title">
@@ -202,7 +201,6 @@ const schema = [
             <p>This opportunity is not currently accepting applications. The page remains available for information; contact Hermes with status questions. Carrier programs, authority, insurance and onboarding availability are never assumed.</p>
             <div class="career-actions">
               <a class="button button-primary" href="/logistics/careers/">Review careers information <ArrowRight size={18} aria-hidden="true" /></a>
-              <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Ask recruiting about current status</a>
               <a class="button" href={recruitingStatusEmail}><Mail size={18} aria-hidden="true" /> Email recruiting status question</a>
             </div>
           </section>
@@ -221,7 +219,6 @@ const schema = [
             <h3>Hermes Recruiting</h3>
             <p>Email subject: Wisconsin Owner-Operator Application. Include your home base, equipment (truck and trailer), experience, preferred lanes and a way to contact you. Do not send sensitive identity documents with your first email.</p>
             <a href={recruitingApplyEmail} data-owner-operator-apply-secondary><Mail size={17} aria-hidden="true" /> Email your application</a>
-            <a href="tel:+14142697377"><Phone size={17} aria-hidden="true" /> Call Wisconsin recruiting</a>
             <small>Previously listed on <a href={historicalSourceUrl} target="_blank" rel="noopener noreferrer">100Hires (historical, unlisted)</a>; not required to apply.</small>
           </article>
           <article class="source-card" data-wi-vacancy-closed-source hidden={vacancyIsCurrent}>
@@ -266,18 +263,17 @@ const schema = [
           <div>
             <p class="eyebrow">Public recruiting contact</p>
             <h2 id="recruiting-contact-title">Owner-Operator Recruiting — Wisconsin</h2>
-            <a class="recruiting-phone" href="tel:+14142697377">+1 (414) 269-7377</a>
-            <p>This is the published Hermes Logistics LLC contracting contact for individual recruiting and operating-term questions. Account-verification numbers are not published here.</p>
+            <p>Hermes Logistics LLC receives Wisconsin owner-operator applications at its existing company inbox. Do not use an independent driver's personal number as a recruiting hotline or a Google Voice verification number as a public candidate contact.</p>
             {vacancyIsCurrent
-              ? <p>Prefer email? <a data-owner-operator-apply-contact href={recruitingApplyEmail}>Apply directly at {recruitingEmail}</a>. Share equipment, location and experience; do not send personal identification documents with your initial inquiry.</p>
+              ? <p><a class="recruiting-phone" data-owner-operator-apply-contact href={recruitingApplyEmail}>Apply at {recruitingEmail}</a>. Include home base, truck and trailer, experience, preferred lanes and a way to contact you. Do not send identity documents with your initial inquiry.</p>
               : <p>To ask about future recruitment, <a href={recruitingStatusEmail}>email {recruitingEmail}</a>. Applications are not currently being accepted.</p>}
           </div>
           <div class="hours-card">
-            <Clock3 size={24} aria-hidden="true" />
+            <Mail size={24} aria-hidden="true" />
             <div>
-              <h3>Call hours · Central Time</h3>
-              <p><strong>Monday–Friday:</strong> after 2:15 PM CT</p>
-              <p><strong>Saturday–Sunday:</strong> 10:00 AM–9:00 PM CT</p>
+              <h3>Email recruiting</h3>
+              <p>Use the subject <strong>Wisconsin Owner-Operator Application</strong>.</p>
+              <p>Submitting an inquiry does not confirm receipt, acceptance, onboarding or a particular carrier program. A publicly approved company recruiting phone may be added after ownership and delivery are verified.</p>
             </div>
           </div>
         </div>
@@ -289,7 +285,7 @@ const schema = [
             <p class="eyebrow">Operating terms</p>
             <h2 id="terms-title">No forced dispatch. No invented income promise.</h2>
             <p>The owner-operator keeps the final decision on the loads they run. Review the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>
-            <p>Compensation, percentage, transportation-company requirements, deductions, dispatcher support, Load Board access, infrastructure, and final operating terms are discussed individually by phone after the interview and fit review.</p>
+            <p>Compensation, percentage, transportation-company requirements, deductions, dispatcher support, Load Board access, infrastructure, and final operating terms are discussed individually after the application and fit review.</p>
           </div>
           <aside class="boundary-card">
             <h3>This posting does not guarantee:</h3>
