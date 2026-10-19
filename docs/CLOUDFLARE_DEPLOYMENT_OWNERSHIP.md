@@ -1,6 +1,6 @@
 # Cloudflare deployment ownership
 
-Status: current authenticated topology reconciled on 2026-09-18. Issue #226 is completed. This document records the surviving ownership contract and the aligned Pages runtime source-of-truth baseline; it must not revive historical duplicate-deployment work without fresh evidence.
+Status: baseline authenticated topology reconciled on 2026-09-18, with later authenticated changes carried by dated receipts and `docs/ERROR_REGISTER.md`. Issue #226 is completed. This document records the surviving ownership contract and the aligned Pages runtime source-of-truth baseline; it must not revive historical duplicate-deployment work without fresh evidence.
 
 ## Evidence precedence
 
@@ -8,7 +8,7 @@ For Cloudflare ownership questions, use this order:
 
 1. authenticated current Cloudflare dashboard/API evidence;
 2. current GitHub `main` plus exact-SHA deployment/workflow evidence;
-3. this document and the current Cloudflare remediation tracker (#1349);
+3. this document plus `docs/ERROR_REGISTER.md`; closed tracker #1349 is historical remediation provenance only;
 4. historical Cloudflare bot comments/issues only as provenance.
 
 A historical bot deployment comment or Security Center recommendation is not current topology evidence by itself.
