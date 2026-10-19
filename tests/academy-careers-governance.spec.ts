@@ -85,7 +85,7 @@ test.describe("Academy and careers governance", () => {
     expect(combined).not.toContain("@ProgressoPro");
   });
 
-  test("Wisconsin owner-operator page exposes verified source, public phone, and truthful local scope", async ({ page }) => {
+  test("Wisconsin owner-operator page exposes verified source, company inbox, and truthful local scope", async ({ page }) => {
     const response = await page.goto("/careers/wisconsin-owner-operators/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch");
@@ -95,8 +95,8 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText(/Apply directly to Hermes, not through an unlisted job board/)).toBeVisible();
     await expect(page.getByText("Applications accepted continuously")).toBeVisible();
     await expect(page.getByRole("link", { name: "100Hires (historical, unlisted)" })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
-    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Call recruiting/ })).toHaveAttribute("href", "tel:+14142697377");
-    await expect(page.getByText("+1 (414) 269-7377", { exact: true })).toBeVisible();
+    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Apply at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+    await expect(page.getByText("+1 (414) 269-7377", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Milwaukee", { exact: true })).toBeVisible();
     await expect(page.getByText("Madison", { exact: true })).toBeVisible();
     await expect(page.getByText("No forced dispatch. No invented income promise.", { exact: true })).toBeVisible();
@@ -105,10 +105,7 @@ test.describe("Academy and careers governance", () => {
     const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
     await companyDriverFaq.locator("summary").click();
     await expect(companyDriverFaq.getByText("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.", { exact: true })).toBeVisible();
-    await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(wisconsinIsCurrent ? 3 : 2);
-    for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
-      expect(href).toBe("tel:+14142697377");
-    }
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     const combined = jsonLd.join(" ");
