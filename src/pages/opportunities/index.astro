@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Mail, Phone } from "@lucide/astro";
+import { ArrowRight, Mail } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -8,7 +8,6 @@ import SiteHeader from "../../components/SiteHeader.astro";
 const canonicalUrl = new URL("/opportunities/", Astro.site).toString();
 const partnershipEmail = "partnership@hermeslogisticsus.com";
 const recruitingEmail = "officeus@hermeslogisticsus.com";
-const recruitingPhone = "+1 (414) 269-7377";
 
 const opportunities = [
   {
@@ -162,8 +161,8 @@ const schema = [
         </div>
         <aside aria-label="Wisconsin Owner-Operator recruiting contact">
           <span>Owner-Operator Recruiting — Wisconsin</span>
-          <a href="tel:+14142697377"><Phone size={18} aria-hidden="true" />{recruitingPhone}</a>
-          <p>Monday–Friday after 2:15 PM CT<br />Saturday–Sunday 10:00 AM–9:00 PM CT</p>
+          <a href="mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application"><Mail size={18} aria-hidden="true" />officeus@hermeslogisticsus.com</a>
+          <p>Apply directly to Hermes by email. Include your truck and trailer, home base, experience and preferred lanes. The company inbox received an external QA message on October 19, 2026; candidate phone service is not yet verified.</p>
         </aside>
       </div>
     </section>
