@@ -108,8 +108,9 @@ assert.ok(wisconsinOwnerOperators.includes("Apply directly to Hermes, not throug
 assert.ok(wisconsinOwnerOperators.includes('href="mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application"'));
 assert.ok(wisconsinOwnerOperators.includes('href="https://100hires.com/j/G4ek3eN"'), "Historical ATS evidence stays explicitly marked unlisted");
 assert.ok(!wisconsinOwnerOperators.includes("View and apply on 100Hires"));
-assert.ok(wisconsinOwnerOperators.includes('href="tel:+14142697377"'));
-assert.ok(wisconsinOwnerOperators.includes("+1 (414) 269-7377"));
+assert.ok(!wisconsinOwnerOperators.includes("tel:+14142697377"), "Third-party owner-operator phone must not appear as Hermes recruiting");
+assert.ok(!wisconsinOwnerOperators.includes("+1 (414) 269-7377"), "Personal number must not be published on the job page");
+assert.ok(wisconsinOwnerOperators.includes("officeus@hermeslogisticsus.com"), "Verified company recruiting email stays accessible");
 assert.ok(wisconsinOwnerOperators.includes("No forced dispatch"));
 assert.ok(!wisconsinOwnerOperators.includes("Power Only — trailer and operating arrangement reviewed individually"));
 assert.ok(wisconsinOwnerOperators.includes("Hermes Logistics LLC"));
