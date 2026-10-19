@@ -89,7 +89,7 @@ export const careerInquiryFields = [
 export const careerPublicBoundaries = [
   "A general careers inquiry is not an application to a verified open vacancy unless a specific approved role page is published.",
   "Submitting information does not guarantee review timing, interview, training access, team placement, employment, contract, compensation, promotion, or future work.",
-  "JobPosting requires an owner-approved verified-open opportunity and real application method. Finite openings need an expiry; owner-confirmed continuous recruiting may omit validThrough while genuinely open."
+  "JobPosting requires an owner-approved verified-open opportunity and real application method. Finite openings need an expiry; owner-confirmed continuous recruiting may omit validThrough while genuinely open.",
   "Salary, commission, benefits, schedule, country eligibility, and role status are not published without current approved evidence.",
   "Do not place identity documents, financial information, credentials, passwords, private company records, or sensitive personal details in a public URL or analytics event.",
 ] as const;
