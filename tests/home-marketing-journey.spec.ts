@@ -39,7 +39,7 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
     const a = arrow.getBoundingClientRect();
     const overlap = Math.max(0, Math.min(a.right, c.right) - Math.max(a.left, c.left))
       * Math.max(0, Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top));
-    const alpha = Number(getComputedStyle(crm).backgroundColor.match(/rgba?\\(([^)]+)\\)/)?.[1].split(",")[3] ?? 0);
+    const alpha = Number(getComputedStyle(crm).backgroundColor.match(/rgba?\(([^)]+)\)/)?.[1].split(",")[3] ?? 0);
     return { overlap, alpha, kickerClearance: kicker.getBoundingClientRect().top - c.bottom };
   });
   expect(desktopProof.alpha, "1440px CRM must not fade into dark gradient").toBeGreaterThanOrEqual(.75);
