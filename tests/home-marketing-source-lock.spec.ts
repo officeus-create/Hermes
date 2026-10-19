@@ -37,5 +37,10 @@ test("Marketing source lock stays legible and static under reduced motion at 390
     Math.min(...nodes.map(node => parseFloat(getComputedStyle(node).fontSize))),
   );
   expect(smallestLabel).toBeGreaterThanOrEqual(10);
+  // The story cannot rely on unreadably small labels for channel, website or CRM meaning.
+  const smallestMeaningfulDetail = await journey.locator(
+    ".home-marketing-stage > em, .home-marketing-channels i, .home-marketing-browser > strong, .home-marketing-browser > em, .home-marketing-evidence-row b",
+  ).evaluateAll(nodes => Math.min(...nodes.map(node => parseFloat(getComputedStyle(node).fontSize))));
+  expect(smallestMeaningfulDetail).toBeGreaterThanOrEqual(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
