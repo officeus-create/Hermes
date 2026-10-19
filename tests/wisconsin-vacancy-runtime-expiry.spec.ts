@@ -18,7 +18,7 @@ test("evergreen Wisconsin recruiting stays indexable with a real direct applicat
   await expect(page.getByRole("link", { name: "Call Yuri · interview" })).toHaveAttribute("href", "tel:+14142697377");
   await expect(page.locator(".recruiting-section").getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
   await expect(page.locator(".hours-card")).toContainText("Saturday–Sunday: 10:00 AM–9:00 PM CT");
-  await expect(page.locator(".recruiting-section").getByRole("link", { name: /Apply at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+  await expect(page.locator(".recruiting-section").getByRole("link", { name: /Apply directly at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
   await expect(page.getByText("Markets to discuss, not confirmed local offices, dedicated freight, or guaranteed lanes.")).toBeVisible();
   await expect(page.getByText("Which Wisconsin markets can an owner-operator ask about?")).toHaveCount(1);
   const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
