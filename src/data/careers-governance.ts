@@ -60,11 +60,10 @@ export const publicVacancyRegistry: PublicVacancyRecord[] = [
     descriptionSourceIds: [
       "100hires:492060",
       "owner:2026-10-03:wisconsin-owner-operator-campaign",
-      "owner:2026-10-03:public-recruiting-phone-confirmed",
       "owner:2026-10-08:ongoing-truck-trailer-recruiting",
-      "owner:2026-10-08:hermes-logistics-llc-contracting-phone",
       "owner:2026-10-08:individual-terms-dispatch-load-board-infrastructure",
       "owner:2026-10-19:permanent-open-recruiting",
+      "owner:2026-10-19:company-recruiting-email-replaces-third-party-phone",
     ],
     compensationSourceIds: ["owner:2026-10-08:individual-compensation-review"],
     datePosted: "2026-10-03",
