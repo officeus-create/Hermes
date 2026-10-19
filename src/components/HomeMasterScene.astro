@@ -591,6 +591,15 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-site{top:49%}
   .home-marketing-inquiry{top:73%;left:22%;width:70%;padding:6px 7px 8px;border-radius:8px;background:rgba(237,255,244,.82)}
 }
+/* Four-column 1024px Home is a compact card, not a full desktop canvas. */
+@media(min-width:1001px) and (max-width:1280px){
+  .home-marketing-journey{inset:6% 6% 28%}
+  .home-marketing-distribution>em{display:none}
+  .home-marketing-channels{gap:2px}
+  .home-marketing-browser{margin-top:4px;padding:4px 5px}
+  .home-marketing-inquiry{top:74%;left:22%;width:74%;padding:4px 5px 6px;border-radius:8px;background:rgba(237,255,244,.84)}
+  .home-master-route-marketing .home-master-route-arrow{top:82%}
+}
 @media(prefers-reduced-motion:reduce){
   .home-marketing-journey,.home-marketing-pulse,.home-marketing-stage::before{animation:none!important;transform:none!important;transition:none!important}
 }
