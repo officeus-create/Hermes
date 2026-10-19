@@ -35,7 +35,8 @@ test.describe("Work With Hermes opportunities hub", () => {
       await expect(desktopOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
     }
 
-    await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
+    await expect(page.locator(".opportunities-current").getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+    await expect(page.locator('a[href="tel:+14142697377"]')).toHaveCount(0);
     await expect(page.getByRole("link", { name: "officeus@hermeslogisticsus.com" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "partnership@hermeslogisticsus.com" }).first()).toBeVisible();
 
