@@ -13,6 +13,7 @@ test("Marketing source lock keeps causal demand journey without an unapproved pi
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   await expect(route.locator('img[src*="/images/home-20261001/marketing-"]')).toHaveCount(0);
   await expect(journey).toHaveAttribute("data-journey-motion", "running");
+  await expect(journey.locator(".home-marketing-caption")).toContainText("DEMO");
   await expect(route.locator('[data-marketing-stage="content"]')).toContainText("CANONICAL CONTENT");
   await expect(route.locator('[data-marketing-stage="distribution"]')).toContainText("DISTRIBUTION");
   await expect(route.locator('[data-marketing-stage="website"]')).toContainText("WEBSITE ACTION");
