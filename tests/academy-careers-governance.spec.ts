@@ -33,8 +33,7 @@ test.describe("Academy and careers governance", () => {
     await expect(employmentFaq.locator("p")).toContainText("employment, income, clients, certification");
 
     await expect(page.locator('[data-contact-form]')).toHaveAttribute("data-contact-mode", "preview");
-    await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(wisconsinIsCurrent ? 3 : 0);
-    for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) expect(href).toBe("tel:+14142697377");
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   });
 
   test("Careers lists always-open Wisconsin recruiting without an unlisted external apply route", async ({ page }) => {
@@ -109,7 +108,8 @@ test.describe("Academy and careers governance", () => {
     const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
     await companyDriverFaq.locator("summary").click();
     await expect(companyDriverFaq.getByText("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.", { exact: true })).toBeVisible();
-    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+    await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(wisconsinIsCurrent ? 3 : 0);
+    for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) expect(href).toBe("tel:+14142697377");
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     const combined = jsonLd.join(" ");
