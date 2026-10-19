@@ -15,7 +15,8 @@ test("evergreen Wisconsin recruiting stays indexable with a real direct applicat
   await expect(page.getByRole("heading", { name: "Wisconsin owner-operator recruiting at a glance" })).toBeVisible();
   await expect(page.getByText("Applications accepted continuously")).toBeVisible();
   await expect(page.getByRole("link", { name: "Apply by email" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
-  await expect(page.getByRole("link", { name: "Call recruiting", exact: true }).first()).toHaveAttribute("href", "tel:+14142697377");
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  await expect(page.locator(".recruiting-section").getByRole("link", { name: /Apply at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
   await expect(page.getByText("Markets to discuss, not confirmed local offices, dedicated freight, or guaranteed lanes.")).toBeVisible();
   await expect(page.getByText("Which Wisconsin markets can an owner-operator ask about?")).toHaveCount(1);
   const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
@@ -39,7 +40,8 @@ test("explicitly paused Wisconsin recruiting hides an old built application's Jo
   await expect(page.getByRole("link", { name: "Apply by email" })).toHaveCount(0);
   await expect(page.locator("[data-wi-vacancy-open-source]")).toHaveCount(0);
   await expect(page.locator("[data-wi-vacancy-closed-source] span").getByText("Not currently accepting applications", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Ask recruiting about current status" })).toHaveAttribute("href", "tel:+14142697377");
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Email recruiting status question" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Recruiting%20Question");
   const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
   expect(jsonLd).not.toContain('"JobPosting"');
   expect(jsonLd).toContain('"BreadcrumbList"');
