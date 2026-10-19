@@ -29,6 +29,10 @@ export function expireWisconsinHtml(html) {
   // Controlled template regions cannot contain nested sections. Keep useful
   // historical content, canonical, robots and all unrelated schema unchanged.
   let output = html.replace(/<section\b[^>]*\bdata-wi-vacancy-current\b[^>]*>[\s\S]*?<\/section>/gi, "");
+  // A paused/closed owner cannot keep current source or apply links from an older cached build.
+  output = output.replace(/<article\b[^>]*\bdata-wi-vacancy-open-source\b[^>]*>[\s\S]*?<\/article>/gi, "");
+  output = output.replace(/(<article\b[^>]*\bdata-wi-vacancy-closed-source\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
+  output = output.replace(/<a\b[^>]*\bdata-owner-operator-apply-contact\b[^>]*>[\s\S]*?<\/a>/gi, "recruiting contact");
   output = output.replace(/(<section\b[^>]*\bdata-wi-vacancy-expired\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
   output = output.replace(/<script\b([^>]*\btype=["']application\/ld\+json["'][^>]*)>([\s\S]*?)<\/script>/gi, (_script, attrs, raw) => {
     try {
