@@ -38,7 +38,7 @@ test("explicitly paused Wisconsin recruiting hides an old built application's Jo
   await expect(page.getByRole("heading", { name: "Recruiting temporarily unavailable" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Apply by email" })).toHaveCount(0);
   await expect(page.locator("[data-wi-vacancy-open-source]")).toHaveCount(0);
-  await expect(page.getByText("Not currently accepting applications")).toBeVisible();
+  await expect(page.locator("[data-wi-vacancy-closed-source] span").getByText("Not currently accepting applications", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Ask recruiting about current status" })).toHaveAttribute("href", "tel:+14142697377");
   const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join(" ");
   expect(jsonLd).not.toContain('"JobPosting"');
