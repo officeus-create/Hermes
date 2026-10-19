@@ -94,6 +94,8 @@ const ownerOperatorJobPostings = ownerOperatorSchemas.filter((entity) => entity?
 assert.equal(ownerOperatorJobPostings.length, 1, "Owner confirmed perpetual Wisconsin hiring");
 const posting = ownerOperatorJobPostings[0];
 assert.equal(posting.title, "Owner-Operator");
+assert.equal(posting.identifier?.value, "WI-OO-2026-10-03", "Genuine stable job identifier should not churn with SEO revisions");
+assert.equal(posting.applicantLocationRequirements, undefined, "This is physical trucking, not a remote-from-home role");
 assert.equal(posting.employmentType, "CONTRACTOR");
 assert.equal(posting.directApply, false);
 assert.equal(posting.datePosted, "2026-10-03", "Original posting date is not rewritten for freshness");
