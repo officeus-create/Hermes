@@ -56,6 +56,7 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
     const scene = page.locator("[data-home-marketing-journey]");
     await expect(scene).toBeVisible();
     await expect(scene.locator(".home-marketing-distribution > em")).toBeHidden();
+    await expect(scene.locator(".home-marketing-origin > em")).toBeHidden();
     const spacing = await scene.evaluate(node => {
       const bounds = (selector: string) => {
         const element = node.querySelector(selector);
@@ -63,6 +64,7 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
         return element.getBoundingClientRect();
       };
       return {
+        originToDistribution: bounds(".home-marketing-distribution small").top - bounds(".home-marketing-origin strong").bottom,
         channelsToWebsite: bounds(".home-marketing-site small").top - bounds(".home-marketing-channels").bottom,
         browserToCrm: bounds(".home-marketing-inquiry small").top - bounds(".home-marketing-browser").bottom,
         sceneBottom: node.getBoundingClientRect().bottom,
@@ -89,6 +91,7 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
         ),
       };
     });
+    expect(spacing.originToDistribution, `${width}px origin → distribution collision`).toBeGreaterThanOrEqual(5);
     expect(spacing.channelsToWebsite, `${width}px channels → website collision`).toBeGreaterThanOrEqual(5);
     expect(spacing.browserToCrm, `${width}px website → CRM collision`).toBeGreaterThanOrEqual(6);
     expect(spacing.lastStepBottom, `${width}px CRM exceeds Marketing visual corridor`).toBeLessThanOrEqual(spacing.sceneBottom + 1);
