@@ -1896,7 +1896,7 @@ ai_name: Codex; role: delegated Academy owner; contribution_type: Implementation
 ## 2026-10-19 — Codex — Cloudflare 1102 evidence-gap review
 
 - Agent/task owner: Codex, sole writer for the bounded #1909 diagnostic delta.
-- Branch: `fix/cloudflare-1102-cause-evidence-20261019`, rebased onto current `origin/main` `e84f3516a6dbfcf58e09749a9b7c7c670558b434`; commits `c6dae8a3` and `4784d3e6`. PR creation remains blocked because the available GitHub API credential is rejected; the feature branch is pushed and the compare page is available.
+- Branch: `fix/cloudflare-1102-cause-evidence-20261019`, rebased onto current `origin/main` `e84f3516a6dbfcf58e09749a9b7c7c670558b434`; implementation commits `c6dae8a3` and `4784d3e6`, truth-boundary documentation commit `0709cf95`. PR creation remains blocked because the available GitHub API credential is rejected; the feature branch is pushed and the compare page is available.
 - PROBLEM: the historical intermittent Cloudflare 1102 was not reproduced, and its original receipt lacks the Ray ID/provider runtime correlation needed to distinguish CPU, memory, startup, subrequest, or another limit.
 - ROOT_CAUSE: `UNKNOWN`. The earlier ordinary-apex HTML buffering was removed by #1593, but that historical defect is not proof of the later #1909 incident's exact cause.
 - FAILED_APPROACH: describing retained public headers as “root-cause evidence” overstated what they prove. A Ray ID is a correlation key, not the provider-side cause.
