@@ -51,11 +51,15 @@ test("Marketing mobile stations retain readable clearances at 390 and 430 px", a
         browserToCrm: bounds(".home-marketing-inquiry small").top - bounds(".home-marketing-browser").bottom,
         sceneBottom: node.getBoundingClientRect().bottom,
         lastStepBottom: bounds(".home-marketing-inquiry .home-marketing-evidence-row:last-child").bottom,
+        crmSurfaceAlpha: Number(
+          getComputedStyle(node.querySelector(".home-marketing-inquiry")!).backgroundColor.match(/rgba?\\(([^)]+)\\)/)?.[1].split(",")[3] ?? 0,
+        ),
       };
     });
     expect(spacing.channelsToWebsite, `${width}px channels → website collision`).toBeGreaterThanOrEqual(5);
     expect(spacing.browserToCrm, `${width}px website → CRM collision`).toBeGreaterThanOrEqual(6);
     expect(spacing.lastStepBottom, `${width}px CRM exceeds Marketing visual corridor`).toBeLessThanOrEqual(spacing.sceneBottom + 1);
+    expect(spacing.crmSurfaceAlpha, `${width}px CRM loses contrast against the dark scene`).toBeGreaterThanOrEqual(.75);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   }
 });
