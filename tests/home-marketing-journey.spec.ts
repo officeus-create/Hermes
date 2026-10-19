@@ -29,6 +29,22 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
     const label = scene.locator(selector);
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
+  const desktopProof = await scene.evaluate(node => {
+    const crm = node.querySelector<HTMLElement>(".home-marketing-inquiry");
+    const route = node.closest("[data-home-route]");
+    const arrow = route?.querySelector<HTMLElement>(".home-master-route-arrow");
+    const kicker = route?.querySelector<HTMLElement>(".home-master-route-copy small");
+    if (!crm || !arrow || !kicker) throw new Error("Desktop Marketing proof element missing");
+    const c = crm.getBoundingClientRect();
+    const a = arrow.getBoundingClientRect();
+    const overlap = Math.max(0, Math.min(a.right, c.right) - Math.max(a.left, c.left))
+      * Math.max(0, Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top));
+    const alpha = Number(getComputedStyle(crm).backgroundColor.match(/rgba?\\(([^)]+)\\)/)?.[1].split(",")[3] ?? 0);
+    return { overlap, alpha, kickerClearance: kicker.getBoundingClientRect().top - c.bottom };
+  });
+  expect(desktopProof.alpha, "1440px CRM must not fade into dark gradient").toBeGreaterThanOrEqual(.75);
+  expect(desktopProof.overlap, "1440px arrow overlaps CRM evidence panel").toBe(0);
+  expect(desktopProof.kickerClearance, "1440px CRM overlaps pillar title").toBeGreaterThanOrEqual(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
