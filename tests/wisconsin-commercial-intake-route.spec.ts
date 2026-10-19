@@ -51,3 +51,17 @@ for (const city of ["Kenosha", "Racine", "Sheboygan"] as const) {
     await expect(page.locator("[data-transport-form]")).toBeVisible();
   });
 }
+
+
+test("Wisconsin auction pickup CTA opens auction-intent review rather than a Load Board preview", async ({ page }) => {
+  await page.goto("/logistics/wisconsin-auction-vehicle-pickup/");
+  const primary = page.locator("[data-wisconsin-auction-direct-intake]");
+  await expect(primary).toHaveAttribute(
+    "href",
+    "/logistics/request-vehicle-transport/?request=auction_pickup#transport-intake",
+  );
+  await primary.click();
+  await expect(page).toHaveURL(/\/logistics\/request-vehicle-transport\/\?request=auction_pickup#transport-intake$/);
+  await expect(page.locator("[data-transport-form]")).toBeVisible();
+  await expect(page.locator('[data-transport-form] select[name="request_type"]')).toHaveValue("auction_pickup");
+});
