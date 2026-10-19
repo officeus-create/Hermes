@@ -51,6 +51,13 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
         browserToCrm: bounds(".home-marketing-inquiry small").top - bounds(".home-marketing-browser").bottom,
         sceneBottom: node.getBoundingClientRect().bottom,
         lastStepBottom: bounds(".home-marketing-inquiry .home-marketing-evidence-row:last-child").bottom,
+        crmToPillarKicker: (() => {
+          const route = node.closest("[data-home-route]");
+          const kicker = route?.querySelector(".home-master-route-copy small");
+          if (!kicker) throw new Error("Marketing direction heading missing");
+          return kicker.getBoundingClientRect().top
+            - bounds(".home-marketing-inquiry .home-marketing-evidence-row:last-child").bottom;
+        })(),
         arrowOverlapArea: (() => {
           const arrow = node.closest("[data-home-route]")?.querySelector<HTMLElement>(".home-master-route-arrow");
           if (!arrow) throw new Error("Marketing route arrow missing");
@@ -69,6 +76,7 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
     expect(spacing.channelsToWebsite, `${width}px channels → website collision`).toBeGreaterThanOrEqual(5);
     expect(spacing.browserToCrm, `${width}px website → CRM collision`).toBeGreaterThanOrEqual(6);
     expect(spacing.lastStepBottom, `${width}px CRM exceeds Marketing visual corridor`).toBeLessThanOrEqual(spacing.sceneBottom + 1);
+    expect(spacing.crmToPillarKicker, `${width}px CRM overlaps GROW DEMAND heading`).toBeGreaterThanOrEqual(4);
     expect(spacing.crmSurfaceAlpha, `${width}px CRM loses contrast against the dark scene`).toBeGreaterThanOrEqual(.75);
     expect(spacing.arrowOverlapArea, `${width}px route arrow visually overlaps CRM surface`).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
