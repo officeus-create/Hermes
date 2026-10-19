@@ -33,7 +33,6 @@ test("Wisconsin enclosed customer CTA opens the transport intake with enclosed e
   await expect(page.locator('[data-transport-form] select[name="equipment_preference"]')).toHaveValue("enclosed");
 });
 
-
 for (const city of ["Kenosha", "Racine", "Sheboygan"] as const) {
   test(`${city} vehicle transport CTA opens customer intake, with Load Board demos separate`, async ({ page }) => {
     const slug = city.toLowerCase();
@@ -48,7 +47,7 @@ for (const city of ["Kenosha", "Racine", "Sheboygan"] as const) {
     await expect(preview).toContainText("Preview Load Board examples");
 
     await primary.click();
-  await expect(page).toHaveURL(/\/logistics\/request-vehicle-transport\/\?role=customer&request=customer_delivery#transport-intake$/);
+    await expect(page).toHaveURL(/\/logistics\/request-vehicle-transport\/\?role=customer&request=customer_delivery#transport-intake$/);
     await expect(page.locator("[data-transport-form]")).toBeVisible();
   });
 }
