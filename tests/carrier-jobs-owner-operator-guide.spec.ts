@@ -50,6 +50,9 @@ test("car-hauler jobs guide separates employment from operating-carrier intent",
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
+  const wisconsinRecruiting = page.locator("[data-wi-evergreen-recruiting-route]");
+  await expect(wisconsinRecruiting.getByRole("link", { name: "Apply to the ongoing Wisconsin Owner-Operator recruiting program" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+  await expect(wisconsinRecruiting).toContainText("not a dispatch service purchase");
 });
 
 test("car-hauler jobs guide keeps compensation and availability boundaries explicit", async ({ page }) => {
