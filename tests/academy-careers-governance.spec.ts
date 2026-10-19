@@ -36,7 +36,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   });
 
-  test("Careers lists only the current verified vacancy and its live external source", async ({ page }) => {
+  test("Careers lists always-open Wisconsin recruiting without an unlisted external apply route", async ({ page }) => {
     const response = await page.goto("/logistics/careers/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator('a[href="/logistics/resources/car-hauler-jobs-owner-operator-guide/"]')).toBeVisible();
@@ -52,7 +52,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.locator('a[href="/careers/car-hauling-dispatcher/"]')).toHaveCount(0);
     await expect(page.getByRole("heading", { name: /Wisconsin Owner-Operators/ })).toBeVisible();
     await expect(page.locator('a[href="/careers/wisconsin-owner-operators/"]')).toBeVisible();
-    await expect(page.locator('a[href="https://100hires.com/j/G4ek3eN"][data-external-vacancy-source]')).toBeVisible();
+    await expect(page.locator('a[data-external-vacancy-source]')).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Prepare a general careers inquiry" })).toBeVisible();
     await expect(page.getByText("does not guarantee review timing", { exact: false })).toBeVisible();
 
@@ -89,13 +89,12 @@ test.describe("Academy and careers governance", () => {
     const response = await page.goto("/careers/wisconsin-owner-operators/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Wisconsin Owner-Operators — Own Truck & Trailer | No Forced Dispatch");
-    await expect(page.locator(".career-updated")).toHaveText("Source reviewed October 8, 2026");
+    await expect(page.locator(".career-updated")).toContainText("Owner-confirmed October 19, 2026");
     await expect(page.locator(".career-updated")).toBeVisible();
-    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /View and apply on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
-    await expect(page.getByRole("link", { name: /Open the Hermes employer page on 100Hires/ })).toHaveAttribute("href", "https://100hires.com/c/hermeslogisticsus-com");
-    await expect(page.getByText(/employer-profile reference rather than a complete vacancy directory/)).toBeVisible();
-    await expect(page.getByText(/There are no active job postings right now/)).toBeVisible();
-    await expect(page.getByText(/After expiry, this page is a recruiting reference/)).toBeVisible();
+    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: "Apply by email" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+    await expect(page.getByText(/Apply directly to Hermes, not through an unlisted job board/)).toBeVisible();
+    await expect(page.getByText("Applications accepted continuously")).toBeVisible();
+    await expect(page.getByRole("link", { name: "100Hires (historical, unlisted)" })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
     if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Call recruiting/ })).toHaveAttribute("href", "tel:+14142697377");
     await expect(page.getByText("+1 (414) 269-7377", { exact: true })).toBeVisible();
     await expect(page.getByText("Milwaukee", { exact: true })).toBeVisible();
@@ -106,7 +105,7 @@ test.describe("Academy and careers governance", () => {
     const companyDriverFaq = page.locator("details").filter({ hasText: "Is this a company-driver job?" });
     await companyDriverFaq.locator("summary").click();
     await expect(companyDriverFaq.getByText("No. This recruiting page is for Wisconsin owner-operators with their own commercial truck and trailer. Equipment, operating fit, experience, and safety history are reviewed individually before onboarding.", { exact: true })).toBeVisible();
-    await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(2);
+    await expect(page.locator('a[href^="tel:"]:visible')).toHaveCount(wisconsinIsCurrent ? 3 : 2);
     for (const href of await page.locator('a[href^="tel:"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
       expect(href).toBe("tel:+14142697377");
     }
@@ -115,12 +114,14 @@ test.describe("Academy and careers governance", () => {
     const combined = jsonLd.join(" ");
     if (!wisconsinIsCurrent) {
       expect(combined).not.toContain('"@type":"JobPosting"');
-      await expect(page.getByText("This vacancy is awaiting a fresh recruiting review.", { exact: false })).toBeVisible();
+      await expect(page.getByText("This opportunity is not currently accepting applications.", { exact: false })).toBeVisible();
       await expect(page.locator("[data-external-job-apply]")).toHaveCount(0);
       return;
     }
     expect(combined).toContain('"@type":"JobPosting"');
     expect(combined).toContain('"employmentType":"CONTRACTOR"');
-    expect(combined).toContain('"sameAs":"https://100hires.com/j/G4ek3eN"');
+    expect(combined).toContain('"datePosted":"2026-10-03"');
+    expect(combined).not.toContain('"validThrough"');
+    expect(combined).not.toContain('"sameAs":"https://100hires.com/j/G4ek3eN"');
   });
 });
