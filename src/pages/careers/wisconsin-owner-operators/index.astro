@@ -105,6 +105,7 @@ const schema = [
     title: "Owner-Operator", // JobPosting title describes the role, not the marketing headline.
     description: jobDescription,
     datePosted: vacancy.datePosted,
+    identifier: { "@type": "PropertyValue", name: "Hermes Logistics LLC", value: "WI-OO-2026-10-03" },
     employmentType: vacancy.employmentType,
     directApply: false,
     url: canonicalUrl,
@@ -116,7 +117,8 @@ const schema = [
         addressCountry: "US",
       },
     },
-    applicantLocationRequirements: { "@type": "AdministrativeArea", name: "Wisconsin, United States" },
+    // This is a physical trucking operation, not a work-from-home/TELECOMMUTE vacancy.
+    // applicantLocationRequirements is reserved for remotely performed jobs in Google Job Search.
     hiringOrganization: {
       "@type": "Organization",
       "@id": "https://hermeslogisticsus.com/#organization",
