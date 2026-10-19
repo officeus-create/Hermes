@@ -375,6 +375,16 @@ assert.match(
   /no active root Wrangler configuration/i,
   "Agent guidance must preserve the no-active-root-Wrangler ownership rule.",
 );
+assert.doesNotMatch(
+  claudeGuide,
+  /the only server-side code is a single Cloudflare Pages Function/i,
+  "Claude guidance must not collapse the current multi-function Pages/runtime architecture into one function.",
+);
+assert.match(
+  claudeGuide,
+  /multiple reviewed Cloudflare Pages Functions coexist under `functions\/`/i,
+  "Claude guidance must describe the current bounded Pages Functions architecture.",
+);
 
 const paidIntentSmokeWorkflow = read(".github/workflows/repair-paid-intent-production-smoke.yml");
 const paidIntentScopeSource = read("scripts/paid-intent-smoke-scope.mjs");
