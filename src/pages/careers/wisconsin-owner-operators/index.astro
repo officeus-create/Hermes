@@ -90,20 +90,21 @@ const faq = [
   },
 ];
 
+// Use paragraph HTML in JobPosting when, and only when, a fresh approved opening exists.
 const jobDescription = [
-  "Hermes Logistics LLC works as an agent with multiple transportation companies and reviews Wisconsin owner-operators with their own commercial truck and trailer when a current owner-approved recruiting review is active.",
-  `Wisconsin markets: ${wisconsinMarkets.join(", ")}.`,
-  `Equipment that may be considered: ${equipment.join(", ")}.`,
-  "No forced dispatch. The owner-operator reviews the load, rate, route, and operating conditions before accepting where the applicable carrier program permits.",
-  "Compensation, percentage, transportation-company requirements, deductions, support configuration, and final operating terms are discussed individually after reviewing skills, experience, equipment, locations, shippers, dealers, and preferred lanes. No loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time are guaranteed.",
-  "Application route: review the live 100Hires source or call Owner-Operator Recruiting — Wisconsin during the published Central Time hours.",
-].join("\n\n");
+  "<p>Hermes Logistics LLC works as an agent with multiple transportation companies and reviews Wisconsin owner-operators with their own commercial truck and trailer only when a current owner-approved recruiting review is active.</p>",
+  `<p>Wisconsin markets to discuss (not local offices or guaranteed lanes): ${wisconsinMarkets.join(", ")}.</p>`,
+  `<p>Equipment considered individually (not automatic acceptance): ${equipment.join(", ")}.</p>`,
+  "<p>No forced dispatch. The owner-operator reviews each load, rate, route, and operating conditions before accepting where the applicable carrier program permits.</p>",
+  "<p>Compensation, percentage, carrier requirements, deductions, dispatch support, and final terms are discussed individually after review of experience, equipment, safety history, home base, and preferred lanes. No loads, income, weekly gross, miles, or weekend home time are guaranteed.</p>",
+  "<p>To check whether recruiting is currently open, contact the published Wisconsin recruiting phone during Central Time hours or email officeus@hermeslogisticsus.com. A question does not guarantee an opening or acceptance.</p>",
+].join("");
 
 const schema = [
   ...(vacancyIsCurrent ? [{
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: vacancy.title,
+    title: "Owner-Operator", // JobPosting title describes the role, not the marketing headline.
     description: jobDescription,
     datePosted: vacancy.datePosted,
     validThrough: `${vacancy.expiresAt}T23:59:59Z`,
