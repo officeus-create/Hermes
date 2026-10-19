@@ -585,6 +585,8 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-browser{margin-top:5px;padding:5px 6px}
   .home-marketing-evidence-row{margin-top:4px}
 }
+/* Narrow Home cards cannot fit the redundant origin explainer without covering stage 02. */
+@media(max-width:1000px){.home-marketing-origin>em{display:none}}
 /* Tablet Home cards are as narrow as mobile, but used the desktop stage spacing. */
 @media(min-width:701px) and (max-width:1000px){
   .home-marketing-distribution{top:26%}
