@@ -85,7 +85,7 @@ assert.ok(carHaulingDispatcher.includes("do not submit through the expired Work.
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 
-const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)]
+const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\\/script>/gi)]
   .flatMap((match) => {
     const parsed = JSON.parse(match[1]);
     return Array.isArray(parsed) ? parsed : [parsed];
@@ -99,7 +99,7 @@ assert.equal(posting.directApply, false);
 assert.equal(posting.datePosted, "2026-10-03", "Original posting date is not rewritten for freshness");
 assert.equal(posting.validThrough, undefined, "Never-expiring position must omit validThrough");
 assert.equal(posting.sameAs, undefined, "Do not designate an unlisted ATS listing as the active canonical application");
-assert.match(posting.description, /mailto|officeus@hermeslogisticsus\\.com/);
+assert.match(posting.description, /mailto|officeus@hermeslogisticsus\.com/);
 assert.ok(wisconsinOwnerOperators.includes("Owner-confirmed October 19, 2026"));
 assert.ok(wisconsinOwnerOperators.includes("Applications accepted continuously"));
 assert.ok(wisconsinOwnerOperators.includes("Apply directly to Hermes, not through an unlisted job board."));
