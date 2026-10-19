@@ -66,6 +66,44 @@ test("Marketing narrow-column stations retain readable clearances at 390, 430 an
   }
 });
 
+test("Marketing remains readable in the compact 1024px four-column Home", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const route = page.locator('[data-route-id="marketing"]');
+  const scene = route.locator("[data-home-marketing-journey]");
+  await expect(scene.locator(".home-marketing-distribution > em")).toBeHidden();
+  const bounds = await route.evaluate(node => {
+    const rect = (selector: string) => {
+      const element = node.querySelector(selector);
+      if (!element) throw new Error(`Missing Marketing compact component: ${selector}`);
+      return element.getBoundingClientRect();
+    };
+    const channels = rect(".home-marketing-channels");
+    const website = rect(".home-marketing-site small");
+    const websiteFrame = rect(".home-marketing-browser");
+    const crm = rect(".home-marketing-inquiry small");
+    const lastStep = rect(".home-marketing-inquiry .home-marketing-evidence-row:last-child");
+    const arrow = rect(".home-master-route-arrow");
+    const crmPanel = rect(".home-marketing-inquiry");
+    return {
+      channelToWebsite: website.top - channels.bottom,
+      websiteToCrm: crm.top - websiteFrame.bottom,
+      lastStepToScene: rect("[data-home-marketing-journey]").bottom - lastStep.bottom,
+      arrowBelowCrm: arrow.top - crmPanel.bottom,
+      crmAlpha: Number(
+        getComputedStyle(node.querySelector(".home-marketing-inquiry")!).backgroundColor.match(/rgba?\(([^)]+)\)/)?.[1].split(",")[3] ?? 0,
+      ),
+    };
+  });
+  expect(bounds.channelToWebsite).toBeGreaterThanOrEqual(4);
+  expect(bounds.websiteToCrm).toBeGreaterThanOrEqual(6);
+  expect(bounds.lastStepToScene).toBeGreaterThanOrEqual(0);
+  expect(bounds.arrowBelowCrm).toBeGreaterThanOrEqual(5);
+  expect(bounds.crmAlpha).toBeGreaterThanOrEqual(.75);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+});
+
 test("Marketing scene is static for reduced motion and keeps native links without JS", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
