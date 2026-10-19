@@ -101,7 +101,7 @@ The existence of a route, city, equipment, or transport page does not prove live
 
 Hermes Marketing covers SEO, Local SEO, logistics SEO, auto-dealer SEO, website development/redesign, search architecture, conversion paths, and privacy-safe measurement design.
 
-ProgressoPro may appear as a subordinate operating or historical marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
+ProgressoPro is the current public-facing marketing services identity within Hermes Marketing. Its verified public service scope includes website strategy, SEO/GEO, social media, positioning, campaigns, lead generation, sales workflow, and measurement. This service label is not another Hermes root direction, and by itself does not prove a separate contracting legal entity, an Organization node, or an approved `sameAs` identity; the proposal or written agreement controls those facts.
 
 Important canonical pages:
 
