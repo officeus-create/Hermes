@@ -15,7 +15,7 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("heading", { name: "Expansion, Investment & Strategic Conversations" })).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Explore careers" })).toHaveAttribute("href", "/logistics/careers/");
-    await expect(page.getByRole("link", { name: "Review Wisconsin Owner-Operator information" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
+    await expect(page.getByRole("link", { name: "Apply for Wisconsin Owner-Operator recruiting" })).toHaveAttribute("href", "/careers/wisconsin-owner-operators/");
     await expect(page.getByRole("link", { name: "Review agency-partner path" })).toHaveAttribute("href", "/paths/logistics/agency-partners/");
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
     await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
