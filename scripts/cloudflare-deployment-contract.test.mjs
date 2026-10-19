@@ -441,6 +441,9 @@ for (const surface of [
 assert.match(fiveSurfaceSyntheticWorkflow, /samplesPassed !== 3/, "All three samples must pass, even after a healthy retry.");
 assert.ok(fiveSurfaceSyntheticWorkflow.includes("Worker exceeded resource limits"), "1102 body must be explicitly detected.");
 assert.ok(fiveSurfaceSyntheticWorkflow.includes("firstFailure ??="), "Earlier failures must never be masked.");
+assert.ok(fiveSurfaceSyntheticWorkflow.includes("firstResourceFailure ??="), "The first 1102 must retain its own diagnostic receipt.");
+assert.ok(fiveSurfaceSyntheticWorkflow.includes('response.headers.get("cf-ray")'), "1102 evidence must retain the public Cloudflare Ray ID needed for provider correlation.");
+assert.ok(fiveSurfaceSyntheticWorkflow.includes('response.headers.get("cf-cache-status")'), "1102 evidence must distinguish edge-cache and Worker-path responses.");
 assert.match(fiveSurfaceSyntheticWorkflow, /method: "GET"/, "Availability checks must be explicit GET-only.");
 assert.match(fiveSurfaceSyntheticWorkflow, /GITHUB_STEP_SUMMARY/, "Synthetic failures must remain visible in the Actions summary.");
 assert.doesNotMatch(fiveSurfaceSyntheticWorkflow, /gh issue comment 1349|issues:\s*write/, "Closed #1349 must not remain a reporting sink or permission justification.");
@@ -471,12 +474,22 @@ async function runCloudflareSyntheticScenario(changeResponse) {
       location: target === "connect.hermeslogisticsus.com/"
         ? "https://hermeslogisticsus.com/services/hermes-connect/"
         : null,
+      headers: {
+        "cf-ray": `healthy-${attempt}-ORD`,
+        "cf-cache-status": "DYNAMIC",
+        server: "cloudflare",
+        "content-type": "text/html; charset=utf-8",
+      },
     };
     const response = changeResponse?.(target, attempt, baseline) ?? baseline;
     return {
       status: response.status,
       text: async () => response.body,
-      headers: { get: (name) => name === "location" ? response.location : null },
+      headers: {
+        get: (name) => name.toLowerCase() === "location"
+          ? response.location
+          : response.headers?.[name.toLowerCase()] ?? null,
+      },
     };
   };
 
@@ -498,12 +511,23 @@ assert.equal(syntheticClean.getRequests, 21, "Every route needs three samples, n
 for (const failingAttempt of [1, 3]) {
   const res = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
     target === "hermeslogisticsus.com/" && attempt === failingAttempt
-      ? { ...baseline, status: 503, body: "Error 1102: Worker exceeded resource limits" }
+      ? {
+          ...baseline,
+          status: 503,
+          body: "Error 1102: Worker exceeded resource limits",
+          headers: {
+            ...baseline.headers,
+            "cf-ray": `resource-${attempt}-SJC`,
+            "cf-cache-status": "DYNAMIC",
+          },
+        }
       : baseline,
   );
   assert.equal(res.exitCode, 1, "Even a recovered or late Cloudflare 1102 must fail the run.");
   assert.equal(res.getRequests, 21, "A failure must not skip other public surfaces.");
   assert.ok(res.observations.some((line) => line.includes("FAIL home stable=2/3 1102=1")));
+  assert.ok(res.observations.some((line) => line.includes(`\"ray\":\"resource-${failingAttempt}-SJC\"`)), "1102 receipt must preserve the Cloudflare Ray ID.");
+  assert.ok(res.observations.some((line) => line.includes('"kind":"cloudflare_1102"')), "1102 receipt must be explicitly classified.");
 }
 
 const brokenRedirect = await runCloudflareSyntheticScenario((target, attempt, baseline) =>

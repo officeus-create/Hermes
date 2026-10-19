@@ -38,10 +38,17 @@ jobs:
           ];
 
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const diagnosticHeaders = (response) => ({
+            ray: response.headers.get("cf-ray"),
+            cacheStatus: response.headers.get("cf-cache-status"),
+            server: response.headers.get("server"),
+            contentType: response.headers.get("content-type"),
+          });
           let failed = false;
 
           for (const target of targets) {
             let firstFailure = null;
+            let firstResourceFailure = null;
             let samplesPassed = 0;
             let resourceErrors = 0;
 
@@ -66,8 +73,19 @@ jobs:
                 const missing = (target.markers || []).filter((marker) => !body.includes(marker));
                 const location = response.headers.get("location");
                 const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
-                observation = { attempt, status: response.status, missing, location, error1102 };
-                if (error1102) resourceErrors += 1;
+                observation = {
+                  attempt,
+                  status: response.status,
+                  missing,
+                  location,
+                  error1102,
+                  kind: error1102 ? "cloudflare_1102" : response.status >= 500 ? "http_5xx" : null,
+                  ...diagnosticHeaders(response),
+                };
+                if (error1102) {
+                  resourceErrors += 1;
+                  firstResourceFailure ??= observation;
+                }
 
                 if (
                   response.status === target.status &&
@@ -78,7 +96,11 @@ jobs:
                   samplesPassed += 1;
                 }
               } catch (error) {
-                observation = { attempt, error: error instanceof Error ? error.name : "request_failure" };
+                observation = {
+                  attempt,
+                  kind: "request_failure",
+                  error: error instanceof Error ? error.name : "request_failure",
+                };
               }
 
               // Record the first failure, even if a later sample succeeds.
@@ -93,7 +115,8 @@ jobs:
             if (samplesPassed !== 3 || firstFailure) {
               failed = true;
               console.error("FAIL " + target.name + " stable=" + samplesPassed + "/3 1102=" +
-                resourceErrors + " first=" + JSON.stringify(firstFailure));
+                resourceErrors + " first=" + JSON.stringify(firstFailure) +
+                " resource=" + JSON.stringify(firstResourceFailure));
             } else {
               console.log("PASS " + target.name + " stable=3/3");
             }

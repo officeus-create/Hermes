@@ -15,31 +15,34 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   };
 }
 
-{
-  const { context, observed } = contextFor("https://hermeslogisticsus.com/");
-  const response = await routeMiddleware(context);
-  assert.equal(await response.text(), "next");
-  assert.equal(observed.nextCalls, 1);
-}
-
-{
+for (const pathname of [
+  "/",
+  "/businesses/",
+  "/paths/logistics/",
+  "/paths/academy/",
+  "/services/hermes-connect/repair-shops/",
+  "/load-board/",
+  "/api/load-board/active",
+  "/robots.txt",
+]) {
   const upstream = new Response(
     "<html><body>Your information was not sent or stored.</body></html>",
     { headers: { "content-type": "text/html; charset=utf-8" } },
   );
   let nextCalls = 0;
   const context = {
-    request: new Request("https://hermeslogisticsus.com/businesses/"),
+    request: new Request(`https://hermeslogisticsus.com${pathname}`),
     next: async () => { nextCalls += 1; return upstream; },
     env: { ASSETS: { fetch: async () => new Response("unused") } },
   };
   const response = await routeMiddleware(context);
-  assert.equal(response, upstream, "ordinary main-domain HTML must pass through without buffering/rebuilding");
+  assert.equal(response, upstream, `${pathname} must pass through without buffering/rebuilding`);
   assert.equal(nextCalls, 1);
+  assert.equal(upstream.bodyUsed, false, `${pathname} must not consume the upstream body`);
   assert.equal(
     await response.text(),
     "<html><body>Your information was not sent or stored.</body></html>",
-    "root middleware must not rewrite intentional preview copy in static HTML",
+    `${pathname} must not rewrite the upstream response`,
   );
 }
 
