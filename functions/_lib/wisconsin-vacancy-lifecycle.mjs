@@ -33,6 +33,8 @@ export function expireWisconsinHtml(html) {
   output = output.replace(/<article\b[^>]*\bdata-wi-vacancy-open-source\b[^>]*>[\s\S]*?<\/article>/gi, "");
   output = output.replace(/(<article\b[^>]*\bdata-wi-vacancy-closed-source\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
   output = output.replace(/<a\b[^>]*\bdata-owner-operator-apply-contact\b[^>]*>[\s\S]*?<\/a>/gi, "recruiting contact");
+  // Yuri interviews only for current recruiting. Remove his call CTA on an explicit pause/closure.
+  output = output.replace(/<a\b[^>]*\bdata-owner-operator-call-contact\b[^>]*>[\s\S]*?<\/a>/gi, "");
   output = output.replace(/(<section\b[^>]*\bdata-wi-vacancy-expired\b[^>]*?)\s+hidden(?:="[^"]*")?/gi, "$1");
   output = output.replace(/<script\b([^>]*\btype=["']application\/ld\+json["'][^>]*)>([\s\S]*?)<\/script>/gi, (_script, attrs, raw) => {
     try {
