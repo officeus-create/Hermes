@@ -95,7 +95,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText(/Apply directly to Hermes, not through an unlisted job board/)).toBeVisible();
     await expect(page.getByText("Applications accepted continuously")).toBeVisible();
     await expect(page.getByRole("link", { name: "100Hires (historical, unlisted)" })).toHaveAttribute("href", "https://100hires.com/j/G4ek3eN");
-    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Apply at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
+    if (wisconsinIsCurrent) await expect(page.getByRole("link", { name: /Apply directly at officeus@hermeslogisticsus.com/ })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com?subject=Wisconsin%20Owner-Operator%20Application");
     await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");
     await expect(page.getByRole("heading", { name: "Yuri\'s interview call hours · Central Time" })).toBeVisible();
     await expect(page.locator(".hours-card")).toContainText("Monday–Friday: after 2:15 PM CT");
