@@ -32,10 +32,10 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
-test("Marketing mobile stations retain readable clearances at 390 and 430 px", async ({ page }) => {
+test("Marketing narrow-column stations retain readable clearances at 390, 430 and 768 px", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const width of [390, 430]) {
-    await page.setViewportSize({ width, height: 844 });
+  for (const width of [390, 430, 768]) {
+    await page.setViewportSize({ width, height: width === 768 ? 1024 : 844 });
     await page.goto("/");
     const scene = page.locator("[data-home-marketing-journey]");
     await expect(scene).toBeVisible();
