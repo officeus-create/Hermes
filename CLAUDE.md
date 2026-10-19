@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A production Astro static site for `hermeslogisticsus.com` (Hermes — Logistics, Marketing, Academy, and IT Development divisions), deployed to Cloudflare Pages. `output: "static"`; the only server-side code is a single Cloudflare Pages Function. Node `>=20 <25` (see `.nvmrc`, pinned to 22).
+A production Astro site for `hermeslogisticsus.com` (Hermes — Logistics, Marketing, Academy, and IT Development divisions), deployed to Cloudflare Pages with `output: "static"`. The generated frontend is static, while multiple reviewed Cloudflare Pages Functions coexist under `functions/` for bounded server-side capabilities; the separate private `hermes-lead-email` Worker is an additional runtime and is not a public site deployer. Node `>=20 <25` (see `.nvmrc`, pinned to 22).
 
 ## Commands
 
