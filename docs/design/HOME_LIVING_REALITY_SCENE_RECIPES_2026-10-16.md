@@ -112,3 +112,37 @@ For every future video/3D/AI asset record:
 - fallback poster/static layer.
 
 Provider-generated media is an offline production input, never a website runtime dependency.
+
+
+## Logistics cinematic v1 release receipt — 2026-10-19
+
+Status: APPROVED AS INTERIM GOLDEN-SCENE VIDEO / LOCAL RUNTIME ASSET / REPLACEABLE BY STRICT 90° V2.
+
+Source:
+- canonical first-frame source: `/images/logistics-living/car-hauler-887.webp`;
+- source is already part of the Hermes-owned/approved Home Logistics asset family.
+
+Generation:
+- tool/model: HeyGen Video 1 image-to-video;
+- provider video id retained only as provenance: `ce8772920dd348b28484ab95ec98e742`;
+- requested behavior: one integrated car-hauler, restrained physical travel, fixed aerial camera, no cuts, duplicate truck, text, logo, HUD or futuristic overlay.
+
+Hermes-controlled output:
+- canonical runtime copy: `/media/home/logistics-golden-v1.mp4`;
+- SHA-256: `1eeec8d0cce373b02f6bb43ac2ea530d68d47be82b6e2002efddcb967ed749f6`;
+- duration: 5 seconds;
+- output is muted at runtime and provider URL is not used by Home;
+- poster/fallback: `/images/logistics-living/car-hauler-512.webp`.
+
+Frame QA:
+- reviewed at approximately 0.1 / 1.2 / 2.5 / 3.7 / 4.8 seconds;
+- one coherent tractor + car-hauler remains present;
+- no duplicate vehicle, morphing subject, visible text, logo, HUD or provider chrome was observed;
+- road, landscape, vehicle load and long shadows remain visually coherent through the sampled sequence;
+- camera is stable aerial-oblique rather than the target strict 90° orthographic top-down view.
+
+Release decision:
+- v1 is acceptable as the first visible cinematic replacement for the static Logistics card because it materially adds real-world motion while preserving a coherent single scene;
+- it is not the final camera target. A future v2 should move closer to the owner-requested strict overhead composition without blocking this bounded release;
+- reduced-motion and failed-video paths must continue to render the approved local responsive still;
+- this receipt does not approve the rejected deterministic vector-truck prototype created during render-pipeline validation.

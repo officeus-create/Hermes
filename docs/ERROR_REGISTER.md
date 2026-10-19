@@ -669,3 +669,13 @@ REUSE_RULE: When a stale product PR depends on an accepted predecessor, rebuild 
 - EVIDENCE: `src/lib/logistics-submission-receipt.ts`, `src/components/ContactCTA.astro`, and the 2026-10-08 corrections in `docs/PRODUCTION_ANALYTICS_EVENT_REGISTRY.md` on base `7c7d055838ec2e0dd1a50de0d0dc4403b5dd7c91`. Runtime behavior is unchanged.
 - LESSON: A supporting README must not promote an evidence stage beyond its authoritative implementation and event contract.
 - REUSE_RULE: When a receiver/event meaning changes, reconcile current summaries while retaining dated historical receipts. CI, delivery, human receipt, qualification, booking, and payment each need their own evidence.
+
+## ERR-HOME-GOLDEN-SCENE-STALE-VIDEO-CONTRACTS-20261019 — RESOLVED_IN_BRANCH / EXACT_HEAD_CI_PENDING
+
+PROBLEM: PR #1960 added the approved single local Logistics cinematic, but Website checks failed because three older Home browser assertions still required zero video elements.
+ROOT_CAUSE: #1954 intentionally relaxed the source contract to permit one provider-independent, poster-backed local cinematic, while legacy runtime assertions still encoded the earlier blanket anti-video rule.
+FAILED_APPROACH: Retrying the failed workflow would reproduce the deterministic mismatch. Removing the video to satisfy the old assertions would undo the owner-requested visible Home change.
+WORKING_APPROACH: Preserve the one-video maximum and canvas ban; require exactly the named Logistics video and local `/media/home/logistics-golden-v1.mp4` source; under reduced motion require the element to remain present but `display:none`; keep split road/truck layers, remote runtime media and Logistics HUD forbidden. Add immutable caching for the versioned local media path.
+EVIDENCE: On commit `506178f7fb99dd6275ca7d748efde6cbd4691d6f`, the five focused Home suites pass 22/22 across desktop and 390px mobile. `npm run build` passes with 411 pages and zero errors. Full required checks and fresh exact-head GitHub CI remain the release gate.
+LESSON: When an approved progressive enhancement changes a media contract, update source, runtime, reduced-motion and fallback assertions together; DOM presence is not equivalent to motion under reduced-motion preferences.
+REUSE_RULE: Allow only narrowly identified local enhancement media, retain semantic/static fallbacks, and reject generic weakening of canvas, remote-provider, split-layer or accessibility contracts.
