@@ -48,7 +48,7 @@ for (const city of ["Kenosha", "Racine", "Sheboygan"] as const) {
     await expect(preview).toContainText("Preview Load Board examples");
 
     await primary.click();
-    await expect(page).toHaveURL(/\\/logistics\\/request-vehicle-transport\\/\\?role=customer&request=customer_delivery#transport-intake$/);
+  await expect(page).toHaveURL(/\/logistics\/request-vehicle-transport\/\?role=customer&request=customer_delivery#transport-intake$/);
     await expect(page.locator("[data-transport-form]")).toBeVisible();
   });
 }
