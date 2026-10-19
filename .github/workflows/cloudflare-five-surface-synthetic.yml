@@ -1,4 +1,4 @@
-name: Cloudflare five-surface synthetic
+name: Cloudflare seven-surface synthetic
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       - name: Check out synthetic contract
         uses: actions/checkout@v6
 
-      - name: Verify five public surfaces
+      - name: Verify seven public surfaces
         id: synthetic
         continue-on-error: true
         shell: bash
@@ -69,31 +69,45 @@ jobs:
                   signal: AbortSignal.timeout(20_000),
                 });
 
-                const body = target.markers || response.status >= 500 ? await response.text() : "";
-                const missing = (target.markers || []).filter((marker) => !body.includes(marker));
-                const location = response.headers.get("location");
-                const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
-                observation = {
+                const responseMetadata = {
                   attempt,
                   status: response.status,
-                  missing,
-                  location,
-                  error1102,
-                  kind: error1102 ? "cloudflare_1102" : response.status >= 500 ? "http_5xx" : null,
+                  location: response.headers.get("location"),
                   ...diagnosticHeaders(response),
                 };
-                if (error1102) {
-                  resourceErrors += 1;
-                  firstResourceFailure ??= observation;
+                let body = "";
+                try {
+                  body = (target.markers || response.status >= 500) ? await response.text() : "";
+                } catch (error) {
+                  observation = {
+                    ...responseMetadata,
+                    kind: "body_read_failure",
+                    error: error instanceof Error ? error.name : "body_read_failure",
+                  };
                 }
 
-                if (
-                  response.status === target.status &&
-                  missing.length === 0 &&
-                  !error1102 &&
-                  (!target.location || location === target.location)
-                ) {
-                  samplesPassed += 1;
+                if (!observation) {
+                  const missing = (target.markers || []).filter((marker) => !body.includes(marker));
+                  const error1102 = /Error\s*1102|Worker exceeded resource limits/i.test(body);
+                  observation = {
+                    ...responseMetadata,
+                    missing,
+                    error1102,
+                    kind: error1102 ? "cloudflare_1102" : response.status >= 500 ? "http_5xx" : null,
+                  };
+                  if (error1102) {
+                    resourceErrors += 1;
+                    firstResourceFailure ??= observation;
+                  }
+
+                  if (
+                    response.status === target.status &&
+                    missing.length === 0 &&
+                    !error1102 &&
+                    (!target.location || responseMetadata.location === target.location)
+                  ) {
+                    samplesPassed += 1;
+                  }
                 }
               } catch (error) {
                 observation = {
@@ -130,7 +144,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Cloudflare five-surface synthetic — FAIL"
+            echo "## Cloudflare seven-surface synthetic — FAIL"
             echo
             echo "At least one of three samples failed on one or more public surfaces in scheduled run `${GITHUB_RUN_ID}`."
             echo

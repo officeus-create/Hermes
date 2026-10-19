@@ -484,7 +484,10 @@ async function runCloudflareSyntheticScenario(changeResponse) {
     const response = changeResponse?.(target, attempt, baseline) ?? baseline;
     return {
       status: response.status,
-      text: async () => response.body,
+      text: async () => {
+        if (response.textThrows) throw new TypeError("response body stream failed");
+        return response.body;
+      },
       headers: {
         get: (name) => name.toLowerCase() === "location"
           ? response.location
@@ -529,6 +532,43 @@ for (const failingAttempt of [1, 3]) {
   assert.ok(res.observations.some((line) => line.includes(`\"ray\":\"resource-${failingAttempt}-SJC\"`)), "1102 receipt must preserve the Cloudflare Ray ID.");
   assert.ok(res.observations.some((line) => line.includes('"kind":"cloudflare_1102"')), "1102 receipt must be explicitly classified.");
 }
+
+const earlierDifferentFailure = await runCloudflareSyntheticScenario((target, attempt, baseline) => {
+  if (target !== "hermeslogisticsus.com/") return baseline;
+  if (attempt === 1) return { ...baseline, status: 503, body: "Maintenance" };
+  if (attempt === 3) {
+    return {
+      ...baseline,
+      status: 503,
+      body: "Error 1102: Worker exceeded resource limits",
+      headers: { ...baseline.headers, "cf-ray": "later-resource-IAD" },
+    };
+  }
+  return baseline;
+});
+assert.equal(earlierDifferentFailure.exitCode, 1);
+assert.ok(
+  earlierDifferentFailure.observations.some((line) =>
+    line.includes('"kind":"http_5xx"') && line.includes('"ray":"later-resource-IAD"')),
+  "A prior non-1102 failure must not hide the later 1102 correlation receipt.",
+);
+
+const bodyReadFailure = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
+  target === "hermeslogisticsus.com/" && attempt === 2
+    ? {
+        ...baseline,
+        status: 503,
+        textThrows: true,
+        headers: { ...baseline.headers, "cf-ray": "stream-failure-DFW" },
+      }
+    : baseline,
+);
+assert.equal(bodyReadFailure.exitCode, 1, "A failed response-body read must fail the synthetic.");
+assert.ok(
+  bodyReadFailure.observations.some((line) =>
+    line.includes('"kind":"body_read_failure"') && line.includes('"ray":"stream-failure-DFW"')),
+  "Response metadata must survive a body-stream failure after headers arrive.",
+);
 
 const brokenRedirect = await runCloudflareSyntheticScenario((target, attempt, baseline) =>
   target === "connect.hermeslogisticsus.com/" && attempt === 2
