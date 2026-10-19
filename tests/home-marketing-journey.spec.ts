@@ -52,7 +52,7 @@ test("Marketing mobile stations retain readable clearances at 390 and 430 px", a
         sceneBottom: node.getBoundingClientRect().bottom,
         lastStepBottom: bounds(".home-marketing-inquiry .home-marketing-evidence-row:last-child").bottom,
         crmSurfaceAlpha: Number(
-          getComputedStyle(node.querySelector(".home-marketing-inquiry")!).backgroundColor.match(/rgba?\\(([^)]+)\\)/)?.[1].split(",")[3] ?? 0,
+          getComputedStyle(node.querySelector(".home-marketing-inquiry")!).backgroundColor.match(/rgba?\(([^)]+)\)/)?.[1].split(",")[3] ?? 0,
         ),
       };
     });
