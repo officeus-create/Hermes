@@ -42,7 +42,8 @@ test("Logistics Golden Scene stays static and local for reduced motion", async (
   await expect(scene).toBeVisible();
   await expect(scene).toHaveCSS("transform", "none");
   await expect(route.locator("[data-home-logistics-road-plate], [data-home-logistics-truck-layer]")).toHaveCount(0);
-  await expect(route.locator("video")).toHaveCount(0);
+  await expect(route.locator('[data-home-cinematic-video="logistics"]')).toHaveCount(1);
+  await expect(route.locator('[data-home-cinematic-video="logistics"]')).toHaveCSS("display", "none");
   expect(externalRequests).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
@@ -65,7 +66,8 @@ test("Logistics six equipment scenes decode from owned local assets only", async
   })), names);
 
   expect(decoded.every(item => item.ok)).toBe(true);
-  expect(decoded.every(item => new URL(item.currentSrc).origin === "http://127.0.0.1:4321")).toBe(true);
+  const pageOrigin = new URL(page.url()).origin;
+  expect(decoded.every(item => new URL(item.currentSrc).origin === pageOrigin)).toBe(true);
 });
 
 test("Logistics keeps the integrated local fallback without JavaScript", async ({ browser }, testInfo) => {
