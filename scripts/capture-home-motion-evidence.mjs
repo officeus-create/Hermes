@@ -121,7 +121,7 @@ try {
           width:innerWidth,scrollWidth:document.documentElement.scrollWidth,
           columns:css.gridTemplateColumns.trim().split(/\s+/).length,
           marketingVisible:getComputedStyle(marketing).display!=='none',
-          marketingStages:marketing.querySelectorAll('.home-marketing-card').length,
+          marketingStages:marketing.querySelectorAll('[data-marketing-stage]').length,
           marketingMotion:marketing.dataset.journeyMotion
         };
       });

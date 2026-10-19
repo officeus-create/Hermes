@@ -9,14 +9,15 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   await expect(route.locator("[data-home-marketing-human]")).toHaveCount(0);
   await expect(route.locator(".home-portal-art img")).toHaveCount(0);
   // The selected scene keeps the causal workflow without the retired botanical legacy artwork.
-  await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
-  for (const label of ["CONTENT", "DISCOVERY", "WEBSITE", "INQUIRY"]) {
+  await expect(scene.locator("[data-marketing-stage]")).toHaveCount(4);
+  await expect(scene.locator(".home-marketing-card")).toHaveCount(0);
+  for (const label of ["CANONICAL CONTENT", "DISTRIBUTION", "WEBSITE ACTION", "CRM EVIDENCE"]) {
     await expect(scene).toContainText(label);
   }
   await expect(page.locator(".home-moving-leaves")).toHaveCount(0);
   await expect(page.locator(".home-story-board")).toHaveCount(0);
   await expect(route).toHaveAttribute("href", "/paths/marketing/");
-  await expect(route).toHaveAttribute("aria-label", /Example flow: content \+ news, search \+ social, website action, crm evidence/i);
+  await expect(route).toHaveAttribute("aria-label", /Example flow: canonical content, search \+ social, website action, crm evidence/i);
   await route.scrollIntoViewIfNeeded();
   await expect(scene).toHaveAttribute("data-journey-motion", "running");
   await expect(scene.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "home-marketing-current");
@@ -24,7 +25,7 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   // New live scene replaces the duplicate legacy workflow overlay.
   await expect(route.locator('[data-home-explainer="marketing"]')).toHaveCSS("display", "none");
   await expect(scene).toHaveCSS("opacity", "1");
-  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+  for (const selector of [".home-marketing-distribution small", ".home-marketing-inquiry small"]) {
     const label = scene.locator(selector);
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
@@ -43,10 +44,10 @@ test("Marketing scene is static for reduced motion and keeps native links withou
   const route = page.locator('[data-route-id="marketing"]');
   const scene = route.locator('[data-home-marketing-journey]');
   await expect(scene).toBeVisible();
-  await expect(scene.locator(".home-marketing-card")).toHaveCount(4);
+  await expect(scene.locator("[data-marketing-stage]")).toHaveCount(4);
   await expect(scene.locator(".home-marketing-pulse")).toHaveCSS("animation-name", "none");
   await expect(route.locator('[data-home-explainer="marketing"]')).toContainText("CRM evidence");
-  for (const selector of [".home-marketing-discovery small", ".home-marketing-inquiry small"]) {
+  for (const selector of [".home-marketing-distribution small", ".home-marketing-inquiry small"]) {
     const label = scene.locator(selector);
     expect(await label.evaluate(node => node.scrollWidth > node.clientWidth + 1)).toBe(false);
   }
@@ -95,7 +96,7 @@ test("tablet four-direction layout uses readable two-column scenes while desktop
   const tabletCards = await stage.locator("[data-home-route]").evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
   expect(tabletCards[0].top).toBe(tabletCards[1].top);
   expect(tabletCards[2].top).toBeGreaterThan(tabletCards[0].bottom);
-  const labelPx = await page.locator("[data-home-marketing-journey] .home-marketing-card small")
+  const labelPx = await page.locator("[data-home-marketing-journey] .home-marketing-stage small")
     .first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
   expect(labelPx).toBeGreaterThanOrEqual(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
