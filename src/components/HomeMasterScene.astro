@@ -585,6 +585,12 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-browser{margin-top:5px;padding:5px 6px}
   .home-marketing-evidence-row{margin-top:4px}
 }
+/* Tablet Home cards are as narrow as mobile, but used the desktop stage spacing. */
+@media(min-width:701px) and (max-width:1000px){
+  .home-marketing-distribution>em{display:none}
+  .home-marketing-site{top:49%}
+  .home-marketing-inquiry{top:73%;left:22%;width:70%;padding:6px 7px 8px;border-radius:8px;background:rgba(237,255,244,.82)}
+}
 @media(prefers-reduced-motion:reduce){
   .home-marketing-journey,.home-marketing-pulse,.home-marketing-stage::before{animation:none!important;transform:none!important;transition:none!important}
 }
