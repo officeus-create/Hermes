@@ -40,7 +40,8 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("link", { name: "partnership@hermeslogisticsus.com" }).first()).toBeVisible();
 
     const bodyText = await page.locator("body").innerText();
-    expect(bodyText).toContain("The most recent Wisconsin recruiting review expired on October 15, 2026.");
+    expect(bodyText).toContain("Hermes owner-confirmed continuous Wisconsin owner-operator recruitment on October 19, 2026.");
+    expect(bodyText).not.toContain("The most recent Wisconsin recruiting review expired on October 15, 2026.");
     expect(bodyText).toContain("their own commercial truck and trailer");
     expect(bodyText).not.toContain("Current recruiting priority · Wisconsin");
     expect(bodyText).not.toContain("Power Only may be considered");
