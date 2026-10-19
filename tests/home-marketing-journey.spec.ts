@@ -32,6 +32,34 @@ test("Marketing portal shows one causal scene without decorative leaves or inven
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
 
+test("Marketing mobile stations retain readable clearances at 390 and 430 px", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const width of [390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    const scene = page.locator("[data-home-marketing-journey]");
+    await expect(scene).toBeVisible();
+    await expect(scene.locator(".home-marketing-distribution > em")).toBeHidden();
+    const spacing = await scene.evaluate(node => {
+      const bounds = (selector: string) => {
+        const element = node.querySelector(selector);
+        if (!element) throw new Error(`Marketing child missing: ${selector}`);
+        return element.getBoundingClientRect();
+      };
+      return {
+        channelsToWebsite: bounds(".home-marketing-site small").top - bounds(".home-marketing-channels").bottom,
+        browserToCrm: bounds(".home-marketing-inquiry small").top - bounds(".home-marketing-browser").bottom,
+        sceneBottom: node.getBoundingClientRect().bottom,
+        lastStepBottom: bounds(".home-marketing-inquiry .home-marketing-evidence-row:last-child").bottom,
+      };
+    });
+    expect(spacing.channelsToWebsite, `${width}px channels → website collision`).toBeGreaterThanOrEqual(5);
+    expect(spacing.browserToCrm, `${width}px website → CRM collision`).toBeGreaterThanOrEqual(6);
+    expect(spacing.lastStepBottom, `${width}px CRM exceeds Marketing visual corridor`).toBeLessThanOrEqual(spacing.sceneBottom + 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  }
+});
+
 test("Marketing scene is static for reduced motion and keeps native links without JS", async ({ browser }, testInfo) => {
   const context = await browser.newContext({
     baseURL: testInfo.project.use.baseURL,
