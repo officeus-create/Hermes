@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Check, Clock3, ExternalLink, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
+import { ArrowRight, Check, Clock3, ExternalLink, Mail, MapPin, Phone, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
@@ -12,8 +12,10 @@ if (!vacancy) throw new Error("Wisconsin Owner-Operators vacancy record is missi
 const vacancyIsCurrent = isVacancyEligibleForJobPosting(vacancy);
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
 const sourceUrl = vacancy.submissionUrl!;
-const title = "Wisconsin Owner-Operator Recruiting | Hermes Logistics";
-const description = "Review Wisconsin owner-operator recruiting, equipment-fit questions, individual operating terms, and the source review status before contacting Hermes.";
+const recruitingEmail = "officeus@hermeslogisticsus.com";
+const recruitingStatusEmail = `mailto:${recruitingEmail}?subject=Wisconsin%20Owner-Operator%20Recruiting%20Status`;
+const title = "Wisconsin Owner-Operator Truck & Trailer | Hermes Logistics";
+const description = "Wisconsin owner-operator recruiting reference for truck and trailer owners. Review no-forced-dispatch terms, equipment fit, covered markets, and current status.";
 const reviewExpiryLabel = new Intl.DateTimeFormat("en-US", {
   month: "long",
   day: "numeric",
@@ -71,6 +73,18 @@ const faq = [
     answer: "No. The opportunity does not guarantee loads, income, weekly gross, miles, dedicated freight, authority, insurance, or universal weekend home time. Compensation, deductions, authority arrangements, carrier requirements, and final terms are discussed individually.",
   },
   {
+    question: "Which Wisconsin markets can an owner-operator ask about?",
+    answer: "The recruiting reference covers statewide Wisconsin, including Milwaukee, Madison, Green Bay, Appleton, Kenosha, Racine, Waukesha, Eau Claire, Oshkosh, and Wausau. These are markets for a fit discussion, not office addresses, local job guarantees, or confirmed freight lanes.",
+  },
+  {
+    question: "What equipment should I have before contacting Hermes?",
+    answer: "The reference is intended for owners with their own commercial truck and trailer. Dry van, reefer, flatbed, step deck, car hauler, hotshot, box truck, Conestoga, and RGN or lowboy equipment may be discussed individually; inclusion does not guarantee acceptance. Be ready to describe equipment, home base, experience, safety history, preferred lanes, and schedule.",
+  },
+  {
+    question: "How do I confirm whether Wisconsin recruiting is currently open?",
+    answer: "The previous owner review expired October 15, 2026, so this page does not confirm a current opening. Call +1 (414) 269-7377 during the published Central Time hours or email officeus@hermeslogisticsus.com with Wisconsin Owner-Operator Recruiting Status in the subject. Sending a question is not an application or onboarding approval.",
+  },
+  {
     question: "Where is the verified external vacancy source?",
     answer: "The 100Hires source and the ongoing recruiting decision were reviewed on October 8, 2026. Current vacancy status requires another fresh recruiting review after the publication review expires. Source availability alone does not confirm operating authority, insurance, or a specific transportation-company program.",
   },
@@ -115,6 +129,20 @@ const schema = [
   }] : []),
   {
     "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${canonicalUrl}#webpage`,
+    url: canonicalUrl,
+    name: title,
+    description,
+    inLanguage: "en-US",
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+    about: [
+      { "@type": "Thing", name: "Owner-operator trucking" },
+      { "@type": "Place", name: "Wisconsin", address: { "@type": "PostalAddress", addressRegion: "WI", addressCountry: "US" } },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
@@ -156,6 +184,10 @@ const schema = [
             <span><Truck size={18} aria-hidden="true" /> Own truck · equipment fit verified individually</span>
             <span><ShieldCheck size={18} aria-hidden="true" /> No forced dispatch</span>
           </div>
+          <div class="career-summary" aria-label="Wisconsin recruiting summary">
+            <h2>Wisconsin owner-operator recruiting at a glance</h2>
+            <p>For independent truck owners with their own commercial truck and trailer, not company-driver applicants. Hermes reviews equipment, safety history, preferred lanes, and operating fit individually; no forced dispatch is stated. This is a dated recruiting reference, not confirmation of an open vacancy after the October 15, 2026 review expiry.</p>
+          </div>
           {vacancyIsCurrent && (
             <section class="career-actions" data-wi-vacancy-current>
               <a class="button button-primary" href={sourceUrl} target="_blank" rel="noopener noreferrer" data-external-job-apply>
@@ -170,6 +202,7 @@ const schema = [
             <div class="career-actions">
               <a class="button button-primary" href="/logistics/careers/">Review careers information <ArrowRight size={18} aria-hidden="true" /></a>
               <a class="button" href="tel:+14142697377"><Phone size={18} aria-hidden="true" /> Ask recruiting about current status</a>
+              <a class="button" href={recruitingStatusEmail}><Mail size={18} aria-hidden="true" /> Email recruiting status question</a>
             </div>
           </section>
         </div>
@@ -215,6 +248,7 @@ const schema = [
               <MapPin size={22} aria-hidden="true" />
               <h3>Wisconsin coverage</h3>
               <ul>{wisconsinMarkets.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
+              <p class="market-note">Markets to discuss, not confirmed local offices, dedicated freight, or guaranteed lanes.</p>
             </article>
             <article>
               <ShieldCheck size={22} aria-hidden="true" />
@@ -231,7 +265,8 @@ const schema = [
             <p class="eyebrow">Public recruiting contact</p>
             <h2 id="recruiting-contact-title">Owner-Operator Recruiting — Wisconsin</h2>
             <a class="recruiting-phone" href="tel:+14142697377">+1 (414) 269-7377</a>
-            <p>This candidate-facing number reaches the Hermes Logistics LLC contracting contact for individual recruiting and operating-term discussions. Account-verification numbers are not published on this page.</p>
+            <p>This candidate-facing number is the published Hermes Logistics LLC contracting contact for recruiting and operating-term questions. Phone connection has not been independently confirmed; account-verification numbers are not published here.</p>
+            <p>Cannot reach recruiting by phone? <a href={recruitingStatusEmail}>Email {recruitingEmail} about Wisconsin recruiting status</a>. This is a question route, not a verified active job application.</p>
           </div>
           <div class="hours-card">
             <Clock3 size={24} aria-hidden="true" />
@@ -294,6 +329,9 @@ const schema = [
   .career-hero h1 { max-width: 18ch; margin: .7rem 0 1rem; font-size: clamp(2.5rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.045em; }
   .career-lead { max-width: 780px; color: #d8e2ff; font-size: clamp(1.05rem, 1.7vw, 1.25rem); line-height: 1.7; }
   .career-updated { margin-top: 1rem; color: #aebdff; font-weight: 750; }
+  .career-summary { margin-top: 1.5rem; max-width: 820px; border-left: 3px solid #8aa9ff; padding-left: 1rem; }
+  .career-summary h2 { font-size: clamp(1.2rem, 2vw, 1.55rem); line-height: 1.2; margin: 0 0 .5rem; }
+  .career-summary p { color: #d8e2ff; line-height: 1.7; margin: 0; }
   .career-review-required[hidden] { display: none; }
   .career-review-required { margin-top: 1.5rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,.3); border-radius: 14px; }
   .career-review-required h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
@@ -315,6 +353,7 @@ const schema = [
   .detail-grid article > svg { color: #315fd7; }
   .detail-grid h3 { margin: .8rem 0; color: #122b72; }
   .detail-grid ul, .boundary-card ul { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+  .detail-grid .market-note { margin-top: 1rem; font-size: .87rem; line-height: 1.5; }
   .detail-grid li { display: flex; gap: .5rem; align-items: flex-start; color: #526181; line-height: 1.45; }
   .detail-grid li svg { flex: none; margin-top: .15rem; color: #267548; }
   .recruiting-section { background: #eef3ff; }
