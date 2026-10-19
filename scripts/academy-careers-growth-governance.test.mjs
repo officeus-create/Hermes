@@ -85,7 +85,7 @@ assert.ok(carHaulingDispatcher.includes("do not submit through the expired Work.
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
 
-const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\\/script>/gi)]
+const ownerOperatorSchemas = [...wisconsinOwnerOperators.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .flatMap((match) => {
     const parsed = JSON.parse(match[1]);
     return Array.isArray(parsed) ? parsed : [parsed];
