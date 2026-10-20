@@ -15,7 +15,7 @@ The new versions are about 3.57x larger in bytes combined. **Do not claim improv
 ## Actual display and bandwidth policy
 - Four native anchors and current Light/Premium Green homepage composition remain intact. The Logistics Golden v1 video is unchanged.
 - The three people scenes add `srcset` posters with an old JPEG fallback. WebP posters are lazy-loaded; no visual animation requires JavaScript.
-- On-device video selection occurs only when the scene intersects: 720p when DPR >= 1.5 or the actual portal is >= 600 CSS pixels wide; 540p otherwise.
+- On-device video selection occurs only once at **40% real viewport visibility** (no positive root margin): 720p when DPR >= 1.5 or the actual portal is >= 600 CSS pixels wide; 540p otherwise. This avoids HD network requests for barely visible second cards on mobile.
 - Effective connection `slow-2g` or `2g` stays 540p even at Retina DPR. `Save-Data` and `prefers-reduced-motion` block all three video downloads; static scene remains.
 - Existing local-only, muted, playsinline, pause-on-background, pause-offscreen, and no-synthetic-live-data protections remain.
 - Only **one** media variant per scene should be fetched in a session. No preload of all videos or remote Pexels requests in browser.
