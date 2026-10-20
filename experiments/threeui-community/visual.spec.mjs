@@ -76,6 +76,9 @@ test('real opt-in WebGL scenes render without uncaught browser failures', async 
     }
     await expect(page.getByRole('button', { name: 'Pause animation' })).toBeVisible();
     await expect(page.locator('.visual canvas')).toBeVisible({ timeout: 20000 });
+    const blending = await page.locator('.visual').evaluate(node => ({ blend: getComputedStyle(node).mixBlendMode, mask: getComputedStyle(node).maskImage }));
+    expect(blending.blend).toBe('screen');
+    expect(blending.mask).toContain('gradient');
     await page.waitForTimeout(600);
     await page.screenshot({ path: `test-results/screenshots/desktop-${direction}-webgl-active.png`, fullPage: true });
     await page.getByRole('button', { name: 'Pause animation' }).click();
