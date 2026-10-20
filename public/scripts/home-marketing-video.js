@@ -1,94 +1,91 @@
-// Hermes Home v3: one visible cinematic video at a time, four unchanged portals.
-// Poster-first, local-only, no new library, analytics, new visual, or external request.
-// Media is attached ONLY after selection; Save-Data/Reduced Motion are poster-only.
+// Hermes Home v3: mobile-only single-film arbitration; desktop stays exactly as
+// approved (independent visible documentary scenes). Poster-first, local media.
 (() => {
-  const routes = Array.from(document.querySelectorAll("[data-home-route]")).filter(
-    (route) => Boolean(route.dataset.routeId)
-  );
+  const routes = Array.from(document.querySelectorAll("[data-home-route]"));
   if (!routes.length) return;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const mobile = window.matchMedia("(max-width: 700px)");
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const ratios = new Map();
   const records = new Map();
-  const visibility = new Map();
-  const thresholds = [0, 0.1, 0.2, 0.4, 0.6, 0.8, 1];
-  let hovered = null;
-  let selected = null;
+  let winner = null;
 
   for (const route of routes) {
     const id = route.dataset.routeId;
-    const video = route.querySelector("[data-home-progressive-video]");
-    const source = route.querySelector("[data-home-progressive-source]");
-    if (video && source) {
-      records.set(id, { route, video, source, loaded: false, unavailable: false });
-      video.addEventListener("playing", () => {
-        const record = records.get(id);
-        if (record && document.documentElement.dataset.homeCinemaActive === id) {
-          route.querySelector("[data-home-progressive-cinematic]")?.setAttribute("data-media-state", "ready");
-        } else {
-          video.pause();
-        }
-      });
-      video.addEventListener("error", () => {
-        const record = records.get(id);
-        if (record) record.unavailable = true;
+    if (!id) continue;
+    ratios.set(id, 0);
+    const stage = route.querySelector("[data-home-progressive-cinematic]");
+    const video = stage?.querySelector("[data-home-progressive-video]");
+    const source = stage?.querySelector("[data-home-progressive-source]");
+    if (!video || !source) continue;
+    const record = { id, stage, video, source, loaded: false, unavailable: false };
+    records.set(id, record);
+    video.addEventListener("playing", () => {
+      if (!isAllowed(record)) {
         video.pause();
-        route.querySelector("[data-home-progressive-cinematic]")?.setAttribute("data-media-state", "poster");
-        synchronize();
-      });
-    }
-    visibility.set(id, 0);
+        stage.dataset.mediaState = "poster";
+      } else {
+        stage.dataset.mediaState = "ready";
+      }
+    });
+    video.addEventListener("error", () => {
+      record.unavailable = true;
+      video.pause();
+      stage.dataset.mediaState = "poster";
+    });
   }
 
-  const policyBlocks = () =>
+  const motionBlocked = () =>
     reduced.matches || Boolean(connection?.saveData) ||
     /^(slow-2g|2g)$/.test(connection?.effectiveType || "") ||
     document.hidden;
 
-  function candidate() {
-    if (policyBlocks()) return null;
-    const focused = document.activeElement?.closest?.("[data-home-route]")?.dataset?.routeId;
-    if (focused && (visibility.get(focused) || 0) >= 0.1) return focused;
-    if (hovered && (visibility.get(hovered) || 0) >= 0.1) return hovered;
-    let best = null;
-    let ratio = 0.2;
+  function electMobile() {
+    if (motionBlocked()) return null;
+    let id = null;
+    let ratio = 0.18;
     for (const route of routes) {
-      const id = route.dataset.routeId;
-      const visibleRatio = visibility.get(id) || 0;
-      if (visibleRatio > ratio) { best = id; ratio = visibleRatio; }
+      const next = ratios.get(route.dataset.routeId) || 0;
+      // Select only an actually dominant mobile portal (single-card layout).
+      if (next > ratio) { id = route.dataset.routeId; ratio = next; }
     }
-    return best;
+    return id;
+  }
+
+  function isAllowed(record) {
+    if (motionBlocked()) return false;
+    const visible = (ratios.get(record.id) || 0) >= 0.01;
+    return visible && (!mobile.matches || winner === record.id);
   }
 
   function synchronize() {
-    const active = candidate();
-    if (active !== selected) {
-      selected = active;
-      document.documentElement.dataset.homeCinemaActive = active || "poster";
-      // Logistics owns its animation/image policy; notify it without a second player.
+    const next = mobile.matches ? electMobile() : null;
+    if (next !== winner || !document.documentElement.hasAttribute("data-home-cinema-active")) {
+      winner = next;
+      document.documentElement.dataset.homeCinemaActive = mobile.matches ? (winner || "poster") : "desktop";
+      // Logistics remains its own original video runtime on desktop.
       window.dispatchEvent(new Event("hermes:cinema-selection"));
     }
-    for (const [id, record] of records) {
-      const stage = record.route.querySelector("[data-home-progressive-cinematic]");
-      if (id !== active || record.unavailable) {
+    for (const record of records.values()) {
+      if (!isAllowed(record) || record.unavailable) {
         record.video.pause();
-        stage?.setAttribute("data-media-state", "poster");
+        record.stage.dataset.mediaState = "poster";
         continue;
       }
       if (!record.loaded) {
-        const viewportMobile = window.matchMedia("(max-width: 700px)").matches;
-        const nextSrc = viewportMobile ? record.source.dataset.mobileSrc : record.source.dataset.desktopSrc;
-        if (!nextSrc?.startsWith("/media/home/")) {
+        const src = mobile.matches ? record.source.dataset.mobileSrc : record.source.dataset.desktopSrc;
+        if (!src?.startsWith("/media/home/")) {
           record.unavailable = true;
           continue;
         }
-        record.source.src = nextSrc;
+        record.source.src = src;
         record.loaded = true;
         record.video.load();
       }
       if (record.video.paused) {
         void record.video.play().catch(() => {
           record.video.pause();
-          stage?.setAttribute("data-media-state", "poster");
+          record.stage.dataset.mediaState = "poster";
         });
       }
     }
@@ -96,34 +93,17 @@
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        visibility.set(entry.target.dataset.routeId, entry.isIntersecting ? entry.intersectionRatio : 0);
-      }
+      for (const entry of entries) ratios.set(entry.target.dataset.routeId, entry.isIntersecting ? entry.intersectionRatio : 0);
       synchronize();
-    }, { threshold: thresholds });
+    }, { threshold: [0, .01, .1, .2, .4, .6, .8, 1] });
     for (const route of routes) observer.observe(route);
-  } else {
-    // No IntersectionObserver: keep original static poster, never load all videos.
-    for (const route of routes) visibility.set(route.dataset.routeId, 0);
-  }
-
-  for (const route of routes) {
-    const id = route.dataset.routeId;
-    route.addEventListener("pointerenter", (event) => {
-      if (event.pointerType === "mouse" || event.pointerType === "pen") {
-        hovered = id;
-        synchronize();
-      }
-    }, { passive: true });
-    route.addEventListener("pointerleave", () => {
-      if (hovered === id) hovered = null;
-      synchronize();
-    }, { passive: true });
-    route.addEventListener("focusin", synchronize);
-    route.addEventListener("focusout", () => queueMicrotask(synchronize));
+  } else if (!mobile.matches) {
+    // Preserve original desktop non-IO fallback while mobile remains poster-only.
+    for (const route of routes) ratios.set(route.dataset.routeId, 1);
   }
   document.addEventListener("visibilitychange", synchronize);
   reduced.addEventListener?.("change", synchronize);
+  mobile.addEventListener?.("change", synchronize);
   connection?.addEventListener?.("change", synchronize);
   window.addEventListener("pageshow", synchronize);
   synchronize();
