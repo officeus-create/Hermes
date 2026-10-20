@@ -1,0 +1,26 @@
+name: ThreeUI Community isolated pilot
+on:
+  pull_request:
+    paths:
+      - 'experiments/threeui-community/**'
+      - '.github/workflows/threeui-community-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-isolated-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: experiments/threeui-community
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      # No Hermes credentials, network connections to internal services, or deployment.
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: test -f dist/index.html
