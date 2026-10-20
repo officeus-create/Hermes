@@ -8,7 +8,7 @@ const read = (relativePath: string) => readFile(path.join(root, relativePath), "
 const rootDirections = [
   {
     route: "marketing",
-    eyebrow: "02 · Hermes Marketing",
+    eyebrow: "04 · Hermes Marketing",
     titleBrand: "Hermes Marketing",
     subordinate: "ProgressoPro",
   },
@@ -20,7 +20,7 @@ const rootDirections = [
   },
   {
     route: "technology",
-    eyebrow: "04 · Hermes Technology",
+    eyebrow: "02 · Hermes Technology",
     titleBrand: "Hermes Technology",
     subordinate: "IT Development",
   },

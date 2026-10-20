@@ -12,19 +12,18 @@ test("global header separates four primary directions from secondary discovery l
   await expect(primary).toHaveCount(4);
   expect(await primary.evaluateAll((links) => links.map((link) => link.getAttribute("data-nav-tone")))).toEqual([
     "logistics",
-    "marketing",
     "technology",
     "academy",
+    "marketing",
   ]);
 
-  const secondary = page.locator(".desktop-nav > .nav-secondary-link");
-  await expect(secondary).toHaveCount(4);
-  expect(await secondary.evaluateAll((links) => links.map((link) => link.getAttribute("data-nav-tone")))).toEqual([
-    "insights",
-    "connect",
-    "catalog",
-    "opportunities",
-  ]);
+  const products = page.locator(".desktop-nav > [data-hermes-products]");
+  await expect(products).toHaveCount(1);
+  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('[data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(products.locator('[data-product="catalog"]')).toHaveAttribute("href", "/businesses/");
+  await expect(products.locator('[data-product="insights"]')).toHaveAttribute("href", "/insights/");
+  await expect(products.locator('[data-product="opportunities"]')).toHaveAttribute("href", "/opportunities/");
 
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
@@ -86,4 +85,81 @@ test("shared Hermes account access is noindex and uses the canonical auth servic
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await expect(page.locator('form[data-access-form] input[name="email"]')).toBeVisible();
   await expect(page.locator('form[data-access-form] input[name="password"]')).toBeVisible();
+});
+
+
+test("cross-page Products hierarchy preserves navigation on Home, divisions, Catalog, Opportunities and localized overview", async ({ page, isMobile }) => {
+  const destinations = {
+    connect: "/services/hermes-connect/",
+    catalog: "/businesses/",
+    insights: "/insights/",
+    opportunities: "/opportunities/",
+  } as const;
+  for (const route of ["/", "/paths/logistics/", "/paths/technology/", "/opportunities/", "/businesses/", "/ru/"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".desktop-nav > .nav-primary-link")).toHaveCount(4);
+    const desktopProducts = page.locator(".desktop-nav .desktop-products-menu");
+    await expect(desktopProducts).toHaveCount(1);
+    const currentProduct = route === "/opportunities/" ? "opportunities" : route === "/businesses/" ? "catalog" : null;
+    if (isMobile) {
+      await page.locator("[data-menu-button]").click();
+      const mobileProducts = page.locator("#mobile-menu .mobile-products-menu");
+      await mobileProducts.locator("summary").click();
+      for (const [key, href] of Object.entries(destinations)) {
+        const link = mobileProducts.locator(`a[data-product="${key}"]`);
+        await expect(link).toBeVisible();
+        const expectedHref = route === "/ru/" && key === "connect"
+          ? "/services/hermes-connect/?lang=ru"
+          : href;
+        await expect(link).toHaveAttribute("href", expectedHref);
+        if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
+      }
+    } else {
+      await desktopProducts.locator("summary").click();
+      for (const [key, href] of Object.entries(destinations)) {
+        const link = desktopProducts.locator(`a[data-product="${key}"]`);
+        await expect(link).toBeVisible();
+        const expectedHref = route === "/ru/" && key === "connect"
+          ? "/services/hermes-connect/?lang=ru"
+          : href;
+        await expect(link).toHaveAttribute("href", expectedHref);
+        if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
+      }
+    }
+  }
+});
+
+
+test("Products navigation remains stable at 320px and the 1180px desktop breakpoint", async ({ browser }, testInfo) => {
+  for (const width of [320, 1180, 1181]) {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width, height: 900 },
+      hasTouch: width <= 1180,
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/");
+      const mobileButton = page.locator("[data-menu-button]");
+      let products;
+      if (await mobileButton.isVisible()) {
+        await mobileButton.click();
+        products = page.locator("#mobile-menu .mobile-products-menu");
+      } else {
+        products = page.locator(".desktop-nav .desktop-products-menu");
+      }
+      await products.locator("summary").click();
+      await expect(products.locator("a[data-product]")).toHaveCount(4);
+      for (const link of await products.locator("a[data-product]").all()) {
+        await expect(link).toBeVisible();
+      }
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+        `No horizontal overflow with expanded Products menu at ${width}px`
+      ).toBe(true);
+    } finally {
+      await context.close();
+    }
+  }
 });

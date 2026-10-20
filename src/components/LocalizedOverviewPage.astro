@@ -36,9 +36,9 @@ const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURICompone
 const directionHref = (id: LocalizedOverview["directions"][number]["id"]) => directionOwnerRoutes[content.locale][id];
 const directionOrder: Record<LocalizedOverview["directions"][number]["id"], number> = {
   logistics: 0,
-  marketing: 1,
-  technology: 2,
-  academy: 3,
+  technology: 1,
+  academy: 2,
+  marketing: 3,
 };
 const orderedDirections = [...content.directions].sort((a, b) => directionOrder[a.id] - directionOrder[b.id]);
 const canonicalUrl = `https://hermeslogisticsus.com${content.path}`;

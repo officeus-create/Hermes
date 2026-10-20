@@ -20,19 +20,25 @@ test.describe("Work With Hermes opportunities hub", () => {
     await expect(page.getByRole("link", { name: "Explore agency launch" })).toHaveAttribute("href", "/logistics/agency/");
     await expect(page.getByRole("link", { name: "Contact Hermes" }).first()).toHaveAttribute("href", "/contacts/");
 
+    // Opportunities remains a first-class public route even when the quiet
+    // corporate header groups it with the other secondary Products links.
     if (isMobile) {
-      const menuButton = page.getByRole("button", { name: "Open navigation" });
-      await menuButton.click();
-      const mobileOpportunities = page.locator("#mobile-menu").getByRole("link", { name: "Opportunities" });
-      await expect(mobileOpportunities).toBeVisible();
-      await expect(mobileOpportunities).toHaveAttribute("href", "/opportunities/");
-      await expect(mobileOpportunities).toHaveAttribute("aria-current", "page");
-      await expect(mobileOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+      await page.getByRole("button", { name: "Open navigation" }).click();
+      const products = page.locator("#mobile-menu .mobile-products-menu");
+      await products.locator("summary").click();
+      const opportunities = products.getByRole("link", { name: "Opportunities" });
+      await expect(opportunities).toBeVisible();
+      await expect(opportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(opportunities).toHaveAttribute("aria-current", "page");
+      await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     } else {
-      const desktopOpportunities = page.locator(".desktop-nav").getByRole("link", { name: "Opportunities" });
-      await expect(desktopOpportunities).toHaveAttribute("href", "/opportunities/");
-      await expect(desktopOpportunities).toHaveAttribute("aria-current", "page");
-      await expect(desktopOpportunities).toHaveAttribute("data-nav-tone", "opportunities");
+      const products = page.locator(".desktop-nav .desktop-products-menu");
+      await products.locator("summary").click();
+      const opportunities = products.getByRole("link", { name: "Opportunities" });
+      await expect(opportunities).toBeVisible();
+      await expect(opportunities).toHaveAttribute("href", "/opportunities/");
+      await expect(opportunities).toHaveAttribute("aria-current", "page");
+      await expect(opportunities).toHaveAttribute("data-product", "opportunities");
     }
 
     await expect(page.getByRole("link", { name: "+1 (414) 269-7377" })).toHaveAttribute("href", "tel:+14142697377");

@@ -16,30 +16,30 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     detail: "Website · SEO/GEO · customer acquisition",
     flow: ["Content + news", "Search + social", "Website action", "CRM evidence"],
     flowPath: "M9 37 C25 13 39 49 54 31 S75 15 91 19",
-    displayNumber: "02", crop: 296, goal: "Grow demand",
+    displayNumber: "04", crop: 296, goal: "Grow demand",
   },
   technology: {
     accent: "var(--hermes-technology)",
     detail: "CRM · automation · custom software",
     flow: ["Hermes Connect", "Website Factory", "Social connectors", "QA readback"],
     flowPath: "M9 18 H31 V41 H56 V25 H77 V40 H91",
-    displayNumber: "03", crop: 556, goal: "Build systems",
+    displayNumber: "02", crop: 556, goal: "Build systems",
   },
   academy: {
     accent: "var(--hermes-academy)",
     detail: "Logistics · marketing · IT/AI · sales · operations",
     flow: ["Task", "Practice", "Feedback", "Next level"],
     flowPath: "M9 48 H30 V38 H51 V28 H71 V18 H91",
-    displayNumber: "04", crop: 818, goal: "Develop people",
+    displayNumber: "03", crop: 818, goal: "Develop people",
   },
 };
 ---
 <section class="home-master" id="top" aria-labelledby="home-master-title">
   <div class="home-master-shell">
     <header class="home-master-intro" id="about">
-      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i">i</span>ons.</span></h1>
+      <h1 id="home-master-title" class="home-master-display" aria-label="Four directions.">Four <span>direct<span class="home-display-i" aria-hidden="true">i</span>ons.</span></h1>
       <p class="home-master-script">Choose yours.</p>
-      <p class="home-master-ink-note">Logistics, marketing, technology and learning for your business. One Hermes ecosystem.</p>
+      <p class="home-master-ink-note">Logistics, technology, learning and marketing for your business. One Hermes ecosystem.</p>
     </header>
     <span id="journey" class="home-legacy-anchor" aria-hidden="true"></span>
     <nav class="home-master-stage" id="paths" aria-label="Hermes operating directions">
@@ -57,16 +57,15 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     class="home-logistics-cinematic"
                     data-home-cinematic-video="logistics"
                     data-home-cinematic-version="v1"
-                    autoplay
                     muted
                     loop
                     playsinline
-                    preload="metadata"
+                    preload="none"
                     poster="/images/logistics-living/car-hauler-512.webp"
                     aria-hidden="true"
                     tabindex="-1"
                   >
-                    <source src="/media/home/logistics-golden-v1.mp4" type="video/mp4" />
+                    <source data-cinematic-src="/media/home/logistics-golden-v1.mp4" type="video/mp4" />
                   </video>
                   <img
                     data-home-logistics-scene-image
@@ -83,16 +82,97 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                     fetchpriority="high"
                   />
                 </span>
+              ) : path.id === "marketing" ? (
+                <span class="home-marketing-layer-stack" data-home-marketing-cinematic data-home-progressive-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/marketing-team-poster.jpg"
+                    width="281"
+                    height="500"
+                    alt="Illustrative stock footage of a business team discussing plans"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-marketing-video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/marketing-team-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-marketing-source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/marketing-team-v1.mp4"
+                      data-mobile-src="/media/home/marketing-team-v1.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
               ) : path.id === "technology" ? (
-                <picture>
-                  <source type="image/avif" srcset="/images/home-20261001/technology-512.avif 512w, /images/home-20261001/technology-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src="/images/home-20261001/technology-512.webp" srcset="/images/home-20261001/technology-512.webp 512w, /images/home-20261001/technology-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Technology architectural scene" loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-technology-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/technology-claude-v3-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of developers collaborating at a computer"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/technology-claude-v3-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/technology-claude-v3.mp4"
+                      data-mobile-src="/media/home/technology-claude-v3.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
               ) : path.id === "academy" ? (
-                <picture>
-                  <source type="image/avif" srcset="/images/home-20261001/academy-512.avif 512w, /images/home-20261001/academy-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src="/images/home-20261001/academy-512.webp" srcset="/images/home-20261001/academy-512.webp 512w, /images/home-20261001/academy-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Academy warm architectural study environment" loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-academy-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/academy-claude-v3-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of a business training presentation"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/academy-claude-v3-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/academy-claude-v3.mp4"
+                      data-mobile-src="/media/home/academy-claude-v3.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
               ) : null}
             </span>
             {path.id === "logistics" && (
@@ -234,8 +314,13 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const weatherStates = ["sun", "fog", "dusk", "rain"] as const;
     const sceneImage = document.querySelector<HTMLImageElement>("[data-home-logistics-scene-image]");
     const cinematicVideo = document.querySelector<HTMLVideoElement>('[data-home-cinematic-video="logistics"]');
+    const cinematicSource = cinematicVideo?.querySelector<HTMLSourceElement>("[data-cinematic-src]");
     const logisticsRoute = logisticsEcho.closest<HTMLElement>("[data-home-route]");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean; addEventListener?: (type: string, callback: () => void) => void }
+    }).connection;
+    let cinematicSourceAttached = false;
     let cinematicAvailable = Boolean(cinematicVideo);
     let sceneIndex = 0;
     let weatherIndex = 0;
@@ -288,14 +373,29 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     };
     const syncCinematic = () => {
       if (!cinematicVideo) return;
-      const shouldPause = reduced.matches || !visible || document.hidden || !cinematicAvailable;
+      // A hidden, reduced-motion or Save-Data visit must not download the movie.
+      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable;
       if (shouldPause) {
         cinematicVideo.pause();
         return;
       }
-      void cinematicVideo.play().catch(() => {
-        // Muted autoplay can still be blocked by a browser policy. The poster/image remains the fallback.
-      });
+      if (!cinematicSourceAttached) {
+        const src = cinematicSource?.dataset.cinematicSrc;
+        if (!src?.startsWith("/media/home/") || !cinematicSource) {
+          cinematicAvailable = false;
+          cinematicVideo.hidden = true;
+          logisticsRoute?.setAttribute("data-logistics-cinematic", "fallback");
+          return;
+        }
+        cinematicSource.src = src;
+        cinematicSourceAttached = true;
+        cinematicVideo.load();
+      }
+      if (cinematicVideo.paused) {
+        void cinematicVideo.play().catch(() => {
+          // Autoplay can still be blocked: keep the image/poster fallback visible.
+        });
+      }
     };
     const update = () => {
       if (reduced.matches) {
@@ -370,6 +470,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     logisticsRoute?.addEventListener("pointerenter", nudgeWeather);
     logisticsRoute?.addEventListener("focusin", nudgeWeather);
     reduced.addEventListener("change", update);
+    connection?.addEventListener?.("change", update);
     document.addEventListener("visibilitychange", update);
     update();
   }
@@ -437,14 +538,23 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     });
   });
 </script>
+<script is:inline src="/scripts/home-marketing-video.js"></script>
 <style>
-.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318}
+.home-master{position:relative;overflow:hidden;padding:8.5rem 0 1.5rem;background:#f7f6f3;color:#111318;
+  /* Home-only preview; do not change Hermes Connect or division pages. */
+  --hermes-logistics:#2866b0;
+  --hermes-technology:#f97316;
+  --hermes-academy:#7c5cff;
+  --hermes-marketing:#16715b;
+}
 .home-master::before{content:"";display:none}
 .home-master-shell{position:relative;width:min(1480px,calc(100% - 40px));margin:auto}
 .home-master-intro{padding:0 24px 26px;scroll-margin-top:6rem}
 .home-master-display{margin:0;font:800 clamp(3.8rem,7.6vw,7.8rem)/1.02 var(--font-display);letter-spacing:-.075em}
 .home-master-display span{color:inherit}
-.home-display-i{display:inline-block;transform-origin:50% 90%;animation:home-letter-hop 5.8s ease-in-out 1s infinite}
+.home-master-display .home-display-i{position:relative;display:inline-block;color:transparent}
+.home-display-i::before{content:"ı";position:absolute;left:0;top:0;color:#111318;pointer-events:none}
+.home-display-i::after{content:"";position:absolute;left:50%;top:.11em;width:.145em;height:.145em;border-radius:50%;background:#16715b;transform:translate(-50%,0);transform-origin:50% 160%;animation:hermes-home-i-dot-bounce 4.8s cubic-bezier(.3,.8,.25,1) 1.2s infinite}
 .home-master-script{position:relative;width:max-content;max-width:100%;margin:.55rem 0 1rem;color:#59606b;font:650 clamp(.98rem,1.35vw,1.15rem)/1.35 var(--font-body);letter-spacing:.08em;text-transform:uppercase;transform:none}
 .home-master-script::after{content:none}
 .home-master-ink-note{max-width:60ch;margin:0;color:#666c79;font-size:clamp(.96rem,1.22vw,1.16rem);line-height:1.6}
@@ -621,7 +731,7 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-logistics-snow{to{background-position:0 46px,10px 58px}}
 @keyframes home-logistics-heat{from{transform:translateY(0) scaleY(1);filter:blur(0)}to{transform:translateY(-3px) scaleY(1.03);filter:blur(.35px)}}
 @keyframes home-logistics-cloud{from{transform:translateX(-2%)}to{transform:translateX(2.5%)}}
-@keyframes home-letter-hop{0%,8%,100%{transform:translateY(0) rotate(0)}2.8%{transform:translateY(-.14em) rotate(-7deg)}5.2%{transform:translateY(.015em) rotate(2deg)}}
+@keyframes hermes-home-i-dot-bounce{0%,84%,100%{transform:translate(-50%,0) scale(1)}89%{transform:translate(-50%,-.2em) scale(.9,1.08)}93%{transform:translate(-50%,.025em) scale(1.12,.86)}96%{transform:translate(-50%,-.045em) scale(.97,1.03)}}
 @keyframes home-underline-draw{from{transform:rotate(-2deg) scaleX(0)}to{transform:rotate(-2deg) scaleX(1)}}
 @keyframes home-road-streak{0%,100%{opacity:0;translate:0 0}22%,65%{opacity:.8}75%{opacity:0;translate:-25px 42px}}
 
@@ -634,9 +744,9 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @keyframes home-academy-progress-pulse{0%,100%{opacity:.45}50%{opacity:.95}}
 @keyframes home-ink-write{0%,15%{stroke-dashoffset:90}60%,100%{stroke-dashoffset:0}}
 .home-master-route::after{content:"";position:absolute;z-index:-1;inset:65% 0 0;background:linear-gradient(180deg,transparent 0%,#122940 27%,#122940 100%)}
-.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#172a23 27%,#172a23)}
-.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#44362e 27%,#44362e)}
-.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#382b50 27%,#382b50)}
+.home-master-route-marketing::after{background:linear-gradient(180deg,transparent,#382230 27%,#382230)}
+.home-master-route-technology::after{background:linear-gradient(180deg,transparent,#113a31 27%,#113a31)}
+.home-master-route-academy::after{background:linear-gradient(180deg,transparent,#443422 27%,#443422)}
 .home-master-route-copy{display:grid;gap:12px;min-width:0;width:100%}
 .home-master-route-copy small{display:flex;align-items:center;gap:10px;font:700 clamp(.58rem,.85vw,.85rem)/1.3 var(--font-body);letter-spacing:.12em;text-transform:uppercase}
 .home-master-route-copy i{display:block;width:5px;height:18px;border-radius:5px;background:var(--route-accent)}
@@ -655,6 +765,20 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
   .home-marketing-journey{inset:6% 7% 31%}
 }
 @media(hover:none){.home-live-explainer,.home-live-step{opacity:1;transform:none}.home-live-path path{stroke-dashoffset:0}}
-@media(max-width:700px) and (hover:none){.home-master-route-arrow{display:none}.home-master-route-copy strong{padding-right:0}}
-@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+@media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
+@media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
+/* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img{z-index:0}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{z-index:1;opacity:0;transition:opacity .45s ease}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)[data-media-state="ready"]>video{opacity:1}
+.home-master-route-marketing .home-marketing-journey,.home-master-route-marketing .home-live-explainer{display:none!important}
+/* Phase 2: match Claude's quiet four-window chooser. Keep real Tech/Academy routes and
+   source-labelled explainer markup for future product-specific pages, but do not
+   superimpose miniature faux dashboards or progress cards onto cinematic Home art. */
+.home-master-route-technology .home-system-display,
+.home-master-route-academy .home-academy-living{display:none!important}
+@media(prefers-reduced-motion:reduce){:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{display:none!important;transition:none!important}}
 </style>
