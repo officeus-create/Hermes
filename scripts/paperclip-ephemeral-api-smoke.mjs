@@ -5,6 +5,8 @@
  * Creates a synthetic company + two idle agents and one synthetic issue.
  */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { buildBatch } from './paperclip-pilot-candidates.mjs';
 
 assert.equal(process.env.GITHUB_ACTIONS, 'true', 'ephemeral_github_actions_only');
 assert.equal(process.env.CI, 'true', 'ci_only');
@@ -25,6 +27,8 @@ async function api(path, method = 'GET', body) {
   return response.json();
 }
 
+const [candidate] = buildBatch(JSON.parse(readFileSync(new URL('../fixtures/paperclip-pilot/synthetic-candidates.json', import.meta.url), 'utf8')));
+assert.equal(candidate.execution, 'REVIEW_ONLY');
 const company = await api('/api/companies', 'POST', {
   name: 'HERMES SYNTHETIC QA ONLY',
   description: 'Ephemeral zero-cost API contract test; not the Hermes operating company',
@@ -51,8 +55,8 @@ const reviewer = await api(`/api/companies/${company.id}/agents`, 'POST', {
 assert.ok(executor.id && reviewer.id);
 assert.notEqual(executor.id, reviewer.id);
 const issue = await api(`/api/companies/${company.id}/issues`, 'POST', {
-  title: 'SYNTHETIC TASK ONLY - no model, no outside writes',
-  description: 'Disposable API orchestration fixture, not a customer or real Hermes task',
+  title: candidate.title,
+  description: 'SYNTHETIC / REVIEW ONLY. Source: ' + candidate.source_url + '\\nHermes ID: ' + candidate.source_id + '\\nAcceptance: ' + candidate.acceptance.join(' | '),
   status: 'todo',
   priority: 'low',
   assigneeAgentId: executor.id,
