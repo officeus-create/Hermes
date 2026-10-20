@@ -22,8 +22,8 @@ test("Home keeps media static on reduced motion without requesting four films", 
   }
 });
 
-test("Home never plays more than one movie while switching scenes", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("Mobile Home never plays more than one movie while switching scenes", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const routes = page.locator("[data-home-route]");
   await expect(routes).toHaveCount(4);
@@ -35,7 +35,7 @@ test("Home never plays more than one movie while switching scenes", async ({ pag
   expect(await countActive()).toBeLessThanOrEqual(1);
   expect(await countLoaded()).toBeLessThanOrEqual(1);
   for (let i = 1; i < 4; i++) {
-    await routes.nth(i).hover();
+    await routes.nth(i).scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     expect(await countActive(), `more than one movie playing at route ${i}`).toBeLessThanOrEqual(1);
   }
