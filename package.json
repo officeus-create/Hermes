@@ -93,6 +93,7 @@
     "@xmldom/xmldom": "0.9.12",
     "http-cache-semantics": "$http-cache-semantics",
     "source-map-js": "1.2.2",
-    "smol-toml": "1.9.0"
+    "smol-toml": "1.9.0",
+    "vite": "8.1.6"
   }
 }
