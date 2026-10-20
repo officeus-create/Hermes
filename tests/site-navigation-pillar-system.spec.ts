@@ -86,3 +86,39 @@ test("shared Hermes account access is noindex and uses the canonical auth servic
   await expect(page.locator('form[data-access-form] input[name="email"]')).toBeVisible();
   await expect(page.locator('form[data-access-form] input[name="password"]')).toBeVisible();
 });
+
+
+test("cross-page Products hierarchy preserves navigation on Home, divisions, Catalog, Opportunities and localized overview", async ({ page, isMobile }) => {
+  const destinations = {
+    connect: "/services/hermes-connect/",
+    catalog: "/businesses/",
+    insights: "/insights/",
+    opportunities: "/opportunities/",
+  } as const;
+  for (const route of ["/", "/paths/logistics/", "/paths/technology/", "/opportunities/", "/businesses/", "/ru/"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".desktop-nav > .nav-primary-link")).toHaveCount(4);
+    const desktopProducts = page.locator(".desktop-nav .desktop-products-menu");
+    await expect(desktopProducts).toHaveCount(1);
+    const currentProduct = route === "/opportunities/" ? "opportunities" : route === "/businesses/" ? "catalog" : null;
+    if (isMobile) {
+      await page.locator("[data-menu-button]").click();
+      const mobileProducts = page.locator("#mobile-menu .mobile-products-menu");
+      await mobileProducts.locator("summary").click();
+      for (const [key, href] of Object.entries(destinations)) {
+        const link = mobileProducts.locator(`a[data-product="${key}"]`);
+        await expect(link).toBeVisible();
+        await expect(link).toHaveAttribute("href", href);
+        if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
+      }
+    } else {
+      await desktopProducts.locator("summary").click();
+      for (const [key, href] of Object.entries(destinations)) {
+        const link = desktopProducts.locator(`a[data-product="${key}"]`);
+        await expect(link).toBeVisible();
+        await expect(link).toHaveAttribute("href", href);
+        if (key === currentProduct) await expect(link).toHaveAttribute("aria-current", "page");
+      }
+    }
+  }
+});
