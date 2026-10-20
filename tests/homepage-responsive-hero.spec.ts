@@ -55,3 +55,54 @@ test("homepage keeps four Claude v3 cinematic routes and the canonical social pr
   );
   await expect(page.locator(".home-master-stage canvas")).toHaveCount(0);
 });
+
+
+test("touch-width Safari-like viewports keep all four portals full-width", async ({ browser }, testInfo) => {
+  for (const width of [390, 701, 710, 760, 820]) {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      viewport: { width, height: 900 },
+      hasTouch: true,
+      isMobile: true,
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/");
+      const result = await page.evaluate(() => {
+        const stage = document.querySelector(".home-master-stage");
+        const routes = [...document.querySelectorAll(".home-master-route")];
+        const stageWidth = stage?.getBoundingClientRect().width ?? 0;
+        return {
+          columns: getComputedStyle(stage!).gridTemplateColumns.split(" ").length,
+          widths: routes.map(route => route.getBoundingClientRect().width),
+          stageWidth,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+        };
+      });
+      expect(result.columns, `Expected one portal column at ${width}px`).toBe(1);
+      expect(result.widths).toHaveLength(4);
+      expect(result.widths.every(w => w >= result.stageWidth * .95), `No half-width cards at ${width}px`).toBe(true);
+      expect(result.overflow).toBe(false);
+    } finally {
+      await context.close();
+    }
+  }
+});
+
+test("desktop tablet still keeps two-column portal layout", async ({ browser }, testInfo) => {
+  const context = await browser.newContext({
+    baseURL: testInfo.project.use.baseURL,
+    viewport: { width: 760, height: 900 },
+    hasTouch: false,
+    isMobile: false,
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto("/");
+    const result = await page.locator(".home-master-stage").evaluate(el => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+    expect(result).toBe(2);
+  } finally {
+    await context.close();
+  }
+});
