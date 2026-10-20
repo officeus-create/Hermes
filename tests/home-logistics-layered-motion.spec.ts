@@ -14,6 +14,8 @@ test("Logistics Golden Scene uses one coherent local visual owner", async ({ pag
   await expect(scene).toHaveCount(1);
   await expect(scene).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
   await expect(scene).toBeVisible();
+  await expect(route).toHaveAttribute("data-logistics-motion", "paused");
+  await route.hover();
   await expect(route).toHaveAttribute("data-logistics-motion", "running");
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
   await expect(route.locator("[data-home-logistics-truck-layer]")).toHaveCount(0);
