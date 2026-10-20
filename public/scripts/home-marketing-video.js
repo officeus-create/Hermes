@@ -60,9 +60,10 @@
 
   function synchronize() {
     const next = mobile.matches ? electMobile() : null;
-    if (next !== winner || !document.documentElement.hasAttribute("data-home-cinema-active")) {
+    const displayMode = motionBlocked() ? "poster" : mobile.matches ? (next || "poster") : "desktop";
+    if (next !== winner || document.documentElement.dataset.homeCinemaActive !== displayMode) {
       winner = next;
-      document.documentElement.dataset.homeCinemaActive = mobile.matches ? (winner || "poster") : "desktop";
+      document.documentElement.dataset.homeCinemaActive = displayMode;
       // Logistics remains its own original video runtime on desktop.
       window.dispatchEvent(new Event("hermes:cinema-selection"));
     }
