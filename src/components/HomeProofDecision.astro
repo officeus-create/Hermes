@@ -11,7 +11,7 @@ type ProofCopy = {
 
 interface Props { locale?: SiteLocale }
 const { locale = "en" } = Astro.props;
-const directionOrder: Direction[] = ["logistics", "marketing", "technology", "academy"];
+const directionOrder: Direction[] = ["logistics", "technology", "academy", "marketing"];
 const sources: Record<Direction, string> = {
   logistics: "/company-information/",
   marketing: "/case/appleton-vehicle-transport-seo/",
@@ -157,7 +157,10 @@ const current = copy[locale];
 </script>
 
 <style>
-  .home-proof-decision{background:#f7f6f3;color:#202935;padding:clamp(30px,4.5vw,64px) 0}
+  .home-proof-decision{background:#f7f6f3;color:#202935;padding:clamp(36px,5vw,72px) 0;border-top:1px solid #dfe5ec}
+  .home-proof-heading::before{content:"THE WORK BEHIND THE SCENES";display:block;margin-bottom:18px;font:700 .68rem/1.4 var(--font-body);letter-spacing:.15em;color:#58657a}
+  .home-proof-card{box-shadow:0 9px 28px rgba(19,35,55,.035);transition:box-shadow .2s ease,transform .2s ease}
+  @media(hover:hover) and (prefers-reduced-motion:no-preference){.home-proof-card:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(19,35,55,.075)}}
   .home-proof-inner{width:min(1180px,calc(100% - 40px));margin-inline:auto}
   .home-proof-heading{max-width:850px;margin-bottom:clamp(20px,3vw,32px)}
   .home-proof-kicker{font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#35649b;font-size:.72rem;margin:0 0 8px}
