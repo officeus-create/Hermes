@@ -12,6 +12,7 @@ test("Marketing shows a real creative collaboration video without decorative HUD
   await expect(route).toHaveAttribute("href", "/paths/marketing/");
   await expect(route).toHaveAttribute("aria-label", /Example flow: content \+ news, search \+ social, website action, crm evidence/i);
   await scene.scrollIntoViewIfNeeded();
+  await route.hover();
   await expect.poll(() => scene.getAttribute("data-media-state")).toBe("ready");
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });
