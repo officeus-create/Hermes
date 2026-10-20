@@ -1,0 +1,20 @@
+{
+  "name": "hermes-threeui-isolated-pilot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "test": "node --test pilot.test.mjs"
+  },
+  "dependencies": {
+    "@designcodeio/threeui": "1.2.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "three": "0.149.0"
+  },
+  "devDependencies": {
+    "vite": "7.3.1"
+  }
+}
