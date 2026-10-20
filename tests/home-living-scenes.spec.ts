@@ -5,6 +5,9 @@ test("Home keeps native routes and shows living details without layout overflow"
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Four directions." })).toBeVisible();
   await expect(page.locator(".home-scene-detail")).toHaveCount(3);
+  // Home keeps a quiet visual chooser: Tech/Academy mini-dashboards are not pasted over art.
+  await expect(page.locator('[data-home-pillar-proof="systems"]')).toBeHidden();
+  await expect(page.locator('[data-home-pillar-proof="progress"]')).toBeHidden();
   await expect(page.locator('[data-route-id="logistics"] .home-scene-detail')).toHaveCount(0);
   await expect(page.locator('[data-route-id="logistics"] [data-home-cinematic-slot="logistics"]')).toBeVisible();
   await expect(page.locator('.home-master-stage [data-home-cinematic-video="logistics"]')).toHaveCount(1);
