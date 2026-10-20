@@ -16,12 +16,12 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   expect(page).not.toContain('const homepageLcpImage = "/images/path-logistics-system.jpg"');
   expect(page).not.toContain("preloadImage={homepageLcpImage}");
 
-  expect(scene).toContain('type="image/avif"');
+  expect(scene).toContain('src="/media/home/technology-claude-v3-poster.jpg"');
   expect(scene).toContain("srcset=");
   expect(scene).toContain('decoding="async"');
   expect(scene).not.toContain("<canvas");
   const videoTags = scene.match(/<video\b/g) ?? [];
-  expect(videoTags.length).toBeLessThanOrEqual(2);
+  expect(videoTags.length).toBe(4);
   if (videoTags.length >= 1) {
     expect(scene).toContain('data-home-cinematic-video="logistics"');
     expect(scene).toContain('autoplay');
@@ -51,6 +51,15 @@ test("homepage keeps V4 interaction polish lightweight without hidden media runt
   const media = ["marketing-team-v1.mp4", "marketing-team-poster.jpg"];
   for (const file of media) expect(fs.existsSync(path.join(root, "public/media/home", file))).toBe(true);
   expect(fs.statSync(path.join(root, "public/media/home/marketing-team-v1.mp4")).size).toBeLessThan(8_000_000);
+  for (const id of ["technology", "academy"]) {
+    expect(scene).toContain(`data-home-${id}-cinematic`);
+    expect(scene).toContain(`data-desktop-src="/media/home/${id}-claude-v3.mp4"`);
+    expect(scene).toContain(`src="/media/home/${id}-claude-v3-poster.jpg"`);
+    for (const file of [`${id}-claude-v3.mp4`, `${id}-claude-v3-poster.jpg`]) {
+      expect(fs.existsSync(path.join(root, "public/media/home", file))).toBe(true);
+      expect(fs.statSync(path.join(root, "public/media/home", file)).size).toBeLessThan(1_500_000);
+    }
+  }
 
   expect(layer).not.toContain("new Image()");
   expect(layer).not.toContain("IntersectionObserver");

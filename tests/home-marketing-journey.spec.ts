@@ -47,7 +47,7 @@ test("tablet keeps four routes in two columns; Marketing retains cinematic sourc
     await expect(image).toHaveAttribute("sizes", /\(min-width:701px\) and \(max-width:1000px\)/);
   }
   await expect(stage.locator('[data-route-id="logistics"] [data-home-logistics-road-plate]')).toHaveCount(0);
-  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src","/images/home-20261001/academy-512.webp");
+  await expect(stage.locator('[data-route-id="academy"] .home-portal-art img')).toHaveAttribute("src","/media/home/academy-claude-v3-poster.jpg");
   await expect(stage.locator("[data-home-route]")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await page.setViewportSize({ width: 1024, height: 900 });

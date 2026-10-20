@@ -84,18 +84,19 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   />
                 </span>
               ) : path.id === "marketing" ? (
-                <span class="home-marketing-layer-stack" data-home-marketing-cinematic data-media-state="poster">
+                <span class="home-marketing-layer-stack" data-home-marketing-cinematic data-home-progressive-cinematic data-media-state="poster">
                   <img
                     src="/media/home/marketing-team-poster.jpg"
                     width="281"
                     height="500"
-                    alt="Illustrative stock footage of three people collaborating at a laptop"
+                    alt="Illustrative stock footage of a business team discussing plans"
                     aria-hidden="true"
                     loading="lazy"
                     decoding="async"
                   />
                   <video
                     data-home-marketing-video
+                    data-home-progressive-video
                     muted
                     loop
                     playsinline
@@ -106,6 +107,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   >
                     <source
                       data-home-marketing-source
+                      data-home-progressive-source
                       data-desktop-src="/media/home/marketing-team-v1.mp4"
                       data-mobile-src="/media/home/marketing-team-v1.mp4"
                       type="video/mp4"
@@ -113,15 +115,65 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
                   </video>
                 </span>
               ) : path.id === "technology" ? (
-                <picture>
-                  <source type="image/avif" srcset="/images/home-20261001/technology-512.avif 512w, /images/home-20261001/technology-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src="/images/home-20261001/technology-512.webp" srcset="/images/home-20261001/technology-512.webp 512w, /images/home-20261001/technology-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Technology architectural scene" loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-technology-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/technology-claude-v3-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of developers collaborating at a computer"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/technology-claude-v3-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/technology-claude-v3.mp4"
+                      data-mobile-src="/media/home/technology-claude-v3.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
               ) : path.id === "academy" ? (
-                <picture>
-                  <source type="image/avif" srcset="/images/home-20261001/academy-512.avif 512w, /images/home-20261001/academy-887.avif 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" />
-                  <img src="/images/home-20261001/academy-512.webp" srcset="/images/home-20261001/academy-512.webp 512w, /images/home-20261001/academy-887.webp 887w" sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)" width="887" height="1774" aria-hidden="true" alt="Hermes Academy warm architectural study environment" loading="lazy" decoding="async" fetchpriority="auto" />
-                </picture>
+                <span class="home-cinematic-layer-stack" data-home-progressive-cinematic data-home-academy-cinematic data-media-state="poster">
+                  <img
+                    src="/media/home/academy-claude-v3-poster.jpg"
+                    width="540"
+                    height="960"
+                    sizes="(max-width:700px) calc(100vw - 24px), (min-width:701px) and (max-width:1000px) calc((100vw - 40px) / 2), (min-width:1520px) 368px, calc((100vw - 50px) / 4)"
+                    alt="Illustrative footage of a business training presentation"
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <video
+                    data-home-progressive-video
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    poster="/media/home/academy-claude-v3-poster.jpg"
+                    aria-hidden="true"
+                    tabindex="-1"
+                  >
+                    <source
+                      data-home-progressive-source
+                      data-desktop-src="/media/home/academy-claude-v3.mp4"
+                      data-mobile-src="/media/home/academy-claude-v3.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </span>
               ) : null}
             </span>
             {path.id === "logistics" && (
@@ -696,16 +748,17 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 @media(max-width:700px) and (hover:none){.home-master-route-arrow{display:grid;width:44px;height:44px}.home-master-route-copy strong{padding-right:52px}}
 @media(prefers-reduced-motion:reduce){.home-logistics-cinematic{display:none!important}.home-master-route-logistics .home-portal-art img{animation:none!important;transform:none!important}.home-logistics-weather{animation:none!important;transition:none!important}.home-portal-art img{transition:none!important}.home-display-i,.home-display-i::after,.home-master-script::after,.home-scene-detail,.home-scene-detail *{animation:none!important;transition:none!important}.home-live-explainer,.home-live-step{opacity:1!important;transform:none!important;transition:none!important}.home-live-path path{stroke-dashoffset:0!important;animation:none!important}}
 /* Phase 1: the real creative process is the visual proof, without decorative mock dashboards. */
-.home-marketing-layer-stack{position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
-.home-marketing-layer-stack>img,.home-marketing-layer-stack>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
-.home-marketing-layer-stack>img{z-index:0}
-.home-marketing-layer-stack>video{z-index:1;opacity:0;transition:opacity .45s ease}
-.home-marketing-layer-stack[data-media-state="ready"]>video{opacity:1}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack){position:absolute;inset:0;display:block;overflow:hidden;background:#cdc8c5}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img,
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>img{z-index:0}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{z-index:1;opacity:0;transition:opacity .45s ease}
+:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)[data-media-state="ready"]>video{opacity:1}
 .home-master-route-marketing .home-marketing-journey,.home-master-route-marketing .home-live-explainer{display:none!important}
 /* Phase 2: match Claude's quiet four-window chooser. Keep real Tech/Academy routes and
    source-labelled explainer markup for future product-specific pages, but do not
    superimpose miniature faux dashboards or progress cards onto cinematic Home art. */
 .home-master-route-technology .home-system-display,
 .home-master-route-academy .home-academy-living{display:none!important}
-@media(prefers-reduced-motion:reduce){.home-marketing-layer-stack>video{display:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){:is(.home-marketing-layer-stack,.home-cinematic-layer-stack)>video{display:none!important;transition:none!important}}
 </style>
