@@ -76,3 +76,32 @@ test("Home keeps a visible direction arrow on touch devices", async ({ browser }
     await context.close();
   }
 });
+
+
+test("Home uses the approved Premium Green and the correct four-division color hierarchy", async ({ page }) => {
+  await page.goto("/");
+  const palette = await page.evaluate(() => {
+    const home = getComputedStyle(document.querySelector(".home-master")!);
+    const nav = getComputedStyle(document.querySelector(".site-header")!);
+    return {
+      home: {
+        logistics: home.getPropertyValue("--hermes-logistics").trim(),
+        technology: home.getPropertyValue("--hermes-technology").trim(),
+        academy: home.getPropertyValue("--hermes-academy").trim(),
+        marketing: home.getPropertyValue("--hermes-marketing").trim(),
+      },
+      header: {
+        logistics: nav.getPropertyValue("--nav-logistics").trim(),
+        technology: nav.getPropertyValue("--nav-technology").trim(),
+        academy: nav.getPropertyValue("--nav-academy").trim(),
+        marketing: nav.getPropertyValue("--nav-marketing").trim(),
+      },
+    };
+  });
+  const colors = { logistics: "#2866b0", technology: "#f97316", academy: "#7c5cff", marketing: "#16715b" };
+  expect(palette.home).toEqual(colors);
+  expect(palette.header).toEqual(colors);
+  await page.goto("/paths/technology/");
+  await expect(page.locator(".home-master")).toHaveCount(0);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+});
