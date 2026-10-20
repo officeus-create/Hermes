@@ -33,7 +33,7 @@ jobs:
           cd "$RUNNER_TEMP"
           LOG="$RUNNER_TEMP/paperclip-disposable/startup.log"
           mkdir -p "$(dirname "$LOG")"
-          npx --yes --registry=https://registry.npmjs.org paperclipai@2026.720.0 test-drive --data-dir "$RUNNER_TEMP/paperclip-disposable/instance" --no-browser > "$LOG" 2>&1 &
+          npx --yes --registry=https://registry.npmjs.org paperclipai@2026.720.0 onboard --yes --data-dir "$RUNNER_TEMP/paperclip-disposable/instance" > "$LOG" 2>&1 &
           PID=$!
           cleanup() {
             kill "$PID" 2>/dev/null || true
@@ -44,7 +44,7 @@ jobs:
           trap cleanup EXIT
           ok=0
           for _ in $(seq 1 80); do
-            if curl --max-time 2 -fsS -o /dev/null http://127.0.0.1:3100/; then
+            if curl --max-time 2 -fsS -o /dev/null http://127.0.0.1:3100/ 2>/dev/null; then
               ok=1
               break
             fi
