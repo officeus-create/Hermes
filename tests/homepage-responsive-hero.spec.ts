@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("homepage entry uses four architectural system scene and keeps the canonical social preview", async ({ page }) => {
+test("homepage keeps four Claude v3 cinematic routes and the canonical social preview", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
@@ -32,7 +32,15 @@ test("homepage entry uses four architectural system scene and keeps the canonica
 
   await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);
   await expect(page.locator(".hero-media picture")).toHaveCount(0);
-  await expect(page.locator(".home-portal-art picture")).toHaveCount(2);
+  // The two older architectural <picture> placeholders have been replaced by
+  // source-matched local films with accessible poster fallback.
+  await expect(page.locator(".home-portal-art picture")).toHaveCount(0);
+  for (const id of ["technology", "academy"]) {
+    const stage = page.locator(`[data-home-${id}-cinematic]`);
+    await expect(stage).toHaveCount(1);
+    await expect(stage.locator("img")).toHaveAttribute("src", `/media/home/${id}-claude-v3-poster.jpg`);
+    await expect(stage.locator("source")).toHaveAttribute("data-mobile-src", `/media/home/${id}-claude-v3.mp4`);
+  }
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
   await expect(page.locator("[data-home-logistics-scene-image]")).toHaveAttribute("src", "/images/logistics-living/car-hauler-512.webp");
   // Owner-directed living Marketing has a real local scene instead of a visible mock dashboard.
