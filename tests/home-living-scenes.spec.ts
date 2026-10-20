@@ -21,6 +21,8 @@ test("Home keeps native routes and shows living details without layout overflow"
   await page.emulateMedia({ reducedMotion: "no-preference" });
   // The owner-approved motion moves only the premium-green dot, never the letter stem.
   const homeI = page.locator(".home-display-i");
+  await expect(homeI).toHaveText("i");
+  await expect(page.locator("#home-master-title")).toHaveText("Four directions.");
   await expect(homeI).toHaveCSS("animation-name", "none");
   const dotMotion = await homeI.evaluate((element) => {
     const dot = getComputedStyle(element, "::after");
