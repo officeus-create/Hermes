@@ -5,9 +5,14 @@ on:
     paths:
       - scripts/media/build-home-v3-720p-candidate.sh
       - .github/workflows/home-v3-720p-candidate.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/media/build-home-v3-720p-candidate.sh
+      - .github/workflows/home-v3-720p-candidate.yml
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   render-preview:
     runs-on: ubuntu-latest
@@ -33,16 +38,3 @@ jobs:
             public/media/home/*-poster-400.webp
             public/media/home/*-poster-720.webp
             docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
-      - name: Stage only validated preview media (never publish to production)
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- public/media/home/*-720.mp4 public/media/home/*-poster-400.webp public/media/home/*-poster-720.webp docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo "No media changes."
-          else
-            git commit -m "assets(home): source-encoded 720p QA-only candidate films and posters"
-            git push origin "HEAD:feat/home-v3-720p-quality-candidate-20261021"
-          fi
