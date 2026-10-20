@@ -84,6 +84,10 @@ test("touch-width Safari-like viewports keep all four portals full-width", async
       expect(result.widths).toHaveLength(4);
       expect(result.widths.every(w => w >= result.stageWidth * .95), `No half-width cards at ${width}px`).toBe(true);
       expect(result.overflow).toBe(false);
+      // The image source selection must follow the same one-column rule as the CSS layout.
+      await expect(page.locator("[data-home-logistics-scene-image]")).toHaveAttribute(
+        "sizes", /\(hover: none\) and \(pointer: coarse\) and \(min-width:701px\) and \(max-width:820px\)/,
+      );
     } finally {
       await context.close();
     }
