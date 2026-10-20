@@ -228,14 +228,6 @@ const languageLinks = siteLocales.filter((language) => !isCatalogLocaleRoute || 
         <a href="/opportunities/" data-product="opportunities" aria-current={isOpportunitiesRoute ? "page" : undefined}>Opportunities</a>
       </div>
     </details>
-    {!isApprovedHome && <HermesConnectLauncher
-      variant="mobile"
-      href="/services/hermes-connect/repair-shops/"
-      label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
-      locale={activeLocale}
-      class="nav-tone-connect"
-    />}
     <a class="mobile-nav-pillar mobile-login-link" data-nav-tone="account" data-hermes-sign-in href="/services/hermes-connect/access/">{signInLabel}</a>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} locale={activeLocale} /></div>}
     {!privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe locale={activeLocale} /></div>}
