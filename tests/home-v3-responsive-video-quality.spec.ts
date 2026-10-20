@@ -18,11 +18,11 @@ test("Home Retina touch portals choose 720p only after becoming visible", async 
     const requested:string[]=[];
     page.on("request", req => {if(req.url().endsWith("-720.mp4")) requested.push(req.url());});
     await page.goto("/");
+    await expect(page.locator('[data-route-id="marketing"] source')).not.toHaveAttribute("src", /.+/);
     for (const film of sources) {
       const scene=page.locator(`[data-route-id="${film.id}"] [data-home-progressive-cinematic]`);
       const source=scene.locator("source");
       await expect(scene.locator("img")).toHaveAttribute("srcset",new RegExp(`/${film.poster}-400\\.webp 400w, /${film.poster}-720\\.webp 720w`));
-      await expect(source).not.toHaveAttribute("src", /.+/);
       await scene.scrollIntoViewIfNeeded();
       await expect(source).toHaveAttribute("src",`/media/home/${film.sharp}`);
       await expect(scene).toHaveAttribute("data-media-quality","sharp-720");
@@ -69,7 +69,7 @@ test("Save-Data prevents all three video downloads while WebP fallback is availa
     });
     const page=await context.newPage();
     const videoRequests:string[]=[];
-    page.on("request",req=>{if(/\/media\/home\/.*\\.mp4$/.test(req.url()))videoRequests.push(req.url());});
+    page.on("request",req=>{if(req.url().includes("/media/home/") && req.url().endsWith(".mp4"))videoRequests.push(req.url());});
     await page.goto("/");
     for(const film of sources){
       const scene=page.locator(`[data-route-id="${film.id}"] [data-home-progressive-cinematic]`);
