@@ -47,6 +47,7 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
   const video = route.locator('[data-home-cinematic-video="logistics"]');
   await expect(video).toHaveCount(1);
   await expect(video).toHaveAttribute("poster", "/images/logistics-living/car-hauler-512.webp");
+  await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("data-cinematic-src", "/media/home/logistics-golden-v1.mp4");
   await expect(video.locator('source[type="video/mp4"]')).toHaveAttribute("src", "/media/home/logistics-golden-v1.mp4");
   expect(await video.evaluate((node) => {
     const media = node as HTMLVideoElement;
@@ -58,11 +59,11 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
       preload: media.preload,
     };
   })).toEqual({
-    autoplay: true,
+    autoplay: false,
     muted: true,
     loop: true,
     playsInline: true,
-    preload: "metadata",
+    preload: "none",
   });
   await expect(route.locator("[data-home-logistics-scene-image]")).toHaveCount(1);
   await expect(route.locator("[data-home-logistics-road-plate]")).toHaveCount(0);
@@ -79,4 +80,38 @@ test("Logistics golden scene stays coherent and local without split vehicle laye
       .filter((value) => /^https?:\/\//i.test(value)),
   );
   expect(externalMedia).toEqual([]);
+});
+
+test("Logistics reduced motion never fetches the hidden cinematic movie", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const movieRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/media/home/logistics-golden-v1.mp4")) movieRequests.push(request.url());
+  });
+  await page.goto("/");
+  await page.locator('[data-route-id="logistics"]').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(400);
+  const video = page.locator('[data-home-cinematic-video="logistics"]');
+  await expect(video).toBeHidden();
+  await expect(video.locator("source")).not.toHaveAttribute("src", /.+/);
+  expect(movieRequests).toEqual([]);
+});
+
+test("Logistics Save-Data renders the poster and never downloads video", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "connection", {
+      configurable: true,
+      value: { saveData: true, addEventListener: () => {} },
+    });
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const requests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/media/home/logistics-golden-v1.mp4")) requests.push(request.url());
+  });
+  await page.goto("/");
+  await page.locator('[data-route-id="logistics"]').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(400);
+  await expect(page.locator('[data-home-cinematic-video="logistics"] source')).not.toHaveAttribute("src", /.+/);
+  expect(requests).toEqual([]);
 });
