@@ -15,7 +15,10 @@ test.describe("Russian route integrity", () => {
     if (!(await headerConnect.isVisible())) {
       await page.locator("[data-menu-button]").click();
       await expect(page.locator("[data-mobile-menu]")).toBeVisible();
-      connect = page.locator('[data-hermes-connect-launcher="mobile"]');
+      // Products is the canonical mobile secondary navigation; keep the selected language.
+      const products = page.locator("#mobile-menu .mobile-products-menu");
+      await products.locator("summary").click();
+      connect = products.locator('a[data-product="connect"]');
     }
 
     await expect(connect).toBeVisible();
