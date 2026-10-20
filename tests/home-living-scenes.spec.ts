@@ -16,10 +16,17 @@ test("Home keeps native routes and shows living details without layout overflow"
   await expect(page.locator(".home-master-route")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(page.locator(".home-display-i")).toHaveCSS("animation-iteration-count", "infinite");
-  await expect(page.locator(".home-display-i")).toHaveCSS("animation-duration", "5.8s");
+  // The owner-approved motion moves only the premium-green dot, never the letter stem.
+  const homeI = page.locator(".home-display-i");
+  await expect(homeI).toHaveCSS("animation-name", "none");
+  const dotMotion = await homeI.evaluate((element) => {
+    const dot = getComputedStyle(element, "::after");
+    return { name: dot.animationName, duration: dot.animationDuration, color: dot.backgroundColor };
+  });
+  expect(dotMotion).toEqual({ name: "hermes-home-i-dot-bounce", duration: "4.8s", color: "rgb(22, 113, 91)" });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".home-display-i")).toHaveCSS("animation-name", "none");
+  expect(await page.locator(".home-display-i").evaluate((element) => getComputedStyle(element, "::after").animationName)).toBe("none");
   const livingProofs = page.locator("[data-home-living-motion]");
   await expect(livingProofs).toHaveCount(2);
   for (const proof of await livingProofs.all()) {
