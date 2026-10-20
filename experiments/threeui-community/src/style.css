@@ -1,0 +1,20 @@
+:root{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#22362f;background:#f7f9f6;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button{font:inherit;cursor:pointer}
+.shell{max-width:1140px;margin:auto;padding:clamp(24px,5vw,72px)}
+.eyebrow{letter-spacing:.12em;font-size:.7rem;font-weight:700;color:#447361}
+h1{font-weight:540;letter-spacing:-.045em;font-size:clamp(2.2rem,5vw,4.9rem);max-width:830px;line-height:1.04;margin:22px 0}
+.intro{color:#5d6c64;max-width:680px;line-height:1.65}
+.tabbar{display:flex;gap:10px;flex-wrap:wrap;margin:32px 0 20px}
+.tabbar button{border:1px solid #cbdad1;background:#fff;border-radius:999px;padding:11px 20px;color:#344b40;text-transform:capitalize}
+.tabbar button[aria-pressed=true]{background:#183e30;color:white;border-color:#183e30}
+.scene{border-radius:26px;position:relative;overflow:hidden;isolation:isolate;min-height:440px;background:linear-gradient(140deg,#eaf2eb,#f1f4e9 50%,#dae7dc);border:1px solid #d7e1d7;box-shadow:0 18px 70px rgba(17,52,32,.07)}
+.visual,.visual>div{position:absolute;inset:0;pointer-events:none}.visual{opacity:.5}
+.copy{position:relative;z-index:2;max-width:650px;padding:clamp(28px,6vw,64px);min-height:440px;display:flex;align-items:flex-start;justify-content:center;flex-direction:column}
+.copy h2{font-size:clamp(2rem,4.4vw,4rem);line-height:1.05;letter-spacing:-.04em;font-weight:550;margin:24px 0 12px}
+.copy p{max-width:450px;line-height:1.6;color:#425c4e}
+.pill{padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.78);font-size:.8rem}
+.cta{border:0;border-radius:999px;background:#1f6d4a;color:white;padding:14px 23px;margin-top:24px}
+.cta:focus-visible,.tabbar button:focus-visible{outline:3px solid #176642;outline-offset:3px}
+.note{max-width:860px;margin-top:28px;color:#657368;line-height:1.6;font-size:.85rem}.status{font-size:.83rem}
+@media(max-width:600px){.shell{padding:22px}.scene,.copy{min-height:430px}.tabbar button{flex:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
