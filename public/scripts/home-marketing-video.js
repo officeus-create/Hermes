@@ -25,7 +25,14 @@
         return;
       }
       if (!loaded) {
-        const nextSrc = mobile.matches ? source.dataset.mobileSrc : source.dataset.desktopSrc;
+        const lightweightSrc = mobile.matches ? source.dataset.mobileSrc : source.dataset.desktopSrc;
+        // Prefer sharper source only for Retina / expanded portals. Do not raise the
+        // initial page's network cost, and keep low-resolution film on 2G connections.
+        const connectionSlow = ["slow-2g", "2g"].includes(connection?.effectiveType ?? "");
+        const needsDetail = window.devicePixelRatio >= 1.5 || stage.getBoundingClientRect().width >= 600;
+        const useSharp = needsDetail && !connectionSlow && Boolean(source.dataset.sharpSrc);
+        const nextSrc = useSharp ? source.dataset.sharpSrc : lightweightSrc;
+        stage.dataset.mediaQuality = useSharp ? "sharp-720" : "lite-540";
         if (!nextSrc || !nextSrc.startsWith("/media/home/")) {
           unavailable = true;
           stage.dataset.mediaState = "poster";
