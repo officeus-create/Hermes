@@ -40,3 +40,35 @@ jobs:
             public/media/home/*-poster-400.webp
             public/media/home/*-poster-720.webp
             docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
+
+  stage-on-preview-branch:
+    # Write scope is separate from the read-only rendering job and never runs on PRs.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/home-v3-720p-quality-candidate-20261021'
+    needs: render-preview
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/home-v3-720p-quality-candidate-20261021
+          persist-credentials: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: hermes-home-v3-720p-visual-candidate
+          path: .
+      - name: Commit preview assets only (no live page changes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/media/home/*-720.mp4 public/media/home/*-poster-400.webp public/media/home/*-poster-720.webp docs/design/HOME_V3_720P_CANDIDATE_METADATA.tsv
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Preview assets unchanged"
+          else
+            git commit -m "assets(home): 720p source-master previews for #1983, not referenced on live site"
+            git push origin HEAD:refs/heads/feat/home-v3-720p-quality-candidate-20261021
+          fi
