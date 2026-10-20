@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@designcodeio/threeui/style.css';
 import './style.css';
 
 // Isolated review-only Vite app, not an Astro site route or Home PR.
@@ -32,6 +31,11 @@ function allowedToAnimate() {
   if (typeof window === 'undefined') return false;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
   if (navigator.connection?.saveData) return false;
+  // Battery/network-first: a GPU shader is never a prerequisite for mobile navigation.
+  if (window.matchMedia('(max-width: 767px), (pointer: coarse)').matches) return false;
+  if (navigator.connection?.effectiveType && /^(slow-2g|2g)$/.test(navigator.connection.effectiveType)) return false;
+  if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4) return false;
+  if (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4) return false;
   try {
     const canvas = document.createElement('canvas');
     return Boolean(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
