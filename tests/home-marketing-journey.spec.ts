@@ -31,12 +31,14 @@ test("Marketing is usable without JavaScript, with the poster and native route",
   await context.close();
 });
 
-test("tablet keeps four routes in two columns; Marketing retains cinematic source and poster", async ({ page }) => {
+test("tablet keeps responsive portal columns for touch and mouse; Marketing retains cinematic source and poster", async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.goto("/");
   const stage = page.locator(".home-master-stage");
   const countColumns = () => stage.evaluate(node => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
-  expect(await countColumns()).toBe(2);
+  // Touch tablets from 701–820px intentionally use full-width portals; mouse-based tablets retain two columns.
+  const touchTablet = await page.evaluate(() => matchMedia("(hover:none) and (pointer:coarse)").matches);
+  expect(await countColumns()).toBe(touchTablet ? 1 : 2);
   const marketing=stage.locator('[data-route-id="marketing"]');
   await expect(marketing.locator("[data-home-marketing-cinematic]")).toHaveCount(1);
   await expect(marketing.locator("img")).toHaveAttribute("src","/media/home/marketing-team-poster.jpg");
