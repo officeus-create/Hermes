@@ -132,7 +132,7 @@ export const site = {
     },
     {
       id: "marketing",
-      number: "02",
+      number: "04",
       category: "Hermes Marketing",
       brandLabel: "Hermes Marketing",
       programLabel: "ProgressoPro · Organic Target",
@@ -235,7 +235,7 @@ export const site = {
     },
     {
       id: "technology",
-      number: "04",
+      number: "02",
       category: "Hermes Technology",
       brandLabel: "Hermes Technology",
       programLabel: "AI • APIs • CRM • Telegram Bots • Business Automation",
