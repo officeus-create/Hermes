@@ -158,15 +158,13 @@ try {
   const touchConsent=touchPage.getByRole('button',{name:'Continue without analytics',exact:true});
   if(await touchConsent.count()) await touchConsent.click();
   for(const direction of ['logistics','marketing','technology','academy']) {
-    // Each direction's screenshot must target the visible visual owner, never a hidden superseded explainer.
-    const selector=direction==='logistics'
-      ? '[data-route-id="logistics"]'
-      : direction==='marketing'
-        ? '[data-home-marketing-cinematic]'
-        : direction==='technology'
-          ? '[data-home-pillar-proof="systems"]'
-          : '[data-home-pillar-proof="progress"]';
+    // Technology and Academy now show clean image portals. Their old workflow
+    // overlay elements intentionally remain hidden, so capture the actual route.
+    const selector=direction==='marketing'
+      ? '[data-home-marketing-cinematic]'
+      : `[data-route-id="${direction}"]`;
     const target=touchPage.locator(selector);
+    if(!(await target.isVisible())) throw new Error(`Home touch scene is not visible: ${direction}`);
     await target.screenshot({path:`${directory}/home-390-touch-${direction}-visual-owner.png`,animations:'allow'});
   }
   if(await touchPage.evaluate(()=>document.documentElement.scrollWidth>innerWidth)) {
