@@ -39,8 +39,13 @@ jobs:
           cleanup() {
             kill "$PID" 2>/dev/null || true
             wait "$PID" 2>/dev/null || true
-            # Disposable runner only, never user files.
-            rm -rf "$RUNNER_TEMP/paperclip-disposable"
+            # Embedded DB subprocess may still be shutting down; hosted runner is disposable.
+            # Best-effort cleanup must not turn a successful real API probe red.
+            for _ in 1 2 3; do
+              rm -rf "$RUNNER_TEMP/paperclip-disposable" 2>/dev/null && break
+              sleep 1
+            done
+            true
           }
           trap cleanup EXIT
           ok=0
