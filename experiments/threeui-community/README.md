@@ -26,3 +26,11 @@ Do not commit generated `node_modules`, `dist` or app screenshots with customer 
 **Promotion criteria:** protect SEO routes/sitemaps and the current four-direction layout; no new decorative truck or false UI statuses; prefer authentic media over WebGL if performance suffers; max one scene effect at a time; no production merge/deploy without separate signoff. Integrate only a chosen tiny component after Home v3 settles.
 
 Owner: Design/IT. NEXT_ACTION: run isolated dependency install/build and manual browser checks on a vetted machine; then choose or reject each effect. Independent QA verifies outcomes. 
+
+## Browser QA, exact evidence (20 Oct 2026)
+
+- Chromium browser tests at 390/768/1440 viewport, Reduce Motion, Save-Data and opt-in WebGL PASS on head `0243e52ec2eed0f8cd6022cd86f7878aed57d8a8`: https://github.com/officeus-create/Hermes/actions/runs/39445052152 .
+- Synthetic screenshot archive was captured by the workflow and remains available as a seven-day GitHub Actions artifact. These are real browser captures, not AI-generated concepts.
+- **Visual QA found a meaningful defect:** the initial shader blend darkened the entire content surface and reduced copy readability. Fixed by masking motion towards the right and using screen blending; tested computed styles and captured active WebGL frames again.
+- **Visual adoption judgment:** text readability is now protected, but the shader is barely visible in the static frame; therefore these components have **not** demonstrated enough commercial benefit to replace existing authentic cinematic video in Home v3. Keep as an experimental Website Factory technique for fitting client cases only. Do not promote solely due to passing tests.
+- Real iPhone/Safari, GPU performance, Lighthouse/CLS and exact-owner approval are still unverified. Browser Chromium PASS does not equal cross-device or production approval.
