@@ -23,3 +23,14 @@ Purpose: one app icon that opens an explicitly provided HTTPS Paperclip server i
 6. Only then consider an owner-approved signed app release or installable PWA; avoid a parallel product.
 
 Rollback: uninstall the companion app. No Hermes or Paperclip database is affected.
+
+## Quality, app size and CI speed — 20 October 2026
+
+- The initial PR APK build and SHA256 succeeded. An expensive Android emulator run showed `adb install` **Success** and `MainActivity` **Resumed**; only its attempt to write screenshot directly under `/sdcard/` failed with **Permission denied** (CI run 39452750117). This is NOT a proven app crash.
+- The capture path was fixed to `adb exec-out screencap -p > .../phone-emulator.png`. The full screenshot step has **not yet been rerun**; explicitly do not call it green on this evidence alone.
+- Every PR now runs source safety tests, Gradle debug APK compilation, SHA256 and **500,000-byte debug APK hard cap**. Emulator boot (over 12 minutes in the previous CI job) is **manual workflow_dispatch only**. Passing release checks remain fast, while full Android UI tests are opt-in.
+- Verified new quick CI: https://github.com/officeus-create/Hermes/actions/runs/39461871836 — success. It proves build and size gate, not direct install onto owner's Realme.
+- Runtime uses the system browser; there is **no WebView, background service, polling, app network permission, third-party analytics or heavyweight JS** inside the launcher. Session/auth state belongs to the separate Paperclip HTTPS site.
+- Real phone cold-start, battery, memory and network measurements **not yet established**. Do not claim native speed advantage from emulator or APK size alone.
+
+**Next:** owner installs debug APK on a specifically authorized Android device, validates HTTPS Paperclip origin after a secure server is available, and records sanitized install/open proof. Do not enable public unsecured server just to make the app seem usable.
