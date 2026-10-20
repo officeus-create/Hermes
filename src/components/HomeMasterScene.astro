@@ -374,7 +374,7 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     const syncCinematic = () => {
       if (!cinematicVideo) return;
       // A hidden, reduced-motion or Save-Data visit must not download the movie.
-      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable;
+      const shouldPause = reduced.matches || Boolean(connection?.saveData) || !visible || document.hidden || !cinematicAvailable || (matchMedia("(max-width: 700px)").matches && document.documentElement.dataset.homeCinemaActive !== "logistics");
       if (shouldPause) {
         cinematicVideo.pause();
         return;
@@ -472,6 +472,8 @@ const routeMeta: Record<string, { accent: string; detail: string; displayNumber:
     reduced.addEventListener("change", update);
     connection?.addEventListener?.("change", update);
     document.addEventListener("visibilitychange", update);
+    // The mobile selector owns which portal can decode/play video at a time.
+    window.addEventListener("hermes:cinema-selection", update);
     update();
   }
 
