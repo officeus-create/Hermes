@@ -12,19 +12,18 @@ test("global header separates four primary directions from secondary discovery l
   await expect(primary).toHaveCount(4);
   expect(await primary.evaluateAll((links) => links.map((link) => link.getAttribute("data-nav-tone")))).toEqual([
     "logistics",
-    "marketing",
     "technology",
     "academy",
+    "marketing",
   ]);
 
-  const secondary = page.locator(".desktop-nav > .nav-secondary-link");
-  await expect(secondary).toHaveCount(4);
-  expect(await secondary.evaluateAll((links) => links.map((link) => link.getAttribute("data-nav-tone")))).toEqual([
-    "insights",
-    "connect",
-    "catalog",
-    "opportunities",
-  ]);
+  const products = page.locator(".desktop-nav > [data-hermes-products]");
+  await expect(products).toHaveCount(1);
+  await expect(products.locator('a[data-product]')).toHaveCount(4);
+  await expect(products.locator('[data-product="connect"]')).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(products.locator('[data-product="catalog"]')).toHaveAttribute("href", "/businesses/");
+  await expect(products.locator('[data-product="insights"]')).toHaveAttribute("href", "/insights/");
+  await expect(products.locator('[data-product="opportunities"]')).toHaveAttribute("href", "/opportunities/");
 
   if (isMobile) {
     await page.locator("[data-menu-button]").click();
