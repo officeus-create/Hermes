@@ -701,5 +701,10 @@ animation:home-logistics-rain 1.45s linear infinite;opacity:.28;filter:blur(.18p
 .home-marketing-layer-stack>video{z-index:1;opacity:0;transition:opacity .45s ease}
 .home-marketing-layer-stack[data-media-state="ready"]>video{opacity:1}
 .home-master-route-marketing .home-marketing-journey,.home-master-route-marketing .home-live-explainer{display:none!important}
+/* Phase 2: match Claude's quiet four-window chooser. Keep real Tech/Academy routes and
+   source-labelled explainer markup for future product-specific pages, but do not
+   superimpose miniature faux dashboards or progress cards onto cinematic Home art. */
+.home-master-route-technology .home-system-display,
+.home-master-route-academy .home-academy-living{display:none!important}
 @media(prefers-reduced-motion:reduce){.home-marketing-layer-stack>video{display:none!important;transition:none!important}}
 </style>
